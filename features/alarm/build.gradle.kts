@@ -7,7 +7,10 @@ plugins {
 
 android {
     namespace = "vn.io.litever.alarm.features.alarm"
-    compileSdk = 36
+
+    compileSdk {
+        version = release(36)
+    }
 
     defaultConfig {
         minSdk = 26
@@ -18,8 +21,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     buildFeatures {
         compose = true
+        viewBinding = false
     }
 }
 
@@ -39,6 +44,7 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.material.icons.extended)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

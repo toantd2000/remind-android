@@ -5,7 +5,10 @@ plugins {
 
 android {
     namespace = "vn.io.litever.alarm.core.designsystem"
-    compileSdk = 36
+
+    compileSdk {
+        version = release(36)
+    }
 
     defaultConfig {
         minSdk = 26
@@ -16,8 +19,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     buildFeatures {
         compose = true
+        viewBinding = false
     }
 }
 

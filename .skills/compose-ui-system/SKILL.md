@@ -15,7 +15,7 @@ metadata:
 
 ### 2. Thành phần giao diện (Components & Reusability)
 - **Tái sử dụng (Reusability):** Trước khi code một Custom Component, PHẢI dùng lệnh tìm kiếm bên trong `:core:designsystem/src/.../components` xem đã có sẵn component tương tự chưa. Nếu nó chưa tồn tại nhưng có tiềm năng dùng lại (ví dụ một AlarmCard), hãy tạo mới nó ở `:core:designsystem`, tuyệt đối KHÔNG tạo cục bộ trong `:features:xxx`. 
-- **Design System:** LUÔN sử dụng các Composable chung từ `ui.components` thay vì dùng API của androidx.compose.
+- **Design System:** LUÔN sử dụng các Composable chung từ `ui.components` thay vì dùng API của androidx.compose. ⚠️ **KINH NGHIỆM GHI NHỚ TỪ SAI LẦM:** Kể cả khi module `:core:designsystem` đang hoàn toàn TRỐNG (chưa có component mẫu nào), bạn cũng TUYỆT ĐỐI KHÔNG được phép "xài tạm" các UI API gốc của vật liệu (như `androidx.compose.material3.Button` hay `Icon`) trực tiếp bên trong `:features:xxx`. Nếu thiếu component, BẮT BUỘC phải qua `:core:designsystem` để tạo Wrapper component đó trước, rồi mới export ngược lại cho Feature dùng.
 - **Theme:** Sử dụng Theme được cấu hình sẵn cho chuẩn dự án (ví dụ `MaterialTheme.colorScheme`). Tuyệt đối không hardcode mã màu HEX (ví dụ: #FF0000).
 
 ### 3. Hiệu suất (Performance)

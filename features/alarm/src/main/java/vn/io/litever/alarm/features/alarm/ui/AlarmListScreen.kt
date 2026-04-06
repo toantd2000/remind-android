@@ -9,12 +9,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import vn.io.litever.alarm.core.designsystem.components.AlarmFloatingActionButton
+import vn.io.litever.alarm.core.designsystem.components.AlarmScaffold
+import vn.io.litever.alarm.core.designsystem.components.AlarmSwitch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -48,9 +48,9 @@ fun AlarmListScreen(
     onAddAlarmClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Scaffold(
+    AlarmScaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = onAddAlarmClick) {
+            AlarmFloatingActionButton(onClick = onAddAlarmClick) {
                 Icon(Icons.Default.Add, contentDescription = "Add Alarm")
             }
         }
@@ -96,7 +96,7 @@ fun AlarmItem(
                 )
             }
         }
-        Switch(
+        AlarmSwitch(
             checked = alarm.isEnabled,
             onCheckedChange = { onToggle() }
         )

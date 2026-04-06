@@ -10,7 +10,8 @@ Cơ chế này đảm bảo "sự tiến hóa" liên tục qua các task, tránh
 ## Ngày tháng: 2026-04-06
 **Vấn đề / Task:** Dùng trực tiếp các thành phần `androidx.compose.material3.*` (như Button, Icon) tại module `:features:alarm` vì thấy `:core:designsystem` lúc đó đang cạn/rỗng.
 **Phân tích nguyên nhân:** 
-* Giả định sai lầm: Tôi đã lầm tưởng rằng nếu `designsystem` chưa định nghĩa các thư viện Wrapper (Button riêng, Icon riêng), thì việc dùng tạm thư viện gốc Material3 ở Feature module là được phép để giải quyết nhanh tính năng.
-* Hậu quả: Phá vỡ nguyên tắc "Single Source of Truth", khiến cho bộ giao diện của dự án bị phân mảnh. Việc đổi mới toàn bộ giao diện (Rebrand/Dark theme/Style update) sau này sẽ cực kỳ tốn kém vì phải sửa thủ công ở mọi file thuộc Feature.
+* Giả định chưa chính xác: Tôi đã lầm tưởng rằng có thể dùng trực tiếp thư viện gốc Material3 ở Feature module đối với mọi loại Component khi `designsystem` còn rỗng.
+* Nhận định đúng (Pragmatic Approach): Việc bọc 100% mọi component (kể cả Text) ngay từ đầu có thể gây dư thừa (Over-engineering).
 **Giải pháp / Rule mới:** 
-* Đã nhận thức rõ: **Triết lý Clean Architecture & Design System không cho phép "đường tắt".**  Kể cả khi `:core:designsystem` rỗng, bước đi duy nhất đúng là phải nhảy sang `:core:designsystem` để khởi tạo cấu trúc và viết Component bọc (Wrapper) đầu tiên (ví dụ `AlarmButton`) trước. Sau đó mới quay lại gọi nó ở `:features:...`.
+* **Quy mô áp dụng mếm mỏng:** Tuân thủ Design System (Wrapper component) với các cấu trúc tương tác lớn, định hình UI (như `Button`, `Scaffold`, `Switch`, `Dialog`...). Kể cả khi `:core:designsystem` rỗng, BẮT BUỘC phải tạo lớp bọc cho chúng (VD: `AlarmButton`) trước khi dùng. 
+* Đối với các thành phần cơ bản thuần tuý như `Text` hay `MaterialTheme.typography`, CÓ THỂ linh động sử dụng trực tiếp từ `androidx.compose.material3.*` tại feature module để giảm chi phí phát triển không cần thiết.

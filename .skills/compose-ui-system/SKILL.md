@@ -15,7 +15,9 @@ metadata:
 
 ### 2. Thành phần giao diện (Components & Reusability)
 - **Tái sử dụng (Reusability):** Trước khi code một Custom Component, PHẢI dùng lệnh tìm kiếm bên trong `:core:designsystem/src/.../components` xem đã có sẵn component tương tự chưa. Nếu nó chưa tồn tại nhưng có tiềm năng dùng lại (ví dụ một AlarmCard), hãy tạo mới nó ở `:core:designsystem`, tuyệt đối KHÔNG tạo cục bộ trong `:features:xxx`. 
-- **Design System:** LUÔN sử dụng các Composable chung từ `ui.components` thay vì dùng API của androidx.compose. ⚠️ **KINH NGHIỆM GHI NHỚ TỪ SAI LẦM:** Kể cả khi module `:core:designsystem` đang hoàn toàn TRỐNG (chưa có component mẫu nào), bạn cũng TUYỆT ĐỐI KHÔNG được phép "xài tạm" các UI API gốc của vật liệu (như `androidx.compose.material3.Button` hay `Icon`) trực tiếp bên trong `:features:xxx`. Nếu thiếu component, BẮT BUỘC phải qua `:core:designsystem` để tạo Wrapper component đó trước, rồi mới export ngược lại cho Feature dùng.
+- **Design System:** Ưu tiên sử dụng các Composable chung từ `ui.components` thay vì dùng API của androidx.compose. ⚠️ **KINH NGHIỆM GHI NHỚ:** 
+ 1. Với các **Interactive/Structural Components** (như `Button`, `Dialog`, `Scaffold`, `Switch`): Kể cả khi module `:core:designsystem` đang TRỐNG, TUYỆT ĐỐI KHÔNG dùng trực tiếp API gốc bên trong `:features:xxx`. Bắt buộc phải qua `:core:designsystem` tạo Wrapper Component (VD `AlarmButton`) trước.
+ 2. Với các **Basic Components** (như `Text`): Vẫn ĐƯỢC PHÉP kế thừa sử dụng trực tiếp `material3.Text` và `MaterialTheme.typography` để tránh việc code hóa dư thừa không cần thiết (Over-engineering).
 - **Theme:** Sử dụng Theme được cấu hình sẵn cho chuẩn dự án (ví dụ `MaterialTheme.colorScheme`). Tuyệt đối không hardcode mã màu HEX (ví dụ: #FF0000).
 
 ### 3. Hiệu suất (Performance)

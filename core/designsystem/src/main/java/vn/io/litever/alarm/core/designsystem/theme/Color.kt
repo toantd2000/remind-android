@@ -9,3 +9,11 @@ val Pink80 = Color(0xFFEFB8C8)
 val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
+
+// Premium Colors
+val DeepIndigo = Color(0xFF1A1C2E)
+val ElectricCyan = Color(0xFF00E5FF)
+val SoftGraphite = Color(0xFF2D2F3F)
+val MidnightBlack = Color(0xFF000000)
+val PureWhite = Color(0xFFFFFFFF)
+val NeonPurple = Color(0xFF7C4DFF)

@@ -12,22 +12,34 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = ElectricCyan,
+    secondary = NeonPurple,
+    tertiary = Purple80,
+    background = MidnightBlack,
+    surface = SoftGraphite,
+    onPrimary = MidnightBlack,
+    onSecondary = PureWhite,
+    onBackground = PureWhite,
+    onSurface = PureWhite
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+    primary = DeepIndigo,
+    secondary = Purple40,
+    tertiary = Pink40,
+    background = PureWhite,
+    surface = Color(0xFFF5F5F7),
+    onPrimary = PureWhite,
+    onSecondary = PureWhite,
+    onBackground = DeepIndigo,
+    onSurface = DeepIndigo
 )
 
 @Composable
 fun AlarmTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    // Disable dynamic color for consistent branding
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

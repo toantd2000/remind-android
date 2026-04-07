@@ -11,7 +11,9 @@ fun AlarmEntity.toModel(): Alarm {
         time = LocalTime.of(hour, minute),
         label = label,
         isEnabled = isEnabled,
-        repeatDays = repeatDays.split(",").filter { it.isNotEmpty() }.map { DayOfWeek.valueOf(it) }
+        repeatDays = repeatDays.split(",").filter { it.isNotEmpty() }.map { DayOfWeek.valueOf(it) },
+        vibrationEnabled = vibrationEnabled,
+        ringtoneUri = ringtoneUri
     )
 }
 
@@ -22,6 +24,8 @@ fun Alarm.toEntity(): AlarmEntity {
         minute = time.minute,
         label = label,
         isEnabled = isEnabled,
-        repeatDays = repeatDays.joinToString(",") { it.name }
+        repeatDays = repeatDays.joinToString(",") { it.name },
+        vibrationEnabled = vibrationEnabled,
+        ringtoneUri = ringtoneUri
     )
 }

@@ -7,7 +7,9 @@ data class Alarm(
     val time: LocalTime,
     val label: String = "",
     val isEnabled: Boolean = true,
-    val repeatDays: List<DayOfWeek> = emptyList()
+    val repeatDays: List<DayOfWeek> = emptyList(),
+    val vibrationEnabled: Boolean = true,
+    val ringtoneUri: String? = null
 )
 
 enum class DayOfWeek {

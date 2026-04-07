@@ -1,0 +1,6 @@
+<resources>
+    <string name="delete_disabled_alarms">Xoá các báo thức đã tắt</string>
+    <string name="no_alarms">Chưa có báo thức nào</string>
+    <string name="next_alarm_in">Báo thức tiếp theo trong %s</string>
+    <string name="empty_description">Nhấn nút + để thêm báo thức mới</string>
+</resources>

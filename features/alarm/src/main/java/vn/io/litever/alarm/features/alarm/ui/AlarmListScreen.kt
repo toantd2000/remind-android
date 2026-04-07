@@ -28,6 +28,7 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun AlarmListRoute(
+    onAddAlarmClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AlarmListViewModel = hiltViewModel()
 ) {
@@ -36,7 +37,7 @@ fun AlarmListRoute(
     AlarmListScreen(
         alarms = alarms,
         onToggleAlarm = viewModel::toggleAlarm,
-        onAddAlarmClick = { /* TODO */ },
+        onAddAlarmClick = onAddAlarmClick,
         modifier = modifier
     )
 }

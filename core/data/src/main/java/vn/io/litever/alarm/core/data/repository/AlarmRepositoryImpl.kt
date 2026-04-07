@@ -18,8 +18,8 @@ class AlarmRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun insertAlarm(alarm: Alarm) {
-        alarmDao.insertAlarm(alarm.toEntity())
+    override suspend fun insertAlarm(alarm: Alarm): Long {
+        return alarmDao.insertAlarm(alarm.toEntity())
     }
 
     override suspend fun updateAlarm(alarm: Alarm) {

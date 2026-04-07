@@ -3,8 +3,8 @@
 Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các tính năng, lịch sử thay đổi kiến trúc và các quyết định kỹ thuật quan trọng của Ứng dụng Báo Thức.
 
 ## Lộ Trình Tổng Thể
-- [ ] **Phase 1:** Hoàn thiện Tầng Dữ liệu (Room DB & Repository)
-- [ ] **Phase 2:** Cơ Chế Lập Lịch Báo Thức (AlarmManager & Receivers)
+- [x] **Phase 1:** Hoàn thiện Tầng Dữ liệu (Room DB & Repository)
+- [x] **Phase 2:** Cơ Chế Lập Lịch Báo Thức (AlarmManager & Receivers)
 - [ ] **Phase 3:** Giao diện Người dùng (CRUD Alarm List & Create)
 - [ ] **Phase 4:** Trải Nghiệm Màn Hình Chuông (Foreground Service & Full-Screen UI)
 

@@ -25,5 +25,11 @@
             android:name=".ringing.AlarmService"
             android:exported="false"
             android:foregroundServiceType="specialUse" />
+            
+        <activity
+            android:name=".ringing.RingingActivity"
+            android:exported="false"
+            android:showOnLockScreen="true"
+            android:turnScreenOn="true" />
     </application>
 </manifest>

@@ -20,4 +20,15 @@ fun NavGraphBuilder.alarmGraph(
             onNavigateBack = onNavigateBack
         )
     }
+    composable(
+        route = alarmRingingRoute,
+        arguments = listOf(androidx.navigation.navArgument("alarmId") { type = androidx.navigation.NavType.LongType }),
+        deepLinks = listOf(androidx.navigation.navDeepLink { uriPattern = "app://alarm/ring/{alarmId}" })
+    ) { backStackEntry ->
+        val alarmId = backStackEntry.arguments?.getLong("alarmId") ?: -1L
+        AlarmRingingRoute(
+            alarmId = alarmId,
+            onFinish = onNavigateBack
+        )
+    }
 }

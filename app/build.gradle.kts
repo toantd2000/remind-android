@@ -46,6 +46,7 @@ android {
 dependencies {
     implementation(project(":features:alarm"))
     implementation(project(":core:data"))
+    implementation(project(":core:alarms"))
     implementation(project(":core:designsystem"))
     implementation(project(":core:common"))
 

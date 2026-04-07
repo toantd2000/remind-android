@@ -1,4 +1,4 @@
-package vn.io.litever.alarm.features.alarm.ringing
+package vn.io.litever.alarm.core.alarms.receiver
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -15,7 +15,7 @@ class BootCompletedReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
-            // TODO: Lọc tất cả báo thức có isEnabled = true từ DB và gọi alarmScheduler.schedule()
+            // TODO: Truy xuất Database tại đây hoặc từ WorkManager
         }
     }
 }

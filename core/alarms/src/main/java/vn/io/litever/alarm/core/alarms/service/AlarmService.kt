@@ -1,4 +1,4 @@
-package vn.io.litever.alarm.features.alarm.ringing
+package vn.io.litever.alarm.core.alarms.service
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -9,15 +9,27 @@ import android.content.Intent
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Build
 import android.os.IBinder
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import androidx.core.app.NotificationCompat
+import dagger.hilt.android.AndroidEntryPoint
+import vn.io.litever.alarm.core.alarms.AlarmRingManager
 import vn.io.litever.alarm.core.domain.scheduler.AlarmScheduler.Companion.EXTRA_ALARM_ID
+import javax.inject.Inject
+import androidx.core.net.toUri
 
+@AndroidEntryPoint
 class AlarmService : Service() {
+    @Inject
+    lateinit var alarmRingManager: AlarmRingManager
+
+    @Inject
+    lateinit var alarmIntentProvider: vn.io.litever.alarm.core.alarms.provider.AlarmIntentProvider
+
     private var mediaPlayer: MediaPlayer? = null
     private var vibrator: Vibrator? = null
 
@@ -30,38 +42,49 @@ class AlarmService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val alarmId = intent?.getLongExtra(EXTRA_ALARM_ID, -1L) ?: -1L
+        if (alarmId == -1L) return START_NOT_STICKY
         
+        alarmRingManager.setRinging(alarmId)
         startRinging()
         
-        // Notification with Full Screen Intent needed to wake screen
-        val ringingIntent = Intent(this, RingingActivity::class.java).apply {
-            putExtra(EXTRA_ALARM_ID, alarmId)
+        // Sử dụng IntentProvider để lấy Intent tường minh (Explicit) từ tầng App
+        val deepLinkIntent = alarmIntentProvider.createRingingIntent(alarmId).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
-        
+
         val pendingIntent = PendingIntent.getActivity(
             this,
             alarmId.hashCode(),
-            ringingIntent,
+            deepLinkIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
             .setContentTitle("Báo Thức!")
-            .setContentText("Đến giờ rồi, dậy thôi!")
+            .setContentText("Nhấn vào đây để xem và tắt báo thức")
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setContentIntent(pendingIntent) 
             .setFullScreenIntent(pendingIntent, true)
             .setOngoing(true)
+            .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
             .build()
             
+        // Ép hệ thống hiển thị thông báo ngay tức khắc (Vượt rào cản OS Delay)
+        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        manager.notify(1, notification)
+        
+        // Gắn vào Foreground để bảo vệ tiến trình (đã được dời xuống sau)
         startForeground(1, notification)
 
         return START_STICKY
     }
 
     private fun startRinging() {
+        if (mediaPlayer?.isPlaying == true) return
+        
         val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM) ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
         
         mediaPlayer = MediaPlayer().apply {
@@ -98,6 +121,7 @@ class AlarmService : Service() {
         mediaPlayer?.stop()
         mediaPlayer?.release()
         vibrator?.cancel()
+        alarmRingManager.setRinging(null)
         super.onDestroy()
     }
 

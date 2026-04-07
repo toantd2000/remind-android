@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 data class AlarmEditUiState(
     val id: Long = 0,
-    val time: LocalTime = LocalTime.now(),
+    val time: LocalTime = LocalTime.now().plusMinutes(1),
     val label: String = "",
     val repeatDays: List<DayOfWeek> = emptyList()
 )

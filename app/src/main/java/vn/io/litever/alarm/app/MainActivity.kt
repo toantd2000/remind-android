@@ -1,47 +1,95 @@
 package vn.io.litever.alarm.app
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import vn.io.litever.alarm.app.theme.AlarmTheme
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
+import dagger.hilt.android.AndroidEntryPoint
+import vn.io.litever.alarm.core.designsystem.theme.AlarmTheme
+import vn.io.litever.alarm.features.alarm.ui.alarmGraph
+import vn.io.litever.alarm.features.alarm.ui.alarmListRoute
+import vn.io.litever.alarm.features.alarm.ui.alarmEditRoute
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleLockScreenBypass()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        handleLockScreenBypass()
+        
         enableEdgeToEdge()
         setContent {
             AlarmTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    val navController = rememberNavController()
+                    
+                    // Observe Global Ringing State
+                    val alarmRingManager = dagger.hilt.EntryPoints.get(
+                        applicationContext,
+                        vn.io.litever.alarm.core.alarms.di.AlarmRingManagerEntryPoint::class.java
+                    ).alarmRingManager()
+                    val ringingAlarmId by alarmRingManager.ringingAlarmId.collectAsState()
+                    
+                    LaunchedEffect(ringingAlarmId) {
+                        ringingAlarmId?.let { id ->
+                            navController.navigate("alarm_ringing_route/$id") {
+                                launchSingleTop = true
+                            }
+                        }
+                    }
+
+                    NavHost(
+                        navController = navController,
+                        startDestination = alarmListRoute
+                    ) {
+                        alarmGraph(
+                            onNavigateToEdit = {
+                                navController.navigate(alarmEditRoute)
+                            },
+                            onNavigateBack = {
+                                navController.popBackStack()
+                            }
+                        )
+                    }
                 }
             }
         }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    AlarmTheme {
-        Greeting("Android")
+    private fun handleLockScreenBypass() {
+        val isRingingIntent = intent?.data?.toString()?.contains("alarm/ring") == true
+        if (isRingingIntent) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O_MR1) {
+                setShowWhenLocked(true)
+                setTurnScreenOn(true)
+            } else {
+                @Suppress("DEPRECATION")
+                window.addFlags(
+                    android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
+                    android.view.WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON or
+                    android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+                    android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                )
+            }
+        }
     }
 }

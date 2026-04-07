@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "vn.io.litever.alarm.core.data"
+    namespace = "vn.io.litever.alarm.core.datastore"
 
     compileSdk {
         version = release(36)
@@ -28,12 +28,11 @@ android {
 
 dependencies {
     implementation(project(":core:model"))
-    implementation(project(":core:domain"))
-    implementation(project(":core:database"))
-    implementation(project(":core:datastore"))
-    implementation(project(":core:common"))
-    
     implementation(libs.androidx.core.ktx)
+    
+    implementation(libs.androidx.datastore.preferences)
+
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+    implementation(libs.kotlinx.coroutines.android)
 }

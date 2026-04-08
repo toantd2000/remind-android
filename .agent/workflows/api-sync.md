@@ -3,6 +3,7 @@
 Quy trình này áp dụng khi có file Swagger (JSON/YAML) mới hoặc khi một Endpoint API thay đổi cấu trúc.
 
 ## Giai đoạn 1: Phân tích tài liệu (Ingestion)
+*Kích hoạt: @api-integration*
 1. **Đọc file nguồn:** Yêu cầu người dùng cung cấp đường dẫn file Swagger hoặc dán nội dung JSON/YAML của Endpoint cần xử lý.
 2. **Trích xuất thông tin:** - Xác định URL Base, Method (GET/POST...), và Header cần thiết.
     - Phân tích cấu trúc Request Body và Response Body.

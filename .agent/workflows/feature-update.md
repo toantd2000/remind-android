@@ -19,6 +19,12 @@ Quy trình này áp dụng khi cần thêm logic mới vào một tính năng đ
     - Cập nhật các bản Unit Test cũ để khớp với logic mới.
     - Viết thêm Test cho các trường hợp mới được thêm vào.
 
-## Giai đoạn 4: Kiểm duyệt (Review)
-1. So sánh sự thay đổi (Diff) để đảm bảo không xóa nhầm code cũ cần thiết.
-2. Đảm bảo các module phụ thuộc vẫn compile bình thường.
+## Giai đoạn 4: Cập nhật Giao diện (Presentation & UI)
+*Kích hoạt: @compose-ui-system*
+1. Cập nhật **ViewModel** và **UiState** để xử lý luồng dữ liệu mới.
+2. Chỉnh sửa hoặc thêm mới các component phần **Compose UI**.
+3. Cập nhật và bổ sung **`@Preview`** cho các UI state bị thay đổi.
+
+## Giai đoạn 5: Kiểm duyệt (Review)
+1. So sánh sự thay đổi (Diff) để đảm bảo không xóa nhầm logic/code lỗi cũ.
+2. Đảm bảo project vẫn compile bình thường và giao diện hiển thị đúng định hướng.

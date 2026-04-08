@@ -41,3 +41,4 @@ Khi được yêu cầu tạo module mới:
 2. Tạo thư mục module và định nghĩa file `build.gradle.kts`. Dán config chuẩn vừa copy sang, chỉ thay đổi `namespace`. **BẮT BUỘC:** Phải tạo kèm theo một file `.gitignore` nằm ngay dưới thư mục gốc của module này với nội dung `/build`.
 3. Chỉ thêm các Thư viện (Dependencies) **tối giản nhất** để phục vụ đúng vai trò của module.
 4. Đăng ký vào `settings.gradle.kts` và khai báo dependency tại `build.gradle.kts` của lớp cha.
+5. **Cập nhật "Bản đồ sống" (Living Map):** Bất cứ khi nào tạo module mới hoặc thay đổi cấu trúc trong `settings.gradle.kts`, BẮT BUỘC phải mở file `ARCHITECTURE_MAP.md` ở thư mục gốc và cập nhật lại sơ đồ kiến trúc để tránh sự hao mòn tài liệu (Documentation Decay).

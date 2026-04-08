@@ -46,6 +46,7 @@ android {
 
 dependencies {
     implementation(project(":features:alarm"))
+    implementation(project(":features:settings"))
     implementation(project(":core:data"))
     implementation(project(":core:alarms"))
     implementation(project(":core:designsystem"))
@@ -59,6 +60,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.material.icons.extended)
     implementation(libs.androidx.navigation.compose)
 
     implementation(libs.hilt.android)

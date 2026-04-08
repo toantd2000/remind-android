@@ -19,6 +19,18 @@ import vn.io.litever.alarm.core.designsystem.theme.AlarmTheme
 import vn.io.litever.alarm.features.alarm.ui.alarmGraph
 import vn.io.litever.alarm.features.alarm.ui.alarmListRoute
 import vn.io.litever.alarm.features.alarm.ui.alarmEditRoute
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Alarm
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.layout.padding
+import vn.io.litever.alarm.features.settings.ui.settingsGraph
+import vn.io.litever.alarm.features.settings.ui.settingsRoute
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -57,18 +69,66 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
-                    NavHost(
-                        navController = navController,
-                        startDestination = alarmListRoute
-                    ) {
-                        alarmGraph(
-                            onNavigateToEdit = { id ->
-                                navController.navigate("alarm_edit_route/$id")
-                            },
-                            onNavigateBack = {
-                                navController.popBackStack()
+                    Scaffold(
+                        bottomBar = {
+                            val navBackStackEntry by navController.currentBackStackEntryAsState()
+                            val currentRoute = navBackStackEntry?.destination?.route
+
+                            val isBottomBarVisible = currentRoute == vn.io.litever.alarm.features.alarm.ui.alarmListRoute || 
+                                currentRoute == vn.io.litever.alarm.features.settings.ui.settingsRoute
+
+                            if (isBottomBarVisible) {
+                                NavigationBar {
+                                    NavigationBarItem(
+                                        icon = { Icon(Icons.Filled.Alarm, contentDescription = "Alarm") },
+                                        label = { Text("Báo thức") },
+                                        selected = currentRoute == vn.io.litever.alarm.features.alarm.ui.alarmListRoute,
+                                        onClick = {
+                                            navController.navigate(vn.io.litever.alarm.features.alarm.ui.alarmListRoute) {
+                                                popUpTo(navController.graph.startDestinationId) {
+                                                    saveState = true
+                                                }
+                                                launchSingleTop = true
+                                                restoreState = true
+                                            }
+                                        }
+                                    )
+                                    NavigationBarItem(
+                                        icon = { Icon(Icons.Filled.Settings, contentDescription = "Settings") },
+                                        label = { Text("Cài đặt") },
+                                        selected = currentRoute == vn.io.litever.alarm.features.settings.ui.settingsRoute,
+                                        onClick = {
+                                            navController.navigate(vn.io.litever.alarm.features.settings.ui.settingsRoute) {
+                                                popUpTo(navController.graph.startDestinationId) {
+                                                    saveState = true
+                                                }
+                                                launchSingleTop = true
+                                                restoreState = true
+                                            }
+                                        }
+                                    )
+                                }
                             }
-                        )
+                        }
+                    ) { paddingValues ->
+                        androidx.compose.foundation.layout.Box(
+                            modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding())
+                        ) {
+                            NavHost(
+                                navController = navController,
+                                startDestination = vn.io.litever.alarm.features.alarm.ui.alarmListRoute
+                            ) {
+                                alarmGraph(
+                                    onNavigateToEdit = { id ->
+                                        navController.navigate("alarm_edit_route/$id")
+                                    },
+                                    onNavigateBack = {
+                                        navController.popBackStack()
+                                    }
+                                )
+                                settingsGraph()
+                            }
+                        }
                     }
                 }
             }

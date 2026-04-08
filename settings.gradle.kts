@@ -33,4 +33,4 @@ include(":core:database")
 include(":core:datastore")
 include(":core:data")
 include(":features:alarm")
- 
+include(":features:settings")

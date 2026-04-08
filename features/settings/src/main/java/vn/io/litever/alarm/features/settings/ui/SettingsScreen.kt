@@ -111,7 +111,7 @@ fun SettingsScreen(
                                     .horizontalScroll(rememberScrollState())
                             ) {
                                 ColorDot(
-                                    color = Color.LightGray,
+                                    color = androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant,
                                     selected = uiState.colorPalette == "DYNAMIC",
                                     isDynamic = true,
                                     onClick = { onColorPaletteChange("DYNAMIC") }
@@ -177,14 +177,14 @@ fun ColorDot(
             androidx.compose.material3.Icon(
                 imageVector = Icons.Default.Wallpaper,
                 contentDescription = "Dynamic Color",
-                tint = if (selected) Color.White else Color.DarkGray,
+                tint = if (selected) androidx.compose.material3.MaterialTheme.colorScheme.onPrimary else androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.align(Alignment.Center).size(20.dp)
             )
         } else if (selected) {
             androidx.compose.material3.Icon(
                 imageVector = Icons.Default.Check,
                 contentDescription = "Selected",
-                tint = Color.White,
+                tint = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier.align(Alignment.Center)
             )
         }

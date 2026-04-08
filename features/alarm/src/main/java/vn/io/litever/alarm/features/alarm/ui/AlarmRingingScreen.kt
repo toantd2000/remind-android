@@ -149,11 +149,7 @@ fun AlarmRingingScreen(
                 Button(
                     onClick = onDismiss,
                     modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.extraLarge,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
+                    shape = MaterialTheme.shapes.extraLarge
                 ) {
                     Text(
                         text = stringResource(R.string.dismiss).uppercase(),

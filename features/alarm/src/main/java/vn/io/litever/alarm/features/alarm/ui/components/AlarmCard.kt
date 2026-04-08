@@ -88,28 +88,5 @@ fun AlarmCard(
 
 @Composable
 private fun getRepeatText(alarm: Alarm): String {
-    if (alarm.repeatDays.isEmpty()) {
-        val now = java.time.LocalTime.now()
-        return if (alarm.time.isAfter(now)) {
-            stringResource(R.string.today)
-        } else {
-            stringResource(R.string.tomorrow)
-        }
-    }
-    
-    if (alarm.repeatDays.size == 7) {
-        return stringResource(R.string.every_day)
-    }
-    val context = LocalContext.current
-    return alarm.repeatDays.joinToString(", ") { day ->
-        when (day) {
-            DayOfWeek.MONDAY -> context.getString(R.string.day_mon)
-            DayOfWeek.TUESDAY -> context.getString(R.string.day_tue)
-            DayOfWeek.WEDNESDAY -> context.getString(R.string.day_wed)
-            DayOfWeek.THURSDAY -> context.getString(R.string.day_thu)
-            DayOfWeek.FRIDAY -> context.getString(R.string.day_fri)
-            DayOfWeek.SATURDAY -> context.getString(R.string.day_sat)
-            DayOfWeek.SUNDAY -> context.getString(R.string.day_sun)
-        }
-    }
+    return getRepeatSummaryText(alarm.repeatDays, alarm.time)
 }

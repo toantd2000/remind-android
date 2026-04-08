@@ -18,6 +18,10 @@ class AlarmRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getAlarmById(id: Long): Alarm? {
+        return alarmDao.getAlarmById(id)?.toModel()
+    }
+
     override suspend fun insertAlarm(alarm: Alarm): Long {
         return alarmDao.insertAlarm(alarm.toEntity())
     }

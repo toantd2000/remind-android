@@ -9,8 +9,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import vn.io.litever.alarm.features.alarm.viewmodel.AlarmRingingViewModel
 
-const val alarmRingingRoute = "alarm_ringing_route/{alarmId}"
-
 @Composable
 fun AlarmRingingRoute(
     alarmId: Long,

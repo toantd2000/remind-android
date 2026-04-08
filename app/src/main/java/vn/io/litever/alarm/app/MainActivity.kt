@@ -62,8 +62,8 @@ class MainActivity : ComponentActivity() {
                         startDestination = alarmListRoute
                     ) {
                         alarmGraph(
-                            onNavigateToEdit = {
-                                navController.navigate(alarmEditRoute)
+                            onNavigateToEdit = { id ->
+                                navController.navigate("alarm_edit_route/$id")
                             },
                             onNavigateBack = {
                                 navController.popBackStack()

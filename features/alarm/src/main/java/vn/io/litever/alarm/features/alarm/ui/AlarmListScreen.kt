@@ -14,13 +14,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import vn.io.litever.alarm.core.designsystem.components.AlarmFloatingActionButton
-import vn.io.litever.alarm.core.designsystem.components.AlarmScaffold
+import vn.io.litever.alarm.core.designsystem.components.*
 import vn.io.litever.alarm.core.model.Alarm
 import vn.io.litever.alarm.features.alarm.R
 import vn.io.litever.alarm.features.alarm.ui.components.AlarmCard
+import vn.io.litever.alarm.features.alarm.ui.components.NextAlarmHeader
+import vn.io.litever.alarm.features.alarm.ui.state.NextAlarmUiState
 import vn.io.litever.alarm.features.alarm.viewmodel.AlarmListViewModel
-import vn.io.litever.alarm.features.alarm.viewmodel.NextAlarmUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,8 +59,8 @@ fun AlarmListScreen(
 
     AlarmScaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Alarms") },
+            AlarmTopAppBar(
+                title = stringResource(R.string.alarms_title),
                 actions = {
                     IconButton(onClick = { showMenu = !showMenu }) {
                         Icon(Icons.Default.MoreVert, contentDescription = "More")
@@ -91,13 +91,8 @@ fun AlarmListScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            // Next Alarm Text
-            Text(
-                text = formatNextAlarmText(nextAlarmState),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)
-            )
+            // Shared Next Alarm Header
+            NextAlarmHeader(state = nextAlarmState)
 
             if (alarms.isEmpty()) {
                 EmptyState(modifier = Modifier.weight(1f))
@@ -149,36 +144,5 @@ fun EmptyState(modifier: Modifier = Modifier) {
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-    }
-}
-@Composable
-private fun formatNextAlarmText(state: NextAlarmUiState): String {
-    return when (state) {
-        NextAlarmUiState.AllOff -> stringResource(R.string.all_alarms_off)
-        is NextAlarmUiState.Remaining -> {
-            val content = when {
-                state.days > 0 -> stringResource(R.string.days_hours, state.days, state.hours)
-                state.hours > 0 -> stringResource(R.string.hours_minutes, state.hours, state.minutes)
-                state.minutes > 0 -> stringResource(R.string.hours_minutes, 0, state.minutes) // This will use minutes part
-                else -> stringResource(R.string.less_than_one_minute)
-            }
-            
-            // Special handling for only minutes if hours == 0 but string expects %1$d hours %2$d mins
-            val finalContent = if (state.days == 0L && state.hours == 0L && state.minutes > 0) {
-                "${state.minutes} ${stringResource(R.string.hours_minutes, 0, 0).split(" ").last()}" // heuristic
-                // Actually, let's just make it simple if it's just minutes
-                "${state.minutes}m" 
-                // Wait, user request was specific for "a giờ b phút", so 0 giờ b phút is fine or just reuse strings.
-            } else content
-
-            val timeDescription = when {
-                state.days > 0 -> stringResource(R.string.days_hours, state.days, state.hours)
-                state.hours > 0 -> stringResource(R.string.hours_minutes, state.hours, state.minutes)
-                state.minutes > 0 -> stringResource(R.string.just_minutes, state.minutes)
-                else -> stringResource(R.string.less_than_one_minute)
-            }
-            
-            stringResource(R.string.next_alarm_prefix, timeDescription)
-        }
     }
 }

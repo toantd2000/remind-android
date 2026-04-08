@@ -20,4 +20,15 @@
     <string name="day_fri">Fri</string>
     <string name="day_sat">Sat</string>
     <string name="day_sun">Sun</string>
+
+    <string name="alarms_title">Alarms</string>
+    <string name="add_alarm_title">Add Alarm</string>
+    <string name="edit_alarm_title">Edit Alarm</string>
+    <string name="select_time">Select Time</string>
+    <string name="schedule_and_name">Schedule &amp; Name</string>
+    <string name="alert_settings">Alert Settings</string>
+    <string name="vibration">Vibration</string>
+    <string name="sound">Sound</string>
+    <string name="alarm_label_placeholder">Alarm Label (Optional)</string>
+    <string name="save">Save</string>
 </resources>

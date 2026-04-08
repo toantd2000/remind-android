@@ -4,14 +4,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import vn.io.litever.alarm.core.domain.repository.AlarmRepository
 import vn.io.litever.alarm.core.domain.scheduler.AlarmScheduler
 import vn.io.litever.alarm.core.model.Alarm
 import vn.io.litever.alarm.core.model.DayOfWeek
+import vn.io.litever.alarm.features.alarm.ui.state.NextAlarmUiState
+import vn.io.litever.alarm.features.alarm.ui.state.calculateNextAlarm
 import java.time.LocalTime
 import javax.inject.Inject
 
@@ -19,7 +24,10 @@ data class AlarmEditUiState(
     val id: Long = 0,
     val time: LocalTime = LocalTime.now().plusMinutes(1),
     val label: String = "",
-    val repeatDays: List<DayOfWeek> = emptyList()
+    val repeatDays: List<DayOfWeek> = emptyList(),
+    val vibrationEnabled: Boolean = true,
+    val ringtoneUri: String? = null,
+    val isEnabled: Boolean = true
 )
 
 @HiltViewModel
@@ -31,8 +39,45 @@ class AlarmEditViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(AlarmEditUiState())
     val uiState: StateFlow<AlarmEditUiState> = _uiState.asStateFlow()
 
-    fun updateTime(hour: Int, minute: Int) {
-        _uiState.update { it.copy(time = LocalTime.of(hour, minute)) }
+    val nextAlarmState: StateFlow<NextAlarmUiState> = _uiState
+        .map { state ->
+            calculateNextAlarm(
+                listOf(
+                    Alarm(
+                        id = state.id,
+                        time = state.time,
+                        label = state.label,
+                        isEnabled = true,
+                        repeatDays = state.repeatDays
+                    )
+                )
+            )
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = NextAlarmUiState.AllOff
+        )
+
+    fun loadAlarm(alarmId: Long) {
+        if (alarmId == 0L) return
+        viewModelScope.launch {
+            repository.getAlarmById(alarmId)?.let { alarm ->
+                _uiState.value = AlarmEditUiState(
+                    id = alarm.id,
+                    time = alarm.time,
+                    label = alarm.label,
+                    repeatDays = alarm.repeatDays,
+                    vibrationEnabled = alarm.vibrationEnabled,
+                    ringtoneUri = alarm.ringtoneUri,
+                    isEnabled = alarm.isEnabled
+                )
+            }
+        }
+    }
+
+    fun updateTime(time: LocalTime) {
+        _uiState.update { it.copy(time = time) }
     }
 
     fun updateLabel(label: String) {
@@ -50,6 +95,14 @@ class AlarmEditViewModel @Inject constructor(
         }
     }
 
+    fun updateVibration(enabled: Boolean) {
+        _uiState.update { it.copy(vibrationEnabled = enabled) }
+    }
+
+    fun updateRingtone(uri: String?) {
+        _uiState.update { it.copy(ringtoneUri = uri) }
+    }
+
     fun saveAlarm(onSuccess: () -> Unit) {
         viewModelScope.launch {
             val state = _uiState.value
@@ -57,12 +110,23 @@ class AlarmEditViewModel @Inject constructor(
                 id = state.id,
                 time = state.time,
                 label = state.label,
-                isEnabled = true,
-                repeatDays = state.repeatDays
+                isEnabled = state.isEnabled,
+                repeatDays = state.repeatDays,
+                vibrationEnabled = state.vibrationEnabled,
+                ringtoneUri = state.ringtoneUri
             )
             
-            val savedId = repository.insertAlarm(alarm)
-            alarmScheduler.schedule(alarm.copy(id = savedId))
+            if (state.id == 0L) {
+                val savedId = repository.insertAlarm(alarm)
+                alarmScheduler.schedule(alarm.copy(id = savedId))
+            } else {
+                repository.updateAlarm(alarm)
+                if (alarm.isEnabled) {
+                    alarmScheduler.schedule(alarm)
+                } else {
+                    alarmScheduler.cancel(alarm)
+                }
+            }
             onSuccess()
         }
     }

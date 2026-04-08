@@ -20,4 +20,15 @@
     <string name="day_fri">Th 6</string>
     <string name="day_sat">Th 7</string>
     <string name="day_sun">CN</string>
+
+    <string name="alarms_title">Báo thức</string>
+    <string name="add_alarm_title">Thêm báo thức</string>
+    <string name="edit_alarm_title">Sửa báo thức</string>
+    <string name="select_time">Chọn giờ</string>
+    <string name="schedule_and_name">Lịch trình &amp; Tên</string>
+    <string name="alert_settings">Cài đặt cảnh báo</string>
+    <string name="vibration">Rung</string>
+    <string name="sound">Âm thanh</string>
+    <string name="alarm_label_placeholder">Tên báo thức (Tùy chọn)</string>
+    <string name="save">Lưu</string>
 </resources>

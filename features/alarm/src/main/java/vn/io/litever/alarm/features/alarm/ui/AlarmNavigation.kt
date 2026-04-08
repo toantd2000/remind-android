@@ -7,23 +7,27 @@ import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 
 const val alarmListRoute = "alarm_list_route"
-const val alarmEditRoute = "alarm_edit_route"
+const val alarmEditRoute = "alarm_edit_route/{alarmId}"
+const val alarmRingingRoute = "alarm_ringing_route/{alarmId}"
 
 fun NavGraphBuilder.alarmGraph(
-    onNavigateToEdit: () -> Unit,
+    onNavigateToEdit: (Long) -> Unit,
     onNavigateBack: () -> Unit
 ) {
     composable(route = alarmListRoute) {
         AlarmListRoute(
-            onAddAlarmClick = onNavigateToEdit,
-            onAlarmClick = { alarm ->
-
-            },
+            onAddAlarmClick = { onNavigateToEdit(0L) },
+            onAlarmClick = { alarm -> onNavigateToEdit(alarm.id) },
         )
     }
-    composable(route = alarmEditRoute) {
+    composable(
+        route = alarmEditRoute,
+        arguments = listOf(navArgument("alarmId") { type = NavType.LongType })
+    ) { backStackEntry ->
+        val alarmId = backStackEntry.arguments?.getLong("alarmId") ?: 0L
         AlarmEditRoute(
-            onNavigateBack = onNavigateBack
+            alarmId = alarmId,
+            onBackClick = onNavigateBack
         )
     }
     composable(

@@ -8,11 +8,13 @@ import androidx.compose.ui.Modifier
 @Composable
 fun AlarmScaffold(
     modifier: Modifier = Modifier,
+    topBar: @Composable () -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit
 ) {
     Scaffold(
         modifier = modifier,
+        topBar = topBar,
         floatingActionButton = floatingActionButton,
         content = content
     )

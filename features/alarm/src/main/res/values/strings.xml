@@ -1,6 +1,23 @@
 <resources>
     <string name="delete_disabled_alarms">Delete disabled alarms</string>
     <string name="no_alarms">No Alarms Available</string>
-    <string name="next_alarm_in">Next alarm in %s</string>
+    <string name="next_alarm_prefix">Alarm in %s</string>
+    <string name="all_alarms_off">All alarms are off</string>
+    <string name="less_than_one_minute">less than 1 minute</string>
+    <string name="days_hours">%1$d days %2$d hours</string>
+    <string name="hours_minutes">%1$d hours %2$d mins</string>
+    <string name="just_minutes">%1$d mins</string>
     <string name="empty_description">Tap + to add a new alarm</string>
+    
+    <string name="today">Today</string>
+    <string name="tomorrow">Tomorrow</string>
+    <string name="every_day">Daily</string>
+    
+    <string name="day_mon">Mon</string>
+    <string name="day_tue">Tue</string>
+    <string name="day_wed">Wed</string>
+    <string name="day_thu">Thu</string>
+    <string name="day_fri">Fri</string>
+    <string name="day_sat">Sat</string>
+    <string name="day_sun">Sun</string>
 </resources>

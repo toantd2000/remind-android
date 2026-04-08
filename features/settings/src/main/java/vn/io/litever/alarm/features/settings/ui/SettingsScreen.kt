@@ -3,6 +3,7 @@ package vn.io.litever.alarm.features.settings.ui
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
@@ -23,6 +24,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 
+import androidx.compose.material3.Card
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -74,71 +77,93 @@ fun SettingsScreen(
         ) {
             Box(modifier = Modifier.weight(1f)) {
                 Column {
-                    ListItem(
-                        headlineContent = { Text("Định dạng 24 giờ") },
-                        supportingContent = { Text("Hiển thị thời gian theo chuẩn 24h hoặc 12h") },
-                        trailingContent = {
-                            Switch(
-                                checked = uiState.is24HourFormat,
-                                onCheckedChange = on24HourFormatChange
-                            )
-                        }
-                    )
-                    
-                    ListItem(
-                        headlineContent = { Text("Giao diện (Theme)") },
-                        supportingContent = {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                RadioButton(selected = uiState.themeMode == "SYSTEM", onClick = { onThemeModeChange("SYSTEM") })
-                                Text("Hệ thống")
-                                Spacer(modifier = Modifier.width(8.dp))
-                                RadioButton(selected = uiState.themeMode == "LIGHT", onClick = { onThemeModeChange("LIGHT") })
-                                Text("Sáng")
-                                Spacer(modifier = Modifier.width(8.dp))
-                                RadioButton(selected = uiState.themeMode == "DARK", onClick = { onThemeModeChange("DARK") })
-                                Text("Tối")
-                            }
-                        }
-                    )
-                    
-                    ListItem(
-                        headlineContent = { Text("Bảng màu (Palette)") },
-                        supportingContent = {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                modifier = Modifier
-                                    .padding(top = 8.dp)
-                                    .horizontalScroll(rememberScrollState())
-                            ) {
-                                ColorDot(
-                                    color = androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant,
-                                    selected = uiState.colorPalette == "DYNAMIC",
-                                    isDynamic = true,
-                                    onClick = { onColorPaletteChange("DYNAMIC") }
-                                )
-                                ColorDot(
-                                    color = DeepIndigo,
-                                    selected = uiState.colorPalette == "DEFAULT",
-                                    onClick = { onColorPaletteChange("DEFAULT") }
-                                )
-                                ColorDot(
-                                    color = OceanBlueLight,
-                                    selected = uiState.colorPalette == "OCEAN",
-                                    onClick = { onColorPaletteChange("OCEAN") }
-                                )
-                                ColorDot(
-                                    color = SunsetOrangeLight,
-                                    selected = uiState.colorPalette == "SUNSET",
-                                    onClick = { onColorPaletteChange("SUNSET") }
-                                )
-                                ColorDot(
-                                    color = ForestGreenLight,
-                                    selected = uiState.colorPalette == "FOREST",
-                                    onClick = { onColorPaletteChange("FOREST") }
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                    ) {
+                        ListItem(
+                            headlineContent = { Text("Định dạng 24 giờ") },
+                            supportingContent = { Text("Hiển thị thời gian theo chuẩn 24h hoặc 12h") },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            trailingContent = {
+                                Switch(
+                                    checked = uiState.is24HourFormat,
+                                    onCheckedChange = on24HourFormatChange
                                 )
                             }
-                        }
-                    )
+                        )
+                    }
+                    
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                    ) {
+                        ListItem(
+                            headlineContent = { Text("Giao diện (Theme)") },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            supportingContent = {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    RadioButton(selected = uiState.themeMode == "SYSTEM", onClick = { onThemeModeChange("SYSTEM") })
+                                    Text("Hệ thống")
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    RadioButton(selected = uiState.themeMode == "LIGHT", onClick = { onThemeModeChange("LIGHT") })
+                                    Text("Sáng")
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    RadioButton(selected = uiState.themeMode == "DARK", onClick = { onThemeModeChange("DARK") })
+                                    Text("Tối")
+                                }
+                            }
+                        )
+                    }
+                    
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                    ) {
+                        ListItem(
+                            headlineContent = { Text("Bảng màu (Palette)") },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            supportingContent = {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 8.dp)
+                                        .horizontalScroll(rememberScrollState())
+                                ) {
+                                    ColorDot(
+                                        color = androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant,
+                                        selected = uiState.colorPalette == "DYNAMIC",
+                                        isDynamic = true,
+                                        onClick = { onColorPaletteChange("DYNAMIC") }
+                                    )
+                                    ColorDot(
+                                        color = DeepIndigo,
+                                        selected = uiState.colorPalette == "DEFAULT",
+                                        onClick = { onColorPaletteChange("DEFAULT") }
+                                    )
+                                    ColorDot(
+                                        color = OceanBlueLight,
+                                        selected = uiState.colorPalette == "OCEAN",
+                                        onClick = { onColorPaletteChange("OCEAN") }
+                                    )
+                                    ColorDot(
+                                        color = SunsetOrangeLight,
+                                        selected = uiState.colorPalette == "SUNSET",
+                                        onClick = { onColorPaletteChange("SUNSET") }
+                                    )
+                                    ColorDot(
+                                        color = ForestGreenLight,
+                                        selected = uiState.colorPalette == "FOREST",
+                                        onClick = { onColorPaletteChange("FOREST") }
+                                    )
+                                }
+                            }
+                        )
+                    }
                 }
             }
             Box(

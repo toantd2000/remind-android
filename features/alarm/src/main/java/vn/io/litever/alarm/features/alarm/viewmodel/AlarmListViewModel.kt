@@ -15,11 +15,21 @@ import vn.io.litever.alarm.features.alarm.ui.state.NextAlarmUiState
 import vn.io.litever.alarm.features.alarm.ui.state.calculateNextAlarm
 import javax.inject.Inject
 
+import vn.io.litever.alarm.core.datastore.AlarmPreferencesDataSource
+
 @HiltViewModel
 class AlarmListViewModel @Inject constructor(
     private val repository: AlarmRepository,
-    private val alarmScheduler: AlarmScheduler
+    private val alarmScheduler: AlarmScheduler,
+    private val preferencesDataSource: AlarmPreferencesDataSource
 ) : ViewModel() {
+
+    val is24HourFormat: StateFlow<Boolean> = preferencesDataSource.is24HourFormat
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = true
+        )
 
     val alarms: StateFlow<List<Alarm>> = repository.getAllAlarms()
         .stateIn(

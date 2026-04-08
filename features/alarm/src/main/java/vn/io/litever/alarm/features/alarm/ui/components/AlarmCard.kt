@@ -14,17 +14,17 @@ import vn.io.litever.alarm.core.designsystem.components.AlarmSwitch
 import vn.io.litever.alarm.core.model.Alarm
 import vn.io.litever.alarm.core.model.DayOfWeek
 import vn.io.litever.alarm.features.alarm.R
-import java.time.format.DateTimeFormatter
+import vn.io.litever.alarm.core.common.util.TimeFormatUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlarmCard(
     alarm: Alarm,
+    is24HourFormat: Boolean,
     onToggle: (Boolean) -> Unit,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
     val alpha = if (alarm.isEnabled) 1f else 0.5f
 
     Card(
@@ -59,11 +59,22 @@ fun AlarmCard(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 // Middle: Time
-                Text(
-                    text = alarm.time.format(timeFormatter),
-                    style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+                val (timeStr, amPm) = TimeFormatUtils.formatTimeParts(alarm.time, is24HourFormat)
+                Row(verticalAlignment = Alignment.Bottom) {
+                    Text(
+                        text = timeStr,
+                        style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    if (amPm != null) {
+                        Text(
+                            text = " $amPm",
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(2.dp))
                 

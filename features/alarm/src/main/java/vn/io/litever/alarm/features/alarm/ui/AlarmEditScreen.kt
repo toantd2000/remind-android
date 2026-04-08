@@ -59,6 +59,7 @@ fun AlarmEditRoute(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val nextAlarmState by viewModel.nextAlarmState.collectAsState()
+    val is24HourFormat by viewModel.is24HourFormat.collectAsState()
 
     LaunchedEffect(alarmId) {
         viewModel.loadAlarm(alarmId)
@@ -67,6 +68,7 @@ fun AlarmEditRoute(
     AlarmEditScreen(
         uiState = uiState,
         nextAlarmState = nextAlarmState,
+        is24HourFormat = is24HourFormat,
         onBackClick = onBackClick,
         onSaveClick = {
             viewModel.saveAlarm(onBackClick)
@@ -84,6 +86,7 @@ fun AlarmEditRoute(
 fun AlarmEditScreen(
     uiState: vn.io.litever.alarm.features.alarm.viewmodel.AlarmEditUiState,
     nextAlarmState: vn.io.litever.alarm.features.alarm.ui.state.NextAlarmUiState,
+    is24HourFormat: Boolean,
     onBackClick: () -> Unit,
     onSaveClick: () -> Unit,
     onTimeChange: (LocalTime) -> Unit,
@@ -95,7 +98,7 @@ fun AlarmEditScreen(
     val timePickerState = rememberTimePickerState(
         initialHour = uiState.time.hour,
         initialMinute = uiState.time.minute,
-        is24Hour = true
+        is24Hour = false
     )
 
     // Sync state time when picker changes

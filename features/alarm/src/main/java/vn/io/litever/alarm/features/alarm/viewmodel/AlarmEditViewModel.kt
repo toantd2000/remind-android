@@ -19,6 +19,7 @@ import vn.io.litever.alarm.features.alarm.ui.state.NextAlarmUiState
 import vn.io.litever.alarm.features.alarm.ui.state.calculateNextAlarm
 import java.time.LocalTime
 import javax.inject.Inject
+import vn.io.litever.alarm.core.datastore.AlarmPreferencesDataSource
 
 data class AlarmEditUiState(
     val id: Long = 0,
@@ -33,8 +34,16 @@ data class AlarmEditUiState(
 @HiltViewModel
 class AlarmEditViewModel @Inject constructor(
     private val repository: AlarmRepository,
-    private val alarmScheduler: AlarmScheduler
+    private val alarmScheduler: AlarmScheduler,
+    private val preferencesDataSource: AlarmPreferencesDataSource
 ) : ViewModel() {
+
+    val is24HourFormat: StateFlow<Boolean> = preferencesDataSource.is24HourFormat
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = true
+        )
 
     private val _uiState = MutableStateFlow(AlarmEditUiState())
     val uiState: StateFlow<AlarmEditUiState> = _uiState.asStateFlow()

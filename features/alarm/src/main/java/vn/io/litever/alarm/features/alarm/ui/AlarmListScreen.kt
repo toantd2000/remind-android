@@ -32,9 +32,11 @@ fun AlarmListRoute(
 ) {
     val alarms by viewModel.alarms.collectAsState()
     val nextAlarmTime by viewModel.nextAlarmTime.collectAsState()
+    val is24HourFormat by viewModel.is24HourFormat.collectAsState()
     
     AlarmListScreen(
         alarms = alarms,
+        is24HourFormat = is24HourFormat,
         nextAlarmState = nextAlarmTime,
         onToggleAlarm = viewModel::toggleAlarm,
         onDeleteDisabledAlarms = viewModel::deleteDisabledAlarms,
@@ -48,6 +50,7 @@ fun AlarmListRoute(
 @Composable
 fun AlarmListScreen(
     alarms: List<Alarm>,
+    is24HourFormat: Boolean,
     nextAlarmState: NextAlarmUiState,
     onToggleAlarm: (Alarm) -> Unit,
     onDeleteDisabledAlarms: () -> Unit,
@@ -111,6 +114,7 @@ fun AlarmListScreen(
                     items(alarms, key = { it.id }) { alarm ->
                         AlarmCard(
                             alarm = alarm,
+                            is24HourFormat = is24HourFormat,
                             onToggle = { onToggleAlarm(alarm) },
                             onClick = { onAlarmClick(alarm) }
                         )

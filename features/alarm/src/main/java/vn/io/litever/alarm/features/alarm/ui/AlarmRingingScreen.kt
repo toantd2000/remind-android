@@ -32,8 +32,11 @@ fun AlarmRingingRoute(
     modifier: Modifier = Modifier,
     viewModel: AlarmRingingViewModel = hiltViewModel()
 ) {
+    val is24HourFormat by viewModel.is24HourFormat.collectAsState()
+
     AlarmRingingScreen(
         alarmId = alarmId,
+        is24HourFormat = is24HourFormat,
         onDismiss = {
             viewModel.dismissAlarm()
             onFinish()
@@ -45,6 +48,7 @@ fun AlarmRingingRoute(
 @Composable
 fun AlarmRingingScreen(
     alarmId: Long,
+    is24HourFormat: Boolean,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -59,7 +63,6 @@ fun AlarmRingingScreen(
         label = "pulseScale"
     )
 
-    val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
     val dateFormatter = DateTimeFormatter.ofPattern("EEEE, d MMMM", Locale.getDefault())
     val currentTime = LocalDateTime.now()
 
@@ -79,14 +82,28 @@ fun AlarmRingingScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.padding(top = 100.dp)
             ) {
-                Text(
-                    text = currentTime.format(timeFormatter),
-                    style = MaterialTheme.typography.displayLarge.copy(
-                        fontSize = 96.sp,
-                        fontWeight = FontWeight.Black
-                    ),
-                    color = MaterialTheme.colorScheme.onBackground
-                )
+                val (timeStr, amPm) = vn.io.litever.alarm.core.common.util.TimeFormatUtils.formatTimeParts(currentTime.toLocalTime(), is24HourFormat)
+                Row(verticalAlignment = Alignment.Bottom) {
+                    Text(
+                        text = timeStr,
+                        style = MaterialTheme.typography.displayLarge.copy(
+                            fontSize = 96.sp,
+                            fontWeight = FontWeight.Black
+                        ),
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    if (amPm != null) {
+                        Text(
+                            text = " $amPm",
+                            style = MaterialTheme.typography.displayLarge.copy(
+                                fontSize = 32.sp,
+                                fontWeight = FontWeight.Black
+                            ),
+                            color = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+                    }
+                }
                 Text(
                     text = currentTime.format(dateFormatter).replaceFirstChar { it.uppercase() },
                     style = MaterialTheme.typography.titleLarge,

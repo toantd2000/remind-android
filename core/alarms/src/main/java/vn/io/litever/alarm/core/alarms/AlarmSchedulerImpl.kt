@@ -35,7 +35,10 @@ class AlarmSchedulerImpl @Inject constructor(
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val triggerTime = calculateTriggerTime(alarm)
+        val triggerTime = alarm.getNextOccurrence()
+            .atZone(ZoneId.systemDefault())
+            .toInstant()
+            .toEpochMilli()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (alarmManager.canScheduleExactAlarms()) {
@@ -65,16 +68,5 @@ class AlarmSchedulerImpl @Inject constructor(
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         alarmManager.cancel(pendingIntent)
-    }
-
-    private fun calculateTriggerTime(alarm: Alarm): Long {
-        val now = LocalDateTime.now()
-        var alarmTime = now.withHour(alarm.time.hour).withMinute(alarm.time.minute).withSecond(0).withNano(0)
-
-        if (alarmTime.isBefore(now) || alarmTime.isEqual(now)) {
-            alarmTime = alarmTime.plusDays(1)
-        }
-
-        return alarmTime.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000
     }
 }

@@ -31,4 +31,6 @@
     <string name="sound">Sound</string>
     <string name="alarm_label_placeholder">Alarm Label (Optional)</string>
     <string name="save">Save</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="snooze">Snooze</string>
 </resources>

@@ -17,6 +17,10 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import androidx.core.app.NotificationCompat
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import vn.io.litever.alarm.core.alarms.AlarmRingManager
 import vn.io.litever.alarm.core.domain.scheduler.AlarmScheduler.Companion.EXTRA_ALARM_ID
 import javax.inject.Inject
@@ -25,6 +29,12 @@ import androidx.core.net.toUri
 @AndroidEntryPoint
 class AlarmService : Service() {
     @Inject
+    lateinit var alarmRepository: vn.io.litever.alarm.core.domain.repository.AlarmRepository
+
+    @Inject
+    lateinit var alarmScheduler: vn.io.litever.alarm.core.domain.scheduler.AlarmScheduler
+
+    @Inject
     lateinit var alarmRingManager: AlarmRingManager
 
     @Inject
@@ -32,6 +42,7 @@ class AlarmService : Service() {
 
     private var mediaPlayer: MediaPlayer? = null
     private var vibrator: Vibrator? = null
+    private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO + kotlinx.coroutines.SupervisorJob())
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -45,6 +56,25 @@ class AlarmService : Service() {
         if (alarmId == -1L) return START_NOT_STICKY
         
         alarmRingManager.setRinging(alarmId)
+        
+        // Post-trigger logic: Reschedule or Disable
+        scope.launch {
+            try {
+                val alarm = alarmRepository.getAlarmById(alarmId)
+                if (alarm != null) {
+                    if (alarm.repeatDays.isEmpty()) {
+                        // One-time alarm: disable it
+                        alarmRepository.updateAlarm(alarm.copy(isEnabled = false))
+                    } else {
+                        // Repeating alarm: schedule next occurrence
+                        alarmScheduler.schedule(alarm)
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
         startRinging()
         
         // Sử dụng IntentProvider để lấy Intent tường minh (Explicit) từ tầng App
@@ -76,7 +106,7 @@ class AlarmService : Service() {
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         manager.notify(1, notification)
         
-        // Gắn vào Foreground để bảo vệ tiến trình (đã được dời xuống sau)
+        // Gắn vào Foreground để bảo vệ tiến trình
         startForeground(1, notification)
 
         return START_STICKY

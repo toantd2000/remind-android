@@ -18,6 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 
+import androidx.compose.material3.RadioButton
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
+
 @Composable
 fun SettingsRoute(
     viewModel: SettingsViewModel = hiltViewModel()
@@ -25,7 +30,8 @@ fun SettingsRoute(
     val uiState by viewModel.uiState.collectAsState()
     SettingsScreen(
         uiState = uiState,
-        on24HourFormatChange = viewModel::set24HourFormat
+        on24HourFormatChange = viewModel::set24HourFormat,
+        onThemeModeChange = viewModel::setThemeMode
     )
 }
 
@@ -33,7 +39,8 @@ fun SettingsRoute(
 @Composable
 fun SettingsScreen(
     uiState: SettingsUiState,
-    on24HourFormatChange: (Boolean) -> Unit
+    on24HourFormatChange: (Boolean) -> Unit,
+    onThemeModeChange: (String) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -55,6 +62,22 @@ fun SettingsScreen(
                                 checked = uiState.is24HourFormat,
                                 onCheckedChange = on24HourFormatChange
                             )
+                        }
+                    )
+                    
+                    ListItem(
+                        headlineContent = { Text("Giao diện (Theme)") },
+                        supportingContent = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                RadioButton(selected = uiState.themeMode == "SYSTEM", onClick = { onThemeModeChange("SYSTEM") })
+                                Text("Hệ thống")
+                                Spacer(modifier = Modifier.width(8.dp))
+                                RadioButton(selected = uiState.themeMode == "LIGHT", onClick = { onThemeModeChange("LIGHT") })
+                                Text("Sáng")
+                                Spacer(modifier = Modifier.width(8.dp))
+                                RadioButton(selected = uiState.themeMode == "DARK", onClick = { onThemeModeChange("DARK") })
+                                Text("Tối")
+                            }
                         }
                     )
                 }

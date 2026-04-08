@@ -50,6 +50,7 @@ dependencies {
     implementation(project(":core:data"))
     implementation(project(":core:alarms"))
     implementation(project(":core:designsystem"))
+    implementation(project(":core:datastore"))
     implementation(project(":core:common"))
 
     implementation(libs.androidx.core.ktx)

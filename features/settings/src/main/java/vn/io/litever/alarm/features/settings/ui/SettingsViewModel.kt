@@ -11,8 +11,11 @@ import kotlinx.coroutines.launch
 import vn.io.litever.alarm.core.datastore.AlarmPreferencesDataSource
 import javax.inject.Inject
 
+import kotlinx.coroutines.flow.combine
+
 data class SettingsUiState(
-    val is24HourFormat: Boolean = true
+    val is24HourFormat: Boolean = true,
+    val themeMode: String = "SYSTEM"
 )
 
 @HiltViewModel
@@ -20,17 +23,29 @@ class SettingsViewModel @Inject constructor(
     private val preferencesDataSource: AlarmPreferencesDataSource
 ) : ViewModel() {
 
-    val uiState: StateFlow<SettingsUiState> = preferencesDataSource.is24HourFormat
-        .map { SettingsUiState(is24HourFormat = it) }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = SettingsUiState()
+    val uiState: StateFlow<SettingsUiState> = combine(
+        preferencesDataSource.is24HourFormat,
+        preferencesDataSource.themeMode
+    ) { is24Hour, theme ->
+        SettingsUiState(
+            is24HourFormat = is24Hour,
+            themeMode = theme
         )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = SettingsUiState()
+    )
 
     fun set24HourFormat(is24Hour: Boolean) {
         viewModelScope.launch {
             preferencesDataSource.set24HourFormat(is24Hour)
+        }
+    }
+
+    fun setThemeMode(mode: String) {
+        viewModelScope.launch {
+            preferencesDataSource.setThemeMode(mode)
         }
     }
 }

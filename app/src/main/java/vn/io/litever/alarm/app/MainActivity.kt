@@ -32,8 +32,24 @@ import androidx.compose.foundation.layout.padding
 import vn.io.litever.alarm.features.settings.ui.settingsGraph
 import vn.io.litever.alarm.features.settings.ui.settingsRoute
 
+import androidx.activity.viewModels
+import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import vn.io.litever.alarm.core.datastore.AlarmPreferencesDataSource
+import javax.inject.Inject
+import androidx.compose.foundation.isSystemInDarkTheme
+
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val preferencesDataSource: AlarmPreferencesDataSource
+) : ViewModel() {
+    val themeMode = preferencesDataSource.themeMode
+}
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val viewModel: MainViewModel by viewModels()
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
@@ -47,7 +63,14 @@ class MainActivity : ComponentActivity() {
         
         enableEdgeToEdge()
         setContent {
-            AlarmTheme {
+            val themeMode by viewModel.themeMode.collectAsState(initial = "SYSTEM")
+            val darkTheme = when (themeMode) {
+                "LIGHT" -> false
+                "DARK" -> true
+                else -> isSystemInDarkTheme()
+            }
+            
+            AlarmTheme(darkTheme = darkTheme) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background

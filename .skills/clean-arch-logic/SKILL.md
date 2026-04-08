@@ -24,6 +24,7 @@ Bạn là một chuyên gia về Clean Architecture trong Android. Khi thực hi
 - **KHÔNG** được phép để lớp Domain phụ thuộc (import) vào lớp Data hoặc UI.
 - **LUÔN** sử dụng `Result<T>` hoặc một Sealed Class để bọc kết quả trả về từ Repository nhằm xử lý lỗi tập trung.
 - **Error Handling Tách Biệt:** Tại lớp `RepositoryImpl`, PHẢI catch các Exceptions đặc thù của Framework/Network (như `HttpException`, `IOException`) và ánh xạ sang các Domain Exceptions thuần túy (như `NoInternetException`, `DataNotFoundException`) rồi mới bọc vào `Result<T>` trả cho UseCase. Cấm leak Exception của thư viện bên ngoài về UseCase hay ViewModel.
+- **Bảo Toàn Dữ Liệu (Room Migration):** BẤT CỨ KHI NÀO thay đổi cấu trúc bảng nội bộ (thêm/sửa/xóa field của Entity), BẮT BUỘC phải tăng `version` của Database và định nghĩa tường minh kịch bản `Migration(old, new)` chứa các câu lệnh SQL (như `ALTER TABLE`) để truyền vào `Room.databaseBuilder`. TUYỆT ĐỐI tránh tình trạng để app crash do thiếu Migration hoặc tự ý dùng `fallbackToDestructiveMigration()` làm bay màu dữ liệu người dùng ở môi trường Production.
 
 # QUY TRÌNH THỰC HIỆN (WORKFLOW)
 Khi tôi yêu cầu "Tạo logic cho tính năng [X]", hãy:

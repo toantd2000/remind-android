@@ -17,3 +17,18 @@ val SoftGraphite = Color(0xFF2D2F3F)
 val MidnightBlack = Color(0xFF000000)
 val PureWhite = Color(0xFFFFFFFF)
 val NeonPurple = Color(0xFF7C4DFF)
+
+// Ocean Palette
+val OceanBlueDark = Color(0xFF005C9E)
+val OceanBlueLight = Color(0xFF007BFF)
+val OceanTeal = Color(0xFF00BFA5)
+
+// Sunset Palette
+val SunsetOrangeDark = Color(0xFFD84315)
+val SunsetOrangeLight = Color(0xFFFF5722)
+val SunsetYellow = Color(0xFFFFC107)
+
+// Forest Palette
+val ForestGreenDark = Color(0xFF2E7D32)
+val ForestGreenLight = Color(0xFF4CAF50)
+val ForestOlive = Color(0xFFCDDC39)

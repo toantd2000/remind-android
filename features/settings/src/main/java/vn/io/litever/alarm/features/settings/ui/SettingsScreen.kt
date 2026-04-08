@@ -23,6 +23,24 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Wallpaper
+import androidx.compose.ui.draw.clip
+import vn.io.litever.alarm.core.designsystem.theme.OceanBlueLight
+import vn.io.litever.alarm.core.designsystem.theme.SunsetOrangeLight
+import vn.io.litever.alarm.core.designsystem.theme.ForestGreenLight
+import vn.io.litever.alarm.core.designsystem.theme.DeepIndigo
+
 @Composable
 fun SettingsRoute(
     viewModel: SettingsViewModel = hiltViewModel()
@@ -31,7 +49,8 @@ fun SettingsRoute(
     SettingsScreen(
         uiState = uiState,
         on24HourFormatChange = viewModel::set24HourFormat,
-        onThemeModeChange = viewModel::setThemeMode
+        onThemeModeChange = viewModel::setThemeMode,
+        onColorPaletteChange = viewModel::setColorPalette
     )
 }
 
@@ -40,7 +59,8 @@ fun SettingsRoute(
 fun SettingsScreen(
     uiState: SettingsUiState,
     on24HourFormatChange: (Boolean) -> Unit,
-    onThemeModeChange: (String) -> Unit
+    onThemeModeChange: (String) -> Unit,
+    onColorPaletteChange: (String) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -80,6 +100,45 @@ fun SettingsScreen(
                             }
                         }
                     )
+                    
+                    ListItem(
+                        headlineContent = { Text("Bảng màu (Palette)") },
+                        supportingContent = {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                modifier = Modifier
+                                    .padding(top = 8.dp)
+                                    .horizontalScroll(rememberScrollState())
+                            ) {
+                                ColorDot(
+                                    color = Color.LightGray,
+                                    selected = uiState.colorPalette == "DYNAMIC",
+                                    isDynamic = true,
+                                    onClick = { onColorPaletteChange("DYNAMIC") }
+                                )
+                                ColorDot(
+                                    color = DeepIndigo,
+                                    selected = uiState.colorPalette == "DEFAULT",
+                                    onClick = { onColorPaletteChange("DEFAULT") }
+                                )
+                                ColorDot(
+                                    color = OceanBlueLight,
+                                    selected = uiState.colorPalette == "OCEAN",
+                                    onClick = { onColorPaletteChange("OCEAN") }
+                                )
+                                ColorDot(
+                                    color = SunsetOrangeLight,
+                                    selected = uiState.colorPalette == "SUNSET",
+                                    onClick = { onColorPaletteChange("SUNSET") }
+                                )
+                                ColorDot(
+                                    color = ForestGreenLight,
+                                    selected = uiState.colorPalette == "FOREST",
+                                    onClick = { onColorPaletteChange("FOREST") }
+                                )
+                            }
+                        }
+                    )
                 }
             }
             Box(
@@ -92,5 +151,55 @@ fun SettingsScreen(
                 Text(text = "Phiên bản 1.0 (1)")
             }
         }
+    }
+}
+
+@Composable
+fun ColorDot(
+    color: Color,
+    selected: Boolean,
+    isDynamic: Boolean = false,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .size(40.dp)
+            .clip(CircleShape)
+            .background(color)
+            .clickable(onClick = onClick)
+            .border(
+                width = if (selected) 2.dp else 0.dp,
+                color = if (selected) androidx.compose.material3.MaterialTheme.colorScheme.onSurface else Color.Transparent,
+                shape = CircleShape
+            )
+    ) {
+        if (isDynamic) {
+            androidx.compose.material3.Icon(
+                imageVector = Icons.Default.Wallpaper,
+                contentDescription = "Dynamic Color",
+                tint = if (selected) Color.White else Color.DarkGray,
+                modifier = Modifier.align(Alignment.Center).size(20.dp)
+            )
+        } else if (selected) {
+            androidx.compose.material3.Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = "Selected",
+                tint = Color.White,
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@Composable
+fun SettingsScreenPreview() {
+    vn.io.litever.alarm.core.designsystem.theme.AlarmTheme {
+        SettingsScreen(
+            uiState = SettingsUiState(is24HourFormat = true, themeMode = "SYSTEM", colorPalette = "DEFAULT"),
+            on24HourFormatChange = {},
+            onThemeModeChange = {},
+            onColorPaletteChange = {}
+        )
     }
 }

@@ -21,6 +21,10 @@ class AlarmPreferencesDataSource @Inject constructor(
         preferences[THEME_MODE_KEY] ?: "SYSTEM"
     }
 
+    val colorPalette: Flow<String> = dataStore.data.map { preferences ->
+        preferences[COLOR_PALETTE_KEY] ?: "DYNAMIC"
+    }
+
     suspend fun set24HourFormat(is24Hour: Boolean) {
         dataStore.edit { preferences ->
             preferences[IS_24_HOUR_FORMAT_KEY] = is24Hour
@@ -33,8 +37,15 @@ class AlarmPreferencesDataSource @Inject constructor(
         }
     }
 
+    suspend fun setColorPalette(palette: String) {
+        dataStore.edit { preferences ->
+            preferences[COLOR_PALETTE_KEY] = palette
+        }
+    }
+
     companion object {
         val IS_24_HOUR_FORMAT_KEY = booleanPreferencesKey("is_24_hour_format")
         val THEME_MODE_KEY = stringPreferencesKey("theme_mode")
+        val COLOR_PALETTE_KEY = stringPreferencesKey("color_palette")
     }
 }

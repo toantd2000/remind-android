@@ -36,21 +36,83 @@ private val LightColorScheme = lightColorScheme(
     onSurface = DeepIndigo
 )
 
+private val OceanLightColorScheme = lightColorScheme(
+    primary = OceanBlueLight,
+    secondary = OceanTeal,
+    background = PureWhite,
+    surface = Color(0xFFF0F8FF),
+    onPrimary = PureWhite,
+    onBackground = OceanBlueDark,
+    onSurface = OceanBlueDark
+)
+
+private val OceanDarkColorScheme = darkColorScheme(
+    primary = OceanBlueLight,
+    secondary = OceanTeal,
+    background = MidnightBlack,
+    surface = OceanBlueDark,
+    onPrimary = MidnightBlack,
+    onBackground = PureWhite,
+    onSurface = PureWhite
+)
+
+private val SunsetLightColorScheme = lightColorScheme(
+    primary = SunsetOrangeLight,
+    secondary = SunsetYellow,
+    background = PureWhite,
+    surface = Color(0xFFFFF3E0),
+    onPrimary = PureWhite,
+    onBackground = SunsetOrangeDark,
+    onSurface = SunsetOrangeDark
+)
+
+private val SunsetDarkColorScheme = darkColorScheme(
+    primary = SunsetOrangeLight,
+    secondary = SunsetYellow,
+    background = MidnightBlack,
+    surface = SunsetOrangeDark,
+    onPrimary = MidnightBlack,
+    onBackground = PureWhite,
+    onSurface = PureWhite
+)
+
+private val ForestLightColorScheme = lightColorScheme(
+    primary = ForestGreenLight,
+    secondary = ForestOlive,
+    background = PureWhite,
+    surface = Color(0xFFE8F5E9),
+    onPrimary = PureWhite,
+    onBackground = ForestGreenDark,
+    onSurface = ForestGreenDark
+)
+
+private val ForestDarkColorScheme = darkColorScheme(
+    primary = ForestGreenLight,
+    secondary = ForestOlive,
+    background = MidnightBlack,
+    surface = ForestGreenDark,
+    onPrimary = MidnightBlack,
+    onBackground = PureWhite,
+    onSurface = PureWhite
+)
+
 @Composable
 fun AlarmTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Disable dynamic color for consistent branding
     dynamicColor: Boolean = false,
+    colorPalette: String = "DYNAMIC",
     content: @Composable () -> Unit
 ) {
+    val isDynamic = colorPalette == "DYNAMIC" || dynamicColor
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+        isDynamic && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        colorPalette == "OCEAN" -> if (darkTheme) OceanDarkColorScheme else OceanLightColorScheme
+        colorPalette == "SUNSET" -> if (darkTheme) SunsetDarkColorScheme else SunsetLightColorScheme
+        colorPalette == "FOREST" -> if (darkTheme) ForestDarkColorScheme else ForestLightColorScheme
+        else -> if (darkTheme) DarkColorScheme else LightColorScheme
     }
 
     MaterialTheme(

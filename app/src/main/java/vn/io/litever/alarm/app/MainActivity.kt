@@ -44,6 +44,7 @@ class MainViewModel @Inject constructor(
     private val preferencesDataSource: AlarmPreferencesDataSource
 ) : ViewModel() {
     val themeMode = preferencesDataSource.themeMode
+    val colorPalette = preferencesDataSource.colorPalette
 }
 
 @AndroidEntryPoint
@@ -64,13 +65,14 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val themeMode by viewModel.themeMode.collectAsState(initial = "SYSTEM")
+            val colorPalette by viewModel.colorPalette.collectAsState(initial = "DYNAMIC")
             val darkTheme = when (themeMode) {
                 "LIGHT" -> false
                 "DARK" -> true
                 else -> isSystemInDarkTheme()
             }
             
-            AlarmTheme(darkTheme = darkTheme) {
+            AlarmTheme(darkTheme = darkTheme, colorPalette = colorPalette) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background

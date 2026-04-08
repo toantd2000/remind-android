@@ -40,3 +40,14 @@ Cơ chế này đảm bảo "sự tiến hóa" liên tục qua các task, tránh
 * **Bảo Toàn Dữ Liệu:** BẤT CỨ KHI NÀO chỉnh sửa cấu trúc của Entity (thêm/sửa cột), BẮT BUỘC phải thực hiện 2 việc:
    1. Tăng số `version` trong `@Database`.
    2. Viết object `Migration(old_version, new_version)` với lệnh SQL tương ứng (Ví dụ: `ALTER TABLE ... ADD COLUMN ...`) và truyền vào `addMigrations()` của Room Builder để nâng cấp mượt mà, giữ nguyên dữ liệu gốc.
+
+---
+
+## Ngày tháng: 2026-04-09
+**Vấn đề / Task:** App crash với exception `IllegalStateException: Asking for intrinsic measurements of SubcomposeLayout layouts is not supported` khi sử dụng `LazyRow` bên trong thuộc tính `supportingContent` của Compose `ListItem`.
+**Phân tích nguyên nhân:** 
+* `ListItem` của Material3 tính toán dàn layout dựa trên cơ chế `Intrinsic measurements` (đo kích thước tự nhiên tối thiểu của các children như `headlineContent`, `supportingContent`).
+* `LazyRow` và `LazyColumn` được xây dựng dựa trên `SubcomposeLayout`. Thành phần này hoàn toàn KHÔNG HỖ TRỢ trả về `Intrinsic measurements` nên ngay khi `ListItem` "hỏi" kích thước, nó lập tức văng exception (do không thể hỗ trợ pre-measure một list lazy chưa biết giới hạn).
+**Giải pháp / Rule mới:** 
+* **TUYỆT ĐỐI KHÔNG** dùng các Layout có đặc tính Lazy (như `LazyRow`, `LazyColumn`, `BoxWithConstraints`) lồng bên trong các Compose components đo nội dung bằng kích thước gốc (ví dụ như `ListItem`, hoặc làm thẻ child khi height/width đang set là `IntrinsicSize.Min`/`Max`).
+* **Thay thế:** Đối với các danh sách nhỏ (như thẻ Tag, hàng chọn Color Palette) hãy dùng `Row` tiêu chuẩn kết hợp với modifier `.horizontalScroll(rememberScrollState())` thay vì `LazyRow`. `Row` hỗ trợ đo size hoàn hảo và không gây crash.

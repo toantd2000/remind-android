@@ -7,11 +7,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -26,7 +31,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimeInput
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,6 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -95,11 +101,13 @@ fun AlarmEditScreen(
     onVibrationToggle: (Boolean) -> Unit,
     onRingtoneClick: () -> Unit
 ) {
-    val timePickerState = rememberTimePickerState(
-        initialHour = uiState.time.hour,
-        initialMinute = uiState.time.minute,
-        is24Hour = false
-    )
+    val timePickerState = androidx.compose.runtime.key(is24HourFormat) {
+        rememberTimePickerState(
+            initialHour = uiState.time.hour,
+            initialMinute = uiState.time.minute,
+            is24Hour = is24HourFormat
+        )
+    }
 
     // Sync state time when picker changes
     LaunchedEffect(timePickerState.hour, timePickerState.minute) {
@@ -114,114 +122,105 @@ fun AlarmEditScreen(
             )
         }
     ) { padding ->
-        Box(modifier = Modifier.fillMaxSize().padding(padding)) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 120.dp, top = 8.dp)
-            ) {
-                item {
-                    NextAlarmHeader(state = nextAlarmState)
-                }
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(
+                top = padding.calculateTopPadding() + 8.dp,
+                bottom = 120.dp,
+                start = 0.dp,
+                end = 0.dp
+            )
+        ) {
+            item {
+                NextAlarmHeader(state = nextAlarmState)
+            }
 
-                item {
-                    // Group 1: Time Selector
-                    Card(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
-                        shape = MaterialTheme.shapes.extraLarge
+            item {
+                // Group 1: Time Selector
+                Card(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
+                    shape = MaterialTheme.shapes.extraLarge
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Column(
-                            modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            TimePicker(state = timePickerState)
-                        }
-                    }
-                }
-
-                item {
-                    // Group 2: Repeat Selector (Separated)
-                    Card(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
-                        shape = MaterialTheme.shapes.extraLarge
-                    ) {
-                        RepeatDaySelector(
-                            selectedDays = uiState.repeatDays,
-                            time = uiState.time,
-                            onDayToggle = onRepeatDayToggle,
-                            modifier = Modifier.padding(16.dp)
-                        )
-                    }
-                }
-
-                item {
-                    // Group 3: Label (Separated)
-                    Card(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
-                        shape = MaterialTheme.shapes.extraLarge
-                    ) {
-                        OutlinedTextField(
-                            value = uiState.label,
-                            onValueChange = onLabelChange,
-                            placeholder = { Text(stringResource(R.string.alarm_label_placeholder)) },
-                            modifier = Modifier.fillMaxWidth().padding(16.dp),
-                            singleLine = true,
-                            shape = MaterialTheme.shapes.large,
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Color.Transparent,
-                                unfocusedBorderColor = Color.Transparent,
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent
-                            )
-                        )
-                    }
-                }
-
-                item {
-                    // Group 4: Alert Settings
-                    Card(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
-                        shape = MaterialTheme.shapes.extraLarge
-                    ) {
-                        Column(modifier = Modifier.padding(vertical = 8.dp)) {
-                            ListItem(
-                                headlineContent = { Text(stringResource(R.string.vibration)) },
-                                trailingContent = {
-                                    Switch(
-                                        checked = uiState.vibrationEnabled,
-                                        onCheckedChange = onVibrationToggle
-                                    )
-                                },
-                                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-                            )
-                            
-                            ListItem(
-                                headlineContent = { Text(stringResource(R.string.sound)) },
-                                supportingContent = { Text(uiState.ringtoneUri ?: "Default") },
-                                modifier = Modifier.clickable { onRingtoneClick() },
-                                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-                            )
-                        }
+                        TimeInput(state = timePickerState)
                     }
                 }
             }
 
-            // Fixed Save Button at the Bottom
-            Surface(
-                modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth(),
-                tonalElevation = 8.dp,
-                shadowElevation = 8.dp
-            ) {
+            item {
+                // Group 2: Repeat Selector (Separated)
+                Card(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
+                    shape = MaterialTheme.shapes.extraLarge
+                ) {
+                    RepeatDaySelector(
+                        selectedDays = uiState.repeatDays,
+                        time = uiState.time,
+                        onDayToggle = onRepeatDayToggle,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+            }
+
+            item {
+                // Group 3: Label (Separated)
+                Card(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
+                    shape = MaterialTheme.shapes.extraLarge
+                ) {
+                    OutlinedTextField(
+                        value = uiState.label,
+                        onValueChange = onLabelChange,
+                        placeholder = { Text(stringResource(R.string.alarm_label_placeholder)) },
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        singleLine = true,
+                        shape = MaterialTheme.shapes.large,
+                        colors = OutlinedTextFieldDefaults.colors()
+                    )
+                }
+            }
+
+            item {
+                // Group 4: Alert Settings
+                Card(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
+                    shape = MaterialTheme.shapes.extraLarge
+                ) {
+                    Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                        ListItem(
+                            headlineContent = { Text(stringResource(R.string.vibration)) },
+                            trailingContent = {
+                                Switch(
+                                    checked = uiState.vibrationEnabled,
+                                    onCheckedChange = onVibrationToggle
+                                )
+                            },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                        )
+
+                        ListItem(
+                            headlineContent = { Text(stringResource(R.string.sound)) },
+                            supportingContent = { Text(uiState.ringtoneUri ?: "Default") },
+                            modifier = Modifier.clickable { onRingtoneClick() },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                        )
+                    }
+                }
+            }
+
+            item {
                 Button(
                     onClick = onSaveClick,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(24.dp)
-                        .height(56.dp),
-                    shape = MaterialTheme.shapes.extraLarge
                 ) {
                     Text(stringResource(R.string.save), style = MaterialTheme.typography.titleMedium)
                 }
@@ -290,15 +289,4 @@ fun RepeatDaySelector(
             }
         }
     }
-}
-
-// Helper mapping
-private fun DayOfWeek.toJavaDayValue(): Int = when (this) {
-    DayOfWeek.MONDAY -> 1
-    DayOfWeek.TUESDAY -> 2
-    DayOfWeek.WEDNESDAY -> 3
-    DayOfWeek.THURSDAY -> 4
-    DayOfWeek.FRIDAY -> 5
-    DayOfWeek.SATURDAY -> 6
-    DayOfWeek.SUNDAY -> 7
 }

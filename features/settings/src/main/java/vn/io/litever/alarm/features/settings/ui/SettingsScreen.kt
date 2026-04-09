@@ -39,10 +39,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Wallpaper
 import androidx.compose.ui.draw.clip
-import vn.io.litever.alarm.core.designsystem.theme.OceanBlueLight
-import vn.io.litever.alarm.core.designsystem.theme.SunsetOrangeLight
-import vn.io.litever.alarm.core.designsystem.theme.ForestGreenLight
-import vn.io.litever.alarm.core.designsystem.theme.DeepIndigo
+import vn.io.litever.alarm.core.designsystem.theme.BluePrimary
+import vn.io.litever.alarm.core.designsystem.theme.PurplePrimary
+import vn.io.litever.alarm.core.designsystem.theme.GreenPrimary
+import vn.io.litever.alarm.core.designsystem.theme.OrangePrimary
+import vn.io.litever.alarm.core.designsystem.theme.IndigoBluePrimary
 
 @Composable
 fun SettingsRoute(
@@ -141,24 +142,29 @@ fun SettingsScreen(
                                         onClick = { onColorPaletteChange("DYNAMIC") }
                                     )
                                     ColorDot(
-                                        color = DeepIndigo,
-                                        selected = uiState.colorPalette == "DEFAULT",
-                                        onClick = { onColorPaletteChange("DEFAULT") }
+                                        color = BluePrimary,
+                                        selected = uiState.colorPalette == "BLUE",
+                                        onClick = { onColorPaletteChange("BLUE") }
                                     )
                                     ColorDot(
-                                        color = OceanBlueLight,
-                                        selected = uiState.colorPalette == "OCEAN",
-                                        onClick = { onColorPaletteChange("OCEAN") }
+                                        color = PurplePrimary,
+                                        selected = uiState.colorPalette == "PURPLE",
+                                        onClick = { onColorPaletteChange("PURPLE") }
                                     )
                                     ColorDot(
-                                        color = SunsetOrangeLight,
-                                        selected = uiState.colorPalette == "SUNSET",
-                                        onClick = { onColorPaletteChange("SUNSET") }
+                                        color = GreenPrimary,
+                                        selected = uiState.colorPalette == "GREEN",
+                                        onClick = { onColorPaletteChange("GREEN") }
                                     )
                                     ColorDot(
-                                        color = ForestGreenLight,
-                                        selected = uiState.colorPalette == "FOREST",
-                                        onClick = { onColorPaletteChange("FOREST") }
+                                        color = OrangePrimary,
+                                        selected = uiState.colorPalette == "ORANGE",
+                                        onClick = { onColorPaletteChange("ORANGE") }
+                                    )
+                                    ColorDot(
+                                        color = IndigoBluePrimary,
+                                        selected = uiState.colorPalette == "TEAL",
+                                        onClick = { onColorPaletteChange("TEAL") }
                                     )
                                 }
                             }
@@ -221,7 +227,7 @@ fun ColorDot(
 fun SettingsScreenPreview() {
     vn.io.litever.alarm.core.designsystem.theme.AlarmTheme {
         SettingsScreen(
-            uiState = SettingsUiState(is24HourFormat = true, themeMode = "SYSTEM", colorPalette = "DEFAULT"),
+            uiState = SettingsUiState(is24HourFormat = true, themeMode = "SYSTEM", colorPalette = "BLUE"),
             on24HourFormatChange = {},
             onThemeModeChange = {},
             onColorPaletteChange = {}

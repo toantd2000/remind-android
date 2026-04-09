@@ -32,9 +32,6 @@ fun AlarmCard(
             .fillMaxWidth()
             .padding(vertical = 8.dp),
         onClick = onClick,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = MaterialTheme.shapes.extraLarge
     ) {

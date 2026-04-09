@@ -10,25 +10,20 @@ val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
-// Premium Colors
-val DeepIndigo = Color(0xFF1A1C2E)
-val ElectricCyan = Color(0xFF00E5FF)
-val SoftGraphite = Color(0xFF2D2F3F)
-val MidnightBlack = Color(0xFF000000)
+// Pure White for reference if needed elsewhere
 val PureWhite = Color(0xFFFFFFFF)
-val NeonPurple = Color(0xFF7C4DFF)
 
-// Ocean Palette
-val OceanBlueDark = Color(0xFF005C9E)
-val OceanBlueLight = Color(0xFF007BFF)
-val OceanTeal = Color(0xFF00BFA5)
+// Blue Palette (Color_1)
+val BluePrimary = Color(0xFF34618E)
 
-// Sunset Palette
-val SunsetOrangeDark = Color(0xFFD84315)
-val SunsetOrangeLight = Color(0xFFFF5722)
-val SunsetYellow = Color(0xFFFFC107)
+// Purple Palette (Color_2)
+val PurplePrimary = Color(0xFF64558F)
 
-// Forest Palette
-val ForestGreenDark = Color(0xFF2E7D32)
-val ForestGreenLight = Color(0xFF4CAF50)
-val ForestOlive = Color(0xFFCDDC39)
+// Green Palette (Color_3)
+val GreenPrimary = Color(0xFF1B6B51)
+
+// Orange Palette (Color_4)
+val OrangePrimary = Color(0xFF8C4E29)
+
+// Indigo Blue Palette (Color6.kt)
+val IndigoBluePrimary = Color(0xFF505B92)

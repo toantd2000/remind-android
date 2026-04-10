@@ -25,6 +25,7 @@ Quy trình này áp dụng khi cần thêm logic mới vào một tính năng đ
 2. Chỉnh sửa hoặc thêm mới các component phần **Compose UI**.
 3. Cập nhật và bổ sung **`@Preview`** cho các UI state bị thay đổi.
 
-## Giai đoạn 5: Kiểm duyệt (Review)
+## Giai đoạn 5: Kiểm duyệt & Ghi nhận
 1. So sánh sự thay đổi (Diff) để đảm bảo không xóa nhầm logic/code lỗi cũ.
 2. Đảm bảo project vẫn compile bình thường và giao diện hiển thị đúng định hướng.
+3. **Kích hoạt `@logwork-update`:** Cập nhật các thay đổi kiến trúc/logic quan trọng vào `LOGWORK.md`.

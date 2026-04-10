@@ -42,3 +42,4 @@ Quy trình này áp dụng khi bắt đầu xây dựng một tính năng từ c
 ## Giai đoạn 7: Hoàn tất & Báo cáo
 1. Liệt kê lại các file đã tạo/chỉnh sửa (bao gồm cả file UI có chứa Preview).
 2. Xác nhận với người dùng rằng tính năng đã hoàn thiện toàn dải từ Domain/Data lên đến giao diện.
+3. **Kích hoạt `@logwork-update`:** Tự động ghi nhận các Quyết định Kỹ thuật (TDR) quan trọng vào `LOGWORK.md` nếu có.

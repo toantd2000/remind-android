@@ -1,40 +1,28 @@
----
-description: Quy trình cập nhật nhật ký phát triển (Logwork) để ghi vết tiến độ và quyết định kỹ thuật.
----
+# Workflow: Cập nhật Nhật ký Phát triển (Logwork Update)
 
-# Mục tiêu
-Đảm bảo mọi thay đổi quan trọng về kiến trúc, logic nghiệp vụ và tiến độ các Phase đều được ghi chép lại một cách hệ thống. `LOGWORK.md` đóng vai trò là "hộp đen" của dự án, giúp DEV (và AI) nắm bắt được lịch sử và lý do đằng sau các quyết định kỹ thuật.
+Mục tiêu của quy trình này là đảm bảo mọi quyết định kiến trúc và thay đổi hệ thống đều được ghi lại một cách chuyên nghiệp dưới dạng Technical Decision Records (TDR).
 
-# Các bước thực hiện
+## Giai đoạn 1: Kích hoạt Kỹ năng
+1. **Kích hoạt:** `@logwork-update`.
+2. **Quét dữ liệu:** Agent tự động đọc `task.md`, `walkthrough.md` và các thay đổi trong session hiện tại để nhận diện các "Quyết định Kỹ thuật" tiềm năng.
 
-## Bước 1: Xác định thời điểm cập nhật
-Cần kích hoạt quy trình này khi:
-1. Hoàn thành một **Phase** (Giai đoạn) trong lộ trình tổng thể.
-2. Đưa ra một **Quyết định Kỹ thuật (Technical Decision)** quan trọng (VD: đổi thư viện, tách module, thay đổi pattern DI).
-3. Thực hiện một đợt **Refactor** diện rộng ảnh hưởng đến cấu trúc nhiều module.
-4. Phát hiện và xử lý một **Bug nghiêm trọng** hoặc lỗi kiến trúc tiềm ẩn.
+## Giai đoạn 2: Trích xuất & Soạn thảo
+1. **Xác định ID:** Kiểm tra `LOGWORK.md` để lấy ID tiếp theo (Dạng `TDR-XXX`).
+2. **Draft nội dung:** Với mỗi quyết định, soạn thảo theo template:
+   - Context (Bối cảnh/Vấn đề).
+   - Decision (Giải pháp/Tại sao chọn).
+   - Consequences (Hệ quả/Tác động).
+3. **Phân loại:** Đảm bảo quyết định đó mang tính hệ thống, không phải chi tiết thực thi nhỏ lẻ.
 
-## Bước 2: Thu thập thông tin
-1. Kiểm tra trạng thái các task trong `task.md`.
-2. Rà soát lại các thay đổi trong `walkthrough.md` gần nhất.
-3. Tổng hợp các lý do (Rationale) dẫn đến sự thay đổi (Tại sao chọn cách này? Có ưu/nhược điểm gì?).
+## Giai đoạn 3: Cập nhật LOGWORK.md
+1. **Append:** Thêm các TDR mới vào cuối phần "Nhật Ký Chi Tiết".
+2. **Roadmap:** Kiểm tra xem task hiện tại có hoàn thành một Phase nào trong "Lộ Trình Tổng Thể" không? Nếu có, hãy đánh dấu `[x]`.
+3. **Commit (Khuyến nghị):** Sau khi cập nhật Logwork, hãy thực hiện một commit riêng cho tài liệu này để đóng gói giai đoạn.
 
-## Bước 3: Cập nhật nội dung LOGWORK.md
-1. **Tiến độ tổng thể:** Đánh dấu `[x]` cho các Phase đã hoàn thành trong phần "Lộ Trình Tổng Thể".
-2. **Nhật ký chi tiết:** Thêm mục mới dưới "Nhật Ký Chi Tiết" theo định dạng:
-   - Ngày tháng thực hiện.
-   - Tiêu đề tóm tắt (Phase hoặc Sự kiện).
-   - Danh sách các Quyết định/Thay đổi (Ghi rõ số thứ tự Quyết định).
-3. **Nội dung Quyết định:** 
-   - Viết ngắn gọn, súc tích nhưng đủ ý.
-   - Nêu rõ vấn đề gặp phải và giải pháp đã thực hiện.
-   - Nhấn mạnh vào lợi ích kiến trúc (Clean Architecture, Multi-module, Performance).
-
-## Bước 4: Kiểm tra và Duyệt
-1. Đảm bảo ngôn ngữ sử dụng là tiếng Việt chuyên ngành kỹ thuật (có thể đan xen thuật ngữ tiếng Anh gốc).
-2. Kiểm tra tính nhất quán giữa Logwork và mã nguồn thực tế.
-3. Thực hiện Commit sau khi cập nhật Logwork để đóng gói giai đoạn.
+## Giai đoạn 4: Đối soát
+1. Kiểm tra tính hiển thị của Markdown (bảng biểu, alert, code block).
+2. Đảm bảo ngôn ngữ nhất quán là Tiếng Việt chuyên ngành.
 
 # Lưu ý quan trọng
-- Không lạm dụng ghi chép các thay đổi nhỏ lẻ (fix typo, đổi tên biến). Chỉ ghi lại những gì ảnh hưởng đến "xương sống" của dự án.
-- Logwork là tài liệu sống, cần được cập nhật ngay sau khi quyết định được thực thi để tránh quên bối cảnh.
+- Logwork là **Single Source of Truth** về lịch sử kiến trúc. Agent không được tự ý xóa bỏ các TDR cũ trừ khi chúng bị thay thế (mark là `Superseded`).
+- Ưu tiên ghi lại **Lý do (Rationale)** hơn là mô tả code.

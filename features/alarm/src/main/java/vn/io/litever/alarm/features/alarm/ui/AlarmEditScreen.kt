@@ -52,6 +52,7 @@ import vn.io.litever.alarm.core.designsystem.components.AlarmTopAppBar
 import vn.io.litever.alarm.core.model.DayOfWeek
 import vn.io.litever.alarm.features.alarm.R
 import vn.io.litever.alarm.features.alarm.ui.components.NextAlarmHeader
+import vn.io.litever.alarm.features.alarm.ui.components.getRepeatSummaryText
 import vn.io.litever.alarm.features.alarm.viewmodel.AlarmEditViewModel
 import java.time.LocalTime
 
@@ -230,10 +231,15 @@ fun RepeatDaySelector(
     modifier: Modifier = Modifier
 ) {
     val allDays = DayOfWeek.entries
+    val label = when {
+        selectedDays.isEmpty() -> getRepeatSummaryText(selectedDays, time)
+        selectedDays.size == 7 -> stringResource(R.string.every_day)
+        else -> stringResource(R.string.repeat)
+    }
     
     Column(modifier = modifier) {
         Text(
-            text = stringResource(R.string.repeat),
+            text = label,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(bottom = 12.dp)
@@ -245,7 +251,7 @@ fun RepeatDaySelector(
         ) {
             allDays.forEach { day ->
                 val javaDay = java.time.DayOfWeek.of(day.toJavaDayValue())
-                val label = javaDay.getDisplayName(java.time.format.TextStyle.SHORT, locale)
+                val label = javaDay.getDisplayName(java.time.format.TextStyle.SHORT, java.util.Locale.getDefault())
                 
                 val isSelected = selectedDays.contains(day)
                 Box(

@@ -101,7 +101,7 @@ fun AlarmEditScreen(
     onVibrationToggle: (Boolean) -> Unit,
     onRingtoneClick: () -> Unit
 ) {
-    val timePickerState = androidx.compose.runtime.key(is24HourFormat) {
+    val timePickerState = androidx.compose.runtime.key(uiState.id, is24HourFormat) {
         rememberTimePickerState(
             initialHour = uiState.time.hour,
             initialMinute = uiState.time.minute,
@@ -123,13 +123,7 @@ fun AlarmEditScreen(
         }
     ) { padding ->
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(
-                top = padding.calculateTopPadding() + 8.dp,
-                bottom = 120.dp,
-                start = 0.dp,
-                end = 0.dp
-            )
+            modifier = Modifier.fillMaxSize().padding(padding),
         ) {
             item {
                 NextAlarmHeader(state = nextAlarmState)

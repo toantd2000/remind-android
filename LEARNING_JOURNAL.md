@@ -50,4 +50,14 @@ Cơ chế này đảm bảo "sự tiến hóa" liên tục qua các task, tránh
 * `LazyRow` và `LazyColumn` được xây dựng dựa trên `SubcomposeLayout`. Thành phần này hoàn toàn KHÔNG HỖ TRỢ trả về `Intrinsic measurements` nên ngay khi `ListItem` "hỏi" kích thước, nó lập tức văng exception (do không thể hỗ trợ pre-measure một list lazy chưa biết giới hạn).
 **Giải pháp / Rule mới:** 
 * **TUYỆT ĐỐI KHÔNG** dùng các Layout có đặc tính Lazy (như `LazyRow`, `LazyColumn`, `BoxWithConstraints`) lồng bên trong các Compose components đo nội dung bằng kích thước gốc (ví dụ như `ListItem`, hoặc làm thẻ child khi height/width đang set là `IntrinsicSize.Min`/`Max`).
-* **Thay thế:** Đối với các danh sách nhỏ (như thẻ Tag, hàng chọn Color Palette) hãy dùng `Row` tiêu chuẩn kết hợp với modifier `.horizontalScroll(rememberScrollState())` thay vì `LazyRow`. `Row` hỗ trợ đo size hoàn hảo và không gây crash.
+---
+
+## Ngày tháng: 2026-04-10
+**Vấn đề / Task:** Khi mở màn hình Edit báo thức ở chế độ 24h, `TimeInput` luôn hiển thị thời gian hiện tại (Now + 1m) thay vì thời gian của báo thức đang cần sửa.
+**Phân tích nguyên nhân:** 
+* `rememberTimePickerState` được khởi tạo bằng `uiState.time` ngay từ Composition đầu tiên.
+* Do `uiState.time` ban đầu mang giá trị mặc định và chỉ được cập nhật sau khi `loadAlarm(id)` (bất đồng bộ) hoàn tất, nên `rememberTimePickerState` bị kẹt ở giá trị cũ. 
+* Cơ chế `remember` không tự nhận diện sự thay đổi của các tham số `initialHour`/`initialMinute` để khởi tạo lại state bên trong.
+**Giải pháp / Rule mới:** 
+* **Quy tắc về State Initialization:** Khi một Composable State (`rememberXState`) phụ thuộc vào dữ liệu được tải bất đồng bộ (Async Data), BẮT BUỘC phải bọc nó trong `androidx.compose.runtime.key` với các tham số định danh (như `id` của đối tượng).
+* Cụ thể: `key(uiState.id) { rememberTimePickerState(...) }`. Khi `id` thay đổi từ 0 (initial) sang ID thực tế, state sẽ được buộc phải reset và nhận giá trị mới từ ViewModel.

@@ -52,7 +52,6 @@ import vn.io.litever.alarm.core.designsystem.components.AlarmTopAppBar
 import vn.io.litever.alarm.core.model.DayOfWeek
 import vn.io.litever.alarm.features.alarm.R
 import vn.io.litever.alarm.features.alarm.ui.components.NextAlarmHeader
-import vn.io.litever.alarm.features.alarm.ui.components.getRepeatSummaryText
 import vn.io.litever.alarm.features.alarm.viewmodel.AlarmEditViewModel
 import java.time.LocalTime
 
@@ -230,20 +229,11 @@ fun RepeatDaySelector(
     onDayToggle: (DayOfWeek) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val locale = java.util.Locale.getDefault()
     val allDays = DayOfWeek.entries
     
-    val summary = getRepeatSummaryText(selectedDays, time)
-    val finalSummary = if (selectedDays.isNotEmpty() && selectedDays.size < 7) {
-        val prefix = if (locale.language == "vi") "Mỗi " else "Every "
-        prefix + summary
-    } else {
-        summary
-    }
-
     Column(modifier = modifier) {
         Text(
-            text = finalSummary,
+            text = stringResource(R.string.repeat),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(bottom = 12.dp)

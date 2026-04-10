@@ -33,4 +33,5 @@
     <string name="save">Lưu</string>
     <string name="dismiss">Tắt báo thức</string>
     <string name="snooze">Tạm dừng (Báo lại)</string>
+    <string name="repeat">Lặp lại</string>
 </resources>

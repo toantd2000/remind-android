@@ -22,7 +22,7 @@ class AlarmPreferencesDataSource @Inject constructor(
     }
 
     val colorPalette: Flow<String> = dataStore.data.map { preferences ->
-        preferences[COLOR_PALETTE_KEY] ?: "DYNAMIC"
+        preferences[COLOR_PALETTE_KEY] ?: "DEFAULT"
     }
 
     suspend fun set24HourFormat(is24Hour: Boolean) {

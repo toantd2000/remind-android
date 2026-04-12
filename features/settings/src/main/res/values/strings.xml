@@ -1,0 +1,14 @@
+<resources>
+    <string name="settings_title">Settings</string>
+    <string name="hour_format_24_headline">24-hour format</string>
+    <string name="hour_format_24_supporting">Display time in 24-hour or 12-hour format</string>
+    <string name="appearance_and_color_group">Appearance &amp; Color</string>
+    <string name="display_mode_headline">Display mode</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="color_source_headline">Primary color source</string>
+    <string name="color_source_default">Default</string>
+    <string name="color_source_wallpaper">Wallpaper</string>
+    <string name="app_version_format">Version %1$s (%2$d)</string>
+</resources>

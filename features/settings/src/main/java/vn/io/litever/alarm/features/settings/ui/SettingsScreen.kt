@@ -5,45 +5,36 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.SettingsBrightness
+import androidx.compose.material.icons.filled.Wallpaper
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import vn.io.litever.alarm.features.settings.R
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-
-import androidx.compose.material3.RadioButton
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.width
-
-import androidx.compose.material3.Card
-import androidx.compose.material3.ListItemDefaults
-import androidx.compose.ui.graphics.Color
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Wallpaper
-import androidx.compose.ui.draw.clip
-import vn.io.litever.alarm.core.designsystem.theme.BluePrimary
-import vn.io.litever.alarm.core.designsystem.theme.PurplePrimary
-import vn.io.litever.alarm.core.designsystem.theme.GreenPrimary
-import vn.io.litever.alarm.core.designsystem.theme.OrangePrimary
-import vn.io.litever.alarm.core.designsystem.theme.IndigoBluePrimary
 
 @Composable
 fun SettingsRoute(
@@ -68,7 +59,7 @@ fun SettingsScreen(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Cài đặt") })
+            TopAppBar(title = { Text(stringResource(R.string.settings_title)) })
         }
     ) { paddingValues ->
         Column(
@@ -84,8 +75,8 @@ fun SettingsScreen(
                             .padding(horizontal = 16.dp, vertical = 8.dp)
                     ) {
                         ListItem(
-                            headlineContent = { Text("Định dạng 24 giờ") },
-                            supportingContent = { Text("Hiển thị thời gian theo chuẩn 24h hoặc 12h") },
+                            headlineContent = { Text(stringResource(R.string.hour_format_24_headline)) },
+                            supportingContent = { Text(stringResource(R.string.hour_format_24_supporting)) },
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                             trailingContent = {
                                 Switch(
@@ -101,74 +92,87 @@ fun SettingsScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp, vertical = 8.dp)
                     ) {
-                        ListItem(
-                            headlineContent = { Text("Giao diện (Theme)") },
-                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                            supportingContent = {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    RadioButton(selected = uiState.themeMode == "SYSTEM", onClick = { onThemeModeChange("SYSTEM") })
-                                    Text("Hệ thống")
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    RadioButton(selected = uiState.themeMode == "LIGHT", onClick = { onThemeModeChange("LIGHT") })
-                                    Text("Sáng")
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    RadioButton(selected = uiState.themeMode == "DARK", onClick = { onThemeModeChange("DARK") })
-                                    Text("Tối")
+                        Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                            Text(
+                                text = stringResource(R.string.appearance_and_color_group),
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                            )
+                            
+                            ListItem(
+                                headlineContent = { Text(stringResource(R.string.display_mode_headline)) },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                supportingContent = {
+                                    val options = listOf(
+                                        "SYSTEM" to stringResource(R.string.theme_system),
+                                        "LIGHT" to stringResource(R.string.theme_light),
+                                        "DARK" to stringResource(R.string.theme_dark)
+                                    )
+                                    val icons = listOf(Icons.Default.SettingsBrightness, Icons.Default.LightMode, Icons.Default.DarkMode)
+                                    
+                                    SingleChoiceSegmentedButtonRow(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 8.dp)
+                                    ) {
+                                        options.forEachIndexed { index, pair ->
+                                            SegmentedButton(
+                                                selected = uiState.themeMode == pair.first,
+                                                onClick = { onThemeModeChange(pair.first) },
+                                                shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
+                                                icon = {
+                                                    SegmentedButtonDefaults.Icon(active = uiState.themeMode == pair.first) {
+                                                        Icon(
+                                                            imageVector = icons[index],
+                                                            contentDescription = pair.second,
+                                                            modifier = Modifier.size(SegmentedButtonDefaults.IconSize)
+                                                        )
+                                                    }
+                                                }
+                                            ) {
+                                                Text(pair.second)
+                                            }
+                                        }
+                                    }
                                 }
-                            }
-                        )
-                    }
-                    
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                    ) {
-                        ListItem(
-                            headlineContent = { Text("Bảng màu (Palette)") },
-                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                            supportingContent = {
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 8.dp)
-                                        .horizontalScroll(rememberScrollState())
-                                ) {
-                                    ColorDot(
-                                        color = androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant,
-                                        selected = uiState.colorPalette == "DYNAMIC",
-                                        isDynamic = true,
-                                        onClick = { onColorPaletteChange("DYNAMIC") }
+                            )
+
+                            ListItem(
+                                headlineContent = { Text(stringResource(R.string.color_source_headline)) },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                supportingContent = {
+                                    val colorOptions = listOf(
+                                        "DEFAULT" to stringResource(R.string.color_source_default),
+                                        "DYNAMIC" to stringResource(R.string.color_source_wallpaper)
                                     )
-                                    ColorDot(
-                                        color = BluePrimary,
-                                        selected = uiState.colorPalette == "BLUE",
-                                        onClick = { onColorPaletteChange("BLUE") }
-                                    )
-                                    ColorDot(
-                                        color = PurplePrimary,
-                                        selected = uiState.colorPalette == "PURPLE",
-                                        onClick = { onColorPaletteChange("PURPLE") }
-                                    )
-                                    ColorDot(
-                                        color = GreenPrimary,
-                                        selected = uiState.colorPalette == "GREEN",
-                                        onClick = { onColorPaletteChange("GREEN") }
-                                    )
-                                    ColorDot(
-                                        color = OrangePrimary,
-                                        selected = uiState.colorPalette == "ORANGE",
-                                        onClick = { onColorPaletteChange("ORANGE") }
-                                    )
-                                    ColorDot(
-                                        color = IndigoBluePrimary,
-                                        selected = uiState.colorPalette == "TEAL",
-                                        onClick = { onColorPaletteChange("TEAL") }
-                                    )
+                                    
+                                    SingleChoiceSegmentedButtonRow(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 8.dp)
+                                    ) {
+                                        colorOptions.forEachIndexed { index, pair ->
+                                            SegmentedButton(
+                                                selected = uiState.colorPalette == pair.first,
+                                                onClick = { onColorPaletteChange(pair.first) },
+                                                shape = SegmentedButtonDefaults.itemShape(index = index, count = colorOptions.size),
+                                                icon = {
+                                                    SegmentedButtonDefaults.Icon(active = uiState.colorPalette == pair.first) {
+                                                        Icon(
+                                                            imageVector = if (pair.first == "DYNAMIC") Icons.Default.Wallpaper else Icons.Default.Palette,
+                                                            contentDescription = pair.second,
+                                                            modifier = Modifier.size(SegmentedButtonDefaults.IconSize)
+                                                        )
+                                                    }
+                                                }
+                                            ) {
+                                                Text(pair.second)
+                                            }
+                                        }
+                                    }
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
                 }
             }
@@ -179,55 +183,20 @@ fun SettingsScreen(
                 contentAlignment = Alignment.Center
             ) {
                 // TODO: Get real version dynamically
-                Text(text = "Phiên bản 1.0 (1)")
+                Text(text = stringResource(R.string.app_version_format, "1.0", 1))
             }
         }
     }
 }
 
-@Composable
-fun ColorDot(
-    color: Color,
-    selected: Boolean,
-    isDynamic: Boolean = false,
-    onClick: () -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .size(40.dp)
-            .clip(CircleShape)
-            .background(color)
-            .clickable(onClick = onClick)
-            .border(
-                width = if (selected) 2.dp else 0.dp,
-                color = if (selected) androidx.compose.material3.MaterialTheme.colorScheme.onSurface else Color.Transparent,
-                shape = CircleShape
-            )
-    ) {
-        if (isDynamic) {
-            androidx.compose.material3.Icon(
-                imageVector = Icons.Default.Wallpaper,
-                contentDescription = "Dynamic Color",
-                tint = if (selected) androidx.compose.material3.MaterialTheme.colorScheme.onPrimary else androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.align(Alignment.Center).size(20.dp)
-            )
-        } else if (selected) {
-            androidx.compose.material3.Icon(
-                imageVector = Icons.Default.Check,
-                contentDescription = "Selected",
-                tint = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-    }
-}
+// ColorDot removed as requested
 
 @androidx.compose.ui.tooling.preview.Preview(showBackground = true)
 @Composable
 fun SettingsScreenPreview() {
     vn.io.litever.alarm.core.designsystem.theme.AlarmTheme {
         SettingsScreen(
-            uiState = SettingsUiState(is24HourFormat = true, themeMode = "SYSTEM", colorPalette = "BLUE"),
+            uiState = SettingsUiState(is24HourFormat = true, themeMode = "SYSTEM", colorPalette = "DEFAULT"),
             on24HourFormatChange = {},
             onThemeModeChange = {},
             onColorPaletteChange = {}

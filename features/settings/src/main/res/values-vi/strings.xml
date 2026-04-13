@@ -12,5 +12,29 @@
     <string name="color_source_headline">Nguồn màu chủ đạo</string>
     <string name="color_source_default">Mặc định</string>
     <string name="color_source_wallpaper">Hình nền</string>
+    <string name="category_app_settings">Cài đặt ứng dụng</string>
+    <string name="category_general">Chung</string>
+    <string name="category_permissions">Quyền</string>
+    <string name="category_alarm">Cài đặt báo thức</string>
+    <string name="category_support">Hỗ trợ</string>
+    <string name="category_about">Giới thiệu</string>
+
+    <string name="setting_general_title">Chung</string>
+    <string name="setting_general_subtitle">Giao diện, ngôn ngữ, định dạng giờ</string>
+    <string name="setting_language">Ngôn ngữ</string>
+    <string name="setting_permissions_title">Quyền</string>
+    <string name="setting_permissions_subtitle">Quản lý trạng thái và liên kết cài đặt</string>
+    <string name="setting_alarm_title">Cài đặt báo thức</string>
+    <string name="setting_alarm_subtitle">Loa tích hợp, thông báo sắp đến...</string>
+    
+    <string name="setting_qa">QA</string>
+    <string name="setting_rate">Đánh giá ứng dụng</string>
+    <string name="setting_share">Chia sẻ ứng dụng</string>
+    
+    <string name="setting_story">Câu chuyện - Tác giả</string>
+    <string name="setting_terms">Điều khoản</string>
+    <string name="setting_history">Lịch sử cập nhật</string>
+    <string name="setting_licenses">Giấy phép nguồn mở</string>
+
     <string name="app_version_format">Phiên bản %1$s (%2$d)</string>
 </resources>

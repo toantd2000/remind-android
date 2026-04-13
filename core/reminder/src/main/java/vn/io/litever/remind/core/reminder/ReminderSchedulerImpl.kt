@@ -1,4 +1,4 @@
-package vn.io.litever.alarm.core.alarms
+package vn.io.litever.remind.core.reminder
 
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import dagger.hilt.android.qualifiers.ApplicationContext
-import vn.io.litever.alarm.core.alarms.receiver.AlarmReceiver
+import vn.io.litever.remind.core.reminder.receiver.ReminderReceiver
 import vn.io.litever.alarm.core.domain.scheduler.AlarmScheduler
 import vn.io.litever.alarm.core.domain.scheduler.AlarmScheduler.Companion.ACTION_TRIGGER_ALARM
 import vn.io.litever.alarm.core.domain.scheduler.AlarmScheduler.Companion.EXTRA_ALARM_ID
@@ -15,15 +15,14 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import javax.inject.Inject
 
-class AlarmSchedulerImpl @Inject constructor(
+class ReminderSchedulerImpl @Inject constructor(
     @ApplicationContext private val context: Context
 ) : AlarmScheduler {
 
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
     override fun schedule(alarm: Alarm) {
-        // TƯỜNG MINH TYPE-SAFE: Class gọi Class trực tiếp trong cùng module!
-        val intent = Intent(context, AlarmReceiver::class.java).apply {
+        val intent = Intent(context, ReminderReceiver::class.java).apply {
             action = ACTION_TRIGGER_ALARM
             putExtra(EXTRA_ALARM_ID, alarm.id)
         }
@@ -44,7 +43,6 @@ class AlarmSchedulerImpl @Inject constructor(
             if (alarmManager.canScheduleExactAlarms()) {
                 setExactAlarm(triggerTime, pendingIntent)
             } else {
-                // FALLBACK: Dùng setAndAllowWhileIdle nếu chưa có quyền Exact Alarm
                 alarmManager.setAndAllowWhileIdle(
                     AlarmManager.RTC_WAKEUP,
                     triggerTime,
@@ -65,7 +63,7 @@ class AlarmSchedulerImpl @Inject constructor(
     }
 
     override fun cancel(alarm: Alarm) {
-        val intent = Intent(context, AlarmReceiver::class.java).apply {
+        val intent = Intent(context, ReminderReceiver::class.java).apply {
             action = ACTION_TRIGGER_ALARM
         }
         val pendingIntent = PendingIntent.getBroadcast(

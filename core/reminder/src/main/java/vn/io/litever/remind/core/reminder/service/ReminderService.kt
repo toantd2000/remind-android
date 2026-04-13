@@ -1,4 +1,4 @@
-package vn.io.litever.alarm.core.alarms.service
+package vn.io.litever.remind.core.reminder.service
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -8,8 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.media.AudioAttributes
 import android.media.MediaPlayer
-import android.media.RingtoneManager
-import android.net.Uri
 import android.os.Build
 import android.os.IBinder
 import android.os.VibrationEffect
@@ -21,13 +19,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import vn.io.litever.alarm.core.alarms.AlarmRingManager
+import vn.io.litever.remind.core.reminder.ReminderRingManager
 import vn.io.litever.alarm.core.domain.scheduler.AlarmScheduler.Companion.EXTRA_ALARM_ID
 import javax.inject.Inject
-import androidx.core.net.toUri
 
 @AndroidEntryPoint
-class AlarmService : Service() {
+class ReminderService : Service() {
     @Inject
     lateinit var alarmRepository: vn.io.litever.alarm.core.domain.repository.AlarmRepository
 
@@ -35,14 +32,14 @@ class AlarmService : Service() {
     lateinit var alarmScheduler: vn.io.litever.alarm.core.domain.scheduler.AlarmScheduler
 
     @Inject
-    lateinit var alarmRingManager: AlarmRingManager
+    lateinit var reminderRingManager: ReminderRingManager
 
     @Inject
-    lateinit var alarmIntentProvider: vn.io.litever.alarm.core.alarms.provider.AlarmIntentProvider
+    lateinit var reminderIntentProvider: vn.io.litever.remind.core.reminder.provider.ReminderIntentProvider
 
     private var mediaPlayer: MediaPlayer? = null
     private var vibrator: Vibrator? = null
-    private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO + kotlinx.coroutines.SupervisorJob())
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -55,18 +52,15 @@ class AlarmService : Service() {
         val alarmId = intent?.getLongExtra(EXTRA_ALARM_ID, -1L) ?: -1L
         if (alarmId == -1L) return START_NOT_STICKY
         
-        alarmRingManager.setRinging(alarmId)
+        reminderRingManager.setRinging(alarmId)
         
-        // Post-trigger logic: Reschedule or Disable
         scope.launch {
             try {
                 val alarm = alarmRepository.getAlarmById(alarmId)
                 if (alarm != null) {
                     if (alarm.repeatDays.isEmpty()) {
-                        // One-time alarm: disable it
                         alarmRepository.updateAlarm(alarm.copy(isEnabled = false))
                     } else {
-                        // Repeating alarm: schedule next occurrence
                         alarmScheduler.schedule(alarm)
                     }
                 }
@@ -77,8 +71,7 @@ class AlarmService : Service() {
 
         startRinging(alarmId)
         
-        // Sử dụng IntentProvider để lấy Intent tường minh (Explicit) từ tầng App
-        val deepLinkIntent = alarmIntentProvider.createRingingIntent(alarmId).apply {
+        val deepLinkIntent = reminderIntentProvider.createRingingIntent(alarmId).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
 
@@ -91,8 +84,8 @@ class AlarmService : Service() {
 
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
-            .setContentTitle("Báo Thức!")
-            .setContentText("Nhấn vào đây để xem và tắt báo thức")
+            .setContentTitle("Nhắc nhở!")
+            .setContentText("Nhấn vào đây để xem và tắt")
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -102,11 +95,9 @@ class AlarmService : Service() {
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
             .build()
             
-        // Ép hệ thống hiển thị thông báo ngay tức khắc (Vượt rào cản OS Delay)
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         manager.notify(1, notification)
         
-        // Gắn vào Foreground để bảo vệ tiến trình
         startForeground(1, notification)
 
         return START_STICKY
@@ -118,15 +109,14 @@ class AlarmService : Service() {
         scope.launch {
             val alarm = alarmRepository.getAlarmById(alarmId) ?: return@launch
             
-            // 1. Setup Audio
             val audioManager = getSystemService(Context.AUDIO_SERVICE) as android.media.AudioManager
             audioManager.setStreamVolume(android.media.AudioManager.STREAM_ALARM, alarm.volume, 0)
             
-            val uri = vn.io.litever.alarm.core.common.util.getAccessibleRingtoneUri(this@AlarmService, alarm.ringtoneUri)
+            val uri = vn.io.litever.alarm.core.common.util.getAccessibleRingtoneUri(this@ReminderService, alarm.ringtoneUri)
             
             launch(Dispatchers.Main) {
                 mediaPlayer = MediaPlayer().apply {
-                    setDataSource(this@AlarmService, uri)
+                    setDataSource(this@ReminderService, uri)
                     setAudioAttributes(
                         AudioAttributes.Builder()
                             .setUsage(AudioAttributes.USAGE_ALARM)
@@ -141,7 +131,6 @@ class AlarmService : Service() {
                     start()
                 }
 
-                // 2. Setup Vibration
                 if (alarm.vibrationEnabled) {
                     vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                         val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
@@ -167,7 +156,7 @@ class AlarmService : Service() {
         mediaPlayer?.stop()
         mediaPlayer?.release()
         vibrator?.cancel()
-        alarmRingManager.setRinging(null)
+        reminderRingManager.setRinging(null)
         super.onDestroy()
     }
 
@@ -175,10 +164,10 @@ class AlarmService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "Alarm Service Channel",
+                "Reminder Service Channel",
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
-                description = "Channel for alarm ringing"
+                description = "Channel for reminder ringing"
                 setSound(null, null) 
                 enableVibration(false)
             }
@@ -188,6 +177,6 @@ class AlarmService : Service() {
     }
 
     companion object {
-        const val CHANNEL_ID = "alarm_channel"
+        const val CHANNEL_ID = "reminder_channel"
     }
 }

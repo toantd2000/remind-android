@@ -1,4 +1,4 @@
-package vn.io.litever.alarm.core.alarms.receiver
+package vn.io.litever.remind.core.reminder.receiver
 
 import android.content.BroadcastReceiver
 import android.content.Context

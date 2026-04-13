@@ -1,4 +1,4 @@
-package vn.io.litever.alarm.core.alarms.service
+package vn.io.litever.remind.core.reminder.service
 
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -6,31 +6,31 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import dagger.hilt.android.qualifiers.ApplicationContext
-import vn.io.litever.alarm.core.alarms.AlarmRingManager
-import vn.io.litever.alarm.core.alarms.receiver.AlarmReceiver
+import vn.io.litever.remind.core.reminder.ReminderRingManager
+import vn.io.litever.remind.core.reminder.receiver.ReminderReceiver
 import vn.io.litever.alarm.core.domain.scheduler.AlarmController
 import vn.io.litever.alarm.core.domain.scheduler.AlarmScheduler.Companion.ACTION_TRIGGER_ALARM
 import vn.io.litever.alarm.core.domain.scheduler.AlarmScheduler.Companion.EXTRA_ALARM_ID
 import javax.inject.Inject
 
-class AlarmControllerImpl @Inject constructor(
+class ReminderControllerImpl @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val alarmRingManager: AlarmRingManager
+    private val reminderRingManager: ReminderRingManager
 ) : AlarmController {
 
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
     override fun dismissAlarm() {
-        val intent = Intent(context, AlarmService::class.java)
+        val intent = Intent(context, ReminderService::class.java)
         context.stopService(intent)
     }
 
     override fun snoozeAlarm() {
-        val currentAlarmId = alarmRingManager.ringingAlarmId.value
+        val currentAlarmId = reminderRingManager.ringingAlarmId.value
         if (currentAlarmId != null) {
             val triggerTime = System.currentTimeMillis() + 5 * 60 * 1000 // 5 mins later
             
-            val intent = Intent(context, AlarmReceiver::class.java).apply {
+            val intent = Intent(context, ReminderReceiver::class.java).apply {
                 action = ACTION_TRIGGER_ALARM
                 putExtra(EXTRA_ALARM_ID, currentAlarmId)
             }
@@ -59,7 +59,7 @@ class AlarmControllerImpl @Inject constructor(
             }
         }
         
-        val intent = Intent(context, AlarmService::class.java)
+        val intent = Intent(context, ReminderService::class.java)
         context.stopService(intent)
     }
 }

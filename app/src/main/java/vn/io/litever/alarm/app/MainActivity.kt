@@ -82,8 +82,8 @@ class MainActivity : ComponentActivity() {
                     // Observe Global Ringing State
                     val alarmRingManager = dagger.hilt.EntryPoints.get(
                         applicationContext,
-                        vn.io.litever.alarm.core.alarms.di.AlarmRingManagerEntryPoint::class.java
-                    ).alarmRingManager()
+                        vn.io.litever.remind.core.reminder.di.ReminderRingManagerEntryPoint::class.java
+                    ).reminderRingManager()
                     val ringingAlarmId by alarmRingManager.ringingAlarmId.collectAsState()
                     
                     LaunchedEffect(ringingAlarmId) {

@@ -48,7 +48,7 @@ dependencies {
     implementation(project(":features:alarm"))
     implementation(project(":features:settings"))
     implementation(project(":core:data"))
-    implementation(project(":core:alarms"))
+    implementation(project(":core:reminder"))
     implementation(project(":core:designsystem"))
     implementation(project(":core:datastore"))
     implementation(project(":core:common"))

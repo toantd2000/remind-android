@@ -12,7 +12,7 @@
 
     <application>
         <receiver
-            android:name=".receiver.AlarmReceiver"
+            android:name=".receiver.ReminderReceiver"
             android:exported="false" />
 
         <receiver
@@ -25,7 +25,7 @@
         </receiver>
 
         <service
-            android:name=".service.AlarmService"
+            android:name=".service.ReminderService"
             android:exported="false"
             android:foregroundServiceType="specialUse" />
     </application>

@@ -1,4 +1,4 @@
-package vn.io.litever.alarm.core.alarms
+package vn.io.litever.remind.core.reminder
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -7,7 +7,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AlarmRingManager @Inject constructor() {
+class ReminderRingManager @Inject constructor() {
     private val _ringingAlarmId = MutableStateFlow<Long?>(null)
     val ringingAlarmId: StateFlow<Long?> = _ringingAlarmId.asStateFlow()
 

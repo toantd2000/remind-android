@@ -4,12 +4,12 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import vn.io.litever.alarm.app.provider.AlarmIntentProviderImpl
-import vn.io.litever.alarm.core.alarms.provider.AlarmIntentProvider
+import vn.io.litever.alarm.app.provider.ReminderIntentProviderImpl
+import vn.io.litever.remind.core.reminder.provider.ReminderIntentProvider
 
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class AppModule {
     @Binds
-    abstract fun bindAlarmIntentProvider(impl: AlarmIntentProviderImpl): AlarmIntentProvider
+    abstract fun bindReminderIntentProvider(impl: ReminderIntentProviderImpl): ReminderIntentProvider
 }

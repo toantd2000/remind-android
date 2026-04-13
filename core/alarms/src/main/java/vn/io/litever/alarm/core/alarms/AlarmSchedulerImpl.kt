@@ -43,6 +43,13 @@ class AlarmSchedulerImpl @Inject constructor(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (alarmManager.canScheduleExactAlarms()) {
                 setExactAlarm(triggerTime, pendingIntent)
+            } else {
+                // FALLBACK: Dùng setAndAllowWhileIdle nếu chưa có quyền Exact Alarm
+                alarmManager.setAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP,
+                    triggerTime,
+                    pendingIntent
+                )
             }
         } else {
             setExactAlarm(triggerTime, pendingIntent)

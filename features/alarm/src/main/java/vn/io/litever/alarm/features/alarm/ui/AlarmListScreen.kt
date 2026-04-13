@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import vn.io.litever.alarm.core.designsystem.components.*
 import vn.io.litever.alarm.core.model.Alarm
@@ -62,8 +63,7 @@ fun AlarmListScreen(
 
     AlarmScaffold(
         topBar = {
-            AlarmTopAppBar(
-                title = stringResource(R.string.alarms_title),
+            MainAlarmTopAppBar(
                 actions = {
                     IconButton(onClick = { showMenu = !showMenu }) {
                         Icon(Icons.Default.MoreVert, contentDescription = "More")
@@ -94,8 +94,10 @@ fun AlarmListScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            // Shared Next Alarm Header
-            NextAlarmHeader(state = nextAlarmState)
+            if (alarms.isNotEmpty()) {
+                // Shared Next Alarm Header
+                NextAlarmHeader(state = nextAlarmState)
+            }
 
             if (alarms.isEmpty()) {
                 EmptyState(modifier = Modifier.weight(1f))

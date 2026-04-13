@@ -15,13 +15,42 @@ fun AlarmTopAppBar(
     onBackClick: (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
-    TopAppBar(
-        title = {
+    AlarmTopAppBar(
+        titleContent = {
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleLarge
             )
         },
+        modifier = modifier,
+        onBackClick = onBackClick,
+        actions = actions
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MainAlarmTopAppBar(
+    modifier: Modifier = Modifier,
+    actions: @Composable RowScope.() -> Unit = {}
+) {
+    AlarmTopAppBar(
+        titleContent = { AlarmLogo() },
+        modifier = modifier,
+        actions = actions
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AlarmTopAppBar(
+    titleContent: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+    onBackClick: (() -> Unit)? = null,
+    actions: @Composable RowScope.() -> Unit = {}
+) {
+    TopAppBar(
+        title = titleContent,
         navigationIcon = {
             if (onBackClick != null) {
                 IconButton(onClick = onBackClick) {

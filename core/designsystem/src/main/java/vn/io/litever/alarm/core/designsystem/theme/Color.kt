@@ -39,6 +39,10 @@ val surfaceContainerLight = Color(0xFFF9ECE0)
 val surfaceContainerHighLight = Color(0xFFF3E6DA)
 val surfaceContainerHighestLight = Color(0xFFEEE0D4)
 
+// Logo Colors
+val logo_up_light = Color(0xFF6B7280)
+val logo_alarm_light = Color(0xFFF59E0B)
+
 // Default Dark Colors
 val primaryDark = Color(0xFFF8BB71)
 val onPrimaryDark = Color(0xFF472A00)
@@ -75,3 +79,6 @@ val surfaceContainerLowDark = Color(0xFF211A13)
 val surfaceContainerDark = Color(0xFF251E17)
 val surfaceContainerHighDark = Color(0xFF302921)
 val surfaceContainerHighestDark = Color(0xFF3B332B)
+
+val logo_up_dark = Color(0xFFCBD5E1)
+val logo_alarm_dark = Color(0xFFFBBF24)

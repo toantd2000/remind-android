@@ -22,7 +22,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Alarm"
+rootProject.name = "ReMind"
 include(":app")
 include(":core:model")
 include(":core:common")

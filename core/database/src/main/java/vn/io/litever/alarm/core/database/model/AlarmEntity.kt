@@ -14,5 +14,6 @@ data class AlarmEntity(
     val isEnabled: Boolean,
     val repeatDays: String, // JSON string or comma separated IDs
     val vibrationEnabled: Boolean,
-    val ringtoneUri: String?
+    val ringtoneUri: String?,
+    val volume: Int
 )

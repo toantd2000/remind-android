@@ -10,7 +10,8 @@ data class Alarm(
     val isEnabled: Boolean = true,
     val repeatDays: List<DayOfWeek> = emptyList(),
     val vibrationEnabled: Boolean = true,
-    val ringtoneUri: String? = null
+    val ringtoneUri: String? = null,
+    val volume: Int = 100
 ) {
     fun getNextOccurrence(now: LocalDateTime = LocalDateTime.now()): LocalDateTime {
         if (repeatDays.isEmpty()) {

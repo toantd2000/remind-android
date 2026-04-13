@@ -75,7 +75,7 @@ class AlarmService : Service() {
             }
         }
 
-        startRinging()
+        startRinging(alarmId)
         
         // Sử dụng IntentProvider để lấy Intent tường minh (Explicit) từ tầng App
         val deepLinkIntent = alarmIntentProvider.createRingingIntent(alarmId).apply {
@@ -112,38 +112,54 @@ class AlarmService : Service() {
         return START_STICKY
     }
 
-    private fun startRinging() {
+    private fun startRinging(alarmId: Long) {
         if (mediaPlayer?.isPlaying == true) return
         
-        val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM) ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
-        
-        mediaPlayer = MediaPlayer().apply {
-            setDataSource(this@AlarmService, uri)
-            setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_ALARM)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                    .build()
-            )
-            isLooping = true
-            prepare()
-            start()
-        }
+        scope.launch {
+            val alarm = alarmRepository.getAlarmById(alarmId) ?: return@launch
+            
+            // 1. Setup Audio
+            val audioManager = getSystemService(Context.AUDIO_SERVICE) as android.media.AudioManager
+            audioManager.setStreamVolume(android.media.AudioManager.STREAM_ALARM, alarm.volume, 0)
+            
+            val uri = vn.io.litever.alarm.core.common.util.getAccessibleRingtoneUri(this@AlarmService, alarm.ringtoneUri)
+            
+            launch(Dispatchers.Main) {
+                mediaPlayer = MediaPlayer().apply {
+                    setDataSource(this@AlarmService, uri)
+                    setAudioAttributes(
+                        AudioAttributes.Builder()
+                            .setUsage(AudioAttributes.USAGE_ALARM)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                            .build()
+                    )
+                    isLooping = true
+                    val maxVolume = audioManager.getStreamMaxVolume(android.media.AudioManager.STREAM_ALARM)
+                    val volumeScale = alarm.volume.toFloat() / maxVolume.toFloat()
+                    setVolume(volumeScale, volumeScale)
+                    prepare()
+                    start()
+                }
 
-        vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-            vibratorManager.defaultVibrator
-        } else {
-            @Suppress("DEPRECATION")
-            getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        }
+                // 2. Setup Vibration
+                if (alarm.vibrationEnabled) {
+                    vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+                        vibratorManager.defaultVibrator
+                    } else {
+                        @Suppress("DEPRECATION")
+                        getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+                    }
 
-        val pattern = longArrayOf(0, 1000, 1000)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            vibrator?.vibrate(VibrationEffect.createWaveform(pattern, 0))
-        } else {
-            @Suppress("DEPRECATION")
-            vibrator?.vibrate(pattern, 0)
+                    val pattern = longArrayOf(0, 1000, 1000)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        vibrator?.vibrate(VibrationEffect.createWaveform(pattern, 0))
+                    } else {
+                        @Suppress("DEPRECATION")
+                        vibrator?.vibrate(pattern, 0)
+                    }
+                }
+            }
         }
     }
 

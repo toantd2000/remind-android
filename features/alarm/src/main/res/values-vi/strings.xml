@@ -34,4 +34,8 @@
     <string name="dismiss">Tắt báo thức</string>
     <string name="snooze">Tạm dừng (Báo lại)</string>
     <string name="repeat">Lặp lại</string>
+    <string name="volume">Âm lượng</string>
+    <string name="ringtone_selection_title">Âm thanh báo thức</string>
+    <string name="default_ringtone">Mặc định</string>
+    <string name="no_ringtone">Không dùng âm thanh</string>
 </resources>

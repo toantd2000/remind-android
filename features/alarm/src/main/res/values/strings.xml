@@ -34,4 +34,8 @@
     <string name="dismiss">Dismiss</string>
     <string name="snooze">Snooze</string>
     <string name="repeat">Repeat</string>
+    <string name="volume">Volume</string>
+    <string name="ringtone_selection_title">Alarm Sound</string>
+    <string name="default_ringtone">Default</string>
+    <string name="no_ringtone">No Sound</string>
 </resources>

@@ -9,10 +9,13 @@ import androidx.navigation.navDeepLink
 const val alarmListRoute = "alarm_list_route"
 const val alarmEditRoute = "alarm_edit_route/{alarmId}"
 const val alarmRingingRoute = "alarm_ringing_route/{alarmId}"
+const val ringtoneSelectionRoute = "ringtone_selection_route"
 
 fun NavGraphBuilder.alarmGraph(
     onNavigateToEdit: (Long) -> Unit,
-    onNavigateBack: () -> Unit
+    onNavigateToRingtoneSelection: (String?) -> Unit,
+    onNavigateBack: () -> Unit,
+    navController: androidx.navigation.NavController
 ) {
     composable(route = alarmListRoute) {
         AlarmListRoute(
@@ -25,9 +28,26 @@ fun NavGraphBuilder.alarmGraph(
         arguments = listOf(navArgument("alarmId") { type = NavType.LongType })
     ) { backStackEntry ->
         val alarmId = backStackEntry.arguments?.getLong("alarmId") ?: 0L
+        
+        // Collect Result from Ringtone Selection
+        val selectedRingtoneUri = backStackEntry.savedStateHandle.get<String>("selectedRingtoneUri")
+        
         AlarmEditRoute(
             alarmId = alarmId,
-            onBackClick = onNavigateBack
+            onBackClick = onNavigateBack,
+            onRingtoneClick = { currentUri -> onNavigateToRingtoneSelection(currentUri) },
+            selectedRingtoneUri = selectedRingtoneUri
+        )
+    }
+    composable(route = ringtoneSelectionRoute) { backStackEntry ->
+        val initialUri = navController.previousBackStackEntry?.savedStateHandle?.get<String>("initialUri")
+        RingtoneSelectionRoute(
+            initialUri = initialUri,
+            onBackClick = onNavigateBack,
+            onRingtoneSelected = { uri ->
+                navController.previousBackStackEntry?.savedStateHandle?.set("selectedRingtoneUri", uri)
+                onNavigateBack()
+            }
         )
     }
     composable(

@@ -147,9 +147,15 @@ class MainActivity : ComponentActivity() {
                                     onNavigateToEdit = { id ->
                                         navController.navigate("alarm_edit_route/$id")
                                     },
+                                    onNavigateToRingtoneSelection = { currentUri ->
+                                        // Set initial URI in the CURRENT entry so the next screen can read it from PREVIOUS entry
+                                        navController.currentBackStackEntry?.savedStateHandle?.set("initialUri", currentUri)
+                                        navController.navigate(vn.io.litever.alarm.features.alarm.ui.ringtoneSelectionRoute)
+                                    },
                                     onNavigateBack = {
                                         navController.popBackStack()
-                                    }
+                                    },
+                                    navController = navController
                                 )
                                 settingsGraph()
                             }

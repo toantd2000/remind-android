@@ -13,7 +13,8 @@ fun AlarmEntity.toModel(): Alarm {
         isEnabled = isEnabled,
         repeatDays = repeatDays.split(",").filter { it.isNotEmpty() }.map { DayOfWeek.valueOf(it) },
         vibrationEnabled = vibrationEnabled,
-        ringtoneUri = ringtoneUri
+        ringtoneUri = ringtoneUri,
+        volume = volume
     )
 }
 
@@ -26,6 +27,7 @@ fun Alarm.toEntity(): AlarmEntity {
         isEnabled = isEnabled,
         repeatDays = repeatDays.joinToString(",") { it.name },
         vibrationEnabled = vibrationEnabled,
-        ringtoneUri = ringtoneUri
+        ringtoneUri = ringtoneUri,
+        volume = volume
     )
 }

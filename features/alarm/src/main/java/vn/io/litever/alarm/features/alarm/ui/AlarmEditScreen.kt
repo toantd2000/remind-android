@@ -46,6 +46,22 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Pause
+import androidx.compose.material.icons.rounded.VolumeUp
+import androidx.compose.material.icons.rounded.VolumeOff
+import androidx.compose.material.icons.rounded.Vibration
+import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material.icons.rounded.GraphicEq
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.hilt.navigation.compose.hiltViewModel
 import vn.io.litever.alarm.core.designsystem.components.AlarmScaffold
 import vn.io.litever.alarm.core.designsystem.components.AlarmTopAppBar
@@ -55,12 +71,15 @@ import vn.io.litever.alarm.features.alarm.ui.components.NextAlarmHeader
 import vn.io.litever.alarm.features.alarm.ui.components.getRepeatSummaryText
 import vn.io.litever.alarm.features.alarm.viewmodel.AlarmEditViewModel
 import java.time.LocalTime
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlarmEditRoute(
     alarmId: Long,
     onBackClick: () -> Unit,
+    onRingtoneClick: (String?) -> Unit,
+    selectedRingtoneUri: String? = null,
     viewModel: AlarmEditViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -69,6 +88,13 @@ fun AlarmEditRoute(
 
     LaunchedEffect(alarmId) {
         viewModel.loadAlarm(alarmId)
+    }
+    
+    // Update ringtone if selected from picker
+    LaunchedEffect(selectedRingtoneUri) {
+        if (selectedRingtoneUri != null) {
+            viewModel.updateRingtone(selectedRingtoneUri)
+        }
     }
 
     AlarmEditScreen(
@@ -83,7 +109,9 @@ fun AlarmEditRoute(
         onLabelChange = viewModel::updateLabel,
         onRepeatDayToggle = viewModel::toggleRepeatDay,
         onVibrationToggle = viewModel::updateVibration,
-        onRingtoneClick = { /* Handle Ringtone Picker */ }
+        onRingtoneClick = { onRingtoneClick(uiState.ringtoneUri) },
+        onVolumeChange = viewModel::updateVolume,
+        onTogglePreview = viewModel::toggleRingtonePlayback
     )
 }
 
@@ -99,7 +127,9 @@ fun AlarmEditScreen(
     onLabelChange: (String) -> Unit,
     onRepeatDayToggle: (DayOfWeek) -> Unit,
     onVibrationToggle: (Boolean) -> Unit,
-    onRingtoneClick: () -> Unit
+    onRingtoneClick: () -> Unit,
+    onVolumeChange: (Int) -> Unit,
+    onTogglePreview: () -> Unit
 ) {
     val timePickerState = androidx.compose.runtime.key(uiState.id, is24HourFormat) {
         rememberTimePickerState(
@@ -187,24 +217,114 @@ fun AlarmEditScreen(
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
                     shape = MaterialTheme.shapes.extraLarge
                 ) {
-                    Column(modifier = Modifier.padding(vertical = 8.dp)) {
-                        ListItem(
-                            headlineContent = { Text(stringResource(R.string.vibration)) },
-                            trailingContent = {
-                                Switch(
-                                    checked = uiState.vibrationEnabled,
-                                    onCheckedChange = onVibrationToggle
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = stringResource(R.string.sound),
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(bottom = 12.dp)
+                        )
+                        
+                        // Row 1: Ringtone Row
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(MaterialTheme.shapes.medium)
+                                .clickable { onRingtoneClick() },
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            androidx.compose.material3.FilledTonalIconButton(
+                                onClick = onTogglePreview,
+                                modifier = Modifier.size(44.dp),
+                                shape = MaterialTheme.shapes.medium
+                            ) {
+                                Icon(
+                                    imageVector = if (uiState.isRingtonePlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
+                                    contentDescription = null
                                 )
-                            },
-                            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-                        )
-
-                        ListItem(
-                            headlineContent = { Text(stringResource(R.string.sound)) },
-                            supportingContent = { Text(uiState.ringtoneUri ?: "Default") },
-                            modifier = Modifier.clickable { onRingtoneClick() },
-                            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-                        )
+                            }
+                            
+                            Column(modifier = Modifier.weight(1f).padding(horizontal = 12.dp)) {
+                                Text(
+                                    text = uiState.ringtoneTitle,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    maxLines = 1
+                                )
+                            }
+                            
+                            Icon(
+                                imageVector = Icons.Rounded.ChevronRight,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                            )
+                        }
+                        
+                        // Row 2: Progress
+                        Box(modifier = Modifier.fillMaxWidth().height(8.dp).padding(start = 56.dp, end = 32.dp)) {
+                            if (uiState.isRingtonePlaying || uiState.ringtoneProgress > 0f) {
+                                LinearProgressIndicator(
+                                    progress = { uiState.ringtoneProgress },
+                                    modifier = Modifier.fillMaxWidth().height(2.dp).clip(RoundedCornerShape(1.dp)),
+                                    color = MaterialTheme.colorScheme.primary,
+                                    trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                                )
+                            }
+                        }
+                        
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        // Row 3: Volume & Vibration
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(44.dp)
+                                    .clip(MaterialTheme.shapes.medium)
+                                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = if (uiState.volume == 0) Icons.Rounded.VolumeOff else Icons.Rounded.VolumeUp,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            
+                            Slider(
+                                value = uiState.volume.toFloat(),
+                                onValueChange = { onVolumeChange(it.roundToInt()) },
+                                valueRange = 0f..uiState.maxVolume.toFloat(),
+                                steps = uiState.maxVolume - 1,
+                                modifier = Modifier.weight(1f).padding(horizontal = 12.dp),
+                                colors = SliderDefaults.colors(
+                                    thumbColor = MaterialTheme.colorScheme.primary,
+                                    activeTrackColor = MaterialTheme.colorScheme.primary,
+                                    inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                                )
+                            )
+                            
+                            Box(
+                                modifier = Modifier
+                                    .size(44.dp)
+                                    .clip(MaterialTheme.shapes.medium)
+                                    .background(
+                                        if (uiState.vibrationEnabled) MaterialTheme.colorScheme.primaryContainer
+                                        else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                                    )
+                                    .clickable { onVibrationToggle(!uiState.vibrationEnabled) },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.Vibration,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp),
+                                    tint = if (uiState.vibrationEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
                     }
                 }
             }

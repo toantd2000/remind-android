@@ -24,7 +24,8 @@ object DatabaseModule {
             context,
             AlarmDatabase::class.java,
             "alarm_database"
-        ).build()
+        ).fallbackToDestructiveMigration()
+        .build()
     }
 
     @Provides

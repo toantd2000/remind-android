@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import vn.io.litever.alarm.features.settings.R
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -43,7 +44,7 @@ fun SettingsRoute(
     val uiState by viewModel.uiState.collectAsState()
     SettingsScreen(
         uiState = uiState,
-        on24HourFormatChange = viewModel::set24HourFormat,
+        onTimeFormatChange = viewModel::setTimeFormat,
         onThemeModeChange = viewModel::setThemeMode,
         onColorPaletteChange = viewModel::setColorPalette
     )
@@ -53,7 +54,7 @@ fun SettingsRoute(
 @Composable
 fun SettingsScreen(
     uiState: SettingsUiState,
-    on24HourFormatChange: (Boolean) -> Unit,
+    onTimeFormatChange: (String) -> Unit,
     onThemeModeChange: (String) -> Unit,
     onColorPaletteChange: (String) -> Unit
 ) {
@@ -74,17 +75,40 @@ fun SettingsScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp, vertical = 8.dp)
                     ) {
-                        ListItem(
-                            headlineContent = { Text(stringResource(R.string.hour_format_24_headline)) },
-                            supportingContent = { Text(stringResource(R.string.hour_format_24_supporting)) },
-                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                            trailingContent = {
-                                Switch(
-                                    checked = uiState.is24HourFormat,
-                                    onCheckedChange = on24HourFormatChange
-                                )
+                        Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                            Text(
+                                text = stringResource(R.string.hour_format_24_headline),
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                            )
+                            
+                            val timeOptions = listOf(
+                                "SYSTEM" to stringResource(R.string.time_format_system),
+                                "H12" to stringResource(R.string.time_format_12h),
+                                "H24" to stringResource(R.string.time_format_24h)
+                            )
+                            
+                            SingleChoiceSegmentedButtonRow(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(
+                                        top = 0.dp,
+                                        bottom = 8.dp,
+                                        start = 16.dp,
+                                        end = 16.dp
+                                    )
+                            ) {
+                                timeOptions.forEachIndexed { index, pair ->
+                                    SegmentedButton(
+                                        selected = uiState.timeFormat == pair.first,
+                                        onClick = { onTimeFormatChange(pair.first) },
+                                        shape = SegmentedButtonDefaults.itemShape(index = index, count = timeOptions.size),
+                                    ) {
+                                        Text(pair.second)
+                                    }
+                                }
                             }
-                        )
+                        }
                     }
                     
                     Card(
@@ -95,7 +119,7 @@ fun SettingsScreen(
                         Column(modifier = Modifier.padding(vertical = 8.dp)) {
                             Text(
                                 text = stringResource(R.string.appearance_and_color_group),
-                                style = MaterialTheme.typography.titleMedium,
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                             )
                             
@@ -196,8 +220,8 @@ fun SettingsScreen(
 fun SettingsScreenPreview() {
     vn.io.litever.alarm.core.designsystem.theme.AlarmTheme {
         SettingsScreen(
-            uiState = SettingsUiState(is24HourFormat = true, themeMode = "SYSTEM", colorPalette = "DEFAULT"),
-            on24HourFormatChange = {},
+            uiState = SettingsUiState(is24HourFormat = true, timeFormat = "SYSTEM", themeMode = "SYSTEM", colorPalette = "DEFAULT"),
+            onTimeFormatChange = {},
             onThemeModeChange = {},
             onColorPaletteChange = {}
         )

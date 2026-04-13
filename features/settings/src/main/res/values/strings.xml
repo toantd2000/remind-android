@@ -1,7 +1,9 @@
 <resources>
     <string name="settings_title">Settings</string>
-    <string name="hour_format_24_headline">24-hour format</string>
-    <string name="hour_format_24_supporting">Display time in 24-hour or 12-hour format</string>
+    <string name="hour_format_24_headline">Time format</string>
+    <string name="time_format_system">System</string>
+    <string name="time_format_12h">12h</string>
+    <string name="time_format_24h">24h</string>
     <string name="appearance_and_color_group">Appearance &amp; Color</string>
     <string name="display_mode_headline">Display mode</string>
     <string name="theme_system">System</string>

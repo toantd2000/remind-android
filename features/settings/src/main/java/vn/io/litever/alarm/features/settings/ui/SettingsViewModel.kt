@@ -15,8 +15,9 @@ import kotlinx.coroutines.flow.combine
 
 data class SettingsUiState(
     val is24HourFormat: Boolean = true,
+    val timeFormat: String = "SYSTEM",
     val themeMode: String = "SYSTEM",
-    val colorPalette: String = "DYNAMIC"
+    val colorPalette: String = "DEFAULT"
 )
 
 @HiltViewModel
@@ -26,11 +27,13 @@ class SettingsViewModel @Inject constructor(
 
     val uiState: StateFlow<SettingsUiState> = combine(
         preferencesDataSource.is24HourFormat,
+        preferencesDataSource.timeFormat,
         preferencesDataSource.themeMode,
         preferencesDataSource.colorPalette
-    ) { is24Hour, theme, palette ->
+    ) { is24Hour, timeFormat, theme, palette ->
         SettingsUiState(
             is24HourFormat = is24Hour,
+            timeFormat = timeFormat,
             themeMode = theme,
             colorPalette = palette
         )
@@ -39,6 +42,12 @@ class SettingsViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = SettingsUiState()
     )
+
+    fun setTimeFormat(format: String) {
+        viewModelScope.launch {
+            preferencesDataSource.setTimeFormat(format)
+        }
+    }
 
     fun set24HourFormat(is24Hour: Boolean) {
         viewModelScope.launch {

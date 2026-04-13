@@ -1,7 +1,9 @@
 <resources>
     <string name="settings_title">Cài đặt</string>
-    <string name="hour_format_24_headline">Định dạng 24 giờ</string>
-    <string name="hour_format_24_supporting">Hiển thị thời gian theo chuẩn 24h hoặc 12h</string>
+    <string name="hour_format_24_headline">Định dạng giờ</string>
+    <string name="time_format_system">Hệ thống</string>
+    <string name="time_format_12h">12h</string>
+    <string name="time_format_24h">24h</string>
     <string name="appearance_and_color_group">Giao diện &amp; Màu sắc</string>
     <string name="display_mode_headline">Chế độ hiển thị</string>
     <string name="theme_system">Hệ thống</string>

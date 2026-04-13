@@ -1,0 +1,41 @@
+<resources>
+    <string name="delete_disabled_reminders">Delete disabled reminders</string>
+    <string name="no_reminders">No Reminders Available</string>
+    <string name="next_reminder_prefix">Reminder in %s</string>
+    <string name="all_reminders_off">All reminders are off</string>
+    <string name="less_than_one_minute">less than 1 minute</string>
+    <string name="days_hours">%1$d days %2$d hours</string>
+    <string name="hours_minutes">%1$d hours %2$d mins</string>
+    <string name="just_minutes">%1$d mins</string>
+    <string name="empty_description">Tap + to add a new reminder</string>
+    
+    <string name="today">Today</string>
+    <string name="tomorrow">Tomorrow</string>
+    <string name="every_day">Daily</string>
+    
+    <string name="day_mon">Mon</string>
+    <string name="day_tue">Tue</string>
+    <string name="day_wed">Wed</string>
+    <string name="day_thu">Thu</string>
+    <string name="day_fri">Fri</string>
+    <string name="day_sat">Sat</string>
+    <string name="day_sun">Sun</string>
+
+    <string name="reminders_title">Reminders</string>
+    <string name="add_reminder_title">Add Reminder</string>
+    <string name="edit_reminder_title">Edit Reminder</string>
+    <string name="select_time">Select Time</string>
+    <string name="schedule_and_name">Schedule &amp; Name</string>
+    <string name="alert_settings">Alert Settings</string>
+    <string name="vibration">Vibration</string>
+    <string name="sound">Sound</string>
+    <string name="reminder_label_placeholder">Reminder Label (Optional)</string>
+    <string name="save">Save</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="snooze">Snooze</string>
+    <string name="repeat">Repeat</string>
+    <string name="volume">Volume</string>
+    <string name="ringtone_selection_title">Reminder Sound</string>
+    <string name="default_ringtone">Default</string>
+    <string name="no_ringtone">No Sound</string>
+</resources>

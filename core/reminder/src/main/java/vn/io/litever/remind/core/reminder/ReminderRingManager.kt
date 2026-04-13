@@ -8,10 +8,10 @@ import javax.inject.Singleton
 
 @Singleton
 class ReminderRingManager @Inject constructor() {
-    private val _ringingAlarmId = MutableStateFlow<Long?>(null)
-    val ringingAlarmId: StateFlow<Long?> = _ringingAlarmId.asStateFlow()
+    private val _ringingReminderId = MutableStateFlow<Long?>(null)
+    val ringingReminderId: StateFlow<Long?> = _ringingReminderId.asStateFlow()
 
-    fun setRinging(alarmId: Long?) {
-        _ringingAlarmId.value = alarmId
+    fun setRinging(reminderId: Long?) {
+        _ringingReminderId.value = reminderId
     }
 }

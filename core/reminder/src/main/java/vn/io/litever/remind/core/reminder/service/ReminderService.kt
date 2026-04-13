@@ -20,22 +20,26 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import vn.io.litever.remind.core.reminder.ReminderRingManager
-import vn.io.litever.alarm.core.domain.scheduler.AlarmScheduler.Companion.EXTRA_ALARM_ID
+import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler.Companion.EXTRA_REMINDER_ID
+import vn.io.litever.remind.core.domain.repository.ReminderRepository
+import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
+import vn.io.litever.remind.core.reminder.provider.ReminderIntentProvider
+import vn.io.litever.remind.core.common.util.getAccessibleRingtoneUri
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class ReminderService : Service() {
     @Inject
-    lateinit var alarmRepository: vn.io.litever.alarm.core.domain.repository.AlarmRepository
+    lateinit var reminderRepository: ReminderRepository
 
     @Inject
-    lateinit var alarmScheduler: vn.io.litever.alarm.core.domain.scheduler.AlarmScheduler
+    lateinit var reminderScheduler: ReminderScheduler
 
     @Inject
     lateinit var reminderRingManager: ReminderRingManager
 
     @Inject
-    lateinit var reminderIntentProvider: vn.io.litever.remind.core.reminder.provider.ReminderIntentProvider
+    lateinit var reminderIntentProvider: ReminderIntentProvider
 
     private var mediaPlayer: MediaPlayer? = null
     private var vibrator: Vibrator? = null
@@ -49,19 +53,19 @@ class ReminderService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val alarmId = intent?.getLongExtra(EXTRA_ALARM_ID, -1L) ?: -1L
-        if (alarmId == -1L) return START_NOT_STICKY
+        val reminderId = intent?.getLongExtra(EXTRA_REMINDER_ID, -1L) ?: -1L
+        if (reminderId == -1L) return START_NOT_STICKY
         
-        reminderRingManager.setRinging(alarmId)
+        reminderRingManager.setRinging(reminderId)
         
         scope.launch {
             try {
-                val alarm = alarmRepository.getAlarmById(alarmId)
-                if (alarm != null) {
-                    if (alarm.repeatDays.isEmpty()) {
-                        alarmRepository.updateAlarm(alarm.copy(isEnabled = false))
+                val reminder = reminderRepository.getReminderById(reminderId)
+                if (reminder != null) {
+                    if (reminder.repeatDays.isEmpty()) {
+                        reminderRepository.updateReminder(reminder.copy(isEnabled = false))
                     } else {
-                        alarmScheduler.schedule(alarm)
+                        reminderScheduler.schedule(reminder)
                     }
                 }
             } catch (e: Exception) {
@@ -69,15 +73,15 @@ class ReminderService : Service() {
             }
         }
 
-        startRinging(alarmId)
+        startRinging(reminderId)
         
-        val deepLinkIntent = reminderIntentProvider.createRingingIntent(alarmId).apply {
+        val deepLinkIntent = reminderIntentProvider.createRingingIntent(reminderId).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
 
         val pendingIntent = PendingIntent.getActivity(
             this,
-            alarmId.hashCode(),
+            reminderId.hashCode(),
             deepLinkIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
@@ -103,16 +107,16 @@ class ReminderService : Service() {
         return START_STICKY
     }
 
-    private fun startRinging(alarmId: Long) {
+    private fun startRinging(reminderId: Long) {
         if (mediaPlayer?.isPlaying == true) return
         
         scope.launch {
-            val alarm = alarmRepository.getAlarmById(alarmId) ?: return@launch
+            val reminder = reminderRepository.getReminderById(reminderId) ?: return@launch
             
             val audioManager = getSystemService(Context.AUDIO_SERVICE) as android.media.AudioManager
-            audioManager.setStreamVolume(android.media.AudioManager.STREAM_ALARM, alarm.volume, 0)
+            audioManager.setStreamVolume(android.media.AudioManager.STREAM_ALARM, reminder.volume, 0)
             
-            val uri = vn.io.litever.alarm.core.common.util.getAccessibleRingtoneUri(this@ReminderService, alarm.ringtoneUri)
+            val uri = getAccessibleRingtoneUri(this@ReminderService, reminder.ringtoneUri)
             
             launch(Dispatchers.Main) {
                 mediaPlayer = MediaPlayer().apply {
@@ -125,13 +129,13 @@ class ReminderService : Service() {
                     )
                     isLooping = true
                     val maxVolume = audioManager.getStreamMaxVolume(android.media.AudioManager.STREAM_ALARM)
-                    val volumeScale = alarm.volume.toFloat() / maxVolume.toFloat()
+                    val volumeScale = reminder.volume.toFloat() / maxVolume.toFloat()
                     setVolume(volumeScale, volumeScale)
                     prepare()
                     start()
                 }
 
-                if (alarm.vibrationEnabled) {
+                if (reminder.vibrationEnabled) {
                     vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                         val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
                         vibratorManager.defaultVibrator

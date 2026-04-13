@@ -7,34 +7,34 @@ import android.content.Intent
 import android.os.Build
 import dagger.hilt.android.qualifiers.ApplicationContext
 import vn.io.litever.remind.core.reminder.receiver.ReminderReceiver
-import vn.io.litever.alarm.core.domain.scheduler.AlarmScheduler
-import vn.io.litever.alarm.core.domain.scheduler.AlarmScheduler.Companion.ACTION_TRIGGER_ALARM
-import vn.io.litever.alarm.core.domain.scheduler.AlarmScheduler.Companion.EXTRA_ALARM_ID
-import vn.io.litever.alarm.core.model.Alarm
+import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
+import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler.Companion.ACTION_TRIGGER_REMINDER
+import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler.Companion.EXTRA_REMINDER_ID
+import vn.io.litever.remind.core.model.Reminder
 import java.time.LocalDateTime
 import java.time.ZoneId
 import javax.inject.Inject
 
 class ReminderSchedulerImpl @Inject constructor(
     @ApplicationContext private val context: Context
-) : AlarmScheduler {
+) : ReminderScheduler {
 
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-    override fun schedule(alarm: Alarm) {
+    override fun schedule(reminder: Reminder) {
         val intent = Intent(context, ReminderReceiver::class.java).apply {
-            action = ACTION_TRIGGER_ALARM
-            putExtra(EXTRA_ALARM_ID, alarm.id)
+            action = ACTION_TRIGGER_REMINDER
+            putExtra(EXTRA_REMINDER_ID, reminder.id)
         }
         
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            alarm.id.hashCode(),
+            reminder.id.hashCode(),
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val triggerTime = alarm.getNextOccurrence()
+        val triggerTime = reminder.getNextOccurrence()
             .atZone(ZoneId.systemDefault())
             .toInstant()
             .toEpochMilli()
@@ -62,13 +62,13 @@ class ReminderSchedulerImpl @Inject constructor(
         )
     }
 
-    override fun cancel(alarm: Alarm) {
+    override fun cancel(reminder: Reminder) {
         val intent = Intent(context, ReminderReceiver::class.java).apply {
-            action = ACTION_TRIGGER_ALARM
+            action = ACTION_TRIGGER_REMINDER
         }
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            alarm.id.hashCode(),
+            reminder.id.hashCode(),
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )

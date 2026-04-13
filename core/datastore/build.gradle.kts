@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "vn.io.litever.alarm.core.datastore"
+    namespace = "vn.io.litever.remind.core.datastore"
 
     compileSdk {
         version = release(36)

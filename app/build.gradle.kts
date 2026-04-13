@@ -6,14 +6,14 @@ plugins {
 }
 
 android {
-    namespace = "vn.io.litever.alarm.app"
+    namespace = "vn.io.litever.remind.app"
 
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "vn.io.litever.alarm"
+        applicationId = "vn.io.litever.remind"
         minSdk = 26
         targetSdk = 36
         versionCode = 1
@@ -45,7 +45,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":features:alarm"))
+    implementation(project(":features:reminder"))
     implementation(project(":features:settings"))
     implementation(project(":core:data"))
     implementation(project(":core:reminder"))

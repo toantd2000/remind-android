@@ -1,0 +1,41 @@
+<resources>
+    <string name="delete_disabled_reminders">Xoá các nhắc nhở đã tắt</string>
+    <string name="no_reminders">Chưa có nhắc nhở nào</string>
+    <string name="next_reminder_prefix">Nhắc nhở sau %s</string>
+    <string name="all_reminders_off">Tất cả nhắc nhở đã tắt</string>
+    <string name="less_than_one_minute">chưa đầy 1 phút</string>
+    <string name="days_hours">%1$d ngày %2$d giờ</string>
+    <string name="hours_minutes">%1$d giờ %2$d phút</string>
+    <string name="just_minutes">%1$d phút</string>
+    <string name="empty_description">Nhấn nút + để thêm nhắc nhở mới</string>
+    
+    <string name="today">Hôm nay</string>
+    <string name="tomorrow">Ngày mai</string>
+    <string name="every_day">Hằng ngày</string>
+    
+    <string name="day_mon">Th 2</string>
+    <string name="day_tue">Th 3</string>
+    <string name="day_wed">Th 4</string>
+    <string name="day_thu">Th 5</string>
+    <string name="day_fri">Th 6</string>
+    <string name="day_sat">Th 7</string>
+    <string name="day_sun">CN</string>
+
+    <string name="reminders_title">Nhắc nhở</string>
+    <string name="add_reminder_title">Thêm nhắc nhở</string>
+    <string name="edit_reminder_title">Sửa nhắc nhở</string>
+    <string name="select_time">Chọn giờ</string>
+    <string name="schedule_and_name">Lịch trình &amp; Tên</string>
+    <string name="alert_settings">Cài đặt cảnh báo</string>
+    <string name="vibration">Rung</string>
+    <string name="sound">Âm thanh</string>
+    <string name="reminder_label_placeholder">Tên nhắc nhở (Tùy chọn)</string>
+    <string name="save">Lưu</string>
+    <string name="dismiss">Tắt nhắc nhở</string>
+    <string name="snooze">Tạm dừng (Báo lại)</string>
+    <string name="repeat">Lặp lại</string>
+    <string name="volume">Âm lượng</string>
+    <string name="ringtone_selection_title">Âm thanh nhắc nhở</string>
+    <string name="default_ringtone">Mặc định</string>
+    <string name="no_ringtone">Không dùng âm thanh</string>
+</resources>

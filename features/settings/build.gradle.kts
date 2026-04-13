@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "vn.io.litever.alarm.features.settings"
+    namespace = "vn.io.litever.remind.features.settings"
 
     compileSdk {
         version = release(36)

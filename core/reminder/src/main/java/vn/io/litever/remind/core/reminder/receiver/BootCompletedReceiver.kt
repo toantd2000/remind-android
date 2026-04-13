@@ -4,14 +4,14 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import dagger.hilt.android.AndroidEntryPoint
-import vn.io.litever.alarm.core.domain.scheduler.AlarmScheduler
+import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class BootCompletedReceiver : BroadcastReceiver() {
     
     @Inject
-    lateinit var alarmScheduler: AlarmScheduler
+    lateinit var reminderScheduler: ReminderScheduler
 
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == Intent.ACTION_BOOT_COMPLETED) {

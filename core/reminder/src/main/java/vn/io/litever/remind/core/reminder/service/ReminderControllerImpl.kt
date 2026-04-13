@@ -8,36 +8,36 @@ import android.os.Build
 import dagger.hilt.android.qualifiers.ApplicationContext
 import vn.io.litever.remind.core.reminder.ReminderRingManager
 import vn.io.litever.remind.core.reminder.receiver.ReminderReceiver
-import vn.io.litever.alarm.core.domain.scheduler.AlarmController
-import vn.io.litever.alarm.core.domain.scheduler.AlarmScheduler.Companion.ACTION_TRIGGER_ALARM
-import vn.io.litever.alarm.core.domain.scheduler.AlarmScheduler.Companion.EXTRA_ALARM_ID
+import vn.io.litever.remind.core.domain.scheduler.ReminderController
+import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler.Companion.ACTION_TRIGGER_REMINDER
+import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler.Companion.EXTRA_REMINDER_ID
 import javax.inject.Inject
 
 class ReminderControllerImpl @Inject constructor(
     @ApplicationContext private val context: Context,
     private val reminderRingManager: ReminderRingManager
-) : AlarmController {
+) : ReminderController {
 
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-    override fun dismissAlarm() {
+    override fun dismissReminder() {
         val intent = Intent(context, ReminderService::class.java)
         context.stopService(intent)
     }
 
-    override fun snoozeAlarm() {
-        val currentAlarmId = reminderRingManager.ringingAlarmId.value
-        if (currentAlarmId != null) {
+    override fun snoozeReminder() {
+        val currentReminderId = reminderRingManager.ringingReminderId.value
+        if (currentReminderId != null) {
             val triggerTime = System.currentTimeMillis() + 5 * 60 * 1000 // 5 mins later
             
             val intent = Intent(context, ReminderReceiver::class.java).apply {
-                action = ACTION_TRIGGER_ALARM
-                putExtra(EXTRA_ALARM_ID, currentAlarmId)
+                action = ACTION_TRIGGER_REMINDER
+                putExtra(EXTRA_REMINDER_ID, currentReminderId)
             }
             
             val pendingIntent = PendingIntent.getBroadcast(
                 context,
-                currentAlarmId.hashCode(),
+                currentReminderId.hashCode(),
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )

@@ -1,4 +1,4 @@
-package vn.io.litever.alarm.core.database.di
+package vn.io.litever.remind.core.database.di
 
 import android.content.Context
 import androidx.room.Room
@@ -7,8 +7,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import vn.io.litever.alarm.core.database.AlarmDatabase
-import vn.io.litever.alarm.core.database.dao.AlarmDao
+import vn.io.litever.remind.core.database.RemindDatabase
+import vn.io.litever.remind.core.database.dao.ReminderDao
 import javax.inject.Singleton
 
 @Module
@@ -19,17 +19,17 @@ object DatabaseModule {
     @Singleton
     fun provideDatabase(
         @ApplicationContext context: Context
-    ): AlarmDatabase {
+    ): RemindDatabase {
         return Room.databaseBuilder(
             context,
-            AlarmDatabase::class.java,
-            "alarm_database"
+            RemindDatabase::class.java,
+            "remind_database"
         ).fallbackToDestructiveMigration()
         .build()
     }
 
     @Provides
-    fun provideAlarmDao(database: AlarmDatabase): AlarmDao {
-        return database.alarmDao()
+    fun provideReminderDao(database: RemindDatabase): ReminderDao {
+        return database.reminderDao()
     }
 }

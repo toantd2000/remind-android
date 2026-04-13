@@ -1,11 +1,10 @@
-package vn.io.litever.alarm.core.database.model
+package vn.io.litever.remind.core.database.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.time.LocalTime
 
-@Entity(tableName = "alarms")
-data class AlarmEntity(
+@Entity(tableName = "reminders")
+data class ReminderEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val hour: Int,

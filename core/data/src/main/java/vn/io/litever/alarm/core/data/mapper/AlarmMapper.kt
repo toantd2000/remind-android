@@ -1,11 +1,11 @@
 package vn.io.litever.alarm.core.data.mapper
 
-import vn.io.litever.alarm.core.database.model.AlarmEntity
+import vn.io.litever.remind.core.database.model.ReminderEntity
 import vn.io.litever.alarm.core.model.Alarm
 import vn.io.litever.alarm.core.model.DayOfWeek
 import java.time.LocalTime
 
-fun AlarmEntity.toModel(): Alarm {
+fun ReminderEntity.toModel(): Alarm {
     return Alarm(
         id = id,
         time = LocalTime.of(hour, minute),
@@ -18,8 +18,8 @@ fun AlarmEntity.toModel(): Alarm {
     )
 }
 
-fun Alarm.toEntity(): AlarmEntity {
-    return AlarmEntity(
+fun Alarm.toEntity(): ReminderEntity {
+    return ReminderEntity(
         id = id,
         hour = time.hour,
         minute = time.minute,

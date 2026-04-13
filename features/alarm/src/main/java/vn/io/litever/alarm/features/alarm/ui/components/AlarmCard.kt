@@ -10,7 +10,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import vn.io.litever.alarm.core.designsystem.components.AlarmSwitch
+import vn.io.litever.remind.core.designsystem.components.ReMindSwitch
 import vn.io.litever.alarm.core.model.Alarm
 import vn.io.litever.alarm.core.model.DayOfWeek
 import vn.io.litever.alarm.features.alarm.R
@@ -86,7 +86,7 @@ fun AlarmCard(
                 )
             }
 
-            AlarmSwitch(
+            ReMindSwitch(
                 checked = alarm.isEnabled,
                 onCheckedChange = onToggle
             )

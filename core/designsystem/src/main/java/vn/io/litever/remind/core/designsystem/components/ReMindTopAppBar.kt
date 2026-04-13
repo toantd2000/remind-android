@@ -1,4 +1,4 @@
-package vn.io.litever.alarm.core.designsystem.components
+package vn.io.litever.remind.core.designsystem.components
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
@@ -9,13 +9,13 @@ import androidx.compose.ui.Modifier
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AlarmTopAppBar(
+fun ReMindTopAppBar(
     title: String,
     modifier: Modifier = Modifier,
     onBackClick: (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
-    AlarmTopAppBar(
+    ReMindTopAppBar(
         titleContent = {
             Text(
                 text = title,
@@ -30,12 +30,12 @@ fun AlarmTopAppBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainAlarmTopAppBar(
+fun MainReMindTopAppBar(
     modifier: Modifier = Modifier,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
-    AlarmTopAppBar(
-        titleContent = { AlarmLogo() },
+    ReMindTopAppBar(
+        titleContent = { ReMindLogo() },
         modifier = modifier,
         actions = actions
     )
@@ -43,7 +43,7 @@ fun MainAlarmTopAppBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AlarmTopAppBar(
+fun ReMindTopAppBar(
     titleContent: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     onBackClick: (() -> Unit)? = null,

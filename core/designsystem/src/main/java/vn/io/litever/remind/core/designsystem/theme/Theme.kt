@@ -1,4 +1,4 @@
-package vn.io.litever.alarm.core.designsystem.theme
+package vn.io.litever.remind.core.designsystem.theme
 
 import android.app.Activity
 import android.os.Build
@@ -93,7 +93,7 @@ private val BaseDarkColorScheme = darkColorScheme(
 )
 
 @Composable
-fun AlarmTheme(
+fun ReMindTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false,
     colorPalette: String = "DEFAULT",
@@ -123,3 +123,4 @@ fun AlarmTheme(
         content = content
     )
 }
+

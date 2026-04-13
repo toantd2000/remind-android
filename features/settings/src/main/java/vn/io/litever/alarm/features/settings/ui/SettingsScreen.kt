@@ -218,7 +218,7 @@ fun SettingsScreen(
 @androidx.compose.ui.tooling.preview.Preview(showBackground = true)
 @Composable
 fun SettingsScreenPreview() {
-    vn.io.litever.alarm.core.designsystem.theme.AlarmTheme {
+    vn.io.litever.remind.core.designsystem.theme.ReMindTheme {
         SettingsScreen(
             uiState = SettingsUiState(is24HourFormat = true, timeFormat = "SYSTEM", themeMode = "SYSTEM", colorPalette = "DEFAULT"),
             onTimeFormatChange = {},

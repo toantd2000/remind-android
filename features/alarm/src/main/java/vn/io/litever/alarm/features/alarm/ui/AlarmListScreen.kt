@@ -15,7 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import vn.io.litever.alarm.core.designsystem.components.*
+import vn.io.litever.remind.core.designsystem.components.*
 import vn.io.litever.alarm.core.model.Alarm
 import vn.io.litever.alarm.features.alarm.R
 import vn.io.litever.alarm.features.alarm.ui.components.AlarmCard
@@ -61,9 +61,9 @@ fun AlarmListScreen(
 ) {
     var showMenu by remember { mutableStateOf(false) }
 
-    AlarmScaffold(
+    ReMindScaffold(
         topBar = {
-            MainAlarmTopAppBar(
+            MainReMindTopAppBar(
                 actions = {
                     IconButton(onClick = { showMenu = !showMenu }) {
                         Icon(Icons.Default.MoreVert, contentDescription = "More")
@@ -84,7 +84,7 @@ fun AlarmListScreen(
             )
         },
         floatingActionButton = {
-            AlarmFloatingActionButton(onClick = onAddAlarmClick) {
+            ReMindFloatingActionButton(onClick = onAddAlarmClick) {
                 Icon(Icons.Default.Add, contentDescription = "Add Alarm")
             }
         }

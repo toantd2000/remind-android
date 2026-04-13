@@ -1,4 +1,4 @@
-package vn.io.litever.alarm.core.designsystem.components
+package vn.io.litever.remind.core.designsystem.components
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.imePadding
@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-fun AlarmScaffold(
+fun ReMindScaffold(
     modifier: Modifier = Modifier,
     topBar: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},

@@ -63,8 +63,8 @@ import androidx.compose.material.icons.rounded.GraphicEq
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.hilt.navigation.compose.hiltViewModel
-import vn.io.litever.alarm.core.designsystem.components.AlarmScaffold
-import vn.io.litever.alarm.core.designsystem.components.AlarmTopAppBar
+import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
+import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.alarm.core.model.DayOfWeek
 import vn.io.litever.alarm.features.alarm.R
 import vn.io.litever.alarm.features.alarm.ui.components.NextAlarmHeader
@@ -144,9 +144,9 @@ fun AlarmEditScreen(
         onTimeChange(LocalTime.of(timePickerState.hour, timePickerState.minute))
     }
 
-    AlarmScaffold(
+    ReMindScaffold(
         topBar = {
-            AlarmTopAppBar(
+            ReMindTopAppBar(
                 title = stringResource(if (uiState.id == 0L) R.string.add_alarm_title else R.string.edit_alarm_title),
                 onBackClick = onBackClick
             )

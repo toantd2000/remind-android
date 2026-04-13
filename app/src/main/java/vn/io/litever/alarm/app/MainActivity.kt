@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import vn.io.litever.alarm.core.designsystem.theme.AlarmTheme
+import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.alarm.features.alarm.ui.alarmGraph
 import vn.io.litever.alarm.features.alarm.ui.alarmListRoute
 import vn.io.litever.alarm.features.alarm.ui.alarmEditRoute
@@ -72,7 +72,7 @@ class MainActivity : ComponentActivity() {
                 else -> isSystemInDarkTheme()
             }
             
-            AlarmTheme(darkTheme = darkTheme, colorPalette = colorPalette) {
+            ReMindTheme(darkTheme = darkTheme, colorPalette = colorPalette) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background

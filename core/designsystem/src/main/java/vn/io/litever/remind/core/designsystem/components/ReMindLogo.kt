@@ -1,4 +1,4 @@
-package vn.io.litever.alarm.core.designsystem.components
+package vn.io.litever.remind.core.designsystem.components
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.Text
@@ -12,21 +12,21 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import vn.io.litever.alarm.core.designsystem.theme.logo_alarm_dark
-import vn.io.litever.alarm.core.designsystem.theme.logo_alarm_light
-import vn.io.litever.alarm.core.designsystem.theme.logo_up_dark
-import vn.io.litever.alarm.core.designsystem.theme.logo_up_light
+import vn.io.litever.remind.core.designsystem.theme.logo_remind_dark
+import vn.io.litever.remind.core.designsystem.theme.logo_remind_light
+import vn.io.litever.remind.core.designsystem.theme.logo_up_dark
+import vn.io.litever.remind.core.designsystem.theme.logo_up_light
 
-import vn.io.litever.alarm.core.designsystem.theme.InterFontFamily
+import vn.io.litever.remind.core.designsystem.theme.InterFontFamily
 
 @Composable
-fun AlarmLogo(
+fun ReMindLogo(
     fontSize: TextUnit = 24.sp,
     modifier: Modifier = Modifier
 ) {
     val isDark = isSystemInDarkTheme()
     val upColor = if (isDark) logo_up_dark else logo_up_light
-    val alarmColor = if (isDark) logo_alarm_dark else logo_alarm_light
+    val remindColor = if (isDark) logo_remind_dark else logo_remind_light
 
     Text(
         text = buildAnnotatedString {
@@ -34,13 +34,13 @@ fun AlarmLogo(
                 fontWeight = FontWeight.Light,
                 color = upColor
             )) {
-                append("Up")
+                append("Re")
             }
             withStyle(style = SpanStyle(
                 fontWeight = FontWeight.ExtraBold,
-                color = alarmColor
+                color = remindColor
             )) {
-                append("Alarm")
+                append("Mind")
             }
         },
         fontSize = fontSize,

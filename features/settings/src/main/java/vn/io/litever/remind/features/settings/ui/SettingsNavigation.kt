@@ -65,6 +65,8 @@ fun NavGraphBuilder.settingsGraph(
     }
     
     composable(alarmSettingsRoute) {
-        // Placeholder AlarmSettingsScreen
+        AlarmSettingsRoute(
+            onNavigateBack = onNavigateBack
+        )
     }
 }

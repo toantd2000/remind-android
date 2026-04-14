@@ -62,4 +62,17 @@
     
     <string name="permission_manufacturer_title">Cài đặt riêng của nhà sản xuất</string>
     <string name="permission_manufacturer_desc">Quản lý Tự khởi chạy và hoạt động nền cho riêng dòng máy của bạn.</string>
+
+    <!-- Alarm Settings -->
+    <string name="snooze_duration_title">Thời gian tạm dừng</string>
+    <string name="snooze_duration_desc">Khoảng thời gian mặc định khi báo lại.</string>
+    <string name="silence_duration_title">Tự động tắt tiếng</string>
+    <string name="silence_duration_desc">Tự động dừng báo thức sau một khoảng thời gian.</string>
+    <string name="increasing_volume_title">Âm lượng tăng dần</string>
+    <string name="increasing_volume_desc">Âm lượng báo thức sẽ to dần lên.</string>
+    <string name="built_in_speaker_title">Luôn dùng loa ngoài</string>
+    <string name="built_in_speaker_desc">Phát âm báo qua loa ngoài ngay cả khi cắm tai nghe.</string>
+    <string name="pre_notification_title">Thông báo báo thức sắp đến</string>
+    <string name="pre_notification_desc">Hiện thông báo trước khi báo thức reo.</string>
+    <string name="minute_format">%d phút</string>
 </resources>

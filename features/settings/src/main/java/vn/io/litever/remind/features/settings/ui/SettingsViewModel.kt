@@ -3,6 +3,7 @@ package vn.io.litever.remind.features.settings.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -16,7 +17,12 @@ data class SettingsUiState(
     val timeFormat: String = "SYSTEM",
     val themeMode: String = "SYSTEM",
     val colorPalette: String = "DEFAULT",
-    val language: String = "en"
+    val language: String = "en",
+    val snoozeDuration: Int = 5,
+    val silenceDuration: Int = 10,
+    val isIncreasingVolume: Boolean = false,
+    val useBuiltInSpeaker: Boolean = true,
+    val isPreNotificationEnabled: Boolean = true
 )
 
 @HiltViewModel
@@ -24,19 +30,32 @@ class SettingsViewModel @Inject constructor(
     private val preferencesDataSource: ReminderPreferencesDataSource
 ) : ViewModel() {
 
+    @Suppress("UNCHECKED_CAST")
     val uiState: StateFlow<SettingsUiState> = combine(
-        preferencesDataSource.is24HourFormat,
-        preferencesDataSource.timeFormat,
-        preferencesDataSource.themeMode,
-        preferencesDataSource.colorPalette,
-        preferencesDataSource.language
-    ) { is24Hour, timeFormat, theme, palette, lang ->
+        listOf<Flow<Any>>(
+            preferencesDataSource.is24HourFormat,
+            preferencesDataSource.timeFormat,
+            preferencesDataSource.themeMode,
+            preferencesDataSource.colorPalette,
+            preferencesDataSource.language,
+            preferencesDataSource.snoozeDuration,
+            preferencesDataSource.silenceDuration,
+            preferencesDataSource.isIncreasingVolume,
+            preferencesDataSource.useBuiltInSpeaker,
+            preferencesDataSource.isPreNotificationEnabled
+        )
+    ) { params ->
         SettingsUiState(
-            is24HourFormat = is24Hour,
-            timeFormat = timeFormat,
-            themeMode = theme,
-            colorPalette = palette,
-            language = lang
+            is24HourFormat = params[0] as Boolean,
+            timeFormat = params[1] as String,
+            themeMode = params[2] as String,
+            colorPalette = params[3] as String,
+            language = params[4] as String,
+            snoozeDuration = params[5] as Int,
+            silenceDuration = params[6] as Int,
+            isIncreasingVolume = params[7] as Boolean,
+            useBuiltInSpeaker = params[8] as Boolean,
+            isPreNotificationEnabled = params[9] as Boolean
         )
     }.stateIn(
         scope = viewModelScope,
@@ -71,6 +90,36 @@ class SettingsViewModel @Inject constructor(
     fun setLanguage(language: String) {
         viewModelScope.launch {
             preferencesDataSource.setLanguage(language)
+        }
+    }
+
+    fun setSnoozeDuration(duration: Int) {
+        viewModelScope.launch {
+            preferencesDataSource.setSnoozeDuration(duration)
+        }
+    }
+
+    fun setSilenceDuration(duration: Int) {
+        viewModelScope.launch {
+            preferencesDataSource.setSilenceDuration(duration)
+        }
+    }
+
+    fun setIncreasingVolume(enabled: Boolean) {
+        viewModelScope.launch {
+            preferencesDataSource.setIncreasingVolume(enabled)
+        }
+    }
+
+    fun setBuiltInSpeaker(enabled: Boolean) {
+        viewModelScope.launch {
+            preferencesDataSource.setBuiltInSpeaker(enabled)
+        }
+    }
+
+    fun setPreNotificationEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            preferencesDataSource.setPreNotificationEnabled(enabled)
         }
     }
 }

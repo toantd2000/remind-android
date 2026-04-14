@@ -1,0 +1,62 @@
+package vn.io.litever.remind.core.designsystem.components
+
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+
+/**
+ * A standard Alert Dialog for the ReMind application.
+ * Wraps Material 3 AlertDialog with the app's design tokens.
+ */
+@Composable
+fun ReMindAlertDialog(
+    onDismissRequest: () -> Unit,
+    confirmButtonText: String,
+    onConfirmClick: () -> Unit,
+    title: String? = null,
+    text: String? = null,
+    dismissButtonText: String? = null,
+    onDismissClick: (() -> Unit)? = null,
+    modifier: Modifier = Modifier
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = title?.let { 
+            { 
+                Text(
+                    text = it, 
+                    style = MaterialTheme.typography.headlineSmall 
+                ) 
+            } 
+        },
+        text = text?.let { 
+            { 
+                Text(
+                    text = it, 
+                    style = MaterialTheme.typography.bodyMedium 
+                ) 
+            } 
+        },
+        confirmButton = {
+            Button(onClick = onConfirmClick) {
+                Text(text = confirmButtonText)
+            }
+        },
+        dismissButton = dismissButtonText?.let {
+            {
+                TextButton(onClick = onDismissClick ?: onDismissRequest) {
+                    Text(text = it)
+                }
+            }
+        },
+        modifier = modifier,
+        shape = MaterialTheme.shapes.extraLarge,
+        containerColor = MaterialTheme.colorScheme.surface,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+}

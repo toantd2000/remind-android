@@ -38,4 +38,14 @@
     <string name="ringtone_selection_title">Reminder Sound</string>
     <string name="default_ringtone">Default</string>
     <string name="no_ringtone">No Sound</string>
+    
+    <!-- Permissions Warning -->
+    <string name="permission_warning_banner_title">Missing Permissions</string>
+    <string name="permission_warning_banner_desc">Notifications and Exact Alarm permissions are required for the alarm to ring properly.</string>
+    <string name="permission_warning_banner_action">Fix Now</string>
+    <string name="error_missing_permissions">Critical permissions missing. Alarm cannot be enabled.</string>
+    <string name="permission_dialog_title">Permission Required</string>
+    <string name="permission_dialog_message">To ensure this alarm fires on time, the app needs Notification and Exact Alarm permissions. If you save now, the alarm will be set as disabled.</string>
+    <string name="action_save_anyway">Save Anyway (Disabled)</string>
+    <string name="action_go_to_settings">Go to Settings</string>
 </resources>

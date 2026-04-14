@@ -38,4 +38,14 @@
     <string name="ringtone_selection_title">Âm thanh nhắc nhở</string>
     <string name="default_ringtone">Mặc định</string>
     <string name="no_ringtone">Không dùng âm thanh</string>
+    
+    <!-- Permissions Warning -->
+    <string name="permission_warning_banner_title">Thiếu quyền hệ thống</string>
+    <string name="permission_warning_banner_desc">Quyền Thông báo và Báo thức chính xác là bắt buộc để ứng dụng có thể reo chuông.</string>
+    <string name="permission_warning_banner_action">Sửa ngay</string>
+    <string name="error_missing_permissions">Thiếu các quyền quan trọng. Không thể bật báo thức.</string>
+    <string name="permission_dialog_title">Yêu cầu cấp quyền</string>
+    <string name="permission_dialog_message">Để đảm bảo báo thức hoạt động chính xác, ứng dụng cần quyền Thông báo và Báo thức chính xác. Nếu bạn lưu bây giờ, báo thức sẽ được lưu ở trạng thái tắt.</string>
+    <string name="action_save_anyway">Vẫn lưu (Tắt báo thức)</string>
+    <string name="action_go_to_settings">Đi đến Cài đặt</string>
 </resources>

@@ -183,6 +183,9 @@ class MainActivity : ComponentActivity() {
                                             navController.currentBackStackEntry?.savedStateHandle?.set("initialUri", currentUri)
                                             navController.navigate(ringtoneSelectionRoute)
                                         },
+                                        onNavigateToPermissions = { 
+                                            navController.navigateToPermissions()
+                                        },
                                         onNavigateBack = {
                                             navController.popBackStack()
                                         },

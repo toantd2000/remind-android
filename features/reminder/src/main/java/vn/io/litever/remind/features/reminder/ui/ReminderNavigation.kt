@@ -14,6 +14,7 @@ const val ringtoneSelectionRoute = "ringtone_selection_route"
 fun NavGraphBuilder.reminderGraph(
     onNavigateToEdit: (Long) -> Unit,
     onNavigateToRingtoneSelection: (String?) -> Unit,
+    onNavigateToPermissions: () -> Unit,
     onNavigateBack: () -> Unit,
     navController: androidx.navigation.NavController
 ) {
@@ -21,22 +22,24 @@ fun NavGraphBuilder.reminderGraph(
         ReminderListRoute(
             onAddReminderClick = { onNavigateToEdit(0L) },
             onReminderClick = { reminder -> onNavigateToEdit(reminder.id) },
+            onNavigateToPermissions = onNavigateToPermissions
         )
     }
     composable(
         route = reminderEditRoute,
         arguments = listOf(navArgument("reminderId") { type = NavType.LongType })
     ) { backStackEntry ->
-        val reminderId = backStackEntry.arguments?.getLong("reminderId") ?: 0L
+        val reminderId = backStackEntry.arguments?.getLong("reminderId")
         
         // Collect Result from Ringtone Selection
         val selectedRingtoneUri = backStackEntry.savedStateHandle.get<String>("selectedRingtoneUri")
         
         ReminderEditRoute(
-            reminderId = reminderId,
+            reminderId = reminderId ?: 0L,
             onBackClick = onNavigateBack,
-            onRingtoneClick = { currentUri -> onNavigateToRingtoneSelection(currentUri) },
-            selectedRingtoneUri = selectedRingtoneUri
+            onRingtoneSelectionClick = onNavigateToRingtoneSelection,
+            onNavigateToPermissions = onNavigateToPermissions,
+            navController = navController
         )
     }
     composable(route = ringtoneSelectionRoute) { backStackEntry ->

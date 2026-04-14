@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -32,37 +33,30 @@ import vn.io.litever.remind.features.settings.R
 
 @Composable
 fun PermissionSettingsRoute(
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    viewModel: PermissionViewModel = hiltViewModel()
 ) {
-    PermissionSettingsScreen(onNavigateBack = onNavigateBack)
+    PermissionSettingsScreen(
+        onNavigateBack = onNavigateBack,
+        viewModel = viewModel
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PermissionSettingsScreen(
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    viewModel: PermissionViewModel
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val uiState by viewModel.uiState.collectAsState()
     
-    // Status states
-    var isNotificationGranted by remember { mutableStateOf(checkNotificationPermission(context)) }
-    var isExactAlarmGranted by remember { mutableStateOf(checkExactAlarmPermission(context)) }
-    var isOverlayGranted by remember { mutableStateOf(checkOverlayPermission(context)) }
-    var isBatteryOptIgnored by remember { mutableStateOf(checkBatteryOptimization(context)) }
-
-    fun refreshPermissions() {
-        isNotificationGranted = checkNotificationPermission(context)
-        isExactAlarmGranted = checkExactAlarmPermission(context)
-        isOverlayGranted = checkOverlayPermission(context)
-        isBatteryOptIgnored = checkBatteryOptimization(context)
-    }
-
     // Observe lifecycle events to refresh when user returns to app
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-                refreshPermissions()
+                viewModel.refreshPermissions()
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -96,7 +90,7 @@ fun PermissionSettingsScreen(
                     PermissionTile(
                         title = stringResource(R.string.permission_exact_alarm_title),
                         description = stringResource(R.string.permission_exact_alarm_desc),
-                        isGranted = isExactAlarmGranted,
+                        isGranted = uiState.isExactAlarmGranted,
                         icon = Icons.Default.Alarm,
                         isCritical = true,
                         onRequest = { requestExactAlarmPermission(context) }
@@ -109,7 +103,7 @@ fun PermissionSettingsScreen(
                 PermissionTile(
                     title = stringResource(R.string.permission_notification_title),
                     description = stringResource(R.string.permission_notification_desc),
-                    isGranted = isNotificationGranted,
+                    isGranted = uiState.isNotificationGranted,
                     icon = Icons.Default.Notifications,
                     isCritical = true,
                     onRequest = { requestNotificationPermission(context) }
@@ -121,7 +115,7 @@ fun PermissionSettingsScreen(
                 PermissionTile(
                     title = stringResource(R.string.permission_overlay_title),
                     description = stringResource(R.string.permission_overlay_desc),
-                    isGranted = isOverlayGranted,
+                    isGranted = uiState.isOverlayGranted,
                     icon = Icons.Default.Layers,
                     onRequest = { requestOverlayPermission(context) }
                 )
@@ -132,7 +126,7 @@ fun PermissionSettingsScreen(
                 PermissionTile(
                     title = stringResource(R.string.permission_battery_title),
                     description = stringResource(R.string.permission_battery_desc),
-                    isGranted = isBatteryOptIgnored,
+                    isGranted = uiState.isBatteryOptIgnored,
                     icon = Icons.Default.BatteryChargingFull,
                     onRequest = { requestIgnoreBatteryOptimization(context) }
                 )
@@ -289,31 +283,6 @@ fun StatusBadge(isGranted: Boolean) {
             fontWeight = FontWeight.Bold
         )
     }
-}
-
-// Permission Helpers
-
-private fun checkNotificationPermission(context: Context): Boolean {
-    val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-    return notificationManager.areNotificationsEnabled()
-}
-
-private fun checkExactAlarmPermission(context: Context): Boolean {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.canScheduleExactAlarms()
-    } else {
-        true
-    }
-}
-
-private fun checkOverlayPermission(context: Context): Boolean {
-    return Settings.canDrawOverlays(context)
-}
-
-private fun checkBatteryOptimization(context: Context): Boolean {
-    val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
-    return powerManager.isIgnoringBatteryOptimizations(context.packageName)
 }
 
 // Request Helpers

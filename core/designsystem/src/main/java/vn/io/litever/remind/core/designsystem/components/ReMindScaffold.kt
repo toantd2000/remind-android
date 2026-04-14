@@ -11,6 +11,7 @@ fun ReMindScaffold(
     modifier: Modifier = Modifier,
     topBar: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
+    snackbarHost: @Composable () -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit
 ) {
@@ -18,6 +19,7 @@ fun ReMindScaffold(
         modifier = modifier.imePadding(),
         topBar = topBar,
         bottomBar = bottomBar,
+        snackbarHost = snackbarHost,
         floatingActionButton = floatingActionButton,
         content = content
     )

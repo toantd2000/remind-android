@@ -33,7 +33,8 @@ data class ReminderEditUiState(
     val maxVolume: Int = 15,
     val isRingtonePlaying: Boolean = false,
     val ringtoneProgress: Float = 0f,
-    val isEnabled: Boolean = true
+    val isEnabled: Boolean = true,
+    val showPermissionDialog: Boolean = false
 )
 
 @HiltViewModel
@@ -41,6 +42,7 @@ class ReminderEditViewModel @Inject constructor(
     private val repository: ReminderRepository,
     private val reminderScheduler: ReminderScheduler,
     private val preferencesDataSource: ReminderPreferencesDataSource,
+    private val permissionChecker: vn.io.litever.remind.core.common.util.PermissionChecker,
     @dagger.hilt.android.qualifiers.ApplicationContext private val context: android.content.Context
 ) : ViewModel() {
 
@@ -189,12 +191,7 @@ class ReminderEditViewModel @Inject constructor(
                     // Start vibration if enabled
                     if (_uiState.value.vibrationEnabled) {
                         val pattern = longArrayOf(0, 500, 500)
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                            vibrator.vibrate(android.os.VibrationEffect.createWaveform(pattern, 0))
-                        } else {
-                            @Suppress("DEPRECATION")
-                            vibrator.vibrate(pattern, 0)
-                        }
+                        vibrator.vibrate(android.os.VibrationEffect.createWaveform(pattern, 0))
                     }
                     // Start progress simulation since MediaPlayer doesn't give precise "played/total" easily for all URIs
                     startProgressSimulation()
@@ -229,12 +226,39 @@ class ReminderEditViewModel @Inject constructor(
         _uiState.update { it.copy(isRingtonePlaying = false, ringtoneProgress = 0f) }
     }
 
+    fun refreshPermissions() {
+        if (permissionChecker.hasCriticalPermissions()) {
+            _uiState.update { it.copy(showPermissionDialog = false) }
+        }
+    }
+
     override fun onCleared() {
         stopRingtonePlayback()
         super.onCleared()
     }
 
     fun saveReminder(onSuccess: () -> Unit) {
+        val state = _uiState.value
+        
+        // Prevent saving enabled alarm if permissions are missing
+        if (state.isEnabled && !permissionChecker.hasCriticalPermissions()) {
+            _uiState.update { it.copy(showPermissionDialog = true) }
+            return
+        }
+
+        performSave(onSuccess)
+    }
+
+    fun saveAnyway(onSuccess: () -> Unit) {
+        _uiState.update { it.copy(isEnabled = false, showPermissionDialog = false) }
+        performSave(onSuccess)
+    }
+
+    fun dismissPermissionDialog() {
+        _uiState.update { it.copy(showPermissionDialog = false) }
+    }
+
+    private fun performSave(onSuccess: () -> Unit) {
         viewModelScope.launch {
             val state = _uiState.value
             val reminder = Reminder(
@@ -250,7 +274,9 @@ class ReminderEditViewModel @Inject constructor(
             
             if (state.id == 0L) {
                 val savedId = repository.insertReminder(reminder)
-                reminderScheduler.schedule(reminder.copy(id = savedId))
+                if (reminder.isEnabled) {
+                    reminderScheduler.schedule(reminder.copy(id = savedId))
+                }
             } else {
                 repository.updateReminder(reminder)
                 if (reminder.isEnabled) {

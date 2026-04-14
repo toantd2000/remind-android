@@ -13,16 +13,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Text
-import androidx.compose.material3.TimeInput
-import androidx.compose.material3.rememberTimePickerState
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -46,9 +39,22 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TimeInput
+import androidx.compose.material3.rememberTimePickerState
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
-import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import vn.io.litever.remind.core.designsystem.components.*
 import vn.io.litever.remind.core.model.DayOfWeek
 import vn.io.litever.remind.features.reminder.R
 import vn.io.litever.remind.features.reminder.ui.components.NextReminderHeader
@@ -62,13 +68,30 @@ import kotlin.math.roundToInt
 fun ReminderEditRoute(
     reminderId: Long,
     onBackClick: () -> Unit,
-    onRingtoneClick: (String?) -> Unit,
+    onRingtoneSelectionClick: (String?) -> Unit,
+    onNavigateToPermissions: () -> Unit,
+    navController: androidx.navigation.NavController,
     selectedRingtoneUri: String? = null,
     viewModel: ReminderEditViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val nextReminderState by viewModel.nextReminderState.collectAsState()
     val is24HourFormat by viewModel.is24HourFormat.collectAsState()
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    // Refresh permissions on resume to auto-dismiss dialog if fixed
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.refreshPermissions()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     LaunchedEffect(reminderId) {
         viewModel.loadReminder(reminderId)
@@ -89,11 +112,16 @@ fun ReminderEditRoute(
         onSaveClick = {
             viewModel.saveReminder(onBackClick)
         },
+        onSaveAnyway = {
+            viewModel.saveAnyway(onBackClick)
+        },
+        onDismissPermissionDialog = viewModel::dismissPermissionDialog,
         onTimeChange = viewModel::updateTime,
         onLabelChange = viewModel::updateLabel,
         onRepeatDayToggle = viewModel::toggleRepeatDay,
         onVibrationToggle = viewModel::updateVibration,
-        onRingtoneClick = { onRingtoneClick(uiState.ringtoneUri) },
+        onRingtoneClick = { onRingtoneSelectionClick(uiState.ringtoneUri) },
+        onNavigateToPermissions = onNavigateToPermissions,
         onVolumeChange = viewModel::updateVolume,
         onTogglePreview = viewModel::toggleRingtonePlayback
     )
@@ -107,11 +135,14 @@ fun ReminderEditScreen(
     is24HourFormat: Boolean,
     onBackClick: () -> Unit,
     onSaveClick: () -> Unit,
+    onSaveAnyway: () -> Unit,
+    onDismissPermissionDialog: () -> Unit,
     onTimeChange: (LocalTime) -> Unit,
     onLabelChange: (String) -> Unit,
     onRepeatDayToggle: (DayOfWeek) -> Unit,
     onVibrationToggle: (Boolean) -> Unit,
     onRingtoneClick: () -> Unit,
+    onNavigateToPermissions: () -> Unit,
     onVolumeChange: (Int) -> Unit,
     onTogglePreview: () -> Unit
 ) {
@@ -126,6 +157,18 @@ fun ReminderEditScreen(
     // Sync state time when picker changes
     LaunchedEffect(timePickerState.hour, timePickerState.minute) {
         onTimeChange(LocalTime.of(timePickerState.hour, timePickerState.minute))
+    }
+
+    if (uiState.showPermissionDialog) {
+        ReMindAlertDialog(
+            onDismissRequest = onDismissPermissionDialog,
+            title = stringResource(R.string.permission_dialog_title),
+            text = stringResource(R.string.permission_dialog_message),
+            confirmButtonText = stringResource(R.string.action_go_to_settings),
+            onConfirmClick = onNavigateToPermissions,
+            dismissButtonText = stringResource(R.string.action_save_anyway),
+            onDismissClick = onSaveAnyway
+        )
     }
 
     ReMindScaffold(
@@ -383,4 +426,4 @@ fun RepeatDaySelector(
             }
         }
     }
-}
+}

@@ -40,4 +40,26 @@
     <string name="setting_licenses">Giấy phép nguồn mở</string>
 
     <string name="app_version_format">Phiên bản %1$s (%2$d)</string>
+    
+    <!-- Permissions -->
+    <string name="permission_granted">Đã cấp quyền</string>
+    <string name="permission_denied">Chưa có quyền</string>
+    <string name="permission_not_required">Không yêu cầu</string>
+    <string name="permission_request_action">Thiết lập</string>
+    <string name="permission_warning_critical">QUAN TRỌNG: App sẽ không thể báo thức nếu thiếu quyền này!</string>
+    
+    <string name="permission_exact_alarm_title">Báo thức &amp; Nhắc nhở</string>
+    <string name="permission_exact_alarm_desc">Cho phép ứng dụng đặt báo thức chính xác ngay cả khi thiết bị đang ở chế độ tiết kiệm pin.</string>
+    
+    <string name="permission_notification_title">Thông báo</string>
+    <string name="permission_notification_desc">Bắt buộc để hiển thị giao diện báo thức lên màn hình khi chuông reo.</string>
+    
+    <string name="permission_overlay_title">Hiển thị trên các ứng dụng khác</string>
+    <string name="permission_overlay_desc">Giúp giao diện báo thức xuất hiện ngay lập tức khi bạn đang sử dụng ứng dụng khác.</string>
+    
+    <string name="permission_battery_title">Tối ưu hóa pin</string>
+    <string name="permission_battery_desc">Giúp ứng dụng chạy ngầm ổn định hơn để đảm bảo báo thức luôn hoạt động.</string>
+    
+    <string name="permission_manufacturer_title">Cài đặt riêng của nhà sản xuất</string>
+    <string name="permission_manufacturer_desc">Quản lý Tự khởi chạy và hoạt động nền cho riêng dòng máy của bạn.</string>
 </resources>

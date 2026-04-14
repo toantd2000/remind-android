@@ -59,7 +59,9 @@ fun NavGraphBuilder.settingsGraph(
     }
     
     composable(permissionsRoute) {
-        // Placeholder PermissionScreen
+        PermissionSettingsRoute(
+            onNavigateBack = onNavigateBack
+        )
     }
     
     composable(alarmSettingsRoute) {

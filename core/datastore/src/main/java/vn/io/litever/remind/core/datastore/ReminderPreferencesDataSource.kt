@@ -45,8 +45,6 @@ class ReminderPreferencesDataSource @Inject constructor(
         }
     }
 
-    val snoozeDuration: Flow<Int> = dataStore.data.map { it[ALARM_SNOOZE_DURATION] ?: 5 }
-    val silenceDuration: Flow<Int> = dataStore.data.map { it[ALARM_SILENCE_DURATION] ?: 10 }
     val isIncreasingVolume: Flow<Boolean> = dataStore.data.map { it[ALARM_INCREASING_VOLUME] ?: false }
     val useBuiltInSpeaker: Flow<Boolean> = dataStore.data.map { it[ALARM_BUILT_IN_SPEAKER] ?: true }
     val isPreNotificationEnabled: Flow<Boolean> = dataStore.data.map { it[ALARM_PRE_NOTIFICATION] ?: true }
@@ -81,14 +79,6 @@ class ReminderPreferencesDataSource @Inject constructor(
         }
     }
 
-    suspend fun setSnoozeDuration(duration: Int) {
-        dataStore.edit { it[ALARM_SNOOZE_DURATION] = duration }
-    }
-
-    suspend fun setSilenceDuration(duration: Int) {
-        dataStore.edit { it[ALARM_SILENCE_DURATION] = duration }
-    }
-
     suspend fun setIncreasingVolume(enabled: Boolean) {
         dataStore.edit { it[ALARM_INCREASING_VOLUME] = enabled }
     }
@@ -106,8 +96,6 @@ class ReminderPreferencesDataSource @Inject constructor(
         val THEME_MODE_KEY = stringPreferencesKey("theme_mode")
         val COLOR_PALETTE_KEY = stringPreferencesKey("color_palette")
         val LANGUAGE_KEY = stringPreferencesKey("language")
-        val ALARM_SNOOZE_DURATION = androidx.datastore.preferences.core.intPreferencesKey("alarm_snooze_duration")
-        val ALARM_SILENCE_DURATION = androidx.datastore.preferences.core.intPreferencesKey("alarm_silence_duration")
         val ALARM_INCREASING_VOLUME = booleanPreferencesKey("alarm_increasing_volume")
         val ALARM_BUILT_IN_SPEAKER = booleanPreferencesKey("alarm_built_in_speaker")
         val ALARM_PRE_NOTIFICATION = booleanPreferencesKey("alarm_pre_notification")

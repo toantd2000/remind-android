@@ -183,6 +183,12 @@ class MainActivity : ComponentActivity() {
                                             navController.currentBackStackEntry?.savedStateHandle?.set("initialUri", currentUri)
                                             navController.navigate(ringtoneSelectionRoute)
                                         },
+                                        onNavigateToSnoozeSettings = { enabled, interval, repeatCount ->
+                                            navController.currentBackStackEntry?.savedStateHandle?.set("snoozeEnabled", enabled)
+                                            navController.currentBackStackEntry?.savedStateHandle?.set("snoozeInterval", interval)
+                                            navController.currentBackStackEntry?.savedStateHandle?.set("snoozeRepeatCount", repeatCount)
+                                            navController.navigate(vn.io.litever.remind.features.reminder.ui.snoozeSettingsRoute)
+                                        },
                                         onNavigateToPermissions = { 
                                             navController.navigateToPermissions()
                                         },

@@ -18,8 +18,6 @@ data class SettingsUiState(
     val themeMode: String = "SYSTEM",
     val colorPalette: String = "DEFAULT",
     val language: String = "en",
-    val snoozeDuration: Int = 5,
-    val silenceDuration: Int = 10,
     val isIncreasingVolume: Boolean = false,
     val useBuiltInSpeaker: Boolean = true,
     val isPreNotificationEnabled: Boolean = true
@@ -38,8 +36,6 @@ class SettingsViewModel @Inject constructor(
             preferencesDataSource.themeMode,
             preferencesDataSource.colorPalette,
             preferencesDataSource.language,
-            preferencesDataSource.snoozeDuration,
-            preferencesDataSource.silenceDuration,
             preferencesDataSource.isIncreasingVolume,
             preferencesDataSource.useBuiltInSpeaker,
             preferencesDataSource.isPreNotificationEnabled
@@ -51,11 +47,9 @@ class SettingsViewModel @Inject constructor(
             themeMode = params[2] as String,
             colorPalette = params[3] as String,
             language = params[4] as String,
-            snoozeDuration = params[5] as Int,
-            silenceDuration = params[6] as Int,
-            isIncreasingVolume = params[7] as Boolean,
-            useBuiltInSpeaker = params[8] as Boolean,
-            isPreNotificationEnabled = params[9] as Boolean
+            isIncreasingVolume = params[5] as Boolean,
+            useBuiltInSpeaker = params[6] as Boolean,
+            isPreNotificationEnabled = params[7] as Boolean
         )
     }.stateIn(
         scope = viewModelScope,
@@ -90,18 +84,6 @@ class SettingsViewModel @Inject constructor(
     fun setLanguage(language: String) {
         viewModelScope.launch {
             preferencesDataSource.setLanguage(language)
-        }
-    }
-
-    fun setSnoozeDuration(duration: Int) {
-        viewModelScope.launch {
-            preferencesDataSource.setSnoozeDuration(duration)
-        }
-    }
-
-    fun setSilenceDuration(duration: Int) {
-        viewModelScope.launch {
-            preferencesDataSource.setSilenceDuration(duration)
         }
     }
 

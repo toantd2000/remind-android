@@ -41,6 +41,10 @@ fun ReminderRingingRoute(
             viewModel.dismissReminder()
             onFinish()
         },
+        onSnooze = {
+            viewModel.snoozeReminder()
+            onFinish()
+        },
         modifier = modifier
     )
 }
@@ -50,6 +54,7 @@ fun ReminderRingingScreen(
     reminderId: Long,
     is24HourFormat: Boolean,
     onDismiss: () -> Unit,
+    onSnooze: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "pulse")
@@ -146,15 +151,32 @@ fun ReminderRingingScreen(
                     .padding(bottom = 64.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Button(
-                    onClick = onDismiss,
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.extraLarge
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Text(
-                        text = stringResource(R.string.dismiss).uppercase(),
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                    )
+                    OutlinedButton(
+                        onClick = onSnooze,
+                        modifier = Modifier.weight(1f),
+                        shape = MaterialTheme.shapes.extraLarge,
+                        border = androidx.compose.foundation.BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.snooze).uppercase(),
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                        )
+                    }
+
+                    Button(
+                        onClick = onDismiss,
+                        modifier = Modifier.weight(1f),
+                        shape = MaterialTheme.shapes.extraLarge
+                    ) {
+                        Text(
+                            text = stringResource(R.string.dismiss).uppercase(),
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                        )
+                    }
                 }
             }
         }

@@ -14,5 +14,9 @@ data class ReminderEntity(
     val repeatDays: String, // JSON string or comma separated IDs
     val vibrationEnabled: Boolean,
     val ringtoneUri: String?,
-    val volume: Int
+    val volume: Int,
+    val snoozeEnabled: Boolean,
+    val snoozeInterval: Int,
+    val snoozeRepeatCount: Int,
+    val autoSilenceMinutes: Int
 )

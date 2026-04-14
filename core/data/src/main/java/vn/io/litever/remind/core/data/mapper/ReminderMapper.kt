@@ -14,7 +14,11 @@ fun ReminderEntity.toModel(): Reminder {
         repeatDays = repeatDays.split(",").filter { it.isNotEmpty() }.map { DayOfWeek.valueOf(it) },
         vibrationEnabled = vibrationEnabled,
         ringtoneUri = ringtoneUri,
-        volume = volume
+        volume = volume,
+        snoozeEnabled = snoozeEnabled,
+        snoozeInterval = snoozeInterval,
+        snoozeRepeatCount = snoozeRepeatCount,
+        autoSilenceMinutes = autoSilenceMinutes
     )
 }
 
@@ -28,6 +32,10 @@ fun Reminder.toEntity(): ReminderEntity {
         repeatDays = repeatDays.joinToString(",") { it.name },
         vibrationEnabled = vibrationEnabled,
         ringtoneUri = ringtoneUri,
-        volume = volume
+        volume = volume,
+        snoozeEnabled = snoozeEnabled,
+        snoozeInterval = snoozeInterval,
+        snoozeRepeatCount = snoozeRepeatCount,
+        autoSilenceMinutes = autoSilenceMinutes
     )
 }

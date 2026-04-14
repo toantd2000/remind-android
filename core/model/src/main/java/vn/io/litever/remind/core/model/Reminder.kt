@@ -11,7 +11,11 @@ data class Reminder(
     val repeatDays: List<DayOfWeek> = emptyList(),
     val vibrationEnabled: Boolean = true,
     val ringtoneUri: String? = null,
-    val volume: Int = 100
+    val volume: Int = 100,
+    val snoozeEnabled: Boolean = true,
+    val snoozeInterval: Int = 5,
+    val snoozeRepeatCount: Int = 3,
+    val autoSilenceMinutes: Int = 3
 ) {
     fun getNextOccurrence(now: LocalDateTime = LocalDateTime.now()): LocalDateTime {
         if (repeatDays.isEmpty()) {

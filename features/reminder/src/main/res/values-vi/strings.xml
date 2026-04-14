@@ -48,4 +48,17 @@
     <string name="permission_dialog_message">Để đảm bảo báo thức hoạt động chính xác, ứng dụng cần quyền Thông báo và Báo thức chính xác. Nếu bạn lưu bây giờ, báo thức sẽ được lưu ở trạng thái tắt.</string>
     <string name="action_save_anyway">Vẫn lưu (Tắt báo thức)</string>
     <string name="action_go_to_settings">Đi đến Cài đặt</string>
+
+    <!-- Snooze & Auto Silence -->
+    <string name="snooze_settings">Báo lại</string>
+    <string name="enable_snooze">Bật báo lại</string>
+    <string name="snooze_interval">Khoảng thời gian</string>
+    <string name="snooze_repeat">Lặp lại</string>
+    <string name="minutes_unit">%d phút</string>
+    <string name="times_unit">%d lần</string>
+    <string name="forever">Mãi mãi</string>
+    <string name="one_time">1 lần</string>
+    <string name="snooze_summary">%1$s, %2$s</string>
+    <string name="auto_silence_title">Tự động tắt tiếng</string>
+    <string name="alarm_settings">Cài đặt báo thức</string>
 </resources>

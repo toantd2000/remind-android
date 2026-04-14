@@ -34,7 +34,11 @@ data class ReminderEditUiState(
     val isRingtonePlaying: Boolean = false,
     val ringtoneProgress: Float = 0f,
     val isEnabled: Boolean = true,
-    val showPermissionDialog: Boolean = false
+    val showPermissionDialog: Boolean = false,
+    val snoozeEnabled: Boolean = true,
+    val snoozeInterval: Int = 5,
+    val snoozeRepeatCount: Int = 3,
+    val autoSilenceMinutes: Int = 3
 )
 
 @HiltViewModel
@@ -106,7 +110,11 @@ class ReminderEditViewModel @Inject constructor(
                     ringtoneTitle = getRingtoneTitle(reminder.ringtoneUri),
                     volume = reminder.volume,
                     maxVolume = audioManager.getStreamMaxVolume(android.media.AudioManager.STREAM_ALARM),
-                    isEnabled = reminder.isEnabled
+                    isEnabled = reminder.isEnabled,
+                    snoozeEnabled = reminder.snoozeEnabled,
+                    snoozeInterval = reminder.snoozeInterval,
+                    snoozeRepeatCount = reminder.snoozeRepeatCount,
+                    autoSilenceMinutes = reminder.autoSilenceMinutes
                 )
             }
         }
@@ -155,6 +163,20 @@ class ReminderEditViewModel @Inject constructor(
         _uiState.update { it.copy(volume = volume) }
         // Update system volume immediately to provide feedback
         audioManager.setStreamVolume(android.media.AudioManager.STREAM_ALARM, volume, 0)
+    }
+
+    fun updateSnoozeSettings(enabled: Boolean, interval: Int, repeatCount: Int) {
+        _uiState.update { 
+            it.copy(
+                snoozeEnabled = enabled, 
+                snoozeInterval = interval, 
+                snoozeRepeatCount = repeatCount
+            ) 
+        }
+    }
+
+    fun updateAutoSilence(minutes: Int) {
+        _uiState.update { it.copy(autoSilenceMinutes = minutes) }
     }
 
     fun toggleRingtonePlayback() {
@@ -269,7 +291,11 @@ class ReminderEditViewModel @Inject constructor(
                 repeatDays = state.repeatDays,
                 vibrationEnabled = state.vibrationEnabled,
                 ringtoneUri = state.ringtoneUri,
-                volume = state.volume
+                volume = state.volume,
+                snoozeEnabled = state.snoozeEnabled,
+                snoozeInterval = state.snoozeInterval,
+                snoozeRepeatCount = state.snoozeRepeatCount,
+                autoSilenceMinutes = state.autoSilenceMinutes
             )
             
             if (state.id == 0L) {

@@ -19,10 +19,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import vn.io.litever.remind.core.reminder.ReminderRingManager
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler.Companion.EXTRA_REMINDER_ID
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
+import vn.io.litever.remind.core.domain.scheduler.ReminderController
 import vn.io.litever.remind.core.reminder.provider.ReminderIntentProvider
 import vn.io.litever.remind.core.common.util.getAccessibleRingtoneUri
 import javax.inject.Inject
@@ -41,9 +44,13 @@ class ReminderService : Service() {
     @Inject
     lateinit var reminderIntentProvider: ReminderIntentProvider
 
+    @Inject
+    lateinit var reminderController: ReminderController
+
     private var mediaPlayer: MediaPlayer? = null
     private var vibrator: Vibrator? = null
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private var autoSilenceJob: Job? = null
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -74,6 +81,7 @@ class ReminderService : Service() {
         }
 
         startRinging(reminderId)
+        setupAutoSilence(reminderId)
         
         val deepLinkIntent = reminderIntentProvider.createRingingIntent(reminderId).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -156,7 +164,22 @@ class ReminderService : Service() {
         }
     }
 
+    private fun setupAutoSilence(reminderId: Long) {
+        autoSilenceJob?.cancel()
+        autoSilenceJob = scope.launch {
+            val reminder = reminderRepository.getReminderById(reminderId) ?: return@launch
+            if (reminder.autoSilenceMinutes > 0) {
+                delay(reminder.autoSilenceMinutes * 60 * 1000L)
+                // Auto-silence acts like a snooze
+                launch(Dispatchers.Main) {
+                    reminderController.snoozeReminder()
+                }
+            }
+        }
+    }
+
     override fun onDestroy() {
+        autoSilenceJob?.cancel()
         mediaPlayer?.stop()
         mediaPlayer?.release()
         vibrator?.cancel()

@@ -30,8 +30,6 @@ fun AlarmSettingsRoute(
     AlarmSettingsScreen(
         uiState = uiState,
         onNavigateBack = onNavigateBack,
-        onSnoozeDurationChange = viewModel::setSnoozeDuration,
-        onSilenceDurationChange = viewModel::setSilenceDuration,
         onIncreasingVolumeChange = viewModel::setIncreasingVolume,
         onBuiltInSpeakerChange = viewModel::setBuiltInSpeaker,
         onPreNotificationChange = viewModel::setPreNotificationEnabled
@@ -43,14 +41,10 @@ fun AlarmSettingsRoute(
 fun AlarmSettingsScreen(
     uiState: SettingsUiState,
     onNavigateBack: () -> Unit,
-    onSnoozeDurationChange: (Int) -> Unit,
-    onSilenceDurationChange: (Int) -> Unit,
     onIncreasingVolumeChange: (Boolean) -> Unit,
     onBuiltInSpeakerChange: (Boolean) -> Unit,
     onPreNotificationChange: (Boolean) -> Unit
 ) {
-    var showSnoozeDialog by remember { mutableStateOf(false) }
-    var showSilenceDialog by remember { mutableStateOf(false) }
 
     ReMindScaffold(
         topBar = {
@@ -98,53 +92,7 @@ fun AlarmSettingsScreen(
                     icon = Icons.Default.NotificationImportant
                 )
             }
-
-            item { HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp)) }
-
-            item {
-                SettingsClickableTile(
-                    title = stringResource(R.string.snooze_duration_title),
-                    subtitle = stringResource(R.string.minute_format, uiState.snoozeDuration),
-                    onClick = { showSnoozeDialog = true },
-                    icon = Icons.Default.Snooze
-                )
-            }
-
-            item {
-                SettingsClickableTile(
-                    title = stringResource(R.string.silence_duration_title),
-                    subtitle = stringResource(R.string.minute_format, uiState.silenceDuration),
-                    onClick = { showSilenceDialog = true },
-                    icon = Icons.Default.TimerOff
-                )
-            }
         }
-    }
-
-    if (showSnoozeDialog) {
-        DurationSelectionDialog(
-            title = stringResource(R.string.snooze_duration_title),
-            currentValue = uiState.snoozeDuration,
-            options = listOf(5, 10, 15, 20, 30),
-            onDismiss = { showSnoozeDialog = false },
-            onSelect = {
-                onSnoozeDurationChange(it)
-                showSnoozeDialog = false
-            }
-        )
-    }
-
-    if (showSilenceDialog) {
-        DurationSelectionDialog(
-            title = stringResource(R.string.silence_duration_title),
-            currentValue = uiState.silenceDuration,
-            options = listOf(1, 5, 10, 20, 30, 60),
-            onDismiss = { showSilenceDialog = false },
-            onSelect = {
-                onSilenceDurationChange(it)
-                showSilenceDialog = false
-            }
-        )
     }
 }
 

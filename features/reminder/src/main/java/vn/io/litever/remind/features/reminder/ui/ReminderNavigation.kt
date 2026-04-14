@@ -10,10 +10,12 @@ const val reminderListRoute = "reminder_list_route"
 const val reminderEditRoute = "reminder_edit_route/{reminderId}"
 const val reminderRingingRoute = "reminder_ringing_route/{reminderId}"
 const val ringtoneSelectionRoute = "ringtone_selection_route"
+const val snoozeSettingsRoute = "snooze_settings_route"
 
 fun NavGraphBuilder.reminderGraph(
     onNavigateToEdit: (Long) -> Unit,
     onNavigateToRingtoneSelection: (String?) -> Unit,
+    onNavigateToSnoozeSettings: (Boolean, Int, Int) -> Unit,
     onNavigateToPermissions: () -> Unit,
     onNavigateBack: () -> Unit,
     navController: androidx.navigation.NavController
@@ -38,8 +40,27 @@ fun NavGraphBuilder.reminderGraph(
             reminderId = reminderId ?: 0L,
             onBackClick = onNavigateBack,
             onRingtoneSelectionClick = onNavigateToRingtoneSelection,
+            onSnoozeSettingsClick = onNavigateToSnoozeSettings,
             onNavigateToPermissions = onNavigateToPermissions,
             navController = navController
+        )
+    }
+    composable(route = snoozeSettingsRoute) {
+        val prevSnoozeEnabled = navController.previousBackStackEntry?.savedStateHandle?.get<Boolean>("snoozeEnabled") ?: true
+        val prevSnoozeInterval = navController.previousBackStackEntry?.savedStateHandle?.get<Int>("snoozeInterval") ?: 5
+        val prevSnoozeRepeatCount = navController.previousBackStackEntry?.savedStateHandle?.get<Int>("snoozeRepeatCount") ?: 3
+        
+        SnoozeSettingsRoute(
+            initialEnabled = prevSnoozeEnabled,
+            initialInterval = prevSnoozeInterval,
+            initialRepeatCount = prevSnoozeRepeatCount,
+            onBackClick = onNavigateBack,
+            onSave = { enabled, interval, repeatCount ->
+                navController.previousBackStackEntry?.savedStateHandle?.set("snoozeEnabled", enabled)
+                navController.previousBackStackEntry?.savedStateHandle?.set("snoozeInterval", interval)
+                navController.previousBackStackEntry?.savedStateHandle?.set("snoozeRepeatCount", repeatCount)
+                onNavigateBack()
+            }
         )
     }
     composable(route = ringtoneSelectionRoute) { backStackEntry ->

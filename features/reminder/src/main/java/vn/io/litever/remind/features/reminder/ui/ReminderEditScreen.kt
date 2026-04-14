@@ -11,15 +11,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.TimeInput
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,6 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Pause
@@ -34,6 +42,8 @@ import androidx.compose.material.icons.rounded.VolumeUp
 import androidx.compose.material.icons.rounded.VolumeOff
 import androidx.compose.material.icons.rounded.Vibration
 import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.material.icons.rounded.Snooze
+import androidx.compose.material.icons.rounded.AlarmOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Slider
@@ -69,6 +79,7 @@ fun ReminderEditRoute(
     reminderId: Long,
     onBackClick: () -> Unit,
     onRingtoneSelectionClick: (String?) -> Unit,
+    onSnoozeSettingsClick: (Boolean, Int, Int) -> Unit,
     onNavigateToPermissions: () -> Unit,
     navController: androidx.navigation.NavController,
     selectedRingtoneUri: String? = null,
@@ -79,6 +90,25 @@ fun ReminderEditRoute(
     val is24HourFormat by viewModel.is24HourFormat.collectAsState()
 
     val lifecycleOwner = LocalLifecycleOwner.current
+
+    // Update snooze settings if returned from screen
+    val returnedSnoozeEnabled = navController.currentBackStackEntry?.savedStateHandle?.getStateFlow<Boolean?>("snoozeEnabled", null)?.collectAsState()
+    val returnedSnoozeInterval = navController.currentBackStackEntry?.savedStateHandle?.getStateFlow<Int?>("snoozeInterval", null)?.collectAsState()
+    val returnedSnoozeRepeatCount = navController.currentBackStackEntry?.savedStateHandle?.getStateFlow<Int?>("snoozeRepeatCount", null)?.collectAsState()
+
+    LaunchedEffect(returnedSnoozeEnabled?.value, returnedSnoozeInterval?.value, returnedSnoozeRepeatCount?.value) {
+        if (returnedSnoozeEnabled?.value != null || returnedSnoozeInterval?.value != null || returnedSnoozeRepeatCount?.value != null) {
+            viewModel.updateSnoozeSettings(
+                enabled = returnedSnoozeEnabled?.value ?: uiState.snoozeEnabled,
+                interval = returnedSnoozeInterval?.value ?: uiState.snoozeInterval,
+                repeatCount = returnedSnoozeRepeatCount?.value ?: uiState.snoozeRepeatCount
+            )
+            // Clear the handle
+            navController.currentBackStackEntry?.savedStateHandle?.remove<Boolean>("snoozeEnabled")
+            navController.currentBackStackEntry?.savedStateHandle?.remove<Int>("snoozeInterval")
+            navController.currentBackStackEntry?.savedStateHandle?.remove<Int>("snoozeRepeatCount")
+        }
+    }
 
     // Refresh permissions on resume to auto-dismiss dialog if fixed
     DisposableEffect(lifecycleOwner) {
@@ -121,6 +151,10 @@ fun ReminderEditRoute(
         onRepeatDayToggle = viewModel::toggleRepeatDay,
         onVibrationToggle = viewModel::updateVibration,
         onRingtoneClick = { onRingtoneSelectionClick(uiState.ringtoneUri) },
+        onSnoozeSettingsClick = {
+            onSnoozeSettingsClick(uiState.snoozeEnabled, uiState.snoozeInterval, uiState.snoozeRepeatCount)
+        },
+        onAutoSilenceChange = viewModel::updateAutoSilence,
         onNavigateToPermissions = onNavigateToPermissions,
         onVolumeChange = viewModel::updateVolume,
         onTogglePreview = viewModel::toggleRingtonePlayback
@@ -142,6 +176,8 @@ fun ReminderEditScreen(
     onRepeatDayToggle: (DayOfWeek) -> Unit,
     onVibrationToggle: (Boolean) -> Unit,
     onRingtoneClick: () -> Unit,
+    onSnoozeSettingsClick: () -> Unit,
+    onAutoSilenceChange: (Int) -> Unit,
     onNavigateToPermissions: () -> Unit,
     onVolumeChange: (Int) -> Unit,
     onTogglePreview: () -> Unit
@@ -168,6 +204,46 @@ fun ReminderEditScreen(
             onConfirmClick = onNavigateToPermissions,
             dismissButtonText = stringResource(R.string.action_save_anyway),
             onDismissClick = onSaveAnyway
+        )
+    }
+
+    var showAutoSilenceDialog by remember { mutableStateOf(false) }
+
+    if (showAutoSilenceDialog) {
+        ReMindAlertDialog(
+            onDismissRequest = { showAutoSilenceDialog = false },
+            title = stringResource(R.string.snooze_interval), // Reusing existing strings or should use auto-silence
+            // Actually let's just make it simple
+            confirmButtonText = stringResource(R.string.save),
+            onConfirmClick = { showAutoSilenceDialog = false }, // Selection happens via onClick
+            text = null,
+            content = {
+                val options = listOf(1, 3, 5, 10, 30)
+                Column {
+                    options.forEach { option ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { 
+                                    onAutoSilenceChange(option)
+                                    showAutoSilenceDialog = false
+                                }
+                                .padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = uiState.autoSilenceMinutes == option,
+                                onClick = { 
+                                    onAutoSilenceChange(option)
+                                    showAutoSilenceDialog = false
+                                }
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(stringResource(R.string.minutes_unit, option))
+                        }
+                    }
+                }
+            }
         )
     }
 
@@ -352,6 +428,63 @@ fun ReminderEditScreen(
                                 )
                             }
                         }
+
+                        HorizontalDivider(
+                            modifier = Modifier.padding(vertical = 12.dp),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f)
+                        )
+                    }
+                }
+            }
+
+            item {
+                // Group 5: Alarm specific settings
+                Card(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
+                    shape = MaterialTheme.shapes.extraLarge
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = stringResource(R.string.alarm_settings),
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(bottom = 12.dp)
+                        )
+
+                        // Snooze Row
+                        val snoozeSummary = if (uiState.snoozeEnabled) {
+                            val repeatLabel = if (uiState.snoozeRepeatCount == -1) {
+                                stringResource(R.string.forever)
+                            } else if (uiState.snoozeRepeatCount == 1) {
+                                stringResource(R.string.one_time)
+                            } else {
+                                stringResource(R.string.times_unit, uiState.snoozeRepeatCount)
+                            }
+                            stringResource(R.string.snooze_summary, stringResource(R.string.minutes_unit, uiState.snoozeInterval), repeatLabel)
+                        } else {
+                            stringResource(R.string.all_reminders_off)
+                        }
+
+                        ReminderSettingRow(
+                            title = stringResource(R.string.snooze),
+                            subtitle = snoozeSummary,
+                            icon = Icons.Rounded.Snooze,
+                            onClick = onSnoozeSettingsClick
+                        )
+
+                        HorizontalDivider(
+                            modifier = Modifier.padding(vertical = 4.dp),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f)
+                        )
+
+                        // Auto Silence Row
+                        ReminderSettingRow(
+                            title = stringResource(R.string.auto_silence_title),
+                            subtitle = stringResource(R.string.minutes_unit, uiState.autoSilenceMinutes),
+                            icon = Icons.Rounded.AlarmOff,
+                            onClick = { showAutoSilenceDialog = true }
+                        )
                     }
                 }
             }
@@ -425,5 +558,60 @@ fun RepeatDaySelector(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ReminderSettingRow(
+    title: String,
+    subtitle: String,
+    icon: ImageVector,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.medium)
+            .clickable(onClick = onClick)
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(44.dp)
+                .clip(MaterialTheme.shapes.medium)
+                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 12.dp)
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+
+        Icon(
+            imageVector = Icons.Rounded.ChevronRight,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+        )
     }
 }

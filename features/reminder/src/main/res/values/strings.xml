@@ -48,4 +48,17 @@
     <string name="permission_dialog_message">To ensure this alarm fires on time, the app needs Notification and Exact Alarm permissions. If you save now, the alarm will be set as disabled.</string>
     <string name="action_save_anyway">Save Anyway (Disabled)</string>
     <string name="action_go_to_settings">Go to Settings</string>
+
+    <!-- Snooze & Auto Silence -->
+    <string name="snooze_settings">Snooze Settings</string>
+    <string name="enable_snooze">Enable Snooze</string>
+    <string name="snooze_interval">Interval</string>
+    <string name="snooze_repeat">Repeat</string>
+    <string name="minutes_unit">%d min</string>
+    <string name="times_unit">%d times</string>
+    <string name="forever">Forever</string>
+    <string name="one_time">1 time</string>
+    <string name="snooze_summary">%1$s, %2$s</string>
+    <string name="auto_silence_title">Auto-silence duration</string>
+    <string name="alarm_settings">Alarm Settings</string>
 </resources>

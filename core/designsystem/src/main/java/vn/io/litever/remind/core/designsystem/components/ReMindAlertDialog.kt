@@ -21,6 +21,7 @@ fun ReMindAlertDialog(
     text: String? = null,
     dismissButtonText: String? = null,
     onDismissClick: (() -> Unit)? = null,
+    content: @Composable (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     AlertDialog(
@@ -33,7 +34,7 @@ fun ReMindAlertDialog(
                 ) 
             } 
         },
-        text = text?.let { 
+        text = content ?: text?.let { 
             { 
                 Text(
                     text = it, 

@@ -86,7 +86,6 @@ fun ReminderEditRoute(
     onSnoozeSettingsClick: (Boolean, Int, Int) -> Unit,
     onNavigateToPermissions: () -> Unit,
     navController: androidx.navigation.NavController,
-    selectedRingtoneUri: String? = null,
     viewModel: ReminderEditViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -114,6 +113,16 @@ fun ReminderEditRoute(
         }
     }
 
+    // Update ringtone if selected from picker
+    val returnedRingtoneUri = navController.currentBackStackEntry?.savedStateHandle?.getStateFlow<String?>("selectedRingtoneUri", null)?.collectAsState()
+    LaunchedEffect(returnedRingtoneUri?.value) {
+        if (returnedRingtoneUri?.value != null) {
+            viewModel.updateRingtone(returnedRingtoneUri.value)
+            // Clear the handle
+            navController.currentBackStackEntry?.savedStateHandle?.remove<String>("selectedRingtoneUri")
+        }
+    }
+
     // Refresh permissions on resume to auto-dismiss dialog if fixed
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -129,13 +138,6 @@ fun ReminderEditRoute(
 
     LaunchedEffect(reminderId) {
         viewModel.loadReminder(reminderId)
-    }
-    
-    // Update ringtone if selected from picker
-    LaunchedEffect(selectedRingtoneUri) {
-        if (selectedRingtoneUri != null) {
-            viewModel.updateRingtone(selectedRingtoneUri)
-        }
     }
 
     ReminderEditScreen(
@@ -260,7 +262,7 @@ fun ReminderEditScreen(
         }
     ) { padding ->
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(padding),
+            modifier = Modifier.fillMaxSize(),
         ) {
             item {
                 NextReminderHeader(state = nextReminderState)

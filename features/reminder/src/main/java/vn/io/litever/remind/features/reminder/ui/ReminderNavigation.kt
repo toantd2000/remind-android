@@ -33,9 +33,6 @@ fun NavGraphBuilder.reminderGraph(
     ) { backStackEntry ->
         val reminderId = backStackEntry.arguments?.getLong("reminderId")
         
-        // Collect Result from Ringtone Selection
-        val selectedRingtoneUri = backStackEntry.savedStateHandle.get<String>("selectedRingtoneUri")
-        
         ReminderEditRoute(
             reminderId = reminderId ?: 0L,
             onBackClick = onNavigateBack,

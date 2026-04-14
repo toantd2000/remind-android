@@ -15,7 +15,8 @@ data class SettingsUiState(
     val is24HourFormat: Boolean = true,
     val timeFormat: String = "SYSTEM",
     val themeMode: String = "SYSTEM",
-    val colorPalette: String = "DEFAULT"
+    val colorPalette: String = "DEFAULT",
+    val language: String = "en"
 )
 
 @HiltViewModel
@@ -27,13 +28,15 @@ class SettingsViewModel @Inject constructor(
         preferencesDataSource.is24HourFormat,
         preferencesDataSource.timeFormat,
         preferencesDataSource.themeMode,
-        preferencesDataSource.colorPalette
-    ) { is24Hour, timeFormat, theme, palette ->
+        preferencesDataSource.colorPalette,
+        preferencesDataSource.language
+    ) { is24Hour, timeFormat, theme, palette, lang ->
         SettingsUiState(
             is24HourFormat = is24Hour,
             timeFormat = timeFormat,
             themeMode = theme,
-            colorPalette = palette
+            colorPalette = palette,
+            language = lang
         )
     }.stateIn(
         scope = viewModelScope,
@@ -62,6 +65,12 @@ class SettingsViewModel @Inject constructor(
     fun setColorPalette(palette: String) {
         viewModelScope.launch {
             preferencesDataSource.setColorPalette(palette)
+        }
+    }
+
+    fun setLanguage(language: String) {
+        viewModelScope.launch {
+            preferencesDataSource.setLanguage(language)
         }
     }
 }

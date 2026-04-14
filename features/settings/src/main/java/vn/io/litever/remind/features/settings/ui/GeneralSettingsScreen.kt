@@ -45,6 +45,7 @@ fun GeneralSettingsRoute(
         onTimeFormatChange = viewModel::setTimeFormat,
         onThemeModeChange = viewModel::setThemeMode,
         onColorPaletteChange = viewModel::setColorPalette,
+        onLanguageChange = viewModel::setLanguage,
         onNavigateBack = onNavigateBack
     )
 }
@@ -56,6 +57,7 @@ fun GeneralSettingsScreen(
     onTimeFormatChange: (String) -> Unit,
     onThemeModeChange: (String) -> Unit,
     onColorPaletteChange: (String) -> Unit,
+    onLanguageChange: (String) -> Unit,
     onNavigateBack: () -> Unit
 ) {
     Scaffold(
@@ -180,11 +182,31 @@ fun GeneralSettingsScreen(
             }
 
             item {
-                SettingsItem(
-                    title = stringResource(R.string.setting_language),
-                    icon = Icons.Default.Language,
-                    statusText = "Tiếng Việt", // Placeholder
-                    onClick = { /* TODO */ }
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.language_headline)) },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    supportingContent = {
+                        val languageOptions = listOf(
+                            "en" to stringResource(R.string.language_english),
+                            "vi" to stringResource(R.string.language_vietnamese)
+                        )
+
+                        SingleChoiceSegmentedButtonRow(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp)
+                        ) {
+                            languageOptions.forEachIndexed { index, pair ->
+                                SegmentedButton(
+                                    selected = uiState.language == pair.first,
+                                    onClick = { onLanguageChange(pair.first) },
+                                    shape = SegmentedButtonDefaults.itemShape(index = index, count = languageOptions.size),
+                                ) {
+                                    Text(pair.second)
+                                }
+                            }
+                        }
+                    }
                 )
             }
         }
@@ -200,6 +222,7 @@ fun GeneralSettingsScreenPreview() {
             onTimeFormatChange = {},
             onThemeModeChange = {},
             onColorPaletteChange = {},
+            onLanguageChange = {},
             onNavigateBack = {}
         )
     }

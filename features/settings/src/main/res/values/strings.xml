@@ -22,6 +22,9 @@
     <string name="setting_general_title">General</string>
     <string name="setting_general_subtitle">Display, language, time format</string>
     <string name="setting_language">Language</string>
+    <string name="language_headline">Select language</string>
+    <string name="language_english">English</string>
+    <string name="language_vietnamese">Tiếng Việt</string>
     <string name="setting_permissions_title">Permissions</string>
     <string name="setting_permissions_subtitle">Manage status and system navigation</string>
     <string name="setting_alarm_title">Alarm Settings</string>

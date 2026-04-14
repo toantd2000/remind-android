@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import android.text.format.DateFormat
+import java.util.Locale
 
 class ReminderPreferencesDataSource @Inject constructor(
     private val dataStore: DataStore<Preferences>,
@@ -34,6 +35,14 @@ class ReminderPreferencesDataSource @Inject constructor(
 
     val colorPalette: Flow<String> = dataStore.data.map { preferences ->
         preferences[COLOR_PALETTE_KEY] ?: "DEFAULT"
+    }
+
+    val language: Flow<String> = dataStore.data.map { preferences ->
+
+        preferences[LANGUAGE_KEY] ?: run {
+            val systemLocale = Locale.getDefault().language
+            if (systemLocale == "vi") "vi" else "en"
+        }
     }
 
     suspend fun set24HourFormat(is24Hour: Boolean) {
@@ -60,9 +69,16 @@ class ReminderPreferencesDataSource @Inject constructor(
         }
     }
 
+    suspend fun setLanguage(language: String) {
+        dataStore.edit { preferences ->
+            preferences[LANGUAGE_KEY] = language
+        }
+    }
+
     companion object {
         val TIME_FORMAT_KEY = stringPreferencesKey("time_format")
         val THEME_MODE_KEY = stringPreferencesKey("theme_mode")
         val COLOR_PALETTE_KEY = stringPreferencesKey("color_palette")
+        val LANGUAGE_KEY = stringPreferencesKey("language")
     }
 }

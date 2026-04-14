@@ -22,6 +22,9 @@
     <string name="setting_general_title">Chung</string>
     <string name="setting_general_subtitle">Giao diện, ngôn ngữ, định dạng giờ</string>
     <string name="setting_language">Ngôn ngữ</string>
+    <string name="language_headline">Chọn ngôn ngữ</string>
+    <string name="language_english">Tiếng Anh</string>
+    <string name="language_vietnamese">Tiếng Việt</string>
     <string name="setting_permissions_title">Quyền</string>
     <string name="setting_permissions_subtitle">Quản lý trạng thái và liên kết cài đặt</string>
     <string name="setting_alarm_title">Cài đặt báo thức</string>

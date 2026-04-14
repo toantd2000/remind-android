@@ -43,6 +43,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import vn.io.litever.remind.core.datastore.ReminderPreferencesDataSource
 import javax.inject.Inject
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalContext
+import android.content.Context
+import android.content.res.Configuration
+import androidx.compose.ui.res.stringResource
+import java.util.Locale
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -50,6 +57,7 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
     val themeMode = preferencesDataSource.themeMode
     val colorPalette = preferencesDataSource.colorPalette
+    val language = preferencesDataSource.language
 }
 
 @AndroidEntryPoint
@@ -71,104 +79,123 @@ class MainActivity : ComponentActivity() {
         setContent {
             val themeMode by viewModel.themeMode.collectAsState(initial = "SYSTEM")
             val colorPalette by viewModel.colorPalette.collectAsState(initial = "DYNAMIC")
+            val language by viewModel.language.collectAsState(initial = "en")
+            
+            val context = LocalContext.current
+            val localizedContext = remember(language) {
+                val locale = Locale(language)
+                Locale.setDefault(locale)
+                val config = Configuration(context.resources.configuration)
+                config.setLocale(locale)
+                config.setLayoutDirection(locale)
+                val configurationContext = context.createConfigurationContext(config)
+                
+                object : android.content.ContextWrapper(context) {
+                    override fun getResources() = configurationContext.resources
+                    override fun getAssets() = configurationContext.assets
+                }
+            }
+
             val darkTheme = when (themeMode) {
                 "LIGHT" -> false
                 "DARK" -> true
                 else -> isSystemInDarkTheme()
             }
             
-            ReMindTheme(darkTheme = darkTheme, colorPalette = colorPalette) {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    val navController = rememberNavController()
-                    
-                    // Observe Global Ringing State
-                    val reminderRingManager = dagger.hilt.EntryPoints.get(
-                        applicationContext,
-                        vn.io.litever.remind.core.reminder.di.ReminderRingManagerEntryPoint::class.java
-                    ).reminderRingManager()
-                    val ringingReminderId by reminderRingManager.ringingReminderId.collectAsState()
-                    
-                    LaunchedEffect(ringingReminderId) {
-                        ringingReminderId?.let { id ->
-                            navController.navigate("reminder_ringing_route/$id") {
-                                launchSingleTop = true
-                            }
-                        }
-                    }
-
-                    Scaffold(
-                        bottomBar = {
-                            val navBackStackEntry by navController.currentBackStackEntryAsState()
-                            val currentRoute = navBackStackEntry?.destination?.route
-
-                            val isBottomBarVisible = currentRoute == reminderListRoute || 
-                                currentRoute == settingsRoute
-
-                            if (isBottomBarVisible) {
-                                NavigationBar {
-                                    NavigationBarItem(
-                                        icon = { Icon(Icons.Filled.Alarm, contentDescription = "Reminder") },
-                                        label = { Text("Nhắc nhở") },
-                                        selected = currentRoute == reminderListRoute,
-                                        onClick = {
-                                            navController.navigate(reminderListRoute) {
-                                                popUpTo(navController.graph.startDestinationId) {
-                                                    saveState = true
-                                                }
-                                                launchSingleTop = true
-                                                restoreState = true
-                                            }
-                                        }
-                                    )
-                                    NavigationBarItem(
-                                        icon = { Icon(Icons.Filled.Settings, contentDescription = "Settings") },
-                                        label = { Text("Cài đặt") },
-                                        selected = currentRoute == settingsRoute,
-                                        onClick = {
-                                            navController.navigate(settingsRoute) {
-                                                popUpTo(navController.graph.startDestinationId) {
-                                                    saveState = true
-                                                }
-                                                launchSingleTop = true
-                                                restoreState = true
-                                            }
-                                        }
-                                    )
+            CompositionLocalProvider(LocalContext provides localizedContext) {
+                ReMindTheme(darkTheme = darkTheme, colorPalette = colorPalette) {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        val navController = rememberNavController()
+                        
+                        // Observe Global Ringing State
+                        val reminderRingManager = dagger.hilt.EntryPoints.get(
+                            applicationContext,
+                            vn.io.litever.remind.core.reminder.di.ReminderRingManagerEntryPoint::class.java
+                        ).reminderRingManager()
+                        val ringingReminderId by reminderRingManager.ringingReminderId.collectAsState()
+                        
+                        LaunchedEffect(ringingReminderId) {
+                            ringingReminderId?.let { id ->
+                                navController.navigate("reminder_ringing_route/$id") {
+                                    launchSingleTop = true
                                 }
                             }
                         }
-                    ) { paddingValues ->
-                        androidx.compose.foundation.layout.Box(
-                            modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding())
-                        ) {
-                            NavHost(
-                                navController = navController,
-                                startDestination = reminderListRoute
+
+                        Scaffold(
+                            bottomBar = {
+                                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                                val currentRoute = navBackStackEntry?.destination?.route
+
+                                val isBottomBarVisible = currentRoute == reminderListRoute || 
+                                    currentRoute == settingsRoute
+
+                                if (isBottomBarVisible) {
+                                    NavigationBar {
+                                        NavigationBarItem(
+                                            icon = { Icon(Icons.Filled.Alarm, contentDescription = "Reminder") },
+                                            label = { Text(stringResource(R.string.navigation_reminders)) },
+                                            selected = currentRoute == reminderListRoute,
+                                            onClick = {
+                                                navController.navigate(reminderListRoute) {
+                                                    popUpTo(navController.graph.startDestinationId) {
+                                                        saveState = true
+                                                    }
+                                                    launchSingleTop = true
+                                                    restoreState = true
+                                                }
+                                            }
+                                        )
+                                        NavigationBarItem(
+                                            icon = { Icon(Icons.Filled.Settings, contentDescription = "Settings") },
+                                            label = { Text(stringResource(R.string.navigation_settings)) },
+                                            selected = currentRoute == settingsRoute,
+                                            onClick = {
+                                                navController.navigate(settingsRoute) {
+                                                    popUpTo(navController.graph.startDestinationId) {
+                                                        saveState = true
+                                                    }
+                                                    launchSingleTop = true
+                                                    restoreState = true
+                                                }
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+                        ) { paddingValues ->
+                            androidx.compose.foundation.layout.Box(
+                                modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding())
                             ) {
-                                reminderGraph(
-                                    onNavigateToEdit = { id ->
-                                        navController.navigate("reminder_edit_route/$id")
-                                    },
-                                    onNavigateToRingtoneSelection = { currentUri ->
-                                        // Set initial URI in the CURRENT entry so the next screen can read it from PREVIOUS entry
-                                        navController.currentBackStackEntry?.savedStateHandle?.set("initialUri", currentUri)
-                                        navController.navigate(ringtoneSelectionRoute)
-                                    },
-                                    onNavigateBack = {
-                                        navController.popBackStack()
-                                    },
-                                    navController = navController
-                                )
-                                settingsGraph(
-                                    onNavigateToGeneralSettings = { navController.navigateToGeneralSettings() },
-                                    onNavigateToQA = { navController.navigateToQA() },
-                                    onNavigateToPermissions = { navController.navigateToPermissions() },
-                                    onNavigateToAlarmSettings = { navController.navigateToAlarmSettings() },
-                                    onNavigateBack = { navController.popBackStack() }
-                                )
+                                NavHost(
+                                    navController = navController,
+                                    startDestination = reminderListRoute
+                                ) {
+                                    reminderGraph(
+                                        onNavigateToEdit = { id ->
+                                            navController.navigate("reminder_edit_route/$id")
+                                        },
+                                        onNavigateToRingtoneSelection = { currentUri ->
+                                            // Set initial URI in the CURRENT entry so the next screen can read it from PREVIOUS entry
+                                            navController.currentBackStackEntry?.savedStateHandle?.set("initialUri", currentUri)
+                                            navController.navigate(ringtoneSelectionRoute)
+                                        },
+                                        onNavigateBack = {
+                                            navController.popBackStack()
+                                        },
+                                        navController = navController
+                                    )
+                                    settingsGraph(
+                                        onNavigateToGeneralSettings = { navController.navigateToGeneralSettings() },
+                                        onNavigateToQA = { navController.navigateToQA() },
+                                        onNavigateToPermissions = { navController.navigateToPermissions() },
+                                        onNavigateToAlarmSettings = { navController.navigateToAlarmSettings() },
+                                        onNavigateBack = { navController.popBackStack() }
+                                    )
+                                }
                             }
                         }
                     }

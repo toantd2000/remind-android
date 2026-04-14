@@ -33,6 +33,7 @@
     <string name="save">Save</string>
     <string name="dismiss">Dismiss</string>
     <string name="snooze">Snooze</string>
+    <string name="snooze_limit_format">Snooze (%1$d left)</string>
     <string name="repeat">Repeat</string>
     <string name="volume">Volume</string>
     <string name="ringtone_selection_title">Reminder Sound</string>
@@ -61,4 +62,5 @@
     <string name="snooze_summary">%1$s, %2$s</string>
     <string name="auto_silence_title">Auto-silence duration</string>
     <string name="alarm_settings">Alarm Settings</string>
+    <string name="off">Off</string>
 </resources>

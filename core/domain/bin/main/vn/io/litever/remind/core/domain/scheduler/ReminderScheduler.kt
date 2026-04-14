@@ -9,5 +9,6 @@ interface ReminderScheduler {
     companion object {
         const val ACTION_TRIGGER_REMINDER = "vn.io.litever.remind.ACTION_TRIGGER_REMINDER"
         const val EXTRA_REMINDER_ID = "REMINDER_ID"
+        const val EXTRA_IS_SNOOZE = "IS_SNOOZE"
     }
 }

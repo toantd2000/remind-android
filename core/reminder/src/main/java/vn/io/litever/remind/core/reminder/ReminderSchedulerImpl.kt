@@ -10,6 +10,7 @@ import vn.io.litever.remind.core.reminder.receiver.ReminderReceiver
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler.Companion.ACTION_TRIGGER_REMINDER
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler.Companion.EXTRA_REMINDER_ID
+import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler.Companion.EXTRA_IS_SNOOZE
 import vn.io.litever.remind.core.model.Reminder
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -25,6 +26,7 @@ class ReminderSchedulerImpl @Inject constructor(
         val intent = Intent(context, ReminderReceiver::class.java).apply {
             action = ACTION_TRIGGER_REMINDER
             putExtra(EXTRA_REMINDER_ID, reminder.id)
+            putExtra(EXTRA_IS_SNOOZE, false)
         }
         
         val pendingIntent = PendingIntent.getBroadcast(

@@ -60,10 +60,14 @@ import androidx.compose.material3.TimeInput
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.features.reminder.ui.state.NextReminderUiState
+import vn.io.litever.remind.features.reminder.viewmodel.ReminderEditUiState
 import vn.io.litever.remind.core.designsystem.components.*
 import vn.io.litever.remind.core.model.DayOfWeek
 import vn.io.litever.remind.features.reminder.R
@@ -164,8 +168,8 @@ fun ReminderEditRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReminderEditScreen(
-    uiState: vn.io.litever.remind.features.reminder.viewmodel.ReminderEditUiState,
-    nextReminderState: vn.io.litever.remind.features.reminder.ui.state.NextReminderUiState,
+    uiState: ReminderEditUiState,
+    nextReminderState: NextReminderUiState,
     is24HourFormat: Boolean,
     onBackClick: () -> Unit,
     onSaveClick: () -> Unit,
@@ -463,7 +467,7 @@ fun ReminderEditScreen(
                             }
                             stringResource(R.string.snooze_summary, stringResource(R.string.minutes_unit, uiState.snoozeInterval), repeatLabel)
                         } else {
-                            stringResource(R.string.all_reminders_off)
+                            stringResource(R.string.off)
                         }
 
                         ReminderSettingRow(
@@ -612,6 +616,78 @@ private fun ReminderSettingRow(
             imageVector = Icons.Rounded.ChevronRight,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+        )
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
+@Composable
+fun ReminderEditScreenPreview() {
+    ReMindTheme {
+        ReminderEditScreen(
+            uiState = ReminderEditUiState(
+                id = 1L,
+                time = java.time.LocalTime.of(8, 30),
+                label = "Morning Alarm",
+                repeatDays = listOf(vn.io.litever.remind.core.model.DayOfWeek.MONDAY, vn.io.litever.remind.core.model.DayOfWeek.TUESDAY),
+                ringtoneTitle = "Early Sunrise",
+                volume = 10,
+                maxVolume = 15,
+                snoozeEnabled = true,
+                snoozeInterval = 5,
+                snoozeRepeatCount = 3
+            ),
+            nextReminderState = NextReminderUiState.Remaining(days = 0, hours = 14, minutes = 30),
+            is24HourFormat = true,
+            onBackClick = {},
+            onSaveClick = {},
+            onSaveAnyway = {},
+            onDismissPermissionDialog = {},
+            onTimeChange = {},
+            onLabelChange = {},
+            onRepeatDayToggle = {},
+            onVibrationToggle = {},
+            onRingtoneClick = {},
+            onSnoozeSettingsClick = {},
+            onAutoSilenceChange = {},
+            onNavigateToPermissions = {},
+            onVolumeChange = {},
+            onTogglePreview = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
+@Composable
+fun ReminderEditScreenDarkPreview() {
+    ReMindTheme(darkTheme = true) {
+        ReminderEditScreen(
+            uiState = ReminderEditUiState(
+                id = 2L,
+                time = java.time.LocalTime.of(22, 0),
+                label = "Sleep Time",
+                repeatDays = emptyList(),
+                ringtoneTitle = "Lullaby",
+                volume = 5,
+                maxVolume = 15,
+                snoozeEnabled = false
+            ),
+            nextReminderState = NextReminderUiState.Remaining(days = 0, hours = 2, minutes = 15),
+            is24HourFormat = false,
+            onBackClick = {},
+            onSaveClick = {},
+            onSaveAnyway = {},
+            onDismissPermissionDialog = {},
+            onTimeChange = {},
+            onLabelChange = {},
+            onRepeatDayToggle = {},
+            onVibrationToggle = {},
+            onRingtoneClick = {},
+            onSnoozeSettingsClick = {},
+            onAutoSilenceChange = {},
+            onNavigateToPermissions = {},
+            onVolumeChange = {},
+            onTogglePreview = {}
         )
     }
 }

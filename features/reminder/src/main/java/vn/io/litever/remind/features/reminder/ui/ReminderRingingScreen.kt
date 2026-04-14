@@ -22,8 +22,12 @@ import vn.io.litever.remind.features.reminder.R
 import vn.io.litever.remind.features.reminder.viewmodel.ReminderRingingViewModel
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import androidx.compose.ui.tooling.preview.Preview
+import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.model.Reminder
 
 @Composable
 fun ReminderRingingRoute(
@@ -33,9 +37,10 @@ fun ReminderRingingRoute(
     viewModel: ReminderRingingViewModel = hiltViewModel()
 ) {
     val is24HourFormat by viewModel.is24HourFormat.collectAsState()
+    val reminder by viewModel.reminder.collectAsState()
 
     ReminderRingingScreen(
-        reminderId = reminderId,
+        reminder = reminder,
         is24HourFormat = is24HourFormat,
         onDismiss = {
             viewModel.dismissReminder()
@@ -51,7 +56,7 @@ fun ReminderRingingRoute(
 
 @Composable
 fun ReminderRingingScreen(
-    reminderId: Long,
+    reminder: Reminder?,
     is24HourFormat: Boolean,
     onDismiss: () -> Unit,
     onSnooze: () -> Unit,
@@ -78,7 +83,7 @@ fun ReminderRingingScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(32.dp),
+                .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
@@ -114,6 +119,17 @@ fun ReminderRingingScreen(
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                 )
+
+                if (!reminder?.label.isNullOrBlank()) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = reminder.label,
+                        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    )
+                }
             }
 
             // Middle: Icon or Pulse Effect
@@ -145,40 +161,91 @@ fun ReminderRingingScreen(
             }
 
             // Bottom: Actions
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 64.dp),
-                contentAlignment = Alignment.Center
+                    .padding(bottom = 32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
+                if (reminder == null || (reminder.snoozeEnabled && reminder.currentSnoozeCount < reminder.snoozeRepeatCount)) {
+                    val remainingSnoozes = if (reminder != null) reminder.snoozeRepeatCount - reminder.currentSnoozeCount else 0
+                    val snoozeText = if (reminder != null && remainingSnoozes > 0) {
+                        stringResource(R.string.snooze_limit_format, remainingSnoozes)
+                    } else {
+                        stringResource(R.string.snooze)
+                    }
+
                     OutlinedButton(
                         onClick = onSnooze,
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
                         shape = MaterialTheme.shapes.extraLarge,
                         border = androidx.compose.foundation.BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
                     ) {
                         Text(
-                            text = stringResource(R.string.snooze).uppercase(),
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                        )
-                    }
-
-                    Button(
-                        onClick = onDismiss,
-                        modifier = Modifier.weight(1f),
-                        shape = MaterialTheme.shapes.extraLarge
-                    ) {
-                        Text(
-                            text = stringResource(R.string.dismiss).uppercase(),
+                            text = snoozeText,
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                         )
                     }
                 }
+
+                Button(
+                    onClick = onDismiss,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = MaterialTheme.shapes.extraLarge
+                ) {
+                    Text(
+                        text = stringResource(R.string.dismiss),
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                    )
+                }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ReminderRingingScreenPreview() {
+    ReMindTheme {
+        ReminderRingingScreen(
+            reminder = Reminder(
+                id = 1,
+                time = LocalTime.of(7, 30),
+                label = "Wake up!",
+                isEnabled = true,
+                snoozeEnabled = true,
+                snoozeRepeatCount = 3,
+                currentSnoozeCount = 1
+            ),
+            is24HourFormat = false,
+            onDismiss = {},
+            onSnooze = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ReminderRingingScreenNoSnoozePreview() {
+    ReMindTheme(darkTheme = true) {
+        ReminderRingingScreen(
+            reminder = Reminder(
+                id = 2,
+                time = LocalTime.of(8, 0),
+                label = "Important Meeting",
+                isEnabled = true,
+                snoozeEnabled = true,
+                snoozeRepeatCount = 3,
+                currentSnoozeCount = 3 // Limit reached
+            ),
+            is24HourFormat = true,
+            onDismiss = {},
+            onSnooze = {}
+        )
     }
 }

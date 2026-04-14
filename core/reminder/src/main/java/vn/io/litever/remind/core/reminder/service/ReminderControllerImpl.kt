@@ -11,6 +11,7 @@ import vn.io.litever.remind.core.reminder.receiver.ReminderReceiver
 import vn.io.litever.remind.core.domain.scheduler.ReminderController
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler.Companion.ACTION_TRIGGER_REMINDER
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler.Companion.EXTRA_REMINDER_ID
+import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler.Companion.EXTRA_IS_SNOOZE
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
@@ -32,13 +33,17 @@ class ReminderControllerImpl @Inject constructor(
         val currentReminderId = reminderRingManager.ringingReminderId.value
         if (currentReminderId != null) {
             val reminder = runBlocking { reminderRepository.getReminderById(currentReminderId) }
-            if (reminder != null && reminder.snoozeEnabled) {
+            if (reminder != null && reminder.snoozeEnabled && reminder.currentSnoozeCount < reminder.snoozeRepeatCount) {
+                val updatedReminder = reminder.copy(currentSnoozeCount = reminder.currentSnoozeCount + 1)
+                runBlocking { reminderRepository.updateReminder(updatedReminder) }
+
                 val interval = if (reminder.snoozeInterval > 0) reminder.snoozeInterval else 5
                 val triggerTime = System.currentTimeMillis() + interval * 60 * 1000L
                 
                 val intent = Intent(context, ReminderReceiver::class.java).apply {
                     action = ACTION_TRIGGER_REMINDER
                     putExtra(EXTRA_REMINDER_ID, currentReminderId)
+                    putExtra(EXTRA_IS_SNOOZE, true)
                 }
                 
                 val pendingIntent = PendingIntent.getBroadcast(

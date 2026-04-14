@@ -15,7 +15,8 @@ data class Reminder(
     val snoozeEnabled: Boolean = true,
     val snoozeInterval: Int = 5,
     val snoozeRepeatCount: Int = 3,
-    val autoSilenceMinutes: Int = 3
+    val autoSilenceMinutes: Int = 3,
+    val currentSnoozeCount: Int = 0
 ) {
     fun getNextOccurrence(now: LocalDateTime = LocalDateTime.now()): LocalDateTime {
         if (repeatDays.isEmpty()) {

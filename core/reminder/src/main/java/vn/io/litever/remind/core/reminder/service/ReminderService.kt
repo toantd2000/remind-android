@@ -23,6 +23,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import vn.io.litever.remind.core.reminder.ReminderRingManager
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler.Companion.EXTRA_REMINDER_ID
+import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler.Companion.EXTRA_IS_SNOOZE
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
 import vn.io.litever.remind.core.domain.scheduler.ReminderController
@@ -65,14 +66,24 @@ class ReminderService : Service() {
         
         reminderRingManager.setRinging(reminderId)
         
+        val isSnoozeTrigger = intent?.getBooleanExtra(EXTRA_IS_SNOOZE, false) ?: false
+        
         scope.launch {
             try {
                 val reminder = reminderRepository.getReminderById(reminderId)
                 if (reminder != null) {
-                    if (reminder.repeatDays.isEmpty()) {
-                        reminderRepository.updateReminder(reminder.copy(isEnabled = false))
+                    // Reset snooze count if it's a fresh (non-snooze) trigger
+                    val updatedReminder = if (!isSnoozeTrigger) {
+                        reminder.copy(currentSnoozeCount = 0)
                     } else {
-                        reminderScheduler.schedule(reminder)
+                        reminder
+                    }
+
+                    if (updatedReminder.repeatDays.isEmpty()) {
+                        reminderRepository.updateReminder(updatedReminder.copy(isEnabled = false))
+                    } else {
+                        reminderRepository.updateReminder(updatedReminder)
+                        reminderScheduler.schedule(updatedReminder)
                     }
                 }
             } catch (e: Exception) {

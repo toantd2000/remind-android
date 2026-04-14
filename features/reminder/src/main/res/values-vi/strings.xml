@@ -31,8 +31,9 @@
     <string name="sound">Âm thanh</string>
     <string name="reminder_label_placeholder">Tên nhắc nhở (Tùy chọn)</string>
     <string name="save">Lưu</string>
-    <string name="dismiss">Tắt nhắc nhở</string>
+    <string name="dismiss">Tắt ngay</string>
     <string name="snooze">Tạm dừng (Báo lại)</string>
+    <string name="snooze_limit_format">Báo lại (Còn %1$d lần)</string>
     <string name="repeat">Lặp lại</string>
     <string name="volume">Âm lượng</string>
     <string name="ringtone_selection_title">Âm thanh nhắc nhở</string>
@@ -61,4 +62,5 @@
     <string name="snooze_summary">%1$s, %2$s</string>
     <string name="auto_silence_title">Tự động tắt tiếng</string>
     <string name="alarm_settings">Cài đặt báo thức</string>
+    <string name="off">Tắt</string>
 </resources>

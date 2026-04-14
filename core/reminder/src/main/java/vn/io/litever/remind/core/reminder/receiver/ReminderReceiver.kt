@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler.Companion.ACTION_TRIGGER_REMINDER
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler.Companion.EXTRA_REMINDER_ID
+import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler.Companion.EXTRA_IS_SNOOZE
 import vn.io.litever.remind.core.reminder.service.ReminderService
 
 class ReminderReceiver : BroadcastReceiver() {
@@ -14,6 +15,7 @@ class ReminderReceiver : BroadcastReceiver() {
             if (reminderId != -1L) {
                 val serviceIntent = Intent(context, ReminderService::class.java).apply {
                     putExtra(EXTRA_REMINDER_ID, reminderId)
+                    putExtra(EXTRA_IS_SNOOZE, intent.getBooleanExtra(EXTRA_IS_SNOOZE, false))
                 }
                 context.startForegroundService(serviceIntent)
             }

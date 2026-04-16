@@ -30,6 +30,8 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import vn.io.litever.remind.features.settings.ui.settingsGraph
 import vn.io.litever.remind.features.settings.ui.settingsRoute
 import vn.io.litever.remind.features.settings.ui.navigateToGeneralSettings
@@ -126,6 +128,7 @@ class MainActivity : ComponentActivity() {
                         }
 
                         Scaffold(
+                            contentWindowInsets = WindowInsets(0, 0, 0, 0),
                             bottomBar = {
                                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                                 val currentRoute = navBackStackEntry?.destination?.route
@@ -168,7 +171,10 @@ class MainActivity : ComponentActivity() {
                             }
                         ) { paddingValues ->
                             androidx.compose.foundation.layout.Box(
-                                modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding())
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(paddingValues)
+                                    .consumeWindowInsets(paddingValues)
                             ) {
                                 NavHost(
                                     navController = navController,

@@ -2,6 +2,8 @@ package vn.io.litever.remind.core.designsystem.components
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

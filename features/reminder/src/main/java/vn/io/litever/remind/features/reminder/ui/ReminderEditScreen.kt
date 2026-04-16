@@ -142,11 +142,16 @@ fun ReminderEditRoute(
             "selectedRingtoneUri",
             null
         )?.collectAsState()
-    LaunchedEffect(returnedRingtoneUri?.value) {
-        if (returnedRingtoneUri?.value != null) {
-            viewModel.updateRingtone(returnedRingtoneUri.value)
+    
+    // Use a special key to detect if a result was SENT at all, even if it's null
+    val resultWasSet = navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>("selectedRingtoneUri_set") ?: false
+
+    LaunchedEffect(returnedRingtoneUri?.value, resultWasSet) {
+        if (resultWasSet) {
+            viewModel.updateRingtone(returnedRingtoneUri?.value)
             // Clear the handle
             navController.currentBackStackEntry?.savedStateHandle?.remove<String>("selectedRingtoneUri")
+            navController.currentBackStackEntry?.savedStateHandle?.remove<Boolean>("selectedRingtoneUri_set")
         }
     }
 

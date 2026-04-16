@@ -67,6 +67,7 @@ fun NavGraphBuilder.reminderGraph(
             onBackClick = onNavigateBack,
             onRingtoneSelected = { uri ->
                 navController.previousBackStackEntry?.savedStateHandle?.set("selectedRingtoneUri", uri)
+                navController.previousBackStackEntry?.savedStateHandle?.set("selectedRingtoneUri_set", true)
                 onNavigateBack()
             }
         )

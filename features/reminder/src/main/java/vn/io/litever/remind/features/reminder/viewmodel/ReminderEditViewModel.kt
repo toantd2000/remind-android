@@ -20,6 +20,7 @@ import vn.io.litever.remind.features.reminder.ui.state.calculateNextReminder
 import java.time.LocalTime
 import javax.inject.Inject
 import vn.io.litever.remind.core.datastore.ReminderPreferencesDataSource
+import vn.io.litever.remind.features.reminder.R
 
 data class ReminderEditUiState(
     val id: Long = 0,
@@ -97,7 +98,7 @@ class ReminderEditViewModel @Inject constructor(
         )
 
     fun loadReminder(reminderId: Long) {
-        if (reminderId == 0L) return
+        if (reminderId == 0L || _uiState.value.id == reminderId) return
         viewModelScope.launch {
             repository.getReminderById(reminderId)?.let { reminder ->
                 _uiState.value = ReminderEditUiState(
@@ -145,16 +146,18 @@ class ReminderEditViewModel @Inject constructor(
     }
 
     fun updateRingtone(uri: String?) {
+        stopRingtonePlayback()
         _uiState.update { it.copy(ringtoneUri = uri, ringtoneTitle = getRingtoneTitle(uri)) }
     }
     
     private fun getRingtoneTitle(uriString: String?): String {
-        if (uriString == null) return "Default"
+        if (uriString == null) return context.getString(R.string.default_ringtone)
         return try {
             val uri = android.net.Uri.parse(uriString)
-            android.media.RingtoneManager.getRingtone(context, uri).getTitle(context)
+            android.media.RingtoneManager.getRingtone(context, uri)?.getTitle(context) 
+                ?: context.getString(R.string.default_ringtone)
         } catch (e: Exception) {
-            "Default"
+            context.getString(R.string.default_ringtone)
         }
     }
 

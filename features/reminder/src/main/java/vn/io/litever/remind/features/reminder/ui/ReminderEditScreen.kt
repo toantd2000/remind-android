@@ -48,6 +48,7 @@ import androidx.compose.material.icons.rounded.Vibration
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Snooze
 import androidx.compose.material.icons.rounded.AlarmOff
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Slider
@@ -355,16 +356,56 @@ fun ReminderEditScreen(
                                 .padding(vertical = 24.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            val formatter = remember(is24HourFormat) {
-                                DateTimeFormatter.ofPattern(if (is24HourFormat) "HH:mm" else "hh:mm a")
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.Bottom
+                                ) {
+                                    val timeFormatter = remember(is24HourFormat) {
+                                        DateTimeFormatter.ofPattern(if (is24HourFormat) "HH:mm" else "hh:mm")
+                                    }
+                                    Text(
+                                        text = uiState.time.format(timeFormatter),
+                                        style = MaterialTheme.typography.displayLarge.copy(
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.primary
+                                        )
+                                    )
+                                    if (!is24HourFormat) {
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(
+                                            text = uiState.time.format(DateTimeFormatter.ofPattern("a")),
+                                            style = MaterialTheme.typography.titleLarge.copy(
+                                                color = MaterialTheme.colorScheme.primary,
+                                                fontWeight = FontWeight.SemiBold
+                                            ),
+                                            modifier = Modifier.padding(bottom = 12.dp)
+                                        )
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.Edit,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp),
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = stringResource(R.string.tap_to_edit_time),
+                                        style = MaterialTheme.typography.labelSmall.copy(
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                                        )
+                                    )
+                                }
                             }
-                            Text(
-                                text = uiState.time.format(formatter),
-                                style = MaterialTheme.typography.displayLarge.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                            )
                         }
                     }
                 }

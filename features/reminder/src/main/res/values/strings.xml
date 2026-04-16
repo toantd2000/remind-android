@@ -64,4 +64,5 @@
     <string name="alarm_settings">Alarm Settings</string>
     <string name="off">Off</string>
     <string name="action_cancel">Cancel</string>
+    <string name="tap_to_edit_time">Tap to change</string>
 </resources>

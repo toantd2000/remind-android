@@ -63,4 +63,6 @@
     <string name="auto_silence_title">Tự động tắt tiếng</string>
     <string name="alarm_settings">Cài đặt báo thức</string>
     <string name="off">Tắt</string>
+    <string name="action_cancel">Hủy</string>
+    <string name="tap_to_edit_time">Chạm để thay đổi</string>
 </resources>

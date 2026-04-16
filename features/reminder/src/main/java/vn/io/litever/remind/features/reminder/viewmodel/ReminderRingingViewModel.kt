@@ -50,10 +50,10 @@ class ReminderRingingViewModel @Inject constructor(
         )
 
     fun dismissReminder() {
-        reminderController.dismissReminder()
+        reminderController.dismissReminder(reminderId)
     }
 
     fun snoozeReminder() {
-        reminderController.snoozeReminder()
+        reminderController.snoozeReminder(reminderId)
     }
 }

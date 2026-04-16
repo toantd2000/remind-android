@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.reminder.ui
 
+import androidx.activity.compose.BackHandler
+
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -67,6 +69,9 @@ fun ReminderRingingScreen(
 ) {
     var remainingSnoozeSeconds by remember { mutableLongStateOf(0L) }
 
+    // Intercept back button to prevent escaping the ringing/locking screen
+    BackHandler { }
+
     LaunchedEffect(reminder) {
         if (reminder != null) {
             val triggerTime = reminder.snoozeNextTriggerTime
@@ -115,7 +120,8 @@ fun ReminderRingingScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.padding(top = 100.dp)
             ) {
-                val (timeStr, amPm) = TimeFormatUtils.formatTimeParts(currentTime.toLocalTime(), is24HourFormat)
+                val displayTime = reminder?.time ?: currentTime.toLocalTime()
+                val (timeStr, amPm) = TimeFormatUtils.formatTimeParts(displayTime, is24HourFormat)
                 Row(verticalAlignment = Alignment.Bottom) {
                     Text(
                         text = timeStr,

@@ -26,9 +26,26 @@ class ReminderControllerImpl @Inject constructor(
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     private val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-    override fun dismissReminder() {
-        val currentReminderId = reminderRingManager.ringingReminderId.value
+    override fun dismissReminder(reminderId: Long?) {
+        val currentReminderId = reminderId ?: reminderRingManager.ringingReminderId.value
         if (currentReminderId != null) {
+            // Cancel any pending snooze
+            val snoozeIntent = Intent(context, ReminderReceiver::class.java).apply {
+                action = ACTION_TRIGGER_REMINDER
+                putExtra(EXTRA_REMINDER_ID, currentReminderId)
+                putExtra(EXTRA_IS_SNOOZE, true)
+            }
+            val pendingSnooze = PendingIntent.getBroadcast(
+                context,
+                currentReminderId.hashCode(),
+                snoozeIntent,
+                PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
+            )
+            if (pendingSnooze != null) {
+                alarmManager.cancel(pendingSnooze)
+                pendingSnooze.cancel()
+            }
+
             runBlocking {
                 val reminder = reminderRepository.getReminderById(currentReminderId)
                 if (reminder != null) {
@@ -47,8 +64,8 @@ class ReminderControllerImpl @Inject constructor(
         currentReminderId?.let { notificationManager.cancel(it.toInt()) }
     }
 
-    override fun snoozeReminder() {
-        val currentReminderId = reminderRingManager.ringingReminderId.value
+    override fun snoozeReminder(reminderId: Long?) {
+        val currentReminderId = reminderId ?: reminderRingManager.ringingReminderId.value
         if (currentReminderId != null) {
             val reminder = runBlocking { reminderRepository.getReminderById(currentReminderId) }
             if (reminder != null && reminder.snoozeEnabled && reminder.currentSnoozeCount < reminder.snoozeRepeatCount) {
@@ -96,8 +113,8 @@ class ReminderControllerImpl @Inject constructor(
         context.stopService(intent)
     }
 
-    override fun markAsMissed() {
-        val currentReminderId = reminderRingManager.ringingReminderId.value
+    override fun markAsMissed(reminderId: Long?) {
+        val currentReminderId = reminderId ?: reminderRingManager.ringingReminderId.value
         if (currentReminderId != null) {
             runBlocking {
                 val reminder = reminderRepository.getReminderById(currentReminderId)

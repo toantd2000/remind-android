@@ -4,32 +4,20 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Code
-import androidx.compose.material.icons.filled.DarkMode
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.LightMode
-import androidx.compose.material.icons.filled.NotificationsActive
-import androidx.compose.material.icons.filled.Palette
-import androidx.compose.material.icons.filled.QuestionAnswer
-import androidx.compose.material.icons.filled.Security
-import androidx.compose.material.icons.filled.SettingsBrightness
-import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.Wallpaper
+import androidx.compose.material.icons.rounded.Code
+import androidx.compose.material.icons.rounded.Description
+import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.Language
+import androidx.compose.material.icons.rounded.NotificationsActive
+import androidx.compose.material.icons.rounded.QuestionAnswer
+import androidx.compose.material.icons.rounded.Security
+import androidx.compose.material.icons.rounded.Share
+import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -37,7 +25,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -91,7 +78,7 @@ fun SettingsScreen(
                 SettingsItem(
                     title = stringResource(R.string.setting_general_title),
                     subtitle = stringResource(R.string.setting_general_subtitle),
-                    icon = Icons.Default.Language,
+                    icon = Icons.Rounded.Language,
                     onClick = onNavigateToGeneralSettings
                 )
             }
@@ -100,7 +87,7 @@ fun SettingsScreen(
                 SettingsItem(
                     title = stringResource(R.string.setting_permissions_title),
                     subtitle = stringResource(R.string.setting_permissions_subtitle),
-                    icon = Icons.Default.Security,
+                    icon = Icons.Rounded.Security,
                     onClick = onNavigateToPermissions
                 )
             }
@@ -109,7 +96,7 @@ fun SettingsScreen(
                 SettingsItem(
                     title = stringResource(R.string.setting_alarm_title),
                     subtitle = stringResource(R.string.setting_alarm_subtitle),
-                    icon = Icons.Default.NotificationsActive,
+                    icon = Icons.Rounded.NotificationsActive,
                     onClick = onNavigateToAlarmSettings
                 )
             }
@@ -121,21 +108,21 @@ fun SettingsScreen(
             item {
                 SettingsItem(
                     title = stringResource(R.string.setting_qa),
-                    icon = Icons.Default.QuestionAnswer,
+                    icon = Icons.Rounded.QuestionAnswer,
                     onClick = onNavigateToQA
                 )
             }
             item {
                 SettingsItem(
                     title = stringResource(R.string.setting_rate),
-                    icon = Icons.Default.Star,
+                    icon = Icons.Rounded.Star,
                     onClick = { /* TODO */ }
                 )
             }
             item {
                 SettingsItem(
                     title = stringResource(R.string.setting_share),
-                    icon = Icons.Default.Share,
+                    icon = Icons.Rounded.Share,
                     onClick = { /* TODO */ }
                 )
             }
@@ -147,28 +134,28 @@ fun SettingsScreen(
             item {
                 SettingsItem(
                     title = stringResource(R.string.setting_story),
-                    icon = Icons.Default.History,
+                    icon = Icons.Rounded.History,
                     onClick = { /* TODO */ }
                 )
             }
             item {
                 SettingsItem(
                     title = stringResource(R.string.setting_terms),
-                    icon = Icons.Default.Description,
+                    icon = Icons.Rounded.Description,
                     onClick = { /* TODO */ }
                 )
             }
             item {
                 SettingsItem(
                     title = stringResource(R.string.setting_history),
-                    icon = Icons.Default.Code,
+                    icon = Icons.Rounded.Code,
                     onClick = { /* TODO */ }
                 )
             }
             item {
                 SettingsItem(
                     title = stringResource(R.string.setting_licenses),
-                    icon = Icons.Default.Description,
+                    icon = Icons.Rounded.Description,
                     onClick = { /* TODO */ }
                 )
             }

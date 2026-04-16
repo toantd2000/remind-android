@@ -11,9 +11,7 @@ import android.provider.Settings
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.ErrorOutline
-import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -71,7 +69,7 @@ fun PermissionSettingsScreen(
                 title = { Text(stringResource(R.string.setting_permissions_title)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Rounded.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
@@ -91,7 +89,7 @@ fun PermissionSettingsScreen(
                         title = stringResource(R.string.permission_exact_alarm_title),
                         description = stringResource(R.string.permission_exact_alarm_desc),
                         isGranted = uiState.isExactAlarmGranted,
-                        icon = Icons.Default.Alarm,
+                        icon = Icons.Rounded.Alarm,
                         isCritical = true,
                         onRequest = { requestExactAlarmPermission(context) }
                     )
@@ -104,7 +102,7 @@ fun PermissionSettingsScreen(
                     title = stringResource(R.string.permission_notification_title),
                     description = stringResource(R.string.permission_notification_desc),
                     isGranted = uiState.isNotificationGranted,
-                    icon = Icons.Default.Notifications,
+                    icon = Icons.Rounded.Notifications,
                     isCritical = true,
                     onRequest = { requestNotificationPermission(context) }
                 )
@@ -116,7 +114,7 @@ fun PermissionSettingsScreen(
                     title = stringResource(R.string.permission_overlay_title),
                     description = stringResource(R.string.permission_overlay_desc),
                     isGranted = uiState.isOverlayGranted,
-                    icon = Icons.Default.Layers,
+                    icon = Icons.Rounded.Layers,
                     onRequest = { requestOverlayPermission(context) }
                 )
             }
@@ -127,7 +125,7 @@ fun PermissionSettingsScreen(
                     title = stringResource(R.string.permission_battery_title),
                     description = stringResource(R.string.permission_battery_desc),
                     isGranted = uiState.isBatteryOptIgnored,
-                    icon = Icons.Default.BatteryChargingFull,
+                    icon = Icons.Rounded.BatteryChargingFull,
                     onRequest = { requestIgnoreBatteryOptimization(context) }
                 )
             }
@@ -193,7 +191,7 @@ fun PermissionTile(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Icon(
-                        imageVector = Icons.Outlined.ErrorOutline,
+                        imageVector = Icons.Rounded.ErrorOutline,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.error,
                         modifier = Modifier.size(16.dp)
@@ -237,7 +235,7 @@ fun ManufacturerSettingsTile(context: Context) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = Icons.Default.SettingsSuggest,
+                    imageVector = Icons.Rounded.SettingsSuggest,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.secondary
                 )

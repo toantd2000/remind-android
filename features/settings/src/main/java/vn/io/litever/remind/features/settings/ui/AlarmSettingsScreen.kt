@@ -4,7 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -52,7 +52,7 @@ fun AlarmSettingsScreen(
                 title = { Text(stringResource(R.string.setting_alarm_title)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Rounded.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
@@ -69,7 +69,7 @@ fun AlarmSettingsScreen(
                     subtitle = stringResource(R.string.increasing_volume_desc),
                     checked = uiState.isIncreasingVolume,
                     onCheckedChange = onIncreasingVolumeChange,
-                    icon = Icons.Default.VolumeUp
+                    icon = Icons.Rounded.VolumeUp
                 )
             }
             
@@ -79,7 +79,7 @@ fun AlarmSettingsScreen(
                     subtitle = stringResource(R.string.built_in_speaker_desc),
                     checked = uiState.useBuiltInSpeaker,
                     onCheckedChange = onBuiltInSpeakerChange,
-                    icon = Icons.Default.Speaker
+                    icon = Icons.Rounded.Speaker
                 )
             }
 
@@ -89,7 +89,7 @@ fun AlarmSettingsScreen(
                     subtitle = stringResource(R.string.pre_notification_desc),
                     checked = uiState.isPreNotificationEnabled,
                     onCheckedChange = onPreNotificationChange,
-                    icon = Icons.Default.NotificationImportant
+                    icon = Icons.Rounded.NotificationImportant
                 )
             }
         }

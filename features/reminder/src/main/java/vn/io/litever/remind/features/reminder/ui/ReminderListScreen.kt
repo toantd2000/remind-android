@@ -4,9 +4,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -110,7 +110,7 @@ fun ReminderListScreen(
             MainReMindTopAppBar(
                 actions = {
                     IconButton(onClick = { showMenu = !showMenu }) {
-                        Icon(Icons.Default.MoreVert, contentDescription = "More")
+                        Icon(Icons.Rounded.MoreVert, contentDescription = "More")
                     }
                     DropdownMenu(
                         expanded = showMenu,
@@ -129,7 +129,7 @@ fun ReminderListScreen(
         },
         floatingActionButton = {
             ReMindFloatingActionButton(onClick = onAddReminderClick) {
-                Icon(Icons.Default.Add, contentDescription = "Add Reminder")
+                Icon(Icons.Rounded.Add, contentDescription = "Add Reminder")
             }
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -184,7 +184,7 @@ fun EmptyState(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
-            imageVector = Icons.Default.Notifications,
+            imageVector = Icons.Rounded.Notifications,
             contentDescription = null,
             modifier = Modifier.size(80.dp),
             tint = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)

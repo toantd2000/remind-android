@@ -7,12 +7,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DarkMode
-import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.LightMode
-import androidx.compose.material.icons.filled.Palette
-import androidx.compose.material.icons.filled.SettingsBrightness
-import androidx.compose.material.icons.filled.Wallpaper
+import androidx.compose.material.icons.rounded.DarkMode
+import androidx.compose.material.icons.rounded.Language
+import androidx.compose.material.icons.rounded.LightMode
+import androidx.compose.material.icons.rounded.Palette
+import androidx.compose.material.icons.rounded.SettingsBrightness
+import androidx.compose.material.icons.rounded.Wallpaper
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -116,7 +116,7 @@ fun GeneralSettingsScreen(
                             "LIGHT" to stringResource(R.string.theme_light),
                             "DARK" to stringResource(R.string.theme_dark)
                         )
-                        val icons = listOf(Icons.Default.SettingsBrightness, Icons.Default.LightMode, Icons.Default.DarkMode)
+                        val icons = listOf(Icons.Rounded.SettingsBrightness, Icons.Rounded.LightMode, Icons.Rounded.DarkMode)
 
                         SingleChoiceSegmentedButtonRow(
                             modifier = Modifier
@@ -169,7 +169,7 @@ fun GeneralSettingsScreen(
                                     icon = {
                                         SegmentedButtonDefaults.Icon(active = uiState.colorPalette == pair.first) {
                                             Icon(
-                                                imageVector = if (pair.first == "DYNAMIC") Icons.Default.Wallpaper else Icons.Default.Palette,
+                                                imageVector = if (pair.first == "DYNAMIC") Icons.Rounded.Wallpaper else Icons.Rounded.Palette,
                                                 contentDescription = pair.second,
                                                 modifier = Modifier.size(SegmentedButtonDefaults.IconSize)
                                             )

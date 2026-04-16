@@ -2,7 +2,7 @@ package vn.io.litever.remind.features.reminder.ui.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ErrorOutline
+import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -31,7 +31,7 @@ fun PermissionWarningBanner(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = Icons.Default.ErrorOutline,
+                    imageVector = Icons.Rounded.ErrorOutline,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.error
                 )

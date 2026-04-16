@@ -22,8 +22,8 @@ import vn.io.litever.remind.features.reminder.ui.reminderEditRoute
 import vn.io.litever.remind.features.reminder.ui.ringtoneSelectionRoute
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Alarm
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.rounded.Alarm
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.NavigationBar
@@ -136,7 +136,7 @@ class MainActivity : ComponentActivity() {
                                 if (isBottomBarVisible) {
                                     NavigationBar {
                                         NavigationBarItem(
-                                            icon = { Icon(Icons.Filled.Alarm, contentDescription = "Reminder") },
+                                            icon = { Icon(Icons.Rounded.Alarm, contentDescription = "Reminder") },
                                             label = { Text(stringResource(R.string.navigation_reminders)) },
                                             selected = currentRoute == reminderListRoute,
                                             onClick = {
@@ -150,7 +150,7 @@ class MainActivity : ComponentActivity() {
                                             }
                                         )
                                         NavigationBarItem(
-                                            icon = { Icon(Icons.Filled.Settings, contentDescription = "Settings") },
+                                            icon = { Icon(Icons.Rounded.Settings, contentDescription = "Settings") },
                                             label = { Text(stringResource(R.string.navigation_settings)) },
                                             selected = currentRoute == settingsRoute,
                                             onClick = {

@@ -65,6 +65,26 @@ fun ReminderRingingScreen(
     onSnooze: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var remainingSnoozeSeconds by remember { mutableLongStateOf(0L) }
+
+    LaunchedEffect(reminder) {
+        if (reminder != null) {
+            val triggerTime = reminder.snoozeNextTriggerTime
+            if (triggerTime != null) {
+                while (true) {
+                    val now = System.currentTimeMillis()
+                    val diff = (triggerTime - now) / 1000
+                    if (diff >= 0) {
+                        remainingSnoozeSeconds = diff
+                    } else {
+                        remainingSnoozeSeconds = 0
+                    }
+                    kotlinx.coroutines.delay(1000L)
+                }
+            }
+        }
+    }
+
     val infiniteTransition = rememberInfiniteTransition(label = "pulse")
     val pulseScale by infiniteTransition.animateFloat(
         initialValue = 1f,
@@ -134,7 +154,36 @@ fun ReminderRingingScreen(
                     )
                 }
 
-                if (autoSilenceCountdown != null) {
+                if (reminder?.isMissed == true) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = stringResource(R.string.missed_alarm_title),
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f),
+                                shape = CircleShape
+                            )
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                } else if (reminder != null && reminder.snoozeNextTriggerTime != null) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    val minutes = remainingSnoozeSeconds / 60
+                    val seconds = remainingSnoozeSeconds % 60
+                    val formattedTime = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
+                    Text(
+                        text = stringResource(R.string.snooze_countdown, formattedTime),
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
+                                shape = CircleShape
+                            )
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                } else if (autoSilenceCountdown != null) {
                     Spacer(modifier = Modifier.height(16.dp))
                     val minutes = autoSilenceCountdown / 60
                     val seconds = autoSilenceCountdown % 60
@@ -189,7 +238,8 @@ fun ReminderRingingScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                if (reminder == null || (reminder.snoozeEnabled && reminder.currentSnoozeCount < reminder.snoozeRepeatCount)) {
+                val isNotMissedNorSnoozing = reminder?.isMissed != true && reminder?.snoozeNextTriggerTime == null
+                if (isNotMissedNorSnoozing && (reminder == null || (reminder.snoozeEnabled && reminder.currentSnoozeCount < reminder.snoozeRepeatCount))) {
                     val remainingSnoozes = if (reminder != null) reminder.snoozeRepeatCount - reminder.currentSnoozeCount else 0
                     val snoozeText = if (reminder != null && remainingSnoozes > 0) {
                         stringResource(R.string.snooze_limit_format, remainingSnoozes)

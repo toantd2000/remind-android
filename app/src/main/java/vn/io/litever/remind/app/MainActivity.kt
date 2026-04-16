@@ -53,13 +53,30 @@ import android.content.res.Configuration
 import androidx.compose.ui.res.stringResource
 import java.util.Locale
 
+import vn.io.litever.remind.core.domain.repository.ReminderRepository
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.SharingStarted
+import androidx.lifecycle.viewModelScope
+
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val preferencesDataSource: ReminderPreferencesDataSource
+    private val preferencesDataSource: ReminderPreferencesDataSource,
+    reminderRepository: ReminderRepository
 ) : ViewModel() {
     val themeMode = preferencesDataSource.themeMode
     val colorPalette = preferencesDataSource.colorPalette
     val language = preferencesDataSource.language
+
+    val activeBlockingReminderId = reminderRepository.getAllReminders()
+        .map { reminders -> 
+            reminders.firstOrNull { it.isMissed || it.snoozeNextTriggerTime != null }?.id 
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
+        )
 }
 
 @AndroidEntryPoint
@@ -118,10 +135,12 @@ class MainActivity : ComponentActivity() {
                             vn.io.litever.remind.core.reminder.di.ReminderRingManagerEntryPoint::class.java
                         ).reminderRingManager()
                         val ringingReminderId by reminderRingManager.ringingReminderId.collectAsState()
+                        val activeBlockingReminderId by viewModel.activeBlockingReminderId.collectAsState()
                         
-                        LaunchedEffect(ringingReminderId) {
-                            ringingReminderId?.let { id ->
-                                navController.navigate("reminder_ringing_route/$id") {
+                        LaunchedEffect(ringingReminderId, activeBlockingReminderId) {
+                            val idToRing = ringingReminderId ?: activeBlockingReminderId
+                            if (idToRing != null) {
+                                navController.navigate("reminder_ringing_route/$idToRing") {
                                     launchSingleTop = true
                                 }
                             }

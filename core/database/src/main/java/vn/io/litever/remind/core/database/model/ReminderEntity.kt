@@ -19,5 +19,7 @@ data class ReminderEntity(
     val snoozeInterval: Int,
     val snoozeRepeatCount: Int,
     val autoSilenceMinutes: Int,
-    val currentSnoozeCount: Int
+    val currentSnoozeCount: Int,
+    val snoozeNextTriggerTime: Long?,
+    val isMissed: Boolean
 )

@@ -19,7 +19,9 @@ fun ReminderEntity.toModel(): Reminder {
         snoozeInterval = snoozeInterval,
         snoozeRepeatCount = snoozeRepeatCount,
         autoSilenceMinutes = autoSilenceMinutes,
-        currentSnoozeCount = currentSnoozeCount
+        currentSnoozeCount = currentSnoozeCount,
+        snoozeNextTriggerTime = snoozeNextTriggerTime,
+        isMissed = isMissed
     )
 }
 
@@ -38,6 +40,8 @@ fun Reminder.toEntity(): ReminderEntity {
         snoozeInterval = snoozeInterval,
         snoozeRepeatCount = snoozeRepeatCount,
         autoSilenceMinutes = autoSilenceMinutes,
-        currentSnoozeCount = currentSnoozeCount
+        currentSnoozeCount = currentSnoozeCount,
+        snoozeNextTriggerTime = snoozeNextTriggerTime,
+        isMissed = isMissed
     )
 }

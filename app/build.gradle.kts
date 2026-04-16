@@ -48,6 +48,8 @@ dependencies {
     implementation(project(":features:reminder"))
     implementation(project(":features:settings"))
     implementation(project(":core:data"))
+    implementation(project(":core:domain"))
+    implementation(project(":core:model"))
     implementation(project(":core:reminder"))
     implementation(project(":core:designsystem"))
     implementation(project(":core:datastore"))

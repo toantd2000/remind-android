@@ -74,9 +74,9 @@ class ReminderService : Service() {
                 if (reminder != null) {
                     // Reset snooze count if it's a fresh (non-snooze) trigger
                     val updatedReminder = if (!isSnoozeTrigger) {
-                        reminder.copy(currentSnoozeCount = 0)
+                        reminder.copy(currentSnoozeCount = 0, snoozeNextTriggerTime = null, isMissed = false)
                     } else {
-                        reminder
+                        reminder.copy(snoozeNextTriggerTime = null, isMissed = false)
                     }
 
                     if (updatedReminder.repeatDays.isEmpty()) {
@@ -187,9 +187,14 @@ class ReminderService : Service() {
                     remainingSeconds--
                 }
                 reminderRingManager.setAutoSilenceCountdown(null)
-                // Auto-silence acts like a snooze (or dismiss if out of count)
+                // Auto-silence acts like a snooze (or missed if out of count)
                 launch(Dispatchers.Main) {
-                    reminderController.snoozeReminder()
+                    val currentReminder = reminderRepository.getReminderById(reminderId)
+                    if (currentReminder != null && currentReminder.snoozeEnabled && currentReminder.currentSnoozeCount < currentReminder.snoozeRepeatCount) {
+                        reminderController.snoozeReminder()
+                    } else {
+                        reminderController.markAsMissed()
+                    }
                 }
             }
         }

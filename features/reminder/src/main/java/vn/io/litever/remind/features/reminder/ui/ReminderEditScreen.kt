@@ -77,11 +77,13 @@ import vn.io.litever.remind.features.reminder.ui.state.NextReminderUiState
 import vn.io.litever.remind.features.reminder.viewmodel.ReminderEditUiState
 import vn.io.litever.remind.core.designsystem.components.*
 import vn.io.litever.remind.core.model.DayOfWeek
+import androidx.compose.material3.TimePicker
 import vn.io.litever.remind.features.reminder.R
 import vn.io.litever.remind.features.reminder.ui.components.NextReminderHeader
 import vn.io.litever.remind.features.reminder.ui.components.getRepeatSummaryText
 import vn.io.litever.remind.features.reminder.viewmodel.ReminderEditViewModel
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -232,6 +234,26 @@ fun ReminderEditScreen(
         )
     }
 
+    var showTimePicker by remember { mutableStateOf(false) }
+
+    if (showTimePicker) {
+        ReMindTimePickerDialog(
+            onDismissRequest = { showTimePicker = false },
+            confirmButton = {
+                TextButton(onClick = { showTimePicker = false }) {
+                    Text(stringResource(R.string.save))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showTimePicker = false }) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            }
+        ) {
+            TimePicker(state = timePickerState)
+        }
+    }
+
     // Sync state time when picker changes
     LaunchedEffect(timePickerState.hour, timePickerState.minute) {
         onTimeChange(LocalTime.of(timePickerState.hour, timePickerState.minute))
@@ -317,7 +339,9 @@ fun ReminderEditScreen(
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .clip(MaterialTheme.shapes.extraLarge)
+                            .clickable { showTimePicker = true },
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(
                                 alpha = 0.3f
@@ -328,10 +352,19 @@ fun ReminderEditScreen(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 16.dp),
+                                .padding(vertical = 24.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            TimeInput(state = timePickerState)
+                            val formatter = remember(is24HourFormat) {
+                                DateTimeFormatter.ofPattern(if (is24HourFormat) "HH:mm" else "hh:mm a")
+                            }
+                            Text(
+                                text = uiState.time.format(formatter),
+                                style = MaterialTheme.typography.displayLarge.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            )
                         }
                     }
                 }

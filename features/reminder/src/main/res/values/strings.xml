@@ -61,6 +61,7 @@
     <string name="one_time">1 time</string>
     <string name="snooze_summary">%1$s, %2$s</string>
     <string name="auto_silence_title">Auto-silence duration</string>
+    <string name="auto_silence_countdown">Auto-silence in %s</string>
     <string name="alarm_settings">Alarm Settings</string>
     <string name="off">Off</string>
     <string name="action_cancel">Cancel</string>

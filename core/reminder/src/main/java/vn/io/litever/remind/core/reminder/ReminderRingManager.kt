@@ -11,7 +11,14 @@ class ReminderRingManager @Inject constructor() {
     private val _ringingReminderId = MutableStateFlow<Long?>(null)
     val ringingReminderId: StateFlow<Long?> = _ringingReminderId.asStateFlow()
 
+    private val _autoSilenceCountdown = MutableStateFlow<Int?>(null)
+    val autoSilenceCountdown: StateFlow<Int?> = _autoSilenceCountdown.asStateFlow()
+
     fun setRinging(reminderId: Long?) {
         _ringingReminderId.value = reminderId
+    }
+
+    fun setAutoSilenceCountdown(seconds: Int?) {
+        _autoSilenceCountdown.value = seconds
     }
 }

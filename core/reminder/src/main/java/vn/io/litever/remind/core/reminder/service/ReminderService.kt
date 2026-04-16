@@ -180,8 +180,14 @@ class ReminderService : Service() {
         autoSilenceJob = scope.launch {
             val reminder = reminderRepository.getReminderById(reminderId) ?: return@launch
             if (reminder.autoSilenceMinutes > 0) {
-                delay(reminder.autoSilenceMinutes * 60 * 1000L)
-                // Auto-silence acts like a snooze
+                var remainingSeconds = reminder.autoSilenceMinutes * 60
+                while (remainingSeconds > 0) {
+                    reminderRingManager.setAutoSilenceCountdown(remainingSeconds)
+                    delay(1000L)
+                    remainingSeconds--
+                }
+                reminderRingManager.setAutoSilenceCountdown(null)
+                // Auto-silence acts like a snooze (or dismiss if out of count)
                 launch(Dispatchers.Main) {
                     reminderController.snoozeReminder()
                 }
@@ -191,6 +197,7 @@ class ReminderService : Service() {
 
     override fun onDestroy() {
         autoSilenceJob?.cancel()
+        reminderRingManager.setAutoSilenceCountdown(null)
         mediaPlayer?.stop()
         mediaPlayer?.release()
         vibrator?.cancel()

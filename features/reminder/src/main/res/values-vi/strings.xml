@@ -61,6 +61,7 @@
     <string name="one_time">1 lần</string>
     <string name="snooze_summary">%1$s, %2$s</string>
     <string name="auto_silence_title">Tự động tắt tiếng</string>
+    <string name="auto_silence_countdown">Tự động tắt sau %s</string>
     <string name="alarm_settings">Cài đặt báo thức</string>
     <string name="off">Tắt</string>
     <string name="action_cancel">Hủy</string>

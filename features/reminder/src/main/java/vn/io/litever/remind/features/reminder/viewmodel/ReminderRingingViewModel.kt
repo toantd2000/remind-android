@@ -14,13 +14,15 @@ import kotlinx.coroutines.flow.stateIn
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.datastore.ReminderPreferencesDataSource
+import vn.io.litever.remind.core.reminder.ReminderRingManager
 
 @HiltViewModel
 class ReminderRingingViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val reminderRepository: ReminderRepository,
     private val reminderController: ReminderController,
-    private val preferencesDataSource: ReminderPreferencesDataSource
+    private val preferencesDataSource: ReminderPreferencesDataSource,
+    private val reminderRingManager: ReminderRingManager
 ) : ViewModel() {
 
     private val reminderId: Long = checkNotNull(savedStateHandle["reminderId"])
@@ -38,6 +40,13 @@ class ReminderRingingViewModel @Inject constructor(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = true
+        )
+
+    val autoSilenceCountdown: StateFlow<Int?> = reminderRingManager.autoSilenceCountdown
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
         )
 
     fun dismissReminder() {

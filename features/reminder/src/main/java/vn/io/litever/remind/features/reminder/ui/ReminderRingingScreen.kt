@@ -38,10 +38,12 @@ fun ReminderRingingRoute(
 ) {
     val is24HourFormat by viewModel.is24HourFormat.collectAsState()
     val reminder by viewModel.reminder.collectAsState()
+    val autoSilenceCountdown by viewModel.autoSilenceCountdown.collectAsState()
 
     ReminderRingingScreen(
         reminder = reminder,
         is24HourFormat = is24HourFormat,
+        autoSilenceCountdown = autoSilenceCountdown,
         onDismiss = {
             viewModel.dismissReminder()
             onFinish()
@@ -58,6 +60,7 @@ fun ReminderRingingRoute(
 fun ReminderRingingScreen(
     reminder: Reminder?,
     is24HourFormat: Boolean,
+    autoSilenceCountdown: Int? = null,
     onDismiss: () -> Unit,
     onSnooze: () -> Unit,
     modifier: Modifier = Modifier
@@ -128,6 +131,24 @@ fun ReminderRingingScreen(
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(horizontal = 16.dp),
                         textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    )
+                }
+
+                if (autoSilenceCountdown != null) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    val minutes = autoSilenceCountdown / 60
+                    val seconds = autoSilenceCountdown % 60
+                    val formattedTime = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
+                    Text(
+                        text = stringResource(R.string.auto_silence_countdown, formattedTime),
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f),
+                                shape = CircleShape
+                            )
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
                     )
                 }
             }

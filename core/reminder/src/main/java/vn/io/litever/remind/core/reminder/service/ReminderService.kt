@@ -21,6 +21,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.cancel
 import vn.io.litever.remind.core.reminder.ReminderRingManager
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler.Companion.EXTRA_REMINDER_ID
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler.Companion.EXTRA_IS_SNOOZE
@@ -52,6 +53,7 @@ class ReminderService : Service() {
     private var vibrator: Vibrator? = null
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var autoSilenceJob: Job? = null
+    private var ringingJob: Job? = null
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -122,9 +124,8 @@ class ReminderService : Service() {
     }
 
     private fun startRinging(reminderId: Long) {
-        if (mediaPlayer?.isPlaying == true) return
-        
-        scope.launch {
+        ringingJob?.cancel()
+        ringingJob = scope.launch {
             val reminder = reminderRepository.getReminderById(reminderId) ?: return@launch
             
             val audioManager = getSystemService(Context.AUDIO_SERVICE) as android.media.AudioManager
@@ -196,6 +197,7 @@ class ReminderService : Service() {
     }
 
     private fun stopCurrentRinging() {
+        ringingJob?.cancel()
         autoSilenceJob?.cancel()
         reminderRingManager.setAutoSilenceCountdown(null)
         mediaPlayer?.stop()
@@ -238,6 +240,7 @@ class ReminderService : Service() {
 
     override fun onDestroy() {
         stopCurrentRinging()
+        scope.cancel()
         super.onDestroy()
     }
 

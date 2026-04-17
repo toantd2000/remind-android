@@ -58,13 +58,26 @@ class ReminderService : Service() {
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
+
+        scope.launch {
+            reminderRingManager.ringingReminderId.collect { id ->
+                if (id == null) {
+                    stopSelf()
+                } else {
+                    stopCurrentRinging()
+                    startRinging(id)
+                    setupAutoSilence(id)
+                    updateNotification(id)
+                }
+            }
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val reminderId = intent?.getLongExtra(EXTRA_REMINDER_ID, -1L) ?: -1L
         if (reminderId == -1L) return START_NOT_STICKY
         
-        reminderRingManager.setRinging(reminderId)
+        reminderRingManager.enqueueReminder(reminderId)
         
         val isSnoozeTrigger = intent?.getBooleanExtra(EXTRA_IS_SNOOZE, false) ?: false
         
@@ -91,36 +104,7 @@ class ReminderService : Service() {
             }
         }
 
-        startRinging(reminderId)
-        setupAutoSilence(reminderId)
-        
-        val deepLinkIntent = reminderIntentProvider.createRingingIntent(reminderId).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        }
-
-        val pendingIntent = PendingIntent.getActivity(
-            this,
-            reminderId.hashCode(),
-            deepLinkIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
-            .setContentTitle("Nhắc nhở!")
-            .setContentText("Nhấn vào đây để xem và tắt")
-            .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setCategory(NotificationCompat.CATEGORY_ALARM)
-            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .setContentIntent(pendingIntent) 
-            .setFullScreenIntent(pendingIntent, true)
-            .setOngoing(true)
-            .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
-            .build()
-            
-        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        manager.notify(1, notification)
-        
+        val notification = createNotification(reminderId)
         startForeground(1, notification)
 
         return START_STICKY
@@ -200,13 +184,49 @@ class ReminderService : Service() {
         }
     }
 
-    override fun onDestroy() {
+    private fun stopCurrentRinging() {
         autoSilenceJob?.cancel()
         reminderRingManager.setAutoSilenceCountdown(null)
         mediaPlayer?.stop()
         mediaPlayer?.release()
+        mediaPlayer = null
         vibrator?.cancel()
-        reminderRingManager.setRinging(null)
+    }
+
+    private fun updateNotification(reminderId: Long) {
+        val notification = createNotification(reminderId)
+        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        manager.notify(1, notification)
+    }
+
+    private fun createNotification(reminderId: Long): android.app.Notification {
+        val deepLinkIntent = reminderIntentProvider.createRingingIntent(reminderId).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        }
+
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            reminderId.hashCode(),
+            deepLinkIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        return NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
+            .setContentTitle("Nhắc nhở!")
+            .setContentText("Nhấn vào đây để xem và tắt")
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setContentIntent(pendingIntent) 
+            .setFullScreenIntent(pendingIntent, true)
+            .setOngoing(true)
+            .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
+            .build()
+    }
+
+    override fun onDestroy() {
+        stopCurrentRinging()
         super.onDestroy()
     }
 

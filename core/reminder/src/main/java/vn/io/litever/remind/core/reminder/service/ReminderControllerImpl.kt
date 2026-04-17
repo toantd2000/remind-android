@@ -58,8 +58,7 @@ class ReminderControllerImpl @Inject constructor(
                 }
             }
         }
-        val intent = Intent(context, ReminderService::class.java)
-        context.stopService(intent)
+        currentReminderId?.let { reminderRingManager.dequeueReminder(it) }
         // Also cancel missed notification if it exists (we use ID = reminderId)
         currentReminderId?.let { notificationManager.cancel(it.toInt()) }
     }
@@ -108,9 +107,7 @@ class ReminderControllerImpl @Inject constructor(
                 }
             }
         }
-        
-        val intent = Intent(context, ReminderService::class.java)
-        context.stopService(intent)
+        currentReminderId?.let { reminderRingManager.dequeueReminder(it) }
     }
 
     override fun markAsMissed(reminderId: Long?) {
@@ -137,7 +134,6 @@ class ReminderControllerImpl @Inject constructor(
                 }
             }
         }
-        val intent = Intent(context, ReminderService::class.java)
-        context.stopService(intent)
+        currentReminderId?.let { reminderRingManager.dequeueReminder(it) }
     }
 }

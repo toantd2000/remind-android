@@ -10,8 +10,14 @@ import java.time.LocalTime as JavaLocalTime
 @Composable
 fun getRepeatSummaryText(
     repeatDays: List<DayOfWeek>,
-    time: JavaLocalTime
+    time: JavaLocalTime,
+    date: java.time.LocalDate? = null
 ): String {
+    if (date != null) {
+        val formatter = java.time.format.DateTimeFormatter.ofLocalizedDate(java.time.format.FormatStyle.MEDIUM)
+        return stringResource(R.string.one_time_on, date.format(formatter))
+    }
+    
     if (repeatDays.isEmpty()) {
         val now = JavaLocalTime.now()
         return if (time.isAfter(now)) {

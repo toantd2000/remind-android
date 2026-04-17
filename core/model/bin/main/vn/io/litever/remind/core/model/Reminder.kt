@@ -9,6 +9,7 @@ data class Reminder(
     val label: String = "",
     val isEnabled: Boolean = true,
     val repeatDays: List<DayOfWeek> = emptyList(),
+    val date: java.time.LocalDate? = null,
     val vibrationEnabled: Boolean = true,
     val ringtoneUri: String? = null,
     val volume: Int = 100,
@@ -18,9 +19,13 @@ data class Reminder(
     val autoSilenceMinutes: Int = 3,
     val currentSnoozeCount: Int = 0,
     val snoozeNextTriggerTime: Long? = null,
-    val isMissed: Boolean = false
+    val isMissed: Boolean = false,
+    val message: String = ""
 ) {
     fun getNextOccurrence(now: LocalDateTime = LocalDateTime.now()): LocalDateTime {
+        if (date != null) {
+            return date.atTime(time).withSecond(0).withNano(0)
+        }
         if (repeatDays.isEmpty()) {
             val todayOccurrence = now.with(time).withSecond(0).withNano(0)
             return if (todayOccurrence.isAfter(now)) {

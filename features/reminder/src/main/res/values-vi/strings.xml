@@ -25,11 +25,16 @@
     <string name="add_reminder_title">Thêm nhắc nhở</string>
     <string name="edit_reminder_title">Sửa nhắc nhở</string>
     <string name="select_time">Chọn giờ</string>
+    <string name="select_date">Chọn ngày</string>
+    <string name="one_time_on">Một lần vào %s</string>
     <string name="schedule_and_name">Lịch trình &amp; Tên</string>
     <string name="alert_settings">Cài đặt cảnh báo</string>
     <string name="vibration">Rung</string>
     <string name="sound">Âm thanh</string>
     <string name="reminder_label_placeholder">Tên nhắc nhở (Tùy chọn)</string>
+    <string name="reminder_label_title">Nhãn</string>
+    <string name="reminder_message_placeholder">Tin nhắn (Thông tin thêm)</string>
+    <string name="reminder_message_title">Tin nhắn</string>
     <string name="save">Lưu</string>
     <string name="dismiss">Tắt ngay</string>
     <string name="snooze">Tạm dừng (Báo lại)</string>

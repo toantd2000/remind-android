@@ -141,7 +141,15 @@ class MainActivity : ComponentActivity() {
                             val idToRing = ringingReminderId ?: activeBlockingReminderId
                             if (idToRing != null) {
                                 navController.navigate("reminder_ringing_route/$idToRing") {
+                                    popUpTo("reminder_ringing_route/{reminderId}") {
+                                        inclusive = true
+                                    }
                                     launchSingleTop = true
+                                }
+                            } else {
+                                val currentRoute = navController.currentBackStackEntry?.destination?.route
+                                if (currentRoute?.startsWith("reminder_ringing_route") == true) {
+                                    navController.popBackStack()
                                 }
                             }
                         }

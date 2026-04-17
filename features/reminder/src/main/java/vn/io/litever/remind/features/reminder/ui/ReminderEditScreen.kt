@@ -21,9 +21,11 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.material3.TimeInput
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -49,21 +51,23 @@ import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Snooze
 import androidx.compose.material.icons.rounded.AlarmOff
 import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimeInput
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalContext
@@ -83,8 +87,12 @@ import vn.io.litever.remind.features.reminder.R
 import vn.io.litever.remind.features.reminder.ui.components.NextReminderHeader
 import vn.io.litever.remind.features.reminder.ui.components.getRepeatSummaryText
 import vn.io.litever.remind.features.reminder.viewmodel.ReminderEditViewModel
+import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import androidx.compose.material.icons.rounded.CalendarMonth
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -189,6 +197,7 @@ fun ReminderEditRoute(
         onDismissPermissionDialog = viewModel::dismissPermissionDialog,
         onTimeChange = viewModel::updateTime,
         onLabelChange = viewModel::updateLabel,
+        onMessageChange = viewModel::updateMessage,
         onRepeatDayToggle = viewModel::toggleRepeatDay,
         onVibrationToggle = viewModel::updateVibration,
         onRingtoneClick = { onRingtoneSelectionClick(uiState.ringtoneUri) },
@@ -202,7 +211,8 @@ fun ReminderEditRoute(
         onAutoSilenceChange = viewModel::updateAutoSilence,
         onNavigateToPermissions = onNavigateToPermissions,
         onVolumeChange = viewModel::updateVolume,
-        onTogglePreview = viewModel::toggleRingtonePlayback
+        onTogglePreview = viewModel::toggleRingtonePlayback,
+        onDateChange = viewModel::updateDate
     )
 }
 
@@ -218,6 +228,7 @@ fun ReminderEditScreen(
     onDismissPermissionDialog: () -> Unit,
     onTimeChange: (LocalTime) -> Unit,
     onLabelChange: (String) -> Unit,
+    onMessageChange: (String) -> Unit,
     onRepeatDayToggle: (DayOfWeek) -> Unit,
     onVibrationToggle: (Boolean) -> Unit,
     onRingtoneClick: () -> Unit,
@@ -225,7 +236,8 @@ fun ReminderEditScreen(
     onAutoSilenceChange: (Int) -> Unit,
     onNavigateToPermissions: () -> Unit,
     onVolumeChange: (Int) -> Unit,
-    onTogglePreview: () -> Unit
+    onTogglePreview: () -> Unit,
+    onDateChange: (LocalDate?) -> Unit
 ) {
     val timePickerState = androidx.compose.runtime.key(uiState.id, is24HourFormat) {
         rememberTimePickerState(
@@ -252,6 +264,45 @@ fun ReminderEditScreen(
             }
         ) {
             TimePicker(state = timePickerState)
+        }
+    }
+
+    var showDatePicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = uiState.date?.atStartOfDay(ZoneId.systemDefault())?.toInstant()?.toEpochMilli(),
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                val date = Instant.ofEpochMilli(utcTimeMillis)
+                    .atZone(ZoneId.of("UTC"))
+                    .toLocalDate()
+                return !date.isBefore(LocalDate.now())
+            }
+        }
+    )
+
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        val date = Instant.ofEpochMilli(millis)
+                            .atZone(ZoneId.of("UTC"))
+                            .toLocalDate()
+                        onDateChange(date)
+                    }
+                    showDatePicker = false
+                }) {
+                    Text(stringResource(R.string.save))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
         }
     }
 
@@ -426,14 +477,16 @@ fun ReminderEditScreen(
                         RepeatDaySelector(
                             selectedDays = uiState.repeatDays,
                             time = uiState.time,
+                            date = uiState.date,
                             onDayToggle = onRepeatDayToggle,
+                            onShowDatePicker = { showDatePicker = true },
                             modifier = Modifier.padding(16.dp)
                         )
                     }
                 }
 
                 item {
-                    // Group 3: Label (Separated)
+                    // Group 3: Content (Label & Message)
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -445,17 +498,37 @@ fun ReminderEditScreen(
                         ),
                         shape = MaterialTheme.shapes.extraLarge
                     ) {
-                        OutlinedTextField(
-                            value = uiState.label,
-                            onValueChange = onLabelChange,
-                            placeholder = { Text(stringResource(R.string.reminder_label_placeholder)) },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            singleLine = true,
-                            shape = MaterialTheme.shapes.large,
-                            colors = OutlinedTextFieldDefaults.colors()
-                        )
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = stringResource(R.string.reminder_content_group_title),
+                                style = MaterialTheme.typography.titleSmall,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(bottom = 12.dp)
+                            )
+                            
+                            ReMindTextField(
+                                value = uiState.label,
+                                onValueChange = onLabelChange,
+                                label = stringResource(R.string.reminder_label_title),
+                                placeholder = stringResource(R.string.reminder_label_placeholder),
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true,
+                                onClearClick = { onLabelChange("") }
+                            )
+                            
+                            Spacer(modifier = Modifier.height(12.dp))
+                            
+                            ReMindTextField(
+                                value = uiState.message,
+                                onValueChange = onMessageChange,
+                                label = stringResource(R.string.reminder_message_title),
+                                placeholder = stringResource(R.string.reminder_message_placeholder),
+                                modifier = Modifier.fillMaxWidth(),
+                                minLines = 2,
+                                maxLines = 4,
+                                onClearClick = { onMessageChange("") }
+                            )
+                        }
                     }
                 }
 
@@ -596,11 +669,6 @@ fun ReminderEditScreen(
                                     )
                                 }
                             }
-
-                            HorizontalDivider(
-                                modifier = Modifier.padding(vertical = 12.dp),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f)
-                            )
                         }
                     }
                 }
@@ -717,23 +785,37 @@ fun ReminderEditScreen(
 fun RepeatDaySelector(
     selectedDays: List<DayOfWeek>,
     time: java.time.LocalTime,
+    date: java.time.LocalDate?,
     onDayToggle: (DayOfWeek) -> Unit,
+    onShowDatePicker: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val allDays = DayOfWeek.entries
-    val label = when {
-        selectedDays.isEmpty() -> getRepeatSummaryText(selectedDays, time)
-        selectedDays.size == 7 -> stringResource(R.string.every_day)
-        else -> stringResource(R.string.repeat)
-    }
+    val label = getRepeatSummaryText(selectedDays, time, date)
 
     Column(modifier = modifier) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(bottom = 12.dp)
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.weight(1f)
+            )
+            
+            IconButton(onClick = onShowDatePicker) {
+                Icon(
+                    imageVector = Icons.Rounded.CalendarMonth,
+                    contentDescription = stringResource(R.string.select_date),
+                    tint = if (date != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -857,6 +939,7 @@ fun ReminderEditScreenPreview() {
             onDismissPermissionDialog = {},
             onTimeChange = {},
             onLabelChange = {},
+            onMessageChange = {},
             onRepeatDayToggle = {},
             onVibrationToggle = {},
             onRingtoneClick = {},
@@ -864,7 +947,8 @@ fun ReminderEditScreenPreview() {
             onAutoSilenceChange = {},
             onNavigateToPermissions = {},
             onVolumeChange = {},
-            onTogglePreview = {}
+            onTogglePreview = {},
+            onDateChange = {}
         )
     }
 }
@@ -892,6 +976,7 @@ fun ReminderEditScreenDarkPreview() {
             onDismissPermissionDialog = {},
             onTimeChange = {},
             onLabelChange = {},
+            onMessageChange = {},
             onRepeatDayToggle = {},
             onVibrationToggle = {},
             onRingtoneClick = {},
@@ -899,7 +984,8 @@ fun ReminderEditScreenDarkPreview() {
             onAutoSilenceChange = {},
             onNavigateToPermissions = {},
             onVolumeChange = {},
-            onTogglePreview = {}
+            onTogglePreview = {},
+            onDateChange = {}
         )
     }
 }

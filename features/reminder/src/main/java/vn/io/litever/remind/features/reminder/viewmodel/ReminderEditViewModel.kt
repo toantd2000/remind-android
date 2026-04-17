@@ -26,7 +26,9 @@ data class ReminderEditUiState(
     val id: Long = 0,
     val time: LocalTime = LocalTime.now().plusMinutes(1),
     val label: String = "",
+    val message: String = "",
     val repeatDays: List<DayOfWeek> = emptyList(),
+    val date: java.time.LocalDate? = null,
     val vibrationEnabled: Boolean = true,
     val ringtoneUri: String? = null,
     val ringtoneTitle: String = "Default",
@@ -85,8 +87,10 @@ class ReminderEditViewModel @Inject constructor(
                         id = state.id,
                         time = state.time,
                         label = state.label,
+                        message = state.message,
                         isEnabled = true,
-                        repeatDays = state.repeatDays
+                        repeatDays = state.repeatDays,
+                        date = state.date
                     )
                 )
             )
@@ -105,7 +109,9 @@ class ReminderEditViewModel @Inject constructor(
                     id = reminder.id,
                     time = reminder.time,
                     label = reminder.label,
+                    message = reminder.message,
                     repeatDays = reminder.repeatDays,
+                    date = reminder.date,
                     vibrationEnabled = reminder.vibrationEnabled,
                     ringtoneUri = reminder.ringtoneUri,
                     ringtoneTitle = getRingtoneTitle(reminder.ringtoneUri),
@@ -129,6 +135,10 @@ class ReminderEditViewModel @Inject constructor(
         _uiState.update { it.copy(label = label) }
     }
 
+    fun updateMessage(message: String) {
+        _uiState.update { it.copy(message = message) }
+    }
+
     fun toggleRepeatDay(day: DayOfWeek) {
         _uiState.update { state ->
             val updatedDays = if (state.repeatDays.contains(day)) {
@@ -136,8 +146,12 @@ class ReminderEditViewModel @Inject constructor(
             } else {
                 state.repeatDays + day
             }
-            state.copy(repeatDays = updatedDays)
+            state.copy(repeatDays = updatedDays, date = null)
         }
+    }
+
+    fun updateDate(date: java.time.LocalDate?) {
+        _uiState.update { it.copy(date = date, repeatDays = emptyList()) }
     }
 
     fun updateVibration(enabled: Boolean) {
@@ -263,10 +277,12 @@ class ReminderEditViewModel @Inject constructor(
     }
 
     fun saveReminder(onSuccess: () -> Unit) {
+        // Automatically enable the alarm whenever the user saves it
+        _uiState.update { it.copy(isEnabled = true) }
         val state = _uiState.value
         
         // Prevent saving enabled alarm if permissions are missing
-        if (state.isEnabled && !permissionChecker.hasCriticalPermissions()) {
+        if (!permissionChecker.hasCriticalPermissions()) {
             _uiState.update { it.copy(showPermissionDialog = true) }
             return
         }
@@ -290,8 +306,10 @@ class ReminderEditViewModel @Inject constructor(
                 id = state.id,
                 time = state.time,
                 label = state.label,
+                message = state.message,
                 isEnabled = state.isEnabled,
                 repeatDays = state.repeatDays,
+                date = state.date,
                 vibrationEnabled = state.vibrationEnabled,
                 ringtoneUri = state.ringtoneUri,
                 volume = state.volume,

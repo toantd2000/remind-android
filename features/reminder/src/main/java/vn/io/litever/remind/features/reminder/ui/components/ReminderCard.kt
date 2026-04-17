@@ -92,5 +92,5 @@ fun ReminderCard(
 
 @Composable
 private fun getRepeatText(reminder: Reminder): String {
-    return getRepeatSummaryText(reminder.repeatDays, reminder.time)
+    return getRepeatSummaryText(reminder.repeatDays, reminder.time, reminder.date)
 }

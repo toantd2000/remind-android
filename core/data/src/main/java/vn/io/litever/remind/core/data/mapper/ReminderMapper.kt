@@ -12,6 +12,7 @@ fun ReminderEntity.toModel(): Reminder {
         label = label,
         isEnabled = isEnabled,
         repeatDays = repeatDays.split(",").filter { it.isNotEmpty() }.map { DayOfWeek.valueOf(it) },
+        date = date?.let { java.time.LocalDate.parse(it) },
         vibrationEnabled = vibrationEnabled,
         ringtoneUri = ringtoneUri,
         volume = volume,
@@ -21,7 +22,8 @@ fun ReminderEntity.toModel(): Reminder {
         autoSilenceMinutes = autoSilenceMinutes,
         currentSnoozeCount = currentSnoozeCount,
         snoozeNextTriggerTime = snoozeNextTriggerTime,
-        isMissed = isMissed
+        isMissed = isMissed,
+        message = message
     )
 }
 
@@ -33,6 +35,7 @@ fun Reminder.toEntity(): ReminderEntity {
         label = label,
         isEnabled = isEnabled,
         repeatDays = repeatDays.joinToString(",") { it.name },
+        date = date?.toString(),
         vibrationEnabled = vibrationEnabled,
         ringtoneUri = ringtoneUri,
         volume = volume,
@@ -42,6 +45,7 @@ fun Reminder.toEntity(): ReminderEntity {
         autoSilenceMinutes = autoSilenceMinutes,
         currentSnoozeCount = currentSnoozeCount,
         snoozeNextTriggerTime = snoozeNextTriggerTime,
-        isMissed = isMissed
+        isMissed = isMissed,
+        message = message
     )
 }

@@ -48,11 +48,9 @@ fun ReminderRingingRoute(
         autoSilenceCountdown = autoSilenceCountdown,
         onDismiss = {
             viewModel.dismissReminder()
-            onFinish()
         },
         onSnooze = {
             viewModel.snoozeReminder()
-            onFinish()
         },
         modifier = modifier
     )
@@ -156,6 +154,17 @@ fun ReminderRingingScreen(
                         style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(horizontal = 16.dp),
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    )
+                }
+
+                if (!reminder?.message.isNullOrBlank()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = reminder.message,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                        modifier = Modifier.padding(horizontal = 32.dp),
                         textAlign = androidx.compose.ui.text.style.TextAlign.Center
                     )
                 }

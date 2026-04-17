@@ -55,6 +55,8 @@ class ReminderService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? = null
 
+    private var hasStartedRinging = false
+
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
@@ -62,8 +64,12 @@ class ReminderService : Service() {
         scope.launch {
             reminderRingManager.ringingReminderId.collect { id ->
                 if (id == null) {
-                    stopSelf()
+                    if (hasStartedRinging) {
+                        stopForeground(STOP_FOREGROUND_REMOVE)
+                        stopSelf()
+                    }
                 } else {
+                    hasStartedRinging = true
                     stopCurrentRinging()
                     startRinging(id)
                     setupAutoSilence(id)
@@ -75,7 +81,15 @@ class ReminderService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val reminderId = intent?.getLongExtra(EXTRA_REMINDER_ID, -1L) ?: -1L
-        if (reminderId == -1L) return START_NOT_STICKY
+        
+        // Always start foreground immediately to prevent crash, even if ID is missing
+        val notification = createNotification(if (reminderId != -1L) reminderId else 0L)
+        startForeground(1, notification)
+        
+        if (reminderId == -1L) {
+            stopSelf()
+            return START_NOT_STICKY
+        }
         
         reminderRingManager.enqueueReminder(reminderId)
         
@@ -103,9 +117,6 @@ class ReminderService : Service() {
                 e.printStackTrace()
             }
         }
-
-        val notification = createNotification(reminderId)
-        startForeground(1, notification)
 
         return START_STICKY
     }

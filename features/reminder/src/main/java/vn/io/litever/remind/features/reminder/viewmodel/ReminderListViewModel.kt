@@ -79,7 +79,10 @@ class ReminderListViewModel @Inject constructor(
                 return@launch
             }
 
-            val updatedReminder = reminder.copy(isEnabled = isEnabling)
+            val updatedReminder = reminder.copy(
+                isEnabled = isEnabling,
+                skippedAt = null // Clear skip status when toggling
+            )
             repository.updateReminder(updatedReminder)
             if (updatedReminder.isEnabled) {
                 reminderScheduler.schedule(updatedReminder)
@@ -89,22 +92,101 @@ class ReminderListViewModel @Inject constructor(
         }
     }
 
+    private val _undoEvent = MutableSharedFlow<UndoType>()
+    val undoEvent = _undoEvent.asSharedFlow()
+
+    private var lastDeletedReminder: Reminder? = null
+    private var lastDeletedReminders: List<Reminder>? = null
+
     fun deleteReminder(reminder: Reminder) {
         viewModelScope.launch {
+            lastDeletedReminder = reminder
+            lastDeletedReminders = null
             repository.deleteReminder(reminder)
             reminderScheduler.cancel(reminder)
+            _undoEvent.emit(UndoType.SINGLE)
         }
     }
 
     fun deleteDisabledReminders() {
         viewModelScope.launch {
             val disabledReminders = reminders.value.filter { !it.isEnabled }
+            if (disabledReminders.isEmpty()) return@launch
+            
+            lastDeletedReminders = disabledReminders
+            lastDeletedReminder = null
             disabledReminders.forEach { reminder ->
                 repository.deleteReminder(reminder)
                 reminderScheduler.cancel(reminder)
             }
+            _undoEvent.emit(UndoType.MULTIPLE)
         }
     }
+
+    fun undoDelete() {
+        viewModelScope.launch {
+            lastDeletedReminder?.let {
+                repository.insertReminder(it)
+                if (it.isEnabled) reminderScheduler.schedule(it)
+                lastDeletedReminder = null
+            }
+            lastDeletedReminders?.let { list ->
+                list.forEach { 
+                    repository.insertReminder(it)
+                    if (it.isEnabled) reminderScheduler.schedule(it)
+                }
+                lastDeletedReminders = null
+            }
+        }
+    }
+
+    enum class UndoType { SINGLE, MULTIPLE }
+
+    fun duplicateReminder(reminder: Reminder) {
+        viewModelScope.launch {
+            // Create a copy with id = 0 to insert as a new record
+            val duplicated = reminder.copy(
+                id = 0,
+                isEnabled = reminder.isEnabled,
+                skippedAt = null,
+                isMissed = false,
+                currentSnoozeCount = 0,
+                snoozeNextTriggerTime = null
+            )
+            val newId = repository.insertReminder(duplicated)
+            if (duplicated.isEnabled) {
+                val reminderWithId = duplicated.copy(id = newId)
+                reminderScheduler.schedule(reminderWithId)
+            }
+        }
+    }
+
+    fun skipNextOccurrence(reminder: Reminder) {
+        viewModelScope.launch {
+            if (reminder.skippedAt != null) return@launch // Already skipped
+            
+            // Find the actual nearest next occurrence and mark it as skipped
+            val nextTime = reminder.getActualNextOccurrence() 
+            val updated = reminder.copy(skippedAt = nextTime)
+            repository.updateReminder(updated)
+            
+            if (updated.isEnabled) {
+                reminderScheduler.schedule(updated)
+            }
+        }
+    }
+
+    fun cancelSkipOccurrence(reminder: Reminder) {
+        viewModelScope.launch {
+            val updated = reminder.copy(skippedAt = null)
+            repository.updateReminder(updated)
+            
+            if (updated.isEnabled) {
+                reminderScheduler.schedule(updated)
+            }
+        }
+    }
+
 
     private fun calculateNextReminder(enabledReminders: List<Reminder>): NextReminderUiState {
         return vn.io.litever.remind.features.reminder.ui.state.calculateNextReminder(enabledReminders)

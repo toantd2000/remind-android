@@ -4,6 +4,9 @@ import vn.io.litever.remind.core.database.model.ReminderEntity
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.DayOfWeek
 import java.time.LocalTime
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.Instant
 
 fun ReminderEntity.toModel(): Reminder {
     return Reminder(
@@ -23,7 +26,8 @@ fun ReminderEntity.toModel(): Reminder {
         currentSnoozeCount = currentSnoozeCount,
         snoozeNextTriggerTime = snoozeNextTriggerTime,
         isMissed = isMissed,
-        message = message
+        message = message,
+        skippedAt = skippedAt?.let { LocalDateTime.ofInstant(Instant.ofEpochMilli(it), ZoneId.systemDefault()) }
     )
 }
 
@@ -46,6 +50,7 @@ fun Reminder.toEntity(): ReminderEntity {
         currentSnoozeCount = currentSnoozeCount,
         snoozeNextTriggerTime = snoozeNextTriggerTime,
         isMissed = isMissed,
-        message = message
+        message = message,
+        skippedAt = skippedAt?.atZone(ZoneId.systemDefault())?.toInstant()?.toEpochMilli()
     )
 }

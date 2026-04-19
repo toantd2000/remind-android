@@ -23,5 +23,6 @@ data class ReminderEntity(
     val currentSnoozeCount: Int,
     val snoozeNextTriggerTime: Long?,
     val isMissed: Boolean,
-    val message: String
+    val message: String,
+    val skippedAt: Long?
 )

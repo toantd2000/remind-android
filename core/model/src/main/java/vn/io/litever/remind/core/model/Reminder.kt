@@ -20,9 +20,19 @@ data class Reminder(
     val currentSnoozeCount: Int = 0,
     val snoozeNextTriggerTime: Long? = null,
     val isMissed: Boolean = false,
-    val message: String = ""
+    val message: String = "",
+    val skippedAt: LocalDateTime? = null
 ) {
     fun getNextOccurrence(now: LocalDateTime = LocalDateTime.now()): LocalDateTime {
+        val rawNext = getActualNextOccurrence(now)
+        return if (skippedAt != null && rawNext.isEqual(skippedAt)) {
+            getActualNextOccurrence(rawNext.plusMinutes(1))
+        } else {
+            rawNext
+        }
+    }
+
+    fun getActualNextOccurrence(now: LocalDateTime = LocalDateTime.now()): LocalDateTime {
         if (date != null) {
             return date.atTime(time).withSecond(0).withNano(0)
         }

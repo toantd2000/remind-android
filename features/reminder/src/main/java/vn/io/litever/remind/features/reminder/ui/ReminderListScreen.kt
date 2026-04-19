@@ -73,6 +73,24 @@ fun ReminderListRoute(
         }
     }
 
+    // Handle Undo events
+    LaunchedEffect(viewModel.undoEvent) {
+        viewModel.undoEvent.collect { type ->
+            val message = when (type) {
+                ReminderListViewModel.UndoType.SINGLE -> context.getString(R.string.reminder_deleted)
+                ReminderListViewModel.UndoType.MULTIPLE -> context.getString(R.string.disabled_reminders_deleted)
+            }
+            val result = snackbarHostState.showSnackbar(
+                message = message,
+                actionLabel = context.getString(R.string.undo),
+                duration = SnackbarDuration.Short
+            )
+            if (result == SnackbarResult.ActionPerformed) {
+                viewModel.undoDelete()
+            }
+        }
+    }
+
     ReminderListScreen(
         reminders = reminders,
         is24HourFormat = is24HourFormat,
@@ -80,6 +98,10 @@ fun ReminderListRoute(
         hasCriticalPermissions = hasCriticalPermissions,
         snackbarHostState = snackbarHostState,
         onToggleReminder = viewModel::toggleReminder,
+        onDeleteReminder = viewModel::deleteReminder,
+        onDuplicateReminder = viewModel::duplicateReminder,
+        onSkipOnce = viewModel::skipNextOccurrence,
+        onCancelSkip = viewModel::cancelSkipOccurrence,
         onDeleteDisabledReminders = viewModel::deleteDisabledReminders,
         onAddReminderClick = onAddReminderClick,
         onReminderClick = onReminderClick,
@@ -97,6 +119,10 @@ fun ReminderListScreen(
     hasCriticalPermissions: Boolean,
     snackbarHostState: SnackbarHostState,
     onToggleReminder: (Reminder) -> Unit,
+    onDeleteReminder: (Reminder) -> Unit,
+    onDuplicateReminder: (Reminder) -> Unit,
+    onSkipOnce: (Reminder) -> Unit,
+    onCancelSkip: (Reminder) -> Unit,
     onDeleteDisabledReminders: () -> Unit,
     onAddReminderClick: () -> Unit,
     onReminderClick: (Reminder) -> Unit,
@@ -167,7 +193,11 @@ fun ReminderListScreen(
                             reminder = reminder,
                             is24HourFormat = is24HourFormat,
                             onToggle = { onToggleReminder(reminder) },
-                            onClick = { onReminderClick(reminder) }
+                            onClick = { onReminderClick(reminder) },
+                            onDelete = { onDeleteReminder(reminder) },
+                            onDuplicate = { onDuplicateReminder(reminder) },
+                            onSkipOnce = { onSkipOnce(reminder) },
+                            onCancelSkip = { onCancelSkip(reminder) }
                         )
                     }
                 }

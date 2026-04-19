@@ -74,4 +74,12 @@
     <string name="off">Off</string>
     <string name="action_cancel">Cancel</string>
     <string name="tap_to_edit_time">Tap to change</string>
+    <string name="action_duplicate">Duplicate</string>
+    <string name="action_skip_once">Skip once</string>
+    <string name="action_cancel_skip">Cancel skip</string>
+    <string name="action_delete">Delete</string>
+    <string name="reminder_deleted">Reminder deleted</string>
+    <string name="disabled_reminders_deleted">Disabled reminders deleted</string>
+    <string name="undo">Undo</string>
+    <string name="skipped_next_format">Skipped next: %s</string>
 </resources>

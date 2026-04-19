@@ -1,3 +1,7 @@
+import java.util.Date
+import java.util.Locale
+import java.text.SimpleDateFormat
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -5,7 +9,16 @@ plugins {
     alias(libs.plugins.hilt)
 }
 
+fun generateVersionName(): String {
+    val date = Date()
+    val formatter = SimpleDateFormat("yyyy.MM.dd", Locale.US)
+    return formatter.format(date)
+}
+
+val isReleaseTask = project.gradle.startParameter.taskNames.any { it.contains("release", ignoreCase = true) }
+
 android {
+
     namespace = "vn.io.litever.remind.app"
 
     compileSdk {
@@ -17,7 +30,8 @@ android {
         minSdk = 26
         targetSdk = 36
         versionCode = 1
-        versionName = "1.0"
+        versionName = if (isReleaseTask) generateVersionName() else "1.0-debug"
+
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

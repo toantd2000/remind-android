@@ -10,6 +10,8 @@ const val generalSettingsRoute = "general_settings_route"
 const val qaRoute = "qa_route"
 const val permissionsRoute = "permissions_route"
 const val alarmSettingsRoute = "alarm_settings_route"
+const val licensesRoute = "licenses_route"
+
 
 fun NavController.navigateToSettings(navOptions: NavOptions? = null) {
     this.navigate(settingsRoute, navOptions)
@@ -31,21 +33,30 @@ fun NavController.navigateToAlarmSettings() {
     this.navigate(alarmSettingsRoute)
 }
 
+fun NavController.navigateToLicenses() {
+    this.navigate(licensesRoute)
+}
+
+
 fun NavGraphBuilder.settingsGraph(
     onNavigateToGeneralSettings: () -> Unit,
     onNavigateToQA: () -> Unit,
     onNavigateToPermissions: () -> Unit,
     onNavigateToAlarmSettings: () -> Unit,
+    onNavigateToLicenses: () -> Unit,
     onNavigateBack: () -> Unit
 ) {
+
     composable(settingsRoute) {
         SettingsRoute(
             onNavigateToGeneralSettings = onNavigateToGeneralSettings,
             onNavigateToQA = onNavigateToQA,
             onNavigateToPermissions = onNavigateToPermissions,
-            onNavigateToAlarmSettings = onNavigateToAlarmSettings
+            onNavigateToAlarmSettings = onNavigateToAlarmSettings,
+            onNavigateToLicenses = onNavigateToLicenses
         )
     }
+
 
     composable(generalSettingsRoute) {
         GeneralSettingsRoute(
@@ -69,4 +80,11 @@ fun NavGraphBuilder.settingsGraph(
             onNavigateBack = onNavigateBack
         )
     }
+
+    composable(licensesRoute) {
+        LicensesScreen(
+            onNavigateBack = onNavigateBack
+        )
+    }
 }
+

@@ -38,6 +38,8 @@ import vn.io.litever.remind.features.settings.ui.navigateToGeneralSettings
 import vn.io.litever.remind.features.settings.ui.navigateToQA
 import vn.io.litever.remind.features.settings.ui.navigateToPermissions
 import vn.io.litever.remind.features.settings.ui.navigateToAlarmSettings
+import vn.io.litever.remind.features.settings.ui.navigateToLicenses
+
 
 import androidx.activity.viewModels
 import androidx.lifecycle.ViewModel
@@ -235,7 +237,9 @@ class MainActivity : ComponentActivity() {
                                         onNavigateToQA = { navController.navigateToQA() },
                                         onNavigateToPermissions = { navController.navigateToPermissions() },
                                         onNavigateToAlarmSettings = { navController.navigateToAlarmSettings() },
+                                        onNavigateToLicenses = { navController.navigateToLicenses() },
                                         onNavigateBack = { navController.popBackStack() }
+
                                     )
                                 }
                             }

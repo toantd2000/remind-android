@@ -15,7 +15,8 @@ Quy trình này áp dụng khi tính năng đã hoàn thiện và sẵn sàng đ
 
 ## Giai đoạn 2: Cấu hình phiên bản (Versioning)
 
-*   **Version Code & Name:** Cập nhật `versionCode` (tăng lên 1) và `versionName` trong file cấu hình.
+*   **Version Code & Name:** Cập nhật `versionCode` (tăng lên 1). `versionName` sẽ tự động được tạo theo ngày (YYYY.MM.DD) khi build bản release.
+*   **Open Source Licenses:** Giấy phép mã nguồn mở được tự động cập nhật bởi plugin `aboutLibraries`. Đảm bảo file `aboutlibraries.json` (nếu có cấu hình tùy chỉnh) đã được cập nhật.
 *   **Changelog:** Cập nhật file `CHANGELOG.md` với các tính năng và bản sửa lỗi mới.
 
 ## Giai đoạn 3: Đóng gói (Bundling)

@@ -15,7 +15,9 @@ import androidx.compose.material.icons.rounded.QuestionAnswer
 import androidx.compose.material.icons.rounded.Security
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ExperimentalMaterial3Api
+
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -25,9 +27,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+
 import vn.io.litever.remind.core.designsystem.components.SettingsCategory
 import vn.io.litever.remind.core.designsystem.components.SettingsItem
 import vn.io.litever.remind.features.settings.R
@@ -38,6 +42,7 @@ fun SettingsRoute(
     onNavigateToQA: () -> Unit,
     onNavigateToPermissions: () -> Unit,
     onNavigateToAlarmSettings: () -> Unit,
+    onNavigateToLicenses: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -46,9 +51,11 @@ fun SettingsRoute(
         onNavigateToGeneralSettings = onNavigateToGeneralSettings,
         onNavigateToQA = onNavigateToQA,
         onNavigateToPermissions = onNavigateToPermissions,
-        onNavigateToAlarmSettings = onNavigateToAlarmSettings
+        onNavigateToAlarmSettings = onNavigateToAlarmSettings,
+        onNavigateToLicenses = onNavigateToLicenses
     )
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,8 +64,10 @@ fun SettingsScreen(
     onNavigateToGeneralSettings: () -> Unit,
     onNavigateToQA: () -> Unit,
     onNavigateToPermissions: () -> Unit,
-    onNavigateToAlarmSettings: () -> Unit
+    onNavigateToAlarmSettings: () -> Unit,
+    onNavigateToLicenses: () -> Unit
 ) {
+
     Scaffold(
         topBar = {
             TopAppBar(title = { Text(stringResource(R.string.settings_title)) })
@@ -156,20 +165,36 @@ fun SettingsScreen(
                 SettingsItem(
                     title = stringResource(R.string.setting_licenses),
                     icon = Icons.Rounded.Description,
-                    onClick = { /* TODO */ }
+                    onClick = onNavigateToLicenses
                 )
             }
 
             item {
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant
+                )
+            }
+
+            item {
+                val context = LocalContext.current
+                val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+                val versionName = packageInfo.versionName ?: "1.0"
+                val versionCode = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                    packageInfo.longVersionCode
+                } else {
+                    @Suppress("DEPRECATION")
+                    packageInfo.versionCode.toLong()
+                }
+
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(32.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    // TODO: Get real version dynamically
                     Text(
-                        text = stringResource(R.string.app_version_format, "1.0", 1),
+                        text = stringResource(R.string.app_version_format, versionName, versionCode),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -178,6 +203,7 @@ fun SettingsScreen(
         }
     }
 }
+
 
 @androidx.compose.ui.tooling.preview.Preview(showBackground = true)
 @Composable
@@ -188,7 +214,8 @@ fun SettingsScreenPreview() {
             onNavigateToGeneralSettings = {},
             onNavigateToQA = {},
             onNavigateToPermissions = {},
-            onNavigateToAlarmSettings = {}
+            onNavigateToAlarmSettings = {},
+            onNavigateToLicenses = {}
         )
     }
 }

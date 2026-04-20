@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import vn.io.litever.remind.core.designsystem.components.ReMindSwitch
@@ -51,6 +52,7 @@ fun ReminderCard(
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
+            .clip(MaterialTheme.shapes.extraLarge)
             .combinedClickable(
                 onClick = onClick,
                 onLongClick = { showMenu = true }

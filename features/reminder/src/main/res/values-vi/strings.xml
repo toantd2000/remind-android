@@ -13,12 +13,12 @@
     <string name="tomorrow">Ngày mai</string>
     <string name="every_day">Hằng ngày</string>
     
-    <string name="day_mon">Th 2</string>
-    <string name="day_tue">Th 3</string>
-    <string name="day_wed">Th 4</string>
-    <string name="day_thu">Th 5</string>
-    <string name="day_fri">Th 6</string>
-    <string name="day_sat">Th 7</string>
+    <string name="day_mon">T2</string>
+    <string name="day_tue">T3</string>
+    <string name="day_wed">T4</string>
+    <string name="day_thu">T5</string>
+    <string name="day_fri">T6</string>
+    <string name="day_sat">T7</string>
     <string name="day_sun">CN</string>
 
     <string name="reminders_title">Nhắc nhở</string>
@@ -40,6 +40,7 @@
     <string name="snooze">Tạm dừng (Báo lại)</string>
     <string name="snooze_limit_format">Báo lại (Còn %1$d lần)</string>
     <string name="repeat">Lặp lại</string>
+    <string name="repeat_prefix">Lặp lại: %s</string>
     <string name="volume">Âm lượng</string>
     <string name="ringtone_selection_title">Âm thanh nhắc nhở</string>
     <string name="default_ringtone">Mặc định</string>

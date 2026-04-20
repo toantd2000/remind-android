@@ -791,7 +791,7 @@ fun RepeatDaySelector(
     modifier: Modifier = Modifier
 ) {
     val allDays = DayOfWeek.entries
-    val label = getRepeatSummaryText(selectedDays, time, date)
+    val label = getRepeatSummaryText(selectedDays, time, date, isShortMode = true)
 
     Column(modifier = modifier) {
         Row(
@@ -801,7 +801,7 @@ fun RepeatDaySelector(
         ) {
             Text(
                 text = label,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.weight(1f)
             )
@@ -815,18 +815,22 @@ fun RepeatDaySelector(
             }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             allDays.forEach { day ->
-                val javaDay = java.time.DayOfWeek.of(day.toJavaDayValue())
-                val label = javaDay.getDisplayName(
-                    java.time.format.TextStyle.SHORT,
-                    java.util.Locale.getDefault()
-                )
+                val dayLabel = when (day) {
+                    DayOfWeek.MONDAY -> stringResource(R.string.day_mon)
+                    DayOfWeek.TUESDAY -> stringResource(R.string.day_tue)
+                    DayOfWeek.WEDNESDAY -> stringResource(R.string.day_wed)
+                    DayOfWeek.THURSDAY -> stringResource(R.string.day_thu)
+                    DayOfWeek.FRIDAY -> stringResource(R.string.day_fri)
+                    DayOfWeek.SATURDAY -> stringResource(R.string.day_sat)
+                    DayOfWeek.SUNDAY -> stringResource(R.string.day_sun)
+                }
 
                 val isSelected = selectedDays.contains(day)
                 Box(
@@ -842,10 +846,10 @@ fun RepeatDaySelector(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = label,
+                        text = dayLabel,
                         style = MaterialTheme.typography.bodySmall.copy(
                             fontWeight = FontWeight.Bold,
-                            fontSize = if (label.length > 2) 10.sp else 11.sp
+                            fontSize = if (dayLabel.length > 2) 10.sp else 11.sp
                         ),
                         color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer
                         else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)

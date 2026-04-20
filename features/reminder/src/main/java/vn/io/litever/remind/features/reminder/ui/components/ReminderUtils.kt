@@ -11,7 +11,8 @@ import java.time.LocalTime as JavaLocalTime
 fun getRepeatSummaryText(
     repeatDays: List<DayOfWeek>,
     time: JavaLocalTime,
-    date: java.time.LocalDate? = null
+    date: java.time.LocalDate? = null,
+    isShortMode: Boolean = false
 ): String {
     if (date != null) {
         val formatter = java.time.format.DateTimeFormatter.ofLocalizedDate(java.time.format.FormatStyle.MEDIUM)
@@ -27,12 +28,17 @@ fun getRepeatSummaryText(
         }
     }
     
-    if (repeatDays.size == 7) {
+    if (isShortMode) {
+        return stringResource(R.string.repeat)
+    }
+
+    val isDaily = repeatDays.distinct().size == 7
+    if (isDaily) {
         return stringResource(R.string.every_day)
     }
 
     val context = LocalContext.current
-    return repeatDays.sortedBy { it.ordinal }.joinToString(", ") { day ->
+    val daysText = repeatDays.distinct().sortedBy { it.ordinal }.joinToString(", ") { day ->
         when (day) {
             DayOfWeek.MONDAY -> context.getString(R.string.day_mon)
             DayOfWeek.TUESDAY -> context.getString(R.string.day_tue)
@@ -43,4 +49,5 @@ fun getRepeatSummaryText(
             DayOfWeek.SUNDAY -> context.getString(R.string.day_sun)
         }
     }
+    return daysText
 }

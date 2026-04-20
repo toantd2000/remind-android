@@ -13,13 +13,13 @@
     <string name="tomorrow">Tomorrow</string>
     <string name="every_day">Daily</string>
     
-    <string name="day_mon">Mon</string>
-    <string name="day_tue">Tue</string>
-    <string name="day_wed">Wed</string>
-    <string name="day_thu">Thu</string>
-    <string name="day_fri">Fri</string>
-    <string name="day_sat">Sat</string>
-    <string name="day_sun">Sun</string>
+    <string name="day_mon">Mo</string>
+    <string name="day_tue">Tu</string>
+    <string name="day_wed">We</string>
+    <string name="day_thu">Th</string>
+    <string name="day_fri">Fr</string>
+    <string name="day_sat">Sa</string>
+    <string name="day_sun">Su</string>
 
     <string name="reminders_title">Reminders</string>
     <string name="add_reminder_title">Add Reminder</string>
@@ -41,6 +41,7 @@
     <string name="snooze">Snooze</string>
     <string name="snooze_limit_format">Snooze (%1$d left)</string>
     <string name="repeat">Repeat</string>
+    <string name="repeat_prefix">Repeat: %s</string>
     <string name="volume">Volume</string>
     <string name="ringtone_selection_title">Reminder Sound</string>
     <string name="default_ringtone">Default</string>

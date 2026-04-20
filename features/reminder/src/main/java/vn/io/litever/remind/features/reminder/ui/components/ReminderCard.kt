@@ -139,6 +139,11 @@ fun ReminderCard(
                 )
             }
 
+            val actionCancelSkip = stringResource(R.string.action_cancel_skip)
+            val actionSkipOnce = stringResource(R.string.action_skip_once)
+            val actionDuplicate = stringResource(R.string.action_duplicate)
+            val actionDelete = stringResource(R.string.action_delete)
+
             DropdownMenu(
                 expanded = showMenu,
                 onDismissRequest = { showMenu = false }
@@ -148,10 +153,7 @@ fun ReminderCard(
                     val isSkipped = reminder.skippedAt != null
                     DropdownMenuItem(
                         text = { 
-                            Text(
-                                if (isSkipped) stringResource(R.string.action_cancel_skip)
-                                else stringResource(R.string.action_skip_once)
-                            ) 
+                            Text(if (isSkipped) actionCancelSkip else actionSkipOnce) 
                         },
                         leadingIcon = { Icon(Icons.Rounded.SkipNext, contentDescription = null) },
                         onClick = {
@@ -161,7 +163,7 @@ fun ReminderCard(
                     )
                 }
                 DropdownMenuItem(
-                    text = { Text(stringResource(R.string.action_duplicate)) },
+                    text = { Text(actionDuplicate) },
                     leadingIcon = { Icon(Icons.Rounded.ContentCopy, contentDescription = null) },
                     onClick = {
                         onDuplicate()
@@ -172,7 +174,7 @@ fun ReminderCard(
                 DropdownMenuItem(
                     text = { 
                         Text(
-                            text = stringResource(R.string.action_delete),
+                            text = actionDelete,
                             color = MaterialTheme.colorScheme.error
                         ) 
                     },

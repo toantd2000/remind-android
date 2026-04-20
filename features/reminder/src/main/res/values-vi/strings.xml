@@ -1,5 +1,5 @@
 <resources>
-    <string name="delete_disabled_reminders">Xoá các nhắc nhở đã tắt</string>
+    <string name="delete_disabled_reminders">Xóa các nhắc nhở đã tắt</string>
     <string name="no_reminders">Chưa có nhắc nhở nào</string>
     <string name="next_reminder_prefix">Nhắc nhở sau %s</string>
     <string name="all_reminders_off">Tất cả nhắc nhở đã tắt</string>
@@ -35,6 +35,7 @@
     <string name="reminder_label_title">Nhãn</string>
     <string name="reminder_message_placeholder">Tin nhắn (Thông tin thêm)</string>
     <string name="reminder_message_title">Tin nhắn</string>
+    <string name="reminder_content_group_title">Nội dung</string>
     <string name="save">Lưu</string>
     <string name="dismiss">Tắt ngay</string>
     <string name="snooze">Tạm dừng (Báo lại)</string>
@@ -78,13 +79,16 @@
     <string name="alarm_settings">Cài đặt báo thức</string>
     <string name="off">Tắt</string>
     <string name="action_cancel">Hủy</string>
+    <string name="action_more">Thêm tùy chọn</string>
+    <string name="action_back">Quay lại</string>
+    <string name="action_add">Thêm nhắc nhở</string>
     <string name="tap_to_edit_time">Chạm để thay đổi</string>
     <string name="action_duplicate">Nhân bản</string>
     <string name="action_skip_once">Bỏ qua lần tới</string>
-    <string name="action_cancel_skip">Huỷ bỏ qua</string>
-    <string name="action_delete">Xoá</string>
-    <string name="reminder_deleted">Đã xoá nhắc nhở</string>
-    <string name="disabled_reminders_deleted">Đã xoá các nhắc nhở đã tắt</string>
+    <string name="action_cancel_skip">Hủy bỏ qua</string>
+    <string name="action_delete">Xóa</string>
+    <string name="reminder_deleted">Đã xóa nhắc nhở</string>
+    <string name="disabled_reminders_deleted">Đã xóa các nhắc nhở đã tắt</string>
     <string name="undo">Hoàn tác</string>
     <string name="skipped_next_format">Bỏ qua lần tới: %s</string>
 </resources>

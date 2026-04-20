@@ -68,8 +68,6 @@
     <string name="snooze_duration_desc">Khoảng thời gian mặc định khi báo lại.</string>
     <string name="silence_duration_title">Tự động tắt tiếng</string>
     <string name="silence_duration_desc">Tự động dừng báo thức sau một khoảng thời gian.</string>
-    <string name="increasing_volume_title">Âm lượng tăng dần</string>
-    <string name="increasing_volume_desc">Âm lượng báo thức sẽ to dần lên.</string>
     <string name="built_in_speaker_title">Luôn dùng loa ngoài</string>
     <string name="built_in_speaker_desc">Phát âm báo qua loa ngoài ngay cả khi cắm tai nghe.</string>
     <string name="pre_notification_title">Thông báo báo thức sắp đến</string>

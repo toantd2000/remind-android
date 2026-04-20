@@ -79,6 +79,9 @@
     <string name="alarm_settings">Alarm Settings</string>
     <string name="off">Off</string>
     <string name="action_cancel">Cancel</string>
+    <string name="action_more">More options</string>
+    <string name="action_back">Back</string>
+    <string name="action_add">Add Reminder</string>
     <string name="tap_to_edit_time">Tap to change</string>
     <string name="action_duplicate">Duplicate</string>
     <string name="action_skip_once">Skip once</string>

@@ -131,19 +131,23 @@ fun ReminderListScreen(
 ) {
     var showMenu by remember { mutableStateOf(false) }
 
+    val actionMoreDescription = stringResource(R.string.action_more)
+    val deleteDisabledRemindersText = stringResource(R.string.delete_disabled_reminders)
+    val actionAddDescription = stringResource(R.string.action_add)
+
     ReMindScaffold(
         topBar = {
             MainReMindTopAppBar(
                 actions = {
                     IconButton(onClick = { showMenu = !showMenu }) {
-                        Icon(Icons.Rounded.MoreVert, contentDescription = "More")
+                        Icon(Icons.Rounded.MoreVert, contentDescription = actionMoreDescription)
                     }
                     DropdownMenu(
                         expanded = showMenu,
                         onDismissRequest = { showMenu = false }
                     ) {
                         DropdownMenuItem(
-                            text = { Text(stringResource(R.string.delete_disabled_reminders)) },
+                            text = { Text(deleteDisabledRemindersText) },
                             onClick = {
                                 onDeleteDisabledReminders()
                                 showMenu = false
@@ -155,7 +159,7 @@ fun ReminderListScreen(
         },
         floatingActionButton = {
             ReMindFloatingActionButton(onClick = onAddReminderClick) {
-                Icon(Icons.Rounded.Add, contentDescription = "Add Reminder")
+                Icon(Icons.Rounded.Add, contentDescription = actionAddDescription)
             }
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }

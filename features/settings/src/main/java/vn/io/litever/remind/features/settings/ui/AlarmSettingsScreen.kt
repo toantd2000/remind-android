@@ -151,7 +151,7 @@ fun DurationSelectionDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(vn.io.litever.remind.core.designsystem.R.string.cancel))
             }
         }
     )

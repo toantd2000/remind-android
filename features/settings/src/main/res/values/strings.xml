@@ -68,8 +68,6 @@
     <string name="snooze_duration_desc">Default interval for snoozing an alarm.</string>
     <string name="silence_duration_title">Auto-silence</string>
     <string name="silence_duration_desc">Automatically stop the alarm after set time.</string>
-    <string name="increasing_volume_title">Increasing volume</string>
-    <string name="increasing_volume_desc">Alarm volume will gradually increase.</string>
     <string name="built_in_speaker_title">Always use built-in speaker</string>
     <string name="built_in_speaker_desc">Play alarm through speaker even when headphones are plugged in.</string>
     <string name="pre_notification_title">Upcoming alarm notification</string>

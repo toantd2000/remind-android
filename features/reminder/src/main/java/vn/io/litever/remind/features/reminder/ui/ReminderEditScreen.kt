@@ -337,7 +337,7 @@ fun ReminderEditScreen(
     if (showAutoSilenceDialog) {
         ReMindAlertDialog(
             onDismissRequest = { showAutoSilenceDialog = false },
-            title = stringResource(R.string.snooze_interval), // Reusing existing strings or should use auto-silence
+            title = stringResource(R.string.auto_silence_title),
             // Actually let's just make it simple
             confirmButtonText = stringResource(R.string.save),
             onConfirmClick = { showAutoSilenceDialog = false }, // Selection happens via onClick

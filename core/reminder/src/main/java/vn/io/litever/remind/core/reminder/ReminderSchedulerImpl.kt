@@ -12,6 +12,7 @@ import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler.Companion.AC
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler.Companion.EXTRA_REMINDER_ID
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler.Companion.EXTRA_IS_SNOOZE
 import vn.io.litever.remind.core.model.Reminder
+import android.net.Uri
 import java.time.LocalDateTime
 import java.time.ZoneId
 import javax.inject.Inject
@@ -57,11 +58,18 @@ class ReminderSchedulerImpl @Inject constructor(
     }
 
     private fun setExactAlarm(triggerTime: Long, pendingIntent: PendingIntent) {
-        alarmManager.setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
-            triggerTime,
-            pendingIntent
+        val showIntent = Intent(Intent.ACTION_VIEW, Uri.parse("app://remind")).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingShowIntent = PendingIntent.getActivity(
+            context,
+            0,
+            showIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
+        
+        val alarmClockInfo = AlarmManager.AlarmClockInfo(triggerTime, pendingShowIntent)
+        alarmManager.setAlarmClock(alarmClockInfo, pendingIntent)
     }
 
     override fun cancel(reminder: Reminder) {

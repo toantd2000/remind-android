@@ -14,6 +14,7 @@ import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler.Companion.AC
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler.Companion.EXTRA_REMINDER_ID
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler.Companion.EXTRA_IS_SNOOZE
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
+import android.net.Uri
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
@@ -90,21 +91,18 @@ class ReminderControllerImpl @Inject constructor(
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    if (alarmManager.canScheduleExactAlarms()) {
-                        alarmManager.setExactAndAllowWhileIdle(
-                            AlarmManager.RTC_WAKEUP,
-                            triggerTime,
-                            pendingIntent
-                        )
-                    }
-                } else {
-                    alarmManager.setExactAndAllowWhileIdle(
-                        AlarmManager.RTC_WAKEUP,
-                        triggerTime,
-                        pendingIntent
-                    )
+                val showIntent = Intent(Intent.ACTION_VIEW, Uri.parse("app://remind")).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 }
+                val pendingShowIntent = PendingIntent.getActivity(
+                    context,
+                    0,
+                    showIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+                
+                val alarmClockInfo = AlarmManager.AlarmClockInfo(triggerTime, pendingShowIntent)
+                alarmManager.setAlarmClock(alarmClockInfo, pendingIntent)
             }
         }
         currentReminderId?.let { reminderRingManager.dequeueReminder(it) }

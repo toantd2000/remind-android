@@ -39,7 +39,8 @@
     <string name="setting_history">Lịch sử cập nhật</string>
     <string name="setting_licenses">Giấy phép nguồn mở</string>
 
-    <string name="app_version_format">Phiên bản %1$s (%2$d)</string>
+    <string name="setting_version_title">Phiên bản ứng dụng</string>
+    <string name="app_version_format">%1$s (%2$d)</string>
     
     <!-- Permissions -->
     <string name="permission_granted">Đã cấp quyền</string>

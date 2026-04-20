@@ -806,10 +806,7 @@ fun ReminderEditScreen(
                                 onClick = onSnoozeSettingsClick
                             )
 
-                            HorizontalDivider(
-                                modifier = Modifier.padding(vertical = 4.dp),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f)
-                            )
+
 
                             // Auto Silence Row
                             ReminderSettingRow(

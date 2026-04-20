@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.NotificationsActive
 import androidx.compose.material.icons.rounded.QuestionAnswer
@@ -101,6 +102,7 @@ fun SettingsScreen(
                 )
             }
 
+/*
             item {
                 SettingsItem(
                     title = stringResource(R.string.setting_alarm_title),
@@ -109,7 +111,9 @@ fun SettingsScreen(
                     onClick = onNavigateToAlarmSettings
                 )
             }
+*/
 
+/*
             // Group: Support
             item {
                 SettingsCategory(title = stringResource(R.string.category_support))
@@ -135,6 +139,7 @@ fun SettingsScreen(
                     onClick = { /* TODO */ }
                 )
             }
+*/
 
             // Group: About
             item {
@@ -170,13 +175,6 @@ fun SettingsScreen(
             }
 
             item {
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    color = MaterialTheme.colorScheme.outlineVariant
-                )
-            }
-
-            item {
                 val context = LocalContext.current
                 val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
                 val versionName = packageInfo.versionName ?: "1.0"
@@ -187,18 +185,11 @@ fun SettingsScreen(
                     packageInfo.versionCode.toLong()
                 }
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(32.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = stringResource(R.string.app_version_format, versionName, versionCode),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
+                SettingsItem(
+                    title = stringResource(R.string.setting_version_title),
+                    subtitle = stringResource(R.string.app_version_format, versionName, versionCode),
+                    icon = Icons.Rounded.Info
+                )
             }
         }
     }

@@ -212,25 +212,13 @@ fun ReminderListScreen(
 
 @Composable
 fun EmptyState(modifier: Modifier = Modifier) {
-    Column(
+    Box(
         modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        contentAlignment = Alignment.Center
     ) {
-        Icon(
-            imageVector = Icons.Rounded.Notifications,
-            contentDescription = null,
-            modifier = Modifier.size(80.dp),
-            tint = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-        )
-        Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = stringResource(R.string.no_reminders),
-            style = MaterialTheme.typography.titleLarge
-        )
-        Text(
-            text = stringResource(R.string.empty_description),
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }

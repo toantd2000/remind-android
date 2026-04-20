@@ -30,6 +30,7 @@ import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
 import vn.io.litever.remind.core.domain.scheduler.ReminderController
 import vn.io.litever.remind.core.reminder.provider.ReminderIntentProvider
 import vn.io.litever.remind.core.common.util.getAccessibleRingtoneUri
+import vn.io.litever.remind.core.reminder.R
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -194,12 +195,7 @@ class ReminderService : Service() {
                     }
 
                     val pattern = longArrayOf(0, 1000, 1000)
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        vibrator?.vibrate(VibrationEffect.createWaveform(pattern, 0))
-                    } else {
-                        @Suppress("DEPRECATION")
-                        vibrator?.vibrate(pattern, 0)
-                    }
+                    vibrator?.vibrate(VibrationEffect.createWaveform(pattern, 0))
                 }
             }
         }
@@ -261,8 +257,8 @@ class ReminderService : Service() {
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
-            .setContentTitle("Nhắc nhở!")
-            .setContentText("Nhấn vào đây để xem và tắt")
+            .setContentTitle(getString(R.string.notification_reminder_title))
+            .setContentText(getString(R.string.notification_reminder_text))
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -283,10 +279,10 @@ class ReminderService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "Reminder Service Channel",
+                getString(R.string.reminder_channel_name),
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
-                description = "Channel for reminder ringing"
+                description = getString(R.string.reminder_channel_description)
                 setSound(null, null) 
                 enableVibration(false)
             }

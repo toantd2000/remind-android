@@ -54,6 +54,7 @@ class ReminderService : Service() {
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var autoSilenceJob: Job? = null
     private var ringingJob: Job? = null
+    private var volumeIncreaseJob: Job? = null
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -125,11 +126,15 @@ class ReminderService : Service() {
 
     private fun startRinging(reminderId: Long) {
         ringingJob?.cancel()
+        volumeIncreaseJob?.cancel()
         ringingJob = scope.launch {
             val reminder = reminderRepository.getReminderById(reminderId) ?: return@launch
             
             val audioManager = getSystemService(Context.AUDIO_SERVICE) as android.media.AudioManager
-            audioManager.setStreamVolume(android.media.AudioManager.STREAM_ALARM, reminder.volume, 0)
+            
+            // Initial volume: 1 if gradual enabled, otherwise reminder.volume
+            val initialVolume = if (reminder.gradualVolumeDurationSeconds > 0) 1 else reminder.volume
+            audioManager.setStreamVolume(android.media.AudioManager.STREAM_ALARM, initialVolume, 0)
             
             val uri = getAccessibleRingtoneUri(this@ReminderService, reminder.ringtoneUri)
             
@@ -144,10 +149,39 @@ class ReminderService : Service() {
                     )
                     isLooping = true
                     val maxVolume = audioManager.getStreamMaxVolume(android.media.AudioManager.STREAM_ALARM)
-                    val volumeScale = reminder.volume.toFloat() / maxVolume.toFloat()
+                    val volumeScale = initialVolume.toFloat() / maxVolume.toFloat()
                     setVolume(volumeScale, volumeScale)
                     prepare()
                     start()
+                }
+
+                // Handle gradual volume increase
+                if (reminder.gradualVolumeDurationSeconds > 0) {
+                    volumeIncreaseJob = scope.launch {
+                        val durationMs = reminder.gradualVolumeDurationSeconds * 1000L
+                        val startTime = System.currentTimeMillis()
+                        val targetVolume = reminder.volume
+                        val systemMaxVolume = audioManager.getStreamMaxVolume(android.media.AudioManager.STREAM_ALARM)
+                        
+                        while (System.currentTimeMillis() - startTime < durationMs) {
+                            val elapsed = System.currentTimeMillis() - startTime
+                            val currentVolume = 1 + ((targetVolume - 1) * elapsed / durationMs).toInt()
+                            
+                            launch(Dispatchers.Main) {
+                                val currentVolumeScale = currentVolume.toFloat() / systemMaxVolume.toFloat()
+                                mediaPlayer?.setVolume(currentVolumeScale, currentVolumeScale)
+                                audioManager.setStreamVolume(android.media.AudioManager.STREAM_ALARM, currentVolume, 0)
+                            }
+                            delay(1000L) // Update every second
+                        }
+                        
+                        // Ensure final volume is reached
+                        launch(Dispatchers.Main) {
+                            val finalVolumeScale = targetVolume.toFloat() / systemMaxVolume.toFloat()
+                            mediaPlayer?.setVolume(finalVolumeScale, finalVolumeScale)
+                            audioManager.setStreamVolume(android.media.AudioManager.STREAM_ALARM, targetVolume, 0)
+                        }
+                    }
                 }
 
                 if (reminder.vibrationEnabled) {
@@ -198,6 +232,7 @@ class ReminderService : Service() {
 
     private fun stopCurrentRinging() {
         ringingJob?.cancel()
+        volumeIncreaseJob?.cancel()
         autoSilenceJob?.cancel()
         reminderRingManager.setAutoSilenceCountdown(null)
         mediaPlayer?.stop()

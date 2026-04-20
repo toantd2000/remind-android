@@ -51,6 +51,8 @@ import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Snooze
 import androidx.compose.material.icons.rounded.AlarmOff
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.GraphicEq
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
@@ -69,6 +71,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TimeInput
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
+import androidx.compose.material3.ListItem
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -93,6 +96,8 @@ import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import androidx.compose.material.icons.rounded.CalendarMonth
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -212,7 +217,8 @@ fun ReminderEditRoute(
         onNavigateToPermissions = onNavigateToPermissions,
         onVolumeChange = viewModel::updateVolume,
         onTogglePreview = viewModel::toggleRingtonePlayback,
-        onDateChange = viewModel::updateDate
+        onDateChange = viewModel::updateDate,
+        onGradualVolumeChange = viewModel::updateGradualVolumeDuration
     )
 }
 
@@ -237,7 +243,8 @@ fun ReminderEditScreen(
     onNavigateToPermissions: () -> Unit,
     onVolumeChange: (Int) -> Unit,
     onTogglePreview: () -> Unit,
-    onDateChange: (LocalDate?) -> Unit
+    onDateChange: (LocalDate?) -> Unit,
+    onGradualVolumeChange: (Int) -> Unit
 ) {
     val timePickerState = androidx.compose.runtime.key(uiState.id, is24HourFormat) {
         rememberTimePickerState(
@@ -248,6 +255,8 @@ fun ReminderEditScreen(
     }
 
     var showTimePicker by remember { mutableStateOf(false) }
+    var showGradualVolumeSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
 
     if (showTimePicker) {
         ReMindTimePickerDialog(
@@ -361,6 +370,25 @@ fun ReminderEditScreen(
                 }
             }
         )
+    }
+
+    val context = LocalContext.current
+
+    if (showGradualVolumeSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showGradualVolumeSheet = false },
+            sheetState = sheetState,
+            containerColor = MaterialTheme.colorScheme.surface,
+            tonalElevation = 0.dp
+        ) {
+            GentleReminderBottomSheetContent(
+                currentDuration = uiState.gradualVolumeDurationSeconds,
+                onDurationSelect = {
+                    onGradualVolumeChange(it)
+                    showGradualVolumeSheet = false
+                }
+            )
+        }
     }
 
     ReMindScaffold(
@@ -669,6 +697,65 @@ fun ReminderEditScreen(
                                     )
                                 }
                             }
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            // Row 4: Gentle Reminder (Increasing Volume)
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(MaterialTheme.shapes.medium)
+                                    .clickable { showGradualVolumeSheet = true }
+                                    .padding(vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(44.dp)
+                                        .clip(MaterialTheme.shapes.medium)
+                                        .background(
+                                            if (uiState.gradualVolumeDurationSeconds > 0) MaterialTheme.colorScheme.primaryContainer
+                                            else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.GraphicEq,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(20.dp),
+                                        tint = if (uiState.gradualVolumeDurationSeconds > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+
+                                Column(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .padding(horizontal = 12.dp)
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.gentle_reminder_title),
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+                                    val summary = if (uiState.gradualVolumeDurationSeconds == 0) {
+                                        stringResource(R.string.off)
+                                    } else if (uiState.gradualVolumeDurationSeconds < 60) {
+                                        stringResource(R.string.seconds_unit_short, uiState.gradualVolumeDurationSeconds)
+                                    } else {
+                                        stringResource(R.string.minutes_unit_short, uiState.gradualVolumeDurationSeconds / 60)
+                                    }
+                                    Text(
+                                        text = summary,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+
+                                Icon(
+                                    imageVector = Icons.Rounded.ChevronRight,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                                )
+                            }
                         }
                     }
                 }
@@ -921,19 +1008,10 @@ fun ReminderEditScreenPreview() {
     ReMindTheme {
         ReminderEditScreen(
             uiState = ReminderEditUiState(
-                id = 1L,
-                time = java.time.LocalTime.of(8, 30),
-                label = "Morning Alarm",
-                repeatDays = listOf(
-                    vn.io.litever.remind.core.model.DayOfWeek.MONDAY,
-                    vn.io.litever.remind.core.model.DayOfWeek.TUESDAY
-                ),
-                ringtoneTitle = "Early Sunrise",
-                volume = 10,
-                maxVolume = 15,
-                snoozeEnabled = true,
-                snoozeInterval = 5,
-                snoozeRepeatCount = 3
+                time = LocalTime.of(10, 30),
+                repeatDays = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY),
+                label = "Gym session",
+                message = "Don't forget your water bottle!"
             ),
             nextReminderState = NextReminderUiState.Remaining(days = 0, hours = 14, minutes = 30),
             is24HourFormat = true,
@@ -952,28 +1030,25 @@ fun ReminderEditScreenPreview() {
             onNavigateToPermissions = {},
             onVolumeChange = {},
             onTogglePreview = {},
-            onDateChange = {}
+            onDateChange = {},
+            onGradualVolumeChange = {}
         )
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
+@Preview(showBackground = true, backgroundColor = 0xFF121212)
 @Composable
 fun ReminderEditScreenDarkPreview() {
     ReMindTheme(darkTheme = true) {
         ReminderEditScreen(
             uiState = ReminderEditUiState(
-                id = 2L,
-                time = java.time.LocalTime.of(22, 0),
-                label = "Sleep Time",
-                repeatDays = emptyList(),
-                ringtoneTitle = "Lullaby",
-                volume = 5,
-                maxVolume = 15,
-                snoozeEnabled = false
+                time = LocalTime.of(10, 30),
+                repeatDays = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY),
+                label = "Gym session",
+                message = "Don't forget your water bottle!"
             ),
-            nextReminderState = NextReminderUiState.Remaining(days = 0, hours = 2, minutes = 15),
-            is24HourFormat = false,
+            nextReminderState = NextReminderUiState.Remaining(days = 0, hours = 14, minutes = 30),
+            is24HourFormat = true,
             onBackClick = {},
             onSaveClick = {},
             onSaveAnyway = {},
@@ -989,7 +1064,57 @@ fun ReminderEditScreenDarkPreview() {
             onNavigateToPermissions = {},
             onVolumeChange = {},
             onTogglePreview = {},
-            onDateChange = {}
+            onDateChange = {},
+            onGradualVolumeChange = {}
         )
+    }
+}
+
+@Composable
+fun GentleReminderBottomSheetContent(
+    currentDuration: Int,
+    onDurationSelect: (Int) -> Unit
+) {
+    val options = listOf(0, 15, 30, 60, 300, 600)
+    
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 32.dp)
+    ) {
+        Text(
+            text = stringResource(R.string.gentle_reminder_title),
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(16.dp)
+        )
+        Text(
+            text = stringResource(R.string.gentle_reminder_description),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        )
+        
+        Spacer(modifier = Modifier.height(8.dp))
+        
+        options.forEach { option ->
+            val label = if (option == 0) {
+                stringResource(R.string.off)
+            } else if (option < 60) {
+                stringResource(R.string.seconds_unit, option)
+            } else {
+                stringResource(R.string.minutes_unit, option / 60)
+            }
+            
+            ListItem(
+                headlineContent = { Text(label) },
+                leadingContent = {
+                    RadioButton(
+                        selected = currentDuration == option,
+                        onClick = { onDurationSelect(option) }
+                    )
+                },
+                modifier = Modifier.clickable { onDurationSelect(option) }
+            )
+        }
     }
 }

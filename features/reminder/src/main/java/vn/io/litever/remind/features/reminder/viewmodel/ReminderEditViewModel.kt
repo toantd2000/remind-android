@@ -41,7 +41,8 @@ data class ReminderEditUiState(
     val snoozeEnabled: Boolean = true,
     val snoozeInterval: Int = 5,
     val snoozeRepeatCount: Int = 3,
-    val autoSilenceMinutes: Int = 3
+    val autoSilenceMinutes: Int = 3,
+    val gradualVolumeDurationSeconds: Int = 0
 )
 
 @HiltViewModel
@@ -121,7 +122,8 @@ class ReminderEditViewModel @Inject constructor(
                     snoozeEnabled = reminder.snoozeEnabled,
                     snoozeInterval = reminder.snoozeInterval,
                     snoozeRepeatCount = reminder.snoozeRepeatCount,
-                    autoSilenceMinutes = reminder.autoSilenceMinutes
+                    autoSilenceMinutes = reminder.autoSilenceMinutes,
+                    gradualVolumeDurationSeconds = reminder.gradualVolumeDurationSeconds
                 )
             }
         }
@@ -194,6 +196,10 @@ class ReminderEditViewModel @Inject constructor(
 
     fun updateAutoSilence(minutes: Int) {
         _uiState.update { it.copy(autoSilenceMinutes = minutes) }
+    }
+
+    fun updateGradualVolumeDuration(seconds: Int) {
+        _uiState.update { it.copy(gradualVolumeDurationSeconds = seconds) }
     }
 
     fun toggleRingtonePlayback() {
@@ -316,7 +322,8 @@ class ReminderEditViewModel @Inject constructor(
                 snoozeEnabled = state.snoozeEnabled,
                 snoozeInterval = state.snoozeInterval,
                 snoozeRepeatCount = state.snoozeRepeatCount,
-                autoSilenceMinutes = state.autoSilenceMinutes
+                autoSilenceMinutes = state.autoSilenceMinutes,
+                gradualVolumeDurationSeconds = state.gradualVolumeDurationSeconds
             )
             
             if (state.id == 0L) {

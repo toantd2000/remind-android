@@ -21,7 +21,8 @@ data class Reminder(
     val snoozeNextTriggerTime: Long? = null,
     val isMissed: Boolean = false,
     val message: String = "",
-    val skippedAt: LocalDateTime? = null
+    val skippedAt: LocalDateTime? = null,
+    val gradualVolumeDurationSeconds: Int = 0
 ) {
     fun getNextOccurrence(now: LocalDateTime = LocalDateTime.now()): LocalDateTime {
         val rawNext = getActualNextOccurrence(now)

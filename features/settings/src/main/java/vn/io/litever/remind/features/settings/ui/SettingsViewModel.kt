@@ -18,7 +18,6 @@ data class SettingsUiState(
     val themeMode: String = "SYSTEM",
     val colorPalette: String = "DEFAULT",
     val language: String = "en",
-    val isIncreasingVolume: Boolean = false,
     val useBuiltInSpeaker: Boolean = true,
     val isPreNotificationEnabled: Boolean = true
 )
@@ -36,7 +35,6 @@ class SettingsViewModel @Inject constructor(
             preferencesDataSource.themeMode,
             preferencesDataSource.colorPalette,
             preferencesDataSource.language,
-            preferencesDataSource.isIncreasingVolume,
             preferencesDataSource.useBuiltInSpeaker,
             preferencesDataSource.isPreNotificationEnabled
         )
@@ -47,9 +45,8 @@ class SettingsViewModel @Inject constructor(
             themeMode = params[2] as String,
             colorPalette = params[3] as String,
             language = params[4] as String,
-            isIncreasingVolume = params[5] as Boolean,
-            useBuiltInSpeaker = params[6] as Boolean,
-            isPreNotificationEnabled = params[7] as Boolean
+            useBuiltInSpeaker = params[5] as Boolean,
+            isPreNotificationEnabled = params[6] as Boolean
         )
     }.stateIn(
         scope = viewModelScope,
@@ -87,11 +84,6 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun setIncreasingVolume(enabled: Boolean) {
-        viewModelScope.launch {
-            preferencesDataSource.setIncreasingVolume(enabled)
-        }
-    }
 
     fun setBuiltInSpeaker(enabled: Boolean) {
         viewModelScope.launch {

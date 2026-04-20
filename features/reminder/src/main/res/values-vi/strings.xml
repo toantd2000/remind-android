@@ -42,6 +42,11 @@
     <string name="repeat">Lặp lại</string>
     <string name="repeat_prefix">Lặp lại: %s</string>
     <string name="volume">Âm lượng</string>
+    <string name="gentle_reminder_title">Nhắc nhở nhẹ nhàng</string>
+    <string name="gentle_reminder_description">Âm lượng tăng dần trong thời gian đã đặt</string>
+    <string name="seconds_unit">%d giây</string>
+    <string name="seconds_unit_short">%ds</string>
+    <string name="minutes_unit_short">%dp</string>
     <string name="ringtone_selection_title">Âm thanh nhắc nhở</string>
     <string name="default_ringtone">Mặc định</string>
     <string name="no_ringtone">Không dùng âm thanh</string>

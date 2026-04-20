@@ -43,6 +43,11 @@
     <string name="repeat">Repeat</string>
     <string name="repeat_prefix">Repeat: %s</string>
     <string name="volume">Volume</string>
+    <string name="gentle_reminder_title">Gentle Reminder</string>
+    <string name="gentle_reminder_description">Gradually increase volume over set time</string>
+    <string name="seconds_unit">%d seconds</string>
+    <string name="seconds_unit_short">%ds</string>
+    <string name="minutes_unit_short">%dm</string>
     <string name="ringtone_selection_title">Reminder Sound</string>
     <string name="default_ringtone">Default</string>
     <string name="no_ringtone">No Sound</string>

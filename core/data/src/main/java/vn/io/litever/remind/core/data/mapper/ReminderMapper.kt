@@ -27,7 +27,8 @@ fun ReminderEntity.toModel(): Reminder {
         snoozeNextTriggerTime = snoozeNextTriggerTime,
         isMissed = isMissed,
         message = message,
-        skippedAt = skippedAt?.let { LocalDateTime.ofInstant(Instant.ofEpochMilli(it), ZoneId.systemDefault()) }
+        skippedAt = skippedAt?.let { LocalDateTime.ofInstant(Instant.ofEpochMilli(it), ZoneId.systemDefault()) },
+        gradualVolumeDurationSeconds = gradualVolumeDurationSeconds
     )
 }
 
@@ -51,6 +52,7 @@ fun Reminder.toEntity(): ReminderEntity {
         snoozeNextTriggerTime = snoozeNextTriggerTime,
         isMissed = isMissed,
         message = message,
-        skippedAt = skippedAt?.atZone(ZoneId.systemDefault())?.toInstant()?.toEpochMilli()
+        skippedAt = skippedAt?.atZone(ZoneId.systemDefault())?.toInstant()?.toEpochMilli(),
+        gradualVolumeDurationSeconds = gradualVolumeDurationSeconds
     )
 }

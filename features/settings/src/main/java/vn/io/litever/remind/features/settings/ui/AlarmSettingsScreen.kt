@@ -30,7 +30,6 @@ fun AlarmSettingsRoute(
     AlarmSettingsScreen(
         uiState = uiState,
         onNavigateBack = onNavigateBack,
-        onIncreasingVolumeChange = viewModel::setIncreasingVolume,
         onBuiltInSpeakerChange = viewModel::setBuiltInSpeaker,
         onPreNotificationChange = viewModel::setPreNotificationEnabled
     )
@@ -41,7 +40,6 @@ fun AlarmSettingsRoute(
 fun AlarmSettingsScreen(
     uiState: SettingsUiState,
     onNavigateBack: () -> Unit,
-    onIncreasingVolumeChange: (Boolean) -> Unit,
     onBuiltInSpeakerChange: (Boolean) -> Unit,
     onPreNotificationChange: (Boolean) -> Unit
 ) {
@@ -63,16 +61,6 @@ fun AlarmSettingsScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            item {
-                SettingsSwitchTile(
-                    title = stringResource(R.string.increasing_volume_title),
-                    subtitle = stringResource(R.string.increasing_volume_desc),
-                    checked = uiState.isIncreasingVolume,
-                    onCheckedChange = onIncreasingVolumeChange,
-                    icon = Icons.Rounded.VolumeUp
-                )
-            }
-            
             item {
                 SettingsSwitchTile(
                     title = stringResource(R.string.built_in_speaker_title),

@@ -45,7 +45,6 @@ class ReminderPreferencesDataSource @Inject constructor(
         }
     }
 
-    val isIncreasingVolume: Flow<Boolean> = dataStore.data.map { it[ALARM_INCREASING_VOLUME] ?: false }
     val useBuiltInSpeaker: Flow<Boolean> = dataStore.data.map { it[ALARM_BUILT_IN_SPEAKER] ?: true }
     val isPreNotificationEnabled: Flow<Boolean> = dataStore.data.map { it[ALARM_PRE_NOTIFICATION] ?: true }
 
@@ -79,10 +78,6 @@ class ReminderPreferencesDataSource @Inject constructor(
         }
     }
 
-    suspend fun setIncreasingVolume(enabled: Boolean) {
-        dataStore.edit { it[ALARM_INCREASING_VOLUME] = enabled }
-    }
-
     suspend fun setBuiltInSpeaker(enabled: Boolean) {
         dataStore.edit { it[ALARM_BUILT_IN_SPEAKER] = enabled }
     }
@@ -96,7 +91,6 @@ class ReminderPreferencesDataSource @Inject constructor(
         val THEME_MODE_KEY = stringPreferencesKey("theme_mode")
         val COLOR_PALETTE_KEY = stringPreferencesKey("color_palette")
         val LANGUAGE_KEY = stringPreferencesKey("language")
-        val ALARM_INCREASING_VOLUME = booleanPreferencesKey("alarm_increasing_volume")
         val ALARM_BUILT_IN_SPEAKER = booleanPreferencesKey("alarm_built_in_speaker")
         val ALARM_PRE_NOTIFICATION = booleanPreferencesKey("alarm_pre_notification")
     }

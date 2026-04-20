@@ -16,6 +16,10 @@ import androidx.compose.material.icons.rounded.QuestionAnswer
 import androidx.compose.material.icons.rounded.Security
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material.icons.rounded.PrivacyTip
+import android.net.Uri
+import androidx.browser.customtabs.CustomTabsIntent
+import android.content.Context
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ExperimentalMaterial3Api
 
@@ -74,6 +78,7 @@ fun SettingsScreen(
     onNavigateToAuthorInfo: () -> Unit,
     onNavigateToUpdateHistory: () -> Unit
 ) {
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -162,7 +167,14 @@ fun SettingsScreen(
                 SettingsItem(
                     title = stringResource(R.string.setting_terms),
                     icon = Icons.Rounded.Description,
-                    onClick = { /* TODO */ }
+                    onClick = { launchCustomTab(context, "https://info.litever.io.vn/legal/remind/terms") }
+                )
+            }
+            item {
+                SettingsItem(
+                    title = stringResource(R.string.setting_privacy),
+                    icon = Icons.Rounded.PrivacyTip,
+                    onClick = { launchCustomTab(context, "https://info.litever.io.vn/legal/remind/privacy") }
                 )
             }
             item {
@@ -181,7 +193,6 @@ fun SettingsScreen(
             }
 
             item {
-                val context = LocalContext.current
                 val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
                 val versionName = packageInfo.versionName ?: "1.0"
                 val versionCode = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
@@ -216,5 +227,16 @@ fun SettingsScreenPreview() {
             onNavigateToAuthorInfo = {},
             onNavigateToUpdateHistory = {}
         )
+    }
+}
+
+private fun launchCustomTab(context: Context, url: String) {
+    try {
+        val customTabsIntent = CustomTabsIntent.Builder().build()
+        customTabsIntent.launchUrl(context, Uri.parse(url))
+    } catch (e: Exception) {
+        // Fallback to regular browser if Custom Tabs fails
+        val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, Uri.parse(url))
+        context.startActivity(intent)
     }
 }

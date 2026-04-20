@@ -36,6 +36,7 @@
     
     <string name="setting_story">Story - Author</string>
     <string name="setting_terms">Terms of Service</string>
+    <string name="setting_privacy">Privacy Policy</string>
     <string name="setting_history">Update History</string>
     <string name="setting_licenses">Open Source Licenses</string>
 

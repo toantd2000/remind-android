@@ -42,6 +42,8 @@ val surfaceContainerHighestLight = Color(0xFFEEE0D4)
 // Logo Colors
 val logo_up_light = Color(0xFF6B7280)
 val logo_remind_light = Color(0xFFF59E0B)
+val brandLite = Color(0xFF6B7280)
+val brandVer = Color(0xFF2563EB)
 
 // Default Dark Colors
 val primaryDark = Color(0xFFF8BB71)

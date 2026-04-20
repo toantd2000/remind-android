@@ -44,6 +44,8 @@ fun SettingsRoute(
     onNavigateToPermissions: () -> Unit,
     onNavigateToAlarmSettings: () -> Unit,
     onNavigateToLicenses: () -> Unit,
+    onNavigateToAuthorInfo: () -> Unit,
+    onNavigateToUpdateHistory: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -53,7 +55,9 @@ fun SettingsRoute(
         onNavigateToQA = onNavigateToQA,
         onNavigateToPermissions = onNavigateToPermissions,
         onNavigateToAlarmSettings = onNavigateToAlarmSettings,
-        onNavigateToLicenses = onNavigateToLicenses
+        onNavigateToLicenses = onNavigateToLicenses,
+        onNavigateToAuthorInfo = onNavigateToAuthorInfo,
+        onNavigateToUpdateHistory = onNavigateToUpdateHistory
     )
 }
 
@@ -66,7 +70,9 @@ fun SettingsScreen(
     onNavigateToQA: () -> Unit,
     onNavigateToPermissions: () -> Unit,
     onNavigateToAlarmSettings: () -> Unit,
-    onNavigateToLicenses: () -> Unit
+    onNavigateToLicenses: () -> Unit,
+    onNavigateToAuthorInfo: () -> Unit,
+    onNavigateToUpdateHistory: () -> Unit
 ) {
 
     Scaffold(
@@ -149,7 +155,7 @@ fun SettingsScreen(
                 SettingsItem(
                     title = stringResource(R.string.setting_story),
                     icon = Icons.Rounded.History,
-                    onClick = { /* TODO */ }
+                    onClick = onNavigateToAuthorInfo
                 )
             }
             item {
@@ -163,7 +169,7 @@ fun SettingsScreen(
                 SettingsItem(
                     title = stringResource(R.string.setting_history),
                     icon = Icons.Rounded.Code,
-                    onClick = { /* TODO */ }
+                    onClick = onNavigateToUpdateHistory
                 )
             }
             item {
@@ -206,7 +212,9 @@ fun SettingsScreenPreview() {
             onNavigateToQA = {},
             onNavigateToPermissions = {},
             onNavigateToAlarmSettings = {},
-            onNavigateToLicenses = {}
+            onNavigateToLicenses = {},
+            onNavigateToAuthorInfo = {},
+            onNavigateToUpdateHistory = {}
         )
     }
 }

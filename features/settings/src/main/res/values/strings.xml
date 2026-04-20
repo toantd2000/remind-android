@@ -42,6 +42,10 @@
     <string name="setting_version_title">App Version</string>
     <string name="app_version_format">%1$s (%2$d)</string>
 
+    <string name="author_info_slogan">Lightweight Code. Solid Core.</string>
+    <string name="author_info_meaning">Modern technology, light yet solid, reliable.</string>
+    <string name="author_info_developed_by">Developed with ❤️ by LiteVer Team</string>
+
     <!-- Permissions -->
     <string name="permission_granted">Granted</string>
     <string name="permission_denied">Denied</string>

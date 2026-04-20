@@ -17,7 +17,7 @@ Quy trình này áp dụng khi tính năng đã hoàn thiện và sẵn sàng đ
 
 *   **Version Code & Name:** Cập nhật `versionCode` (tăng lên 1). `versionName` sẽ tự động được tạo theo ngày (YYYY.MM.DD) khi build bản release.
 *   **Open Source Licenses:** Giấy phép mã nguồn mở được tự động cập nhật bởi plugin `aboutLibraries`. Đảm bảo file `aboutlibraries.json` (nếu có cấu hình tùy chỉnh) đã được cập nhật.
-*   **Changelog:** Cập nhật file `CHANGELOG.md` với các tính năng và bản sửa lỗi mới.
+*   **Changelog:** Cập nhật file `CHANGELOG.md` cho nhà phát triển VÀ file `features/settings/src/main/assets/changelog.json` để hiển thị lịch sử cập nhật ngay trong ứng dụng.
 
 ## Giai đoạn 3: Đóng gói (Bundling)
 

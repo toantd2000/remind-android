@@ -5,13 +5,36 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
+import vn.io.litever.remind.core.designsystem.components.BrandLogo
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,6 +62,9 @@ import vn.io.litever.remind.features.settings.ui.navigateToQA
 import vn.io.litever.remind.features.settings.ui.navigateToPermissions
 import vn.io.litever.remind.features.settings.ui.navigateToAlarmSettings
 import vn.io.litever.remind.features.settings.ui.navigateToLicenses
+import vn.io.litever.remind.features.settings.ui.navigateToAuthorInfo
+import vn.io.litever.remind.features.settings.ui.navigateToUpdateHistory
+import vn.io.litever.remind.core.designsystem.components.ReMindLogo
 
 
 import androidx.activity.viewModels
@@ -92,6 +118,7 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         
         handleLockScreenBypass()
@@ -125,10 +152,15 @@ class MainActivity : ComponentActivity() {
             
             CompositionLocalProvider(LocalContext provides localizedContext) {
                 ReMindTheme(darkTheme = darkTheme, colorPalette = colorPalette) {
-                    Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.background
-                    ) {
+                    var showBranding by remember { mutableStateOf(true) }
+
+                    if (showBranding) {
+                        BrandingSplashScreen(onFinished = { showBranding = false })
+                    } else {
+                        Surface(
+                            modifier = Modifier.fillMaxSize(),
+                            color = MaterialTheme.colorScheme.background
+                        ) {
                         val navController = rememberNavController()
                         
                         // Observe Global Ringing State
@@ -238,12 +270,73 @@ class MainActivity : ComponentActivity() {
                                         onNavigateToPermissions = { navController.navigateToPermissions() },
                                         onNavigateToAlarmSettings = { navController.navigateToAlarmSettings() },
                                         onNavigateToLicenses = { navController.navigateToLicenses() },
+                                        onNavigateToAuthorInfo = { navController.navigateToAuthorInfo() },
+                                        onNavigateToUpdateHistory = { navController.navigateToUpdateHistory() },
                                         onNavigateBack = { navController.popBackStack() }
 
                                     )
                                 }
                             }
                         }
+                    }
+                }
+            }
+        }
+    }
+}
+
+    @Composable
+    private fun BrandingSplashScreen(onFinished: () -> Unit) {
+        var visible by remember { mutableStateOf(false) }
+
+        LaunchedEffect(Unit) {
+            delay(300) // Small delay before animation
+            visible = true
+            delay(2000) // Show for 2 seconds
+            onFinished()
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
+            contentAlignment = Alignment.Center
+        ) {
+            AnimatedVisibility(
+                visible = visible,
+                enter = fadeIn(animationSpec = tween(1000)),
+                exit = fadeOut(animationSpec = tween(500))
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.padding(24.dp)
+                ) {
+                    // App Logo (Large)
+                    ReMindLogo(fontSize = 72.sp)
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Slogan
+                    Text(
+                        text = stringResource(R.string.app_slogan),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontWeight = FontWeight.Medium,
+                        textAlign = TextAlign.Center
+                    )
+
+                    Spacer(modifier = Modifier.height(64.dp))
+
+                    // Brand Attribution
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "by ",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.outline
+                        )
+                        BrandLogo(fontSize = 18.sp)
                     }
                 }
             }

@@ -41,6 +41,10 @@
 
     <string name="setting_version_title">Phiên bản ứng dụng</string>
     <string name="app_version_format">%1$s (%2$d)</string>
+
+    <string name="author_info_slogan">Lightweight Code. Solid Core.</string>
+    <string name="author_info_meaning">Công nghệ hiện đại, nhẹ nhàng nhưng vững chắc, đáng tin cậy.</string>
+    <string name="author_info_developed_by">Phát triển với ❤️ bởi LiteVer Team</string>
     
     <!-- Permissions -->
     <string name="permission_granted">Đã cấp quyền</string>

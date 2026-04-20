@@ -127,7 +127,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             val themeMode by viewModel.themeMode.collectAsState(initial = "SYSTEM")
             val colorPalette by viewModel.colorPalette.collectAsState(initial = "DYNAMIC")
-            val language by viewModel.language.collectAsState(initial = "en")
+            val language by viewModel.language.collectAsState(
+                initial = if (java.util.Locale.getDefault().language == "vi") "vi" else "en"
+            )
             
             val context = LocalContext.current
             val localizedContext = remember(language) {

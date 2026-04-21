@@ -105,27 +105,46 @@ class ReminderControllerImpl @Inject constructor(
                 alarmManager.setAlarmClock(alarmClockInfo, pendingIntent)
             }
         }
-        currentReminderId?.let { reminderRingManager.dequeueReminder(it) }
+        // NO OVERLAP RULE: Don't dequeue here. The alarm stays in queue during snooze
+        // to prevent next alarm from ringing until this session is finished.
     }
 
     override fun markAsMissed(reminderId: Long?) {
         val currentReminderId = reminderId ?: reminderRingManager.ringingReminderId.value
         if (currentReminderId != null) {
-            runBlocking {
-                val reminder = reminderRepository.getReminderById(currentReminderId)
-                if (reminder != null) {
+            val reminder = runBlocking { reminderRepository.getReminderById(currentReminderId) }
+            if (reminder != null) {
+                // AUTO-SNOOZE LOGIC: If we haven't reached snooze limit, snooze instead of marking as missed
+                if (reminder.snoozeEnabled && reminder.currentSnoozeCount < reminder.snoozeRepeatCount) {
+                    snoozeReminder(currentReminderId)
+                    return
+                }
+
+                runBlocking {
                     val updatedReminder = reminder.copy(
                         isMissed = true,
                         snoozeNextTriggerTime = null
                     )
                     reminderRepository.updateReminder(updatedReminder)
 
+                    // Deep link to message screen
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("app://remind/message/${reminder.id}")).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    }
+                    val pendingIntent = PendingIntent.getActivity(
+                        context,
+                        reminder.id.hashCode(),
+                        intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    )
+
                     // Show a silent notification
                     val notification = androidx.core.app.NotificationCompat.Builder(context, "reminder_channel")
                         .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
-                        .setContentTitle("Missed Alarm")
-                        .setContentText(reminder.label.ifEmpty { "You missed an alarm" })
+                        .setContentTitle(context.getString(vn.io.litever.remind.core.reminder.R.string.missed_alarm_title))
+                        .setContentText(reminder.label.ifEmpty { context.getString(vn.io.litever.remind.core.reminder.R.string.missed_alarm_text) })
                         .setPriority(androidx.core.app.NotificationCompat.PRIORITY_DEFAULT)
+                        .setContentIntent(pendingIntent)
                         .setAutoCancel(true)
                         .build()
                     notificationManager.notify(currentReminderId.toInt(), notification)
@@ -133,5 +152,36 @@ class ReminderControllerImpl @Inject constructor(
             }
         }
         currentReminderId?.let { reminderRingManager.dequeueReminder(it) }
+    }
+
+    override fun cancelSnooze(reminderId: Long) {
+        // Cancel any pending snooze
+        val snoozeIntent = Intent(context, ReminderReceiver::class.java).apply {
+            action = ACTION_TRIGGER_REMINDER
+            putExtra(EXTRA_REMINDER_ID, reminderId)
+            putExtra(EXTRA_IS_SNOOZE, true)
+        }
+        val pendingSnooze = PendingIntent.getBroadcast(
+            context,
+            reminderId.hashCode(),
+            snoozeIntent,
+            PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
+        )
+        if (pendingSnooze != null) {
+            alarmManager.cancel(pendingSnooze)
+            pendingSnooze.cancel()
+        }
+
+        runBlocking {
+            val reminder = reminderRepository.getReminderById(reminderId)
+            if (reminder != null) {
+                val updatedReminder = reminder.copy(
+                    currentSnoozeCount = 0,
+                    snoozeNextTriggerTime = null,
+                    isMissed = false
+                )
+                reminderRepository.updateReminder(updatedReminder)
+            }
+        }
     }
 }

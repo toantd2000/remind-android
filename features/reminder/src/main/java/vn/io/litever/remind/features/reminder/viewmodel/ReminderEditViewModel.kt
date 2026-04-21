@@ -10,6 +10,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
@@ -42,12 +45,14 @@ data class ReminderEditUiState(
     val snoozeInterval: Int = 5,
     val snoozeRepeatCount: Int = 3,
     val autoSilenceMinutes: Int = 3,
-    val gradualVolumeDurationSeconds: Int = 0
+    val gradualVolumeDurationSeconds: Int = 0,
+    val missions: List<vn.io.litever.remind.core.model.Mission> = emptyList()
 )
 
 @HiltViewModel
 class ReminderEditViewModel @Inject constructor(
     private val repository: ReminderRepository,
+    private val missionRepository: vn.io.litever.remind.core.domain.repository.MissionRepository,
     private val reminderScheduler: ReminderScheduler,
     private val preferencesDataSource: ReminderPreferencesDataSource,
     private val permissionChecker: vn.io.litever.remind.core.common.util.PermissionChecker,
@@ -106,26 +111,57 @@ class ReminderEditViewModel @Inject constructor(
         if (reminderId == 0L || _uiState.value.id == reminderId) return
         viewModelScope.launch {
             repository.getReminderById(reminderId)?.let { reminder ->
-                _uiState.value = ReminderEditUiState(
-                    id = reminder.id,
-                    time = reminder.time,
-                    label = reminder.label,
-                    message = reminder.message,
-                    repeatDays = reminder.repeatDays,
-                    date = reminder.date,
-                    vibrationEnabled = reminder.vibrationEnabled,
-                    ringtoneUri = reminder.ringtoneUri,
-                    ringtoneTitle = getRingtoneTitle(reminder.ringtoneUri),
-                    volume = reminder.volume,
-                    maxVolume = audioManager.getStreamMaxVolume(android.media.AudioManager.STREAM_ALARM),
-                    isEnabled = reminder.isEnabled,
-                    snoozeEnabled = reminder.snoozeEnabled,
-                    snoozeInterval = reminder.snoozeInterval,
-                    snoozeRepeatCount = reminder.snoozeRepeatCount,
-                    autoSilenceMinutes = reminder.autoSilenceMinutes,
-                    gradualVolumeDurationSeconds = reminder.gradualVolumeDurationSeconds
-                )
+                val missions = missionRepository.getMissionsForReminder(reminderId).first()
+                _uiState.update { it.copy(
+                        id = reminder.id,
+                        time = reminder.time,
+                        label = reminder.label,
+                        message = reminder.message,
+                        repeatDays = reminder.repeatDays,
+                        date = reminder.date,
+                        vibrationEnabled = reminder.vibrationEnabled,
+                        ringtoneUri = reminder.ringtoneUri,
+                        ringtoneTitle = getRingtoneTitle(reminder.ringtoneUri),
+                        volume = reminder.volume,
+                        maxVolume = audioManager.getStreamMaxVolume(android.media.AudioManager.STREAM_ALARM),
+                        isEnabled = reminder.isEnabled,
+                        snoozeEnabled = reminder.snoozeEnabled,
+                        snoozeInterval = reminder.snoozeInterval,
+                        snoozeRepeatCount = reminder.snoozeRepeatCount,
+                        autoSilenceMinutes = reminder.autoSilenceMinutes,
+                        gradualVolumeDurationSeconds = reminder.gradualVolumeDurationSeconds,
+                        missions = missions
+                    )
+                }
             }
+        }
+    }
+
+    fun addMission(type: vn.io.litever.remind.core.model.MissionType) {
+        if (_uiState.value.missions.size >= 5) return
+        val newMission = vn.io.litever.remind.core.model.Mission(
+            reminderId = _uiState.value.id,
+            type = type,
+            order = _uiState.value.missions.size
+        )
+        _uiState.update { it.copy(missions = it.missions + newMission) }
+    }
+
+    fun updateMission(mission: vn.io.litever.remind.core.model.Mission) {
+        _uiState.update { state ->
+            val updatedMissions = state.missions.map {
+                if (it.order == mission.order) mission else it
+            }
+            state.copy(missions = updatedMissions)
+        }
+    }
+
+    fun removeMission(mission: vn.io.litever.remind.core.model.Mission) {
+        _uiState.update { state ->
+            val updatedMissions = (state.missions - mission).mapIndexed { index, m ->
+                m.copy(order = index)
+            }
+            state.copy(missions = updatedMissions)
         }
     }
 
@@ -323,16 +359,26 @@ class ReminderEditViewModel @Inject constructor(
                 snoozeInterval = state.snoozeInterval,
                 snoozeRepeatCount = state.snoozeRepeatCount,
                 autoSilenceMinutes = state.autoSilenceMinutes,
-                gradualVolumeDurationSeconds = state.gradualVolumeDurationSeconds
+                gradualVolumeDurationSeconds = state.gradualVolumeDurationSeconds,
+                missions = state.missions
             )
             
             if (state.id == 0L) {
                 val savedId = repository.insertReminder(reminder)
+                // Save missions for new reminder
+                state.missions.forEach { mission ->
+                    missionRepository.saveMission(mission.copy(reminderId = savedId))
+                }
                 if (reminder.isEnabled) {
                     reminderScheduler.schedule(reminder.copy(id = savedId))
                 }
             } else {
                 repository.updateReminder(reminder)
+                // Update missions for existing reminder
+                missionRepository.deleteMissionsForReminder(state.id)
+                state.missions.forEach { mission ->
+                    missionRepository.saveMission(mission)
+                }
                 if (reminder.isEnabled) {
                     reminderScheduler.schedule(reminder)
                 } else {

@@ -42,12 +42,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material.icons.Icons
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Keyboard
+import androidx.compose.material.icons.rounded.Calculate
+import androidx.compose.material.icons.rounded.QrCodeScanner
+import androidx.compose.material.icons.rounded.Extension
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Notifications
+import androidx.compose.material.icons.rounded.Snooze
+import androidx.compose.material.icons.rounded.AlarmOff
+import androidx.compose.material.icons.rounded.GraphicEq
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.VolumeUp
 import androidx.compose.material.icons.rounded.VolumeOff
 import androidx.compose.material.icons.rounded.Vibration
 import androidx.compose.material.icons.rounded.ChevronRight
+import vn.io.litever.remind.features.mission.ui.components.MissionSelectionBottomSheet
+import vn.io.litever.remind.core.model.MissionType
 import androidx.compose.material.icons.rounded.Snooze
 import androidx.compose.material.icons.rounded.AlarmOff
 import androidx.compose.material.icons.rounded.Edit
@@ -108,12 +121,28 @@ fun ReminderEditRoute(
     onRingtoneSelectionClick: (String?) -> Unit,
     onSnoozeSettingsClick: (Boolean, Int, Int) -> Unit,
     onNavigateToPermissions: () -> Unit,
+    onAddMissionClick: () -> Unit,
+    onMissionClick: (vn.io.litever.remind.core.model.Mission) -> Unit,
     navController: androidx.navigation.NavController,
     viewModel: ReminderEditViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val nextReminderState by viewModel.nextReminderState.collectAsState()
     val is24HourFormat by viewModel.is24HourFormat.collectAsState()
+    val nextReminderState by viewModel.nextReminderState.collectAsState()
+
+    var showMissionSelection by remember { mutableStateOf(false) }
+
+    // Observe result from TypingMissionConfig
+    val updatedMission by navController.currentBackStackEntry?.savedStateHandle
+        ?.getStateFlow<vn.io.litever.remind.core.model.Mission?>("updatedMission", null)
+        ?.collectAsState() ?: remember { mutableStateOf(null) }
+
+    LaunchedEffect(updatedMission) {
+        updatedMission?.let {
+            viewModel.updateMission(it)
+            navController.currentBackStackEntry?.savedStateHandle?.remove<vn.io.litever.remind.core.model.Mission>("updatedMission")
+        }
+    }
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -188,6 +217,15 @@ fun ReminderEditRoute(
         viewModel.loadReminder(reminderId)
     }
 
+    if (showMissionSelection) {
+        MissionSelectionBottomSheet(
+            onDismissRequest = { showMissionSelection = false },
+            onMissionTypeSelected = { type: MissionType ->
+                viewModel.addMission(type)
+            }
+        )
+    }
+
     ReminderEditScreen(
         uiState = uiState,
         nextReminderState = nextReminderState,
@@ -218,7 +256,10 @@ fun ReminderEditRoute(
         onVolumeChange = viewModel::updateVolume,
         onTogglePreview = viewModel::toggleRingtonePlayback,
         onDateChange = viewModel::updateDate,
-        onGradualVolumeChange = viewModel::updateGradualVolumeDuration
+        onGradualVolumeChange = viewModel::updateGradualVolumeDuration,
+        onAddMissionClick = { showMissionSelection = true },
+        onMissionClick = onMissionClick,
+        onMissionRemove = viewModel::removeMission
     )
 }
 
@@ -244,7 +285,10 @@ fun ReminderEditScreen(
     onVolumeChange: (Int) -> Unit,
     onTogglePreview: () -> Unit,
     onDateChange: (LocalDate?) -> Unit,
-    onGradualVolumeChange: (Int) -> Unit
+    onGradualVolumeChange: (Int) -> Unit,
+    onAddMissionClick: () -> Unit,
+    onMissionClick: (vn.io.litever.remind.core.model.Mission) -> Unit,
+    onMissionRemove: (vn.io.litever.remind.core.model.Mission) -> Unit
 ) {
     val timePickerState = androidx.compose.runtime.key(uiState.id, is24HourFormat) {
         rememberTimePickerState(
@@ -823,6 +867,71 @@ fun ReminderEditScreen(
                 }
 
                 item {
+                    // Group 6: Missions
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(
+                                alpha = 0.3f
+                            )
+                        ),
+                        shape = MaterialTheme.shapes.extraLarge
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_title),
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "${uiState.missions.size}/5",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            
+                            Spacer(modifier = Modifier.height(12.dp))
+                            
+                            uiState.missions.forEach { mission ->
+                                MissionRow(
+                                    mission = mission,
+                                    onClick = { onMissionClick(mission) },
+                                    onDelete = { onMissionRemove(mission) }
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
+                            
+                            if (uiState.missions.size < 5) {
+                                OutlinedButton(
+                                    onClick = onAddMissionClick,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = MaterialTheme.shapes.medium,
+                                    border = androidx.compose.foundation.BorderStroke(
+                                        1.dp, 
+                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                                    )
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.Add, 
+                                        contentDescription = null,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(stringResource(vn.io.litever.remind.core.designsystem.R.string.add_mission))
+                                }
+                            }
+                        }
+                    }
+                }
+
+                item {
                     Spacer(modifier = Modifier.height(100.dp + padding.calculateBottomPadding()))
                 }
             }
@@ -1028,7 +1137,10 @@ fun ReminderEditScreenPreview() {
             onVolumeChange = {},
             onTogglePreview = {},
             onDateChange = {},
-            onGradualVolumeChange = {}
+            onGradualVolumeChange = {},
+            onAddMissionClick = {},
+            onMissionClick = {},
+            onMissionRemove = {}
         )
     }
 }
@@ -1062,8 +1174,85 @@ fun ReminderEditScreenDarkPreview() {
             onVolumeChange = {},
             onTogglePreview = {},
             onDateChange = {},
-            onGradualVolumeChange = {}
+            onGradualVolumeChange = {},
+            onAddMissionClick = {},
+            onMissionClick = {},
+            onMissionRemove = {}
         )
+    }
+}
+
+@Composable
+private fun MissionRow(
+    mission: vn.io.litever.remind.core.model.Mission,
+    onClick: () -> Unit,
+    onDelete: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.medium)
+            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))
+            .clickable(onClick = onClick)
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        val icon = when (mission.type) {
+            vn.io.litever.remind.core.model.MissionType.TYPING -> Icons.Rounded.Keyboard
+            vn.io.litever.remind.core.model.MissionType.MATH -> Icons.Rounded.Calculate
+            vn.io.litever.remind.core.model.MissionType.SHAKE -> Icons.Rounded.Vibration
+            vn.io.litever.remind.core.model.MissionType.QR_CODE -> Icons.Rounded.QrCodeScanner
+            else -> Icons.Rounded.Extension
+        }
+
+        val title = when (mission.type) {
+            vn.io.litever.remind.core.model.MissionType.TYPING -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_typing)
+            vn.io.litever.remind.core.model.MissionType.MATH -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_math)
+            vn.io.litever.remind.core.model.MissionType.SHAKE -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_shake)
+            vn.io.litever.remind.core.model.MissionType.QR_CODE -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_qr_code)
+            else -> mission.type.name
+        }
+
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .clip(MaterialTheme.shapes.medium)
+                .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
+        }
+
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 12.dp)
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
+            )
+            Text(
+                text = stringResource(vn.io.litever.remind.core.designsystem.R.string.times_unit, mission.repeatCount),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+
+        IconButton(onClick = onDelete) {
+            Icon(
+                imageVector = Icons.Rounded.Delete,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp),
+                tint = MaterialTheme.colorScheme.error.copy(alpha = 0.6f)
+            )
+        }
     }
 }
 

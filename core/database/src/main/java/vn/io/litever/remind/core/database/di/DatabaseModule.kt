@@ -9,6 +9,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import vn.io.litever.remind.core.database.RemindDatabase
 import vn.io.litever.remind.core.database.dao.ReminderDao
+import vn.io.litever.remind.core.database.dao.MissionDao
+import vn.io.litever.remind.core.database.dao.PhraseDao
 import javax.inject.Singleton
 
 @Module
@@ -31,5 +33,15 @@ object DatabaseModule {
     @Provides
     fun provideReminderDao(database: RemindDatabase): ReminderDao {
         return database.reminderDao()
+    }
+
+    @Provides
+    fun provideMissionDao(database: RemindDatabase): MissionDao {
+        return database.missionDao()
+    }
+
+    @Provides
+    fun providePhraseDao(database: RemindDatabase): PhraseDao {
+        return database.phraseDao()
     }
 }

@@ -11,13 +11,18 @@ const val reminderEditRoute = "reminder_edit_route/{reminderId}"
 const val reminderRingingRoute = "reminder_ringing_route/{reminderId}"
 const val ringtoneSelectionRoute = "ringtone_selection_route"
 const val snoozeSettingsRoute = "snooze_settings_route"
+const val reminderMessageRoute = "reminder_message_route/{reminderId}"
 
 fun NavGraphBuilder.reminderGraph(
     onNavigateToEdit: (Long) -> Unit,
     onNavigateToRingtoneSelection: (String?) -> Unit,
     onNavigateToSnoozeSettings: (Boolean, Int, Int) -> Unit,
     onNavigateToPermissions: () -> Unit,
+    onNavigateToMissionRinging: (Long) -> Unit,
+    onNavigateToMessage: (Long) -> Unit,
     onNavigateBack: () -> Unit,
+    onAddMissionClick: () -> Unit,
+    onMissionClick: (vn.io.litever.remind.core.model.Mission) -> Unit,
     navController: androidx.navigation.NavController
 ) {
     composable(route = reminderListRoute) {
@@ -39,6 +44,8 @@ fun NavGraphBuilder.reminderGraph(
             onRingtoneSelectionClick = onNavigateToRingtoneSelection,
             onSnoozeSettingsClick = onNavigateToSnoozeSettings,
             onNavigateToPermissions = onNavigateToPermissions,
+            onAddMissionClick = onAddMissionClick,
+            onMissionClick = onMissionClick,
             navController = navController
         )
     }
@@ -79,6 +86,20 @@ fun NavGraphBuilder.reminderGraph(
     ) { backStackEntry ->
         val reminderId = backStackEntry.arguments?.getLong("reminderId") ?: -1L
         ReminderRingingRoute(
+            reminderId = reminderId,
+            onFinish = onNavigateBack,
+            onStartMission = onNavigateToMissionRinging,
+            onDismissSuccess = onNavigateToMessage,
+            navController = navController
+        )
+    }
+    composable(
+        route = reminderMessageRoute,
+        arguments = listOf(navArgument("reminderId") { type = NavType.LongType }),
+        deepLinks = listOf(navDeepLink { uriPattern = "app://remind/message/{reminderId}" })
+    ) { backStackEntry ->
+        val reminderId = backStackEntry.arguments?.getLong("reminderId") ?: -1L
+        ReminderMessageRoute(
             reminderId = reminderId,
             onFinish = onNavigateBack
         )

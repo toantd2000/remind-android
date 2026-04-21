@@ -1,7 +1,6 @@
 package vn.io.litever.remind.features.reminder.ui
 
 import androidx.activity.compose.BackHandler
-
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -35,12 +34,38 @@ import vn.io.litever.remind.core.model.Reminder
 fun ReminderRingingRoute(
     reminderId: Long,
     onFinish: () -> Unit,
+    onStartMission: (Long) -> Unit,
+    onDismissSuccess: (Long) -> Unit,
+    navController: androidx.navigation.NavController,
     modifier: Modifier = Modifier,
     viewModel: ReminderRingingViewModel = hiltViewModel()
 ) {
     val is24HourFormat by viewModel.is24HourFormat.collectAsState()
     val reminder by viewModel.reminder.collectAsState()
     val autoSilenceCountdown by viewModel.autoSilenceCountdown.collectAsState()
+    
+    val missionResult by navController.currentBackStackEntry
+        ?.savedStateHandle
+        ?.getStateFlow<String?>("mission_result", null)
+        ?.collectAsState() ?: remember { mutableStateOf(null) }
+
+    LaunchedEffect(missionResult) {
+        when (missionResult) {
+            "abandoned" -> {
+                viewModel.onAbandonMission()
+                navController.currentBackStackEntry?.savedStateHandle?.remove<String>("mission_result")
+            }
+            "success" -> {
+                viewModel.dismissReminder()
+                onDismissSuccess(reminderId)
+                navController.currentBackStackEntry?.savedStateHandle?.remove<String>("mission_result")
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        // Stop sound if we are returning from mission success (handled by startMission earlier)
+    }
 
     ReminderRingingScreen(
         reminder = reminder,
@@ -48,9 +73,15 @@ fun ReminderRingingRoute(
         autoSilenceCountdown = autoSilenceCountdown,
         onDismiss = {
             viewModel.dismissReminder()
+            onDismissSuccess(reminderId)
         },
         onSnooze = {
             viewModel.snoozeReminder()
+            onFinish()
+        },
+        onStartMission = {
+            viewModel.startMission()
+            onStartMission(reminderId)
         },
         modifier = modifier
     )
@@ -63,6 +94,7 @@ fun ReminderRingingScreen(
     autoSilenceCountdown: Int? = null,
     onDismiss: () -> Unit,
     onSnooze: () -> Unit,
+    onStartMission: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var remainingSnoozeSeconds by remember { mutableLongStateOf(0L) }
@@ -220,29 +252,36 @@ fun ReminderRingingScreen(
             // Middle: Icon or Pulse Effect
             Box(
                 modifier = Modifier
-                    .size(200.dp)
-                    .scale(pulseScale),
+                    .weight(1f)
+                    .fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            brush = Brush.radialGradient(
-                                colors = listOf(
-                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
-                                    Color.Transparent
-                                )
-                            ),
-                            shape = CircleShape
-                        )
-                )
-                Icon(
-                    imageVector = Icons.Rounded.Notifications,
-                    contentDescription = null,
-                    modifier = Modifier.size(80.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
+                        .size(200.dp)
+                        .scale(pulseScale),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(
+                                brush = Brush.radialGradient(
+                                    colors = listOf(
+                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                                        Color.Transparent
+                                    )
+                                ),
+                                shape = CircleShape
+                            )
+                    )
+                    Icon(
+                        imageVector = Icons.Rounded.Notifications,
+                        contentDescription = null,
+                        modifier = Modifier.size(80.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
 
             // Bottom: Actions
@@ -257,9 +296,9 @@ fun ReminderRingingScreen(
                 if (isNotMissedNorSnoozing && (reminder == null || (reminder.snoozeEnabled && reminder.currentSnoozeCount < reminder.snoozeRepeatCount))) {
                     val remainingSnoozes = if (reminder != null) reminder.snoozeRepeatCount - reminder.currentSnoozeCount else 0
                     val snoozeText = if (reminder != null && remainingSnoozes > 0) {
-                        stringResource(R.string.snooze_limit_format, remainingSnoozes)
+                        stringResource(vn.io.litever.remind.features.reminder.R.string.snooze_limit_format, remainingSnoozes)
                     } else {
-                        stringResource(R.string.snooze)
+                        stringResource(vn.io.litever.remind.core.designsystem.R.string.snooze)
                     }
 
                     OutlinedButton(
@@ -278,14 +317,32 @@ fun ReminderRingingScreen(
                 }
 
                 Button(
-                    onClick = onDismiss,
+                    onClick = {
+                        val hasMission = (reminder?.missions?.isNotEmpty() == true) && reminder?.isMissed != true
+                        if (hasMission) {
+                            onStartMission()
+                        } else {
+                            onDismiss()
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
-                    shape = MaterialTheme.shapes.extraLarge
+                    shape = MaterialTheme.shapes.extraLarge,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
                 ) {
+                    val hasMission = (reminder?.missions?.isNotEmpty() == true) && reminder?.isMissed != true
+                    val dismissText = if (hasMission) {
+                        stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_start)
+                    } else if (reminder?.isMissed == true) {
+                        stringResource(vn.io.litever.remind.core.designsystem.R.string.dismiss) // Or "View Message"
+                    } else {
+                        stringResource(vn.io.litever.remind.core.designsystem.R.string.dismiss)
+                    }
                     Text(
-                        text = stringResource(R.string.dismiss),
+                        text = dismissText,
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                     )
                 }
@@ -310,7 +367,8 @@ fun ReminderRingingScreenPreview() {
             ),
             is24HourFormat = false,
             onDismiss = {},
-            onSnooze = {}
+            onSnooze = {},
+            onStartMission = {}
         )
     }
 }
@@ -331,7 +389,8 @@ fun ReminderRingingScreenNoSnoozePreview() {
             ),
             is24HourFormat = true,
             onDismiss = {},
-            onSnooze = {}
+            onSnooze = {},
+            onStartMission = {}
         )
     }
 }

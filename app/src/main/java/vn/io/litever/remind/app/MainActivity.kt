@@ -65,6 +65,10 @@ import vn.io.litever.remind.features.settings.ui.navigateToLicenses
 import vn.io.litever.remind.features.settings.ui.navigateToAuthorInfo
 import vn.io.litever.remind.features.settings.ui.navigateToUpdateHistory
 import vn.io.litever.remind.core.designsystem.components.ReMindLogo
+import vn.io.litever.remind.features.mission.ui.missionGraph
+import vn.io.litever.remind.features.mission.ui.navigateToTypingMissionConfig
+import vn.io.litever.remind.features.mission.ui.navigateToPhraseSelection
+import vn.io.litever.remind.features.mission.ui.navigateToMissionRinging
 
 
 import androidx.activity.viewModels
@@ -173,17 +177,25 @@ class MainActivity : ComponentActivity() {
                         val ringingReminderId by reminderRingManager.ringingReminderId.collectAsState()
                         val activeBlockingReminderId by viewModel.activeBlockingReminderId.collectAsState()
                         
-                        LaunchedEffect(ringingReminderId, activeBlockingReminderId) {
+                        val navBackStackEntry by navController.currentBackStackEntryAsState()
+                        val currentRoute = navBackStackEntry?.destination?.route
+
+                        LaunchedEffect(ringingReminderId, activeBlockingReminderId, currentRoute) {
                             val idToRing = ringingReminderId ?: activeBlockingReminderId
                             if (idToRing != null) {
-                                navController.navigate("reminder_ringing_route/$idToRing") {
-                                    popUpTo("reminder_ringing_route/{reminderId}") {
-                                        inclusive = true
+                                // NO OVERLAP RULE: Don't interrupt if user is in a mission or viewing a message
+                                val isUserBusy = currentRoute?.startsWith("mission_ringing_route") == true ||
+                                               currentRoute?.startsWith("reminder_message_route") == true
+                                
+                                if (!isUserBusy) {
+                                    navController.navigate("reminder_ringing_route/$idToRing") {
+                                        popUpTo("reminder_ringing_route/{reminderId}") {
+                                            inclusive = true
+                                        }
+                                        launchSingleTop = true
                                     }
-                                    launchSingleTop = true
                                 }
                             } else {
-                                val currentRoute = navController.currentBackStackEntry?.destination?.route
                                 if (currentRoute?.startsWith("reminder_ringing_route") == true) {
                                     navController.popBackStack()
                                 }
@@ -261,9 +273,47 @@ class MainActivity : ComponentActivity() {
                                         onNavigateToPermissions = { 
                                             navController.navigateToPermissions()
                                         },
+                                        onNavigateToMissionRinging = { reminderId ->
+                                            navController.navigateToMissionRinging(reminderId)
+                                        },
+                                        onNavigateToMessage = { reminderId ->
+                                            navController.navigate("reminder_message_route/$reminderId")
+                                        },
                                         onNavigateBack = {
                                             navController.popBackStack()
                                         },
+                                        onAddMissionClick = {
+                                            // Handle showMissionSelection bottom sheet in ReminderEditRoute
+                                            // or navigate if it's a separate screen. 
+                                            // Actually, I'll pass a dummy here and handle it inside ReminderEditRoute.
+                                        },
+                                        onMissionClick = { mission ->
+                                            if (mission.type == vn.io.litever.remind.core.model.MissionType.TYPING) {
+                                                val config = mission.config as? vn.io.litever.remind.core.model.TypingMissionConfig
+                                                navController.currentBackStackEntry?.savedStateHandle?.set("repetitions", mission.repeatCount)
+                                                navController.currentBackStackEntry?.savedStateHandle?.set("selectedPhraseIds", config?.selectedPhraseIds ?: emptyList())
+                                                navController.navigateToTypingMissionConfig(mission.reminderId)
+                                            }
+                                        },
+                                        navController = navController
+                                    )
+                                    missionGraph(
+                                        onNavigateToPhraseSelection = { reminderId, selectedIds ->
+                                            navController.currentBackStackEntry?.savedStateHandle?.set("selectedPhraseIds", selectedIds)
+                                            navController.navigateToPhraseSelection(reminderId)
+                                        },
+                                        onPhrasesSelected = { phraseIds ->
+                                            navController.previousBackStackEntry?.savedStateHandle?.set("selectedPhraseIds", phraseIds)
+                                            navController.popBackStack()
+                                        },
+                                        onSaveMission = { mission ->
+                                            navController.previousBackStackEntry?.savedStateHandle?.set("updatedMission", mission)
+                                            navController.popBackStack()
+                                        },
+                                        onMissionFinish = { id ->
+                                            navController.navigate("reminder_message_route/$id")
+                                        },
+                                        onBackClick = { navController.popBackStack() },
                                         navController = navController
                                     )
                                     settingsGraph(

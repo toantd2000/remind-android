@@ -85,6 +85,7 @@ android {
 dependencies {
     implementation(project(":features:reminder"))
     implementation(project(":features:settings"))
+    implementation(project(":features:mission"))
     implementation(project(":core:data"))
     implementation(project(":core:domain"))
     implementation(project(":core:model"))

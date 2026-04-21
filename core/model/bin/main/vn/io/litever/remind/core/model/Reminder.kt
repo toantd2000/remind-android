@@ -22,7 +22,8 @@ data class Reminder(
     val isMissed: Boolean = false,
     val message: String = "",
     val skippedAt: LocalDateTime? = null,
-    val gradualVolumeDurationSeconds: Int = 0
+    val gradualVolumeDurationSeconds: Int = 0,
+    val missions: List<Mission> = emptyList()
 ) {
     fun getNextOccurrence(now: LocalDateTime = LocalDateTime.now()): LocalDateTime {
         val rawNext = getActualNextOccurrence(now)

@@ -22,12 +22,19 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.isActive
 import vn.io.litever.remind.core.reminder.ReminderRingManager
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler.Companion.EXTRA_REMINDER_ID
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler.Companion.EXTRA_IS_SNOOZE
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
 import vn.io.litever.remind.core.domain.scheduler.ReminderController
+import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.reminder.provider.ReminderIntentProvider
 import vn.io.litever.remind.core.common.util.getAccessibleRingtoneUri
 import vn.io.litever.remind.core.reminder.R
@@ -59,6 +66,7 @@ class ReminderService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? = null
 
+    private var currentActiveId: Long? = null
     private var hasStartedRinging = false
 
     override fun onCreate() {
@@ -66,18 +74,56 @@ class ReminderService : Service() {
         createNotificationChannel()
 
         scope.launch {
-            reminderRingManager.ringingReminderId.collect { id ->
-                if (id == null) {
-                    if (hasStartedRinging) {
-                        stopForeground(STOP_FOREGROUND_REMOVE)
-                        stopSelf()
-                    }
+            @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+            combine(
+                reminderRingManager.ringingReminderId,
+                reminderRingManager.mutedReminderIds
+            ) { id, mutedIds -> id to (id != null && id in mutedIds) }
+            .flatMapLatest { (id, isMuted) ->
+                if (id == null || isMuted) {
+                    kotlinx.coroutines.flow.flowOf(null)
                 } else {
+                    reminderRepository.getReminderFlow(id).map { reminder ->
+                        val isSnoozing = reminder?.snoozeNextTriggerTime != null
+                        if (reminder != null && !isSnoozing) reminder else null
+                    }
+                }
+            }.collect { targetReminder ->
+                val targetId = targetReminder?.id
+                
+                launch(Dispatchers.Main) {
+                    if (targetId != currentActiveId) {
+                        stopCurrentRinging()
+                        if (targetReminder != null) {
+                            startRinging(targetReminder)
+                        }
+                        currentActiveId = targetId
+                    }
+                }
+
+                // Life cycle and notification logic
+                val mainId = reminderRingManager.ringingReminderId.value
+                if (mainId != null) {
                     hasStartedRinging = true
-                    stopCurrentRinging()
-                    startRinging(id)
-                    setupAutoSilence(id)
-                    updateNotification(id)
+                    
+                    // Only run auto-silence if the reminder is actually ringing (not muted/in mission)
+                    if (targetId != null) {
+                        // Only start a new timer if one isn't already running
+                        if (autoSilenceJob == null || autoSilenceJob?.isActive == false) {
+                            setupAutoSilence(mainId)
+                        }
+                    } else {
+                        autoSilenceJob?.cancel()
+                        autoSilenceJob = null
+                        reminderRingManager.setAutoSilenceCountdown(null)
+                    }
+                    
+                    updateNotification(mainId)
+                } else if (hasStartedRinging) {
+                        launch(Dispatchers.Main) {
+                            stopForeground(STOP_FOREGROUND_REMOVE)
+                            stopSelf()
+                        }
                 }
             }
         }
@@ -125,22 +171,23 @@ class ReminderService : Service() {
         return START_STICKY
     }
 
-    private fun startRinging(reminderId: Long) {
+    private fun startRinging(reminder: Reminder) {
         ringingJob?.cancel()
         volumeIncreaseJob?.cancel()
+        
+        val audioManager = getSystemService(AUDIO_SERVICE) as android.media.AudioManager
+        
+        // Initial volume: 1 if gradual enabled, otherwise reminder.volume
+        val initialVolume = if (reminder.gradualVolumeDurationSeconds > 0) 1 else reminder.volume
+        audioManager.setStreamVolume(android.media.AudioManager.STREAM_ALARM, initialVolume, 0)
+        
+        val uri = getAccessibleRingtoneUri(this@ReminderService, reminder.ringtoneUri)
+        
+        // Use a dedicated job for the ringing session
         ringingJob = scope.launch {
-            val reminder = reminderRepository.getReminderById(reminderId) ?: return@launch
-            
-            val audioManager = getSystemService(Context.AUDIO_SERVICE) as android.media.AudioManager
-            
-            // Initial volume: 1 if gradual enabled, otherwise reminder.volume
-            val initialVolume = if (reminder.gradualVolumeDurationSeconds > 0) 1 else reminder.volume
-            audioManager.setStreamVolume(android.media.AudioManager.STREAM_ALARM, initialVolume, 0)
-            
-            val uri = getAccessibleRingtoneUri(this@ReminderService, reminder.ringtoneUri)
-            
-            launch(Dispatchers.Main) {
-                mediaPlayer = MediaPlayer().apply {
+            var player: MediaPlayer? = null
+            try {
+                player = MediaPlayer().apply {
                     setDataSource(this@ReminderService, uri)
                     setAudioAttributes(
                         AudioAttributes.Builder()
@@ -152,11 +199,26 @@ class ReminderService : Service() {
                     val maxVolume = audioManager.getStreamMaxVolume(android.media.AudioManager.STREAM_ALARM)
                     val volumeScale = initialVolume.toFloat() / maxVolume.toFloat()
                     setVolume(volumeScale, volumeScale)
-                    prepare()
-                    start()
                 }
 
-                // Handle gradual volume increase
+                // Prepare on IO thread
+                kotlinx.coroutines.withContext(Dispatchers.IO) {
+                    player.prepare()
+                }
+
+                // IMPORTANT: Check if we are still active before starting and assigning to global variable
+                kotlinx.coroutines.withContext(Dispatchers.Main) {
+                    if (isActive) {
+                        player.start()
+                        mediaPlayer = player
+                    } else {
+                        player.release()
+                    }
+                }
+
+                if (!isActive) return@launch
+
+                // Handle gradual volume increase (stays on scope)
                 if (reminder.gradualVolumeDurationSeconds > 0) {
                     volumeIncreaseJob = scope.launch {
                         val durationMs = reminder.gradualVolumeDurationSeconds * 1000L
@@ -164,39 +226,37 @@ class ReminderService : Service() {
                         val targetVolume = reminder.volume
                         val systemMaxVolume = audioManager.getStreamMaxVolume(android.media.AudioManager.STREAM_ALARM)
                         
-                        while (System.currentTimeMillis() - startTime < durationMs) {
+                        while (System.currentTimeMillis() - startTime < durationMs && isActive) {
                             val elapsed = System.currentTimeMillis() - startTime
                             val currentVolume = 1 + ((targetVolume - 1) * elapsed / durationMs).toInt()
                             
-                            launch(Dispatchers.Main) {
-                                val currentVolumeScale = currentVolume.toFloat() / systemMaxVolume.toFloat()
-                                mediaPlayer?.setVolume(currentVolumeScale, currentVolumeScale)
-                                audioManager.setStreamVolume(android.media.AudioManager.STREAM_ALARM, currentVolume, 0)
+                            kotlinx.coroutines.withContext(Dispatchers.Main) {
+                                if (isActive) {
+                                    val currentVolumeScale = currentVolume.toFloat() / systemMaxVolume.toFloat()
+                                    mediaPlayer?.setVolume(currentVolumeScale, currentVolumeScale)
+                                    audioManager.setStreamVolume(android.media.AudioManager.STREAM_ALARM, currentVolume, 0)
+                                }
                             }
-                            delay(1000L) // Update every second
-                        }
-                        
-                        // Ensure final volume is reached
-                        launch(Dispatchers.Main) {
-                            val finalVolumeScale = targetVolume.toFloat() / systemMaxVolume.toFloat()
-                            mediaPlayer?.setVolume(finalVolumeScale, finalVolumeScale)
-                            audioManager.setStreamVolume(android.media.AudioManager.STREAM_ALARM, targetVolume, 0)
+                            delay(1000L)
                         }
                     }
                 }
 
                 if (reminder.vibrationEnabled) {
                     vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+                        val vibratorManager = getSystemService(VIBRATOR_MANAGER_SERVICE) as VibratorManager
                         vibratorManager.defaultVibrator
                     } else {
                         @Suppress("DEPRECATION")
-                        getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+                        getSystemService(VIBRATOR_SERVICE) as Vibrator
                     }
 
                     val pattern = longArrayOf(0, 1000, 1000)
                     vibrator?.vibrate(VibrationEffect.createWaveform(pattern, 0))
                 }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                player?.release()
             }
         }
     }
@@ -231,15 +291,23 @@ class ReminderService : Service() {
         volumeIncreaseJob?.cancel()
         autoSilenceJob?.cancel()
         reminderRingManager.setAutoSilenceCountdown(null)
-        mediaPlayer?.stop()
-        mediaPlayer?.release()
+        try {
+            mediaPlayer?.stop()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        try {
+            mediaPlayer?.release()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         mediaPlayer = null
         vibrator?.cancel()
     }
 
     private fun updateNotification(reminderId: Long) {
         val notification = createNotification(reminderId)
-        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         manager.notify(1, notification)
     }
 

@@ -15,6 +15,7 @@ import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.datastore.ReminderPreferencesDataSource
 import vn.io.litever.remind.core.reminder.ReminderRingManager
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class ReminderRingingViewModel @Inject constructor(
@@ -50,7 +51,27 @@ class ReminderRingingViewModel @Inject constructor(
         )
 
     fun dismissReminder() {
+        viewModelScope.launch {
+            reminderRingManager.mute(reminderId)
+        }
+    }
+
+    fun onFinishMessage() {
         reminderController.dismissReminder(reminderId)
+    }
+
+    fun startMission() {
+        viewModelScope.launch {
+            reminderRingManager.enqueueReminder(reminderId)
+            reminderRingManager.mute(reminderId) // Silence while doing mission
+            reminderController.cancelSnooze(reminderId)
+        }
+    }
+
+    fun onAbandonMission() {
+        viewModelScope.launch {
+            reminderRingManager.unmute(reminderId) // Resume ringing
+        }
     }
 
     fun snoozeReminder() {

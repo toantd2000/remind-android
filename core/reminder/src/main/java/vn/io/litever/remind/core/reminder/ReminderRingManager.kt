@@ -34,7 +34,19 @@ class ReminderRingManager @Inject constructor() {
     }
 
     fun dequeueReminder(reminderId: Long) {
-        _ringingQueue.value = _ringingQueue.value.filter { it != reminderId }
+        _ringingQueue.update { it - reminderId }
+        _mutedReminderIds.update { it - reminderId }
+    }
+
+    private val _mutedReminderIds = MutableStateFlow<Set<Long>>(emptySet())
+    val mutedReminderIds = _mutedReminderIds.asStateFlow()
+
+    fun mute(reminderId: Long) {
+        _mutedReminderIds.value = _mutedReminderIds.value + reminderId
+    }
+
+    fun unmute(reminderId: Long) {
+        _mutedReminderIds.value = _mutedReminderIds.value - reminderId
     }
 
     private val _autoSilenceCountdown = MutableStateFlow<Int?>(null)

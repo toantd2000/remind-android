@@ -4,7 +4,9 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import vn.io.litever.remind.core.data.repository.MissionRepositoryImpl
 import vn.io.litever.remind.core.data.repository.ReminderRepositoryImpl
+import vn.io.litever.remind.core.domain.repository.MissionRepository
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import javax.inject.Singleton
 
@@ -17,4 +19,10 @@ abstract class RepositoryModule {
     abstract fun bindReminderRepository(
         reminderRepositoryImpl: ReminderRepositoryImpl
     ): ReminderRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindMissionRepository(
+        missionRepositoryImpl: MissionRepositoryImpl
+    ): MissionRepository
 }

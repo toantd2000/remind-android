@@ -1,12 +1,14 @@
 package vn.io.litever.remind.core.data.mapper
 
 import vn.io.litever.remind.core.database.model.ReminderEntity
+import vn.io.litever.remind.core.database.model.PopulatedReminder
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.DayOfWeek
 import java.time.LocalTime
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.Instant
+import vn.io.litever.remind.core.data.mapper.toModel
 
 fun ReminderEntity.toModel(): Reminder {
     return Reminder(
@@ -29,6 +31,12 @@ fun ReminderEntity.toModel(): Reminder {
         message = message,
         skippedAt = skippedAt?.let { LocalDateTime.ofInstant(Instant.ofEpochMilli(it), ZoneId.systemDefault()) },
         gradualVolumeDurationSeconds = gradualVolumeDurationSeconds
+    )
+}
+
+fun PopulatedReminder.toModel(): Reminder {
+    return reminder.toModel().copy(
+        missions = missions.map { it.toModel() }
     )
 }
 

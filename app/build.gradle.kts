@@ -1,6 +1,15 @@
 import java.util.Date
 import java.util.Locale
 import java.text.SimpleDateFormat
+import java.util.Properties
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use {
+        localProperties.load(it)
+    }
+}
 
 plugins {
     alias(libs.plugins.android.application)
@@ -37,6 +46,14 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+    signingConfigs {
+        register("release") {
+            keyAlias = localProperties.getProperty("LITEVER_KEYSTORE_ALIAS")
+            keyPassword = localProperties.getProperty("LITEVER_KEYSTORE_ALIAS_PASSWORD")
+            storeFile = file(localProperties.getProperty("LITEVER_KEYSTORE_PATH"))
+            storePassword = localProperties.getProperty("LITEVER_KEYSTORE_PASSWORD")
+        }
+    }
 
     buildTypes {
         debug {
@@ -45,6 +62,7 @@ android {
         release {
             isMinifyEnabled = false
             manifestPlaceholders["crashlyticsCollectionEnabled"] = "true"
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

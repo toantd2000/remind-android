@@ -1,4 +1,16 @@
-# Nhật Ký Học Tập Của Agent (Learning Journal)
+# Learning Journal & Self-Correction Log
+
+## [2026-04-21] Stabilizing Alarm & Mission Logic
+### Key Lessons
+- **Reactive Flow Integrity**: When using `combine` or `flatMapLatest` in a Service, ensure all potential state changes (like Mute/Unmute) are captured at the top level of the flow.
+- **Direct UI-Service Signals**: For critical UI feedback like "Back from Mission -> Sound ON", calling the Manager/Repository directly from the ViewModel is more reliable than waiting for navigation results.
+- **Resource Lifecycle**: Always wrap `MediaPlayer.stop()` in try-catch and check `isActive` before `start()` in asynchronous contexts.
+- **Process Improvement**: Established `DECISION_LOG.md` to record solidified behavioral scenarios. This prevents arbitrary changes to complex logic once it's tested and approved.
+
+### Corrective Actions
+- Fixed KSP errors by splitting Flow/Suspend DAO methods.
+- Implemented Safe-Start pattern for MediaPlayer.
+- Synchronized Auto-Silence timer with mission states.
 
 Đây là nơi Agent (với tư cách là một Android Developer hiện đại) ghi chép lại những sai lầm gặp phải, những giả định chưa đúng trong quá trình phát triển, cũng như các thói quen, quy chuẩn code đúc rút ra được.
 Cơ chế này đảm bảo "sự tiến hóa" liên tục qua các task, tránh việc một lỗi vi phạm lặp đi lặp lại.

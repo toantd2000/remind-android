@@ -24,5 +24,5 @@
     <string name="mission_global_progress">Tiến độ: Nhiệm vụ %1$d / %2$d</string>
     <string name="mission_group_title">Nhóm nhiệm vụ</string>
     <string name="mission_empty_desc">Chưa có nhiệm vụ nào. Thêm nhiệm vụ để đảm bảo bạn thức dậy đúng giờ!</string>
-
+    <string name="app_slogan">Thức giấc, Thử thách, Kiên trì.</string>
 </resources>

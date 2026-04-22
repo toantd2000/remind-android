@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import vn.io.litever.remind.core.designsystem.components.BrandLogo
+import vn.io.litever.remind.core.designsystem.components.BrandingSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
@@ -365,72 +366,14 @@ class MainActivity : ComponentActivity() {
 
                                     )
                                 }
-                            }
                         }
                     }
+                }
                 }
             }
         }
     }
 }
-
-    @Composable
-    private fun BrandingSplashScreen(onFinished: () -> Unit) {
-        var visible by remember { mutableStateOf(false) }
-
-        LaunchedEffect(Unit) {
-            delay(300) // Small delay before animation
-            visible = true
-            delay(2000) // Show for 2 seconds
-            onFinished()
-        }
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
-            contentAlignment = Alignment.Center
-        ) {
-            AnimatedVisibility(
-                visible = visible,
-                enter = fadeIn(animationSpec = tween(1000)),
-                exit = fadeOut(animationSpec = tween(500))
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.padding(24.dp)
-                ) {
-                    // App Logo (Large)
-                    ReMindLogo(fontSize = 72.sp)
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Slogan
-                    Text(
-                        text = stringResource(R.string.app_slogan),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontWeight = FontWeight.Medium,
-                        textAlign = TextAlign.Center
-                    )
-
-                    Spacer(modifier = Modifier.height(64.dp))
-
-                    // Brand Attribution
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "by ",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.outline
-                        )
-                        BrandLogo(fontSize = 18.sp)
-                    }
-                }
-            }
-        }
-    }
 
     private fun handleLockScreenBypass() {
         val isRingingIntent = intent?.data?.toString()?.contains("remind/ring") == true

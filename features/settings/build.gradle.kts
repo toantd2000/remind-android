@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.aboutlibraries.compose.m3)
     implementation(libs.kotlinx.serialization.json)
 
+    debugImplementation(libs.androidx.compose.ui.tooling)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

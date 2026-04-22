@@ -41,4 +41,5 @@
     <string name="missed_alarm_text">You missed an alarm</string>
     <string name="mission_group_title">Mission Group</string>
     <string name="mission_empty_desc">No missions yet. Add missions to ensure you wake up on time!</string>
+    <string name="app_slogan">Wake up, Challenge, Repeat.</string>
 </resources>

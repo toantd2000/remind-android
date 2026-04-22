@@ -104,40 +104,35 @@ class ReminderService : Service() {
                 val mainId = state.mainId
                 val isSnoozing = state.isSnoozing
 
-                launch(Dispatchers.Main) {
+                // Synchronize all lifecycle changes on Main thread to avoid race conditions
+                withContext(Dispatchers.Main) {
                     if (targetId != currentActiveId) {
-                        stopCurrentRinging()
+                        stopAudibleRinging()
                         if (targetReminder != null) {
                             startRinging(targetReminder)
                         }
                         currentActiveId = targetId
                     }
-                }
 
-                // Life cycle and notification logic
-                if (mainId != null) {
-                    hasStartedRinging = true
-                    
                     // AUTO-SILENCE LOGIC:
-                    // It should run whenever an alarm is "active" (ringing or muted).
-                    // It should NOT run if the alarm is snoozing.
-                    if (!isSnoozing && state.fullReminder != null) {
-                        // Only start a new timer if one isn't already running for this ID
-                        // Or if it was previously snoozing and now returned to ringing
-                        if (autoSilenceJob == null || autoSilenceJob?.isActive == false || lastAutoSilencedId != mainId) {
-                            setupAutoSilence(state.fullReminder)
-                            lastAutoSilencedId = mainId
+                    // Per user request:
+                    // - Stop when mission starts (muted) or snoozing.
+                    // - Restart from beginning when back from mission or snooze ends.
+                    if (targetReminder != null) {
+                        // If it's not running, or it's a different reminder, start/restart it
+                        if (autoSilenceJob == null || autoSilenceJob?.isActive == false || lastAutoSilencedId != targetId) {
+                            setupAutoSilence(targetReminder)
+                            lastAutoSilencedId = targetId
                         }
                     } else {
-                        autoSilenceJob?.cancel()
-                        autoSilenceJob = null
-                        lastAutoSilencedId = null // Ensure it restarts when snooze ends
-                        reminderRingManager.setAutoSilenceCountdown(null)
+                        stopAutoSilence()
+                        lastAutoSilencedId = null 
                     }
-                    
-                    updateNotification(mainId)
-                } else if (hasStartedRinging) {
-                    launch(Dispatchers.Main) {
+
+                    if (mainId != null) {
+                        hasStartedRinging = true
+                        updateNotification(mainId)
+                    } else if (hasStartedRinging) {
                         stopForeground(STOP_FOREGROUND_REMOVE)
                         stopSelf()
                     }
@@ -302,10 +297,13 @@ class ReminderService : Service() {
     }
 
     private fun stopCurrentRinging() {
+        stopAudibleRinging()
+        stopAutoSilence()
+    }
+
+    private fun stopAudibleRinging() {
         ringingJob?.cancel()
         volumeIncreaseJob?.cancel()
-        autoSilenceJob?.cancel()
-        reminderRingManager.setAutoSilenceCountdown(null)
         try {
             mediaPlayer?.stop()
         } catch (e: Exception) {
@@ -318,6 +316,12 @@ class ReminderService : Service() {
         }
         mediaPlayer = null
         vibrator?.cancel()
+    }
+
+    private fun stopAutoSilence() {
+        autoSilenceJob?.cancel()
+        autoSilenceJob = null
+        reminderRingManager.setAutoSilenceCountdown(null)
     }
 
     private fun updateNotification(reminderId: Long) {

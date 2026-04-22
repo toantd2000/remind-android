@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.withContext
 import vn.io.litever.remind.core.reminder.ReminderRingManager
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler.Companion.EXTRA_REMINDER_ID
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler.Companion.EXTRA_IS_SNOOZE
@@ -63,10 +64,18 @@ class ReminderService : Service() {
     private var autoSilenceJob: Job? = null
     private var ringingJob: Job? = null
     private var volumeIncreaseJob: Job? = null
+    
+    private data class RingingState(
+        val mainId: Long?,
+        val audibleReminder: Reminder?,
+        val fullReminder: Reminder?,
+        val isSnoozing: Boolean
+    )
 
     override fun onBind(intent: Intent?): IBinder? = null
 
     private var currentActiveId: Long? = null
+    private var lastAutoSilencedId: Long? = null
     private var hasStartedRinging = false
 
     override fun onCreate() {
@@ -80,17 +89,21 @@ class ReminderService : Service() {
                 reminderRingManager.mutedReminderIds
             ) { id, mutedIds -> id to (id != null && id in mutedIds) }
             .flatMapLatest { (id, isMuted) ->
-                if (id == null || isMuted) {
-                    kotlinx.coroutines.flow.flowOf(null)
+                if (id == null) {
+                    flowOf(RingingState(null, null, null, false))
                 } else {
                     reminderRepository.getReminderFlow(id).map { reminder ->
                         val isSnoozing = reminder?.snoozeNextTriggerTime != null
-                        if (reminder != null && !isSnoozing) reminder else null
+                        val audibleReminder = if (!isMuted && !isSnoozing) reminder else null
+                        RingingState(id, audibleReminder, reminder, isSnoozing)
                     }
                 }
-            }.collect { targetReminder ->
+            }.collect { state ->
+                val targetReminder = state.audibleReminder
                 val targetId = targetReminder?.id
-                
+                val mainId = state.mainId
+                val isSnoozing = state.isSnoozing
+
                 launch(Dispatchers.Main) {
                     if (targetId != currentActiveId) {
                         stopCurrentRinging()
@@ -102,28 +115,32 @@ class ReminderService : Service() {
                 }
 
                 // Life cycle and notification logic
-                val mainId = reminderRingManager.ringingReminderId.value
                 if (mainId != null) {
                     hasStartedRinging = true
                     
-                    // Only run auto-silence if the reminder is actually ringing (not muted/in mission)
-                    if (targetId != null) {
-                        // Only start a new timer if one isn't already running
-                        if (autoSilenceJob == null || autoSilenceJob?.isActive == false) {
-                            setupAutoSilence(mainId)
+                    // AUTO-SILENCE LOGIC:
+                    // It should run whenever an alarm is "active" (ringing or muted).
+                    // It should NOT run if the alarm is snoozing.
+                    if (!isSnoozing && state.fullReminder != null) {
+                        // Only start a new timer if one isn't already running for this ID
+                        // Or if it was previously snoozing and now returned to ringing
+                        if (autoSilenceJob == null || autoSilenceJob?.isActive == false || lastAutoSilencedId != mainId) {
+                            setupAutoSilence(state.fullReminder)
+                            lastAutoSilencedId = mainId
                         }
                     } else {
                         autoSilenceJob?.cancel()
                         autoSilenceJob = null
+                        lastAutoSilencedId = null // Ensure it restarts when snooze ends
                         reminderRingManager.setAutoSilenceCountdown(null)
                     }
                     
                     updateNotification(mainId)
                 } else if (hasStartedRinging) {
-                        launch(Dispatchers.Main) {
-                            stopForeground(STOP_FOREGROUND_REMOVE)
-                            stopSelf()
-                        }
+                    launch(Dispatchers.Main) {
+                        stopForeground(STOP_FOREGROUND_REMOVE)
+                        stopSelf()
+                    }
                 }
             }
         }
@@ -261,10 +278,10 @@ class ReminderService : Service() {
         }
     }
 
-    private fun setupAutoSilence(reminderId: Long) {
+    private fun setupAutoSilence(reminder: Reminder) {
         autoSilenceJob?.cancel()
         autoSilenceJob = scope.launch {
-            val reminder = reminderRepository.getReminderById(reminderId) ?: return@launch
+            val reminderId = reminder.id
             if (reminder.autoSilenceMinutes > 0) {
                 var remainingSeconds = reminder.autoSilenceMinutes * 60
                 while (remainingSeconds > 0) {
@@ -274,13 +291,11 @@ class ReminderService : Service() {
                 }
                 reminderRingManager.setAutoSilenceCountdown(null)
                 // Auto-silence acts like a snooze (or missed if out of count)
-                launch(Dispatchers.Main) {
-                    val currentReminder = reminderRepository.getReminderById(reminderId)
-                    if (currentReminder != null && currentReminder.snoozeEnabled && currentReminder.currentSnoozeCount < currentReminder.snoozeRepeatCount) {
-                        reminderController.snoozeReminder()
-                    } else {
-                        reminderController.markAsMissed()
-                    }
+                val currentReminder = withContext(Dispatchers.IO) { reminderRepository.getReminderById(reminderId) }
+                if (currentReminder != null && currentReminder.snoozeEnabled && currentReminder.currentSnoozeCount < currentReminder.snoozeRepeatCount) {
+                    reminderController.snoozeReminder(reminderId)
+                } else {
+                    reminderController.markAsMissed(reminderId)
                 }
             }
         }

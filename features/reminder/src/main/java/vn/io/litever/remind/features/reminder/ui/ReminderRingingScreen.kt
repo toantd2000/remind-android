@@ -77,7 +77,6 @@ fun ReminderRingingRoute(
         },
         onSnooze = {
             viewModel.snoozeReminder()
-            onFinish()
         },
         onStartMission = {
             viewModel.startMission()
@@ -201,20 +200,7 @@ fun ReminderRingingScreen(
                     )
                 }
 
-                if (reminder?.isMissed == true) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = stringResource(R.string.missed_alarm_title),
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier
-                            .background(
-                                color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f),
-                                shape = CircleShape
-                            )
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                    )
-                } else if (reminder != null && reminder.snoozeNextTriggerTime != null) {
+                if (reminder != null && reminder.snoozeNextTriggerTime != null) {
                     Spacer(modifier = Modifier.height(16.dp))
                     val minutes = remainingSnoozeSeconds / 60
                     val seconds = remainingSnoozeSeconds % 60
@@ -292,8 +278,8 @@ fun ReminderRingingScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                val isNotMissedNorSnoozing = reminder?.isMissed != true && reminder?.snoozeNextTriggerTime == null
-                if (isNotMissedNorSnoozing && (reminder == null || (reminder.snoozeEnabled && reminder.currentSnoozeCount < reminder.snoozeRepeatCount))) {
+                val isNotSnoozing = reminder?.snoozeNextTriggerTime == null
+                if (isNotSnoozing && (reminder == null || (reminder.snoozeEnabled && reminder.currentSnoozeCount < reminder.snoozeRepeatCount))) {
                     val remainingSnoozes = if (reminder != null) reminder.snoozeRepeatCount - reminder.currentSnoozeCount else 0
                     val snoozeText = if (reminder != null && remainingSnoozes > 0) {
                         stringResource(vn.io.litever.remind.features.reminder.R.string.snooze_limit_format, remainingSnoozes)
@@ -318,7 +304,7 @@ fun ReminderRingingScreen(
 
                 Button(
                     onClick = {
-                        val hasMission = (reminder?.missions?.isNotEmpty() == true) && reminder?.isMissed != true
+                        val hasMission = (reminder?.missions?.isNotEmpty() == true)
                         if (hasMission) {
                             onStartMission()
                         } else {
@@ -333,11 +319,9 @@ fun ReminderRingingScreen(
                         containerColor = MaterialTheme.colorScheme.primary
                     )
                 ) {
-                    val hasMission = (reminder?.missions?.isNotEmpty() == true) && reminder?.isMissed != true
+                    val hasMission = (reminder?.missions?.isNotEmpty() == true)
                     val dismissText = if (hasMission) {
                         stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_start)
-                    } else if (reminder?.isMissed == true) {
-                        stringResource(vn.io.litever.remind.core.designsystem.R.string.dismiss) // Or "View Message"
                     } else {
                         stringResource(vn.io.litever.remind.core.designsystem.R.string.dismiss)
                     }

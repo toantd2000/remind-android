@@ -56,4 +56,11 @@ class ReminderRingManager @Inject constructor() {
     fun setAutoSilenceCountdown(seconds: Int?) {
         _autoSilenceCountdown.value = seconds
     }
+
+    private val _acknowledgingReminderId = MutableStateFlow<Long?>(null)
+    val acknowledgingReminderId: StateFlow<Long?> = _acknowledgingReminderId.asStateFlow()
+
+    fun setAcknowledgingReminderId(reminderId: Long?) {
+        _acknowledgingReminderId.value = reminderId
+    }
 }

@@ -1,8 +1,8 @@
 package vn.io.litever.remind.core.domain.scheduler
 
 interface ReminderController {
-    fun dismissReminder(reminderId: Long? = null)
-    fun snoozeReminder(reminderId: Long? = null)
-    fun markAsMissed(reminderId: Long? = null)
-    fun cancelSnooze(reminderId: Long)
+    suspend fun dismissReminder(reminderId: Long? = null)
+    suspend fun snoozeReminder(reminderId: Long? = null)
+    suspend fun markAsMissed(reminderId: Long? = null)
+    suspend fun cancelSnooze(reminderId: Long)
 }

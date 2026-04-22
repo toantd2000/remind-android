@@ -94,15 +94,27 @@ import androidx.lifecycle.viewModelScope
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val preferencesDataSource: ReminderPreferencesDataSource,
+    private val reminderRingManager: vn.io.litever.remind.core.reminder.ReminderRingManager,
     reminderRepository: ReminderRepository
 ) : ViewModel() {
     val themeMode = preferencesDataSource.themeMode
     val colorPalette = preferencesDataSource.colorPalette
     val language = preferencesDataSource.language
+    val acknowledgingReminderId = reminderRingManager.acknowledgingReminderId
 
-    val activeBlockingReminderId = reminderRepository.getAllReminders()
+    val activeSnoozingReminderId = reminderRepository.getAllReminders()
         .map { reminders -> 
-            reminders.firstOrNull { it.isMissed || it.snoozeNextTriggerTime != null }?.id 
+            reminders.firstOrNull { it.snoozeNextTriggerTime != null }?.id 
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
+        )
+
+    val missedReminderId = reminderRepository.getAllReminders()
+        .map { reminders -> 
+            reminders.firstOrNull { it.isMissed }?.id 
         }
         .stateIn(
             scope = viewModelScope,
@@ -175,28 +187,52 @@ class MainActivity : ComponentActivity() {
                             vn.io.litever.remind.core.reminder.di.ReminderRingManagerEntryPoint::class.java
                         ).reminderRingManager()
                         val ringingReminderId by reminderRingManager.ringingReminderId.collectAsState()
-                        val activeBlockingReminderId by viewModel.activeBlockingReminderId.collectAsState()
+                        val activeSnoozingReminderId by viewModel.activeSnoozingReminderId.collectAsState()
+                        val missedReminderId by viewModel.missedReminderId.collectAsState()
                         
                         val navBackStackEntry by navController.currentBackStackEntryAsState()
                         val currentRoute = navBackStackEntry?.destination?.route
+                        val acknowledgingReminderId by viewModel.acknowledgingReminderId.collectAsState(initial = null as Long?)
 
-                        LaunchedEffect(ringingReminderId, activeBlockingReminderId, currentRoute) {
-                            val idToRing = ringingReminderId ?: activeBlockingReminderId
-                            if (idToRing != null) {
-                                // NO OVERLAP RULE: Don't interrupt if user is in a mission or viewing a message
-                                val isUserBusy = currentRoute?.startsWith("mission_ringing_route") == true ||
-                                               currentRoute?.startsWith("reminder_message_route") == true
+                        LaunchedEffect(ringingReminderId, activeSnoozingReminderId, missedReminderId, acknowledgingReminderId) {
+                            val idToRing = ringingReminderId ?: activeSnoozingReminderId
+                            val idMessage = acknowledgingReminderId ?: missedReminderId
+                            
+                            val currentEntry = navController.currentBackStackEntry
+                            val currentDest = currentEntry?.destination?.route
+                            val currentId = currentEntry?.arguments?.getLong("reminderId")
+
+                            if (idMessage != null) {
+                                val isAlreadyMessageId = currentDest == "reminder_message_route/{reminderId}" && currentId == idMessage
                                 
-                                if (!isUserBusy) {
-                                    navController.navigate("reminder_ringing_route/$idToRing") {
-                                        popUpTo("reminder_ringing_route/{reminderId}") {
-                                            inclusive = true
+                                if (!isAlreadyMessageId) {
+                                    navController.navigate("reminder_message_route/$idMessage") {
+                                        popUpTo(reminderListRoute) {
+                                            inclusive = false
                                         }
                                         launchSingleTop = true
                                     }
                                 }
+                            } else if (idToRing != null) {
+                                // NO OVERLAP RULE: Don't interrupt if user is in a mission
+                                // But DO interrupt if user is just viewing a missed message
+                                val isUserInMission = currentDest?.startsWith("mission_ringing_route") == true
+                                
+                                if (!isUserInMission) {
+                                    val isAlreadyRingingId = currentDest == "reminder_ringing_route/{reminderId}" && currentId == idToRing
+                                    if (!isAlreadyRingingId) {
+                                        navController.navigate("reminder_ringing_route/$idToRing") {
+                                            popUpTo(reminderListRoute) {
+                                                inclusive = false
+                                            }
+                                            launchSingleTop = true
+                                        }
+                                    }
+                                }
                             } else {
-                                if (currentRoute?.startsWith("reminder_ringing_route") == true) {
+                                if (currentDest == "reminder_ringing_route/{reminderId}" ||
+                                    currentDest == "reminder_message_route/{reminderId}") {
+                                    // Only pop if we were blocking the app and the state is now cleared
                                     navController.popBackStack()
                                 }
                             }

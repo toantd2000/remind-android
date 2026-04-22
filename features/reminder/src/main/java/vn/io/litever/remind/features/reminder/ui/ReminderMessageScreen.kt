@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.reminder.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -11,7 +12,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AlarmOff
+import androidx.compose.material.icons.rounded.CheckCircle
 import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.Reminder
@@ -42,6 +47,7 @@ fun ReminderMessageScreen(
     reminder: Reminder?,
     onFinish: () -> Unit
 ) {
+    BackHandler { }
     ReMindScaffold { padding ->
         Column(
             modifier = Modifier
@@ -58,10 +64,23 @@ fun ReminderMessageScreen(
                 stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_complete)
             }
             val titleColor = if (isMissed) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+            val icon = if (isMissed) Icons.Rounded.AlarmOff else Icons.Rounded.CheckCircle
+
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(80.dp),
+                tint = titleColor
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
 
             Text(
                 text = titleText,
-                style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Black),
+                style = MaterialTheme.typography.headlineLarge.copy(
+                    fontWeight = FontWeight.Black,
+                    letterSpacing = (-1).sp
+                ),
                 color = titleColor,
                 textAlign = TextAlign.Center
             )

@@ -52,12 +52,16 @@ class ReminderRingingViewModel @Inject constructor(
 
     fun dismissReminder() {
         viewModelScope.launch {
-            reminderRingManager.mute(reminderId)
+            reminderRingManager.setAcknowledgingReminderId(reminderId)
+            reminderController.dismissReminder(reminderId)
         }
     }
 
     fun onFinishMessage() {
-        reminderController.dismissReminder(reminderId)
+        viewModelScope.launch {
+            reminderRingManager.setAcknowledgingReminderId(null)
+            reminderController.dismissReminder(reminderId)
+        }
     }
 
     fun startMission() {
@@ -75,6 +79,8 @@ class ReminderRingingViewModel @Inject constructor(
     }
 
     fun snoozeReminder() {
-        reminderController.snoozeReminder(reminderId)
+        viewModelScope.launch {
+            reminderController.snoozeReminder(reminderId)
+        }
     }
 }

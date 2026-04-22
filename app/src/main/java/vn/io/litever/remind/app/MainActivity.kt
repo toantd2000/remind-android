@@ -313,7 +313,8 @@ class MainActivity : ComponentActivity() {
                                             navController.navigateToMissionRinging(reminderId)
                                         },
                                         onNavigateToMessage = { reminderId ->
-                                            navController.navigate("reminder_message_route/$reminderId")
+                                            // Navigation handled globally
+                                            // navController.navigate("reminder_message_route/$reminderId")
                                         },
                                         onNavigateBack = {
                                             navController.popBackStack()
@@ -347,7 +348,7 @@ class MainActivity : ComponentActivity() {
                                             navController.popBackStack()
                                         },
                                         onMissionFinish = { id ->
-                                            navController.navigate("reminder_message_route/$id")
+                                            navController.popBackStack()
                                         },
                                         onBackClick = { navController.popBackStack() },
                                         navController = navController

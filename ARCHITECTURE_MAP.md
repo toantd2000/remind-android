@@ -42,6 +42,16 @@ Luồng xử lý khi nhắc nhở nổ:
 4. Nếu có `reminderId`, App tự động điều hướng sang `ReminderRingingRoute` thông qua `navController`. 
 => Điều này giúp App chủ động nhảy màn hình ngay cả khi đang ở Foreground mà không cần phụ thuộc vào việc nhấn Notification.
 
+### C. Luồng Thêm Nhiệm Vụ (Add Mission Flow)
+Để đảm bảo trải nghiệm người dùng liền mạch và linh hoạt, việc thêm nhiệm vụ được thực hiện qua sự kết hợp giữa Bottom Sheet và Navigation:
+1. **Kích hoạt:** Người dùng nhấn "Add Mission" tại màn hình chỉnh sửa báo thức -> Hiển thị **Mission Selection Bottom Sheet**.
+2. **Bước 1 (Selection):** Người dùng chọn một loại nhiệm vụ từ danh sách trong Bottom Sheet.
+3. **Bước 2 (Configuration):**
+    - Nếu nhiệm vụ cần cấu hình phức tạp (ví dụ: Gõ chữ), App sẽ điều hướng sang **màn hình cấu hình đầy đủ** (Full Screen).
+    - **Lưu ý:** Bottom Sheet vẫn được giữ ở trạng thái "Open" tại màn hình chỉnh sửa báo thức (underlying screen).
+4. **Điều hướng ngược (Back):** Nếu người dùng nhấn "Back" từ màn hình cấu hình, họ sẽ quay lại màn hình chỉnh sửa và **Bottom Sheet vẫn đang hiện**, cho phép chọn lại loại nhiệm vụ khác.
+5. **Hoàn tất (Finish):** Khi nhấn "Save/Finish" tại màn hình cấu hình, App quay lại màn hình chỉnh sửa, tự động đóng Bottom Sheet và cập nhật danh sách nhiệm vụ mới.
+
 ---
 
 ## 4. Quy tắc phát triển (Development Rules)

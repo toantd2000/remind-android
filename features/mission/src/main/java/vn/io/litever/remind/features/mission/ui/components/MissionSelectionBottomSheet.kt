@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import vn.io.litever.remind.core.model.MissionType
 import vn.io.litever.remind.core.designsystem.R
@@ -35,7 +36,7 @@ fun MissionSelectionBottomSheet(
         ) {
             Text(
                 text = stringResource(R.string.mission_selection_title),
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier.padding(16.dp)
             )
             
@@ -52,15 +53,20 @@ fun MissionSelectionBottomSheet(
                         headlineContent = { Text(item.title) },
                         supportingContent = { Text(item.description) },
                         leadingContent = {
-                            Icon(
-                                imageVector = item.icon,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary
-                            )
+                            Surface(
+                                shape = MaterialTheme.shapes.medium,
+                                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
+                            ) {
+                                Icon(
+                                    imageVector = item.icon,
+                                    contentDescription = null,
+                                    modifier = Modifier.padding(8.dp).size(24.dp),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
                         },
                         modifier = Modifier.clickable {
                             onMissionTypeSelected(item.type)
-                            onDismissRequest()
                         }
                     )
                 }

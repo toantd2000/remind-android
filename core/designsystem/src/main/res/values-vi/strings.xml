@@ -3,4 +3,26 @@
     <string name="cancel">Hủy</string>
     <string name="save">Lưu</string>
     <string name="action_back">Quay lại</string>
+
+    <string name="mission_title">Nhiệm vụ</string>
+    <string name="add_mission">Thêm nhiệm vụ</string>
+    <string name="mission_selection_title">Chọn nhiệm vụ</string>
+    <string name="mission_typing">Gõ chữ</string>
+    <string name="mission_math">Giải toán</string>
+    <string name="mission_shake">Lắc máy</string>
+    <string name="mission_qr_code">QR/Mã vạch</string>
+    <string name="mission_typing_desc">Gõ các cụm từ để tỉnh táo</string>
+    <string name="mission_math_desc">Giải các bài toán cơ bản</string>
+    <string name="mission_repetitions">Số lần lặp lại</string>
+    <string name="mission_select_phrases">Chọn cụm từ</string>
+    <string name="mission_complete">Hoàn thành</string>
+    <string name="mission_save">Lưu nhiệm vụ</string>
+    <string name="mission_cancel">Hủy bỏ</string>
+    <string name="mission_preview">Xem trước</string>
+    <string name="times_unit">%d lần</string>
+    <string name="mission_start">Bắt đầu</string>
+    <string name="mission_global_progress">Tiến độ: Nhiệm vụ %1$d / %2$d</string>
+    <string name="mission_group_title">Nhóm nhiệm vụ</string>
+    <string name="mission_empty_desc">Chưa có nhiệm vụ nào. Thêm nhiệm vụ để đảm bảo bạn thức dậy đúng giờ!</string>
+
 </resources>

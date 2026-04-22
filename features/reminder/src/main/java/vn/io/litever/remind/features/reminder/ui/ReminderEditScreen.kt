@@ -130,7 +130,8 @@ fun ReminderEditRoute(
     val is24HourFormat by viewModel.is24HourFormat.collectAsState()
     val nextReminderState by viewModel.nextReminderState.collectAsState()
 
-    var showMissionSelection by remember { mutableStateOf(false) }
+    var showMissionSelection by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(false) }
+    var isNavigatingToConfig by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(false) }
 
     // Observe result from TypingMissionConfig
     val updatedMission by navController.currentBackStackEntry?.savedStateHandle
@@ -139,7 +140,13 @@ fun ReminderEditRoute(
 
     LaunchedEffect(updatedMission) {
         updatedMission?.let {
-            viewModel.updateMission(it)
+            if (showMissionSelection) {
+                viewModel.addMission(it)
+                showMissionSelection = false
+                isNavigatingToConfig = false
+            } else {
+                viewModel.updateMission(it)
+            }
             navController.currentBackStackEntry?.savedStateHandle?.remove<vn.io.litever.remind.core.model.Mission>("updatedMission")
         }
     }
@@ -200,11 +207,12 @@ fun ReminderEditRoute(
         }
     }
 
-    // Refresh permissions on resume to auto-dismiss dialog if fixed
+    // Reset navigation flag when returning to screen
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
                 viewModel.refreshPermissions()
+                isNavigatingToConfig = false
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -219,9 +227,25 @@ fun ReminderEditRoute(
 
     if (showMissionSelection) {
         MissionSelectionBottomSheet(
-            onDismissRequest = { showMissionSelection = false },
-            onMissionTypeSelected = { type: MissionType ->
-                viewModel.addMission(type)
+            onDismissRequest = { 
+                if (!isNavigatingToConfig) {
+                    showMissionSelection = false 
+                }
+            },
+            onMissionTypeSelected = { type ->
+                if (type == vn.io.litever.remind.core.model.MissionType.TYPING) {
+                    isNavigatingToConfig = true
+                    onMissionClick(
+                        vn.io.litever.remind.core.model.Mission(
+                            reminderId = reminderId,
+                            type = type,
+                            order = -1 // Indication for adding
+                        )
+                    )
+                } else {
+                    viewModel.addMission(type)
+                    showMissionSelection = false
+                }
             }
         )
     }

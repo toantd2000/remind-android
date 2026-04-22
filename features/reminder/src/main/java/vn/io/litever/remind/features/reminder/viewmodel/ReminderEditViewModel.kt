@@ -137,14 +137,23 @@ class ReminderEditViewModel @Inject constructor(
         }
     }
 
-    fun addMission(type: vn.io.litever.remind.core.model.MissionType) {
+    fun addMission(mission: vn.io.litever.remind.core.model.Mission) {
         if (_uiState.value.missions.size >= 5) return
-        val newMission = vn.io.litever.remind.core.model.Mission(
+        val newMission = mission.copy(
             reminderId = _uiState.value.id,
-            type = type,
             order = _uiState.value.missions.size
         )
         _uiState.update { it.copy(missions = it.missions + newMission) }
+    }
+
+    fun addMission(type: vn.io.litever.remind.core.model.MissionType) {
+        addMission(
+            vn.io.litever.remind.core.model.Mission(
+                reminderId = _uiState.value.id,
+                type = type,
+                order = _uiState.value.missions.size
+            )
+        )
     }
 
     fun updateMission(mission: vn.io.litever.remind.core.model.Mission) {

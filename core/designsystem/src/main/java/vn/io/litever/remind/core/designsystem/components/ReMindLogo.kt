@@ -21,8 +21,8 @@ import vn.io.litever.remind.core.designsystem.theme.InterFontFamily
 
 @Composable
 fun ReMindLogo(
+    modifier: Modifier = Modifier,
     fontSize: TextUnit = 24.sp,
-    modifier: Modifier = Modifier
 ) {
     val isDark = isSystemInDarkTheme()
     val upColor = if (isDark) logo_up_dark else logo_up_light

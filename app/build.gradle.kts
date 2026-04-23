@@ -1,6 +1,3 @@
-import java.util.Date
-import java.util.Locale
-import java.text.SimpleDateFormat
 import java.util.Properties
 
 val localProperties = Properties()
@@ -20,12 +17,6 @@ plugins {
     alias(libs.plugins.firebase.crashlytics)
 }
 
-fun generateVersionName(): String {
-    val date = Date()
-    val formatter = SimpleDateFormat("yyyy.MM.dd", Locale.US)
-    return formatter.format(date)
-}
-
 val isReleaseTask = project.gradle.startParameter.taskNames.any { it.contains("release", ignoreCase = true) }
 
 android {
@@ -41,7 +32,7 @@ android {
         minSdk = 26
         targetSdk = 36
         versionCode = 1
-        versionName = if (isReleaseTask) generateVersionName() else "1.0-debug"
+        versionName = "1.0.0"
 
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -60,13 +51,16 @@ android {
             manifestPlaceholders["crashlyticsCollectionEnabled"] = "false"
         }
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             manifestPlaceholders["crashlyticsCollectionEnabled"] = "true"
             signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            configure<com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension> {
+                mappingFileUploadEnabled = false
+            }
         }
     }
 

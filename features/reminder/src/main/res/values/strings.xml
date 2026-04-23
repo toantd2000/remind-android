@@ -75,6 +75,7 @@
     <string name="snooze_summary">%1$s, %2$s</string>
     <string name="snooze_countdown">Snoozing (%s)</string>
     <string name="missed_alarm_title">Missed Alarm</string>
+    <string name="missed_alarm_text">You missed an alarm</string>
     <string name="auto_silence_title">Auto-silence duration</string>
     <string name="auto_silence_countdown">Auto-silence in %s</string>
     <string name="alarm_settings">Alarm Settings</string>

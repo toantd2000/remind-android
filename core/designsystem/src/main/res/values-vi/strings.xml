@@ -50,5 +50,7 @@
     <string name="mission_math_placeholder">Đáp án</string>
     <string name="mission_phrases_none_selected">Chưa chọn cụm từ nào</string>
     <string name="mission_phrases_selected">Đã chọn %1$d cụm từ</string>
+    <string name="missed_alarm_title">Báo thức bị bỏ lỡ</string>
+    <string name="missed_alarm_text">Bạn đã bỏ lỡ một báo thức</string>
     <string name="coming_soon">Sắp ra mắt</string>
 </resources>

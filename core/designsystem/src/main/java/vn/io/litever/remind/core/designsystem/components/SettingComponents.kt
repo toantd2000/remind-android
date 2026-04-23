@@ -46,13 +46,13 @@ fun SettingsCategory(
 @Composable
 fun SettingsItem(
     title: String,
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     subtitle: String? = null,
     statusText: String? = null,
     statusColor: Color? = null,
     onClick: (() -> Unit)? = null,
     trailingContent: @Composable (() -> Unit)? = null,
-    modifier: Modifier = Modifier
 ) {
     ListItem(
         headlineContent = {
@@ -105,9 +105,9 @@ fun SettingsSwitchItem(
     title: String,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     subtitle: String? = null,
-    modifier: Modifier = Modifier
 ) {
     SettingsItem(
         title = title,

@@ -17,12 +17,12 @@ fun ReMindAlertDialog(
     onDismissRequest: () -> Unit,
     confirmButtonText: String,
     onConfirmClick: () -> Unit,
+    modifier: Modifier = Modifier,
     title: String? = null,
     text: String? = null,
     dismissButtonText: String? = null,
     onDismissClick: (() -> Unit)? = null,
     content: @Composable (() -> Unit)? = null,
-    modifier: Modifier = Modifier
 ) {
     AlertDialog(
         onDismissRequest = onDismissRequest,

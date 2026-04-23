@@ -37,17 +37,18 @@ fun getRepeatSummaryText(
         return stringResource(R.string.every_day)
     }
 
-    val context = LocalContext.current
+    val dayNames = mapOf(
+        DayOfWeek.MONDAY to stringResource(R.string.day_mon),
+        DayOfWeek.TUESDAY to stringResource(R.string.day_tue),
+        DayOfWeek.WEDNESDAY to stringResource(R.string.day_wed),
+        DayOfWeek.THURSDAY to stringResource(R.string.day_thu),
+        DayOfWeek.FRIDAY to stringResource(R.string.day_fri),
+        DayOfWeek.SATURDAY to stringResource(R.string.day_sat),
+        DayOfWeek.SUNDAY to stringResource(R.string.day_sun)
+    )
+
     val daysText = repeatDays.distinct().sortedBy { it.ordinal }.joinToString(", ") { day ->
-        when (day) {
-            DayOfWeek.MONDAY -> context.getString(R.string.day_mon)
-            DayOfWeek.TUESDAY -> context.getString(R.string.day_tue)
-            DayOfWeek.WEDNESDAY -> context.getString(R.string.day_wed)
-            DayOfWeek.THURSDAY -> context.getString(R.string.day_thu)
-            DayOfWeek.FRIDAY -> context.getString(R.string.day_fri)
-            DayOfWeek.SATURDAY -> context.getString(R.string.day_sat)
-            DayOfWeek.SUNDAY -> context.getString(R.string.day_sun)
-        }
+        dayNames[day] ?: ""
     }
     return daysText
 }

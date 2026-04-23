@@ -40,6 +40,7 @@ import vn.io.litever.remind.features.reminder.ui.components.ReminderCard
 import vn.io.litever.remind.features.reminder.ui.state.NextReminderUiState
 import vn.io.litever.remind.features.reminder.viewmodel.ReminderListViewModel
 
+@Suppress("LocalContextGetResourceValueCall")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReminderListRoute(
@@ -71,10 +72,11 @@ fun ReminderListRoute(
         }
     }
 
+    val resources = LocalContext.current.resources
     // Handle UI messages (Snackbars)
     LaunchedEffect(viewModel.uiMessage) {
         viewModel.uiMessage.collectLatest { messageRes ->
-            snackbarHostState.showSnackbar(context.getString(messageRes))
+            snackbarHostState.showSnackbar(resources.getString(messageRes))
         }
     }
 
@@ -82,12 +84,12 @@ fun ReminderListRoute(
     LaunchedEffect(viewModel.undoEvent) {
         viewModel.undoEvent.collect { type ->
             val message = when (type) {
-                ReminderListViewModel.UndoType.SINGLE -> context.getString(R.string.reminder_deleted)
-                ReminderListViewModel.UndoType.MULTIPLE -> context.getString(R.string.disabled_reminders_deleted)
+                ReminderListViewModel.UndoType.SINGLE -> resources.getString(R.string.reminder_deleted)
+                ReminderListViewModel.UndoType.MULTIPLE -> resources.getString(R.string.disabled_reminders_deleted)
             }
             val result = snackbarHostState.showSnackbar(
                 message = message,
-                actionLabel = context.getString(R.string.undo),
+                actionLabel = resources.getString(R.string.undo),
                 duration = SnackbarDuration.Short
             )
             if (result == SnackbarResult.ActionPerformed) {

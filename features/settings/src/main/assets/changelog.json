@@ -1,17 +1,17 @@
 [
   {
-    "versionName": "2026.04.20",
-    "date": "2026-04-20",
+    "versionName": "1.0.0",
+    "date": "2026-04-23",
     "isLatest": true,
     "notes": [
-      "Chào mừng bạn đến với ReMind! Phiên bản đầu tiên tập trung vào sự chính xác và trải nghiệm người dùng tối giản.",
-      "Báo thức chính xác tuyệt đối ngay cả khi thiết bị ở chế độ tiết kiệm pin.",
-      "Hỗ trợ đặt báo thức theo thứ trong tuần hoặc theo ngày cụ thể (One-time alarm).",
-      "Tính năng 'Nhắc nhở nhẹ nhàng': Tự động tăng dần âm lượng để bạn thức dậy êm ái hơn.",
-      "Quản lý báo thức thông minh: Hỗ trợ Nhân bản, Bỏ qua lần tới và Hoàn tác khi xoá.",
-      "Giao diện Material 3 hiện đại: Hỗ trợ Màu động (Dynamic Color) và Chế độ Sáng/Tối.",
-      "Tùy chỉnh sâu: Đặt nhạc chuông, âm lượng và rung riêng cho từng báo thức.",
-      "Hỗ trợ đa ngôn ngữ: Tiếng Việt và Tiếng Anh."
+      "Chào mừng bạn đến với ReMind: Tối giản, mượt mà và chính xác.",
+      "Báo thức chuẩn xác, hoạt động tốt ngay cả khi tiết kiệm pin.",
+      "Hỗ trợ báo thức định kỳ hoặc theo ngày cụ thể (One-time).",
+      "Thức dậy êm ái với tính năng âm lượng tăng dần tự động.",
+      "Quản lý linh hoạt: Nhân bản, Bỏ qua lần tới và Hoàn tác xóa.",
+      "Giao diện Material 3 hiện đại, hỗ trợ Dynamic Color.",
+      "Cá nhân hóa nhạc chuông và chế độ rung cho từng báo thức.",
+      "Hỗ trợ song ngữ đầy đủ: Tiếng Việt và Tiếng Anh."
     ]
   }
 ]

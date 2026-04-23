@@ -3,4 +3,6 @@
     <string name="notification_reminder_text">Nhấn vào đây để xem và tắt</string>
     <string name="reminder_channel_name">Kênh Nhắc nhở</string>
     <string name="reminder_channel_description">Thông báo khi có nhắc nhở</string>
+    <string name="missed_alarm_title">Báo thức bị bỏ lỡ</string>
+    <string name="missed_alarm_text">Bạn đã bỏ lỡ một báo thức</string>
 </resources>

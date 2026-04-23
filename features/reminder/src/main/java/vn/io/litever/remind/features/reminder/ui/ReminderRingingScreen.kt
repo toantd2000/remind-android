@@ -71,9 +71,6 @@ fun ReminderRingingRoute(
     }
 
     ReminderRingingScreen(
-        reminder = reminder,
-        is24HourFormat = is24HourFormat,
-        autoSilenceCountdown = autoSilenceCountdown,
         onDismiss = {
             viewModel.dismissReminder()
             onDismissSuccess(reminderId)
@@ -85,19 +82,22 @@ fun ReminderRingingRoute(
             viewModel.startMission()
             onStartMission(reminderId)
         },
-        modifier = modifier
+        modifier = modifier,
+        reminder = reminder,
+        is24HourFormat = is24HourFormat,
+        autoSilenceCountdown = autoSilenceCountdown
     )
 }
 
 @Composable
 fun ReminderRingingScreen(
-    reminder: Reminder?,
-    is24HourFormat: Boolean,
-    autoSilenceCountdown: Int? = null,
     onDismiss: () -> Unit,
     onSnooze: () -> Unit,
     onStartMission: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    reminder: Reminder? = null,
+    is24HourFormat: Boolean = false,
+    autoSilenceCountdown: Int? = null,
 ) {
     var remainingSnoozeSeconds by remember { mutableLongStateOf(0L) }
 
@@ -303,7 +303,7 @@ fun ReminderRingingScreen(
                         onClick = onSnooze,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .offset(x = snoozeShakeOffset.dp) // Áp dụng rung nhẹ
+                            .offset { androidx.compose.ui.unit.IntOffset(x = snoozeShakeOffset.dp.roundToPx(), y = 0) } // Áp dụng rung nhẹ
                     ) {
                         Text(
                             text = snoozeText,
@@ -323,7 +323,7 @@ fun ReminderRingingScreen(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .offset(x = shakeOffset.dp) // Áp dụng hiệu ứng rung
+                        .offset { androidx.compose.ui.unit.IntOffset(x = shakeOffset.dp.roundToPx(), y = 0) } // Áp dụng hiệu ứng rung
                 ) {
                     val hasMission = (reminder?.missions?.isNotEmpty() == true)
                     val dismissText = if (hasMission) {
@@ -346,6 +346,9 @@ fun ReminderRingingScreen(
 fun ReminderRingingScreenPreview() {
     ReMindTheme {
         ReminderRingingScreen(
+            onDismiss = {},
+            onSnooze = {},
+            onStartMission = {},
             reminder = Reminder(
                 id = 1,
                 time = LocalTime.of(7, 30),
@@ -355,10 +358,7 @@ fun ReminderRingingScreenPreview() {
                 snoozeRepeatCount = 3,
                 currentSnoozeCount = 1
             ),
-            is24HourFormat = false,
-            onDismiss = {},
-            onSnooze = {},
-            onStartMission = {}
+            is24HourFormat = false
         )
     }
 }
@@ -368,6 +368,9 @@ fun ReminderRingingScreenPreview() {
 fun ReminderRingingScreenNoSnoozePreview() {
     ReMindTheme(darkTheme = true) {
         ReminderRingingScreen(
+            onDismiss = {},
+            onSnooze = {},
+            onStartMission = {},
             reminder = Reminder(
                 id = 2,
                 time = LocalTime.of(8, 0),
@@ -377,10 +380,7 @@ fun ReminderRingingScreenNoSnoozePreview() {
                 snoozeRepeatCount = 3,
                 currentSnoozeCount = 3 // Limit reached
             ),
-            is24HourFormat = true,
-            onDismiss = {},
-            onSnooze = {},
-            onStartMission = {}
+            is24HourFormat = true
         )
     }
 }

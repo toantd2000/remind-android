@@ -26,8 +26,8 @@ fun SnoozeSettingsRoute(
     onSave: (Boolean, Int, Int) -> Unit
 ) {
     var enabled by remember { mutableStateOf(initialEnabled) }
-    var interval by remember { mutableStateOf(initialInterval) }
-    var repeatCount by remember { mutableStateOf(initialRepeatCount) }
+    var interval by remember { mutableIntStateOf(initialInterval) }
+    var repeatCount by remember { mutableIntStateOf(initialRepeatCount) }
 
     SnoozeSettingsScreen(
         enabled = enabled,

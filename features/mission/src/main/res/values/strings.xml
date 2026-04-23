@@ -24,7 +24,7 @@
     <string name="mission_shared_desc">Available for all reminders</string>
     <string name="mission_private">Private</string>
     <string name="mission_phrase_delete_confirm">Are you sure you want to delete this phrase?</string>
-    <string name="mission_complete_title">TASK COMPLETE</string>
+    <string name="mission_complete_title">Task complete</string>
     <string name="mission_complete_subtitle">One step closer to your day!</string>
     <string name="mission_complete_next">Next task starting...</string>
 </resources>

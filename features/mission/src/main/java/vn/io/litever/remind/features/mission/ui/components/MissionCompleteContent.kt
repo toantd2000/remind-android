@@ -24,7 +24,7 @@ fun MissionCompleteContent(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(32.dp),
+            .padding(28.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -35,7 +35,7 @@ fun MissionCompleteContent(
             modifier = Modifier.size(80.dp)
         )
         
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(16.dp))
         
         Text(
             text = title,

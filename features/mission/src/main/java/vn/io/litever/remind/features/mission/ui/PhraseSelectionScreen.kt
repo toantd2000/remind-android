@@ -31,6 +31,7 @@ import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindButton
 import vn.io.litever.remind.core.model.Phrase
 import vn.io.litever.remind.core.designsystem.R
+import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.features.mission.viewmodel.PhraseSelectionViewModel
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 
@@ -155,12 +156,7 @@ fun PhraseSelectionScreen(
             )
         },
         bottomBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp)
-                    .navigationBarsPadding()
-            ) {
+            ReMindBottomBar {
                 ReMindButton(
                     onClick = onComplete,
                     modifier = Modifier.fillMaxWidth(),
@@ -172,7 +168,19 @@ fun PhraseSelectionScreen(
                     )
                 }
             }
-        }
+        },
+        floatingActionButton = {
+            if (selectedTabIndex == 2) {
+                FloatingActionButton(
+                    onClick = onAddCustomPhraseClick,
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    shape = MaterialTheme.shapes.medium
+                ) {
+                    Icon(Icons.Rounded.Add, contentDescription = null)
+                }
+            }
+        },
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
             TabRow(
@@ -224,7 +232,7 @@ fun PhraseSelectionScreen(
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(bottom = 100.dp) // Adjusted for bottom bar
+                        contentPadding = PaddingValues(bottom = 16.dp)
                     ) {
                         if (currentCategory == "custom") {
                             val sharedPhrases = phrases.filter { it.source == vn.io.litever.remind.core.model.PhraseSource.USER_SHARED }
@@ -292,20 +300,6 @@ fun PhraseSelectionScreen(
                     }
                 }
 
-                if (currentCategory == "custom") {
-                    FloatingActionButton(
-                        onClick = onAddCustomPhraseClick,
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(24.dp)
-                            .padding(bottom = 72.dp), // Lift FAB above the bottom bar
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                        shape = MaterialTheme.shapes.medium
-                    ) {
-                        Icon(Icons.Rounded.Add, contentDescription = null)
-                    }
-                }
             }
         }
     }
@@ -498,8 +492,7 @@ fun AddCustomPhraseContent(
             OutlinedButton(
                 onClick = onDismiss,
                 modifier = Modifier
-                    .weight(1f)
-                    .height(52.dp),
+                    .weight(1f),
                 shape = MaterialTheme.shapes.medium
             ) {
                 Text(stringResource(R.string.cancel))
@@ -510,7 +503,6 @@ fun AddCustomPhraseContent(
                 enabled = text.isNotBlank(),
                 modifier = Modifier
                     .weight(1f)
-                    .height(52.dp)
             ) {
                 Text(stringResource(R.string.save))
             }

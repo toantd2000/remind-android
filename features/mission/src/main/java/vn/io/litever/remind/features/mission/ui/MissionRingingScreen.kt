@@ -14,6 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.features.mission.R
 import vn.io.litever.remind.core.designsystem.components.ReMindButton
 import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
@@ -105,12 +106,7 @@ fun MissionRingingScreen(
         },
         bottomBar = {
             if (!uiState.isMissionJustCompleted && !uiState.isDismissed) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(24.dp)
-                        .navigationBarsPadding()
-                ) {
+                ReMindBottomBar {
                     ReMindButton(
                         onClick = onFinish,
                         modifier = Modifier.fillMaxWidth(),

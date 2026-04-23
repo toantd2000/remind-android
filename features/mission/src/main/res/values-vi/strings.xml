@@ -24,7 +24,7 @@
     <string name="mission_shared_desc">Dùng cho tất cả nhắc nhở</string>
     <string name="mission_private">Riêng tư</string>
     <string name="mission_phrase_delete_confirm">Bạn có chắc muốn xóa cụm từ này không?</string>
-    <string name="mission_complete_title">HOÀN THÀNH</string>
+    <string name="mission_complete_title">Hoàn thành</string>
     <string name="mission_complete_subtitle">Bắt đầu ngày mới thôi nào!</string>
     <string name="mission_complete_next">Nhiệm vụ tiếp theo...</string>
 </resources>

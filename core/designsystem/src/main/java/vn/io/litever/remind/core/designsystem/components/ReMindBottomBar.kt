@@ -33,6 +33,7 @@ fun ReMindBottomBar(
         Row(
             modifier = Modifier
                 .padding(horizontal = 16.dp, vertical = 12.dp)
+                .navigationBarsPadding()
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,

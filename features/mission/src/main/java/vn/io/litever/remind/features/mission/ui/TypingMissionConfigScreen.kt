@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import vn.io.litever.remind.core.designsystem.R
+import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.components.ReMindButton
 import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
@@ -92,12 +93,7 @@ fun TypingMissionConfigScreen(
             )
         },
         bottomBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp)
-                    .navigationBarsPadding()
-            ) {
+            ReMindBottomBar {
                 ReMindButton(
                     onClick = onSave,
                     modifier = Modifier.fillMaxWidth(),

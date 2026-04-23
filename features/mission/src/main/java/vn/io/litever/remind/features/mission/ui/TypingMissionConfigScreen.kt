@@ -24,6 +24,15 @@ import vn.io.litever.remind.core.model.Mission
 import vn.io.litever.remind.core.model.MissionType
 import vn.io.litever.remind.core.model.TypingMissionConfig
 import vn.io.litever.remind.core.designsystem.R
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import vn.io.litever.remind.features.mission.viewmodel.TypingMissionConfigViewModel
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.material.icons.rounded.Remove
+import androidx.compose.material.icons.rounded.Add
 
 @Composable
 fun TypingMissionConfigRoute(
@@ -32,17 +41,23 @@ fun TypingMissionConfigRoute(
     initialSelectedPhraseIds: List<Long> = emptyList(),
     onBackClick: () -> Unit,
     onNavigateToPhraseSelection: (List<Long>) -> Unit,
-    onSaveMission: (Mission) -> Unit
+    onSaveMission: (Mission) -> Unit,
+    viewModel: TypingMissionConfigViewModel = hiltViewModel()
 ) {
-    var repetitions by remember { mutableIntStateOf(initialRepetitions) }
-    var selectedPhraseIds by remember { mutableStateOf(initialSelectedPhraseIds) }
+    var repetitions by rememberSaveable { mutableIntStateOf(initialRepetitions) }
+    val basicPhrases by viewModel.basicPhrases.collectAsState()
+    
+    val randomPhrase = remember(basicPhrases) {
+        if (basicPhrases.isNotEmpty()) basicPhrases.random().content else ""
+    }
 
     TypingMissionConfigScreen(
         repetitions = repetitions,
-        selectedPhraseIds = selectedPhraseIds,
+        selectedPhraseIds = initialSelectedPhraseIds,
+        randomExamplePhrase = randomPhrase,
         onBackClick = onBackClick,
         onRepetitionsChange = { repetitions = it },
-        onNavigateToPhraseSelection = { onNavigateToPhraseSelection(selectedPhraseIds) },
+        onNavigateToPhraseSelection = { onNavigateToPhraseSelection(initialSelectedPhraseIds) },
         onSave = {
             onSaveMission(
                 Mission(
@@ -50,7 +65,7 @@ fun TypingMissionConfigRoute(
                     type = MissionType.TYPING,
                     order = 0, // Will be set by the caller
                     repeatCount = repetitions,
-                    config = TypingMissionConfig(selectedPhraseIds)
+                    config = TypingMissionConfig(initialSelectedPhraseIds)
                 )
             )
         }
@@ -62,6 +77,7 @@ fun TypingMissionConfigRoute(
 fun TypingMissionConfigScreen(
     repetitions: Int,
     selectedPhraseIds: List<Long>,
+    randomExamplePhrase: String,
     onBackClick: () -> Unit,
     onRepetitionsChange: (Int) -> Unit,
     onNavigateToPhraseSelection: () -> Unit,
@@ -82,7 +98,33 @@ fun TypingMissionConfigScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Repetitions Picker (Simplified)
+            // Example Preview Section
+            if (randomExamplePhrase.isNotEmpty()) {
+                Text(
+                    text = stringResource(R.string.mission_typing_example),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 24.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                    )
+                ) {
+                    Text(
+                        text = randomExamplePhrase,
+                        style = MaterialTheme.typography.bodyLarge.copy(fontStyle = FontStyle.Italic),
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+
+            // Repetitions Input
             Text(
                 text = stringResource(R.string.mission_repetitions),
                 style = MaterialTheme.typography.titleMedium,
@@ -92,16 +134,42 @@ fun TypingMissionConfigScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly,
+                    .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                listOf(1, 2, 3, 5).forEach { value ->
-                    FilterChip(
-                        selected = repetitions == value,
-                        onClick = { onRepetitionsChange(value) },
-                        label = { Text(stringResource(R.string.times_unit, value)) }
-                    )
+                IconButton(
+                    onClick = { if (repetitions > 1) onRepetitionsChange(repetitions - 1) },
+                    enabled = repetitions > 1
+                ) {
+                    Icon(Icons.Rounded.Remove, contentDescription = "Decrease")
+                }
+                
+                OutlinedTextField(
+                    value = repetitions.toString(),
+                    onValueChange = { newValue ->
+                        if (newValue.isEmpty()) {
+                            onRepetitionsChange(1)
+                        } else {
+                            newValue.toIntOrNull()?.let {
+                                val coerced = it.coerceIn(1, 99)
+                                onRepetitionsChange(coerced)
+                            }
+                        }
+                    },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier
+                        .width(100.dp)
+                        .padding(horizontal = 16.dp),
+                    textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
+                    singleLine = true
+                )
+                
+                IconButton(
+                    onClick = { if (repetitions < 99) onRepetitionsChange(repetitions + 1) },
+                    enabled = repetitions < 99
+                ) {
+                    Icon(Icons.Rounded.Add, contentDescription = "Increase")
                 }
             }
 
@@ -130,7 +198,10 @@ fun TypingMissionConfigScreen(
                             style = MaterialTheme.typography.titleMedium
                         )
                         Text(
-                            text = if (selectedPhraseIds.isEmpty()) "None selected" else "${selectedPhraseIds.size} phrases selected",
+                            text = if (selectedPhraseIds.isEmpty()) 
+                                stringResource(R.string.mission_phrases_none_selected) 
+                            else 
+                                stringResource(R.string.mission_phrases_selected, selectedPhraseIds.size),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -165,6 +236,7 @@ fun TypingMissionConfigScreenPreview() {
         TypingMissionConfigScreen(
             repetitions = 3,
             selectedPhraseIds = listOf(1, 2),
+            randomExamplePhrase = "Wake up and shine",
             onBackClick = {},
             onRepetitionsChange = {},
             onNavigateToPhraseSelection = {},

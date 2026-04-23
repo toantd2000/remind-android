@@ -32,11 +32,12 @@ class PhraseSelectionViewModel @Inject constructor(
         }
     }
 
-    fun addCustomPhrase(content: String, isShared: Boolean) {
+    fun saveCustomPhrase(id: Long = 0, content: String, isShared: Boolean) {
         if (content.isBlank()) return
         viewModelScope.launch {
             missionRepository.savePhrase(
                 Phrase(
+                    id = id,
                     content = content,
                     categoryId = "custom",
                     isCustom = true,

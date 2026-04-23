@@ -63,14 +63,24 @@ class MissionRingingViewModel @Inject constructor(
         val data = when (mission.type) {
             MissionType.TYPING -> {
                 val config = mission.config as? TypingMissionConfig
-                val phrases = missionRepository.getPhrasesByIds(config?.selectedPhraseIds ?: emptyList(), reminderId)
-                if (phrases.isEmpty()) {
+                val basePhrases = missionRepository.getPhrasesByIds(config?.selectedPhraseIds ?: emptyList(), reminderId)
+                val phrases = if (basePhrases.isEmpty()) {
                     listOf(Phrase(content = "I am awake", categoryId = "basic"))
-                } else phrases
+                } else basePhrases
+
+                val result = mutableListOf<Phrase>()
+                val repeatCount = mission.repeatCount
+                val fullRepeats = repeatCount / phrases.size
+                for (i in 0 until fullRepeats) {
+                    result.addAll(phrases)
+                }
+                val remainder = repeatCount % phrases.size
+                result.addAll(phrases.shuffled().take(remainder))
+                result.shuffle()
+                result
             }
             MissionType.MATH -> {
                 val config = mission.config as? MathMissionConfig
-                // Generate a list of math problems equal to repeatCount
                 List(mission.repeatCount) { generateMathProblem(config?.difficulty ?: MathDifficulty.NORMAL) }
             }
             else -> emptyList<Any>()
@@ -81,7 +91,7 @@ class MissionRingingViewModel @Inject constructor(
                 currentMissionIndex = index,
                 currentRepetition = 1,
                 missionData = data,
-                currentTargetData = data.randomOrNull()
+                currentTargetData = data.firstOrNull()
             )
         }
         startTimeoutTimer()
@@ -138,7 +148,7 @@ class MissionRingingViewModel @Inject constructor(
             _uiState.update { 
                 it.copy(
                     currentRepetition = it.currentRepetition + 1,
-                    currentTargetData = it.missionData.randomOrNull()
+                    currentTargetData = it.missionData.getOrNull(it.currentRepetition)
                 )
             }
             _userInput.value = ""

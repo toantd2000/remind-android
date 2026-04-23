@@ -5,6 +5,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 
 const val typingMissionConfigRoute = "typing_mission_config_route/{reminderId}"
 const val phraseSelectionRoute = "phrase_selection_route/{reminderId}"
@@ -35,13 +37,16 @@ fun NavGraphBuilder.missionGraph(
         arguments = listOf(navArgument("reminderId") { type = NavType.LongType })
     ) { backStackEntry ->
         val reminderId = backStackEntry.arguments?.getLong("reminderId") ?: 0L
-        val initialRepetitions = navController.currentBackStackEntry?.savedStateHandle?.get<Int>("repetitions") ?: 1
-        val initialPhraseIds = navController.currentBackStackEntry?.savedStateHandle?.get<List<Long>>("selectedPhraseIds") ?: emptyList()
+        
+        val initialRepetitions = navController.previousBackStackEntry?.savedStateHandle?.get<Int>("repetitions") ?: 1
+        val initialPhraseIds = navController.previousBackStackEntry?.savedStateHandle?.get<List<Long>>("selectedPhraseIds") ?: emptyList()
+        
+        val updatedPhraseIds by backStackEntry.savedStateHandle.getStateFlow<List<Long>?>("selectedPhraseIds", null).collectAsState()
         
         TypingMissionConfigRoute(
             reminderId = reminderId,
             initialRepetitions = initialRepetitions,
-            initialSelectedPhraseIds = initialPhraseIds,
+            initialSelectedPhraseIds = updatedPhraseIds ?: initialPhraseIds,
             onBackClick = onBackClick,
             onNavigateToPhraseSelection = { ids -> onNavigateToPhraseSelection(reminderId, ids) },
             onSaveMission = onSaveMission
@@ -53,7 +58,7 @@ fun NavGraphBuilder.missionGraph(
         arguments = listOf(navArgument("reminderId") { type = NavType.LongType })
     ) { backStackEntry ->
         val reminderId = backStackEntry.arguments?.getLong("reminderId") ?: 0L
-        val initialPhraseIds = navController.currentBackStackEntry?.savedStateHandle?.get<List<Long>>("selectedPhraseIds") ?: emptyList()
+        val initialPhraseIds = navController.previousBackStackEntry?.savedStateHandle?.get<List<Long>>("selectedPhraseIds") ?: emptyList()
 
         PhraseSelectionRoute(
             initialSelectedIds = initialPhraseIds,

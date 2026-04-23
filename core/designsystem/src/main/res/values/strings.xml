@@ -13,7 +13,7 @@
     <string name="mission_qr_code">QR/Barcode</string>
     <string name="mission_typing_desc">Type phrases to wake up</string>
     <string name="mission_math_desc">Solve math problems</string>
-    <string name="mission_repetitions">Repetitions</string>
+    <string name="mission_repetitions">Times</string>
     <string name="mission_select_phrases">Select Phrases</string>
     <string name="mission_phrases_motivation">Motivation</string>
     <string name="mission_phrases_basic">Basic</string>
@@ -29,7 +29,7 @@
     <string name="mission_preview">Preview</string>
     <string name="mission_limit_reached">Maximum 5 missions reached</string>
     <string name="mission_shared">Shared</string>
-    <string name="mission_private">Private</string>
+    <string name="mission_private">This alarm only</string>
     <string name="times_unit">%d times</string>
     <string name="dismiss">Dismiss</string>
     <string name="snooze">Snooze</string>
@@ -42,4 +42,14 @@
     <string name="mission_group_title">Mission Group</string>
     <string name="mission_empty_desc">No missions yet. Add missions to ensure you wake up on time!</string>
     <string name="app_slogan">Wake up, Challenge, Repeat.</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_select_all">Select All</string>
+    <string name="action_deselect_all">Deselect All</string>
+    <string name="mission_phrase_delete_confirm">Are you sure you want to delete this phrase?</string>
+    <string name="mission_typing_example">Example</string>
+    <string name="mission_phrase_edit_title">Edit Phrase</string>
+    <string name="mission_shared_desc">Shared phrases can be used across all alarms.</string>
+    <string name="mission_phrases_none_selected">None selected</string>
+    <string name="mission_phrases_selected">%1$d phrases selected</string>
 </resources>

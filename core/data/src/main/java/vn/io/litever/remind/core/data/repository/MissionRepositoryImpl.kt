@@ -16,9 +16,15 @@ import vn.io.litever.remind.core.model.Phrase
 import javax.inject.Inject
 
 @Serializable
+private data class PhraseDto(
+    val id: Long,
+    val content: String
+)
+
+@Serializable
 private data class PredefinedPhrasesDto(
-    val motivation: List<String>,
-    val basic: List<String>
+    val motivation: List<PhraseDto>,
+    val basic: List<PhraseDto>
 )
 
 class MissionRepositoryImpl @Inject constructor(
@@ -52,11 +58,11 @@ class MissionRepositoryImpl @Inject constructor(
             val jsonString = context.assets.open("phrases.json").bufferedReader().use { it.readText() }
             val dto = json.decodeFromString<PredefinedPhrasesDto>(jsonString)
             mapOf<String, List<Phrase>>(
-                "motivation" to dto.motivation.map { content ->
-                    Phrase(content = content, categoryId = "motivation", isCustom = false)
+                "motivation" to dto.motivation.map { item ->
+                    Phrase(id = item.id, content = item.content, categoryId = "motivation", isCustom = false)
                 },
-                "basic" to dto.basic.map { content ->
-                    Phrase(content = content, categoryId = "basic", isCustom = false)
+                "basic" to dto.basic.map { item ->
+                    Phrase(id = item.id, content = item.content, categoryId = "basic", isCustom = false)
                 }
             )
         } catch (e: Exception) {
@@ -77,7 +83,8 @@ class MissionRepositoryImpl @Inject constructor(
     }
 
     override suspend fun savePhrase(phrase: Phrase) {
-        phraseDao.insertPhrase(phrase.toEntity())
+        val safePhrase = phrase.copy(content = phrase.content.take(128))
+        phraseDao.insertPhrase(safePhrase.toEntity())
     }
 
     override suspend fun deletePhrase(phrase: Phrase) {

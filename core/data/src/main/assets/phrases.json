@@ -1,15 +1,15 @@
 {
   "motivation": [
-    "Stay gentle",
-    "Live with hope",
-    "Never give up",
-    "Keep going",
-    "You are doing great"
+    {"id": -101, "content": "Stay gentle"},
+    {"id": -102, "content": "Live with hope"},
+    {"id": -103, "content": "Never give up"},
+    {"id": -104, "content": "Keep going"},
+    {"id": -105, "content": "You are doing great"}
   ],
   "basic": [
-    "Wake up",
-    "Good morning",
-    "Time to start",
-    "Rise and shine"
+    {"id": -201, "content": "Wake up"},
+    {"id": -202, "content": "Good morning"},
+    {"id": -203, "content": "Time to start"},
+    {"id": -204, "content": "Rise and shine"}
   ]
 }

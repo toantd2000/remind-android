@@ -13,14 +13,17 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import vn.io.litever.remind.features.reminder.R
 import androidx.hilt.navigation.compose.hiltViewModel
 import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
-import vn.io.litever.remind.features.reminder.R
 import vn.io.litever.remind.features.reminder.viewmodel.RingtoneItem
 import vn.io.litever.remind.features.reminder.viewmodel.RingtoneSelectionViewModel
+import vn.io.litever.remind.core.designsystem.components.*
 
 @Composable
 fun RingtoneSelectionRoute(
@@ -65,13 +68,16 @@ fun RingtoneSelectionScreen(
             )
         },
         bottomBar = {
-            Button(
-                onClick = onSaveClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp)
-            ) {
-                Text(stringResource(R.string.save), style = MaterialTheme.typography.titleMedium)
+            ReMindBottomBar {
+                ReMindButton(
+                    onClick = onSaveClick,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        stringResource(R.string.save),
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                    )
+                }
             }
         }
     ) { padding ->
@@ -102,21 +108,41 @@ fun RingtoneListItem(
     item: RingtoneItem,
     onClick: () -> Unit
 ) {
-    ListItem(
-        headlineContent = { 
-            Text(
-                text = item.title,
-                style = if (item.isSelected) MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.primary)
-                        else MaterialTheme.typography.bodyLarge
-            )
-        },
-        leadingContent = {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .clip(MaterialTheme.shapes.medium)
+            .clickable { onClick() },
+        color = if (item.isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+                else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.1f),
+        shape = MaterialTheme.shapes.medium,
+        border = if (item.isSelected) androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
+                 else null
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             RadioButton(
                 selected = item.isSelected,
-                onClick = null // Handle click on the whole row
+                onClick = null,
+                modifier = Modifier.size(24.dp)
             )
-        },
-        trailingContent = {
+            
+            Spacer(modifier = Modifier.width(12.dp))
+            
+            Text(
+                text = item.title,
+                modifier = Modifier.weight(1f),
+                style = if (item.isSelected) MaterialTheme.typography.bodyLarge.copy(
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.primary
+                ) else MaterialTheme.typography.bodyLarge
+            )
+            
             if (item.isPlaying) {
                 Icon(
                     imageVector = Icons.Rounded.VolumeUp,
@@ -125,13 +151,6 @@ fun RingtoneListItem(
                     modifier = Modifier.size(20.dp)
                 )
             }
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
-        colors = ListItemDefaults.colors(
-            containerColor = if (item.isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
-                            else MaterialTheme.colorScheme.surface
-        )
-    )
+        }
+    }
 }

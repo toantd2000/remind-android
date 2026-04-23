@@ -450,21 +450,10 @@ fun ReminderEditScreen(
             )
         },
         bottomBar = {
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .navigationBarsPadding(),
-                color = MaterialTheme.colorScheme.surface,
-                tonalElevation = 1.dp,
-                shadowElevation = 8.dp
-            ) {
-                Button(
+            ReMindBottomBar {
+                ReMindButton(
                     onClick = onSaveClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .height(56.dp),
-                    shape = MaterialTheme.shapes.extraLarge,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
                         stringResource(R.string.save),

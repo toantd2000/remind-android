@@ -1,26 +1,36 @@
 package vn.io.litever.remind.features.mission.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
+import vn.io.litever.remind.core.designsystem.components.ReMindButton
 import vn.io.litever.remind.core.model.Phrase
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.features.mission.viewmodel.PhraseSelectionViewModel
+import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -93,7 +103,9 @@ fun PhraseSelectionRoute(
                 phraseToEdit = null
             },
             sheetState = sheetState,
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.surface,
+            tonalElevation = 0.dp,
+            dragHandle = { BottomSheetDefaults.DragHandle(color = MaterialTheme.colorScheme.outlineVariant) }
         ) {
             AddCustomPhraseContent(
                 editingPhrase = phraseToEdit,
@@ -111,7 +123,6 @@ fun PhraseSelectionRoute(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PhraseSelectionScreen(
     predefinedPhrases: Map<String, List<Phrase>>,
@@ -138,22 +149,56 @@ fun PhraseSelectionScreen(
         topBar = {
             ReMindTopAppBar(
                 title = stringResource(R.string.mission_select_phrases),
-                onBackClick = onBackClick,
-                actions = {
-                    TextButton(onClick = onComplete) {
-                        Text(stringResource(R.string.mission_complete))
-                    }
-                }
+                onBackClick = onBackClick
             )
+        },
+        bottomBar = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp)
+                    .navigationBarsPadding()
+            ) {
+                ReMindButton(
+                    onClick = onComplete,
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = selectedIds.isNotEmpty()
+                ) {
+                    Text(
+                        text = stringResource(R.string.save),
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                    )
+                }
+            }
         }
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
-            TabRow(selectedTabIndex = selectedTabIndex) {
+            TabRow(
+                selectedTabIndex = selectedTabIndex,
+                containerColor = MaterialTheme.colorScheme.background,
+                contentColor = MaterialTheme.colorScheme.primary,
+                indicator = { tabPositions ->
+                    if (selectedTabIndex < tabPositions.size) {
+                        TabRowDefaults.SecondaryIndicator(
+                            Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+            ) {
                 tabTitles.forEachIndexed { index, title ->
                     Tab(
                         selected = selectedTabIndex == index,
                         onClick = { selectedTabIndex = index },
-                        text = { Text(title) }
+                        text = { 
+                            Text(
+                                text = title,
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = if (selectedTabIndex == index) FontWeight.Bold else FontWeight.Normal
+                            ) 
+                        },
+                        selectedContentColor = MaterialTheme.colorScheme.primary,
+                        unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -175,19 +220,17 @@ fun PhraseSelectionScreen(
                         )
                     }
                 } else {
-                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(bottom = 100.dp) // Adjusted for bottom bar
+                    ) {
                         if (currentCategory == "custom") {
                             val sharedPhrases = phrases.filter { it.source == vn.io.litever.remind.core.model.PhraseSource.USER_SHARED }
                             val privatePhrases = phrases.filter { it.source == vn.io.litever.remind.core.model.PhraseSource.USER_PRIVATE }
                             
                             if (sharedPhrases.isNotEmpty()) {
                                 item {
-                                    Text(
-                                        text = stringResource(R.string.mission_shared),
-                                        style = MaterialTheme.typography.titleSmall,
-                                        color = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp)
-                                    )
+                                    SectionHeader(stringResource(R.string.mission_shared))
                                 }
                                 items(sharedPhrases) { phrase ->
                                     PhraseItem(
@@ -202,12 +245,7 @@ fun PhraseSelectionScreen(
                             
                             if (privatePhrases.isNotEmpty()) {
                                 item {
-                                    Text(
-                                        text = stringResource(R.string.mission_private),
-                                        style = MaterialTheme.typography.titleSmall,
-                                        color = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp)
-                                    )
+                                    SectionHeader(stringResource(R.string.mission_private))
                                 }
                                 items(privatePhrases) { phrase ->
                                     PhraseItem(
@@ -232,7 +270,10 @@ fun PhraseSelectionScreen(
                                         if (allSelected) onDeselectAll(phrases.map { it.id })
                                         else onSelectAll(phrases.map { it.id })
                                     }) {
-                                        Text(stringResource(if (allSelected) R.string.action_deselect_all else R.string.action_select_all))
+                                        Text(
+                                            text = stringResource(if (allSelected) R.string.action_deselect_all else R.string.action_select_all),
+                                            style = MaterialTheme.typography.labelLarge
+                                        )
                                     }
                                 }
                             }
@@ -254,9 +295,11 @@ fun PhraseSelectionScreen(
                         onClick = onAddCustomPhraseClick,
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
-                            .padding(24.dp),
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                            .padding(24.dp)
+                            .padding(bottom = 72.dp), // Lift FAB above the bottom bar
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        shape = MaterialTheme.shapes.medium
                     ) {
                         Icon(Icons.Rounded.Add, contentDescription = null)
                     }
@@ -264,6 +307,16 @@ fun PhraseSelectionScreen(
             }
         }
     }
+}
+
+@Composable
+fun SectionHeader(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp)
+    )
 }
 
 @Composable
@@ -276,22 +329,63 @@ fun PhraseItem(
 ) {
     var showMenu by remember { mutableStateOf(false) }
 
-    ListItem(
-        leadingContent = {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .clip(MaterialTheme.shapes.medium)
+            .clickable { onToggle() },
+        shape = MaterialTheme.shapes.medium,
+        color = if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f) 
+                else MaterialTheme.colorScheme.surface,
+        border = androidx.compose.foundation.BorderStroke(
+            1.dp,
+            if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+            else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Checkbox(
                 checked = isSelected,
-                onCheckedChange = { onToggle() }
+                onCheckedChange = { onToggle() },
+                colors = CheckboxDefaults.colors(
+                    checkedColor = MaterialTheme.colorScheme.primary,
+                    uncheckedColor = MaterialTheme.colorScheme.outline
+                )
             )
-        },
-        headlineContent = { Text(phrase.content) },
-        supportingContent = if (phrase.isCustom) {
-            { Text(stringResource(if (phrase.isShared) R.string.mission_shared else R.string.mission_private)) }
-        } else null,
-        trailingContent = {
+            
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 12.dp)
+            ) {
+                Text(
+                    text = phrase.content,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                if (phrase.isCustom) {
+                    Text(
+                        text = stringResource(if (phrase.isShared) R.string.mission_shared else R.string.mission_private),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
             if (phrase.isCustom) {
                 Box {
                     IconButton(onClick = { showMenu = true }) {
-                        Icon(Icons.Rounded.MoreVert, contentDescription = "More options")
+                        Icon(
+                            imageVector = Icons.Rounded.MoreVert, 
+                            contentDescription = "More options",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                     DropdownMenu(
                         expanded = showMenu,
@@ -300,6 +394,7 @@ fun PhraseItem(
                         if (onEdit != null) {
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.action_edit)) },
+                                leadingIcon = { Icon(Icons.Rounded.Edit, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
                                     onEdit()
@@ -309,6 +404,7 @@ fun PhraseItem(
                         if (onDelete != null) {
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.action_delete), color = MaterialTheme.colorScheme.error) },
+                                leadingIcon = { Icon(Icons.Rounded.Delete, contentDescription = null, tint = MaterialTheme.colorScheme.error) },
                                 onClick = {
                                     showMenu = false
                                     onDelete()
@@ -318,9 +414,8 @@ fun PhraseItem(
                     }
                 }
             }
-        },
-        modifier = Modifier.fillMaxWidth()
-    )
+        }
+    }
 }
 
 @Composable
@@ -340,8 +435,8 @@ fun AddCustomPhraseContent(
     ) {
         Text(
             text = stringResource(if (editingPhrase != null) R.string.mission_phrase_edit_title else R.string.mission_add_custom_phrase),
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(bottom = 16.dp)
+            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+            modifier = Modifier.padding(bottom = 20.dp)
         )
 
         OutlinedTextField(
@@ -349,7 +444,8 @@ fun AddCustomPhraseContent(
             onValueChange = { if (it.length <= 128) text = it },
             label = { Text(stringResource(R.string.mission_phrase_placeholder)) },
             modifier = Modifier.fillMaxWidth(),
-            maxLines = 3,
+            maxLines = 5,
+            shape = MaterialTheme.shapes.medium,
             supportingText = {
                 Text(
                     text = "${text.length}/128",
@@ -361,38 +457,58 @@ fun AddCustomPhraseContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(MaterialTheme.shapes.medium)
+                .clickable { if (editingPhrase == null) isShared = !isShared },
+            color = Color.Transparent
         ) {
-            Checkbox(
-                checked = isShared,
-                onCheckedChange = { isShared = it },
-                enabled = editingPhrase == null
-            )
-            Column(modifier = Modifier.padding(start = 8.dp)) {
-                Text(stringResource(R.string.mission_shared))
-                Text(
-                    text = stringResource(R.string.mission_shared_desc),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(vertical = 8.dp)
+            ) {
+                Checkbox(
+                    checked = isShared,
+                    onCheckedChange = { isShared = it },
+                    enabled = editingPhrase == null
                 )
+                Column(modifier = Modifier.padding(start = 12.dp)) {
+                    Text(
+                        text = stringResource(R.string.mission_shared),
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Text(
+                        text = stringResource(R.string.mission_shared_desc),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            TextButton(onClick = onDismiss) {
+            OutlinedButton(
+                onClick = onDismiss,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(52.dp),
+                shape = MaterialTheme.shapes.medium
+            ) {
                 Text(stringResource(R.string.cancel))
             }
-            Spacer(modifier = Modifier.width(8.dp))
-            Button(
+            
+            ReMindButton(
                 onClick = { onConfirm(text, isShared) },
-                enabled = text.isNotBlank()
+                enabled = text.isNotBlank(),
+                modifier = Modifier
+                    .weight(1f)
+                    .height(52.dp)
             ) {
                 Text(stringResource(R.string.save))
             }
@@ -400,10 +516,10 @@ fun AddCustomPhraseContent(
     }
 }
 
-@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@Preview(showBackground = true)
 @Composable
 fun PhraseSelectionScreenPreview() {
-    vn.io.litever.remind.core.designsystem.theme.ReMindTheme {
+    ReMindTheme {
         PhraseSelectionScreen(
             predefinedPhrases = emptyMap(),
             customPhrases = emptyList(),

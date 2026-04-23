@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AlarmOff
+import androidx.compose.material.icons.rounded.Lightbulb
 import androidx.compose.material.icons.rounded.NotificationsActive
 import androidx.compose.material.icons.rounded.Star
 import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
@@ -181,7 +182,7 @@ fun ReminderMessageScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = Icons.Rounded.Star,
+                        imageVector = Icons.Rounded.Lightbulb,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.secondary,
                         modifier = Modifier.size(20.dp)

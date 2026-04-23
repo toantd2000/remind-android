@@ -8,6 +8,11 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material3.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.foundation.clickable
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -129,7 +134,8 @@ fun ReminderListScreen(
     onNavigateToPermissions: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var showMenu by remember { mutableStateOf(false) }
+    var showTopMenu by remember { mutableStateOf(false) }
+    var selectedReminderForMenu by remember { mutableStateOf<Reminder?>(null) }
 
     val actionMoreDescription = stringResource(R.string.action_more)
     val deleteDisabledRemindersText = stringResource(R.string.delete_disabled_reminders)
@@ -139,18 +145,18 @@ fun ReminderListScreen(
         topBar = {
             MainReMindTopAppBar(
                 actions = {
-                    IconButton(onClick = { showMenu = !showMenu }) {
+                    IconButton(onClick = { showTopMenu = !showTopMenu }) {
                         Icon(Icons.Rounded.MoreVert, contentDescription = actionMoreDescription)
                     }
                     DropdownMenu(
-                        expanded = showMenu,
-                        onDismissRequest = { showMenu = false }
+                        expanded = showTopMenu,
+                        onDismissRequest = { showTopMenu = false }
                     ) {
                         DropdownMenuItem(
                             text = { Text(deleteDisabledRemindersText) },
                             onClick = {
                                 onDeleteDisabledReminders()
-                                showMenu = false
+                                showTopMenu = false
                             }
                         )
                     }
@@ -198,28 +204,159 @@ fun ReminderListScreen(
                             is24HourFormat = is24HourFormat,
                             onToggle = { onToggleReminder(reminder) },
                             onClick = { onReminderClick(reminder) },
-                            onDelete = { onDeleteReminder(reminder) },
-                            onDuplicate = { onDuplicateReminder(reminder) },
-                            onSkipOnce = { onSkipOnce(reminder) },
-                            onCancelSkip = { onCancelSkip(reminder) }
+                            onMoreClick = { selectedReminderForMenu = reminder }
                         )
                     }
                 }
             }
         }
     }
-}
 
-@Composable
-fun EmptyState(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = stringResource(R.string.no_reminders),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+    // Action Bottom Sheet
+    if (selectedReminderForMenu != null) {
+        ReminderActionBottomSheet(
+            reminder = selectedReminderForMenu!!,
+            onDismiss = { selectedReminderForMenu = null },
+            onDelete = {
+                onDeleteReminder(selectedReminderForMenu!!)
+                selectedReminderForMenu = null
+            },
+            onDuplicate = {
+                onDuplicateReminder(selectedReminderForMenu!!)
+                selectedReminderForMenu = null
+            },
+            onSkipOnce = {
+                onSkipOnce(selectedReminderForMenu!!)
+                selectedReminderForMenu = null
+            },
+            onCancelSkip = {
+                onCancelSkip(selectedReminderForMenu!!)
+                selectedReminderForMenu = null
+            }
         )
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ReminderActionBottomSheet(
+    reminder: Reminder,
+    onDismiss: () -> Unit,
+    onDelete: () -> Unit,
+    onDuplicate: () -> Unit,
+    onSkipOnce: () -> Unit,
+    onCancelSkip: () -> Unit
+) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        dragHandle = { BottomSheetDefaults.DragHandle() },
+        containerColor = MaterialTheme.colorScheme.surface,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 32.dp)
+        ) {
+            if (reminder.isEnabled) {
+                val isSkipped = reminder.skippedAt != null
+                ListItem(
+                    headlineContent = { 
+                        Text(stringResource(if (isSkipped) R.string.action_cancel_skip else R.string.action_skip_once)) 
+                    },
+                    leadingContent = { 
+                        Icon(
+                            if (isSkipped) Icons.Rounded.NotificationsPaused else Icons.Rounded.SkipNext, 
+                            contentDescription = null
+                        ) 
+                    },
+                    modifier = Modifier.clickable { if (isSkipped) onCancelSkip() else onSkipOnce() }
+                )
+            }
+            
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.action_duplicate)) },
+                leadingContent = { Icon(Icons.Rounded.ContentCopy, contentDescription = null) },
+                modifier = Modifier.clickable { onDuplicate() }
+            )
+            
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 8.dp),
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
+            )
+            
+            ListItem(
+                headlineContent = { 
+                    Text(
+                        stringResource(R.string.action_delete), 
+                        color = MaterialTheme.colorScheme.error
+                    ) 
+                },
+                leadingContent = { 
+                    Icon(
+                        Icons.Rounded.Delete, 
+                        contentDescription = null, 
+                        tint = MaterialTheme.colorScheme.error
+                    ) 
+                },
+                modifier = Modifier.clickable { onDelete() }
+            )
+        }
+    }
+}
+
+
+@Composable
+fun EmptyState(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Surface(
+            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.15f),
+            shape = CircleShape,
+            modifier = Modifier.size(100.dp)
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(
+                    imageVector = Icons.Rounded.Notifications,
+                    contentDescription = null,
+                    modifier = Modifier.size(48.dp),
+                    tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+                )
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(24.dp))
+        
+        Text(
+            text = stringResource(R.string.no_reminders),
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onSurface,
+            fontWeight = FontWeight.SemiBold,
+            textAlign = TextAlign.Center
+        )
+        
+        Spacer(modifier = Modifier.height(8.dp))
+        
+        Text(
+            text = stringResource(R.string.empty_description),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(horizontal = 24.dp)
+        )
+    }
+}
+
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true, device = androidx.compose.ui.tooling.preview.Devices.PIXEL_7)
+@Composable
+fun EmptyStatePreview() {
+    vn.io.litever.remind.core.designsystem.theme.ReMindTheme {
+        EmptyState()
+    }
+}
+

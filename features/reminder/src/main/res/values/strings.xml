@@ -20,6 +20,7 @@
     <string name="day_fri">Fr</string>
     <string name="day_sat">Sa</string>
     <string name="day_sun">Su</string>
+    <string name="no_label">No label</string>
 
     <string name="reminders_title">Reminders</string>
     <string name="add_reminder_title">Add Reminder</string>

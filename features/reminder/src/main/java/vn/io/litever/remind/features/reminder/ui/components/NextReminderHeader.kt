@@ -1,11 +1,14 @@
 package vn.io.litever.remind.features.reminder.ui.components
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Alarm
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import vn.io.litever.remind.features.reminder.R
 import vn.io.litever.remind.features.reminder.ui.state.NextReminderUiState
@@ -15,13 +18,34 @@ fun NextReminderHeader(
     state: NextReminderUiState,
     modifier: Modifier = Modifier
 ) {
-    Text(
-        text = formatNextReminderText(state),
-        style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.primary,
-        modifier = modifier.padding(horizontal = 24.dp, vertical = 16.dp)
-    )
+    Surface(
+        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.1f),
+        shape = MaterialTheme.shapes.extraLarge,
+        modifier = modifier
+            .padding(horizontal = 20.dp, vertical = 6.dp)
+            .fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Alarm,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            Text(
+                text = formatNextReminderText(state),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+    }
 }
+
 
 @Composable
 private fun formatNextReminderText(state: NextReminderUiState): String {
@@ -38,3 +62,24 @@ private fun formatNextReminderText(state: NextReminderUiState): String {
         }
     }
 }
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@Composable
+fun NextReminderHeaderPreview() {
+    vn.io.litever.remind.core.designsystem.theme.ReMindTheme {
+        NextReminderHeader(
+            state = NextReminderUiState.Remaining(0, 7, 30)
+        )
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@Composable
+fun NextReminderHeaderAllOffPreview() {
+    vn.io.litever.remind.core.designsystem.theme.ReMindTheme {
+        NextReminderHeader(
+            state = NextReminderUiState.AllOff
+        )
+    }
+}
+

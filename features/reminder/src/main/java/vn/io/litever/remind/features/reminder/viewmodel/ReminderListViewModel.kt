@@ -52,6 +52,12 @@ class ReminderListViewModel @Inject constructor(
         )
 
     val reminders: StateFlow<List<Reminder>> = repository.getAllReminders()
+        .map { list ->
+            list.sortedWith(
+                compareByDescending<Reminder> { it.isEnabled }
+                    .thenBy { it.time }
+            )
+        }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),

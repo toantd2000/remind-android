@@ -20,6 +20,7 @@
     <string name="day_fri">T6</string>
     <string name="day_sat">T7</string>
     <string name="day_sun">CN</string>
+    <string name="no_label">Không có nhãn</string>
 
     <string name="reminders_title">Nhắc nhở</string>
     <string name="add_reminder_title">Thêm nhắc nhở</string>

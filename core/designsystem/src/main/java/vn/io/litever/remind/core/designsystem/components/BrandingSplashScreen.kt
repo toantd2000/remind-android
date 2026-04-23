@@ -1,10 +1,11 @@
 package vn.io.litever.remind.core.designsystem.components
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.*
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -45,54 +46,68 @@ fun BrandingSplashScreen(
             .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
-        val content = @Composable {
+        val scale by animateFloatAsState(
+            targetValue = if (visible) 1f else 0.8f,
+            animationSpec = tween(durationMillis = 1000, easing = LinearOutSlowInEasing),
+            label = "logoScale"
+        )
+
+        // Main Logo Content
+        AnimatedVisibility(
+            visible = isPreview || visible,
+            enter = fadeIn(tween(800)),
+            exit = fadeOut(tween(400))
+        ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(24.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .graphicsLayer(scaleX = scale, scaleY = scale)
             ) {
-                // App Logo (Large)
-                ReMindLogo(fontSize = 36.sp)
-
-                Spacer(modifier = Modifier.height(4.dp))
-
+                // App Logo
+                ReMindLogo(fontSize = 42.sp)
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
                 // Slogan
                 Text(
                     text = stringResource(R.string.app_slogan),
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                     fontWeight = FontWeight.Medium,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    letterSpacing = 1.5.sp
                 )
-
-                Spacer(modifier = Modifier.height(64.dp))
-
-                // Brand Attribution
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "by ",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.outline
-                    )
-                    BrandLogo(fontSize = 16.sp)
-                }
             }
         }
 
-        if (isPreview) {
-            content()
-        } else {
-            AnimatedVisibility(
-                visible = visible,
-                enter = fadeIn(animationSpec = tween(1000)),
-                exit = fadeOut(animationSpec = tween(500))
+        // Bottom Brand Attribution
+        AnimatedVisibility(
+            visible = isPreview || visible,
+            enter = fadeIn(tween(1200, delayMillis = 500)),
+            exit = fadeOut(tween(400)),
+            modifier = Modifier.align(Alignment.BottomCenter)
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(bottom = 64.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                content()
+                Text(
+                    text = "from",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                    modifier = Modifier.padding(bottom = 4.dp),
+                    letterSpacing = 1.sp
+                )
+                BrandLogo(fontSize = 20.sp)
             }
         }
     }
 }
+
+
+
 
 @Preview(showBackground = true, device = Devices.PIXEL_7, showSystemUi = true)
 @Composable

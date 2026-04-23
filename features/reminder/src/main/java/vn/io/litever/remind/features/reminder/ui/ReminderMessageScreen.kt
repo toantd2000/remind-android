@@ -202,7 +202,7 @@ fun ReminderMessageScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = stringResource(vn.io.litever.remind.core.designsystem.R.string.dismiss),
+                    text = stringResource(vn.io.litever.remind.features.reminder.R.string.reminder_message_dismiss),
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                 )
             }

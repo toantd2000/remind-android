@@ -93,4 +93,5 @@
     <string name="undo">Undo</string>
     <string name="skipped_next_format">Skipped next: %s</string>
     <string name="reminder_summary_title">Reminder Summary</string>
+    <string name="reminder_message_dismiss">Got it</string>
 </resources>

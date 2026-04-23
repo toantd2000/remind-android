@@ -14,9 +14,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
-import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.features.reminder.R
+import vn.io.litever.remind.core.designsystem.components.*
 
 @Composable
 fun SnoozeSettingsRoute(
@@ -62,6 +61,19 @@ fun SnoozeSettingsScreen(
                 title = stringResource(R.string.snooze_settings),
                 onBackClick = onBackClick
             )
+        },
+        bottomBar = {
+            ReMindBottomBar {
+                ReMindButton(
+                    onClick = onBackClick,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        stringResource(R.string.save),
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                    )
+                }
+            }
         }
     ) { padding ->
         LazyColumn(
@@ -78,9 +90,10 @@ fun SnoozeSettingsScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
                     ),
-                    shape = MaterialTheme.shapes.large
+                    shape = MaterialTheme.shapes.medium,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
                 ) {
                     Row(
                         modifier = Modifier
@@ -95,7 +108,7 @@ fun SnoozeSettingsScreen(
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.Bold
                         )
-                        Switch(
+                        ReMindSwitch(
                             checked = enabled,
                             onCheckedChange = onEnabledChange
                         )
@@ -116,9 +129,10 @@ fun SnoozeSettingsScreen(
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
                             ),
-                            shape = MaterialTheme.shapes.large
+                            shape = MaterialTheme.shapes.medium,
+                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
                         ) {
                             Column {
                                 intervalOptions.forEachIndexed { index, option ->
@@ -151,9 +165,10 @@ fun SnoozeSettingsScreen(
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
                             ),
-                            shape = MaterialTheme.shapes.large
+                            shape = MaterialTheme.shapes.medium,
+                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
                         ) {
                             Column {
                                 repeatOptions.forEachIndexed { index, option ->
@@ -206,7 +221,7 @@ fun SnoozeOptionRow(
             text = label,
             style = MaterialTheme.typography.bodyLarge,
             color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
         )
         if (isSelected) {
             Icon(

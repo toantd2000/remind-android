@@ -36,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 
+import vn.io.litever.remind.features.settings.BuildConfig
 import vn.io.litever.remind.features.settings.R
 
 @Composable
@@ -45,7 +46,6 @@ fun SettingsRoute(
     onNavigateToPermissions: () -> Unit,
     onNavigateToAlarmSettings: () -> Unit,
     onNavigateToLicenses: () -> Unit,
-    onNavigateToAuthorInfo: () -> Unit,
     onNavigateToUpdateHistory: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
@@ -57,7 +57,6 @@ fun SettingsRoute(
         onNavigateToPermissions = onNavigateToPermissions,
         onNavigateToAlarmSettings = onNavigateToAlarmSettings,
         onNavigateToLicenses = onNavigateToLicenses,
-        onNavigateToAuthorInfo = onNavigateToAuthorInfo,
         onNavigateToUpdateHistory = onNavigateToUpdateHistory
     )
 }
@@ -72,7 +71,6 @@ fun SettingsScreen(
     onNavigateToPermissions: () -> Unit,
     onNavigateToAlarmSettings: () -> Unit,
     onNavigateToLicenses: () -> Unit,
-    onNavigateToAuthorInfo: () -> Unit,
     onNavigateToUpdateHistory: () -> Unit
 ) {
     val context = LocalContext.current
@@ -112,19 +110,19 @@ fun SettingsScreen(
                     SettingsItem(
                         title = stringResource(R.string.setting_story),
                         icon = Icons.Rounded.History,
-                        onClick = onNavigateToAuthorInfo
+                        onClick = { launchCustomTab(context, BuildConfig.URL_AUTHOR) }
                     )
                     
                     SettingsItem(
                         title = stringResource(R.string.setting_terms),
                         icon = Icons.Rounded.Description,
-                        onClick = { launchCustomTab(context, "https://info.litever.io.vn/legal/remind/terms") }
+                        onClick = { launchCustomTab(context, BuildConfig.URL_TERMS) }
                     )
                     
                     SettingsItem(
                         title = stringResource(R.string.setting_privacy),
                         icon = Icons.Rounded.PrivacyTip,
-                        onClick = { launchCustomTab(context, "https://info.litever.io.vn/legal/remind/privacy") }
+                        onClick = { launchCustomTab(context, BuildConfig.URL_PRIVACY) }
                     )
                     
                     SettingsItem(
@@ -178,7 +176,6 @@ fun SettingsScreenPreview() {
             onNavigateToPermissions = {},
             onNavigateToAlarmSettings = {},
             onNavigateToLicenses = {},
-            onNavigateToAuthorInfo = {},
             onNavigateToUpdateHistory = {}
         )
     }

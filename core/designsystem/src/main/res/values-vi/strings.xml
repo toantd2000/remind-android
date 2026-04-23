@@ -24,7 +24,7 @@
     <string name="mission_global_progress">Tiến độ: Nhiệm vụ %1$d / %2$d</string>
     <string name="mission_group_title">Nhóm nhiệm vụ</string>
     <string name="mission_empty_desc">Chưa có nhiệm vụ nào. Thêm nhiệm vụ để đảm bảo bạn thức dậy đúng giờ!</string>
-    <string name="app_slogan">Kết nối lại tâm trí.</string>
+    <string name="app_slogan">Reconnect your Mind.</string>
     <string name="action_edit">Chỉnh sửa</string>
     <string name="action_delete">Xoá</string>
     <string name="action_select_all">Chọn tất cả</string>

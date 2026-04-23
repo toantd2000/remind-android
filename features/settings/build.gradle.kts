@@ -17,6 +17,9 @@ android {
     defaultConfig {
         minSdk = 26
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "URL_AUTHOR", "\"https://litever.io.vn/\"")
+        buildConfigField("String", "URL_TERMS", "\"https://litever.io.vn/legal/remind/terms\"")
+        buildConfigField("String", "URL_PRIVACY", "\"https://litever.io.vn/legal/remind/privacy\"")
     }
 
     compileOptions {
@@ -27,6 +30,7 @@ android {
     buildFeatures {
         compose = true
         viewBinding = false
+        buildConfig = true
     }
 }
 

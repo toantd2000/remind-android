@@ -63,7 +63,6 @@ import vn.io.litever.remind.features.settings.ui.navigateToQA
 import vn.io.litever.remind.features.settings.ui.navigateToPermissions
 import vn.io.litever.remind.features.settings.ui.navigateToAlarmSettings
 import vn.io.litever.remind.features.settings.ui.navigateToLicenses
-import vn.io.litever.remind.features.settings.ui.navigateToAuthorInfo
 import vn.io.litever.remind.features.settings.ui.navigateToUpdateHistory
 import vn.io.litever.remind.core.designsystem.components.ReMindLogo
 import vn.io.litever.remind.features.mission.ui.missionGraph
@@ -360,7 +359,6 @@ class MainActivity : ComponentActivity() {
                                         onNavigateToPermissions = { navController.navigateToPermissions() },
                                         onNavigateToAlarmSettings = { navController.navigateToAlarmSettings() },
                                         onNavigateToLicenses = { navController.navigateToLicenses() },
-                                        onNavigateToAuthorInfo = { navController.navigateToAuthorInfo() },
                                         onNavigateToUpdateHistory = { navController.navigateToUpdateHistory() },
                                         onNavigateBack = { navController.popBackStack() }
 

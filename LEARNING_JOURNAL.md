@@ -1,5 +1,18 @@
 # Learning Journal & Self-Correction Log
 
+## [2026-04-23] Modernizing UI with Glassmorphism & Dynamic Feedback
+### Key Lessons
+- **Glassmorphism Implementation**: Applied a premium, layered aesthetic using semi-transparent surfaces (`alpha = 0.2f/0.3f`) combined with unified 8dp corner radii (`MaterialTheme.shapes.medium`). This creates visual depth without adding UI clutter.
+- **Real-time Interaction Feedback**: Leveraged `AnnotatedString` to provide character-by-character color feedback in Typing Missions. Visualizing "Success" (Green) and "Error" (Red) directly on the target text significantly reduces user frustration during alarm RINGING states.
+- **Intentionality in UX**: Transitioned mission progression from "auto-complete" to "manual confirm" via a fixed bottom bar. This ensures the user is fully awake and focused before moving between tasks.
+- **Multi-module Resource Management**: Encountered `Found item String/... more than one time` error due to misplacing strings in the wrong module. **New Rule:** Feature-specific strings MUST reside in their respective module's `strings.xml` to avoid resource merging collisions and maintain modular encapsulation.
+
+### Corrective Actions
+- Fixed build errors related to missing imports (`clip`) and cross-module resource references.
+- Cleaned up duplicate string resources in `:features:reminder` and `:features:mission`.
+- Restored manual numerical input for repetitions to maintain power-user efficiency.
+
+
 ## [2026-04-21] Stabilizing Alarm & Mission Logic
 ### Key Lessons
 - **Reactive Flow Integrity**: When using `combine` or `flatMapLatest` in a Service, ensure all potential state changes (like Mute/Unmute) are captured at the top level of the flow.

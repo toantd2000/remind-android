@@ -22,39 +22,53 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
 import vn.io.litever.remind.features.settings.R
+import vn.io.litever.remind.core.designsystem.components.*
 
 @Composable
 fun PermissionSettingsRoute(
     onNavigateBack: () -> Unit,
     viewModel: PermissionViewModel = hiltViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+    
     PermissionSettingsScreen(
+        uiState = uiState,
         onNavigateBack = onNavigateBack,
-        viewModel = viewModel
+        onRefreshPermissions = viewModel::refreshPermissions,
+        onRequestExactAlarm = { requestExactAlarmPermission(context) },
+        onRequestNotification = { requestNotificationPermission(context) },
+        onRequestOverlay = { requestOverlayPermission(context) },
+        onRequestBatteryOptimization = { requestIgnoreBatteryOptimization(context) },
+        onOpenManufacturerSettings = { openManufacturerSettings(context) }
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PermissionSettingsScreen(
+    uiState: PermissionUiState,
     onNavigateBack: () -> Unit,
-    viewModel: PermissionViewModel
+    onRefreshPermissions: () -> Unit,
+    onRequestExactAlarm: () -> Unit,
+    onRequestNotification: () -> Unit,
+    onRequestOverlay: () -> Unit,
+    onRequestBatteryOptimization: () -> Unit,
+    onOpenManufacturerSettings: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    val uiState by viewModel.uiState.collectAsState()
     
     // Observe lifecycle events to refresh when user returns to app
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-                viewModel.refreshPermissions()
+                onRefreshPermissions()
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -64,14 +78,11 @@ fun PermissionSettingsScreen(
     }
 
     ReMindScaffold(
+        modifier = modifier,
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.setting_permissions_title)) },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Rounded.ArrowBack, contentDescription = "Back")
-                    }
-                }
+            ReMindTopAppBar(
+                title = stringResource(R.string.setting_permissions_title),
+                onBackClick = onNavigateBack
             )
         }
     ) { paddingValues ->
@@ -91,7 +102,7 @@ fun PermissionSettingsScreen(
                         isGranted = uiState.isExactAlarmGranted,
                         icon = Icons.Rounded.Alarm,
                         isCritical = true,
-                        onRequest = { requestExactAlarmPermission(context) }
+                        onRequest = onRequestExactAlarm
                     )
                 }
             }
@@ -104,7 +115,7 @@ fun PermissionSettingsScreen(
                     isGranted = uiState.isNotificationGranted,
                     icon = Icons.Rounded.Notifications,
                     isCritical = true,
-                    onRequest = { requestNotificationPermission(context) }
+                    onRequest = onRequestNotification
                 )
             }
 
@@ -115,7 +126,7 @@ fun PermissionSettingsScreen(
                     description = stringResource(R.string.permission_overlay_desc),
                     isGranted = uiState.isOverlayGranted,
                     icon = Icons.Rounded.Layers,
-                    onRequest = { requestOverlayPermission(context) }
+                    onRequest = onRequestOverlay
                 )
             }
 
@@ -126,15 +137,37 @@ fun PermissionSettingsScreen(
                     description = stringResource(R.string.permission_battery_desc),
                     isGranted = uiState.isBatteryOptIgnored,
                     icon = Icons.Rounded.BatteryChargingFull,
-                    onRequest = { requestIgnoreBatteryOptimization(context) }
+                    onRequest = onRequestBatteryOptimization
                 )
             }
 
             // 5. Manufacturer Specific (No status)
             item {
-                ManufacturerSettingsTile(context)
+                ManufacturerSettingsTile(onOpen = onOpenManufacturerSettings)
             }
         }
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@Composable
+fun PermissionSettingsScreenPreview() {
+    vn.io.litever.remind.core.designsystem.theme.ReMindTheme {
+        PermissionSettingsScreen(
+            uiState = PermissionUiState(
+                isExactAlarmGranted = true,
+                isNotificationGranted = false,
+                isOverlayGranted = false,
+                isBatteryOptIgnored = true
+            ),
+            onNavigateBack = {},
+            onRefreshPermissions = {},
+            onRequestExactAlarm = {},
+            onRequestNotification = {},
+            onRequestOverlay = {},
+            onRequestBatteryOptimization = {},
+            onOpenManufacturerSettings = {}
+        )
     }
 }
 
@@ -150,14 +183,17 @@ fun PermissionTile(
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-        )
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+        ),
+        shape = MaterialTheme.shapes.medium,
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Top // Căn Top để nếu tiêu đề dài xuống dòng trông vẫn đẹp
             ) {
                 Icon(
                     imageVector = icon,
@@ -165,18 +201,27 @@ fun PermissionTile(
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
                 )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.weight(1f))
                 
-                StatusBadge(isGranted = isGranted)
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 12.dp)
+                ) {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        lineHeight = 20.sp
+                    )
+                    
+                    Spacer(modifier = Modifier.height(4.dp))
+                    
+                    // Badge nằm ngay dưới tiêu đề nếu màn hình hẹp, hoặc có thể tùy biến
+                    StatusBadge(isGranted = isGranted)
+                }
             }
             
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             
             Text(
                 text = description,
@@ -207,13 +252,15 @@ fun PermissionTile(
             }
 
             if (!isGranted) {
-                Spacer(modifier = Modifier.height(12.dp))
-                Button(
+                Spacer(modifier = Modifier.height(16.dp))
+                ReMindButton(
                     onClick = onRequest,
-                    modifier = Modifier.align(Alignment.End),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp)
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(stringResource(R.string.permission_request_action))
+                    Text(
+                        stringResource(R.string.permission_request_action),
+                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
+                    )
                 }
             }
         }
@@ -221,12 +268,14 @@ fun PermissionTile(
 }
 
 @Composable
-fun ManufacturerSettingsTile(context: Context) {
+fun ManufacturerSettingsTile(onOpen: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f)
-        )
+            containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.1f)
+        ),
+        shape = MaterialTheme.shapes.medium,
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f))
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -255,13 +304,16 @@ fun ManufacturerSettingsTile(context: Context) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             
-            OutlinedButton(
-                onClick = { openManufacturerSettings(context) },
-                modifier = Modifier.align(Alignment.End)
+            ReMindOutlinedButton(
+                onClick = onOpen,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text(stringResource(R.string.permission_request_action))
+                Text(
+                    stringResource(R.string.permission_request_action),
+                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
+                )
             }
         }
     }
@@ -270,8 +322,12 @@ fun ManufacturerSettingsTile(context: Context) {
 @Composable
 fun StatusBadge(isGranted: Boolean) {
     Surface(
-        color = if (isGranted) Color(0xFF4CAF50).copy(alpha = 0.1f) else MaterialTheme.colorScheme.errorContainer,
-        shape = MaterialTheme.shapes.small
+        color = if (isGranted) Color(0xFF4CAF50).copy(alpha = 0.1f) else MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.4f),
+        shape = MaterialTheme.shapes.small,
+        border = androidx.compose.foundation.BorderStroke(
+            1.dp, 
+            if (isGranted) Color(0xFF4CAF50).copy(alpha = 0.2f) else MaterialTheme.colorScheme.error.copy(alpha = 0.2f)
+        )
     ) {
         Text(
             text = if (isGranted) stringResource(R.string.permission_granted) else stringResource(R.string.permission_denied),

@@ -14,8 +14,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,7 +39,7 @@ fun SettingsCategory(
         fontWeight = FontWeight.Bold,
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(vertical = 8.dp)
     )
 }
 
@@ -111,7 +114,7 @@ fun SettingsSwitchItem(
         icon = icon,
         subtitle = subtitle,
         trailingContent = {
-            Switch(
+            ReMindSwitch(
                 checked = checked,
                 onCheckedChange = onCheckedChange
             )
@@ -119,4 +122,29 @@ fun SettingsSwitchItem(
         onClick = { onCheckedChange(!checked) },
         modifier = modifier
     )
+}
+
+@Composable
+fun ReMindSettingsGroup(
+    title: String? = null,
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Column(modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+        if (title != null) {
+            SettingsCategory(
+                title = title,
+                modifier = Modifier.padding(horizontal = 4.dp) // Thêm một chút padding để chữ không sát mép card
+            )
+        }
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.medium,
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+            ),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)),
+            content = content
+        )
+    }
 }

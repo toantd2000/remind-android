@@ -16,8 +16,11 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.foundation.border
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.style.TextAlign
+import vn.io.litever.remind.core.designsystem.components.*
 import androidx.hilt.navigation.compose.hiltViewModel
 import vn.io.litever.remind.features.reminder.R
 import vn.io.litever.remind.features.reminder.viewmodel.ReminderRingingViewModel
@@ -119,15 +122,27 @@ fun ReminderRingingScreen(
         }
     }
 
-    val infiniteTransition = rememberInfiniteTransition(label = "pulse")
-    val pulseScale by infiniteTransition.animateFloat(
-        initialValue = 1f,
-        targetValue = 1.05f,
+    // Shake animation for the dismiss button
+    val shakeTransition = rememberInfiniteTransition(label = "shake")
+    val shakeOffset by shakeTransition.animateFloat(
+        initialValue = -3f,
+        targetValue = 3f,
         animationSpec = infiniteRepeatable(
-            animation = tween(1000, easing = FastOutSlowInEasing),
+            animation = tween(50, easing = LinearEasing),
             repeatMode = RepeatMode.Reverse
         ),
-        label = "pulseScale"
+        label = "shakeOffset"
+    )
+
+    // Gentle shake for the snooze button
+    val snoozeShakeOffset by shakeTransition.animateFloat(
+        initialValue = -1f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(100, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "snoozeShakeOffset"
     )
 
     val dateFormatter = DateTimeFormatter.ofPattern("EEEE, d MMMM", Locale.getDefault())
@@ -137,6 +152,20 @@ fun ReminderRingingScreen(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
+        // Subtle gradient background
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.05f),
+                            MaterialTheme.colorScheme.background,
+                            MaterialTheme.colorScheme.secondary.copy(alpha = 0.05f)
+                        )
+                    )
+                )
+        )
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -211,8 +240,13 @@ fun ReminderRingingScreen(
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier
                             .background(
-                                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
-                                shape = CircleShape
+                                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+                                shape = MaterialTheme.shapes.medium
+                            )
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                shape = MaterialTheme.shapes.medium
                             )
                             .padding(horizontal = 16.dp, vertical = 8.dp)
                     )
@@ -227,54 +261,32 @@ fun ReminderRingingScreen(
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier
                             .background(
-                                color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f),
-                                shape = CircleShape
+                                color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f),
+                                shape = MaterialTheme.shapes.medium
+                            )
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.error.copy(alpha = 0.1f),
+                                shape = MaterialTheme.shapes.medium
                             )
                             .padding(horizontal = 16.dp, vertical = 8.dp)
                     )
                 }
             }
 
-            // Middle: Icon or Pulse Effect
+            // Middle: Empty space for future custom background
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(200.dp)
-                        .scale(pulseScale),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                brush = Brush.radialGradient(
-                                    colors = listOf(
-                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
-                                        Color.Transparent
-                                    )
-                                ),
-                                shape = CircleShape
-                            )
-                    )
-                    Icon(
-                        imageVector = Icons.Rounded.Notifications,
-                        contentDescription = null,
-                        modifier = Modifier.size(80.dp),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
+                    .fillMaxWidth()
+            )
 
             // Bottom: Actions
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 32.dp),
+                    .navigationBarsPadding()
+                    .padding(bottom = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
@@ -287,13 +299,11 @@ fun ReminderRingingScreen(
                         stringResource(vn.io.litever.remind.core.designsystem.R.string.snooze)
                     }
 
-                    OutlinedButton(
+                    ReMindOutlinedButton(
                         onClick = onSnooze,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(56.dp),
-                        shape = MaterialTheme.shapes.extraLarge,
-                        border = androidx.compose.foundation.BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
+                            .offset(x = snoozeShakeOffset.dp) // Áp dụng rung nhẹ
                     ) {
                         Text(
                             text = snoozeText,
@@ -302,7 +312,7 @@ fun ReminderRingingScreen(
                     }
                 }
 
-                Button(
+                ReMindButton(
                     onClick = {
                         val hasMission = (reminder?.missions?.isNotEmpty() == true)
                         if (hasMission) {
@@ -313,11 +323,7 @@ fun ReminderRingingScreen(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(56.dp),
-                    shape = MaterialTheme.shapes.extraLarge,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary
-                    )
+                        .offset(x = shakeOffset.dp) // Áp dụng hiệu ứng rung
                 ) {
                     val hasMission = (reminder?.missions?.isNotEmpty() == true)
                     val dismissText = if (hasMission) {

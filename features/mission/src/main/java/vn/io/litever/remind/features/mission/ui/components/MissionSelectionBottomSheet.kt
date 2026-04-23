@@ -43,24 +43,30 @@ fun MissionSelectionBottomSheet(
             val missionTypes = listOf(
                 MissionItem(MissionType.TYPING, stringResource(R.string.mission_typing), stringResource(R.string.mission_typing_desc), Icons.Rounded.Keyboard),
                 MissionItem(MissionType.MATH, stringResource(R.string.mission_math), stringResource(R.string.mission_math_desc), Icons.Rounded.Calculate),
-                MissionItem(MissionType.SHAKE, stringResource(R.string.mission_shake), "Shake your phone to wake up", Icons.Rounded.Vibration),
+                MissionItem(MissionType.SHAKE, stringResource(R.string.mission_shake), "Shake your phone to wake up", Icons.Rounded.Smartphone),
                 MissionItem(MissionType.QR_CODE, stringResource(R.string.mission_qr_code), "Scan a QR code or barcode", Icons.Rounded.QrCodeScanner)
             )
 
             LazyColumn {
                 items(missionTypes) { item ->
                     ListItem(
-                        headlineContent = { Text(item.title) },
+                        headlineContent = { 
+                            Text(
+                                item.title,
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
+                            ) 
+                        },
                         supportingContent = { Text(item.description) },
                         leadingContent = {
                             Surface(
                                 shape = MaterialTheme.shapes.medium,
-                                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
+                                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
+                                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
                             ) {
                                 Icon(
                                     imageVector = item.icon,
                                     contentDescription = null,
-                                    modifier = Modifier.padding(8.dp).size(24.dp),
+                                    modifier = Modifier.padding(10.dp).size(24.dp),
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                             }

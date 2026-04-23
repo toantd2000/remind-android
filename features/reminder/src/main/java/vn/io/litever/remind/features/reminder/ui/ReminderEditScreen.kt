@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
@@ -58,7 +59,9 @@ import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.VolumeUp
 import androidx.compose.material.icons.rounded.VolumeOff
 import androidx.compose.material.icons.rounded.Vibration
+import androidx.compose.material.icons.rounded.Smartphone
 import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.foundation.BorderStroke
 import vn.io.litever.remind.features.mission.ui.components.MissionSelectionBottomSheet
 import vn.io.litever.remind.core.model.MissionType
 import androidx.compose.material.icons.rounded.Snooze
@@ -85,6 +88,7 @@ import androidx.compose.material3.TimeInput
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -312,7 +316,8 @@ fun ReminderEditScreen(
     onGradualVolumeChange: (Int) -> Unit,
     onAddMissionClick: () -> Unit,
     onMissionClick: (vn.io.litever.remind.core.model.Mission) -> Unit,
-    onMissionRemove: (vn.io.litever.remind.core.model.Mission) -> Unit
+    onMissionRemove: (vn.io.litever.remind.core.model.Mission) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val timePickerState = androidx.compose.runtime.key(uiState.id, is24HourFormat) {
         rememberTimePickerState(
@@ -400,44 +405,22 @@ fun ReminderEditScreen(
         )
     }
 
-    var showAutoSilenceDialog by remember { mutableStateOf(false) }
+    var showAutoSilenceSheet by remember { mutableStateOf(false) }
 
-    if (showAutoSilenceDialog) {
-        ReMindAlertDialog(
-            onDismissRequest = { showAutoSilenceDialog = false },
-            title = stringResource(R.string.auto_silence_title),
-            // Actually let's just make it simple
-            confirmButtonText = stringResource(R.string.save),
-            onConfirmClick = { showAutoSilenceDialog = false }, // Selection happens via onClick
-            text = null,
-            content = {
-                val options = listOf(1, 3, 5, 10, 30)
-                Column {
-                    options.forEach { option ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    onAutoSilenceChange(option)
-                                    showAutoSilenceDialog = false
-                                }
-                                .padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            RadioButton(
-                                selected = uiState.autoSilenceMinutes == option,
-                                onClick = {
-                                    onAutoSilenceChange(option)
-                                    showAutoSilenceDialog = false
-                                }
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(stringResource(R.string.minutes_unit, option))
-                        }
-                    }
+    if (showAutoSilenceSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showAutoSilenceSheet = false },
+            containerColor = MaterialTheme.colorScheme.surface,
+            tonalElevation = 0.dp
+        ) {
+            AutoSilenceBottomSheetContent(
+                currentMinutes = uiState.autoSilenceMinutes,
+                onMinutesSelect = {
+                    onAutoSilenceChange(it)
+                    showAutoSilenceSheet = false
                 }
-            }
-        )
+            )
+        }
     }
 
     val context = LocalContext.current
@@ -465,22 +448,41 @@ fun ReminderEditScreen(
                 title = stringResource(if (uiState.id == 0L) R.string.add_reminder_title else R.string.edit_reminder_title),
                 onBackClick = onBackClick
             )
+        },
+        bottomBar = {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding(),
+                color = MaterialTheme.colorScheme.surface,
+                tonalElevation = 1.dp,
+                shadowElevation = 8.dp
+            ) {
+                Button(
+                    onClick = onSaveClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .height(56.dp),
+                    shape = MaterialTheme.shapes.extraLarge,
+                ) {
+                    Text(
+                        stringResource(R.string.save),
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                    )
+                }
+            }
         }
     ) { padding ->
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(
-                top = padding.calculateTopPadding(),
-                bottom = 0.dp,
-                start = padding.calculateStartPadding(LayoutDirection.Ltr),
-                end = padding.calculateEndPadding(LayoutDirection.Ltr)
-            )) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                item {
-                    NextReminderHeader(state = nextReminderState)
-                }
+        LazyColumn(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(padding),
+            contentPadding = PaddingValues(bottom = 16.dp)
+        ) {
+            item {
+                NextReminderHeader(state = nextReminderState)
+            }
 
                 item {
                     // Group 1: Time Selector
@@ -495,7 +497,8 @@ fun ReminderEditScreen(
                                 alpha = 0.3f
                             )
                         ),
-                        shape = MaterialTheme.shapes.extraLarge
+                        shape = MaterialTheme.shapes.extraLarge,
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
                     ) {
                         Box(
                             modifier = Modifier
@@ -515,17 +518,18 @@ fun ReminderEditScreen(
                                     Text(
                                         text = uiState.time.format(timeFormatter),
                                         style = MaterialTheme.typography.displayLarge.copy(
-                                            fontWeight = FontWeight.Bold,
-                                            color = MaterialTheme.colorScheme.primary
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = MaterialTheme.colorScheme.primary,
+                                            letterSpacing = (-2).sp
                                         )
                                     )
                                     if (!is24HourFormat) {
-                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Spacer(modifier = Modifier.width(6.dp))
                                         Text(
-                                            text = uiState.time.format(DateTimeFormatter.ofPattern("a")),
-                                            style = MaterialTheme.typography.titleLarge.copy(
-                                                color = MaterialTheme.colorScheme.primary,
-                                                fontWeight = FontWeight.SemiBold
+                                            text = uiState.time.format(DateTimeFormatter.ofPattern("a")).uppercase(),
+                                            style = MaterialTheme.typography.headlineSmall.copy(
+                                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+                                                fontWeight = FontWeight.Bold
                                             ),
                                             modifier = Modifier.padding(bottom = 12.dp)
                                         )
@@ -568,7 +572,8 @@ fun ReminderEditScreen(
                                 alpha = 0.3f
                             )
                         ),
-                        shape = MaterialTheme.shapes.extraLarge
+                        shape = MaterialTheme.shapes.extraLarge,
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
                     ) {
                         RepeatDaySelector(
                             selectedDays = uiState.repeatDays,
@@ -592,7 +597,8 @@ fun ReminderEditScreen(
                                 alpha = 0.3f
                             )
                         ),
-                        shape = MaterialTheme.shapes.extraLarge
+                        shape = MaterialTheme.shapes.extraLarge,
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
@@ -639,7 +645,8 @@ fun ReminderEditScreen(
                                 alpha = 0.3f
                             )
                         ),
-                        shape = MaterialTheme.shapes.extraLarge
+                        shape = MaterialTheme.shapes.extraLarge,
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
@@ -839,7 +846,8 @@ fun ReminderEditScreen(
                                 alpha = 0.3f
                             )
                         ),
-                        shape = MaterialTheme.shapes.extraLarge
+                        shape = MaterialTheme.shapes.extraLarge,
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
@@ -884,7 +892,7 @@ fun ReminderEditScreen(
                                     uiState.autoSilenceMinutes
                                 ),
                                 icon = Icons.Rounded.AlarmOff,
-                                onClick = { showAutoSilenceDialog = true }
+                                onClick = { showAutoSilenceSheet = true }
                             )
                         }
                     }
@@ -901,7 +909,8 @@ fun ReminderEditScreen(
                                 alpha = 0.3f
                             )
                         ),
-                        shape = MaterialTheme.shapes.extraLarge
+                        shape = MaterialTheme.shapes.extraLarge,
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Row(
@@ -955,44 +964,8 @@ fun ReminderEditScreen(
                     }
                 }
 
-                item {
-                    Spacer(modifier = Modifier.height(100.dp + padding.calculateBottomPadding()))
-                }
-            }
-
-            // Pinned/Floating Save Button
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .background(
-                        Brush.verticalGradient(
-                            listOf(
-                                Color.Transparent,
-                                MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
-                            )
-                        )
-                    )
-                    .padding(
-                        start = 16.dp + padding.calculateStartPadding(LayoutDirection.Ltr),
-                        end = 16.dp + padding.calculateEndPadding(LayoutDirection.Ltr),
-                        bottom = 16.dp + padding.calculateBottomPadding(),
-                        top = 16.dp
-                    )
-            ) {
-                Button(
-                    onClick = onSaveClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    shape = MaterialTheme.shapes.extraLarge,
-                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
-                ) {
-                    Text(
-                        stringResource(R.string.save),
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                    )
-                }
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
@@ -1036,7 +1009,7 @@ fun RepeatDaySelector(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             allDays.forEach { day ->
                 val dayLabel = when (day) {
@@ -1050,27 +1023,27 @@ fun RepeatDaySelector(
                 }
 
                 val isSelected = selectedDays.contains(day)
-                Box(
+                Surface(
                     modifier = Modifier
-                        .size(42.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(
-                            if (isSelected) MaterialTheme.colorScheme.primaryContainer
-                            else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                        )
-                        .clickable { onDayToggle(day) }
-                        .padding(4.dp),
-                    contentAlignment = Alignment.Center
+                        .weight(1f)
+                        .height(44.dp)
+                        .clip(MaterialTheme.shapes.medium)
+                        .clickable { onDayToggle(day) },
+                    color = if (isSelected) MaterialTheme.colorScheme.primaryContainer
+                            else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                    shape = MaterialTheme.shapes.medium,
+                    border = if (isSelected) null else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
                 ) {
-                    Text(
-                        text = dayLabel,
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            fontWeight = FontWeight.Bold,
-                            fontSize = if (dayLabel.length > 2) 10.sp else 11.sp
-                        ),
-                        color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer
-                        else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                    )
+                    Box(contentAlignment = Alignment.Center) {
+                        Text(
+                            text = dayLabel,
+                            style = MaterialTheme.typography.labelMedium.copy(
+                                fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Medium
+                            ),
+                            color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer
+                            else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
         }
@@ -1213,69 +1186,74 @@ private fun MissionRow(
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(
+    Surface(
         modifier = modifier
             .fillMaxWidth()
-            .clip(MaterialTheme.shapes.medium)
-            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))
-            .clickable(onClick = onClick)
-            .padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .clip(MaterialTheme.shapes.large)
+            .clickable(onClick = onClick),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
+        shape = MaterialTheme.shapes.large,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.1f))
     ) {
-        val icon = when (mission.type) {
-            vn.io.litever.remind.core.model.MissionType.TYPING -> Icons.Rounded.Keyboard
-            vn.io.litever.remind.core.model.MissionType.MATH -> Icons.Rounded.Calculate
-            vn.io.litever.remind.core.model.MissionType.SHAKE -> Icons.Rounded.Vibration
-            vn.io.litever.remind.core.model.MissionType.QR_CODE -> Icons.Rounded.QrCodeScanner
-            else -> Icons.Rounded.Extension
-        }
-
-        val title = when (mission.type) {
-            vn.io.litever.remind.core.model.MissionType.TYPING -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_typing)
-            vn.io.litever.remind.core.model.MissionType.MATH -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_math)
-            vn.io.litever.remind.core.model.MissionType.SHAKE -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_shake)
-            vn.io.litever.remind.core.model.MissionType.QR_CODE -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_qr_code)
-            else -> mission.type.name
-        }
-
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(MaterialTheme.shapes.medium)
-                .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)),
-            contentAlignment = Alignment.Center
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp),
-                tint = MaterialTheme.colorScheme.primary
-            )
-        }
+            val icon = when (mission.type) {
+                vn.io.litever.remind.core.model.MissionType.TYPING -> Icons.Rounded.Keyboard
+                vn.io.litever.remind.core.model.MissionType.MATH -> Icons.Rounded.Calculate
+                vn.io.litever.remind.core.model.MissionType.SHAKE -> Icons.Rounded.Smartphone
+                vn.io.litever.remind.core.model.MissionType.QR_CODE -> Icons.Rounded.QrCodeScanner
+                else -> Icons.Rounded.Extension
+            }
 
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 12.dp)
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
-            )
-            Text(
-                text = stringResource(vn.io.litever.remind.core.designsystem.R.string.times_unit, mission.repeatCount),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
+            val title = when (mission.type) {
+                vn.io.litever.remind.core.model.MissionType.TYPING -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_typing)
+                vn.io.litever.remind.core.model.MissionType.MATH -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_math)
+                vn.io.litever.remind.core.model.MissionType.SHAKE -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_shake)
+                vn.io.litever.remind.core.model.MissionType.QR_CODE -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_qr_code)
+                else -> mission.type.name
+            }
 
-        IconButton(onClick = onDelete) {
-            Icon(
-                imageVector = Icons.Rounded.Delete,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp),
-                tint = MaterialTheme.colorScheme.error.copy(alpha = 0.6f)
-            )
+            Box(
+                modifier = Modifier
+                    .size(44.dp)
+                    .clip(MaterialTheme.shapes.medium)
+                    .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 12.dp)
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold)
+                )
+                Text(
+                    text = stringResource(vn.io.litever.remind.core.designsystem.R.string.times_unit, mission.repeatCount),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            IconButton(onClick = onDelete) {
+                Icon(
+                    imageVector = Icons.Rounded.Delete,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp),
+                    tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
+                )
+            }
         }
     }
 }
@@ -1285,7 +1263,7 @@ fun GentleReminderBottomSheetContent(
     currentDuration: Int,
     onDurationSelect: (Int) -> Unit
 ) {
-    val options = listOf(0, 15, 30, 60, 300, 600)
+    val options = listOf(0, 15, 30, 60)
     
     Column(
         modifier = Modifier
@@ -1294,7 +1272,7 @@ fun GentleReminderBottomSheetContent(
     ) {
         Text(
             text = stringResource(R.string.gentle_reminder_title),
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
             modifier = Modifier.padding(16.dp)
         )
         Text(
@@ -1316,7 +1294,12 @@ fun GentleReminderBottomSheetContent(
             }
             
             ListItem(
-                headlineContent = { Text(label) },
+                headlineContent = { 
+                    Text(
+                        label,
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
+                    ) 
+                },
                 leadingContent = {
                     RadioButton(
                         selected = currentDuration == option,
@@ -1324,6 +1307,46 @@ fun GentleReminderBottomSheetContent(
                     )
                 },
                 modifier = Modifier.clickable { onDurationSelect(option) }
+            )
+        }
+    }
+}
+
+@Composable
+fun AutoSilenceBottomSheetContent(
+    currentMinutes: Int,
+    onMinutesSelect: (Int) -> Unit
+) {
+    val options = listOf(1, 3, 5, 10, 30)
+    
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 32.dp)
+    ) {
+        Text(
+            text = stringResource(R.string.auto_silence_title),
+            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+            modifier = Modifier.padding(16.dp)
+        )
+        
+        Spacer(modifier = Modifier.height(8.dp))
+        
+        options.forEach { option ->
+            ListItem(
+                headlineContent = { 
+                    Text(
+                        stringResource(R.string.minutes_unit, option),
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
+                    ) 
+                },
+                leadingContent = {
+                    RadioButton(
+                        selected = currentMinutes == option,
+                        onClick = { onMinutesSelect(option) }
+                    )
+                },
+                modifier = Modifier.clickable { onMinutesSelect(option) }
             )
         }
     }

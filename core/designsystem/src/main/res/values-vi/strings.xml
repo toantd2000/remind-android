@@ -20,7 +20,7 @@
     <string name="mission_cancel">Hủy bỏ</string>
     <string name="mission_preview">Xem trước</string>
     <string name="times_unit">%d lần</string>
-    <string name="mission_start">Bắt đầu</string>
+    <string name="mission_start">Bắt đầu nhiệm vụ</string>
     <string name="mission_global_progress">Tiến độ: Nhiệm vụ %1$d / %2$d</string>
     <string name="mission_group_title">Nhóm nhiệm vụ</string>
     <string name="mission_empty_desc">Chưa có nhiệm vụ nào. Thêm nhiệm vụ để đảm bảo bạn thức dậy đúng giờ!</string>
@@ -48,8 +48,7 @@
     <string name="snooze">Báo lại</string>
     <string name="mission_math_instruction">Giải bài toán</string>
     <string name="mission_math_placeholder">Đáp án</string>
-    <string name="missed_alarm_title">Bỏ lỡ báo thức</string>
-    <string name="missed_alarm_text">Bạn đã bỏ lỡ một báo thức</string>
     <string name="mission_phrases_none_selected">Chưa chọn cụm từ nào</string>
     <string name="mission_phrases_selected">Đã chọn %1$d cụm từ</string>
+    <string name="coming_soon">Sắp ra mắt</string>
 </resources>

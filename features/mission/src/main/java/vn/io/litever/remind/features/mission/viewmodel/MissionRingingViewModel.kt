@@ -10,13 +10,7 @@ import kotlinx.coroutines.launch
 import vn.io.litever.remind.core.domain.repository.MissionRepository
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderController
-import vn.io.litever.remind.core.model.Mission
-import vn.io.litever.remind.core.model.MissionType
-import vn.io.litever.remind.core.model.Phrase
-import vn.io.litever.remind.core.model.TypingMissionConfig
-import vn.io.litever.remind.core.model.MathMissionConfig
-import vn.io.litever.remind.core.model.MathDifficulty
-import vn.io.litever.remind.core.model.MathProblem
+import vn.io.litever.remind.core.model.*
 import vn.io.litever.remind.core.reminder.ReminderRingManager
 import javax.inject.Inject
 
@@ -120,23 +114,27 @@ class MissionRingingViewModel @Inject constructor(
     fun onUserInputChange(input: String) {
         _userInput.value = input
         startTimeoutTimer() // Reset timer on every interaction
+    }
+
+    fun validateCurrentStep() {
         val state = _uiState.value
         val currentMission = state.currentMission ?: return
+        val input = _userInput.value
 
-        when (currentMission.type) {
+        val isCorrect = when (currentMission.type) {
             MissionType.TYPING -> {
                 val target = (state.currentTargetData as? Phrase)?.content ?: return
-                if (input.trim().equals(target.trim(), ignoreCase = true)) {
-                    onRepetitionCompleted()
-                }
+                input.trim().equals(target.trim(), ignoreCase = true)
             }
             MissionType.MATH -> {
                 val target = (state.currentTargetData as? MathProblem)?.answer?.toString() ?: return
-                if (input.trim() == target) {
-                    onRepetitionCompleted()
-                }
+                input.trim() == target
             }
-            else -> { /* Handle other mission types */ }
+            else -> false
+        }
+
+        if (isCorrect) {
+            onRepetitionCompleted()
         }
     }
 
@@ -222,4 +220,3 @@ data class MissionRingingUiState(
 ) {
     val currentMission: Mission? get() = missions.getOrNull(currentMissionIndex)
 }
-

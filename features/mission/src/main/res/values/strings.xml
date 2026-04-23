@@ -1,0 +1,30 @@
+<resources>
+    <string name="mission_title">Mission</string>
+    <string name="mission_typing">Typing</string>
+    <string name="mission_math">Math</string>
+    <string name="mission_repetitions">Repetitions</string>
+    <string name="mission_typing_example">Example phrase to type:</string>
+    <string name="mission_typing_instruction">Type the phrase below to dismiss:</string>
+    <string name="mission_math_instruction">Solve the problem below to dismiss:</string>
+    <string name="mission_math_placeholder">Enter answer</string>
+    <string name="mission_phrase_placeholder">Type here...</string>
+    <string name="mission_progress">Progress: %1$d / %2$d</string>
+    <string name="mission_global_progress">Task %1$d of %2$d</string>
+    <string name="mission_complete">Complete</string>
+    <string name="mission_select_phrases">Select Phrases</string>
+    <string name="mission_phrases_none_selected">No phrases selected</string>
+    <string name="mission_phrases_selected">%d phrases selected</string>
+    <string name="mission_phrases_motivation">Motivation</string>
+    <string name="mission_phrases_basic">Basic</string>
+    <string name="mission_phrases_my">My Phrases</string>
+    <string name="mission_phrase_empty">No custom phrases yet</string>
+    <string name="mission_add_custom_phrase">Add Custom Phrase</string>
+    <string name="mission_phrase_edit_title">Edit Phrase</string>
+    <string name="mission_shared">Shared</string>
+    <string name="mission_shared_desc">Available for all reminders</string>
+    <string name="mission_private">Private</string>
+    <string name="mission_phrase_delete_confirm">Are you sure you want to delete this phrase?</string>
+    <string name="mission_complete_title">TASK COMPLETE</string>
+    <string name="mission_complete_subtitle">One step closer to your day!</string>
+    <string name="mission_complete_next">Next task starting...</string>
+</resources>

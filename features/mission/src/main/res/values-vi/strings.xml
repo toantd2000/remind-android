@@ -1,0 +1,30 @@
+<resources>
+    <string name="mission_title">Nhiệm vụ</string>
+    <string name="mission_typing">Gõ chữ</string>
+    <string name="mission_math">Giải toán</string>
+    <string name="mission_repetitions">Số lần lặp lại</string>
+    <string name="mission_typing_example">Ví dụ cụm từ cần gõ:</string>
+    <string name="mission_typing_instruction">Gõ lại cụm từ bên dưới:</string>
+    <string name="mission_math_instruction">Giải phép tính bên dưới:</string>
+    <string name="mission_math_placeholder">Nhập kết quả</string>
+    <string name="mission_phrase_placeholder">Nhập tại đây...</string>
+    <string name="mission_progress">Tiến độ: %1$d / %2$d</string>
+    <string name="mission_global_progress">Nhiệm vụ %1$d / %2$d</string>
+    <string name="mission_complete">Hoàn tất</string>
+    <string name="mission_select_phrases">Chọn cụm từ</string>
+    <string name="mission_phrases_none_selected">Chưa chọn cụm từ nào</string>
+    <string name="mission_phrases_selected">Đã chọn %d cụm từ</string>
+    <string name="mission_phrases_motivation">Động lực</string>
+    <string name="mission_phrases_basic">Cơ bản</string>
+    <string name="mission_phrases_my">Của tôi</string>
+    <string name="mission_phrase_empty">Chưa có cụm từ tùy chỉnh</string>
+    <string name="mission_add_custom_phrase">Thêm cụm từ mới</string>
+    <string name="mission_phrase_edit_title">Sửa cụm từ</string>
+    <string name="mission_shared">Chia sẻ</string>
+    <string name="mission_shared_desc">Dùng cho tất cả nhắc nhở</string>
+    <string name="mission_private">Riêng tư</string>
+    <string name="mission_phrase_delete_confirm">Bạn có chắc muốn xóa cụm từ này không?</string>
+    <string name="mission_complete_title">HOÀN THÀNH</string>
+    <string name="mission_complete_subtitle">Bắt đầu ngày mới thôi nào!</string>
+    <string name="mission_complete_next">Nhiệm vụ tiếp theo...</string>
+</resources>

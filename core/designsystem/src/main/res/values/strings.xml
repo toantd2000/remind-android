@@ -52,4 +52,5 @@
     <string name="mission_shared_desc">Shared phrases can be used across all alarms.</string>
     <string name="mission_phrases_none_selected">None selected</string>
     <string name="mission_phrases_selected">%1$d phrases selected</string>
+    <string name="coming_soon">Coming Soon</string>
 </resources>

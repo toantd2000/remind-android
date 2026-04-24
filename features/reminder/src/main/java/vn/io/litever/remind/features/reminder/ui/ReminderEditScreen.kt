@@ -263,8 +263,12 @@ fun ReminderEditRoute(
         uiState = uiState,
         nextReminderState = nextReminderState,
         is24HourFormat = is24HourFormat,
-        onBackClick = onBackClick,
+        onBackClick = {
+            viewModel.stopRingtonePlayback()
+            onBackClick()
+        },
         onSaveClick = {
+            viewModel.stopRingtonePlayback()
             viewModel.saveReminder(onBackClick)
         },
         onSaveAnyway = {
@@ -276,8 +280,12 @@ fun ReminderEditRoute(
         onMessageChange = viewModel::updateMessage,
         onRepeatDayToggle = viewModel::toggleRepeatDay,
         onVibrationToggle = viewModel::updateVibration,
-        onRingtoneClick = { onRingtoneSelectionClick(uiState.ringtoneUri) },
+        onRingtoneClick = { 
+            viewModel.stopRingtonePlayback()
+            onRingtoneSelectionClick(uiState.ringtoneUri) 
+        },
         onSnoozeSettingsClick = {
+            viewModel.stopRingtonePlayback()
             onSnoozeSettingsClick(
                 uiState.snoozeEnabled,
                 uiState.snoozeInterval,
@@ -290,8 +298,14 @@ fun ReminderEditRoute(
         onTogglePreview = viewModel::toggleRingtonePlayback,
         onDateChange = viewModel::updateDate,
         onGradualVolumeChange = viewModel::updateGradualVolumeDuration,
-        onAddMissionClick = { showMissionSelection = true },
-        onMissionClick = onMissionClick,
+        onAddMissionClick = { 
+            viewModel.stopRingtonePlayback()
+            showMissionSelection = true 
+        },
+        onMissionClick = {
+            viewModel.stopRingtonePlayback()
+            onMissionClick(it)
+        },
         onMissionRemove = viewModel::removeMission
     )
 }

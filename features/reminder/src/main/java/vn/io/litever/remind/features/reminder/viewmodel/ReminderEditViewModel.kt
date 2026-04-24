@@ -275,8 +275,8 @@ class ReminderEditViewModel @Inject constructor(
                 setDataSource(context, uri)
                 setAudioAttributes(
                     android.media.AudioAttributes.Builder()
-                        .setUsage(android.media.AudioAttributes.USAGE_ALARM)
-                        .setContentType(android.media.AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .setUsage(android.media.AudioAttributes.USAGE_MEDIA)
+                        .setContentType(android.media.AudioAttributes.CONTENT_TYPE_MUSIC)
                         .build()
                 )
                 isLooping = true
@@ -314,7 +314,7 @@ class ReminderEditViewModel @Inject constructor(
         }
     }
 
-    private fun stopRingtonePlayback() {
+    fun stopRingtonePlayback() {
         progressJob?.cancel()
         vibrator.cancel()
         mediaPlayer?.stop()

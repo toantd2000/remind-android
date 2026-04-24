@@ -324,6 +324,11 @@ fun ReminderEditScreen(
     onMissionRemove: (vn.io.litever.remind.core.model.Mission) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    if (uiState.isLoading) {
+        Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
+        return
+    }
+
     val timePickerState = androidx.compose.runtime.key(uiState.id, is24HourFormat) {
         rememberTimePickerState(
             initialHour = uiState.time.hour,

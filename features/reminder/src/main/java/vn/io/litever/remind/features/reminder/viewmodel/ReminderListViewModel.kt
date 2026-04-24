@@ -51,7 +51,7 @@ class ReminderListViewModel @Inject constructor(
             initialValue = true
         )
 
-    val reminders: StateFlow<List<Reminder>> = repository.getAllReminders()
+    val reminders: StateFlow<List<Reminder>?> = repository.getAllReminders()
         .map { list ->
             list.sortedWith(
                 compareByDescending<Reminder> { it.isEnabled }
@@ -61,12 +61,13 @@ class ReminderListViewModel @Inject constructor(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
+            initialValue = null
         )
 
     val nextReminderTime: StateFlow<NextReminderUiState> = reminders
         .map { list ->
-            calculateNextReminder(list.filter { it.isEnabled })
+            if (list == null) NextReminderUiState.AllOff
+            else calculateNextReminder(list.filter { it.isEnabled })
         }
         .stateIn(
             scope = viewModelScope,
@@ -116,7 +117,8 @@ class ReminderListViewModel @Inject constructor(
 
     fun deleteDisabledReminders() {
         viewModelScope.launch {
-            val disabledReminders = reminders.value.filter { !it.isEnabled }
+            val currentReminders = reminders.value ?: return@launch
+            val disabledReminders = currentReminders.filter { !it.isEnabled }
             if (disabledReminders.isEmpty()) return@launch
             
             lastDeletedReminders = disabledReminders

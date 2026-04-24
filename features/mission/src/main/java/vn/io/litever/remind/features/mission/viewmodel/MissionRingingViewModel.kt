@@ -43,8 +43,10 @@ class MissionRingingViewModel @Inject constructor(
             val reminder = reminderRepository.getReminderById(reminderId) ?: return@launch
             if (reminder.missions.isNotEmpty()) {
                 val missions = reminder.missions.sortedBy { it.order }
-                _uiState.update { it.copy(missions = missions, reminder = reminder) }
+                _uiState.update { it.copy(isLoading = false, missions = missions, reminder = reminder) }
                 loadMissionData(0)
+            } else {
+                _uiState.update { it.copy(isLoading = false) }
             }
         }
     }
@@ -206,6 +208,7 @@ class MissionRingingViewModel @Inject constructor(
 }
 
 data class MissionRingingUiState(
+    val isLoading: Boolean = true,
     val reminder: vn.io.litever.remind.core.model.Reminder? = null,
     val missions: List<Mission> = emptyList(),
     val currentMissionIndex: Int = 0,

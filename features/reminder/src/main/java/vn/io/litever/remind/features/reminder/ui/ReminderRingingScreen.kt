@@ -102,6 +102,11 @@ fun ReminderRingingScreen(
 ) {
     var remainingSnoozeSeconds by remember { mutableLongStateOf(0L) }
 
+    if (reminder == null) {
+        Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
+        return
+    }
+
     // Intercept back button to prevent escaping the ringing/locking screen
     BackHandler { }
 

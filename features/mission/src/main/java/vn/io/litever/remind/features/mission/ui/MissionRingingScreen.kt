@@ -75,6 +75,11 @@ fun MissionRingingScreen(
 ) {
     BackHandler { onAbandon() } // Back button abandons mission
 
+    if (uiState.isLoading) {
+        Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
+        return
+    }
+
     ReMindScaffold(
         topBar = {
             if (!uiState.isMissionJustCompleted && !uiState.isDismissed) {

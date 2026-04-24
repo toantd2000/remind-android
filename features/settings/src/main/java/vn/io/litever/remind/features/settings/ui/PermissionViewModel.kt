@@ -20,12 +20,15 @@ class PermissionViewModel @Inject constructor(
     private val permissionChecker: vn.io.litever.remind.core.common.util.PermissionChecker
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(PermissionUiState())
+    private val _uiState = MutableStateFlow(
+        PermissionUiState(
+            isNotificationGranted = permissionChecker.hasNotificationPermission(),
+            isExactAlarmGranted = permissionChecker.hasExactAlarmPermission(),
+            isOverlayGranted = permissionChecker.hasOverlayPermission(),
+            isBatteryOptIgnored = permissionChecker.isIgnoringBatteryOptimizations()
+        )
+    )
     val uiState: StateFlow<PermissionUiState> = _uiState.asStateFlow()
-
-    init {
-        refreshPermissions()
-    }
 
     fun refreshPermissions() {
         _uiState.value = PermissionUiState(

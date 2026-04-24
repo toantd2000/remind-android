@@ -120,7 +120,7 @@ fun ReminderListRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReminderListScreen(
-    reminders: List<Reminder>,
+    reminders: List<Reminder>?,
     is24HourFormat: Boolean,
     nextReminderState: NextReminderUiState,
     hasCriticalPermissions: Boolean,
@@ -181,33 +181,38 @@ fun ReminderListScreen(
                 PermissionWarningBanner(onClick = onNavigateToPermissions)
             }
 
-            if (reminders.isNotEmpty()) {
-                // Shared Next Reminder Header
-                NextReminderHeader(state = nextReminderState)
-            }
-
-            if (reminders.isEmpty()) {
-                EmptyState(modifier = Modifier.weight(1f))
+            if (reminders == null) {
+                // Show nothing while loading to avoid empty state flash
+                Box(modifier = Modifier.weight(1f))
             } else {
-                LazyColumn(
-                    modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp).let { 
-                        PaddingValues(
-                            start = it.calculateStartPadding(androidx.compose.ui.unit.LayoutDirection.Ltr),
-                            top = it.calculateTopPadding(),
-                            end = it.calculateEndPadding(androidx.compose.ui.unit.LayoutDirection.Ltr),
-                            bottom = it.calculateBottomPadding() + 80.dp
-                        )
-                    }
-                ) {
-                    items(reminders, key = { it.id }) { reminder ->
-                        ReminderCard(
-                            reminder = reminder,
-                            is24HourFormat = is24HourFormat,
-                            onToggle = { onToggleReminder(reminder) },
-                            onClick = { onReminderClick(reminder) },
-                            onMoreClick = { selectedReminderForMenu = reminder }
-                        )
+                if (reminders.isNotEmpty()) {
+                    // Shared Next Reminder Header
+                    NextReminderHeader(state = nextReminderState)
+                }
+
+                if (reminders.isEmpty()) {
+                    EmptyState(modifier = Modifier.weight(1f))
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.weight(1f),
+                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp).let { 
+                            PaddingValues(
+                                start = it.calculateStartPadding(androidx.compose.ui.unit.LayoutDirection.Ltr),
+                                top = it.calculateTopPadding(),
+                                end = it.calculateEndPadding(androidx.compose.ui.unit.LayoutDirection.Ltr),
+                                bottom = it.calculateBottomPadding() + 80.dp
+                            )
+                        }
+                    ) {
+                        items(reminders, key = { it.id }) { reminder ->
+                            ReminderCard(
+                                reminder = reminder,
+                                is24HourFormat = is24HourFormat,
+                                onToggle = { onToggleReminder(reminder) },
+                                onClick = { onReminderClick(reminder) },
+                                onMoreClick = { selectedReminderForMenu = reminder }
+                            )
+                        }
                     }
                 }
             }

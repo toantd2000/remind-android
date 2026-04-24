@@ -26,6 +26,7 @@ import vn.io.litever.remind.core.datastore.ReminderPreferencesDataSource
 import vn.io.litever.remind.features.reminder.R
 
 data class ReminderEditUiState(
+    val isLoading: Boolean = true,
     val id: Long = 0,
     val time: LocalTime = LocalTime.now().plusMinutes(1),
     val label: String = "",
@@ -108,11 +109,17 @@ class ReminderEditViewModel @Inject constructor(
         )
 
     fun loadReminder(reminderId: Long) {
-        if (reminderId == 0L || _uiState.value.id == reminderId) return
+        if (reminderId == 0L) {
+            _uiState.update { it.copy(isLoading = false) }
+            return
+        }
+        if (_uiState.value.id == reminderId && !_uiState.value.isLoading) return
+        
         viewModelScope.launch {
             repository.getReminderById(reminderId)?.let { reminder ->
                 val missions = missionRepository.getMissionsForReminder(reminderId).first()
                 _uiState.update { it.copy(
+                        isLoading = false,
                         id = reminder.id,
                         time = reminder.time,
                         label = reminder.label,

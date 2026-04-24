@@ -9,6 +9,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -28,6 +30,7 @@ fun MissionSelectionBottomSheet(
     onMissionTypeSelected: (MissionType) -> Unit,
     sheetState: SheetState = rememberModalBottomSheetState()
 ) {
+    val coroutineScope = rememberCoroutineScope()
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
@@ -89,7 +92,10 @@ fun MissionSelectionBottomSheet(
                             .fillMaxWidth()
                             .alpha(if (isAvailable) 1f else 0.5f)
                             .clickable(enabled = isAvailable) {
-                                onMissionTypeSelected(item.type)
+                                coroutineScope.launch {
+                                    sheetState.hide()
+                                    onMissionTypeSelected(item.type)
+                                }
                             },
                         headlineContent = { 
                             Row(verticalAlignment = Alignment.CenterVertically) {

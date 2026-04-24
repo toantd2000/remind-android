@@ -144,7 +144,7 @@ fun ReminderEditRoute(
 
     LaunchedEffect(updatedMission) {
         updatedMission?.let {
-            if (showMissionSelection) {
+            if (isNavigatingToConfig || showMissionSelection) {
                 viewModel.addMission(it)
                 showMissionSelection = false
                 isNavigatingToConfig = false
@@ -216,7 +216,12 @@ fun ReminderEditRoute(
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
                 viewModel.refreshPermissions()
-                isNavigatingToConfig = false
+                if (isNavigatingToConfig) {
+                    val hasUpdatedMission = navController.currentBackStackEntry?.savedStateHandle?.contains("updatedMission") == true
+                    if (!hasUpdatedMission) {
+                        isNavigatingToConfig = false
+                    }
+                }
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -237,6 +242,7 @@ fun ReminderEditRoute(
                 }
             },
             onMissionTypeSelected = { type ->
+                showMissionSelection = false
                 if (type == vn.io.litever.remind.core.model.MissionType.TYPING) {
                     isNavigatingToConfig = true
                     onMissionClick(
@@ -248,7 +254,6 @@ fun ReminderEditRoute(
                     )
                 } else {
                     viewModel.addMission(type)
-                    showMissionSelection = false
                 }
             }
         )

@@ -54,7 +54,7 @@
     <string name="permission_request_action">Thiết lập</string>
     <string name="permission_warning_critical">QUAN TRỌNG: App sẽ không thể báo thức nếu thiếu quyền này!</string>
     
-    <string name="permission_exact_alarm_title">Báo thức &amp; Nhắc nhở</string>
+    <string name="permission_exact_alarm_title">Báo thức</string>
     <string name="permission_exact_alarm_desc">Cho phép ứng dụng đặt báo thức chính xác ngay cả khi thiết bị đang ở chế độ tiết kiệm pin.</string>
     
     <string name="permission_notification_title">Thông báo</string>
@@ -80,3 +80,6 @@
     <string name="pre_notification_desc">Hiện thông báo trước khi báo thức reo.</string>
     <string name="minute_format">%d phút</string>
 </resources>
+
+
+

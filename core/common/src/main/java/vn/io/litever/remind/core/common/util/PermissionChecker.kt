@@ -44,3 +44,13 @@ class PermissionChecker @Inject constructor(
         return hasNotificationPermission() && hasExactAlarmPermission()
     }
 }
+
+
+
+
+
+
+
+
+
+

@@ -14,7 +14,7 @@ data class Phrase(
     val categoryId: String, // "motivation", "basic", "custom"
     val isCustom: Boolean = false,
     val isShared: Boolean = true,
-    val reminderId: Long? = null
+    val alarmId: Long? = null
 ) : Serializable {
     val source: PhraseSource
         get() = when {
@@ -29,3 +29,13 @@ data class PhraseCategory(
     val name: String,
     val phrases: List<Phrase> = emptyList()
 ) : Serializable
+
+
+
+
+
+
+
+
+
+

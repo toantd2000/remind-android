@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">ReMind</string>
-    <string name="navigation_reminders">Reminders</string>
+    <string name="navigation_alarms">Alarms</string>
     <string name="navigation_settings">Settings</string>
 </resources>
+
+
+

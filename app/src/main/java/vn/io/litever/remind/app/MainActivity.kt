@@ -42,10 +42,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
-import vn.io.litever.remind.features.reminder.ui.reminderGraph
-import vn.io.litever.remind.features.reminder.ui.reminderListRoute
-import vn.io.litever.remind.features.reminder.ui.reminderEditRoute
-import vn.io.litever.remind.features.reminder.ui.ringtoneSelectionRoute
+import vn.io.litever.remind.features.alarms.ui.alarmGraph
+import vn.io.litever.remind.features.alarms.ui.AlarmListRoute
+import vn.io.litever.remind.features.alarms.ui.AlarmEditRoute
+import vn.io.litever.remind.features.alarms.ui.AlarmRingingRoute
+import vn.io.litever.remind.features.alarms.ui.AlarmMessageRoute
+import vn.io.litever.remind.features.alarms.ui.ringtoneSelectionRoute
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Alarm
@@ -76,7 +78,7 @@ import vn.io.litever.remind.features.mission.ui.navigateToMissionRinging
 import androidx.activity.viewModels
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import vn.io.litever.remind.core.datastore.ReminderPreferencesDataSource
+import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import javax.inject.Inject
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.remember
@@ -87,7 +89,7 @@ import android.content.res.Configuration
 import androidx.compose.ui.res.stringResource
 import java.util.Locale
 
-import vn.io.litever.remind.core.domain.repository.ReminderRepository
+import vn.io.litever.remind.core.domain.repository.AlarmRepository
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.SharingStarted
@@ -95,18 +97,18 @@ import androidx.lifecycle.viewModelScope
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val preferencesDataSource: ReminderPreferencesDataSource,
-    private val reminderRingManager: vn.io.litever.remind.core.reminder.ReminderRingManager,
-    reminderRepository: ReminderRepository
+    private val preferencesDataSource: AlarmPreferencesDataSource,
+    private val alarmRingManager: vn.io.litever.remind.core.alarm.AlarmRingManager,
+    alarmRepository: AlarmRepository
 ) : ViewModel() {
     val themeMode = preferencesDataSource.themeMode
     val colorPalette = preferencesDataSource.colorPalette
     val language = preferencesDataSource.language
-    val acknowledgingReminderId = reminderRingManager.acknowledgingReminderId
+    val acknowledgingAlarmId = alarmRingManager.acknowledgingAlarmId
 
-    val activeSnoozingReminderId = reminderRepository.getAllReminders()
-        .map { reminders -> 
-            reminders.firstOrNull { it.snoozeNextTriggerTime != null }?.id 
+    val activeSnoozingalarmId = alarmRepository.getAllAlarms()
+        .map { alarms -> 
+            alarms.firstOrNull { it.snoozeNextTriggerTime != null }?.id 
         }
         .stateIn(
             scope = viewModelScope,
@@ -114,9 +116,9 @@ class MainViewModel @Inject constructor(
             initialValue = null
         )
 
-    val missedReminderId = reminderRepository.getAllReminders()
-        .map { reminders -> 
-            reminders.firstOrNull { it.isMissed }?.id 
+    val missedalarmId = alarmRepository.getAllAlarms()
+        .map { alarms -> 
+            alarms.firstOrNull { it.isMissed }?.id 
         }
         .stateIn(
             scope = viewModelScope,
@@ -191,32 +193,33 @@ class MainActivity : ComponentActivity() {
                         val navController = rememberNavController()
                         
                         // Observe Global Ringing State
-                        val reminderRingManager = dagger.hilt.EntryPoints.get(
+                        val alarmRingManagerEntryPoint = dagger.hilt.EntryPoints.get(
                             applicationContext,
-                            vn.io.litever.remind.core.reminder.di.ReminderRingManagerEntryPoint::class.java
-                        ).reminderRingManager()
-                        val ringingReminderId by reminderRingManager.ringingReminderId.collectAsState()
-                        val activeSnoozingReminderId by viewModel.activeSnoozingReminderId.collectAsState()
-                        val missedReminderId by viewModel.missedReminderId.collectAsState()
+                            vn.io.litever.remind.core.alarm.di.AlarmRingManagerEntryPoint::class.java
+                        )
+                        val alarmRingManager = alarmRingManagerEntryPoint.alarmRingManager()
+                        val ringingAlarmId by alarmRingManager.ringingAlarmId.collectAsState()
+                        val activeSnoozingalarmId by viewModel.activeSnoozingalarmId.collectAsState()
+                        val missedalarmId by viewModel.missedalarmId.collectAsState()
                         
                         val navBackStackEntry by navController.currentBackStackEntryAsState()
                         val currentRoute = navBackStackEntry?.destination?.route
-                        val acknowledgingReminderId by viewModel.acknowledgingReminderId.collectAsState(initial = null as Long?)
+                        val acknowledgingAlarmId by viewModel.acknowledgingAlarmId.collectAsState(initial = null as Long?)
 
-                        LaunchedEffect(ringingReminderId, activeSnoozingReminderId, missedReminderId, acknowledgingReminderId) {
-                            val idToRing = ringingReminderId ?: activeSnoozingReminderId
-                            val idMessage = acknowledgingReminderId ?: missedReminderId
+                        LaunchedEffect(ringingAlarmId, activeSnoozingalarmId, missedalarmId, acknowledgingAlarmId) {
+                            val idToRing = ringingAlarmId ?: activeSnoozingalarmId
+                            val idMessage = acknowledgingAlarmId ?: missedalarmId
                             
                             val currentEntry = navController.currentBackStackEntry
                             val currentDest = currentEntry?.destination?.route
-                            val currentId = currentEntry?.arguments?.getLong("reminderId")
+                            val currentId = currentEntry?.arguments?.getLong("alarmId")
 
                             if (idMessage != null) {
-                                val isAlreadyMessageId = currentDest == "reminder_message_route/{reminderId}" && currentId == idMessage
+                                val isAlreadyMessageId = currentDest == "alarm_message_route/{alarmId}" && currentId == idMessage
                                 
                                 if (!isAlreadyMessageId) {
-                                    navController.navigate("reminder_message_route/$idMessage") {
-                                        popUpTo(reminderListRoute) {
+                                    navController.navigate("alarm_message_route/$idMessage") {
+                                        popUpTo(AlarmListRoute) {
                                             inclusive = false
                                         }
                                         launchSingleTop = true
@@ -228,10 +231,10 @@ class MainActivity : ComponentActivity() {
                                 val isUserInMission = currentDest?.startsWith("mission_ringing_route") == true
                                 
                                 if (!isUserInMission) {
-                                    val isAlreadyRingingId = currentDest == "reminder_ringing_route/{reminderId}" && currentId == idToRing
+                                    val isAlreadyRingingId = currentDest == "alarm_ringing_route/{alarmId}" && currentId == idToRing
                                     if (!isAlreadyRingingId) {
-                                        navController.navigate("reminder_ringing_route/$idToRing") {
-                                            popUpTo(reminderListRoute) {
+                                        navController.navigate("alarm_ringing_route/$idToRing") {
+                                            popUpTo(AlarmListRoute) {
                                                 inclusive = false
                                             }
                                             launchSingleTop = true
@@ -239,8 +242,8 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                             } else {
-                                if (currentDest == "reminder_ringing_route/{reminderId}" ||
-                                    currentDest == "reminder_message_route/{reminderId}") {
+                                if (currentDest == "alarm_ringing_route/{alarmId}" ||
+                                    currentDest == "alarm_message_route/{alarmId}") {
                                     // Only pop if we were blocking the app and the state is now cleared
                                     navController.popBackStack()
                                 }
@@ -253,17 +256,17 @@ class MainActivity : ComponentActivity() {
                                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                                 val currentRoute = navBackStackEntry?.destination?.route
 
-                                val isBottomBarVisible = currentRoute == reminderListRoute || 
+                                val isBottomBarVisible = currentRoute == AlarmListRoute || 
                                     currentRoute == settingsRoute
 
                                 if (isBottomBarVisible) {
                                     NavigationBar {
                                         NavigationBarItem(
-                                            icon = { Icon(Icons.Rounded.Alarm, contentDescription = "Reminder") },
-                                            label = { Text(stringResource(R.string.navigation_reminders)) },
-                                            selected = currentRoute == reminderListRoute,
+                                            icon = { Icon(Icons.Rounded.Alarm, contentDescription = "Alarm") },
+                                            label = { Text(stringResource(R.string.navigation_alarms)) },
+                                            selected = currentRoute == AlarmListRoute,
                                             onClick = {
-                                                navController.navigate(reminderListRoute) {
+                                                navController.navigate(AlarmListRoute) {
                                                     popUpTo(navController.graph.startDestinationId) {
                                                         saveState = true
                                                     }
@@ -298,11 +301,11 @@ class MainActivity : ComponentActivity() {
                             ) {
                                 NavHost(
                                     navController = navController,
-                                    startDestination = reminderListRoute
+                                    startDestination = AlarmListRoute
                                 ) {
-                                    reminderGraph(
+                                    alarmGraph(
                                         onNavigateToEdit = { id ->
-                                            navController.navigate("reminder_edit_route/$id")
+                                            navController.navigate("alarm_edit_route/$id")
                                         },
                                         onNavigateToRingtoneSelection = { currentUri ->
                                             // Set initial URI in the CURRENT entry so the next screen can read it from PREVIOUS entry
@@ -313,40 +316,39 @@ class MainActivity : ComponentActivity() {
                                             navController.currentBackStackEntry?.savedStateHandle?.set("snoozeEnabled", enabled)
                                             navController.currentBackStackEntry?.savedStateHandle?.set("snoozeInterval", interval)
                                             navController.currentBackStackEntry?.savedStateHandle?.set("snoozeRepeatCount", repeatCount)
-                                            navController.navigate(vn.io.litever.remind.features.reminder.ui.snoozeSettingsRoute)
+                                            navController.navigate(vn.io.litever.remind.features.alarms.ui.snoozeSettingsRoute)
                                         },
                                         onNavigateToPermissions = { 
                                             navController.navigateToPermissions()
                                         },
-                                        onNavigateToMissionRinging = { reminderId ->
-                                            navController.navigateToMissionRinging(reminderId)
+                                        onNavigateToMissionRinging = { alarmId ->
+                                            navController.navigateToMissionRinging(alarmId)
                                         },
-                                        onNavigateToMessage = { reminderId ->
+                                        onNavigateToMessage = { alarmId ->
                                             // Navigation handled globally
-                                            // navController.navigate("reminder_message_route/$reminderId")
                                         },
                                         onNavigateBack = {
                                             navController.popBackStack()
                                         },
                                         onAddMissionClick = {
-                                            // Handle showMissionSelection bottom sheet in ReminderEditRoute
+                                            // Handle showMissionSelection bottom sheet in AlarmEditRoute
                                             // or navigate if it's a separate screen. 
-                                            // Actually, I'll pass a dummy here and handle it inside ReminderEditRoute.
+                                            // Actually, I'll pass a dummy here and handle it inside AlarmEditRoute.
                                         },
                                         onMissionClick = { mission ->
                                             if (mission.type == vn.io.litever.remind.core.model.MissionType.TYPING) {
                                                 val config = mission.config as? vn.io.litever.remind.core.model.TypingMissionConfig
                                                 navController.currentBackStackEntry?.savedStateHandle?.set("repetitions", mission.repeatCount)
                                                 navController.currentBackStackEntry?.savedStateHandle?.set("selectedPhraseIds", config?.selectedPhraseIds ?: emptyList())
-                                                navController.navigateToTypingMissionConfig(mission.reminderId)
+                                                navController.navigateToTypingMissionConfig(mission.alarmId)
                                             }
                                         },
                                         navController = navController
                                     )
                                     missionGraph(
-                                        onNavigateToPhraseSelection = { reminderId, selectedIds ->
+                                        onNavigateToPhraseSelection = { alarmId, selectedIds ->
                                             navController.currentBackStackEntry?.savedStateHandle?.set("selectedPhraseIds", selectedIds)
-                                            navController.navigateToPhraseSelection(reminderId)
+                                            navController.navigateToPhraseSelection(alarmId)
                                         },
                                         onPhrasesSelected = { phraseIds ->
                                             navController.previousBackStackEntry?.savedStateHandle?.set("selectedPhraseIds", phraseIds)
@@ -400,3 +402,12 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+
+
+
+
+
+
+
+

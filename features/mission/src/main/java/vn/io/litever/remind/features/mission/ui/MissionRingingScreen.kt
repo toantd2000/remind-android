@@ -30,7 +30,7 @@ import vn.io.litever.remind.features.mission.viewmodel.MissionRingingViewModel
 
 @Composable
 fun MissionRingingRoute(
-    reminderId: Long,
+    alarmId: Long,
     onFinish: () -> Unit,
     onAbandon: () -> Unit,
     navController: androidx.navigation.NavController,
@@ -229,14 +229,14 @@ fun MissionRingingScreenPreview() {
     vn.io.litever.remind.core.designsystem.theme.ReMindTheme {
         MissionRingingScreen(
             uiState = vn.io.litever.remind.features.mission.viewmodel.MissionRingingUiState(
-                reminder = vn.io.litever.remind.core.model.Reminder(
+                alarm = vn.io.litever.remind.core.model.Alarm(
                     id = 1,
                     time = java.time.LocalTime.of(7, 30),
                     label = "Wake up!"
                 ),
                 missions = listOf(
                     vn.io.litever.remind.core.model.Mission(
-                        reminderId = 1,
+                        alarmId = 1,
                         type = MissionType.TYPING,
                         order = 0,
                         repeatCount = 3
@@ -251,3 +251,13 @@ fun MissionRingingScreenPreview() {
         )
     }
 }
+
+
+
+
+
+
+
+
+
+

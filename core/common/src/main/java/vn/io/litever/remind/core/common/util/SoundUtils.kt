@@ -48,3 +48,13 @@ private fun isUriAccessible(context: Context, uri: Uri?): Boolean {
         false
     }
 }
+
+
+
+
+
+
+
+
+
+

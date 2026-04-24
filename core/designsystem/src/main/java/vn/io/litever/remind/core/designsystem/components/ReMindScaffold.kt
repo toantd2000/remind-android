@@ -26,3 +26,13 @@ fun ReMindScaffold(
         content = content
     )
 }
+
+
+
+
+
+
+
+
+
+

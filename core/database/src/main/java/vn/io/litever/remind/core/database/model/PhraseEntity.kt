@@ -9,13 +9,13 @@ import androidx.room.PrimaryKey
     tableName = "phrases",
     foreignKeys = [
         ForeignKey(
-            entity = ReminderEntity::class,
+            entity = AlarmEntity::class,
             parentColumns = ["id"],
-            childColumns = ["reminderId"],
+            childColumns = ["alarmId"],
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("reminderId")]
+    indices = [Index("alarmId")]
 )
 data class PhraseEntity(
     @PrimaryKey(autoGenerate = true)
@@ -24,5 +24,15 @@ data class PhraseEntity(
     val categoryId: String,
     val isCustom: Boolean,
     val isShared: Boolean,
-    val reminderId: Long? = null
+    val alarmId: Long? = null
 )
+
+
+
+
+
+
+
+
+
+

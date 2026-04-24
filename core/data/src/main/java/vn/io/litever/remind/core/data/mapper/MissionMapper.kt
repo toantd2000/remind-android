@@ -31,7 +31,7 @@ fun MissionEntity.toModel(): Mission {
     
     return Mission(
         id = id,
-        reminderId = reminderId,
+        alarmId = alarmId,
         type = MissionType.valueOf(type),
         order = missionOrder,
         repeatCount = repeatCount,
@@ -51,10 +51,20 @@ fun Mission.toEntity(): MissionEntity {
     
     return MissionEntity(
         id = id,
-        reminderId = reminderId,
+        alarmId = alarmId,
         type = type.name,
         missionOrder = order,
         repeatCount = repeatCount,
         configJson = configJsonString
     )
 }
+
+
+
+
+
+
+
+
+
+

@@ -47,3 +47,13 @@ fun ReMindTextField(
         colors = OutlinedTextFieldDefaults.colors()
     )
 }
+
+
+
+
+
+
+
+
+
+

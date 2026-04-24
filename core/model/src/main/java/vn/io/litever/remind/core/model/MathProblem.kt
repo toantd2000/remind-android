@@ -6,3 +6,13 @@ data class MathProblem(
     val expression: String,
     val answer: Int
 ) : Serializable
+
+
+
+
+
+
+
+
+
+

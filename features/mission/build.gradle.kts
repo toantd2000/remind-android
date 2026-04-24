@@ -33,7 +33,7 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:common"))
     implementation(project(":core:designsystem"))
-    implementation(project(":core:reminder"))
+    implementation(project(":core:alarm"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

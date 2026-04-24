@@ -8,7 +8,7 @@ enum class MissionType : Serializable {
 
 data class Mission(
     val id: Long = 0,
-    val reminderId: Long,
+    val alarmId: Long,
     val type: MissionType,
     val order: Int,
     val repeatCount: Int = 1,
@@ -26,3 +26,13 @@ enum class MathDifficulty { EASY, NORMAL, HARD }
 data class MathMissionConfig(
     val difficulty: MathDifficulty = MathDifficulty.NORMAL
 ) : MissionConfig
+
+
+
+
+
+
+
+
+
+

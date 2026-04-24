@@ -35,8 +35,8 @@ class MissionRepositoryImpl @Inject constructor(
 
     private val json = Json { ignoreUnknownKeys = true }
 
-    override fun getMissionsForReminder(reminderId: Long): Flow<List<Mission>> {
-        return missionDao.getMissionsForReminder(reminderId).map { entities ->
+    override fun getMissionsForAlarm(alarmId: Long): Flow<List<Mission>> {
+        return missionDao.getMissionsForAlarm(alarmId).map { entities ->
             entities.map { it.toModel() }
         }
     }
@@ -49,8 +49,8 @@ class MissionRepositoryImpl @Inject constructor(
         missionDao.deleteMission(mission.toEntity())
     }
 
-    override suspend fun deleteMissionsForReminder(reminderId: Long) {
-        missionDao.deleteMissionsForReminder(reminderId)
+    override suspend fun deleteMissionsForAlarm(alarmId: Long) {
+        missionDao.deleteMissionsForAlarm(alarmId)
     }
 
     override suspend fun getPredefinedPhrases(): Map<String, List<Phrase>> {
@@ -70,13 +70,13 @@ class MissionRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getCustomPhrases(reminderId: Long): Flow<List<Phrase>> {
-        return phraseDao.getCustomPhrasesForReminder(reminderId).map { entities ->
+    override fun getCustomPhrases(alarmId: Long): Flow<List<Phrase>> {
+        return phraseDao.getCustomPhrasesForAlarm(alarmId).map { entities ->
             entities.map { it.toModel() }
         }
     }
 
-    override suspend fun getPhrasesByIds(ids: List<Long>, reminderId: Long): List<Phrase> {
+    override suspend fun getPhrasesByIds(ids: List<Long>, alarmId: Long): List<Phrase> {
         val predefined = getPredefinedPhrases().values.flatten().filter { ids.contains(it.id) }
         val custom = phraseDao.getPhrasesByIds(ids).map { it.toModel() }
         return predefined + custom
@@ -91,3 +91,13 @@ class MissionRepositoryImpl @Inject constructor(
         phraseDao.deletePhrase(phrase.toEntity())
     }
 }
+
+
+
+
+
+
+
+
+
+

@@ -10,7 +10,7 @@ fun PhraseEntity.toModel(): Phrase {
         categoryId = categoryId,
         isCustom = isCustom,
         isShared = isShared,
-        reminderId = reminderId
+        alarmId = alarmId
     )
 }
 
@@ -21,6 +21,16 @@ fun Phrase.toEntity(): PhraseEntity {
         categoryId = categoryId,
         isCustom = isCustom,
         isShared = isShared,
-        reminderId = reminderId
+        alarmId = alarmId
     )
 }
+
+
+
+
+
+
+
+
+
+

@@ -8,23 +8,23 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import vn.io.litever.remind.core.domain.repository.MissionRepository
-import vn.io.litever.remind.core.domain.repository.ReminderRepository
-import vn.io.litever.remind.core.domain.scheduler.ReminderController
+import vn.io.litever.remind.core.domain.repository.AlarmRepository
+import vn.io.litever.remind.core.domain.scheduler.AlarmController
 import vn.io.litever.remind.core.model.*
-import vn.io.litever.remind.core.reminder.ReminderRingManager
+import vn.io.litever.remind.core.alarm.AlarmRingManager
 import javax.inject.Inject
 
 @HiltViewModel
 class MissionRingingViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val missionRepository: MissionRepository,
-    private val reminderRepository: ReminderRepository,
-    private val reminderController: ReminderController,
-    private val reminderRingManager: ReminderRingManager
+    private val alarmRepository: AlarmRepository,
+    private val alarmController: AlarmController,
+    private val alarmRingManager: AlarmRingManager
 ) : ViewModel() {
     private val MISSION_TIMEOUT_SECONDS = 30
 
-    private val reminderId: Long = checkNotNull(savedStateHandle["reminderId"])
+    private val alarmId: Long = checkNotNull(savedStateHandle["alarmId"])
 
     private val _uiState = MutableStateFlow(MissionRingingUiState())
     val uiState = _uiState.asStateFlow()
@@ -40,10 +40,10 @@ class MissionRingingViewModel @Inject constructor(
 
     private fun loadMissions() {
         viewModelScope.launch {
-            val reminder = reminderRepository.getReminderById(reminderId) ?: return@launch
-            if (reminder.missions.isNotEmpty()) {
-                val missions = reminder.missions.sortedBy { it.order }
-                _uiState.update { it.copy(isLoading = false, missions = missions, reminder = reminder) }
+            val alarm = alarmRepository.getAlarmById(alarmId) ?: return@launch
+            if (alarm.missions.isNotEmpty()) {
+                val missions = alarm.missions.sortedBy { it.order }
+                _uiState.update { it.copy(isLoading = false, missions = missions, alarm = alarm) }
                 loadMissionData(0)
             } else {
                 _uiState.update { it.copy(isLoading = false) }
@@ -59,7 +59,7 @@ class MissionRingingViewModel @Inject constructor(
         val data = when (mission.type) {
             MissionType.TYPING -> {
                 val config = mission.config as? TypingMissionConfig
-                val basePhrases = missionRepository.getPhrasesByIds(config?.selectedPhraseIds ?: emptyList(), reminderId)
+                val basePhrases = missionRepository.getPhrasesByIds(config?.selectedPhraseIds ?: emptyList(), alarmId)
                 val phrases = if (basePhrases.isEmpty()) {
                     listOf(Phrase(content = "I am awake", categoryId = "basic"))
                 } else basePhrases
@@ -108,7 +108,7 @@ class MissionRingingViewModel @Inject constructor(
 
     fun abandonMission() {
         viewModelScope.launch {
-            reminderRingManager.unmute(reminderId)
+            alarmRingManager.unmute(alarmId)
             _uiState.update { it.copy(isAbandoned = true) }
         }
     }
@@ -209,7 +209,7 @@ class MissionRingingViewModel @Inject constructor(
 
 data class MissionRingingUiState(
     val isLoading: Boolean = true,
-    val reminder: vn.io.litever.remind.core.model.Reminder? = null,
+    val alarm: vn.io.litever.remind.core.model.Alarm? = null,
     val missions: List<Mission> = emptyList(),
     val currentMissionIndex: Int = 0,
     val currentRepetition: Int = 1,
@@ -223,3 +223,13 @@ data class MissionRingingUiState(
 ) {
     val currentMission: Mission? get() = missions.getOrNull(currentMissionIndex)
 }
+
+
+
+
+
+
+
+
+
+

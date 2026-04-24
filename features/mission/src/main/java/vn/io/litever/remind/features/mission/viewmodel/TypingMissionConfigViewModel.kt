@@ -19,3 +19,13 @@ class TypingMissionConfigViewModel @Inject constructor(
         emit(phrases)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 }
+
+
+
+
+
+
+
+
+
+

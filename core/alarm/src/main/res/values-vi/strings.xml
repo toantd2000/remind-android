@@ -1,0 +1,12 @@
+<resources>
+    <string name="notification_Alarm_title">Báo thức!</string>
+    <string name="notification_Alarm_text">Nhấn vào đây để xem và tắt</string>
+    <string name="alarm_channel_name">Kênh Báo thức</string>
+    <string name="alarm_channel_description">Thông báo khi có báo thức</string>
+    <string name="missed_alarm_title">Báo thức bị bỏ lỡ</string>
+    <string name="missed_alarm_text">Bạn đã bỏ lỡ một báo thức</string>
+</resources>
+
+
+
+

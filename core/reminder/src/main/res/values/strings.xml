@@ -1,8 +1,0 @@
-<resources>
-    <string name="notification_reminder_title">Reminder!</string>
-    <string name="notification_reminder_text">Tap to view and dismiss</string>
-    <string name="reminder_channel_name">Reminder Service</string>
-    <string name="reminder_channel_description">Channel for reminder ringing</string>
-    <string name="missed_alarm_title">Missed Alarm</string>
-    <string name="missed_alarm_text">You missed an alarm</string>
-</resources>

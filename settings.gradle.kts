@@ -28,10 +28,13 @@ include(":core:model")
 include(":core:common")
 include(":core:designsystem")
 include(":core:domain")
-include(":core:reminder")
+include(":core:alarm")
 include(":core:database")
 include(":core:datastore")
 include(":core:data")
-include(":features:reminder")
+include(":features:alarms")
 include(":features:settings")
 include(":features:mission")
+
+
+

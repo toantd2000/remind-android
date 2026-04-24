@@ -40,3 +40,13 @@ fun ReMindBottomBar(
         )
     }
 }
+
+
+
+
+
+
+
+
+
+

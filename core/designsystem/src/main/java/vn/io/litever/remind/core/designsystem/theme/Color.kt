@@ -85,3 +85,13 @@ val surfaceContainerHighestDark = Color(0xFF3B332B)
 val logo_up_dark = Color(0xFFCBD5E1)
 val logo_remind_dark = Color(0xFFFBBF24)
 
+
+
+
+
+
+
+
+
+
+

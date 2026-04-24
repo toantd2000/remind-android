@@ -13,8 +13,8 @@ interface PhraseDao {
     @Query("SELECT * FROM phrases WHERE id IN (:ids)")
     suspend fun getPhrasesByIds(ids: List<Long>): List<PhraseEntity>
 
-    @Query("SELECT * FROM phrases WHERE (isShared = 1 AND isCustom = 1) OR (reminderId = :reminderId)")
-    fun getCustomPhrasesForReminder(reminderId: Long): Flow<List<PhraseEntity>>
+    @Query("SELECT * FROM phrases WHERE (isShared = 1 AND isCustom = 1) OR (alarmId = :alarmId)")
+    fun getCustomPhrasesForAlarm(alarmId: Long): Flow<List<PhraseEntity>>
 
     @Query("SELECT * FROM phrases WHERE isShared = 1 AND isCustom = 1")
     fun getAllSharedCustomPhrases(): Flow<List<PhraseEntity>>
@@ -25,6 +25,16 @@ interface PhraseDao {
     @Delete
     suspend fun deletePhrase(phrase: PhraseEntity)
 
-    @Query("DELETE FROM phrases WHERE reminderId = :reminderId")
-    suspend fun deletePhrasesForReminder(reminderId: Long)
+    @Query("DELETE FROM phrases WHERE alarmId = :alarmId")
+    suspend fun deletePhrasesForAlarm(alarmId: Long)
 }
+
+
+
+
+
+
+
+
+
+

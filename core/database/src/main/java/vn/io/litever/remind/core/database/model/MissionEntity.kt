@@ -9,20 +9,30 @@ import androidx.room.PrimaryKey
     tableName = "missions",
     foreignKeys = [
         ForeignKey(
-            entity = ReminderEntity::class,
+            entity = AlarmEntity::class,
             parentColumns = ["id"],
-            childColumns = ["reminderId"],
+            childColumns = ["alarmId"],
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("reminderId")]
+    indices = [Index("alarmId")]
 )
 data class MissionEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-    val reminderId: Long,
+    val alarmId: Long,
     val type: String,
     val missionOrder: Int, // renamed from 'order' as it might be a reserved keyword in some SQL dialects
     val repeatCount: Int,
     val configJson: String? = null
 )
+
+
+
+
+
+
+
+
+
+

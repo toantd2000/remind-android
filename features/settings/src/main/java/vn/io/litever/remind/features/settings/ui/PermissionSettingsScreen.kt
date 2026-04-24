@@ -407,3 +407,13 @@ private fun openManufacturerSettings(context: Context) {
 private fun isIntentAvailable(context: Context, intent: Intent): Boolean {
     return context.packageManager.queryIntentActivities(intent, 0).isNotEmpty()
 }
+
+
+
+
+
+
+
+
+
+

@@ -5,3 +5,13 @@ import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
 class ReMindApplication : Application()
+
+
+
+
+
+
+
+
+
+

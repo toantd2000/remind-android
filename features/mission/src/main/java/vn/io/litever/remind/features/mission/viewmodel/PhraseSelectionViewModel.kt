@@ -18,12 +18,12 @@ class PhraseSelectionViewModel @Inject constructor(
     private val missionRepository: MissionRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    val reminderId: Long = savedStateHandle.get<Long>("reminderId") ?: 0L
+    val alarmId: Long = savedStateHandle.get<Long>("alarmId") ?: 0L
     
     private val _predefinedPhrases = mutableStateOf<Map<String, List<Phrase>>>(emptyMap())
     val predefinedPhrases: State<Map<String, List<Phrase>>> = _predefinedPhrases
 
-    val customPhrases = missionRepository.getCustomPhrases(reminderId)
+    val customPhrases = missionRepository.getCustomPhrases(alarmId)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     init {
@@ -42,7 +42,7 @@ class PhraseSelectionViewModel @Inject constructor(
                     categoryId = "custom",
                     isCustom = true,
                     isShared = isShared,
-                    reminderId = if (isShared) null else reminderId
+                    alarmId = if (isShared) null else alarmId
                 )
             )
         }
@@ -54,3 +54,13 @@ class PhraseSelectionViewModel @Inject constructor(
         }
     }
 }
+
+
+
+
+
+
+
+
+
+

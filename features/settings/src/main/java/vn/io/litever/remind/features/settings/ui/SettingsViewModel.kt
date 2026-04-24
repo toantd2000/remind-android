@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import vn.io.litever.remind.core.datastore.ReminderPreferencesDataSource
+import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import javax.inject.Inject
 
 data class SettingsUiState(
@@ -24,7 +24,7 @@ data class SettingsUiState(
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val preferencesDataSource: ReminderPreferencesDataSource
+    private val preferencesDataSource: AlarmPreferencesDataSource
 ) : ViewModel() {
 
     @Suppress("UNCHECKED_CAST")
@@ -97,3 +97,13 @@ class SettingsViewModel @Inject constructor(
         }
     }
 }
+
+
+
+
+
+
+
+
+
+

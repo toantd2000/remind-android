@@ -22,3 +22,12 @@ class ExampleInstrumentedTest {
         assertEquals("vn.io.litever.remind", appContext.packageName)
     }
 }
+
+
+
+
+
+
+
+
+

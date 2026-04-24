@@ -38,7 +38,7 @@ import vn.io.litever.remind.features.mission.viewmodel.TypingMissionConfigViewMo
 
 @Composable
 fun TypingMissionConfigRoute(
-    reminderId: Long,
+    alarmId: Long,
     initialRepetitions: Int = 1,
     initialSelectedPhraseIds: List<Long> = emptyList(),
     onBackClick: () -> Unit,
@@ -63,7 +63,7 @@ fun TypingMissionConfigRoute(
         onSave = {
             onSaveMission(
                 Mission(
-                    reminderId = reminderId,
+                    alarmId = alarmId,
                     type = MissionType.TYPING,
                     order = 0, // Will be set by the caller
                     repeatCount = repetitions,
@@ -295,3 +295,13 @@ fun TypingMissionConfigScreenPreview() {
         )
     }
 }
+
+
+
+
+
+
+
+
+
+

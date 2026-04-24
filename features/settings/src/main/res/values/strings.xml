@@ -54,7 +54,7 @@
     <string name="permission_request_action">Request</string>
     <string name="permission_warning_critical">CRITICAL: App cannot alert you if this is missing!</string>
     
-    <string name="permission_exact_alarm_title">Alarms &amp; Reminders</string>
+    <string name="permission_exact_alarm_title">Alarms</string>
     <string name="permission_exact_alarm_desc">Allow the app to set precise alarms even when the device is in power-saving mode.</string>
     
     <string name="permission_notification_title">Notifications</string>
@@ -80,3 +80,7 @@
     <string name="pre_notification_desc">Show notification before the alarm triggers.</string>
     <string name="minute_format">%d minutes</string>
 </resources>
+
+
+
+

@@ -34,7 +34,6 @@ android {
         versionCode = 1
         versionName = "1.0.0"
 
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
@@ -77,13 +76,13 @@ android {
 }
 
 dependencies {
-    implementation(project(":features:reminder"))
+    implementation(project(":features:alarms"))
     implementation(project(":features:settings"))
     implementation(project(":features:mission"))
     implementation(project(":core:data"))
     implementation(project(":core:domain"))
     implementation(project(":core:model"))
-    implementation(project(":core:reminder"))
+    implementation(project(":core:alarm"))
     implementation(project(":core:designsystem"))
     implementation(project(":core:datastore"))
     implementation(project(":core:common"))
@@ -116,3 +115,6 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
+
+
+

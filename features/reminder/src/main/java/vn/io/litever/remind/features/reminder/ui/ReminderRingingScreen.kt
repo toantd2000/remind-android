@@ -11,7 +11,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -145,6 +146,33 @@ fun ReminderRingingScreen(
         label = "snoozeShakeOffset"
     )
 
+    var isVisible by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        isVisible = true
+    }
+
+    val topAlpha by animateFloatAsState(
+        targetValue = if (isVisible) 1f else 0f,
+        animationSpec = tween(durationMillis = 1000, easing = FastOutSlowInEasing),
+        label = "topAlpha"
+    )
+    val topOffset by animateDpAsState(
+        targetValue = if (isVisible) 0.dp else (-50).dp,
+        animationSpec = tween(durationMillis = 1000, easing = FastOutSlowInEasing),
+        label = "topOffset"
+    )
+
+    val bottomAlpha by animateFloatAsState(
+        targetValue = if (isVisible) 1f else 0f,
+        animationSpec = tween(durationMillis = 1000, delayMillis = 300, easing = FastOutSlowInEasing),
+        label = "bottomAlpha"
+    )
+    val bottomOffset by animateDpAsState(
+        targetValue = if (isVisible) 0.dp else 50.dp,
+        animationSpec = tween(durationMillis = 1000, delayMillis = 300, easing = FastOutSlowInEasing),
+        label = "bottomOffset"
+    )
+
     val dateFormatter = DateTimeFormatter.ofPattern("EEEE, d MMMM", Locale.getDefault())
     val currentTime = LocalDateTime.now()
 
@@ -176,11 +204,21 @@ fun ReminderRingingScreen(
             // Top: Time & Date
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(top = 100.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 100.dp)
+                    .graphicsLayer {
+                        translationY = topOffset.toPx()
+                        alpha = topAlpha
+                    }
             ) {
                 val displayTime = reminder?.time ?: currentTime.toLocalTime()
                 val (timeStr, amPm) = TimeFormatUtils.formatTimeParts(displayTime, is24HourFormat)
-                Row(verticalAlignment = Alignment.Bottom) {
+                Row(
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     Text(
                         text = timeStr,
                         style = MaterialTheme.typography.displayLarge.copy(
@@ -204,7 +242,9 @@ fun ReminderRingingScreen(
                 Text(
                     text = currentTime.format(dateFormatter).replaceFirstChar { it.uppercase() },
                     style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
                 )
 
                 if (!reminder?.label.isNullOrBlank()) {
@@ -213,8 +253,8 @@ fun ReminderRingingScreen(
                         text = reminder.label,
                         style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                        textAlign = TextAlign.Center
                     )
                 }
 
@@ -224,38 +264,58 @@ fun ReminderRingingScreen(
                         text = reminder.message,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-                        modifier = Modifier.padding(horizontal = 32.dp),
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
+                        textAlign = TextAlign.Center
                     )
                 }
 
-                if (reminder != null && reminder.snoozeNextTriggerTime != null) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    val minutes = remainingSnoozeSeconds / 60
-                    val seconds = remainingSnoozeSeconds % 60
-                    val formattedTime = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
-                    Text(
-                        text = stringResource(R.string.snooze_countdown, formattedTime),
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier
-                            .background(
-                                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
-                                shape = MaterialTheme.shapes.medium
-                            )
-                            .border(
-                                width = 1.dp,
-                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                                shape = MaterialTheme.shapes.medium
-                            )
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                    )
-                } else if (autoSilenceCountdown != null) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    val minutes = autoSilenceCountdown / 60
-                    val seconds = autoSilenceCountdown % 60
-                    val formattedTime = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
-                    Text(
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = reminder != null && reminder.snoozeNextTriggerTime != null,
+                    enter = androidx.compose.animation.fadeIn() + androidx.compose.animation.expandVertically(),
+                    exit = androidx.compose.animation.fadeOut() + androidx.compose.animation.shrinkVertically()
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        val minutes = remainingSnoozeSeconds / 60
+                        val seconds = remainingSnoozeSeconds % 60
+                        val formattedTime = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
+                        Text(
+                            text = stringResource(R.string.snooze_countdown, formattedTime),
+                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+                                    shape = MaterialTheme.shapes.medium
+                                )
+                                .border(
+                                    width = 1.dp,
+                                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                    shape = MaterialTheme.shapes.medium
+                                )
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
+                    }
+                }
+                
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = (reminder == null || reminder.snoozeNextTriggerTime == null) && autoSilenceCountdown != null,
+                    enter = androidx.compose.animation.fadeIn() + androidx.compose.animation.expandVertically(),
+                    exit = androidx.compose.animation.fadeOut() + androidx.compose.animation.shrinkVertically()
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        val safeCountdown = autoSilenceCountdown ?: 0
+                        val minutes = safeCountdown / 60
+                        val seconds = safeCountdown % 60
+                        val formattedTime = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
+                        Text(
                         text = stringResource(R.string.auto_silence_countdown, formattedTime),
                         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
                         color = MaterialTheme.colorScheme.error,
@@ -270,7 +330,8 @@ fun ReminderRingingScreen(
                                 shape = MaterialTheme.shapes.medium
                             )
                             .padding(horizontal = 16.dp, vertical = 8.dp)
-                    )
+                        )
+                    }
                 }
             }
 
@@ -286,12 +347,21 @@ fun ReminderRingingScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .navigationBarsPadding()
-                    .padding(bottom = 16.dp),
+                    .padding(bottom = 16.dp)
+                    .graphicsLayer {
+                        translationY = bottomOffset.toPx()
+                        alpha = bottomAlpha
+                    },
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 val isNotSnoozing = reminder?.snoozeNextTriggerTime == null
-                if (isNotSnoozing && (reminder == null || (reminder.snoozeEnabled && reminder.currentSnoozeCount < reminder.snoozeRepeatCount))) {
+                
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = isNotSnoozing && (reminder == null || (reminder.snoozeEnabled && reminder.currentSnoozeCount < reminder.snoozeRepeatCount)),
+                    enter = androidx.compose.animation.fadeIn() + androidx.compose.animation.expandVertically(),
+                    exit = androidx.compose.animation.fadeOut() + androidx.compose.animation.shrinkVertically()
+                ) {
                     val remainingSnoozes = if (reminder != null) reminder.snoozeRepeatCount - reminder.currentSnoozeCount else 0
                     val snoozeText = if (reminder != null && remainingSnoozes > 0) {
                         stringResource(vn.io.litever.remind.features.reminder.R.string.snooze_limit_format, remainingSnoozes)

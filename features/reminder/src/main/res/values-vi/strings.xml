@@ -93,6 +93,7 @@
     <string name="disabled_reminders_deleted">Đã xóa các nhắc nhở đã tắt</string>
     <string name="undo">Hoàn tác</string>
     <string name="skipped_next_format">Bỏ qua lần tới: %s</string>
-    <string name="reminder_summary_title">Tóm tắt nhắc nhở</string>
+    <string name="reminder_summary_title">Nhắc bạn</string>
+    <string name="reminder_message_greeting">Chúc bạn một ngày tốt lành!</string>
     <string name="reminder_message_dismiss">Tôi nhớ rồi</string>
 </resources>

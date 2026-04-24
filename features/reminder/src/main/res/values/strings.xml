@@ -93,6 +93,7 @@
     <string name="disabled_reminders_deleted">Disabled reminders deleted</string>
     <string name="undo">Undo</string>
     <string name="skipped_next_format">Skipped next: %s</string>
-    <string name="reminder_summary_title">Reminder Summary</string>
+    <string name="reminder_summary_title">Reminder</string>
+    <string name="reminder_message_greeting">Have a wonderful day ahead!</string>
     <string name="reminder_message_dismiss">Got it</string>
 </resources>

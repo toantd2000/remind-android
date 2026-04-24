@@ -3,6 +3,7 @@ package vn.io.litever.remind.features.reminder.ui
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -118,15 +119,19 @@ fun ReminderMessageScreen(
                 )
             ) {
                 Column(
-                    modifier = Modifier.padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    modifier = Modifier.fillMaxWidth().padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     // Time with small AM/PM
                     val displayTime = reminder?.time ?: LocalTime.now()
                     val timeFormatter = java.time.format.DateTimeFormatter.ofPattern("hh:mm")
                     val amPmFormatter = java.time.format.DateTimeFormatter.ofPattern("a")
                     
-                    Row(verticalAlignment = Alignment.Bottom) {
+                    Row(
+                        verticalAlignment = Alignment.Bottom,
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
                         Text(
                             text = displayTime.format(timeFormatter),
                             style = MaterialTheme.typography.displayMedium.copy(
@@ -151,6 +156,7 @@ fun ReminderMessageScreen(
                         Text(
                             text = reminder?.label ?: "",
                             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                            modifier = Modifier.fillMaxWidth(),
                             textAlign = TextAlign.Center,
                             color = MaterialTheme.colorScheme.onSurface
                         )
@@ -161,6 +167,7 @@ fun ReminderMessageScreen(
                         Text(
                             text = reminder?.message ?: "",
                             style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.fillMaxWidth(),
                             textAlign = TextAlign.Center,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -189,7 +196,7 @@ fun ReminderMessageScreen(
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = "Have a wonderful day ahead!",
+                        text = stringResource(vn.io.litever.remind.features.reminder.R.string.reminder_message_greeting),
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.secondary
                     )

@@ -124,7 +124,7 @@ class MissionRingingViewModel @Inject constructor(
         val isCorrect = when (currentMission.type) {
             MissionType.TYPING -> {
                 val target = (state.currentTargetData as? Phrase)?.content ?: return
-                input.trim().equals(target.trim(), ignoreCase = true)
+                input == target
             }
             MissionType.MATH -> {
                 val target = (state.currentTargetData as? MathProblem)?.answer?.toString() ?: return

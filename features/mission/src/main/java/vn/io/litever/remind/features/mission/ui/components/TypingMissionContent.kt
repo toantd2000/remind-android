@@ -11,6 +11,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,7 +38,7 @@ fun TypingMissionContent(
         var firstErrorIndex = -1
         for (i in userInput.indices) {
             if (i < targetContent.length) {
-                if (userInput[i].lowercaseChar() != targetContent[i].lowercaseChar()) {
+                if (userInput[i] != targetContent[i]) {
                     firstErrorIndex = i
                     break
                 }
@@ -55,13 +56,20 @@ fun TypingMissionContent(
         }
         
         // Error character in Error Red
-        if (firstErrorIndex != -1 && firstErrorIndex < targetContent.length) {
-            withStyle(style = SpanStyle(color = errorColor, fontWeight = FontWeight.Bold)) {
-                append(targetContent[firstErrorIndex])
-            }
-            // Remaining part in default dimmed
-            withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f))) {
-                append(targetContent.substring(firstErrorIndex + 1))
+        if (firstErrorIndex != -1) {
+            if (firstErrorIndex < targetContent.length) {
+                withStyle(style = SpanStyle(color = errorColor, fontWeight = FontWeight.Bold)) {
+                    append(targetContent[firstErrorIndex])
+                }
+                // Remaining part in default dimmed
+                withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f))) {
+                    append(targetContent.substring(firstErrorIndex + 1))
+                }
+            } else {
+                // Extra typed characters beyond target length
+                withStyle(style = SpanStyle(color = errorColor, fontWeight = FontWeight.Bold, textDecoration = TextDecoration.LineThrough)) {
+                    append(userInput.substring(targetContent.length))
+                }
             }
         } else if (lastCorrectIndex < targetContent.length) {
             // Remaining part in default dimmed
@@ -141,7 +149,7 @@ fun TypingMissionContent(
             singleLine = true,
             shape = MaterialTheme.shapes.medium,
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = if (userInput.isNotEmpty() && !targetContent.startsWith(userInput, ignoreCase = true)) 
+                focusedBorderColor = if (userInput.isNotEmpty() && !targetContent.startsWith(userInput, ignoreCase = false)) 
                     errorColor else MaterialTheme.colorScheme.primary,
                 unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
                 focusedContainerColor = MaterialTheme.colorScheme.surface,

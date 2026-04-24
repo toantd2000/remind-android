@@ -110,7 +110,10 @@ fun MissionRingingScreen(
                     ReMindButton(
                         onClick = onFinish,
                         modifier = Modifier.fillMaxWidth(),
-                        enabled = userInput.isNotBlank()
+                        enabled = when (uiState.currentMission?.type) {
+                            MissionType.TYPING -> userInput == (uiState.currentTargetData as? Phrase)?.content
+                            else -> userInput.isNotBlank()
+                        }
                     ) {
                         Text(
                             text = stringResource(R.string.mission_complete),

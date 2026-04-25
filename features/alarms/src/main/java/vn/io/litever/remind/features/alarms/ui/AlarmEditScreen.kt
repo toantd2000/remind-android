@@ -127,6 +127,7 @@ fun AlarmEditRoute(
     onNavigateToPermissions: () -> Unit,
     onAddMissionClick: () -> Unit,
     onMissionClick: (vn.io.litever.remind.core.model.Mission) -> Unit,
+    onPreviewClick: (Long) -> Unit,
     navController: androidx.navigation.NavController,
     viewModel: AlarmEditViewModel = hiltViewModel()
 ) {
@@ -306,7 +307,12 @@ fun AlarmEditRoute(
             viewModel.stopRingtonePlayback()
             onMissionClick(it)
         },
-        onMissionRemove = viewModel::removeMission
+        onMissionRemove = viewModel::removeMission,
+        onPreviewClick = { 
+            viewModel.stopRingtonePlayback()
+            viewModel.preparePreview()
+            onPreviewClick(alarmId) 
+        }
     )
 }
 
@@ -336,6 +342,7 @@ fun AlarmEditScreen(
     onAddMissionClick: () -> Unit,
     onMissionClick: (vn.io.litever.remind.core.model.Mission) -> Unit,
     onMissionRemove: (vn.io.litever.remind.core.model.Mission) -> Unit,
+    onPreviewClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (uiState.isLoading) {
@@ -475,14 +482,27 @@ fun AlarmEditScreen(
         },
         bottomBar = {
             ReMindBottomBar {
-                ReMindButton(
-                    onClick = onSaveClick,
-                    modifier = Modifier.fillMaxWidth()
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Text(
-                        stringResource(R.string.save),
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                    )
+                    ReMindOutlinedButton(
+                        onClick = onPreviewClick
+                    ) {
+                        Text(
+                            stringResource(R.string.action_preview),
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                        )
+                    }
+                    ReMindButton(
+                        onClick = onSaveClick,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            stringResource(R.string.save),
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                        )
+                    }
                 }
             }
         }
@@ -1150,7 +1170,8 @@ fun AlarmEditScreenPreview() {
             onGradualVolumeChange = {},
             onAddMissionClick = {},
             onMissionClick = {},
-            onMissionRemove = {}
+            onMissionRemove = {},
+            onPreviewClick = {}
         )
     }
 }
@@ -1187,7 +1208,8 @@ fun AlarmEditScreenDarkPreview() {
             onGradualVolumeChange = {},
             onAddMissionClick = {},
             onMissionClick = {},
-            onMissionRemove = {}
+            onMissionRemove = {},
+            onPreviewClick = {}
         )
     }
 }

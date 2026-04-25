@@ -31,6 +31,7 @@ import vn.io.litever.remind.features.mission.viewmodel.MissionRingingViewModel
 @Composable
 fun MissionRingingRoute(
     alarmId: Long,
+    isPreview: Boolean = false,
     onFinish: () -> Unit,
     onAbandon: () -> Unit,
     navController: androidx.navigation.NavController,

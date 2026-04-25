@@ -12,6 +12,7 @@ import vn.io.litever.remind.core.domain.repository.AlarmRepository
 import vn.io.litever.remind.core.domain.scheduler.AlarmController
 import vn.io.litever.remind.core.model.*
 import vn.io.litever.remind.core.alarm.AlarmRingManager
+import vn.io.litever.remind.core.alarm.DraftAlarmStore
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,11 +21,13 @@ class MissionRingingViewModel @Inject constructor(
     private val missionRepository: MissionRepository,
     private val alarmRepository: AlarmRepository,
     private val alarmController: AlarmController,
-    private val alarmRingManager: AlarmRingManager
+    private val alarmRingManager: AlarmRingManager,
+    private val draftAlarmStore: DraftAlarmStore
 ) : ViewModel() {
     private val MISSION_TIMEOUT_SECONDS = 30
 
     private val alarmId: Long = checkNotNull(savedStateHandle["alarmId"])
+    private val isPreview: Boolean = savedStateHandle["isPreview"] ?: false
 
     private val _uiState = MutableStateFlow(MissionRingingUiState())
     val uiState = _uiState.asStateFlow()
@@ -40,7 +43,7 @@ class MissionRingingViewModel @Inject constructor(
 
     private fun loadMissions() {
         viewModelScope.launch {
-            val alarm = alarmRepository.getAlarmById(alarmId) ?: return@launch
+            val alarm = draftAlarmStore.getDraft() ?: alarmRepository.getAlarmById(alarmId) ?: return@launch
             if (alarm.missions.isNotEmpty()) {
                 val missions = alarm.missions.sortedBy { it.order }
                 _uiState.update { it.copy(isLoading = false, missions = missions, alarm = alarm) }

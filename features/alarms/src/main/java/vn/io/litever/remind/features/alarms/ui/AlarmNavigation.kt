@@ -9,6 +9,7 @@ import androidx.navigation.navDeepLink
 const val AlarmListRoute = "alarm_list_route"
 const val AlarmEditRoute = "alarm_edit_route/{alarmId}"
 const val AlarmRingingRoute = "alarm_ringing_route/{alarmId}"
+const val AlarmPreviewRoute = "alarm_preview_route/{alarmId}"
 const val ringtoneSelectionRoute = "ringtone_selection_route"
 const val snoozeSettingsRoute = "snooze_settings_route"
 const val AlarmMessageRoute = "alarm_message_route/{alarmId}"
@@ -23,12 +24,15 @@ fun NavGraphBuilder.alarmGraph(
     onNavigateBack: () -> Unit,
     onAddMissionClick: () -> Unit,
     onMissionClick: (vn.io.litever.remind.core.model.Mission) -> Unit,
+    onNavigateToPreview: (Long) -> Unit,
+    onNavigateToMissionPreview: (Long) -> Unit,
     navController: androidx.navigation.NavController
 ) {
     composable(route = AlarmListRoute) {
         AlarmListRoute(
             onAddAlarmClick = { onNavigateToEdit(0L) },
             onAlarmClick = { alarm -> onNavigateToEdit(alarm.id) },
+            onNavigateToPreview = onNavigateToPreview,
             onNavigateToPermissions = onNavigateToPermissions
         )
     }
@@ -46,6 +50,7 @@ fun NavGraphBuilder.alarmGraph(
             onNavigateToPermissions = onNavigateToPermissions,
             onAddMissionClick = onAddMissionClick,
             onMissionClick = onMissionClick,
+            onPreviewClick = onNavigateToPreview,
             navController = navController
         )
     }
@@ -102,6 +107,17 @@ fun NavGraphBuilder.alarmGraph(
         AlarmMessageRoute(
             alarmId = alarmId,
             onFinish = onNavigateBack
+        )
+    }
+    composable(
+        route = AlarmPreviewRoute,
+        arguments = listOf(navArgument("alarmId") { type = NavType.LongType })
+    ) { backStackEntry ->
+        val alarmId = backStackEntry.arguments?.getLong("alarmId") ?: -1L
+        AlarmPreviewRoute(
+            alarmId = alarmId,
+            onExit = onNavigateBack,
+            onStartMissionPreview = onNavigateToMissionPreview
         )
     }
 }

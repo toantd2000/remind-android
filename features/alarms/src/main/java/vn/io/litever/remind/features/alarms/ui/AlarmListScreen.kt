@@ -46,6 +46,7 @@ import vn.io.litever.remind.features.alarms.viewmodel.AlarmListViewModel
 fun AlarmListRoute(
     onAddAlarmClick: () -> Unit,
     onAlarmClick: (Alarm) -> Unit,
+    onNavigateToPreview: (Long) -> Unit,
     onNavigateToPermissions: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AlarmListViewModel = hiltViewModel()
@@ -112,6 +113,7 @@ fun AlarmListRoute(
         onDeleteDisabledAlarms = viewModel::deleteDisabledAlarms,
         onAddAlarmClick = onAddAlarmClick,
         onAlarmClick = onAlarmClick,
+        onPreviewClick = { alarm -> onNavigateToPreview(alarm.id) },
         onNavigateToPermissions = onNavigateToPermissions,
         modifier = modifier
     )
@@ -133,6 +135,7 @@ fun AlarmListScreen(
     onDeleteDisabledAlarms: () -> Unit,
     onAddAlarmClick: () -> Unit,
     onAlarmClick: (Alarm) -> Unit,
+    onPreviewClick: (Alarm) -> Unit,
     onNavigateToPermissions: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -239,6 +242,10 @@ fun AlarmListScreen(
             onCancelSkip = {
                 onCancelSkip(selectedAlarmForMenu!!)
                 selectedAlarmForMenu = null
+            },
+            onPreview = {
+                onPreviewClick(selectedAlarmForMenu!!)
+                selectedAlarmForMenu = null
             }
         )
     }
@@ -252,7 +259,8 @@ private fun AlarmActionBottomSheet(
     onDelete: () -> Unit,
     onDuplicate: () -> Unit,
     onSkipOnce: () -> Unit,
-    onCancelSkip: () -> Unit
+    onCancelSkip: () -> Unit,
+    onPreview: () -> Unit
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -279,6 +287,12 @@ private fun AlarmActionBottomSheet(
                     modifier = Modifier.clickable { if (isSkipped) onCancelSkip() else onSkipOnce() }
                 )
             }
+
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.action_preview)) },
+                leadingContent = { Icon(Icons.Rounded.PlayArrow, contentDescription = null) },
+                modifier = Modifier.clickable { onPreview() }
+            )
             
             ListItem(
                 headlineContent = { Text(stringResource(R.string.action_duplicate)) },

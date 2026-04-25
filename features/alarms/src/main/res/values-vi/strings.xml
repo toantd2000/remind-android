@@ -96,6 +96,8 @@
     <string name="alarm_summary_title">Báo thức</string>
     <string name="alarm_message_greeting">Chúc bạn một ngày tốt lành!</string>
     <string name="alarm_message_dismiss">Tôi nhớ rồi</string>
+    <string name="action_preview">Xem trước</string>
+    <string name="action_exit_preview">Thoát xem trước</string>
 </resources>
 
 

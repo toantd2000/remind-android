@@ -23,6 +23,7 @@ import vn.io.litever.remind.features.alarms.ui.state.calculateNextAlarm
 import java.time.LocalTime
 import javax.inject.Inject
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
+import vn.io.litever.remind.core.alarm.DraftAlarmStore
 import vn.io.litever.remind.features.alarms.R
 
 data class AlarmEditUiState(
@@ -57,6 +58,7 @@ class AlarmEditViewModel @Inject constructor(
     private val alarmScheduler: AlarmScheduler,
     private val preferencesDataSource: AlarmPreferencesDataSource,
     private val permissionChecker: vn.io.litever.remind.core.common.util.PermissionChecker,
+    private val draftAlarmStore: DraftAlarmStore,
     @dagger.hilt.android.qualifiers.ApplicationContext private val context: android.content.Context
 ) : ViewModel() {
 
@@ -142,6 +144,10 @@ class AlarmEditViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun preparePreview() {
+        draftAlarmStore.setDraft(createDraftAlarm())
     }
 
     fun addMission(mission: vn.io.litever.remind.core.model.Mission) {
@@ -359,25 +365,8 @@ class AlarmEditViewModel @Inject constructor(
 
     private fun performSave(onSuccess: () -> Unit) {
         viewModelScope.launch {
+            val alarm = createDraftAlarm()
             val state = _uiState.value
-            val alarm = Alarm(
-                id = state.id,
-                time = state.time,
-                label = state.label,
-                message = state.message,
-                isEnabled = state.isEnabled,
-                repeatDays = state.repeatDays,
-                date = state.date,
-                vibrationEnabled = state.vibrationEnabled,
-                ringtoneUri = state.ringtoneUri,
-                volume = state.volume,
-                snoozeEnabled = state.snoozeEnabled,
-                snoozeInterval = state.snoozeInterval,
-                snoozeRepeatCount = state.snoozeRepeatCount,
-                autoSilenceMinutes = state.autoSilenceMinutes,
-                gradualVolumeDurationSeconds = state.gradualVolumeDurationSeconds,
-                missions = state.missions
-            )
             
             if (state.id == 0L) {
                 val savedId = repository.insertAlarm(alarm)
@@ -403,6 +392,28 @@ class AlarmEditViewModel @Inject constructor(
             }
             onSuccess()
         }
+    }
+
+    fun createDraftAlarm(): Alarm {
+        val state = _uiState.value
+        return Alarm(
+            id = state.id,
+            time = state.time,
+            label = state.label,
+            message = state.message,
+            isEnabled = state.isEnabled,
+            repeatDays = state.repeatDays,
+            date = state.date,
+            vibrationEnabled = state.vibrationEnabled,
+            ringtoneUri = state.ringtoneUri,
+            volume = state.volume,
+            snoozeEnabled = state.snoozeEnabled,
+            snoozeInterval = state.snoozeInterval,
+            snoozeRepeatCount = state.snoozeRepeatCount,
+            autoSilenceMinutes = state.autoSilenceMinutes,
+            gradualVolumeDurationSeconds = state.gradualVolumeDurationSeconds,
+            missions = state.missions
+        )
     }
 }
 

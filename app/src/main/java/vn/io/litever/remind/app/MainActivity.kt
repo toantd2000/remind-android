@@ -343,6 +343,12 @@ class MainActivity : ComponentActivity() {
                                                 navController.navigateToTypingMissionConfig(mission.alarmId)
                                             }
                                         },
+                                        onNavigateToPreview = { id ->
+                                            navController.navigate("alarm_preview_route/$id")
+                                        },
+                                        onNavigateToMissionPreview = { id ->
+                                            navController.navigate("mission_ringing_route/$id?isPreview=true")
+                                        },
                                         navController = navController
                                     )
                                     missionGraph(

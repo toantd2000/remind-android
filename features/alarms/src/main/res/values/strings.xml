@@ -96,6 +96,8 @@
     <string name="alarm_summary_title">Alarm</string>
     <string name="alarm_message_greeting">Have a wonderful day ahead!</string>
     <string name="alarm_message_dismiss">Got it</string>
+    <string name="action_preview">Preview</string>
+    <string name="action_exit_preview">Exit Preview</string>
 </resources>
 
 

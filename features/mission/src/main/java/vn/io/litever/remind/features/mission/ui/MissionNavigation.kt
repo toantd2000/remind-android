@@ -10,7 +10,7 @@ import androidx.compose.runtime.getValue
 
 const val typingMissionConfigRoute = "typing_mission_config_route/{alarmId}"
 const val phraseSelectionRoute = "phrase_selection_route/{alarmId}"
-const val missionRingingRoute = "mission_ringing_route/{alarmId}"
+const val missionRingingRoute = "mission_ringing_route/{alarmId}?isPreview={isPreview}"
 
 fun NavController.navigateToTypingMissionConfig(alarmId: Long) {
     this.navigate("typing_mission_config_route/$alarmId")
@@ -20,8 +20,8 @@ fun NavController.navigateToPhraseSelection(alarmId: Long) {
     this.navigate("phrase_selection_route/$alarmId")
 }
 
-fun NavController.navigateToMissionRinging(alarmId: Long) {
-    this.navigate("mission_ringing_route/$alarmId")
+fun NavController.navigateToMissionRinging(alarmId: Long, isPreview: Boolean = false) {
+    this.navigate("mission_ringing_route/$alarmId?isPreview=$isPreview")
 }
 
 fun NavGraphBuilder.missionGraph(
@@ -69,11 +69,19 @@ fun NavGraphBuilder.missionGraph(
 
     composable(
         route = missionRingingRoute,
-        arguments = listOf(navArgument("alarmId") { type = NavType.LongType })
+        arguments = listOf(
+            navArgument("alarmId") { type = NavType.LongType },
+            navArgument("isPreview") { 
+                type = NavType.BoolType
+                defaultValue = false
+            }
+        )
     ) { backStackEntry ->
         val alarmId = backStackEntry.arguments?.getLong("alarmId") ?: 0L
+        val isPreview = backStackEntry.arguments?.getBoolean("isPreview") ?: false
         MissionRingingRoute(
             alarmId = alarmId,
+            isPreview = isPreview,
             onFinish = { onMissionFinish(alarmId) },
             onAbandon = onBackClick,
             navController = navController

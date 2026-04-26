@@ -35,12 +35,12 @@ class ReminderRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun refreshReminder(query: String?) {
+    override suspend fun refreshReminder(query: String?, force: Boolean) {
         val today = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
         val lastUpdatedDate = preferencesDataSource.reminderLastUpdatedDate.first()
 
-        // Only refresh if it's a new day
-        if (today == lastUpdatedDate) {
+        // Only refresh if it's a new day, unless forced
+        if (!force && today == lastUpdatedDate) {
             return
         }
 

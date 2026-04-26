@@ -60,15 +60,19 @@ private fun FullWeatherView(weather: WeatherResponse, modifier: Modifier = Modif
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent)
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+        border = androidx.compose.foundation.BorderStroke(
+            1.dp, 
+            MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+        )
     ) {
         Box(
             modifier = Modifier
                 .background(
                     brush = Brush.linearGradient(
                         colors = listOf(
-                            weatherColors[0].copy(alpha = if (isNight) 0.8f else 0.4f),
-                            weatherColors[1].copy(alpha = if (isNight) 0.5f else 0.2f)
+                            weatherColors[0].copy(alpha = if (isNight) 0.4f else 0.2f),
+                            weatherColors[1].copy(alpha = if (isNight) 0.4f else 0.2f)
                         )
                     )
                 )
@@ -151,9 +155,13 @@ private fun FullWeatherView(weather: WeatherResponse, modifier: Modifier = Modif
                 // Row 3: AI Hint
                 if (weather.aiAnalysis.hint.isNotBlank()) {
                     Surface(
-                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.3f),
                         shape = MaterialTheme.shapes.medium,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        border = androidx.compose.foundation.BorderStroke(
+                            1.dp,
+                            MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)
+                        )
                     ) {
                         Row(
                             modifier = Modifier.padding(12.dp),
@@ -182,10 +190,10 @@ private fun CompactWeatherView(weather: WeatherResponse, modifier: Modifier = Mo
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
-        color = weatherColors[0].copy(alpha = if (isNight) 0.25f else 0.1f),
+        color = weatherColors[0].copy(alpha = if (isNight) 0.2f else 0.1f),
         border = androidx.compose.foundation.BorderStroke(
             1.dp, 
-            weatherColors[0].copy(alpha = if (isNight) 0.3f else 0.15f)
+            MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)
         )
     ) {
         Row(

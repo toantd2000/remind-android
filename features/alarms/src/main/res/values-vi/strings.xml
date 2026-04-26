@@ -74,7 +74,7 @@
     <string name="one_time">1 lần</string>
     <string name="snooze_summary">%1$s, %2$s</string>
     <string name="snooze_countdown">Báo lại sau: %s</string>
-    <string name="missed_alarm_title">Báo thức bị bỏ lỡ</string>
+    <string name="missed_alarm_title">Nhắc nhở bị bỏ lỡ</string>
     <string name="missed_alarm_text">Bạn đã bỏ lỡ một báo thức</string>
     <string name="auto_silence_title">Tự động tắt tiếng</string>
     <string name="auto_silence_countdown">Tự động tắt sau %s</string>
@@ -93,7 +93,7 @@
     <string name="disabled_alarms_deleted">Đã xóa các báo thức đã tắt</string>
     <string name="undo">Hoàn tác</string>
     <string name="skipped_next_format">Bỏ qua lần tới: %s</string>
-    <string name="alarm_summary_title">Báo thức</string>
+    <string name="alarm_summary_title">Nhắc bạn</string>
     <string name="alarm_message_greeting">Chúc bạn một ngày tốt lành!</string>
     <string name="alarm_message_dismiss">Tôi nhớ rồi</string>
     <string name="action_preview">Xem trước</string>

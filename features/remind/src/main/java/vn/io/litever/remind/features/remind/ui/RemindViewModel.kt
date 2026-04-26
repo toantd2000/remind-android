@@ -3,6 +3,7 @@ package vn.io.litever.remind.features.remind.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -37,9 +38,14 @@ class RemindViewModel @Inject constructor(
     fun refresh() {
         viewModelScope.launch {
             _isRefreshing.value = true
-            launch { weatherRepository.refreshWeather() }
-            launch { reminderRepository.refreshReminder() }
-            _isRefreshing.value = false
+            try {
+                coroutineScope {
+                    launch { weatherRepository.refreshWeather(force = true) }
+                    launch { reminderRepository.refreshReminder(force = true) }
+                }
+            } finally {
+                _isRefreshing.value = false
+            }
         }
     }
 }

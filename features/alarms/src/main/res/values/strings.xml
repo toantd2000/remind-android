@@ -74,7 +74,7 @@
     <string name="one_time">1 time</string>
     <string name="snooze_summary">%1$s, %2$s</string>
     <string name="snooze_countdown">Snoozing (%s)</string>
-    <string name="missed_alarm_title">Missed Alarm</string>
+    <string name="missed_alarm_title">Missed Reminder</string>
     <string name="missed_alarm_text">You missed an alarm</string>
     <string name="auto_silence_title">Auto-silence duration</string>
     <string name="auto_silence_countdown">Auto-silence in %s</string>
@@ -93,7 +93,7 @@
     <string name="disabled_alarms_deleted">Disabled alarms deleted</string>
     <string name="undo">Undo</string>
     <string name="skipped_next_format">Skipped next: %s</string>
-    <string name="alarm_summary_title">Alarm</string>
+    <string name="alarm_summary_title">Reminder</string>
     <string name="alarm_message_greeting">Have a wonderful day ahead!</string>
     <string name="alarm_message_dismiss">Got it</string>
     <string name="action_preview">Preview</string>

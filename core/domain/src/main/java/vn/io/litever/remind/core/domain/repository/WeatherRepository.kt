@@ -5,5 +5,5 @@ import vn.io.litever.remind.core.model.WeatherResponse
 
 interface WeatherRepository {
     fun getRemindWeather(): Flow<WeatherResponse?>
-    suspend fun refreshWeather()
+    suspend fun refreshWeather(force: Boolean = false)
 }

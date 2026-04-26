@@ -29,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import vn.io.litever.remind.core.designsystem.components.ReMindButton
 import vn.io.litever.remind.core.designsystem.components.WeatherInfoView
 import vn.io.litever.remind.core.model.*
+import vn.io.litever.remind.core.designsystem.components.NativeAdView
 import java.time.LocalTime
 import java.util.Locale
 
@@ -189,6 +190,11 @@ fun AlarmMessageScreen(
                 weather = weather,
                 isCompact = true
             )
+
+            if (reminder?.adConfig?.enableAds == true) {
+                Spacer(modifier = Modifier.height(16.dp))
+                NativeAdView(adId = reminder.adConfig.nativeId)
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 

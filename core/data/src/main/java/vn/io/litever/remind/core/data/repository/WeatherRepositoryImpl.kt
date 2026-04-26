@@ -33,12 +33,12 @@ class WeatherRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun refreshWeather() {
+    override suspend fun refreshWeather(force: Boolean) {
         val lastUpdated = preferencesDataSource.lastUpdatedMillis.first()
         val currentTime = System.currentTimeMillis()
         
-        // Cache for 1 hour (3600000 ms)
-        if (currentTime - lastUpdated < 3600000) {
+        // Cache for 1 hour (3600000 ms), unless forced
+        if (!force && currentTime - lastUpdated < 3600000) {
             return
         }
 

@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import vn.io.litever.remind.core.designsystem.components.MainReMindTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
 import vn.io.litever.remind.core.designsystem.components.WeatherInfoView
 import vn.io.litever.remind.core.designsystem.components.ReminderInfoView
@@ -24,7 +23,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.*
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RemindRoute(
     modifier: Modifier = Modifier,
@@ -43,7 +41,6 @@ fun RemindRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RemindScreen(
     weather: WeatherResponse?,
@@ -52,17 +49,7 @@ fun RemindScreen(
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    ReMindScaffold(
-        topBar = {
-            MainReMindTopAppBar(
-                actions = {
-                    IconButton(onClick = onRefresh, enabled = !isRefreshing) {
-                        Icon(Icons.Rounded.Refresh, contentDescription = "Refresh")
-                    }
-                }
-            )
-        }
-    ) { padding ->
+    ReMindScaffold { padding ->
         Column(
             modifier = modifier
                 .fillMaxSize()
@@ -71,6 +58,13 @@ fun RemindScreen(
                 .padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            GreetingView(
+                onRefresh = onRefresh,
+                isRefreshing = isRefreshing
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
             if (weather != null) {
                 WeatherInfoView(weather = weather)
             } else if (isRefreshing) {
@@ -85,6 +79,36 @@ fun RemindScreen(
                 Spacer(modifier = Modifier.height(16.dp))
                 NativeAdView(adId = reminder?.adConfig?.nativeId)
             }
+        }
+    }
+}
+
+@Composable
+fun GreetingView(
+    modifier: Modifier = Modifier,
+    onRefresh: () -> Unit,
+    isRefreshing: Boolean
+) {
+    val hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)
+    val greeting = when (hour) {
+        in 5..11 -> stringResource(R.string.greeting_morning)
+        in 12..17 -> stringResource(R.string.greeting_afternoon)
+        in 18..21 -> stringResource(R.string.greeting_evening)
+        else -> stringResource(R.string.greeting_night)
+    }
+
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = greeting,
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        IconButton(onClick = onRefresh, enabled = !isRefreshing) {
+            Icon(Icons.Rounded.Refresh, contentDescription = stringResource(R.string.refresh))
         }
     }
 }

@@ -23,7 +23,11 @@ fun ReminderInfoView(
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.medium,
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                ),
+                border = androidx.compose.foundation.BorderStroke(
+                    1.dp,
+                    MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)
                 )
             ) {
                 Text(
@@ -32,6 +36,23 @@ fun ReminderInfoView(
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
+        }
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@Composable
+fun ReminderInfoViewPreview() {
+    val mockReminder = ReminderResponse(
+        messages = listOf(
+            "Đừng quên mang theo tài liệu họp lúc 9h sáng nhé!",
+            "Uống thuốc sau khi ăn sáng."
+        ),
+        adConfig = vn.io.litever.remind.core.model.AdConfig(enableAds = false)
+    )
+    vn.io.litever.remind.core.designsystem.theme.ReMindTheme {
+        Box(modifier = Modifier.padding(16.dp)) {
+            ReminderInfoView(reminder = mockReminder)
         }
     }
 }

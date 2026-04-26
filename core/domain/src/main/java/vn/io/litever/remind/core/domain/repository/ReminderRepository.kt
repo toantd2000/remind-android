@@ -5,5 +5,5 @@ import vn.io.litever.remind.core.model.ReminderResponse
 
 interface ReminderRepository {
     fun getReminder(): Flow<ReminderResponse?>
-    suspend fun refreshReminder(query: String? = null)
+    suspend fun refreshReminder(query: String? = null, force: Boolean = false)
 }

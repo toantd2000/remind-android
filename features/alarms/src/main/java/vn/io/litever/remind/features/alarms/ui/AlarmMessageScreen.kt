@@ -27,6 +27,8 @@ import vn.io.litever.remind.core.model.Alarm
 import vn.io.litever.remind.features.alarms.viewmodel.AlarmRingingViewModel
 import androidx.compose.ui.tooling.preview.Preview
 import vn.io.litever.remind.core.designsystem.components.ReMindButton
+import vn.io.litever.remind.core.designsystem.components.WeatherInfoView
+import vn.io.litever.remind.core.model.*
 import java.time.LocalTime
 import java.util.Locale
 
@@ -37,9 +39,11 @@ fun AlarmMessageRoute(
     viewModel: AlarmRingingViewModel = hiltViewModel()
 ) {
     val alarm by viewModel.alarm.collectAsState()
+    val weather by viewModel.weather.collectAsState()
 
     AlarmMessageScreen(
         alarm = alarm,
+        weather = weather,
         onFinish = {
             viewModel.onFinishMessage()
             onFinish()
@@ -50,6 +54,7 @@ fun AlarmMessageRoute(
 @Composable
 fun AlarmMessageScreen(
     alarm: Alarm?,
+    weather: vn.io.litever.remind.core.model.WeatherResponse?,
     onFinish: () -> Unit
 ) {
     BackHandler { }
@@ -176,32 +181,11 @@ fun AlarmMessageScreen(
             }
 
             Spacer(modifier = Modifier.height(24.dp))
-
-            // Future Extras Placeholder (e.g. Weather)
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.medium,
-                color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.1f),
-                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.1f))
-            ) {
-                Row(
-                    modifier = Modifier.padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Lightbulb,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Text(
-                        text = stringResource(vn.io.litever.remind.features.alarms.R.string.alarm_message_greeting),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.secondary
-                    )
-                }
-            }
+            
+            WeatherInfoView(
+                weather = weather,
+                isCompact = true
+            )
 
             Spacer(modifier = Modifier.weight(1f))
 
@@ -221,6 +205,24 @@ fun AlarmMessageScreen(
 @Preview(showBackground = true)
 @Composable
 fun AlarmMessageScreenPreview() {
+    val mockWeather = WeatherResponse(
+        locationName = "Hanoi",
+        current = CurrentWeather(
+            lastUpdated = "2026-04-26 07:45",
+            tempC = 23.7,
+            feelsLikeC = 25.9,
+            isDay = 1,
+            conditionText = "Partly Cloudy",
+            conditionIcon = "https://cdn.weatherapi.com/weather/64x64/day/116.png",
+            conditionCode = 1003,
+            aqiIndex = 3,
+            precipMm = 0.0
+        ),
+        dailySummary = DailySummary(maxTemp = 29.6, minTemp = 22.2, chanceOfRain = 88),
+        hourlyForecast = emptyList(),
+        aiAnalysis = AiAnalysis(hint = "Trời mát, mang theo ô vì có thể có mưa rào.")
+    )
+
     ReMindTheme {
         AlarmMessageScreen(
             alarm = Alarm(
@@ -229,6 +231,7 @@ fun AlarmMessageScreenPreview() {
                 label = "Morning Yoga",
                 message = "Time to stretch and start your day!"
             ),
+            weather = mockWeather,
             onFinish = {}
         )
     }
@@ -237,6 +240,24 @@ fun AlarmMessageScreenPreview() {
 @Preview(showBackground = true)
 @Composable
 fun AlarmMessageMissedScreenPreview() {
+    val mockWeather = WeatherResponse(
+        locationName = "Hanoi",
+        current = CurrentWeather(
+            lastUpdated = "2026-04-26 07:45",
+            tempC = 33.5, // Hot
+            feelsLikeC = 36.0,
+            isDay = 1,
+            conditionText = "Sunny",
+            conditionIcon = "https://cdn.weatherapi.com/weather/64x64/day/113.png",
+            conditionCode = 1000,
+            aqiIndex = 5,
+            precipMm = 0.0
+        ),
+        dailySummary = DailySummary(maxTemp = 35.0, minTemp = 26.0, chanceOfRain = 0),
+        hourlyForecast = emptyList(),
+        aiAnalysis = AiAnalysis(hint = "Trời rất nóng, hãy uống đủ nước và mặc đồ thoáng mát.")
+    )
+
     ReMindTheme(darkTheme = true) {
         AlarmMessageScreen(
             alarm = Alarm(
@@ -246,6 +267,7 @@ fun AlarmMessageMissedScreenPreview() {
                 message = "You missed this important alarm.",
                 isMissed = true
             ),
+            weather = mockWeather,
             onFinish = {}
         )
     }

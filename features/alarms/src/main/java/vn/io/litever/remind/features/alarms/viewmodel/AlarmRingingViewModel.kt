@@ -23,7 +23,8 @@ class AlarmRingingViewModel @Inject constructor(
     private val alarmRepository: AlarmRepository,
     private val alarmController: AlarmController,
     private val preferencesDataSource: AlarmPreferencesDataSource,
-    private val alarmRingManager: AlarmRingManager
+    private val alarmRingManager: AlarmRingManager,
+    private val weatherRepository: vn.io.litever.remind.core.domain.repository.WeatherRepository
 ) : ViewModel() {
 
     private val alarmId: Long = checkNotNull(savedStateHandle["alarmId"])
@@ -49,6 +50,19 @@ class AlarmRingingViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = null
         )
+
+    val weather: StateFlow<vn.io.litever.remind.core.model.WeatherResponse?> = weatherRepository.getRemindWeather()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
+        )
+
+    init {
+        viewModelScope.launch {
+            weatherRepository.refreshWeather()
+        }
+    }
 
     fun dismissAlarm() {
         viewModelScope.launch {

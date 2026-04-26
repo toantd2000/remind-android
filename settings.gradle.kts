@@ -32,9 +32,11 @@ include(":core:alarm")
 include(":core:database")
 include(":core:datastore")
 include(":core:data")
+include(":core:network")
 include(":features:alarms")
 include(":features:settings")
 include(":features:mission")
+include(":features:remind")
 
 
 

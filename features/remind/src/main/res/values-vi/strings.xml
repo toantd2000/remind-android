@@ -1,0 +1,5 @@
+<resources>
+    <string name="remind_title">Nhắc bạn</string>
+    <string name="no_weather_data">Không có dữ liệu thời tiết</string>
+    <string name="refresh">Cập nhật</string>
+</resources>

@@ -25,6 +25,12 @@ abstract class RepositoryModule {
     abstract fun bindMissionRepository(
         missionRepositoryImpl: MissionRepositoryImpl
     ): MissionRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindWeatherRepository(
+        weatherRepositoryImpl: vn.io.litever.remind.core.data.repository.WeatherRepositoryImpl
+    ): vn.io.litever.remind.core.domain.repository.WeatherRepository
 }
 
 

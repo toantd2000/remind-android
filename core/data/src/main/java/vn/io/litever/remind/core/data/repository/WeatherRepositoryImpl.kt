@@ -1,0 +1,63 @@
+package vn.io.litever.remind.core.data.repository
+
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
+import vn.io.litever.remind.core.datastore.WeatherPreferencesDataSource
+import vn.io.litever.remind.core.domain.repository.WeatherRepository
+import vn.io.litever.remind.core.model.WeatherResponse
+import vn.io.litever.remind.core.network.WeatherApi
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+class WeatherRepositoryImpl @Inject constructor(
+    private val weatherApi: WeatherApi,
+    private val preferencesDataSource: WeatherPreferencesDataSource,
+    private val json: Json
+) : WeatherRepository {
+
+    override fun getRemindWeather(): Flow<WeatherResponse?> {
+        return preferencesDataSource.weatherJson.map { jsonString ->
+            if (jsonString != null) {
+                try {
+                    json.decodeFromString<WeatherResponse>(jsonString)
+                } catch (e: Exception) {
+                    null
+                }
+            } else {
+                null
+            }
+        }
+    }
+
+    override suspend fun refreshWeather() {
+        val lastUpdated = preferencesDataSource.lastUpdatedMillis.first()
+        val currentTime = System.currentTimeMillis()
+        
+        // Cache for 1 hour (3600000 ms)
+        if (currentTime - lastUpdated < 3600000) {
+            return
+        }
+
+        val locationUrl = preferencesDataSource.locationUrl.first()
+        // q defaults to empty string as per user request
+        val query = if (locationUrl.isEmpty()) "" else locationUrl
+
+        try {
+            val response = weatherApi.getRemindWeather(query = query)
+            val jsonString = json.encodeToString(response)
+            
+            // Save weather data and update the location identifier for the next request
+            preferencesDataSource.saveWeather(
+                json = jsonString,
+                timestamp = currentTime,
+                locationUrl = response.locationUrl ?: response.locationName
+            )
+        } catch (e: Exception) {
+            // Log error or handle failure
+        }
+    }
+}

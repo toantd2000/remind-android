@@ -73,6 +73,8 @@ import vn.io.litever.remind.features.mission.ui.missionGraph
 import vn.io.litever.remind.features.mission.ui.navigateToTypingMissionConfig
 import vn.io.litever.remind.features.mission.ui.navigateToPhraseSelection
 import vn.io.litever.remind.features.mission.ui.navigateToMissionRinging
+import vn.io.litever.remind.features.remind.ui.remindRoute
+import vn.io.litever.remind.features.remind.ui.remindGraph
 
 
 import androidx.activity.viewModels
@@ -86,6 +88,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalContext
 import android.content.Context
 import android.content.res.Configuration
+import androidx.compose.material.icons.rounded.Lightbulb
 import androidx.compose.ui.res.stringResource
 import java.util.Locale
 
@@ -257,7 +260,8 @@ class MainActivity : ComponentActivity() {
                                 val currentRoute = navBackStackEntry?.destination?.route
 
                                 val isBottomBarVisible = currentRoute == AlarmListRoute || 
-                                    currentRoute == settingsRoute
+                                    currentRoute == settingsRoute ||
+                                    currentRoute == remindRoute
 
                                 if (isBottomBarVisible) {
                                     NavigationBar {
@@ -267,6 +271,20 @@ class MainActivity : ComponentActivity() {
                                             selected = currentRoute == AlarmListRoute,
                                             onClick = {
                                                 navController.navigate(AlarmListRoute) {
+                                                    popUpTo(navController.graph.startDestinationId) {
+                                                        saveState = true
+                                                    }
+                                                    launchSingleTop = true
+                                                    restoreState = true
+                                                }
+                                            }
+                                        )
+                                        NavigationBarItem(
+                                            icon = { Icon(Icons.Rounded.Lightbulb, contentDescription = "Remind") },
+                                            label = { Text(stringResource(R.string.navigation_remind)) },
+                                            selected = currentRoute == remindRoute,
+                                            onClick = {
+                                                navController.navigate(remindRoute) {
                                                     popUpTo(navController.graph.startDestinationId) {
                                                         saveState = true
                                                     }
@@ -370,6 +388,7 @@ class MainActivity : ComponentActivity() {
                                         onBackClick = { navController.popBackStack() },
                                         navController = navController
                                     )
+                                    remindGraph()
                                     settingsGraph(
                                         onNavigateToGeneralSettings = { navController.navigateToGeneralSettings() },
                                         onNavigateToQA = { navController.navigateToQA() },

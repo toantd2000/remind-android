@@ -5,19 +5,25 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import vn.io.litever.remind.core.domain.repository.WeatherRepository
-import vn.io.litever.remind.core.model.WeatherResponse
 import javax.inject.Inject
 
 @HiltViewModel
 class RemindViewModel @Inject constructor(
-    private val weatherRepository: WeatherRepository
+    private val weatherRepository: vn.io.litever.remind.core.domain.repository.WeatherRepository,
+    private val reminderRepository: vn.io.litever.remind.core.domain.repository.ReminderRepository
 ) : ViewModel() {
 
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing = _isRefreshing.asStateFlow()
 
-    val weather: StateFlow<WeatherResponse?> = weatherRepository.getRemindWeather()
+    val weather: StateFlow<vn.io.litever.remind.core.model.WeatherResponse?> = weatherRepository.getRemindWeather()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
+        )
+
+    val reminder: StateFlow<vn.io.litever.remind.core.model.ReminderResponse?> = reminderRepository.getReminder()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -31,7 +37,8 @@ class RemindViewModel @Inject constructor(
     fun refresh() {
         viewModelScope.launch {
             _isRefreshing.value = true
-            weatherRepository.refreshWeather()
+            launch { weatherRepository.refreshWeather() }
+            launch { reminderRepository.refreshReminder() }
             _isRefreshing.value = false
         }
     }

@@ -42,9 +42,8 @@ class WeatherRepositoryImpl @Inject constructor(
             return
         }
 
-        val locationUrl = preferencesDataSource.locationUrl.first()
-        // q defaults to empty string as per user request
-        val query = if (locationUrl.isEmpty()) "" else locationUrl
+        // Always pass empty string as per user request, ignoring saved location for automatic refresh
+        val query = ""
 
         try {
             val response = weatherApi.getRemindWeather(query = query)

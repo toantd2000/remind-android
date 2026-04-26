@@ -8,6 +8,10 @@ import vn.io.litever.remind.core.data.repository.AlarmRepositoryImpl
 import vn.io.litever.remind.core.data.repository.MissionRepositoryImpl
 import vn.io.litever.remind.core.domain.repository.AlarmRepository
 import vn.io.litever.remind.core.domain.repository.MissionRepository
+import vn.io.litever.remind.core.domain.repository.WeatherRepository
+import vn.io.litever.remind.core.domain.repository.ReminderRepository
+import vn.io.litever.remind.core.data.repository.WeatherRepositoryImpl
+import vn.io.litever.remind.core.data.repository.ReminderRepositoryImpl
 import javax.inject.Singleton
 
 @Module
@@ -29,8 +33,14 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindWeatherRepository(
-        weatherRepositoryImpl: vn.io.litever.remind.core.data.repository.WeatherRepositoryImpl
-    ): vn.io.litever.remind.core.domain.repository.WeatherRepository
+        weatherRepositoryImpl: WeatherRepositoryImpl
+    ): WeatherRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindReminderRepository(
+        reminderRepositoryImpl: ReminderRepositoryImpl
+    ): ReminderRepository
 }
 
 

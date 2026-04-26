@@ -59,7 +59,7 @@ private fun FullWeatherView(weather: WeatherResponse, modifier: Modifier = Modif
     
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
+        shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(containerColor = Color.Transparent)
     ) {
         Box(
@@ -130,7 +130,7 @@ private fun FullWeatherView(weather: WeatherResponse, modifier: Modifier = Modif
                             WeatherDetailItem(Icons.Rounded.Thermostat, "${weather.current.precipMm}mm")
                         }
                         
-                        Divider(
+                        HorizontalDivider(
                             modifier = Modifier.width(40.dp).padding(vertical = 2.dp),
                             color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
                         )
@@ -152,7 +152,7 @@ private fun FullWeatherView(weather: WeatherResponse, modifier: Modifier = Modif
                 if (weather.aiAnalysis.hint.isNotBlank()) {
                     Surface(
                         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
-                        shape = RoundedCornerShape(16.dp),
+                        shape = MaterialTheme.shapes.medium,
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Row(
@@ -181,7 +181,7 @@ private fun CompactWeatherView(weather: WeatherResponse, modifier: Modifier = Mo
     
     Surface(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = MaterialTheme.shapes.medium,
         color = weatherColors[0].copy(alpha = if (isNight) 0.25f else 0.1f),
         border = androidx.compose.foundation.BorderStroke(
             1.dp, 

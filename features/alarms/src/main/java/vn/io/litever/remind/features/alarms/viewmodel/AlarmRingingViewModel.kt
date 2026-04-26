@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import vn.io.litever.remind.core.domain.repository.AlarmRepository
 import vn.io.litever.remind.core.model.Alarm
@@ -24,7 +25,8 @@ class AlarmRingingViewModel @Inject constructor(
     private val alarmController: AlarmController,
     private val preferencesDataSource: AlarmPreferencesDataSource,
     private val alarmRingManager: AlarmRingManager,
-    private val weatherRepository: vn.io.litever.remind.core.domain.repository.WeatherRepository
+    private val weatherRepository: vn.io.litever.remind.core.domain.repository.WeatherRepository,
+    private val reminderRepository: vn.io.litever.remind.core.domain.repository.ReminderRepository
 ) : ViewModel() {
 
     private val alarmId: Long = checkNotNull(savedStateHandle["alarmId"])
@@ -58,9 +60,17 @@ class AlarmRingingViewModel @Inject constructor(
             initialValue = null
         )
 
+    val reminder: StateFlow<vn.io.litever.remind.core.model.ReminderResponse?> = reminderRepository.getReminder()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
+        )
+
     init {
         viewModelScope.launch {
-            weatherRepository.refreshWeather()
+            launch { weatherRepository.refreshWeather() }
+            launch { reminderRepository.refreshReminder() }
         }
     }
 
@@ -98,13 +108,3 @@ class AlarmRingingViewModel @Inject constructor(
         }
     }
 }
-
-
-
-
-
-
-
-
-
-

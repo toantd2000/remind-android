@@ -15,7 +15,7 @@ import vn.io.litever.remind.core.database.model.PhraseEntity
         MissionEntity::class,
         PhraseEntity::class
     ],
-    version = 4, // Increment for migration
+    version = 1, // Initial release version
     exportSchema = false
 )
 abstract class RemindDatabase : RoomDatabase() {
@@ -23,13 +23,3 @@ abstract class RemindDatabase : RoomDatabase() {
     abstract fun missionDao(): MissionDao
     abstract fun phraseDao(): PhraseDao
 }
-
-
-
-
-
-
-
-
-
-

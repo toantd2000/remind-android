@@ -178,6 +178,16 @@ private fun FullWeatherView(
                         }
                     }
                 }
+
+                // Attribution
+                Text(
+                    text = "Powered by WeatherAPI.com",
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        fontSize = 8.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+                    ),
+                    modifier = Modifier.align(Alignment.End)
+                )
             }
         }
     }

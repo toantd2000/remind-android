@@ -75,6 +75,7 @@ import vn.io.litever.remind.features.mission.ui.navigateToPhraseSelection
 import vn.io.litever.remind.features.mission.ui.navigateToMissionRinging
 import vn.io.litever.remind.features.remind.ui.remindRoute
 import vn.io.litever.remind.features.remind.ui.remindGraph
+import vn.io.litever.remind.features.remind.ui.locationSearchRoute
 
 
 import androidx.activity.viewModels
@@ -388,7 +389,14 @@ class MainActivity : ComponentActivity() {
                                         onBackClick = { navController.popBackStack() },
                                         navController = navController
                                     )
-                                    remindGraph()
+                                    remindGraph(
+                                        onNavigateToLocationSearch = {
+                                            navController.navigate(locationSearchRoute)
+                                        },
+                                        onBackClick = {
+                                            navController.popBackStack()
+                                        }
+                                    )
                                     settingsGraph(
                                         onNavigateToGeneralSettings = { navController.navigateToGeneralSettings() },
                                         onNavigateToQA = { navController.navigateToQA() },

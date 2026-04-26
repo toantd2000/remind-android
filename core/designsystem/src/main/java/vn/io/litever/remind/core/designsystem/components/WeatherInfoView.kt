@@ -1,14 +1,14 @@
 package vn.io.litever.remind.core.designsystem.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Air
 import androidx.compose.material.icons.rounded.Thermostat
-import androidx.compose.material.icons.rounded.WaterDrop
+import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,14 +29,15 @@ import vn.io.litever.remind.core.model.WeatherResponse
 fun WeatherInfoView(
     weather: WeatherResponse?,
     modifier: Modifier = Modifier,
-    isCompact: Boolean = false
+    isCompact: Boolean = false,
+    onLocationClick: () -> Unit = {}
 ) {
     if (weather == null) return
 
     if (isCompact) {
-        CompactWeatherView(weather, modifier)
+        CompactWeatherView(weather, modifier, onLocationClick)
     } else {
-        FullWeatherView(weather, modifier)
+        FullWeatherView(weather, modifier, onLocationClick)
     }
 }
 
@@ -53,7 +54,11 @@ private fun getWeatherColors(temp: Double, isDay: Int): List<Color> {
 }
 
 @Composable
-private fun FullWeatherView(weather: WeatherResponse, modifier: Modifier = Modifier) {
+private fun FullWeatherView(
+    weather: WeatherResponse, 
+    modifier: Modifier = Modifier,
+    onLocationClick: () -> Unit = {}
+) {
     val weatherColors = getWeatherColors(weather.current.tempC, weather.current.isDay)
     val isNight = weather.current.isDay == 0
     
@@ -80,34 +85,43 @@ private fun FullWeatherView(weather: WeatherResponse, modifier: Modifier = Modif
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 // Row 1: Location
-                Text(
-                    text = weather.locationName ?: "Unknown",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable { onLocationClick() }
+                ) {
+                    Text(
+                        text = weather.locationName ?: "Unknown",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Icon(
+                        imageVector = Icons.Rounded.ChevronRight,
+                        contentDescription = "Change Location",
+                        modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
 
-                // Row 2: 3 Columns
+                // Row 2: Main Info
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Col 1: Temperature (Main Focus) - wrap content
+                    // Temperature
                     Text(
                         text = "${weather.current.tempC.toInt()}°",
                         style = MaterialTheme.typography.displayLarge.copy(
                             fontWeight = FontWeight.Black,
                             fontSize = 64.sp
-                        ),
-                        modifier = Modifier.wrapContentWidth(),
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
                     )
-
-                    // Col 2: Icon + Condition Text - wrap content
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.wrapContentWidth()
-                    ) {
+                    
+                    Spacer(modifier = Modifier.width(20.dp))
+                    
+                    // Condition
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         AsyncImage(
                             model = weather.current.conditionIcon,
                             contentDescription = null,
@@ -116,40 +130,27 @@ private fun FullWeatherView(weather: WeatherResponse, modifier: Modifier = Modif
                         Text(
                             text = weather.current.conditionText,
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                        )
-                    }
-
-                    // Col 3: Details Cluster - takes remaining space
-                    Column(
-                        horizontalAlignment = Alignment.End,
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
-                        modifier = Modifier.weight(1f) 
-                    ) {
-                        // Compact Row for 3 params
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            WeatherDetailItem(Icons.Rounded.WaterDrop, "${weather.dailySummary.chanceOfRain}%")
-                            WeatherDetailItem(Icons.Rounded.Air, weather.current.aqiIndex.toString())
-                            WeatherDetailItem(Icons.Rounded.Thermostat, "${weather.current.precipMm}mm")
-                        }
-                        
-                        HorizontalDivider(
-                            modifier = Modifier.width(40.dp).padding(vertical = 2.dp),
-                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
-                        )
-                        
-                        Text(
-                            text = "Cao: ${weather.dailySummary.maxTemp.toInt()}° Thấp: ${weather.dailySummary.minTemp.toInt()}°",
-                            style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "Cảm giác như ${weather.current.feelsLikeC.toInt()}°",
-                            style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
+                }
+
+                // Row 3: Secondary Info (Min/Max & Feels Like)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Cao: ${weather.dailySummary.maxTemp.toInt()}° • Thấp: ${weather.dailySummary.minTemp.toInt()}°",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "Cảm giác như ${weather.current.feelsLikeC.toInt()}°",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
 
                 // Row 3: AI Hint
@@ -183,7 +184,11 @@ private fun FullWeatherView(weather: WeatherResponse, modifier: Modifier = Modif
 }
 
 @Composable
-private fun CompactWeatherView(weather: WeatherResponse, modifier: Modifier = Modifier) {
+private fun CompactWeatherView(
+    weather: WeatherResponse, 
+    modifier: Modifier = Modifier,
+    onLocationClick: () -> Unit = {}
+) {
     val weatherColors = getWeatherColors(weather.current.tempC, weather.current.isDay)
     val isNight = weather.current.isDay == 0
     
@@ -197,7 +202,9 @@ private fun CompactWeatherView(weather: WeatherResponse, modifier: Modifier = Mo
         )
     ) {
         Row(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier
+                .clickable { onLocationClick() }
+                .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
@@ -222,28 +229,6 @@ private fun CompactWeatherView(weather: WeatherResponse, modifier: Modifier = Mo
     }
 }
 
-@Composable
-private fun WeatherDetailItem(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    value: String
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(2.dp)
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            modifier = Modifier.size(16.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.labelSmall,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
 
 @Preview(showBackground = true)
 @Composable

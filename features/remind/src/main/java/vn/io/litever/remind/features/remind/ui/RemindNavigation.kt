@@ -4,9 +4,20 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 
 const val remindRoute = "remind_route"
+const val locationSearchRoute = "location_search_route"
 
-fun NavGraphBuilder.remindGraph() {
+fun NavGraphBuilder.remindGraph(
+    onNavigateToLocationSearch: () -> Unit,
+    onBackClick: () -> Unit
+) {
     composable(remindRoute) {
-        RemindRoute()
+        RemindRoute(
+            onLocationClick = onNavigateToLocationSearch
+        )
+    }
+    composable(locationSearchRoute) {
+        LocationSearchRoute(
+            onBackClick = onBackClick
+        )
     }
 }

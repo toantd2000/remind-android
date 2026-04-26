@@ -26,6 +26,7 @@ import vn.io.litever.remind.core.model.*
 @Composable
 fun RemindRoute(
     modifier: Modifier = Modifier,
+    onLocationClick: () -> Unit = {},
     viewModel: RemindViewModel = hiltViewModel()
 ) {
     val weather by viewModel.weather.collectAsState()
@@ -37,6 +38,7 @@ fun RemindRoute(
         reminder = reminder,
         isRefreshing = isRefreshing,
         onRefresh = viewModel::refresh,
+        onLocationClick = onLocationClick,
         modifier = modifier
     )
 }
@@ -47,6 +49,7 @@ fun RemindScreen(
     reminder: ReminderResponse?,
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
+    onLocationClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     ReMindScaffold { padding ->
@@ -66,7 +69,10 @@ fun RemindScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             if (weather != null) {
-                WeatherInfoView(weather = weather)
+                WeatherInfoView(
+                    weather = weather,
+                    onLocationClick = onLocationClick
+                )
             } else if (isRefreshing) {
                 CircularProgressIndicator()
             }

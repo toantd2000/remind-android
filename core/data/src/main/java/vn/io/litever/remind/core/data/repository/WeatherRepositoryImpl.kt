@@ -42,8 +42,9 @@ class WeatherRepositoryImpl @Inject constructor(
             return
         }
 
-        // Always pass empty string as per user request, ignoring saved location for automatic refresh
-        val query = ""
+        // Use selected location name if available
+        val savedName = preferencesDataSource.selectedLocationName.first()
+        val query = if (savedName.isNotBlank()) savedName else ""
 
         try {
             val response = weatherApi.getRemindWeather(query = query)
@@ -59,4 +60,20 @@ class WeatherRepositoryImpl @Inject constructor(
             // Log error or handle failure
         }
     }
+
+    override suspend fun searchLocation(query: String): List<vn.io.litever.remind.core.model.LocationSearchResponse> {
+        return try {
+            weatherApi.searchLocation(query)
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    override suspend fun saveSelectedLocation(name: String, country: String) {
+        preferencesDataSource.saveSelectedLocation(name, country)
+    }
+
+    override fun getSelectedLocationName(): Flow<String> = preferencesDataSource.selectedLocationName
+
+    override fun getSelectedLocationCountry(): Flow<String> = preferencesDataSource.selectedLocationCountry
 }

@@ -17,6 +17,8 @@ class WeatherPreferencesDataSource @Inject constructor(
         val LOCATION_URL = stringPreferencesKey("weather_location_url")
         val REMINDER_JSON = stringPreferencesKey("reminder_json")
         val REMINDER_LAST_UPDATED_DATE = stringPreferencesKey("reminder_last_updated_date")
+        val SELECTED_LOCATION_NAME = stringPreferencesKey("selected_location_name")
+        val SELECTED_LOCATION_COUNTRY = stringPreferencesKey("selected_location_country")
     }
 
     val weatherJson: Flow<String?> = dataStore.data.map { it[PreferencesKeys.WEATHER_JSON] }
@@ -24,6 +26,8 @@ class WeatherPreferencesDataSource @Inject constructor(
     val locationUrl: Flow<String> = dataStore.data.map { it[PreferencesKeys.LOCATION_URL] ?: "" }
     val reminderJson: Flow<String?> = dataStore.data.map { it[PreferencesKeys.REMINDER_JSON] }
     val reminderLastUpdatedDate: Flow<String> = dataStore.data.map { it[PreferencesKeys.REMINDER_LAST_UPDATED_DATE] ?: "" }
+    val selectedLocationName: Flow<String> = dataStore.data.map { it[PreferencesKeys.SELECTED_LOCATION_NAME] ?: "" }
+    val selectedLocationCountry: Flow<String> = dataStore.data.map { it[PreferencesKeys.SELECTED_LOCATION_COUNTRY] ?: "" }
 
     suspend fun saveWeather(json: String, timestamp: Long, locationUrl: String?) {
         dataStore.edit { preferences ->
@@ -39,6 +43,13 @@ class WeatherPreferencesDataSource @Inject constructor(
         dataStore.edit { preferences ->
             preferences[PreferencesKeys.REMINDER_JSON] = json
             preferences[PreferencesKeys.REMINDER_LAST_UPDATED_DATE] = date
+        }
+    }
+
+    suspend fun saveSelectedLocation(name: String, country: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.SELECTED_LOCATION_NAME] = name
+            preferences[PreferencesKeys.SELECTED_LOCATION_COUNTRY] = country
         }
     }
 }

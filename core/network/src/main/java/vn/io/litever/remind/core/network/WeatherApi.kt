@@ -10,4 +10,10 @@ interface WeatherApi {
         @Query("q") query: String? = null,
         @Query("lang") lang: String = "vi"
     ): WeatherResponse
+
+    @GET("weather/search")
+    suspend fun searchLocation(
+        @Query("q") query: String,
+        @Query("lang") lang: String = "vi"
+    ): List<vn.io.litever.remind.core.model.LocationSearchResponse>
 }

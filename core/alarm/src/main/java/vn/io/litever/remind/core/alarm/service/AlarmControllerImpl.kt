@@ -20,7 +20,8 @@ import javax.inject.Inject
 class AlarmControllerImpl @Inject constructor(
     @ApplicationContext private val context: Context,
     private val alarmRingManager: AlarmRingManager,
-    private val alarmRepository: AlarmRepository
+    private val alarmRepository: AlarmRepository,
+    private val alarmScheduler: AlarmScheduler
 ) : AlarmController {
 
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -29,26 +30,11 @@ class AlarmControllerImpl @Inject constructor(
     override suspend fun dismissAlarm(alarmId: Long?) {
         val currentAlarmId = alarmId ?: alarmRingManager.ringingAlarmId.value
         if (currentAlarmId != null) {
-            // Cancel any pending snooze
-            val snoozeIntent = Intent(context, AlarmReceiver::class.java).apply {
-                action = AlarmScheduler.ACTION_TRIGGER_ALARM
-                putExtra(AlarmScheduler.EXTRA_ALARM_ID, currentAlarmId)
-                putExtra(AlarmScheduler.EXTRA_IS_SNOOZE, true)
-            }
-            val pendingSnooze = PendingIntent.getBroadcast(
-                context,
-                currentAlarmId.hashCode(),
-                snoozeIntent,
-                PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
-            )
-            if (pendingSnooze != null) {
-                alarmManager.cancel(pendingSnooze)
-                pendingSnooze.cancel()
-            }
-
             withContext(Dispatchers.IO) {
                 val alarm = alarmRepository.getAlarmById(currentAlarmId)
                 if (alarm != null) {
+                    alarmScheduler.cancelSnooze(alarm)
+                    
                     val updatedAlarm = alarm.copy(
                         currentSnoozeCount = 0,
                         snoozeNextTriggerTime = null,
@@ -80,31 +66,7 @@ class AlarmControllerImpl @Inject constructor(
                 )
                 withContext(Dispatchers.IO) { alarmRepository.updateAlarm(updatedAlarm) }
                 
-                val intent = Intent(context, AlarmReceiver::class.java).apply {
-                    action = AlarmScheduler.ACTION_TRIGGER_ALARM
-                    putExtra(AlarmScheduler.EXTRA_ALARM_ID, currentAlarmId)
-                    putExtra(AlarmScheduler.EXTRA_IS_SNOOZE, true)
-                }
-                
-                val pendingIntent = PendingIntent.getBroadcast(
-                    context,
-                    currentAlarmId.hashCode(),
-                    intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                )
-
-                val showIntent = Intent(Intent.ACTION_VIEW, Uri.parse("app://remind")).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                }
-                val pendingShowIntent = PendingIntent.getActivity(
-                    context,
-                    0,
-                    showIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                )
-                
-                val alarmClockInfo = AlarmManager.AlarmClockInfo(triggerTime, pendingShowIntent)
-                alarmManager.setAlarmClock(alarmClockInfo, pendingIntent)
+                alarmScheduler.scheduleSnooze(updatedAlarm, triggerTime)
             }
         }
         // NO OVERLAP RULE: Don't dequeue here. The alarm stays in queue during snooze
@@ -160,26 +122,11 @@ class AlarmControllerImpl @Inject constructor(
     }
 
     override suspend fun cancelSnooze(alarmId: Long) {
-        // Cancel any pending snooze
-        val snoozeIntent = Intent(context, AlarmReceiver::class.java).apply {
-            action = AlarmScheduler.ACTION_TRIGGER_ALARM
-            putExtra(AlarmScheduler.EXTRA_ALARM_ID, alarmId)
-            putExtra(AlarmScheduler.EXTRA_IS_SNOOZE, true)
-        }
-        val pendingSnooze = PendingIntent.getBroadcast(
-            context,
-            alarmId.hashCode(),
-            snoozeIntent,
-            PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
-        )
-        if (pendingSnooze != null) {
-            alarmManager.cancel(pendingSnooze)
-            pendingSnooze.cancel()
-        }
-
         withContext(Dispatchers.IO) {
             val alarm = alarmRepository.getAlarmById(alarmId)
             if (alarm != null) {
+                alarmScheduler.cancelSnooze(alarm)
+                
                 val updatedAlarm = alarm.copy(
                     currentSnoozeCount = 0,
                     snoozeNextTriggerTime = null,

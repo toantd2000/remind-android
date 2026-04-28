@@ -4,7 +4,9 @@ import vn.io.litever.remind.core.model.Alarm
 
 interface AlarmScheduler {
     fun schedule(alarm: Alarm)
+    fun scheduleSnooze(alarm: Alarm, triggerTime: Long)
     fun cancel(alarm: Alarm)
+    fun cancelSnooze(alarm: Alarm)
 
     companion object {
         const val ACTION_TRIGGER_ALARM = "vn.io.litever.remind.ACTION_TRIGGER_ALARM"
@@ -12,13 +14,3 @@ interface AlarmScheduler {
         const val EXTRA_IS_SNOOZE = "IS_SNOOZE"
     }
 }
-
-
-
-
-
-
-
-
-
-

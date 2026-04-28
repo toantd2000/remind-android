@@ -21,10 +21,22 @@ class AlarmSchedulerImpl @Inject constructor(
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
     override fun schedule(alarm: Alarm) {
+        val triggerTime = alarm.getNextOccurrence()
+            .atZone(ZoneId.systemDefault())
+            .toInstant()
+            .toEpochMilli()
+        setAlarmInternal(alarm, triggerTime, isSnooze = false)
+    }
+
+    override fun scheduleSnooze(alarm: Alarm, triggerTime: Long) {
+        setAlarmInternal(alarm, triggerTime, isSnooze = true)
+    }
+
+    private fun setAlarmInternal(alarm: Alarm, triggerTime: Long, isSnooze: Boolean) {
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             action = AlarmScheduler.ACTION_TRIGGER_ALARM
             putExtra(AlarmScheduler.EXTRA_ALARM_ID, alarm.id)
-            putExtra(AlarmScheduler.EXTRA_IS_SNOOZE, false)
+            putExtra(AlarmScheduler.EXTRA_IS_SNOOZE, isSnooze)
         }
         
         val pendingIntent = PendingIntent.getBroadcast(
@@ -34,14 +46,9 @@ class AlarmSchedulerImpl @Inject constructor(
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val triggerTime = alarm.getNextOccurrence()
-            .atZone(ZoneId.systemDefault())
-            .toInstant()
-            .toEpochMilli()
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (alarmManager.canScheduleExactAlarms()) {
-                setExactAlarm(triggerTime, pendingIntent)
+                setAlarmClock(triggerTime, pendingIntent)
             } else {
                 alarmManager.setAndAllowWhileIdle(
                     AlarmManager.RTC_WAKEUP,
@@ -50,11 +57,11 @@ class AlarmSchedulerImpl @Inject constructor(
                 )
             }
         } else {
-            setExactAlarm(triggerTime, pendingIntent)
+            setAlarmClock(triggerTime, pendingIntent)
         }
     }
 
-    private fun setExactAlarm(triggerTime: Long, pendingIntent: PendingIntent) {
+    private fun setAlarmClock(triggerTime: Long, pendingIntent: PendingIntent) {
         val showIntent = Intent(Intent.ACTION_VIEW, Uri.parse("app://remind")).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
@@ -70,8 +77,18 @@ class AlarmSchedulerImpl @Inject constructor(
     }
 
     override fun cancel(alarm: Alarm) {
+        cancelAlarmInternal(alarm, isSnooze = false)
+    }
+
+    override fun cancelSnooze(alarm: Alarm) {
+        cancelAlarmInternal(alarm, isSnooze = true)
+    }
+
+    private fun cancelAlarmInternal(alarm: Alarm, isSnooze: Boolean) {
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             action = AlarmScheduler.ACTION_TRIGGER_ALARM
+            putExtra(AlarmScheduler.EXTRA_ALARM_ID, alarm.id)
+            putExtra(AlarmScheduler.EXTRA_IS_SNOOZE, isSnooze)
         }
         val pendingIntent = PendingIntent.getBroadcast(
             context,
@@ -80,6 +97,7 @@ class AlarmSchedulerImpl @Inject constructor(
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         alarmManager.cancel(pendingIntent)
+        pendingIntent.cancel()
     }
 }
 

@@ -22,10 +22,10 @@ data class AlarmEntity(
     val autoSilenceMinutes: Int,
     val currentSnoozeCount: Int,
     val snoozeNextTriggerTime: Long?,
-    val isMissed: Boolean,
     val message: String,
     val skippedAt: Long?,
-    val gradualVolumeDurationSeconds: Int
+    val gradualVolumeDurationSeconds: Int,
+    val lastTriggeredTime: Long?
 )
 
 

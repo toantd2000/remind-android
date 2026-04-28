@@ -19,10 +19,10 @@ data class Alarm(
     val autoSilenceMinutes: Int = 3,
     val currentSnoozeCount: Int = 0,
     val snoozeNextTriggerTime: Long? = null,
-    val isMissed: Boolean = false,
     val message: String = "",
     val skippedAt: LocalDateTime? = null,
     val gradualVolumeDurationSeconds: Int = 0,
+    val lastTriggeredTime: Long? = null,
     val missions: List<Mission> = emptyList()
 ) {
     fun getNextOccurrence(now: LocalDateTime = LocalDateTime.now()): LocalDateTime {

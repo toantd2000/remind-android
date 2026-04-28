@@ -98,11 +98,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.SharingStarted
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val preferencesDataSource: AlarmPreferencesDataSource,
     private val alarmRingManager: vn.io.litever.remind.core.alarm.AlarmRingManager,
+    private val missedAlarmRepository: vn.io.litever.remind.core.domain.repository.MissedAlarmRepository,
     alarmRepository: AlarmRepository
 ) : ViewModel() {
     val themeMode = preferencesDataSource.themeMode
@@ -120,15 +122,18 @@ class MainViewModel @Inject constructor(
             initialValue = null
         )
 
-    val missedalarmId = alarmRepository.getAllAlarms()
-        .map { alarms -> 
-            alarms.firstOrNull { it.isMissed }?.id 
-        }
+    val missedAlarms = missedAlarmRepository.getAllMissedAlarms()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = null
+            initialValue = emptyList()
         )
+
+    fun dismissMissedAlarms() {
+        viewModelScope.launch {
+            missedAlarmRepository.deleteAllMissedAlarms()
+        }
+    }
 }
 
 @AndroidEntryPoint
@@ -204,15 +209,22 @@ class MainActivity : ComponentActivity() {
                         val alarmRingManager = alarmRingManagerEntryPoint.alarmRingManager()
                         val ringingAlarmId by alarmRingManager.ringingAlarmId.collectAsState()
                         val activeSnoozingalarmId by viewModel.activeSnoozingalarmId.collectAsState()
-                        val missedalarmId by viewModel.missedalarmId.collectAsState()
+                        val missedAlarms by viewModel.missedAlarms.collectAsState()
                         
                         val navBackStackEntry by navController.currentBackStackEntryAsState()
                         val currentRoute = navBackStackEntry?.destination?.route
                         val acknowledgingAlarmId by viewModel.acknowledgingAlarmId.collectAsState(initial = null as Long?)
 
-                        LaunchedEffect(ringingAlarmId, activeSnoozingalarmId, missedalarmId, acknowledgingAlarmId) {
+                        if (missedAlarms.isNotEmpty()) {
+                            vn.io.litever.remind.features.alarms.ui.components.MissedAlarmDialog(
+                                missedAlarms = missedAlarms,
+                                onDismiss = { viewModel.dismissMissedAlarms() }
+                            )
+                        }
+
+                        LaunchedEffect(ringingAlarmId, activeSnoozingalarmId, acknowledgingAlarmId) {
                             val idToRing = ringingAlarmId ?: activeSnoozingalarmId
-                            val idMessage = acknowledgingAlarmId ?: missedalarmId
+                            val idMessage = acknowledgingAlarmId
                             
                             val currentEntry = navController.currentBackStackEntry
                             val currentDest = currentEntry?.destination?.route

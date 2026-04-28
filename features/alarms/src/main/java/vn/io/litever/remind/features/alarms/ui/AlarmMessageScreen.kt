@@ -63,14 +63,9 @@ fun AlarmMessageScreen(
 ) {
     BackHandler { }
     ReMindScaffold { padding ->
-        val isMissed = alarm?.isMissed == true
-        val statusColor = if (isMissed) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
-        val icon = if (isMissed) Icons.Rounded.AlarmOff else Icons.Rounded.NotificationsActive
-        val statusTitle = if (isMissed) {
-            stringResource(vn.io.litever.remind.features.alarms.R.string.missed_alarm_title)
-        } else {
-            stringResource(vn.io.litever.remind.features.alarms.R.string.alarm_summary_title)
-        }
+        val statusColor = MaterialTheme.colorScheme.primary
+        val icon = Icons.Rounded.NotificationsActive
+        val statusTitle = stringResource(vn.io.litever.remind.features.alarms.R.string.alarm_summary_title)
 
         // Subtle gradient background based on status
         Box(
@@ -293,7 +288,6 @@ fun AlarmMessageMissedScreenPreview() {
                 time = LocalTime.of(8, 0),
                 label = "Important Meeting",
                 message = "You missed this important alarm.",
-                isMissed = true
             ),
             weather = mockWeather,
             reminder = mockReminder,

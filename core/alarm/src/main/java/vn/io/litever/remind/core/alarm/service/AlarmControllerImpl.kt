@@ -12,16 +12,22 @@ import vn.io.litever.remind.core.alarm.receiver.AlarmReceiver
 import vn.io.litever.remind.core.domain.scheduler.AlarmController
 import vn.io.litever.remind.core.domain.scheduler.AlarmScheduler
 import vn.io.litever.remind.core.domain.repository.AlarmRepository
+import vn.io.litever.remind.core.domain.repository.MissedAlarmRepository
+import vn.io.litever.remind.core.model.MissedAlarm
+import vn.io.litever.remind.core.model.MissedReason
 import android.net.Uri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import androidx.core.app.NotificationCompat
+import vn.io.litever.remind.core.alarm.R
 import javax.inject.Inject
 
 class AlarmControllerImpl @Inject constructor(
     @ApplicationContext private val context: Context,
     private val alarmRingManager: AlarmRingManager,
     private val alarmRepository: AlarmRepository,
-    private val alarmScheduler: AlarmScheduler
+    private val alarmScheduler: AlarmScheduler,
+    private val missedAlarmRepository: MissedAlarmRepository
 ) : AlarmController {
 
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -37,8 +43,7 @@ class AlarmControllerImpl @Inject constructor(
                     
                     val updatedAlarm = alarm.copy(
                         currentSnoozeCount = 0,
-                        snoozeNextTriggerTime = null,
-                        isMissed = false
+                        snoozeNextTriggerTime = null
                     )
                     alarmRepository.updateAlarm(updatedAlarm)
                 }
@@ -86,13 +91,21 @@ class AlarmControllerImpl @Inject constructor(
 
                 withContext(Dispatchers.IO) {
                     val updatedAlarm = alarm.copy(
-                        isMissed = true,
                         snoozeNextTriggerTime = null
                     )
                     alarmRepository.updateAlarm(updatedAlarm)
 
-                    // Deep link to message screen
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("app://remind/message/${alarm.id}")).apply {
+                    missedAlarmRepository.insertMissedAlarm(
+                        MissedAlarm(
+                            alarmId = alarm.id,
+                            alarmLabel = alarm.label,
+                            scheduledTime = System.currentTimeMillis(), // Time when it timed out
+                            reason = MissedReason.TIMEOUT
+                        )
+                    )
+
+                    // Deep link to app (which will show the Missed Alarms dialog)
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("app://remind/home")).apply {
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     }
                     val pendingIntent = PendingIntent.getActivity(
@@ -103,11 +116,11 @@ class AlarmControllerImpl @Inject constructor(
                     )
 
                     // Show a silent notification
-                    val notification = androidx.core.app.NotificationCompat.Builder(context, "alarm_channel")
+                    val notification = NotificationCompat.Builder(context, "alarm_channel")
                         .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
-                        .setContentTitle(context.getString(vn.io.litever.remind.core.alarm.R.string.missed_alarm_title))
-                        .setContentText(alarm.label.ifEmpty { context.getString(vn.io.litever.remind.core.alarm.R.string.missed_alarm_text) })
-                        .setPriority(androidx.core.app.NotificationCompat.PRIORITY_DEFAULT)
+                        .setContentTitle(context.getString(R.string.missed_alarm_title))
+                        .setContentText(alarm.label.ifEmpty { context.getString(R.string.missed_alarm_text) })
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                         .setContentIntent(pendingIntent)
                         .setAutoCancel(true)
                         .build()
@@ -129,8 +142,7 @@ class AlarmControllerImpl @Inject constructor(
                 
                 val updatedAlarm = alarm.copy(
                     currentSnoozeCount = 0,
-                    snoozeNextTriggerTime = null,
-                    isMissed = false
+                    snoozeNextTriggerTime = null
                 )
                 alarmRepository.updateAlarm(updatedAlarm)
             }

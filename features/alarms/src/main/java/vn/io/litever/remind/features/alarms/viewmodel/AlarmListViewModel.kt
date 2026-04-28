@@ -157,7 +157,6 @@ class AlarmListViewModel @Inject constructor(
                 id = 0,
                 isEnabled = alarm.isEnabled,
                 skippedAt = null,
-                isMissed = false,
                 currentSnoozeCount = 0,
                 snoozeNextTriggerTime = null
             )

@@ -161,9 +161,13 @@ class AlarmService : Service() {
                 if (alarm != null) {
                     // Reset snooze count if it's a fresh (non-snooze) trigger
                     val updatedAlarm = if (!isSnoozeTrigger) {
-                        alarm.copy(currentSnoozeCount = 0, snoozeNextTriggerTime = null, isMissed = false)
+                        alarm.copy(
+                            currentSnoozeCount = 0,
+                            snoozeNextTriggerTime = null,
+                            lastTriggeredTime = System.currentTimeMillis()
+                        )
                     } else {
-                        alarm.copy(snoozeNextTriggerTime = null, isMissed = false)
+                        alarm.copy(snoozeNextTriggerTime = null)
                     }
 
                     if (updatedAlarm.repeatDays.isEmpty()) {

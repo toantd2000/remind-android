@@ -11,6 +11,7 @@ import vn.io.litever.remind.core.database.RemindDatabase
 import vn.io.litever.remind.core.database.dao.AlarmDao
 import vn.io.litever.remind.core.database.dao.MissionDao
 import vn.io.litever.remind.core.database.dao.PhraseDao
+import vn.io.litever.remind.core.database.dao.MissedAlarmDao
 import javax.inject.Singleton
 
 @Module
@@ -26,7 +27,8 @@ object DatabaseModule {
             context,
             RemindDatabase::class.java,
             "remind_database"
-        ).fallbackToDestructiveMigration()
+        ).addMigrations(RemindDatabase.MIGRATION_1_2)
+        .fallbackToDestructiveMigration()
         .build()
     }
 
@@ -43,6 +45,11 @@ object DatabaseModule {
     @Provides
     fun providePhraseDao(database: RemindDatabase): PhraseDao {
         return database.phraseDao()
+    }
+
+    @Provides
+    fun provideMissedAlarmDao(database: RemindDatabase): MissedAlarmDao {
+        return database.missedAlarmDao()
     }
 }
 

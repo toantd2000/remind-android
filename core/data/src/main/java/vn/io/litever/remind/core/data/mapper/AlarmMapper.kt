@@ -26,10 +26,10 @@ fun AlarmEntity.toModel(): Alarm {
         autoSilenceMinutes = autoSilenceMinutes,
         currentSnoozeCount = currentSnoozeCount,
         snoozeNextTriggerTime = snoozeNextTriggerTime,
-        isMissed = isMissed,
         message = message,
         skippedAt = skippedAt?.let { LocalDateTime.ofInstant(Instant.ofEpochMilli(it), ZoneId.systemDefault()) },
-        gradualVolumeDurationSeconds = gradualVolumeDurationSeconds
+        gradualVolumeDurationSeconds = gradualVolumeDurationSeconds,
+        lastTriggeredTime = lastTriggeredTime
     )
 }
 
@@ -57,19 +57,9 @@ fun Alarm.toEntity(): AlarmEntity {
         autoSilenceMinutes = autoSilenceMinutes,
         currentSnoozeCount = currentSnoozeCount,
         snoozeNextTriggerTime = snoozeNextTriggerTime,
-        isMissed = isMissed,
         message = message,
         skippedAt = skippedAt?.atZone(ZoneId.systemDefault())?.toInstant()?.toEpochMilli(),
-        gradualVolumeDurationSeconds = gradualVolumeDurationSeconds
+        gradualVolumeDurationSeconds = gradualVolumeDurationSeconds,
+        lastTriggeredTime = lastTriggeredTime
     )
 }
-
-
-
-
-
-
-
-
-
-

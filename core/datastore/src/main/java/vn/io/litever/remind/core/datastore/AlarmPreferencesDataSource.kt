@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import android.text.format.DateFormat
+import androidx.datastore.preferences.core.longPreferencesKey
 import java.util.Locale
 
 class AlarmPreferencesDataSource @Inject constructor(
@@ -47,6 +48,7 @@ class AlarmPreferencesDataSource @Inject constructor(
 
     val useBuiltInSpeaker: Flow<Boolean> = dataStore.data.map { it[ALARM_BUILT_IN_SPEAKER] ?: true }
     val isPreNotificationEnabled: Flow<Boolean> = dataStore.data.map { it[ALARM_PRE_NOTIFICATION] ?: true }
+    val lastMissedCheckTime: Flow<Long> = dataStore.data.map { it[LAST_MISSED_CHECK_TIME] ?: 0L }
 
     suspend fun set24HourFormat(is24Hour: Boolean) {
         dataStore.edit { preferences ->
@@ -86,6 +88,10 @@ class AlarmPreferencesDataSource @Inject constructor(
         dataStore.edit { it[ALARM_PRE_NOTIFICATION] = enabled }
     }
 
+    suspend fun setLastMissedCheckTime(time: Long) {
+        dataStore.edit { it[LAST_MISSED_CHECK_TIME] = time }
+    }
+
     companion object {
         val TIME_FORMAT_KEY = stringPreferencesKey("time_format")
         val THEME_MODE_KEY = stringPreferencesKey("theme_mode")
@@ -93,6 +99,7 @@ class AlarmPreferencesDataSource @Inject constructor(
         val LANGUAGE_KEY = stringPreferencesKey("language")
         val ALARM_BUILT_IN_SPEAKER = booleanPreferencesKey("alarm_built_in_speaker")
         val ALARM_PRE_NOTIFICATION = booleanPreferencesKey("alarm_pre_notification")
+        val LAST_MISSED_CHECK_TIME = longPreferencesKey("last_missed_check_time")
     }
 }
 

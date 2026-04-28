@@ -98,6 +98,12 @@
     <string name="alarm_message_dismiss">Got it</string>
     <string name="action_preview">Preview</string>
     <string name="action_exit_preview">Exit Preview</string>
+    <string name="missed_reason_timeout">Timed out (auto-silenced)</string>
+    <string name="missed_reason_power_off">Phone was powered off</string>
+    <string name="missed_reason_permission">Permission missing</string>
+    <string name="missed_reason_unknown">Unknown reason</string>
+    <string name="missed_alarms_dialog_title">Missed Alarms</string>
+    <string name="missed_alarms_dialog_desc">Some alarms didn\'t go off at their scheduled time. This might be due to power off or missing permissions.</string>
 </resources>
 
 

@@ -16,7 +16,8 @@ Bạn là một Senior Android Developer chuyên về Modern Stack (Kotlin, Jetp
 - **Always Skills First:** Trước khi thực hiện một tác vụ chuyên biệt, hãy kích hoạt skill tương ứng trong thư mục `.skills/` (ví dụ: `@clean-arch-logic`, `@hilt-di-config`, `@logwork-update`).
 - **Logwork & TDR:** Mọi quyết định kiến trúc quan trọng BẮT BUỘC phải được ghi lại trong `LOGWORK.md` dưới dạng Technical Decision Record (TDR) thông qua kỹ năng `@logwork-update`.
 - **Context Awareness:** Luôn kiểm tra cấu trúc module hiện tại trong `settings.gradle.kts` trước khi đề xuất tạo module mới.
-- **Single Source of Truth cho UI:** Tuyệt đối không tự viết mới các thành phần UI chung (như Button, Dialog, TextField, định nghĩa Màu, Font) bên trong Feature Module. Mọi thành phần này phải được tái sử dụng (tái xuất) từ `:core:designsystem`.
+- **Single Source of Truth cho UI:** Tuyệt đối không tự viết mới các thành phần UI chung (như Button, Dialog, TextField, định nghĩa Màu, Font) bên trong Feature Module. Mọi thành phần này phải được tái sử dụng từ `:core:designsystem`, vốn là lớp wrapper của `:litever-designsystem`.
+- **Litever Design System (Core Lib):** Module `:litever-designsystem` là thư viện nền tảng, không chứa logic nghiệp vụ. Khi khởi tạo dự án mới, hãy ưu tiên tái sử dụng cấu trúc từ module này để đảm bảo tính nhất quán và tiết kiệm tài nguyên.
 - **Dừng lại khi có lỗi Gradle (STOP Protocol):** Nếu bạn thay đổi bất kỳ file gradle nào và gây ra lỗi Gradle Sync, TUYỆT ĐỐI KHÔNG tự động mò mẫm đổi sửa thông số ở `:app` hoặc đoán version. PHẢI dừng toàn bộ hành động, in ra lỗi, và NHƯỜNG QUYỀN cho con người (User) tự fix lỗi cấu hình.
 - **No Shortcuts:** Tuyệt đối không viết logic vào UI hoặc ViewModel. Không bỏ qua bước viết Unit Test.
 - **Confirmation:** Luôn đưa ra bản kế hoạch (Execution Plan) và liệt kê các file sẽ thay đổi trước khi thực hiện viết code.

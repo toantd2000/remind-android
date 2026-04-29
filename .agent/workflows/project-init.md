@@ -13,10 +13,11 @@ Quy trình này áp dụng khi bắt đầu một dự án Android hoàn toàn m
 ## Giai đoạn 2: Xây dựng Core Modules (Core Framework)
 Khởi tạo các module thuộc nhóm `:core:` đóng vai trò cung cấp tài nguyên, tiện ích, và nền tảng cho toàn bộ các module tính năng (`:features:`):
 
-1. **Module `:core:designsystem`:**
-   * Định nghĩa toàn bộ hệ thống màu sắc, Typography, Shapes theo chuẩn Design System của dự án.
-   * Cung cấp các Composable Widgets dùng chung xuyên suốt dự án (VD: `AppButton`, `AppTopBar`, `LoadingScreen`).
-   * *Kích hoạt Skill: `@compose-ui-system`* để đảm bảo tuân thủ nguyên tắc thiết kế.
+1. **Module `:core:designsystem` (Adapter Layer):**
+   * **BẮT BUỘC:** Thực hiện quy trình tại [design-system-init.md](file:///.agent/workflows/design-system-init.md) để khởi tạo module này dựa trên thư viện chuẩn `:litever-designsystem`.
+   * Định nghĩa các tài nguyên mang tính Branding riêng cho app (Logo, Colors app-specific).
+   * Đóng vai trò là lớp Adapter (Wrapper) để cung cấp các component từ thư viện cho App.
+   * *Kích hoạt Skill: `@design-system-management`* thay vì viết lại từ đầu.
 
 2. **Module `:core:network`:**
    * Cấu hình HTTP Client (Retrofit/Ktor), OkHttp Interceptors (Log, Auth).

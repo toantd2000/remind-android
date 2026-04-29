@@ -1,23 +1,5 @@
 package vn.io.litever.remind.core.designsystem.theme
 
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Shapes
-import androidx.compose.ui.unit.dp
+import vn.io.litever.designsystem.theme.LiteverShapes as BaseShapes
 
-val Shapes = Shapes(
-    extraSmall = RoundedCornerShape(4.dp),
-    small = RoundedCornerShape(8.dp),
-    medium = RoundedCornerShape(8.dp),
-    large = RoundedCornerShape(8.dp),
-    extraLarge = RoundedCornerShape(8.dp)
-)
-
-
-
-
-
-
-
-
-
-
+val Shapes = BaseShapes

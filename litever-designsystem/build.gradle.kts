@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "vn.io.litever.remind.core.designsystem"
+    namespace = "vn.io.litever.designsystem"
 
     compileSdk {
         version = release(36)
@@ -27,8 +27,6 @@ android {
 }
 
 dependencies {
-    api(project(":litever-designsystem"))
-    implementation(project(":core:model"))
     implementation(libs.androidx.core.ktx)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)

@@ -1,16 +1,11 @@
 package vn.io.litever.remind.core.designsystem.components
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Clear
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
+import vn.io.litever.designsystem.components.LiteverTextField
 
-/**
- * A custom TextField wrapper for the ReMind application.
- * Follows Material 3 design and includes a built-in clear button.
- */
 @Composable
 fun ReMindTextField(
     value: String,
@@ -24,36 +19,16 @@ fun ReMindTextField(
     onClearClick: (() -> Unit)? = null,
     shape: Shape = MaterialTheme.shapes.large,
 ) {
-    OutlinedTextField(
+    LiteverTextField(
         value = value,
         onValueChange = onValueChange,
         modifier = modifier,
-        label = label?.let { { Text(it) } },
-        placeholder = placeholder?.let { { Text(it) } },
+        label = label,
+        placeholder = placeholder,
         singleLine = singleLine,
         minLines = minLines,
         maxLines = maxLines,
-        shape = shape,
-        trailingIcon = if (onClearClick != null && value.isNotEmpty()) {
-            {
-                IconButton(onClick = onClearClick) {
-                    Icon(
-                        imageVector = Icons.Rounded.Clear,
-                        contentDescription = "Clear"
-                    )
-                }
-            }
-        } else null,
-        colors = OutlinedTextFieldDefaults.colors()
+        onClearClick = onClearClick,
+        shape = shape
     )
 }
-
-
-
-
-
-
-
-
-
-

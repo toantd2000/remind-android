@@ -1,17 +1,9 @@
 package vn.io.litever.remind.core.designsystem.components
 
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import vn.io.litever.designsystem.components.LiteverAlertDialog
 
-/**
- * A standard Alert Dialog for the ReMind application.
- * Wraps Material 3 AlertDialog with the app's design tokens.
- */
 @Composable
 fun ReMindAlertDialog(
     onDismissRequest: () -> Unit,
@@ -24,50 +16,15 @@ fun ReMindAlertDialog(
     onDismissClick: (() -> Unit)? = null,
     content: @Composable (() -> Unit)? = null,
 ) {
-    AlertDialog(
+    LiteverAlertDialog(
         onDismissRequest = onDismissRequest,
-        title = title?.let { 
-            { 
-                Text(
-                    text = it, 
-                    style = MaterialTheme.typography.headlineSmall 
-                ) 
-            } 
-        },
-        text = content ?: text?.let { 
-            { 
-                Text(
-                    text = it, 
-                    style = MaterialTheme.typography.bodyMedium 
-                ) 
-            } 
-        },
-        confirmButton = {
-            Button(onClick = onConfirmClick) {
-                Text(text = confirmButtonText)
-            }
-        },
-        dismissButton = dismissButtonText?.let {
-            {
-                TextButton(onClick = onDismissClick ?: onDismissRequest) {
-                    Text(text = it)
-                }
-            }
-        },
+        confirmButtonText = confirmButtonText,
+        onConfirmClick = onConfirmClick,
         modifier = modifier,
-        shape = MaterialTheme.shapes.extraLarge,
-        containerColor = MaterialTheme.colorScheme.surface,
-        titleContentColor = MaterialTheme.colorScheme.onSurface,
-        textContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        title = title,
+        text = text,
+        dismissButtonText = dismissButtonText,
+        onDismissClick = onDismissClick,
+        content = content
     )
 }
-
-
-
-
-
-
-
-
-
-

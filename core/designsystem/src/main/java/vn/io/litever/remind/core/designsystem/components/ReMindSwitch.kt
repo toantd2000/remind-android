@@ -1,8 +1,8 @@
 package vn.io.litever.remind.core.designsystem.components
 
-import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import vn.io.litever.designsystem.components.LiteverSwitch
 
 @Composable
 fun ReMindSwitch(
@@ -10,19 +10,9 @@ fun ReMindSwitch(
     onCheckedChange: ((Boolean) -> Unit)?,
     modifier: Modifier = Modifier
 ) {
-    Switch(
+    LiteverSwitch(
         checked = checked,
         onCheckedChange = onCheckedChange,
         modifier = modifier
     )
 }
-
-
-
-
-
-
-
-
-
-

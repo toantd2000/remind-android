@@ -1,11 +1,15 @@
 package vn.io.litever.remind.core.designsystem.components
 
-import androidx.compose.foundation.layout.height
-import androidx.compose.material3.*
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonElevation
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.unit.dp
+import vn.io.litever.designsystem.components.LiteverButton
+import vn.io.litever.designsystem.components.LiteverOutlinedButton
+import vn.io.litever.designsystem.components.LiteverTextButton
 
 @Composable
 fun ReMindButton(
@@ -17,14 +21,14 @@ fun ReMindButton(
     elevation: ButtonElevation? = ButtonDefaults.buttonElevation(),
     content: @Composable () -> Unit
 ) {
-    Button(
+    LiteverButton(
         onClick = onClick,
-        modifier = modifier.height(52.dp),
+        modifier = modifier,
         enabled = enabled,
         shape = shape,
         colors = colors,
         elevation = elevation,
-        content = { content() }
+        content = content
     )
 }
 
@@ -38,14 +42,14 @@ fun ReMindOutlinedButton(
     elevation: ButtonElevation? = null,
     content: @Composable () -> Unit
 ) {
-    OutlinedButton(
+    LiteverOutlinedButton(
         onClick = onClick,
-        modifier = modifier.height(52.dp),
+        modifier = modifier,
         enabled = enabled,
         shape = shape,
         colors = colors,
         elevation = elevation,
-        content = { content() }
+        content = content
     )
 }
 
@@ -58,22 +62,12 @@ fun ReMindTextButton(
     colors: ButtonColors = ButtonDefaults.textButtonColors(),
     content: @Composable () -> Unit
 ) {
-    TextButton(
+    LiteverTextButton(
         onClick = onClick,
-        modifier = modifier.height(52.dp),
+        modifier = modifier,
         enabled = enabled,
         shape = shape,
         colors = colors,
-        content = { content() }
+        content = content
     )
 }
-
-
-
-
-
-
-
-
-
-

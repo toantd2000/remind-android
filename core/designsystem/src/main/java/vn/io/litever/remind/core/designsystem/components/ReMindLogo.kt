@@ -17,7 +17,7 @@ import vn.io.litever.remind.core.designsystem.theme.logo_remind_light
 import vn.io.litever.remind.core.designsystem.theme.logo_up_dark
 import vn.io.litever.remind.core.designsystem.theme.logo_up_light
 
-import vn.io.litever.remind.core.designsystem.theme.InterFontFamily
+import vn.io.litever.designsystem.theme.InterFontFamily
 
 @Composable
 fun ReMindLogo(
@@ -49,6 +49,7 @@ fun ReMindLogo(
         modifier = modifier
     )
 }
+
 
 
 

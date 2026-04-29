@@ -1,13 +1,12 @@
 package vn.io.litever.remind.core.designsystem.components
 
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import vn.io.litever.remind.core.designsystem.R
+import vn.io.litever.designsystem.components.LiteverTopAppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -17,13 +16,8 @@ fun ReMindTopAppBar(
     onBackClick: (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
-    ReMindTopAppBar(
-        titleContent = {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleLarge
-            )
-        },
+    LiteverTopAppBar(
+        title = title,
         modifier = modifier,
         onBackClick = onBackClick,
         actions = actions
@@ -36,7 +30,7 @@ fun MainReMindTopAppBar(
     modifier: Modifier = Modifier,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
-    ReMindTopAppBar(
+    LiteverTopAppBar(
         titleContent = { ReMindLogo() },
         modifier = modifier,
         actions = actions
@@ -51,29 +45,10 @@ fun ReMindTopAppBar(
     onBackClick: (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
-    TopAppBar(
-        title = titleContent,
-        navigationIcon = {
-            if (onBackClick != null) {
-                IconButton(onClick = onBackClick) {
-                    Icon(
-                        imageVector = Icons.Rounded.ArrowBack,
-                        contentDescription = stringResource(R.string.action_back)
-                    )
-                }
-            }
-        },
-        actions = actions,
-        modifier = modifier
+    LiteverTopAppBar(
+        titleContent = titleContent,
+        modifier = modifier,
+        onBackClick = onBackClick,
+        actions = actions
     )
 }
-
-
-
-
-
-
-
-
-
-

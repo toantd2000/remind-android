@@ -25,6 +25,7 @@ import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.Alarm
 import vn.io.litever.remind.features.alarms.viewmodel.AlarmRingingViewModel
+import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import androidx.compose.ui.tooling.preview.Preview
 import vn.io.litever.remind.core.designsystem.components.ReMindButton
 import vn.io.litever.remind.core.designsystem.components.WeatherInfoView
@@ -40,11 +41,13 @@ fun AlarmMessageRoute(
     viewModel: AlarmRingingViewModel = hiltViewModel()
 ) {
     val alarm by viewModel.alarm.collectAsState()
+    val is24HourFormat by viewModel.is24HourFormat.collectAsState()
     val weather by viewModel.weather.collectAsState()
     val reminder by viewModel.reminder.collectAsState()
 
     AlarmMessageScreen(
         alarm = alarm,
+        is24HourFormat = is24HourFormat,
         weather = weather,
         reminder = reminder,
         onFinish = {
@@ -57,6 +60,7 @@ fun AlarmMessageRoute(
 @Composable
 fun AlarmMessageScreen(
     alarm: Alarm?,
+    is24HourFormat: Boolean,
     weather: vn.io.litever.remind.core.model.WeatherResponse?,
     reminder: vn.io.litever.remind.core.model.ReminderResponse?,
     onFinish: () -> Unit
@@ -128,8 +132,7 @@ fun AlarmMessageScreen(
                 ) {
                     // Time with small AM/PM
                     val displayTime = alarm?.time ?: LocalTime.now()
-                    val timeFormatter = java.time.format.DateTimeFormatter.ofPattern("hh:mm")
-                    val amPmFormatter = java.time.format.DateTimeFormatter.ofPattern("a")
+                    val (timeStr, amPm) = TimeFormatUtils.formatTimeParts(displayTime, is24HourFormat)
                     
                     Row(
                         verticalAlignment = Alignment.Bottom,
@@ -137,22 +140,24 @@ fun AlarmMessageScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            text = displayTime.format(timeFormatter),
+                            text = timeStr,
                             style = MaterialTheme.typography.displayMedium.copy(
                                 fontWeight = FontWeight.Black,
                                 letterSpacing = (-1).sp
                             ),
                             color = MaterialTheme.colorScheme.onSurface
                         )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = displayTime.format(amPmFormatter).uppercase(Locale.getDefault()),
-                            style = MaterialTheme.typography.titleLarge.copy(
-                                fontWeight = FontWeight.Bold
-                            ),
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
+                        if (amPm != null) {
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = amPm.uppercase(Locale.getDefault()),
+                                style = MaterialTheme.typography.titleLarge.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+                        }
                     }
 
                     if (!alarm?.label.isNullOrBlank()) {
@@ -247,6 +252,7 @@ fun AlarmMessageScreenPreview() {
                 label = "Morning Yoga",
                 message = "Time to stretch and start your day!"
             ),
+            is24HourFormat = false,
             weather = mockWeather,
             reminder = mockReminder,
             onFinish = {}
@@ -289,6 +295,7 @@ fun AlarmMessageMissedScreenPreview() {
                 label = "Important Meeting",
                 message = "You missed this important alarm.",
             ),
+            is24HourFormat = true,
             weather = mockWeather,
             reminder = mockReminder,
             onFinish = {}

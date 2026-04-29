@@ -98,6 +98,13 @@
     <string name="alarm_message_dismiss">Tôi nhớ rồi</string>
     <string name="action_preview">Xem trước</string>
     <string name="action_exit_preview">Thoát xem trước</string>
+    <string name="missed_reason_timeout">Hết thời gian reo</string>
+    <string name="missed_reason_power_off">Điện thoại đã bị tắt nguồn</string>
+    <string name="missed_reason_permission">Thiếu quyền hệ thống</string>
+    <string name="missed_reason_unknown">Lý do không xác định</string>
+    <string name="missed_alarms_dialog_title">Báo thức bị lỡ</string>
+    <string name="missed_alarms_dialog_desc">Một số báo thức đã không thể đổ chuông đúng giờ. Nguyên nhân có thể do điện thoại bị tắt nguồn hoặc ứng dụng bị hạn chế quyền.</string>
+    <string name="scheduled_time_format">Báo thức: %s</string>
 </resources>
 
 

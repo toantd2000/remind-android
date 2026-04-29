@@ -124,11 +124,20 @@ fun AlarmRingingContent(
     isPreview: Boolean = false,
     onExitPreview: () -> Unit = {}
 ) {
+    var currentTime by remember { mutableStateOf(LocalDateTime.now()) }
     var remainingSnoozeSeconds by remember { mutableLongStateOf(0L) }
-
+ 
     if (alarm == null) {
         Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
         return
+    }
+ 
+    // Update current time every second
+    LaunchedEffect(Unit) {
+        while (true) {
+            currentTime = LocalDateTime.now()
+            kotlinx.coroutines.delay(1000L)
+        }
     }
 
     // Intercept back button to prevent escaping the ringing/locking screen
@@ -205,8 +214,7 @@ fun AlarmRingingContent(
         label = "bottomOffset"
     )
 
-    val dateFormatter = DateTimeFormatter.ofPattern("EEEE, d MMMM", Locale.getDefault())
-    val currentTime = LocalDateTime.now()
+    val dateFormatter = remember { DateTimeFormatter.ofPattern("EEEE, d MMMM", Locale.getDefault()) }
 
     Surface(
         modifier = modifier.fillMaxSize(),
@@ -266,8 +274,8 @@ fun AlarmRingingContent(
                         alpha = topAlpha
                     }
             ) {
-                val displayTime = alarm?.time ?: currentTime.toLocalTime()
-                val (timeStr, amPm) = TimeFormatUtils.formatTimeParts(displayTime, is24HourFormat)
+                // Show ACTUAL current time when ringing
+                val (timeStr, amPm) = TimeFormatUtils.formatTimeParts(currentTime.toLocalTime(), is24HourFormat)
                 Row(
                     verticalAlignment = Alignment.Bottom,
                     horizontalArrangement = Arrangement.Center,
@@ -283,13 +291,13 @@ fun AlarmRingingContent(
                     )
                     if (amPm != null) {
                         Text(
-                            text = " $amPm",
+                            text = amPm.uppercase(Locale.getDefault()),
                             style = MaterialTheme.typography.displayLarge.copy(
                                 fontSize = 32.sp,
                                 fontWeight = FontWeight.Black
                             ),
                             color = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier.padding(bottom = 16.dp)
+                            modifier = Modifier.padding(bottom = 16.dp, start = 8.dp)
                         )
                     }
                 }
@@ -300,6 +308,35 @@ fun AlarmRingingContent(
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center
                 )
+
+                if (alarm != null) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Surface(
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.08f),
+                        shape = CircleShape
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Notifications,
+                                contentDescription = null,
+                                modifier = Modifier.size(14.dp),
+                                tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = stringResource(
+                                    vn.io.litever.remind.features.alarms.R.string.scheduled_time_format,
+                                    TimeFormatUtils.formatTime(alarm.time, is24HourFormat)
+                                ),
+                                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium),
+                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                            )
+                        }
+                    }
+                }
 
                 if (!alarm?.label.isNullOrBlank()) {
                     Spacer(modifier = Modifier.height(16.dp))

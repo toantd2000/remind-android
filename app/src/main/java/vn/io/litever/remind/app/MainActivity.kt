@@ -105,8 +105,14 @@ class MainViewModel @Inject constructor(
     private val preferencesDataSource: AlarmPreferencesDataSource,
     private val alarmRingManager: vn.io.litever.remind.core.alarm.AlarmRingManager,
     private val missedAlarmRepository: vn.io.litever.remind.core.domain.repository.MissedAlarmRepository,
+    private val alarmSyncManager: vn.io.litever.remind.core.alarm.AlarmSyncManager,
     alarmRepository: AlarmRepository
 ) : ViewModel() {
+    init {
+        viewModelScope.launch {
+            alarmSyncManager.sync()
+        }
+    }
     val themeMode = preferencesDataSource.themeMode
     val colorPalette = preferencesDataSource.colorPalette
     val language = preferencesDataSource.language

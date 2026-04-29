@@ -36,7 +36,7 @@ fun BrandingSplashScreen(
             delay(300) // Small delay before animation
             visible = true
         }
-        delay(2000) // Show for 2 seconds
+        delay(700) // Show for 2 seconds
         onFinished()
     }
 

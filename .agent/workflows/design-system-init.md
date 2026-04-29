@@ -34,11 +34,11 @@ description: Quy trình trích xuất hoặc khởi tạo Design System bằng c
 - Biến các component cũ thành Wrapper trỏ đến module Design System mới (như cách làm với `ReMindButton` trỏ đến `LiteverButton`).
 - Cập nhật `Theme.kt` của App để kế thừa từ `LiteverTheme`.
 
-### 6. Kiểm tra và Build
-- Chạy `./gradlew :<module-name>:assembleDebug` để kiểm tra lỗi biên dịch.
-- Mở Preview để xác nhận giao diện hiển thị đúng.
+### 7. Cập nhật Tài liệu (Documentation Sync)
+- **BẮT BUỘC:** Cập nhật [LOGWORK.md](file:///d%3A/Dev/Github/toantd2000/remind-android/LOGWORK.md) với một TDR mới về việc khởi tạo Design System.
+- **BẮT BUỘC:** Cập nhật [ARCHITECTURE_MAP.md](file:///d%3A/Dev/Github/toantd2000/remind-android/ARCHITECTURE_MAP.md) để phản ánh cấu trúc module mới.
+- **LƯU Ý:** Ghi lại các khó khăn vào [LEARNING_JOURNAL.md](file:///d%3A/Dev/Github/toantd2000/remind-android/LEARNING_JOURNAL.md).
 
 ## Quy tắc quan trọng
 - **KHÔNG** viết lại logic tokens (Color, Type, Shape) nếu không có yêu cầu đặc thù về thiết kế. Chỉ cần truyền `LiteverColors` mới vào `LiteverTheme`.
 - **ƯU TIÊN** dùng lệnh `sed` hoặc công cụ replace của IDE để đổi package thay vì sửa từng file thủ công.
-- **BẮT BUỘC** cập nhật `LOGWORK.md` sau khi hoàn thành.

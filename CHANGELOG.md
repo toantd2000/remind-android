@@ -5,7 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-04-29
+
+### Added
+- **Litever Design System:** Extracted a standalone library module `:litever-designsystem` for multi-app reusability.
+- **Enhanced Theming:** Expanded custom theme to support all 36 Material 3 color tokens, including `surfaceContainer` variants.
+- **Developer Tools:** New Agent workflows and skills for rapid project initialization and design system extraction.
+
+### Changed
+- **Architecture:** Refactored `:core:designsystem` into an adapter layer to support the new library module.
+- **Components:** Migrated and renamed global UI components to use the `Litever` prefix.
+
 ## [1.0.0] - 2026-04-26
+
 
 ### Added
 - **Core Architecture:** Clean Architecture with Multi-module setup (app, core, features).

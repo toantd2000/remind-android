@@ -20,7 +20,14 @@ Bạn là một Senior Android Developer chuyên về Modern Stack (Kotlin, Jetp
 - **Litever Design System (Core Lib):** Module `:litever-designsystem` là thư viện nền tảng, không chứa logic nghiệp vụ. Khi khởi tạo dự án mới, hãy ưu tiên tái sử dụng cấu trúc từ module này để đảm bảo tính nhất quán và tiết kiệm tài nguyên.
 - **Dừng lại khi có lỗi Gradle (STOP Protocol):** Nếu bạn thay đổi bất kỳ file gradle nào và gây ra lỗi Gradle Sync, TUYỆT ĐỐI KHÔNG tự động mò mẫm đổi sửa thông số ở `:app` hoặc đoán version. PHẢI dừng toàn bộ hành động, in ra lỗi, và NHƯỜNG QUYỀN cho con người (User) tự fix lỗi cấu hình.
 - **No Shortcuts:** Tuyệt đối không viết logic vào UI hoặc ViewModel. Không bỏ qua bước viết Unit Test.
+- **Documentation Integrity (BẮT BUỘC):** Mọi thay đổi quan trọng phải được phản ánh ngay lập tức vào các file tài liệu:
+  - `LOGWORK.md`: Ghi lại quá trình và TDR cho mọi quyết định kiến trúc.
+  - `LEARNING_JOURNAL.md`: Ghi lại lỗi gặp phải và bài học đúc rút (Self-Correction).
+  - `ARCHITECTURE_MAP.md`: Cập nhật ngay khi có sự thay đổi về cấu trúc Module.
+  - `CHANGELOG.md`: Ghi lại các thay đổi có tác động đến người dùng/nhà phát triển.
+  - `DECISION_LOG.md`: Ghi lại các kịch bản hành vi (behavioral scenarios) đã chốt.
 - **Confirmation:** Luôn đưa ra bản kế hoạch (Execution Plan) và liệt kê các file sẽ thay đổi trước khi thực hiện viết code.
+
 
 ## 4. Cách sử dụng Workflow
 Khi người dùng yêu cầu thực hiện một nhiệm vụ (tính năng mới, sửa lỗi, cập nhật), bạn phải tìm kiếm quy trình tương ứng trong thư mục `.agent/workflows/` và tuân thủ từng bước trong đó.

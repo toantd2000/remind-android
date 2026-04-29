@@ -39,7 +39,10 @@ Quy trình này áp dụng khi bắt đầu xây dựng một tính năng từ c
 2. Thiết kế màn hình bằng **Jetpack Compose**.
 3. Bắt buộc phải viết **`@Preview`** cho mọi UI component/screen được tạo ra với các trạng thái đầy đủ (Loading, Success, Error).
 
-## Giai đoạn 7: Hoàn tất & Báo cáo
+## Giai đoạn 7: Hoàn tất & Cập nhật Tài liệu (Finalization & Documentation)
 1. Liệt kê lại các file đã tạo/chỉnh sửa (bao gồm cả file UI có chứa Preview).
-2. Xác nhận với người dùng rằng tính năng đã hoàn thiện toàn dải từ Domain/Data lên đến giao diện.
-3. **Kích hoạt `@logwork-update`:** Tự động ghi nhận các Quyết định Kỹ thuật (TDR) quan trọng vào `LOGWORK.md` nếu có.
+2. **Cập nhật CHANGELOG.md:** Ghi lại tính năng mới cho người dùng.
+3. **Cập nhật ARCHITECTURE_MAP.md:** Nếu có module mới được tạo.
+4. **Cập nhật DECISION_LOG.md:** Nếu có các kịch bản hành vi quan trọng được chốt.
+5. **Kích hoạt `@logwork-update`:** BẮT BUỘC ghi nhận TDR vào `LOGWORK.md` cho các quyết định kiến trúc.
+6. **Kích hoạt `@learning-journal`:** Ghi lại các lỗi gặp phải và bài học kinh nghiệm.

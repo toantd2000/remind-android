@@ -48,6 +48,10 @@ Khởi tạo các module thuộc nhóm `:core:` đóng vai trò cung cấp tài 
 1. Tùy chọn thiết lập hệ thống kiểm tra mã nguồn (Linter) như **Detekt** hoặc **Ktlint**.
 2. Đảm bảo file `.gitignore` đã loại bỏ các file rác đúng chuẩn Android.
 
-## Giai đoạn 6: Báo cáo & Bàn giao
-1. Agent in ra **Cấu trúc cây thư mục (Project Tree)** đại diện cho toàn bộ các Core modules vừa tạo.
-2. Yêu cầu người dùng (Tech Lead) chạy Sync Gradle và Review lại toàn bộ kiến trúc nền tảng trước khi bắt tay vào Feature số 1.
+## Giai đoạn 6: Cập nhật Hệ thống Tài liệu (Documentation integrity)
+1. **ARCHITECTURE_MAP.md:** In ra và cập nhật sơ đồ kiến trúc module mới.
+2. **LOGWORK.md:** Ghi lại TDR cho các quyết định kiến trúc nền tảng.
+3. **LEARNING_JOURNAL.md:** Ghi lại các bài học về tech-stack đã chọn.
+4. **DECISION_LOG.md:** Định nghĩa các kịch bản hành vi cốt lõi đã chốt.
+5. **CHANGELOG.md:** Ghi nhận sự kiện khởi tạo dự án.
+6. Yêu cầu người dùng (Tech Lead) chạy Sync Gradle và Review lại toàn bộ kiến trúc nền tảng trước khi bắt tay vào Feature số 1.

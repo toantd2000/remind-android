@@ -20,5 +20,8 @@ Quy trình này áp dụng khi có báo cáo lỗi (Bug Report) hoặc Crash.
 1. Chạy toàn bộ Test Suite của module liên quan để đảm bảo việc sửa lỗi không làm hỏng các tính năng khác.
 2. Nếu lỗi liên quan đến UI, hãy kiểm tra lại trạng thái (State) trong ViewModel.
 
-## Giai đoạn 4: Đúc kết
-1. Giải thích ngắn gọn nguyên nhân và giải pháp để người dùng lưu lại nhật ký thay đổi (Changelog).
+## Giai đoạn 4: Đúc kết & Cập nhật Tài liệu
+1. Giải thích ngắn gọn nguyên nhân và giải pháp.
+2. **Kích hoạt `@learning-journal`:** BẮT BUỘC ghi lại Root Cause và cách khắc phục để tránh tái diễn.
+3. **Cập nhật CHANGELOG.md:** Ghi nhận lỗi đã được fix (nếu là lỗi quan trọng).
+4. **Cập nhật LOGWORK.md:** Nếu cách sửa lỗi dẫn đến một quyết định kiến trúc mới.

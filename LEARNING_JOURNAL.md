@@ -1,16 +1,18 @@
 # Learning Journal & Self-Correction Log
 
-## [2026-04-23] Modernizing UI with Glassmorphism & Dynamic Feedback
+## [2026-04-29] Design System Modularization & Custom Themes
 ### Key Lessons
-- **Glassmorphism Implementation**: Applied a premium, layered aesthetic using semi-transparent surfaces (`alpha = 0.2f/0.3f`) combined with unified 8dp corner radii (`MaterialTheme.shapes.medium`). This creates visual depth without adding UI clutter.
-- **Real-time Interaction Feedback**: Leveraged `AnnotatedString` to provide character-by-character color feedback in Typing Missions. Visualizing "Success" (Green) and "Error" (Red) directly on the target text significantly reduces user frustration during alarm RINGING states.
-- **Intentionality in UX**: Transitioned mission progression from "auto-complete" to "manual confirm" via a fixed bottom bar. This ensures the user is fully awake and focused before moving between tasks.
-- **Multi-module Resource Management**: Encountered `Found item String/... more than one time` error due to misplacing strings in the wrong module. **New Rule:** Feature-specific strings MUST reside in their respective module's `strings.xml` to avoid resource merging collisions and maintain modular encapsulation.
+- **Custom Theme Architecture**: Using `staticCompositionLocalOf` to provide a custom `LiteverColors` class allows for a more flexible and multi-app design system than relying solely on `MaterialTheme.colorScheme`. This pattern enables each application to define its own branding while reusing the same base components.
+- **Full M3 Token Mapping**: Standard Material 3 components (like `NavigationBar`) rely on modern color tokens such as `surfaceContainer`. Missing these tokens in a custom theme causes visual inconsistencies and broken dynamic coloring. Always map all 36+ color tokens for full compatibility.
+- **Naming Conflicts in Compose**: Naming a variable exactly like its class (e.g., `val Shapes = Shapes(...)`) can cause confusing compilation errors in Compose, especially when both are in the same package. Prefixing custom instances (e.g., `LiteverShapes`) is a safer practice.
+- **Composable Context in Extensions**: Extension properties that access `@Composable` values (like `CompositionLocal.current`) must also be marked with `@get:Composable` or used within a Composable function. Direct property access will fail compilation.
+- **Workflow Efficiency**: Instead of writing UI components from scratch for every new module, a "Copy & Adapt" workflow (automated via Agent scripts) significantly reduces token usage and prevents "hallucinated" variations of common components.
 
 ### Corrective Actions
-- Fixed build errors related to missing imports (`clip`) and cross-module resource references.
-- Cleaned up duplicate string resources in `:features:reminder` and `:features:mission`.
-- Restored manual numerical input for repetitions to maintain power-user efficiency.
+- Fixed compilation errors in `LiteverSwitch` by moving `@Composable` access to the correct context.
+- Resolved naming ambiguity between the `Shapes` class and the `Shapes` variable.
+- Patched Windows-specific `bundleLibCompileToJarDebug` file access errors by stopping Gradle daemons and retrying builds.
+- Refactored `core:designsystem` into an adapter layer to maintain backward compatibility for existing feature modules.
 
 
 ## [2026-04-21] Stabilizing Alarm & Mission Logic

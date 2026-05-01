@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2026-05-01
+
+### Fixed
+- **Audio Handling:** Fixed a bug where alarms and ringtone previews would continue to ring during incoming or active phone calls.
+- **Audio Focus:** Implemented proper Audio Focus management to pause/stop playback when other apps or the system request priority.
+
+### Changed
+- **Architecture:** Centralized all audio and vibration logic into a new `AudioPlayer` component in `:core:common` for consistency across the app.
+
 ## [1.1.0] - 2026-04-29
 
 ### Added

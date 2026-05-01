@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -164,20 +165,40 @@ private fun FullWeatherView(
                             MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)
                         )
                     ) {
-                        Row(
-                            modifier = Modifier.padding(12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            // Left Accent Bar (Bookmark effect)
+                            Box(
+                                modifier = Modifier
+                                    .matchParentSize()
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                        .width(4.dp)
+                                        .background(
+                                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+                                        )
+                                )
+                            }
+
+                            Row(
+                                modifier = Modifier.padding(12.dp).padding(start = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
                             Text("✨", fontSize = 18.sp)
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = weather.aiAnalysis.hint,
-                                style = MaterialTheme.typography.bodySmall,
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    fontStyle = FontStyle.Italic,
+                                    color = MaterialTheme.colorScheme.primary
+                                ),
                                 fontWeight = FontWeight.Medium
                             )
                         }
                     }
                 }
+            }
 
                 // Attribution
                 Text(

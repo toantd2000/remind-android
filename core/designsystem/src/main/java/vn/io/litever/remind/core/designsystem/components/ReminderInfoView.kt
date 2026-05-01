@@ -1,9 +1,11 @@
 package vn.io.litever.remind.core.designsystem.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import vn.io.litever.remind.core.model.ReminderResponse
 
@@ -30,11 +32,31 @@ fun ReminderInfoView(
                     MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)
                 )
             ) {
-                Text(
-                    text = msg,
-                    modifier = Modifier.padding(16.dp),
-                    style = MaterialTheme.typography.bodyLarge
-                )
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    // Left Accent Bar (Bookmark effect)
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .width(4.dp)
+                                .background(
+                                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+                                )
+                        )
+                    }
+
+                    Text(
+                        text = msg,
+                        modifier = Modifier.padding(16.dp).padding(start = 4.dp),
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            fontStyle = FontStyle.Italic,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    )
+                }
             }
         }
     }

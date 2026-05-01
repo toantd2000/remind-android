@@ -1,12 +1,7 @@
 package vn.io.litever.remind.features.alarms.viewmodel
 
-import android.content.Context
-import android.media.AudioAttributes
-import android.media.MediaPlayer
 import android.os.Build
-import android.os.VibrationEffect
-import android.os.Vibrator
-import android.os.VibratorManager
+import vn.io.litever.remind.core.common.audio.AudioPlayer
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -39,7 +34,8 @@ class AlarmPreviewViewModel @Inject constructor(
     private val preferencesDataSource: AlarmPreferencesDataSource,
     private val draftAlarmStore: DraftAlarmStore,
     private val alarmRingManager: AlarmRingManager,
-    @ApplicationContext private val context: Context
+    private val audioPlayer: AudioPlayer,
+    @ApplicationContext private val context: android.content.Context
 ) : ViewModel() {
 
     private val alarmId: Long = checkNotNull(savedStateHandle["alarmId"])
@@ -66,18 +62,16 @@ class AlarmPreviewViewModel @Inject constructor(
 
     private val mutedAlarmIds = alarmRingManager.mutedAlarmIds
 
-    private var mediaPlayer: MediaPlayer? = null
-    private var vibrator: Vibrator? = null
     private var autoSilenceJob: Job? = null
-    private var ringingJob: Job? = null
-    private var volumeIncreaseJob: Job? = null
+    private var hasStartedRinging = false
 
     init {
         viewModelScope.launch {
             alarm.collect { alarm ->
-                if (alarm != null && ringingJob == null) {
+                if (alarm != null && !hasStartedRinging) {
                     startPreviewRinging(alarm)
                     setupAutoSilence(alarm)
+                    hasStartedRinging = true
                 }
             }
         }
@@ -87,16 +81,10 @@ class AlarmPreviewViewModel @Inject constructor(
                 val isMuted = mutedIds.contains(alarmId)
                 val currentAlarm = alarm.value
                 if (currentAlarm != null) {
-                    val targetVolume = if (isMuted) 0f else {
-                        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as android.media.AudioManager
-                        val systemMaxVolume = audioManager.getStreamMaxVolume(android.media.AudioManager.STREAM_ALARM)
-                        currentAlarm.volume.toFloat() / systemMaxVolume.toFloat()
-                    }
-                    withContext(Dispatchers.Main) {
-                        mediaPlayer?.setVolume(targetVolume, targetVolume)
-                    }
+                    val targetVolume = if (isMuted) 0 else currentAlarm.volume
+                    audioPlayer.setVolume(android.media.AudioAttributes.USAGE_ALARM, targetVolume)
+                    
                     if (isMuted) {
-                        vibrator?.cancel()
                         autoSilenceJob?.cancel()
                     } else if (wasMuted) {
                         // Restart auto-silence from beginning as per DECISION_LOG.md
@@ -109,83 +97,14 @@ class AlarmPreviewViewModel @Inject constructor(
     }
 
     private fun startPreviewRinging(alarm: Alarm) {
-        ringingJob?.cancel()
-        volumeIncreaseJob?.cancel()
-
-        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as android.media.AudioManager
-        val initialVolume = if (alarm.gradualVolumeDurationSeconds > 0) 1 else alarm.volume
         val uri = getAccessibleRingtoneUri(context, alarm.ringtoneUri)
-
-        ringingJob = viewModelScope.launch(Dispatchers.IO) {
-            val player = MediaPlayer().apply {
-                setDataSource(context, uri)
-                setAudioAttributes(
-                    AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_ALARM)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                        .build()
-                )
-                isLooping = true
-                val maxVolume = audioManager.getStreamMaxVolume(android.media.AudioManager.STREAM_ALARM)
-                val volumeScale = initialVolume.toFloat() / maxVolume.toFloat()
-                setVolume(volumeScale, volumeScale)
-            }
-
-            try {
-                player.prepare()
-                val started = withContext(Dispatchers.Main) {
-                    if (isActive) {
-                        player.start()
-                        mediaPlayer = player
-                        true
-                    } else {
-                        player.release()
-                        false
-                    }
-                }
-
-                if (started && alarm.gradualVolumeDurationSeconds > 0) {
-                    volumeIncreaseJob = viewModelScope.launch(Dispatchers.IO) {
-                        val durationMs = alarm.gradualVolumeDurationSeconds * 1000L
-                        val startTime = System.currentTimeMillis()
-                        val targetVolume = alarm.volume
-                        val systemMaxVolume = audioManager.getStreamMaxVolume(android.media.AudioManager.STREAM_ALARM)
-
-                        while (System.currentTimeMillis() - startTime < durationMs && isActive) {
-                            val elapsed = System.currentTimeMillis() - startTime
-                            val currentVolume = 1 + ((targetVolume - 1) * elapsed / durationMs).toInt()
-                            val currentVolumeScale = currentVolume.toFloat() / systemMaxVolume.toFloat()
-                            
-                            withContext(Dispatchers.Main) {
-                                val isCurrentlyMuted = alarmRingManager.mutedAlarmIds.value.contains(alarmId)
-                                if (!isCurrentlyMuted) {
-                                    mediaPlayer?.setVolume(currentVolumeScale, currentVolumeScale)
-                                }
-                            }
-                            delay(1000L)
-                        }
-                    }
-                }
-
-                if (started && alarm.vibrationEnabled) {
-                    vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-                        vibratorManager.defaultVibrator
-                    } else {
-                        @Suppress("DEPRECATION")
-                        context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-                    }
-
-                    val pattern = longArrayOf(0, 1000, 1000)
-                    vibrator?.vibrate(VibrationEffect.createWaveform(pattern, 0))
-                }
-            } catch (e: Exception) {
-                if (e !is kotlinx.coroutines.CancellationException) {
-                    e.printStackTrace()
-                }
-                player.release()
-            }
-        }
+        audioPlayer.play(
+            uri = uri,
+            usage = android.media.AudioAttributes.USAGE_ALARM,
+            volume = alarm.volume,
+            gradualVolumeDurationSeconds = alarm.gradualVolumeDurationSeconds,
+            vibrationEnabled = alarm.vibrationEnabled
+        )
     }
 
     private fun setupAutoSilence(alarm: Alarm) {
@@ -205,17 +124,9 @@ class AlarmPreviewViewModel @Inject constructor(
     }
 
     fun stopPreview() {
-        ringingJob?.cancel()
-        volumeIncreaseJob?.cancel()
+        audioPlayer.stop()
         autoSilenceJob?.cancel()
-        
-        // Don't use viewModelScope here as it's already cancelled when onCleared is called
-        mediaPlayer?.stop()
-        mediaPlayer?.release()
-        mediaPlayer = null
-        
-        vibrator?.cancel()
-        vibrator = null
+        hasStartedRinging = false
 
         draftAlarmStore.setDraft(null)
         alarmRingManager.unmute(alarmId)

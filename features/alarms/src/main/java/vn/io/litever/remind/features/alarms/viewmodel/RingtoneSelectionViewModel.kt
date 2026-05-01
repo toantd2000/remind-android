@@ -1,9 +1,8 @@
 package vn.io.litever.remind.features.alarms.viewmodel
 
 import android.content.Context
-import android.media.AudioAttributes
-import android.media.MediaPlayer
 import android.media.RingtoneManager
+import vn.io.litever.remind.core.common.audio.AudioPlayer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,14 +35,12 @@ data class RingtoneSelectionUiState(
 
 @HiltViewModel
 class RingtoneSelectionViewModel @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val audioPlayer: AudioPlayer
 ) : ViewModel() {
 
-    private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as android.media.AudioManager
     private val _uiState = MutableStateFlow(RingtoneSelectionUiState())
     val uiState: StateFlow<RingtoneSelectionUiState> = _uiState.asStateFlow()
-
-    private var mediaPlayer: MediaPlayer? = null
 
     init {
         loadRingtones()
@@ -102,44 +99,24 @@ class RingtoneSelectionViewModel @Inject constructor(
         
         val uri = vn.io.litever.remind.core.common.util.getAccessibleRingtoneUri(context, uriString)
 
-        try {
-            mediaPlayer = MediaPlayer().apply {
-                setDataSource(context, uri)
-                setAudioAttributes(
-                    AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_MEDIA)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                        .build()
-                )
-                isLooping = true
-                
-                // Use MEDIA volume for selection screen
-                val currentVolume = audioManager.getStreamVolume(android.media.AudioManager.STREAM_MUSIC)
-                val maxVolume = audioManager.getStreamMaxVolume(android.media.AudioManager.STREAM_MUSIC)
-                val volumeScale = currentVolume.toFloat() / maxVolume.toFloat()
-                setVolume(volumeScale, volumeScale)
-                
-                prepareAsync()
-                setOnPreparedListener { 
-                    it.start()
-                    val internalUri = uriString ?: RingtoneSelectionUiState.DEFAULT_URI
-                    _uiState.update { state -> 
-                        state.copy(
-                            playingUri = internalUri,
-                            ringtones = state.ringtones.map { item -> item.copy(isPlaying = item.uri == uriString) }
-                        )
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
+        audioPlayer.play(
+            uri = uri,
+            usage = android.media.AudioAttributes.USAGE_MEDIA,
+            contentType = android.media.AudioAttributes.CONTENT_TYPE_MUSIC,
+            loop = true
+        )
+
+        val internalUri = uriString ?: RingtoneSelectionUiState.DEFAULT_URI
+        _uiState.update { state -> 
+            state.copy(
+                playingUri = internalUri,
+                ringtones = state.ringtones.map { item -> item.copy(isPlaying = item.uri == uriString) }
+            )
         }
     }
 
     private fun stopPlayback() {
-        mediaPlayer?.stop()
-        mediaPlayer?.release()
-        mediaPlayer = null
+        audioPlayer.stop()
         _uiState.update { state -> 
             state.copy(
                 playingUri = RingtoneSelectionUiState.IDLE_URI,

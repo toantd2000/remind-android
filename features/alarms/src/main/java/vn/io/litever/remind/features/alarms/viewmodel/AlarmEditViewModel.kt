@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import vn.io.litever.remind.core.common.audio.AudioPlayer
 import vn.io.litever.remind.core.domain.repository.AlarmRepository
 import vn.io.litever.remind.core.domain.scheduler.AlarmScheduler
 import vn.io.litever.remind.core.model.Alarm
@@ -59,18 +60,11 @@ class AlarmEditViewModel @Inject constructor(
     private val preferencesDataSource: AlarmPreferencesDataSource,
     private val permissionChecker: vn.io.litever.remind.core.common.util.PermissionChecker,
     private val draftAlarmStore: DraftAlarmStore,
+    private val audioPlayer: AudioPlayer,
     @dagger.hilt.android.qualifiers.ApplicationContext private val context: android.content.Context
 ) : ViewModel() {
 
     private val audioManager = context.getSystemService(android.content.Context.AUDIO_SERVICE) as android.media.AudioManager
-    private val vibrator = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-        val vibratorManager = context.getSystemService(android.content.Context.VIBRATOR_MANAGER_SERVICE) as android.os.VibratorManager
-        vibratorManager.defaultVibrator
-    } else {
-        @Suppress("DEPRECATION")
-        context.getSystemService(android.content.Context.VIBRATOR_SERVICE) as android.os.Vibrator
-    }
-    private var mediaPlayer: android.media.MediaPlayer? = null
     private var progressJob: kotlinx.coroutines.Job? = null
 
     val is24HourFormat: StateFlow<Boolean> = preferencesDataSource.is24HourFormat
@@ -236,10 +230,8 @@ class AlarmEditViewModel @Inject constructor(
     }
 
     fun updateVolume(volume: Int) {
-        stopRingtonePlayback()
         _uiState.update { it.copy(volume = volume) }
-        // Update system volume immediately to provide feedback
-        audioManager.setStreamVolume(android.media.AudioManager.STREAM_ALARM, volume, 0)
+        audioPlayer.setVolume(android.media.AudioAttributes.USAGE_ALARM, volume)
     }
 
     fun updateSnoozeSettings(enabled: Boolean, interval: Int, repeatCount: Int) {
@@ -275,35 +267,15 @@ class AlarmEditViewModel @Inject constructor(
         
         val uri = vn.io.litever.remind.core.common.util.getAccessibleRingtoneUri(context, _uiState.value.ringtoneUri)
 
-        try {
-            mediaPlayer?.release()
-            mediaPlayer = android.media.MediaPlayer().apply {
-                setDataSource(context, uri)
-                setAudioAttributes(
-                    android.media.AudioAttributes.Builder()
-                        .setUsage(android.media.AudioAttributes.USAGE_MEDIA)
-                        .setContentType(android.media.AudioAttributes.CONTENT_TYPE_MUSIC)
-                        .build()
-                )
-                isLooping = true
-                val volumeScale = _uiState.value.volume.toFloat() / _uiState.value.maxVolume.toFloat()
-                setVolume(volumeScale, volumeScale)
-                prepareAsync()
-                setOnPreparedListener { 
-                    it.start()
-                    // Start vibration if enabled
-                    if (_uiState.value.vibrationEnabled) {
-                        val pattern = longArrayOf(0, 500, 500)
-                        vibrator.vibrate(android.os.VibrationEffect.createWaveform(pattern, 0))
-                    }
-                    // Start progress simulation since MediaPlayer doesn't give precise "played/total" easily for all URIs
-                    startProgressSimulation()
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            stopRingtonePlayback()
-        }
+        audioPlayer.play(
+            uri = uri,
+            usage = android.media.AudioAttributes.USAGE_MEDIA,
+            contentType = android.media.AudioAttributes.CONTENT_TYPE_MUSIC,
+            volume = _uiState.value.volume,
+            vibrationEnabled = _uiState.value.vibrationEnabled
+        )
+        
+        startProgressSimulation()
     }
 
     private fun startProgressSimulation() {
@@ -322,10 +294,7 @@ class AlarmEditViewModel @Inject constructor(
 
     fun stopRingtonePlayback() {
         progressJob?.cancel()
-        vibrator.cancel()
-        mediaPlayer?.stop()
-        mediaPlayer?.release()
-        mediaPlayer = null
+        audioPlayer.stop()
         _uiState.update { it.copy(isRingtonePlaying = false, ringtoneProgress = 0f) }
     }
 

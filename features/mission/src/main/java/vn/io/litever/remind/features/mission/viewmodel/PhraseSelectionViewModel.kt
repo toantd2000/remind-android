@@ -42,7 +42,7 @@ class PhraseSelectionViewModel @Inject constructor(
                     categoryId = "custom",
                     isCustom = true,
                     isShared = isShared,
-                    alarmId = if (isShared) null else alarmId
+                    alarmId = if (isShared || alarmId == 0L) null else alarmId
                 )
             )
         }

@@ -29,6 +29,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindButton
+import vn.io.litever.remind.core.designsystem.components.ReMindOutlinedButton
 import vn.io.litever.remind.core.model.Phrase
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
@@ -112,6 +113,7 @@ fun PhraseSelectionRoute(
         ) {
             AddCustomPhraseContent(
                 editingPhrase = phraseToEdit,
+                canBePrivate = viewModel.alarmId != 0L,
                 onDismiss = { 
                     showAddSheet = false 
                     phraseToEdit = null
@@ -417,11 +419,16 @@ fun PhraseItem(
 @Composable
 fun AddCustomPhraseContent(
     editingPhrase: Phrase?,
+    canBePrivate: Boolean,
     onDismiss: () -> Unit,
     onConfirm: (String, Boolean) -> Unit
 ) {
     var text by remember(editingPhrase) { mutableStateOf(editingPhrase?.content ?: "") }
     var isShared by remember(editingPhrase) { mutableStateOf(editingPhrase?.isShared ?: true) }
+
+    LaunchedEffect(canBePrivate) {
+        if (!canBePrivate) isShared = true
+    }
 
     Column(
         modifier = Modifier
@@ -457,7 +464,7 @@ fun AddCustomPhraseContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(MaterialTheme.shapes.medium)
-                .clickable { if (editingPhrase == null) isShared = !isShared },
+                .clickable { if (editingPhrase == null && canBePrivate) isShared = !isShared },
             color = Color.Transparent
         ) {
             Row(
@@ -467,7 +474,7 @@ fun AddCustomPhraseContent(
                 Checkbox(
                     checked = isShared,
                     onCheckedChange = { isShared = it },
-                    enabled = editingPhrase == null
+                    enabled = editingPhrase == null && canBePrivate
                 )
                 Column(modifier = Modifier.padding(start = 12.dp)) {
                     Text(
@@ -475,9 +482,9 @@ fun AddCustomPhraseContent(
                         style = MaterialTheme.typography.titleSmall
                     )
                     Text(
-                        text = stringResource(R.string.mission_shared_desc),
+                        text = stringResource(if (canBePrivate) R.string.mission_shared_desc else R.string.mission_private_disabled_desc),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = if (canBePrivate) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error
                     )
                 }
             }
@@ -489,7 +496,7 @@ fun AddCustomPhraseContent(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            OutlinedButton(
+            ReMindOutlinedButton(
                 onClick = onDismiss,
                 modifier = Modifier
                     .weight(1f),

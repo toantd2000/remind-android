@@ -33,6 +33,7 @@
     <string name="mission_typing_example">Ví dụ</string>
     <string name="mission_phrase_edit_title">Sửa cụm từ</string>
     <string name="mission_shared_desc">Cụm từ dùng chung có thể được dùng cho tất cả báo thức.</string>
+    <string name="mission_private_disabled_desc">Cụm từ riêng chỉ khả dụng sau khi báo thức được lưu lần đầu.</string>
     <string name="mission_phrases_motivation">Động lực</string>
     <string name="mission_phrases_basic">Cơ bản</string>
     <string name="mission_phrases_my">Của tôi</string>

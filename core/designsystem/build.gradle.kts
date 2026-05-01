@@ -27,7 +27,7 @@ android {
 }
 
 dependencies {
-    api(project(":litever-designsystem"))
+    api(libs.litever.designsystem)
     implementation(project(":core:model"))
     implementation(libs.androidx.core.ktx)
     implementation(platform(libs.androidx.compose.bom))

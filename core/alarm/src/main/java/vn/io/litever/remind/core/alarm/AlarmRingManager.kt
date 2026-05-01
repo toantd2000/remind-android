@@ -63,6 +63,13 @@ class AlarmRingManager @Inject constructor() {
     fun setAcknowledgingAlarmId(alarmId: Long?) {
         _acknowledgingAlarmId.value = alarmId
     }
+
+    private val _isRingingScreenVisible = MutableStateFlow(false)
+    val isRingingScreenVisible: StateFlow<Boolean> = _isRingingScreenVisible.asStateFlow()
+
+    fun setRingingScreenVisible(isVisible: Boolean) {
+        _isRingingScreenVisible.value = isVisible
+    }
 }
 
 

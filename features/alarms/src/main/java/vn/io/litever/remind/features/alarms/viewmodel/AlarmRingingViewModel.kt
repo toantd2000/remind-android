@@ -107,4 +107,8 @@ class AlarmRingingViewModel @Inject constructor(
             alarmController.snoozeAlarm(alarmId)
         }
     }
+
+    fun setRingingScreenVisible(isVisible: Boolean) {
+        alarmRingManager.setRingingScreenVisible(isVisible)
+    }
 }

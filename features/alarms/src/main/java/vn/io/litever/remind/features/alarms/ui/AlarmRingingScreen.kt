@@ -67,8 +67,11 @@ fun AlarmRingingRoute(
         }
     }
 
-    LaunchedEffect(Unit) {
-        // Stop sound if we are returning from mission success (handled by startMission earlier)
+    DisposableEffect(Unit) {
+        viewModel.setRingingScreenVisible(true)
+        onDispose {
+            viewModel.setRingingScreenVisible(false)
+        }
     }
 
     AlarmRingingScreen(

@@ -5,7 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - 2026-05-03
+
+### Added
+- **AdMob Integration:** Integrated Google Mobile Ads SDK (AdMob) with pre-configured App ID for advertisement support.
+- **Native Ads:** Implemented real Native Ad rendering using `AdLoader` and `AndroidView` within the Jetpack Compose UI.
+- **AdMob Optimization:** Introduced a `NativeAdManager` singleton for caching ads, preventing frequent reloads during tab switches and ensuring compliance with AdMob policies.
+- **Initialization:** Automated AdMob SDK initialization in the application startup sequence.
+
 ## [1.1.1] - 2026-05-01
+
 
 ### Fixed
 - **Audio Handling:** Fixed a bug where alarms and ringtone previews would continue to ring during incoming or active phone calls.

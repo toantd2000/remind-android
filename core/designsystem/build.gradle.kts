@@ -29,6 +29,8 @@ android {
 dependencies {
     api(libs.litever.designsystem)
     implementation(project(":core:model"))
+    implementation(project(":core:common"))
+
     implementation(libs.androidx.core.ktx)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
@@ -38,6 +40,9 @@ dependencies {
     implementation(libs.material.icons.extended)
     implementation(libs.androidx.compose.ui.text.google.fonts)
     implementation(libs.coil.compose)
+    implementation(libs.google.play.services.ads)
+    implementation(libs.hilt.android)
+
 
     debugImplementation(libs.androidx.compose.ui.tooling)
 }

@@ -34,7 +34,22 @@ Cơ chế này đảm bảo "sự tiến hóa" liên tục qua các task, tránh
 
 ---
 
+## [2026-05-03] AdMob Integration & Native Ad Caching
+### Key Lessons
+- **Composable Lifecycle & Ad Fraud**: In Jetpack Compose Navigation, switching tabs causes the composable for the previous tab to be disposed. If ads are loaded directly within the composable (e.g., via `LaunchedEffect`), they will be reloaded every time the user returns to the tab. This can be flagged as "Invalid Traffic" by AdMob.
+- **Singleton Ad Management**: To comply with ad policies and improve UX, ad loading and storage should be managed outside the UI lifecycle (e.g., in a Singleton Manager or a long-lived ViewModel).
+- **Native Ad Viewbinding in Compose**: Since Compose doesn't have a built-in Native Ad component, `AndroidView` must be used to wrap the XML/View-based `com.google.android.gms.ads.nativead.NativeAdView`. It is crucial to correctly bind all components (headline, icon, CTA) to the `NativeAdView` so that AdMob can track impressions and clicks accurately.
+- **Hilt EntryPoints**: For modules like `:core:designsystem` that provide generic UI components but are not themselves Hilt-managed (like a Composable function), `EntryPoints.get` is an effective way to access Singleton dependencies (like `NativeAdManager`) from the `ApplicationContext`.
+
+### Corrective Actions
+- Refactored `NativeAdView` to use a `NativeAdManager` singleton instead of local loading logic.
+- Implemented a 5-minute cache for Native Ads to prevent excessive network requests.
+- Fixed an issue where the package declaration was accidentally removed during a file replacement.
+
+---
+
 ## Ngày tháng: 2026-04-06
+
 **Vấn đề / Task:** Dùng trực tiếp các thành phần `androidx.compose.material3.*` (như Button, Icon) tại module `:features:alarm` vì thấy `:core:designsystem` lúc đó đang cạn/rỗng.
 **Phân tích nguyên nhân:** 
 * Giả định chưa chính xác: Tôi đã lầm tưởng rằng có thể dùng trực tiếp thư viện gốc Material3 ở Feature module đối với mọi loại Component khi `designsystem` còn rỗng.

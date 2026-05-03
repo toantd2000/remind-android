@@ -1,8 +1,20 @@
 [
   {
+    "versionName": "1.1.0",
+    "date": "2026-05-03",
+    "isLatest": true,
+    "notes": [
+      "Tích hợp quảng cáo AdMob (Native Ads) tối ưu.",
+      "Hỗ trợ giao diện tràn viền (Edge-to-edge) & Android 15.",
+      "Cải thiện cơ chế xử lý báo thức bỏ lỡ (Missed Alarm).",
+      "Tối ưu hóa âm thanh, Audio Focus và nhạc chuông.",
+      "Nâng cấp hệ thống Design System mới."
+    ]
+  },
+  {
     "versionName": "1.0.0",
     "date": "2026-04-26",
-    "isLatest": true,
+    "isLatest": false,
     "notes": [
       "Chào mừng bạn đến với ReMind: Tối giản & Chính xác.",
       "Quản lý báo thức linh hoạt, thức dậy êm ái.",

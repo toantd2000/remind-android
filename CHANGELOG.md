@@ -5,34 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.2] - 2026-05-03
+## [1.1.0] - 2026-05-03
 
 ### Added
-- **AdMob Integration:** Integrated Google Mobile Ads SDK (AdMob) with pre-configured App ID for advertisement support.
-- **Native Ads:** Implemented real Native Ad rendering using `AdLoader` and `AndroidView` within the Jetpack Compose UI.
-- **AdMob Optimization:** Introduced a `NativeAdManager` singleton for caching ads, preventing frequent reloads during tab switches and ensuring compliance with AdMob policies.
-- **Initialization:** Automated AdMob SDK initialization in the application startup sequence.
-
-## [1.1.1] - 2026-05-01
-
+- **AdMob Integration:** Integrated Google Mobile Ads SDK (AdMob) with pre-configured App ID and Native Ad caching for optimization.
+- **Edge-to-edge Support:** Implemented full edge-to-edge display support and Android 15 compliance for a modern look.
+- **Litever Design System:** Extracted a standalone library module `:litever-designsystem` for multi-app reusability and enhanced theming (36 M3 tokens).
+- **Missed Alarm Logic:** Implemented `AlarmSyncManager` to handle missed alarms after reboot and improve notification reliability.
+- **UI Polish:** Applied italic style and bookmark effects to quotes and weather hints; updated icons to Rounded variants.
 
 ### Fixed
-- **Audio Handling:** Fixed a bug where alarms and ringtone previews would continue to ring during incoming or active phone calls.
-- **Audio Focus:** Implemented proper Audio Focus management to pause/stop playback when other apps or the system request priority.
+- **Audio Handling:** Resolved bugs where alarms would ring during active phone calls or fail to respect Audio Focus.
+- **Stability:** Fixed a critical crash when adding phrases to new alarms and resolved UI button alignment issues.
 
 ### Changed
-- **Architecture:** Centralized all audio and vibration logic into a new `AudioPlayer` component in `:core:common` for consistency across the app.
-
-## [1.1.0] - 2026-04-29
-
-### Added
-- **Litever Design System:** Extracted a standalone library module `:litever-designsystem` for multi-app reusability.
-- **Enhanced Theming:** Expanded custom theme to support all 36 Material 3 color tokens, including `surfaceContainer` variants.
-- **Developer Tools:** New Agent workflows and skills for rapid project initialization and design system extraction.
-
-### Changed
-- **Architecture:** Refactored `:core:designsystem` into an adapter layer to support the new library module.
-- **Components:** Migrated and renamed global UI components to use the `Litever` prefix.
+- **Architecture:** Centralized audio and vibration logic into `AudioPlayer` and refactored theme system into an adapter layer.
+- **UX:** Implemented sequential alarm processing and "Gentle Reminder" (gradual volume) for a better wake-up experience.
 
 ## [1.0.0] - 2026-04-26
 

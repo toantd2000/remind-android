@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2026-05-05
+
+### Fixed
+- **Alarm Scheduling:** Resolved a critical bug where repeating alarms (e.g., Mon, Tue) failed to schedule the next occurrence if the current one was snoozed or dismissed. This was caused by `PendingIntent` collisions in `AlarmManager`.
+- **System Reliability:** Improved `AlarmSyncManager` to correctly restore both main alarms and active snoozes after a device reboot.
+
 ## [1.1.0] - 2026-05-03
 
 ### Added

@@ -1,5 +1,16 @@
 # Learning Journal & Self-Correction Log
 
+## [2026-05-05] PendingIntent Identity & Alarm Collisions
+### Key Lessons
+- **PendingIntent Equality**: In Android, two `PendingIntent` objects are considered equal if their `ComponentName`, `Action`, and `RequestCode` match. `Intent` extras are **NOT** part of the identity.
+- **Silent Overwrites**: If you schedule two alarms (e.g., a main alarm and a snooze) with the same identity, the second one will silently overwrite the first in `AlarmManager`.
+- **Cancellation Side Effects**: Calling `alarmManager.cancel(pendingIntent)` will cancel ANY alarm matching that identity. If a main alarm and a snooze share an identity, cancelling the snooze will accidentally kill the main alarm's future schedule.
+- **Deterministic Unique IDs**: When multiple intents are needed for the same entity (like an Alarm), use a deterministic offset or bit-flag in the `requestCode` and different `Actions` to guarantee uniqueness.
+
+### Corrective Actions
+- Implemented `ACTION_TRIGGER_SNOOZE` and a +1B offset for snooze request codes.
+- Updated `AlarmSyncManager` to restore both main and snooze schedules after reboot.
+
 ## [2026-04-29] Design System Modularization & Custom Themes
 ### Key Lessons
 - **Custom Theme Architecture**: Using `staticCompositionLocalOf` to provide a custom `LiteverColors` class allows for a more flexible and multi-app design system than relying solely on `MaterialTheme.colorScheme`. This pattern enables each application to define its own branding while reusing the same base components.

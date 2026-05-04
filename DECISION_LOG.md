@@ -36,3 +36,12 @@ This document records the solidified technical decisions and behavioral scenario
 ### DAO Query Patterns
 - **Decision**: Methods returning `Flow` for reactive updates and `suspend` methods for one-shot updates must be clearly separated.
 - **Consistency**: Use `@Transaction` for methods that fetch complex relations (like `PopulatedReminder`) to ensure data consistency across multiple tables.
+
+## 4. Alarm Scheduling & PendingIntent Identity
+
+### Scenario: Coexistence of Main Alarm and Snooze
+- **Problem**: Android distinguishes `PendingIntent` only by Component, Action, and RequestCode. Extras are ignored. Sharing these fields between Main and Snooze alarms causes one to overwrite or cancel the other.
+- **Decision**:
+    - **Unique Actions**: Use `ACTION_TRIGGER_ALARM` for main occurrences and `ACTION_TRIGGER_SNOOZE` for snoozes.
+    - **Unique Request Codes**: Use `alarm.id.hashCode()` for main and `alarm.id.hashCode() + 1,000,000,000` for snooze.
+    - **Simultaneous Scheduling**: `AlarmSyncManager` (on boot) must schedule BOTH if a snooze is active, ensuring the long-term schedule is preserved even during a snooze session.

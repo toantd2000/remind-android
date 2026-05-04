@@ -30,7 +30,8 @@ class AlarmReceiver : BroadcastReceiver() {
     lateinit var missedAlarmRepository: MissedAlarmRepository
 
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action == AlarmScheduler.ACTION_TRIGGER_ALARM) {
+        val action = intent.action
+        if (action == AlarmScheduler.ACTION_TRIGGER_ALARM || action == AlarmScheduler.ACTION_TRIGGER_SNOOZE) {
             val alarmId = intent.getLongExtra(AlarmScheduler.EXTRA_ALARM_ID, -1L)
             if (alarmId != -1L) {
                 // Check notification permission on Android 13+

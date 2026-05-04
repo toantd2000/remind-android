@@ -69,11 +69,13 @@ class AlarmSyncManager @Inject constructor(
                 }
             } else {
                 // Not missed, just normal rescheduling (e.g. after reboot)
+                // Always schedule the main occurrence
+                alarmScheduler.schedule(alarm)
+                
+                // Also restore snooze if it's still in the future
                 val snoozeTime = alarm.snoozeNextTriggerTime
                 if (snoozeTime != null && snoozeTime > nowMillis) {
                     alarmScheduler.scheduleSnooze(alarm, snoozeTime)
-                } else {
-                    alarmScheduler.schedule(alarm)
                 }
             }
         }

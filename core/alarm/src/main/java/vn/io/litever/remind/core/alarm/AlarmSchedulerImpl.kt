@@ -34,14 +34,14 @@ class AlarmSchedulerImpl @Inject constructor(
 
     private fun setAlarmInternal(alarm: Alarm, triggerTime: Long, isSnooze: Boolean) {
         val intent = Intent(context, AlarmReceiver::class.java).apply {
-            action = AlarmScheduler.ACTION_TRIGGER_ALARM
+            action = if (isSnooze) AlarmScheduler.ACTION_TRIGGER_SNOOZE else AlarmScheduler.ACTION_TRIGGER_ALARM
             putExtra(AlarmScheduler.EXTRA_ALARM_ID, alarm.id)
             putExtra(AlarmScheduler.EXTRA_IS_SNOOZE, isSnooze)
         }
         
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            alarm.id.hashCode(),
+            getRequestCode(alarm.id, isSnooze),
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
@@ -86,18 +86,23 @@ class AlarmSchedulerImpl @Inject constructor(
 
     private fun cancelAlarmInternal(alarm: Alarm, isSnooze: Boolean) {
         val intent = Intent(context, AlarmReceiver::class.java).apply {
-            action = AlarmScheduler.ACTION_TRIGGER_ALARM
+            action = if (isSnooze) AlarmScheduler.ACTION_TRIGGER_SNOOZE else AlarmScheduler.ACTION_TRIGGER_ALARM
             putExtra(AlarmScheduler.EXTRA_ALARM_ID, alarm.id)
             putExtra(AlarmScheduler.EXTRA_IS_SNOOZE, isSnooze)
         }
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            alarm.id.hashCode(),
+            getRequestCode(alarm.id, isSnooze),
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         alarmManager.cancel(pendingIntent)
         pendingIntent.cancel()
+    }
+
+    private fun getRequestCode(alarmId: Long, isSnooze: Boolean): Int {
+        val idHash = alarmId.hashCode()
+        return if (isSnooze) idHash + 1000000000 else idHash
     }
 }
 

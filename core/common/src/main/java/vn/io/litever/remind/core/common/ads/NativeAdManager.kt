@@ -10,6 +10,7 @@ import com.google.android.gms.ads.nativead.NativeAdOptions
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
+import vn.io.litever.remind.core.common.util.DeviceUtils
 import java.util.concurrent.ConcurrentHashMap
 
 @Singleton
@@ -27,6 +28,12 @@ class NativeAdManager @Inject constructor(
         val currentTime = System.currentTimeMillis()
         val cachedAd = cachedAds[adId]
         val lastTime = lastLoadTime[adId] ?: 0L
+
+        // Skip loading on emulators
+        if (DeviceUtils.isEmulator()) {
+            onComplete(null)
+            return
+        }
 
         // If we have a cached ad and it's still fresh, use it
         if (cachedAd != null && (currentTime - lastTime) < CACHE_DURATION_MS) {

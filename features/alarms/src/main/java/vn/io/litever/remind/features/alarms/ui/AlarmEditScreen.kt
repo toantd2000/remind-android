@@ -1,33 +1,66 @@
 package vn.io.litever.remind.features.alarms.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.TextButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.AlarmOff
+import androidx.compose.material.icons.rounded.Calculate
+import androidx.compose.material.icons.rounded.CalendarMonth
+import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.Extension
+import androidx.compose.material.icons.rounded.GraphicEq
+import androidx.compose.material.icons.rounded.Keyboard
+import androidx.compose.material.icons.rounded.Pause
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.QrCodeScanner
+import androidx.compose.material.icons.rounded.Smartphone
+import androidx.compose.material.icons.rounded.Snooze
+import androidx.compose.material.icons.rounded.Vibration
+import androidx.compose.material.icons.rounded.VolumeOff
+import androidx.compose.material.icons.rounded.VolumeUp
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
+import androidx.compose.material3.SelectableDates
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -37,84 +70,40 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Keyboard
-import androidx.compose.material.icons.rounded.Calculate
-import androidx.compose.material.icons.rounded.QrCodeScanner
-import androidx.compose.material.icons.rounded.Extension
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Notifications
-import androidx.compose.material.icons.rounded.Snooze
-import androidx.compose.material.icons.rounded.AlarmOff
-import androidx.compose.material.icons.rounded.GraphicEq
-import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material.icons.rounded.Pause
-import androidx.compose.material.icons.rounded.VolumeUp
-import androidx.compose.material.icons.rounded.VolumeOff
-import androidx.compose.material.icons.rounded.Vibration
-import androidx.compose.material.icons.rounded.Smartphone
-import androidx.compose.material.icons.rounded.ChevronRight
-import androidx.compose.foundation.BorderStroke
-import vn.io.litever.remind.features.mission.ui.components.MissionSelectionBottomSheet
-import vn.io.litever.remind.core.model.MissionType
-import androidx.compose.material.icons.rounded.Snooze
-import androidx.compose.material.icons.rounded.AlarmOff
-import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.GraphicEq
-import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.SelectableDates
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.Text
-import androidx.compose.material3.TimeInput
-import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.material3.rememberTimePickerState
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.Surface
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import vn.io.litever.remind.core.designsystem.components.MissionSelectionBottomSheet
+import vn.io.litever.remind.core.designsystem.components.ReMindAlertDialog
+import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
+import vn.io.litever.remind.core.designsystem.components.ReMindButton
+import vn.io.litever.remind.core.designsystem.components.ReMindOutlinedButton
+import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
+import vn.io.litever.remind.core.designsystem.components.ReMindTextField
+import vn.io.litever.remind.core.designsystem.components.ReMindTimePickerDialog
+import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
-import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState
-import vn.io.litever.remind.features.alarms.viewmodel.AlarmEditUiState
-import vn.io.litever.remind.core.designsystem.components.*
 import vn.io.litever.remind.core.model.DayOfWeek
-import androidx.compose.material3.TimePicker
+import vn.io.litever.remind.core.model.MissionType
 import vn.io.litever.remind.features.alarms.R
 import vn.io.litever.remind.features.alarms.ui.components.NextAlarmHeader
 import vn.io.litever.remind.features.alarms.ui.components.getRepeatSummaryText
+import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState
+import vn.io.litever.remind.features.alarms.viewmodel.AlarmEditUiState
 import vn.io.litever.remind.features.alarms.viewmodel.AlarmEditViewModel
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import androidx.compose.material.icons.rounded.CalendarMonth
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.rememberModalBottomSheetState
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -244,7 +233,7 @@ fun AlarmEditRoute(
             },
             onMissionTypeSelected = { type ->
                 showMissionSelection = false
-                if (type == vn.io.litever.remind.core.model.MissionType.TYPING) {
+                if (type == MissionType.TYPING) {
                     isNavigatingToConfig = true
                     onMissionClick(
                         vn.io.litever.remind.core.model.Mission(
@@ -454,7 +443,7 @@ fun AlarmEditScreen(
         }
     }
 
-    val context = LocalContext.current
+    LocalContext.current
 
     if (showGradualVolumeSheet) {
         ModalBottomSheet(
@@ -979,7 +968,7 @@ fun AlarmEditScreen(
                                     onClick = onAddMissionClick,
                                     modifier = Modifier.fillMaxWidth(),
                                     shape = MaterialTheme.shapes.medium,
-                                    border = androidx.compose.foundation.BorderStroke(
+                                    border = BorderStroke(
                                         1.dp, 
                                         MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
                                     )
@@ -1007,8 +996,8 @@ fun AlarmEditScreen(
 @Composable
 fun RepeatDaySelector(
     selectedDays: List<DayOfWeek>,
-    time: java.time.LocalTime,
-    date: java.time.LocalDate?,
+    time: LocalTime,
+    date: LocalDate?,
     onDayToggle: (DayOfWeek) -> Unit,
     onShowDatePicker: () -> Unit,
     modifier: Modifier = Modifier
@@ -1235,18 +1224,18 @@ private fun MissionRow(
             verticalAlignment = Alignment.CenterVertically
         ) {
             val icon = when (mission.type) {
-                vn.io.litever.remind.core.model.MissionType.TYPING -> Icons.Rounded.Keyboard
-                vn.io.litever.remind.core.model.MissionType.MATH -> Icons.Rounded.Calculate
-                vn.io.litever.remind.core.model.MissionType.SHAKE -> Icons.Rounded.Smartphone
-                vn.io.litever.remind.core.model.MissionType.QR_CODE -> Icons.Rounded.QrCodeScanner
+                MissionType.TYPING -> Icons.Rounded.Keyboard
+                MissionType.MATH -> Icons.Rounded.Calculate
+                MissionType.SHAKE -> Icons.Rounded.Smartphone
+                MissionType.QR_CODE -> Icons.Rounded.QrCodeScanner
                 else -> Icons.Rounded.Extension
             }
 
             val title = when (mission.type) {
-                vn.io.litever.remind.core.model.MissionType.TYPING -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_typing)
-                vn.io.litever.remind.core.model.MissionType.MATH -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_math)
-                vn.io.litever.remind.core.model.MissionType.SHAKE -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_shake)
-                vn.io.litever.remind.core.model.MissionType.QR_CODE -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_qr_code)
+                MissionType.TYPING -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_typing)
+                MissionType.MATH -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_math)
+                MissionType.SHAKE -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_shake)
+                MissionType.QR_CODE -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_qr_code)
                 else -> mission.type.name
             }
 

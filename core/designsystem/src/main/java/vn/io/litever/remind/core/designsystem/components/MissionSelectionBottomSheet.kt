@@ -1,6 +1,5 @@
-package vn.io.litever.remind.features.mission.ui.components
+package vn.io.litever.remind.core.designsystem.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,7 +9,6 @@ import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -20,8 +18,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import vn.io.litever.remind.core.model.MissionType
+import kotlinx.coroutines.launch
 import vn.io.litever.remind.core.designsystem.R
+import vn.io.litever.remind.core.model.MissionType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -161,13 +160,3 @@ private data class MissionItem(
     val icon: ImageVector,
     val isAvailable: Boolean = true
 )
-
-
-
-
-
-
-
-
-
-

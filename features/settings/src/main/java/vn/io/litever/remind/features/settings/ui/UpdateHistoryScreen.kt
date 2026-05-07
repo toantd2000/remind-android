@@ -1,6 +1,7 @@
 package vn.io.litever.remind.features.settings.ui
 
 import android.content.Context
+import java.util.Locale
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,7 +27,8 @@ data class ChangelogItem(
     val versionName: String,
     val date: String,
     val isLatest: Boolean = false,
-    val notes: List<String>
+    val notes: List<String> = emptyList(),
+    val multiLangNotes: Map<String, List<String>>? = null
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -154,7 +156,13 @@ fun TimelineItem(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                item.notes.forEach { note ->
+                val displayNotes = if (Locale.getDefault().language == "vi") {
+                    item.multiLangNotes?.get("vi") ?: item.notes
+                } else {
+                    item.multiLangNotes?.get("en") ?: item.notes
+                }
+
+                displayNotes.forEach { note ->
                     Row(
                         modifier = Modifier.padding(bottom = 4.dp)
                     ) {

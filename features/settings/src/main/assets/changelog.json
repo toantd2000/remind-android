@@ -1,25 +1,76 @@
 [
   {
+    "versionName": "1.1.2",
+    "date": "2026-05-07",
+    "isLatest": true,
+    "multiLangNotes": {
+      "vi": [
+        "Cho phép chọn tệp âm thanh bất kỳ làm nhạc chuông báo thức.",
+        "Sử dụng SAF để truy cập tệp mà không cần quyền bộ nhớ.",
+        "Sửa lỗi báo thức bỏ qua hiển thị sai trạng thái khi tắt nguồn.",
+        "Tự động dọn dẹp trạng thái 'Bỏ qua một lần' sau khi đã trôi qua."
+      ],
+      "en": [
+        "Custom Ringtone Selection: Pick any audio file as your alarm sound.",
+        "Uses SAF for file access without requiring storage permissions.",
+        "Fixed skipped alarms showing incorrect status when powered off.",
+        "Automatically cleans up 'Skip once' status after it has passed."
+      ]
+    }
+  },
+  {
+    "versionName": "1.1.1",
+    "date": "2026-05-05",
+    "isLatest": false,
+    "multiLangNotes": {
+      "vi": [
+        "Sửa lỗi báo thức lặp lại không lên lịch lại sau khi hoãn hoặc tắt.",
+        "Cải thiện khả năng khôi phục báo thức sau khi khởi động lại máy."
+      ],
+      "en": [
+        "Fixed repeating alarms failing to reschedule after snooze/dismissal.",
+        "Improved alarm restoration reliability after device reboot."
+      ]
+    }
+  },
+  {
     "versionName": "1.1.0",
     "date": "2026-05-03",
-    "isLatest": true,
-    "notes": [
-      "Tích hợp quảng cáo AdMob (Native Ads) tối ưu.",
-      "Hỗ trợ giao diện tràn viền (Edge-to-edge) & Android 15.",
-      "Cải thiện cơ chế xử lý báo thức bỏ lỡ (Missed Alarm).",
-      "Tối ưu hóa âm thanh, Audio Focus và nhạc chuông.",
-      "Nâng cấp hệ thống Design System mới."
-    ]
+    "isLatest": false,
+    "multiLangNotes": {
+      "vi": [
+        "Tích hợp quảng cáo AdMob (Native Ads) tối ưu.",
+        "Hỗ trợ giao diện tràn viền (Edge-to-edge) & Android 15.",
+        "Cải thiện cơ chế xử lý báo thức bỏ lỡ (Missed Alarm).",
+        "Tối ưu hóa âm thanh, Audio Focus và nhạc chuông.",
+        "Nâng cấp hệ thống Design System mới."
+      ],
+      "en": [
+        "Integrated AdMob (Native Ads) for optimized experience.",
+        "Edge-to-edge support & Android 15 compliance.",
+        "Improved Missed Alarm handling mechanism.",
+        "Optimized audio, Audio Focus, and ringtones.",
+        "Upgraded Design System."
+      ]
+    }
   },
   {
     "versionName": "1.0.0",
     "date": "2026-04-26",
     "isLatest": false,
-    "notes": [
-      "Chào mừng bạn đến với ReMind: Tối giản & Chính xác.",
-      "Quản lý báo thức linh hoạt, thức dậy êm ái.",
-      "Thử thách nhiệm vụ giúp bạn tỉnh táo khi thức dậy.",
-      "Giao diện Material 3, hỗ trợ đa ngôn ngữ (VI/EN)."
-    ]
+    "multiLangNotes": {
+      "vi": [
+        "Chào mừng bạn đến với ReMind: Tối giản & Chính xác.",
+        "Quản lý báo thức linh hoạt, thức dậy êm ái.",
+        "Thử thách nhiệm vụ giúp bạn tỉnh táo khi thức dậy.",
+        "Giao diện Material 3, hỗ trợ đa ngôn ngữ (VI/EN)."
+      ],
+      "en": [
+        "Welcome to ReMind: Minimalist & Accurate.",
+        "Flexible alarm management, gentle wake-up.",
+        "Mission challenges to ensure you wake up.",
+        "Material 3 interface, multi-language support (VI/EN)."
+      ]
+    }
   }
 ]

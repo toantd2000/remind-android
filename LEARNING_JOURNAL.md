@@ -1,3 +1,18 @@
+## [2026-05-08] Release v1.1.2 & Changelog Localization
+
+### Context
+Preparing for release v1.1.2. Requirement to support English changelog in-app and ensure database stability.
+
+### What happened
+- Updated `UpdateHistoryScreen.kt` to handle multi-language notes in `changelog.json`.
+- Implemented a fallback mechanism: default to English if the current language is not Vietnamese.
+- Verified that no database schema changes were made since v1.1.1, so no version bump was needed.
+- Centralized release notes in both `CHANGELOG.md` and `changelog.json`.
+
+### Lessons Learned
+- **Scalability of Data Classes**: When designing metadata files like `changelog.json`, using a `Map<String, T>` for localized strings is more flexible than hardcoded fields.
+- **Room Migration Hygiene**: Always verify entity changes against the last tagged version before deciding on a migration. No-op migrations are better than accidental data loss, but no bump is cleaner if truly no changes occurred.
+
 ## [2026-05-07] Alarm Skip Logic & Sync Manager Consistency
 - **Logic Ordering in Sync**: When a sync process performs both validation (e.g., missed alarm check) and cleanup (e.g., clearing expired flags), the validation **MUST** happen before the cleanup if it depends on the data being cleaned. Clearing a "skippedAt" flag before checking for missed alarms causes the system to "forget" the skip intent.
 - **Unified Calculation**: Always use the most high-level calculation method (`getNextOccurrence`) that accounts for all modifiers (skips, snoozes) rather than raw calculations.

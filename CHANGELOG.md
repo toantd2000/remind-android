@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.1.2] - 2026-05-07
 
+### Added
+- **Custom Ringtone Selection:** Users can now pick any audio file from their device to use as an alarm sound.
+- **Permission Optimization:** Implemented using Storage Access Framework (SAF), eliminating the need for `READ_EXTERNAL_STORAGE` permission while maintaining persistent access across reboots.
+
 ### Fixed
 - **Alarm Skip Logic:** Fixed a bug where skipped alarms were incorrectly marked as "Missed due to power off" if the alarm time passed while the app was closed.
 - **Database Maintenance:** Implemented automatic cleanup of expired "Skip once" statuses. Alarms will now correctly reset their skipped state once the skipped occurrence has passed, ensuring both DB and UI stay consistent.

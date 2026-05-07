@@ -49,7 +49,8 @@
     <string name="seconds_unit">%d giây</string>
     <string name="seconds_unit_short">%ds</string>
     <string name="minutes_unit_short">%dp</string>
-    <string name="ringtone_selection_title">Âm thanh báo thức</string>
+    <string name="ringtone_custom_pick">Chọn từ thiết bị…</string>
+    <string name="ringtone_selection_title">Nhạc chuông</string>
     <string name="default_ringtone">Mặc định</string>
     <string name="no_ringtone">Không dùng âm thanh</string>
     

@@ -12,6 +12,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
@@ -34,6 +36,13 @@ fun RingtoneSelectionRoute(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument(),
+        onResult = { uri ->
+            uri?.let { viewModel.addCustomRingtone(it) }
+        }
+    )
+
     LaunchedEffect(Unit) {
         viewModel.setInitialSelection(initialUri)
     }
@@ -43,6 +52,9 @@ fun RingtoneSelectionRoute(
         onBackClick = onBackClick,
         onRingtoneClick = { item ->
             viewModel.selectRingtone(item.uri)
+        },
+        onPickCustomClick = {
+            launcher.launch(arrayOf("audio/*"))
         },
         onSaveClick = {
             onRingtoneSelected(uiState.selectedUri)
@@ -56,6 +68,7 @@ fun RingtoneSelectionScreen(
     uiState: vn.io.litever.remind.features.alarms.viewmodel.RingtoneSelectionUiState,
     onBackClick: () -> Unit,
     onRingtoneClick: (RingtoneItem) -> Unit,
+    onPickCustomClick: () -> Unit,
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -92,6 +105,27 @@ fun RingtoneSelectionScreen(
                     .padding(padding),
                 contentPadding = PaddingValues(bottom = 16.dp)
             ) {
+                item {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                    ) {
+                        ReMindOutlinedButton(
+                            onClick = onPickCustomClick,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.LibraryMusic,
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(stringResource(R.string.ringtone_custom_pick))
+                        }
+                    }
+                }
+                
                 items(uiState.ringtones) { item ->
                     RingtoneListItem(
                         item = item,

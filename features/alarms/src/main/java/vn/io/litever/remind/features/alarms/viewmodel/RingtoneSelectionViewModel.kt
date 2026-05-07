@@ -2,6 +2,9 @@ package vn.io.litever.remind.features.alarms.viewmodel
 
 import android.content.Context
 import android.media.RingtoneManager
+import android.content.Intent
+import android.net.Uri
+import android.provider.OpenableColumns
 import vn.io.litever.remind.core.common.audio.AudioPlayer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -127,10 +130,55 @@ class RingtoneSelectionViewModel @Inject constructor(
 
     fun setInitialSelection(uri: String?) {
         _uiState.update { state ->
+            val ringtones = state.ringtones.toMutableList()
+            if (!uri.isNullOrEmpty() && ringtones.none { it.uri == uri }) {
+                // If the initial URI is a custom one not in the system list, add it
+                val title = getFileName(Uri.parse(uri)) ?: "Custom Ringtone"
+                ringtones.add(1, RingtoneItem(title, uri))
+            }
             state.copy(
                 selectedUri = uri,
-                ringtones = state.ringtones.map { it.copy(isSelected = it.uri == uri) }
+                ringtones = ringtones.map { it.copy(isSelected = it.uri == uri) }
             )
+        }
+    }
+
+    fun addCustomRingtone(uri: Uri) {
+        viewModelScope.launch {
+            // Grant persistable permission
+            try {
+                context.contentResolver.takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+            } catch (e: Exception) {
+                // Not always possible depending on picker and SDK version
+            }
+
+            val title = getFileName(uri) ?: "Custom Ringtone"
+            val uriString = uri.toString()
+            
+            _uiState.update { state ->
+                val newList = state.ringtones.toMutableList()
+                if (newList.none { it.uri == uriString }) {
+                    newList.add(1, RingtoneItem(title, uriString)) // Add after Default
+                }
+                state.copy(ringtones = newList)
+            }
+            selectRingtone(uriString)
+        }
+    }
+
+    private fun getFileName(uri: Uri): String? {
+        return try {
+            context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+                val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (cursor.moveToFirst()) {
+                    cursor.getString(nameIndex)
+                } else null
+            }
+        } catch (e: Exception) {
+            null
         }
     }
 

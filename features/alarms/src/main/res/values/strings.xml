@@ -49,7 +49,8 @@
     <string name="seconds_unit">%d seconds</string>
     <string name="seconds_unit_short">%ds</string>
     <string name="minutes_unit_short">%dm</string>
-    <string name="ringtone_selection_title">Alarm Sound</string>
+    <string name="ringtone_custom_pick">Pick from device…</string>
+    <string name="ringtone_selection_title">Ringtone</string>
     <string name="default_ringtone">Default</string>
     <string name="no_ringtone">No Sound</string>
     

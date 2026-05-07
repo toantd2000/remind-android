@@ -29,7 +29,7 @@ firebaseBom = "34.12.0"
 retrofit = "3.0.0"
 okhttp = "5.3.2"
 coil = "2.7.0"
-liteverDesignsystem = "v1.0.0"
+liteverDesignsystem = "v1.0.3"
 playServicesAds = "23.6.0"
 
 

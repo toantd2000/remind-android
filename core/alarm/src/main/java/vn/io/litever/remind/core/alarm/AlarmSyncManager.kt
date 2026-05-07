@@ -31,51 +31,56 @@ class AlarmSyncManager @Inject constructor(
         }
 
         val alarms = alarmRepository.getAllAlarms().first()
-        val enabledAlarms = alarms.filter { it.isEnabled }
+        val now = LocalDateTime.now()
 
-        enabledAlarms.forEach { alarm ->
-            // Logic to check if missed:
-            // We look for occurrences between [lastCheck, now].
-            // If the earliest occurrence starting from max(lastCheck, lastTriggered) is in the past (before now - grace), it was missed.
-            
+        alarms.forEach { alarm ->
+            if (!alarm.isEnabled) return@forEach
+
+            // 1. Logic to check if missed:
+            // Use getNextOccurrence(startDateTime) with original alarm to respect skip during missed check
             val startTimeMillis = maxOf(lastCheck, alarm.lastTriggeredTime ?: 0L)
             val startDateTime = LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(startTimeMillis),
                 ZoneId.systemDefault()
             )
 
-            val nextOccurrence = alarm.getActualNextOccurrence(startDateTime)
+            val nextOccurrence = alarm.getNextOccurrence(startDateTime)
             val occurrenceMillis = nextOccurrence.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
 
-            // If the next occurrence according to our last record is in the past, it was missed
+            // 2. Prepare updated alarm: Clear expired skip status BEFORE rescheduling
+            var currentAlarm = alarm
+            if (alarm.isSkipExpired(now)) {
+                currentAlarm = alarm.copy(skippedAt = null)
+                alarmRepository.updateAlarm(currentAlarm)
+            }
+
+            // 3. Process Missed or Reschedule
             if (occurrenceMillis < nowMillis - 60000) { // 1 minute grace period
                 missedAlarmRepository.insertMissedAlarm(
                     MissedAlarm(
-                        alarmId = alarm.id,
-                        alarmLabel = alarm.label,
+                        alarmId = currentAlarm.id,
+                        alarmLabel = currentAlarm.label,
                         scheduledTime = occurrenceMillis,
                         reason = MissedReason.POWER_OFF
                     )
                 )
 
                 // Update status: if one-time alarm, disable it
-                if (alarm.repeatDays.isEmpty()) {
-                    val updatedAlarm = alarm.copy(isEnabled = false)
+                if (currentAlarm.repeatDays.isEmpty()) {
+                    val updatedAlarm = currentAlarm.copy(isEnabled = false)
                     alarmRepository.updateAlarm(updatedAlarm)
-                    // No need to schedule if disabled
                 } else {
-                    // For recurring alarms, keep it enabled and reschedule for the NEXT occurrence
-                    alarmScheduler.schedule(alarm)
+                    // For recurring alarms, reschedule for the NEXT occurrence
+                    alarmScheduler.schedule(currentAlarm)
                 }
             } else {
                 // Not missed, just normal rescheduling (e.g. after reboot)
-                // Always schedule the main occurrence
-                alarmScheduler.schedule(alarm)
+                alarmScheduler.schedule(currentAlarm)
                 
-                // Also restore snooze if it's still in the future
-                val snoozeTime = alarm.snoozeNextTriggerTime
+                // Restore snooze if active
+                val snoozeTime = currentAlarm.snoozeNextTriggerTime
                 if (snoozeTime != null && snoozeTime > nowMillis) {
-                    alarmScheduler.scheduleSnooze(alarm, snoozeTime)
+                    alarmScheduler.scheduleSnooze(currentAlarm, snoozeTime)
                 }
             }
         }

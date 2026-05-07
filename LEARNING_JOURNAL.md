@@ -1,4 +1,10 @@
-# Learning Journal & Self-Correction Log
+## [2026-05-07] Alarm Skip Logic & Sync Manager Consistency
+- **Logic Ordering in Sync**: When a sync process performs both validation (e.g., missed alarm check) and cleanup (e.g., clearing expired flags), the validation **MUST** happen before the cleanup if it depends on the data being cleaned. Clearing a "skippedAt" flag before checking for missed alarms causes the system to "forget" the skip intent.
+- **Unified Calculation**: Always use the most high-level calculation method (`getNextOccurrence`) that accounts for all modifiers (skips, snoozes) rather than raw calculations.
+
+### Corrective Actions
+- Fixed regression in `AlarmSyncManager.sync()` by moving `skippedAt` cleanup to the end of the alarm processing loop.
+- Updated `AlarmSyncManagerTest` to verify both the correct skip handling and the eventual cleanup.
 
 ## [2026-05-07] Automatic Database Cleanup & Flow Loops
 ### Key Lessons

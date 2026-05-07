@@ -65,6 +65,10 @@ data class Alarm(
             return now.with(time).plusDays(daysDiff).withSecond(0).withNano(0)
         }
     }
+
+    fun isSkipExpired(now: LocalDateTime = LocalDateTime.now()): Boolean {
+        return skippedAt != null && skippedAt.isBefore(now)
+    }
 }
 
 enum class DayOfWeek {

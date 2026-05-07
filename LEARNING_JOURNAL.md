@@ -1,5 +1,16 @@
 # Learning Journal & Self-Correction Log
 
+## [2026-05-07] Automatic Database Cleanup & Flow Loops
+### Key Lessons
+- **Flow Trigger Loops**: When a `Flow` from a database (like Room) is mapped in a `ViewModel`, performing a database update within that `map` can potentially cause an infinite loop if the update triggers another emission that satisfies the same condition.
+- **Self-Terminating Updates**: To safely update the database from within a `Flow.map`, ensure the update logic modifies the data such that it **no longer satisfies** the trigger condition on the next emission. For example, clearing an "expired" flag or a past timestamp.
+- **Batch vs. Individual Updates**: For multiple items requiring cleanup, launching individual coroutines is acceptable for small datasets, but consider batch updates for performance-critical scenarios or large lists.
+- **State Consistency**: Providing a "cleaned" list immediately in the `map` ensures the UI is responsive, while the background database update ensures persistence.
+
+### Corrective Actions
+- Implemented `isSkipExpired` cleanup in `AlarmListViewModel`'s `alarms` flow.
+- Added safety check to only launch update if the condition is met, preventing loops.
+
 ## [2026-05-05] PendingIntent Identity & Alarm Collisions
 ### Key Lessons
 - **PendingIntent Equality**: In Android, two `PendingIntent` objects are considered equal if their `ComponentName`, `Action`, and `RequestCode` match. `Intent` extras are **NOT** part of the identity.

@@ -18,6 +18,7 @@ import vn.io.litever.remind.core.domain.scheduler.AlarmScheduler
 import vn.io.litever.remind.core.model.Alarm
 import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState
 import vn.io.litever.remind.features.alarms.ui.state.calculateNextAlarm
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
@@ -53,7 +54,16 @@ class AlarmListViewModel @Inject constructor(
 
     val alarms: StateFlow<List<Alarm>?> = repository.getAllAlarms()
         .map { list ->
-            list.sortedWith(
+            val now = LocalDateTime.now()
+            list.map { alarm ->
+                if (alarm.isSkipExpired(now)) {
+                    val updated = alarm.copy(skippedAt = null)
+                    viewModelScope.launch { repository.updateAlarm(updated) }
+                    updated
+                } else {
+                    alarm
+                }
+            }.sortedWith(
                 compareByDescending<Alarm> { it.isEnabled }
                     .thenBy { it.time }
             )

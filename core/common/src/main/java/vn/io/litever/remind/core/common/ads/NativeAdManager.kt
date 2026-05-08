@@ -21,8 +21,8 @@ class NativeAdManager @Inject constructor(
     private val loadingIds = ConcurrentHashMap.newKeySet<String>()
     private val lastLoadTime = ConcurrentHashMap<String, Long>()
 
-    // Cache duration: 5 minutes
-    private val CACHE_DURATION_MS = 5 * 60 * 1000L
+    // Cache duration: 2 minutes
+    private val CACHE_DURATION_MS = 2 * 60 * 1000L
 
     fun loadAd(adId: String, onComplete: (NativeAd?) -> Unit) {
         val currentTime = System.currentTimeMillis()

@@ -16,46 +16,57 @@ fun ReminderInfoView(
 ) {
     if (reminder == null) return
 
-    Column(
+    Card(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+        ),
+        border = androidx.compose.foundation.BorderStroke(
+            1.dp,
+            MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)
+        )
     ) {
-        reminder.messages.forEach { msg ->
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.medium,
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-                ),
-                border = androidx.compose.foundation.BorderStroke(
-                    1.dp,
-                    MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)
-                )
+        Box(modifier = Modifier.fillMaxWidth()) {
+            // Left Accent Bar (Bookmark effect for the entire block)
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
             ) {
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    // Left Accent Bar (Bookmark effect)
-                    Box(
-                        modifier = Modifier
-                            .matchParentSize()
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .width(4.dp)
-                                .background(
-                                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
-                                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(4.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
                         )
-                    }
+                )
+            }
 
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 4.dp)
+                    .padding(vertical = 8.dp)
+            ) {
+                reminder.messages.forEachIndexed { index, msg ->
                     Text(
                         text = msg,
-                        modifier = Modifier.padding(16.dp).padding(start = 4.dp),
+                        modifier = Modifier.padding(start = 12.dp, end = 16.dp)
+                            .padding(vertical = 8.dp),
                         style = MaterialTheme.typography.bodyLarge.copy(
                             fontStyle = FontStyle.Italic,
                             color = MaterialTheme.colorScheme.primary
                         )
                     )
+                    
+                    if (index < reminder.messages.size - 1) {
+                        HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            thickness = 0.5.dp,
+                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                        )
+                    }
                 }
             }
         }

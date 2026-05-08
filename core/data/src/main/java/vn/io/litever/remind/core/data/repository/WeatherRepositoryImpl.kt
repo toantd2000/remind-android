@@ -9,6 +9,7 @@ import vn.io.litever.remind.core.datastore.WeatherPreferencesDataSource
 import vn.io.litever.remind.core.domain.repository.WeatherRepository
 import vn.io.litever.remind.core.model.WeatherResponse
 import vn.io.litever.remind.core.network.WeatherApi
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,6 +19,10 @@ class WeatherRepositoryImpl @Inject constructor(
     private val preferencesDataSource: WeatherPreferencesDataSource,
     private val json: Json
 ) : WeatherRepository {
+
+    private fun getCurrentLanguage(): String {
+        return Locale.getDefault().language
+    }
 
     override fun getRemindWeather(): Flow<WeatherResponse?> {
         return preferencesDataSource.weatherJson.map { jsonString ->
@@ -35,10 +40,12 @@ class WeatherRepositoryImpl @Inject constructor(
 
     override suspend fun refreshWeather(force: Boolean) {
         val lastUpdated = preferencesDataSource.lastUpdatedMillis.first()
+        val cachedLang = preferencesDataSource.cachedLanguage.first()
+        val currentLang = getCurrentLanguage()
         val currentTime = System.currentTimeMillis()
         
-        // Cache for 1 hour (3600000 ms), unless forced
-        if (!force && currentTime - lastUpdated < 3600000) {
+        // Cache for 1 hour (3600000 ms), unless forced OR language changed
+        if (!force && (currentTime - lastUpdated < 3600000) && (cachedLang == currentLang)) {
             return
         }
 
@@ -47,14 +54,15 @@ class WeatherRepositoryImpl @Inject constructor(
         val query = if (savedName.isNotBlank()) savedName else ""
 
         try {
-            val response = weatherApi.getRemindWeather(query = query)
+            val response = weatherApi.getRemindWeather(query = query, lang = currentLang)
             val jsonString = json.encodeToString(response)
             
             // Save weather data and update the location identifier for the next request
             preferencesDataSource.saveWeather(
                 json = jsonString,
                 timestamp = currentTime,
-                locationUrl = response.locationUrl ?: response.locationName
+                locationUrl = response.locationUrl ?: response.locationName,
+                lang = currentLang
             )
         } catch (e: Exception) {
             // Log error or handle failure
@@ -63,7 +71,7 @@ class WeatherRepositoryImpl @Inject constructor(
 
     override suspend fun searchLocation(query: String): List<vn.io.litever.remind.core.model.LocationSearchResponse> {
         return try {
-            weatherApi.searchLocation(query)
+            weatherApi.searchLocation(query, lang = getCurrentLanguage())
         } catch (e: Exception) {
             emptyList()
         }

@@ -69,6 +69,7 @@ import vn.io.litever.remind.features.settings.ui.navigateToPermissions
 import vn.io.litever.remind.features.settings.ui.navigateToAlarmSettings
 import vn.io.litever.remind.features.settings.ui.navigateToLicenses
 import vn.io.litever.remind.features.settings.ui.navigateToUpdateHistory
+import vn.io.litever.remind.features.settings.ui.navigateToAttributions
 import vn.io.litever.remind.core.designsystem.components.ReMindLogo
 import vn.io.litever.remind.features.mission.ui.missionGraph
 import vn.io.litever.remind.features.mission.ui.navigateToTypingMissionConfig
@@ -426,6 +427,7 @@ class MainActivity : ComponentActivity() {
                                         onNavigateToAlarmSettings = { navController.navigateToAlarmSettings() },
                                         onNavigateToLicenses = { navController.navigateToLicenses() },
                                         onNavigateToUpdateHistory = { navController.navigateToUpdateHistory() },
+                                        onNavigateToAttributions = { navController.navigateToAttributions() },
                                         onNavigateBack = { navController.popBackStack() }
 
                                     )

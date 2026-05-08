@@ -54,6 +54,14 @@
     <string name="missed_alarm_title">Báo thức bị bỏ lỡ</string>
     <string name="missed_alarm_text">Bạn đã bỏ lỡ một báo thức</string>
     <string name="coming_soon">Sắp ra mắt</string>
+
+    <!-- Weather -->
+    <string name="weather_change_location">Thay đổi vị trí</string>
+    <string name="weather_unknown_location">Không xác định</string>
+    <string name="weather_temp_range">Cao: %1$d° • Thấp: %2$d°</string>
+    <string name="weather_temp_celsius">%d°C</string>
+    <string name="weather_feels_like">Cảm giác như %d°</string>
+    <string name="weather_powered_by">Cung cấp bởi WeatherAPI</string>
 </resources>
 
 

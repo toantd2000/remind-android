@@ -53,6 +53,14 @@
     <string name="mission_phrases_none_selected">None selected</string>
     <string name="mission_phrases_selected">%1$d phrases selected</string>
     <string name="coming_soon">Coming Soon</string>
+
+    <!-- Weather -->
+    <string name="weather_change_location">Change Location</string>
+    <string name="weather_unknown_location">Unknown</string>
+    <string name="weather_temp_range">High: %1$d° • Low: %2$d°</string>
+    <string name="weather_temp_celsius">%d°C</string>
+    <string name="weather_feels_like">Feels like %d°</string>
+    <string name="weather_powered_by">Powered by WeatherAPI</string>
 </resources>
 
 

@@ -19,7 +19,7 @@ fun NextAlarmHeader(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.1f),
+        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f),
         shape = MaterialTheme.shapes.extraLarge,
         modifier = modifier
             .padding(horizontal = 20.dp, vertical = 6.dp)
@@ -39,7 +39,7 @@ fun NextAlarmHeader(
             Text(
                 text = formatNextAlarmText(state),
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
                 fontWeight = FontWeight.SemiBold
             )
         }

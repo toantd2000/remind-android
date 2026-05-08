@@ -47,6 +47,7 @@ fun SettingsRoute(
     onNavigateToAlarmSettings: () -> Unit,
     onNavigateToLicenses: () -> Unit,
     onNavigateToUpdateHistory: () -> Unit,
+    onNavigateToAttributions: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -57,7 +58,8 @@ fun SettingsRoute(
         onNavigateToPermissions = onNavigateToPermissions,
         onNavigateToAlarmSettings = onNavigateToAlarmSettings,
         onNavigateToLicenses = onNavigateToLicenses,
-        onNavigateToUpdateHistory = onNavigateToUpdateHistory
+        onNavigateToUpdateHistory = onNavigateToUpdateHistory,
+        onNavigateToAttributions = onNavigateToAttributions
     )
 }
 
@@ -71,7 +73,8 @@ fun SettingsScreen(
     onNavigateToPermissions: () -> Unit,
     onNavigateToAlarmSettings: () -> Unit,
     onNavigateToLicenses: () -> Unit,
-    onNavigateToUpdateHistory: () -> Unit
+    onNavigateToUpdateHistory: () -> Unit,
+    onNavigateToAttributions: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -132,9 +135,10 @@ fun SettingsScreen(
                     )
                     
                     SettingsItem(
-                        title = stringResource(R.string.setting_licenses),
+                        title = stringResource(R.string.setting_attributions_title),
+                        subtitle = stringResource(R.string.setting_attributions_subtitle),
                         icon = Icons.Rounded.Description,
-                        onClick = onNavigateToLicenses
+                        onClick = onNavigateToAttributions
                     )
                 }
             }
@@ -176,7 +180,8 @@ fun SettingsScreenPreview() {
             onNavigateToPermissions = {},
             onNavigateToAlarmSettings = {},
             onNavigateToLicenses = {},
-            onNavigateToUpdateHistory = {}
+            onNavigateToUpdateHistory = {},
+            onNavigateToAttributions = {}
         )
     }
 }

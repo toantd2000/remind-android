@@ -39,6 +39,14 @@
     <string name="setting_privacy">Privacy Policy</string>
     <string name="setting_history">Update History</string>
     <string name="setting_licenses">Open Source Licenses</string>
+    <string name="setting_attributions_title">Attributions &amp; Credits</string>
+    <string name="setting_attributions_subtitle">Open source libraries and illustrations</string>
+    <string name="attributions_thanks_message">Special thanks to the following resources that made this app possible:</string>
+    <string name="attribution_storyset_title">Illustrations by Storyset</string>
+    <string name="attribution_storyset_desc">Beautiful illustrations used throughout the app</string>
+    <string name="attribution_oss_title">Open Source Libraries</string>
+    <string name="attribution_oss_desc">Third-party software used in this project</string>
+
 
     <string name="setting_version_title">App Version</string>
     <string name="app_version_format">%1$s (%2$d)</string>

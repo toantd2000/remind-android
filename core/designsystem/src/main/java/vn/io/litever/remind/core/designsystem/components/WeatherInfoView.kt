@@ -1,8 +1,10 @@
 package vn.io.litever.remind.core.designsystem.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.magnifier
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -15,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -22,7 +26,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import vn.io.litever.designsystem.components.LiteverTextButton
 import vn.io.litever.designsystem.theme.TailwindColors
+import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.*
 
@@ -44,13 +50,24 @@ fun WeatherInfoView(
 
 @Composable
 private fun getWeatherColors(temp: Double, isDay: Int): List<Color> {
-    val isNight = isDay == 0
     return when {
-        isNight -> listOf(TailwindColors.Indigo.c800, TailwindColors.Violet.c900) // Night
         temp < 15 -> listOf(TailwindColors.Sky.c300, TailwindColors.Cyan.c200)    // Cold
         temp < 25 -> listOf(TailwindColors.Emerald.c300, TailwindColors.Green.c100) // Mild
         temp < 32 -> listOf(TailwindColors.Amber.c200, TailwindColors.Amber.c50)   // Warm
         else -> listOf(TailwindColors.Orange.c300, TailwindColors.Rose.c100)       // Hot
+    }
+}
+
+@Composable
+private fun getPanaIllustration(hint: String): Int {
+    val lowerHint = hint.lowercase()
+    return when {
+        lowerHint.contains("mưa") -> R.drawable.raining_pana
+        lowerHint.contains("ô") -> R.drawable.umbrella_pana
+        lowerHint.contains("nắng") -> R.drawable.sunny_day_pana
+        lowerHint.contains("gió") -> R.drawable.windy_day_pana
+        lowerHint.contains("lạnh") -> R.drawable.fall_is_coming_pana
+        else -> R.drawable.windy_day_pana
     }
 }
 
@@ -65,7 +82,7 @@ private fun FullWeatherView(
 
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         border = androidx.compose.foundation.BorderStroke(
             1.dp,
@@ -82,39 +99,39 @@ private fun FullWeatherView(
                         )
                     )
                 )
-                .padding(16.dp)
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                // Row 1: Location
-                Row(
-                    modifier = Modifier.fillMaxWidth().clickable { onLocationClick() },
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Top
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = weather.locationName ?: "Unknown",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Icon(
-                            imageVector = Icons.Rounded.ChevronRight,
-                            contentDescription = "Change Location",
-                            modifier = Modifier.size(20.dp).padding(start = 4.dp),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
 
-                // Row 2: Main Info (Temp Left, Icon Right)
+                // Location & Main Temperature Row
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(horizontal = 8.dp)
+                        .padding(top = 8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Left: Temperature & Min/Max
-                    Column {
+                    // Left: Location, Temperature, Min/Max
+                    Column(modifier = Modifier.weight(1f)) {
+                        LiteverTextButton(
+                            onClick = onLocationClick,
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = weather.locationName ?: stringResource(R.string.weather_unknown_location),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Icon(
+                                    imageVector = Icons.Rounded.ChevronRight,
+                                    contentDescription = stringResource(R.string.weather_change_location),
+                                    modifier = Modifier
+                                        .size(20.dp)
+                                        .padding(start = 4.dp),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
                         Text(
                             text = "${weather.current.tempC.toInt()}°",
                             style = MaterialTheme.typography.displayLarge.copy(
@@ -122,78 +139,88 @@ private fun FullWeatherView(
                                 fontSize = 72.sp,
                                 letterSpacing = (-2).sp
                             ),
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.padding(start = 8.dp)
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
+
                         Text(
-                            text = "Cao: ${weather.dailySummary.maxTemp.toInt()}° • Thấp: ${weather.dailySummary.minTemp.toInt()}°",
+                            text = stringResource(
+                                R.string.weather_temp_range,
+                                weather.dailySummary.maxTemp.toInt(),
+                                weather.dailySummary.minTemp.toInt()
+                            ),
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(start = 8.dp)
                         )
                         Text(
-                            text = "Cảm giác như ${weather.current.feelsLikeC.toInt()}°",
+                            text = stringResource(R.string.weather_feels_like, weather.current.feelsLikeC.toInt()),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
-                            modifier = Modifier.padding(top = 2.dp)
+                            modifier = Modifier.padding(start = 8.dp, top = 2.dp),
+
                         )
                     }
 
-                    // Right: Condition Icon & Text
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(end = 8.dp)
-                    ) {
-                        AsyncImage(
-                            model = weather.current.conditionIcon,
-                            contentDescription = null,
-                            modifier = Modifier.size(80.dp),
-                            contentScale = ContentScale.Fit
-                        )
-                        Text(
-                            text = weather.current.conditionText,
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(top = 4.dp)
-                        )
-                    }
+                    // Right: Illustration (Pana)
+                    val panaRes = getPanaIllustration(weather.aiAnalysis.hint)
+                    Image(
+                        painter = painterResource(id = panaRes),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .weight(1.0f)
+                            .padding(start = 8.dp),
+                        contentScale = ContentScale.Fit
+                    )
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                // Condition Row: Icon & Text (below temperature)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                ) {
+                    AsyncImage(
+                        model = weather.current.conditionIcon,
+                        contentDescription = null,
+                        modifier = Modifier.size(28.dp),
+                        contentScale = ContentScale.Fit
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = weather.current.conditionText,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                
 
-                // Row 3: AI Hint (Free floating)
+                // AI Hint Section
                 if (weather.aiAnalysis.hint.isNotBlank()) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.Top,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Text(
-                            text = "✨",
-                            fontSize = 20.sp,
-                            modifier = Modifier.padding(top = 2.dp)
-                        )
-                        Text(
-                            text = weather.aiAnalysis.hint,
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                lineHeight = 20.sp
-                            ),
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f),
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
+                    Text(
+                        text = "✨ "  + weather.aiAnalysis.hint,
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            lineHeight = 20.sp
+                        ),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f),
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                    )
                 }
-
+                
                 // Attribution
                 Text(
-                    text = "Powered by WeatherAPI",
+                    text = stringResource(R.string.weather_powered_by),
                     style = MaterialTheme.typography.labelSmall.copy(
                         fontSize = 9.sp,
                         fontWeight = FontWeight.Medium
                     ),
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f),
-                    modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = 16.dp, bottom = 8.dp),
                     textAlign = TextAlign.End
                 )
             }
@@ -212,7 +239,7 @@ private fun CompactWeatherView(
 
     Surface(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(8.dp),
         color = Color.Transparent,
         border = androidx.compose.foundation.BorderStroke(
             1.dp,
@@ -230,53 +257,68 @@ private fun CompactWeatherView(
                     )
                 )
                 .clickable { onLocationClick() }
-                .padding(16.dp)
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                // Icon inside a subtle circle
+            Row(
+                modifier = Modifier.height(IntrinsicSize.Min),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Left: Pana Illustration - Sử dụng Box + matchParentSize để không làm bung chiều cao Row
+                val panaRes = getPanaIllustration(weather.aiAnalysis.hint)
                 Box(
                     modifier = Modifier
-                        .background(
-                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f),
-                            shape = androidx.compose.foundation.shape.CircleShape
-                        )
-                        .padding(6.dp)
+                        .fillMaxHeight()
+                        .aspectRatio(1f)
                 ) {
-                    AsyncImage(
-                        model = weather.current.conditionIcon,
+                    Image(
+                        painter = painterResource(id = panaRes),
                         contentDescription = null,
-                        modifier = Modifier.size(44.dp)
+                        modifier = Modifier
+                            .matchParentSize()
+                            .padding(all = 2.dp),
+                        contentScale = ContentScale.Fit
                     )
                 }
 
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(12.dp))
 
-                Column(modifier = Modifier.weight(1f)) {
-                    // Top row: Temp & Cond + Location
-                    Text(
-                        text = "${weather.current.tempC.toInt()}°C • ${weather.current.conditionText}",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(top = 8.dp, bottom = 8.dp, end = 8.dp)
+                ) {
+                    // Row 1: Temperature & Condition Summary
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = stringResource(R.string.weather_temp_celsius, weather.current.tempC.toInt()) + " • ",
+                            style = MaterialTheme.typography.labelMedium.copy(
+                                fontWeight = FontWeight.Black
+                            ),
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+
+                        AsyncImage(
+                            model = weather.current.conditionIcon,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = weather.current.conditionText,
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(4.dp))
 
-                    // Bottom row: AI Hint
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = "✨",
-                            fontSize = 12.sp,
-                            modifier = Modifier.padding(end = 6.dp)
-                        )
-                        Text(
-                            text = weather.aiAnalysis.hint,
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            fontWeight = FontWeight.Medium,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
+                    // Row 2: AI Hint
+                    Text(
+                        text = "✨ " + weather.aiAnalysis.hint,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             }
         }

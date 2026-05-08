@@ -51,7 +51,7 @@ class WeatherRepositoryImpl @Inject constructor(
 
         // Use selected location name if available
         val savedName = preferencesDataSource.selectedLocationName.first()
-        val query = if (savedName.isNotBlank()) savedName else ""
+        val query = if (savedName.isNotBlank()) savedName else null
 
         try {
             val response = weatherApi.getRemindWeather(query = query, lang = currentLang)

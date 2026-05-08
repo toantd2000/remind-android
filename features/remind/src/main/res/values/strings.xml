@@ -6,4 +6,8 @@
     <string name="greeting_afternoon">Good afternoon!</string>
     <string name="greeting_evening">Good evening!</string>
     <string name="greeting_night">Good night!</string>
+    <string name="weather_location_automatic">Automatic Location</string>
+    <string name="weather_location_automatic_desc">Get weather based on your current location</string>
+    <string name="search_location_title">Search Location</string>
+    <string name="search_location_placeholder">Enter city name...</string>
 </resources>

@@ -6,4 +6,8 @@
     <string name="greeting_afternoon">Chào buổi chiều!</string>
     <string name="greeting_evening">Chào buổi tối!</string>
     <string name="greeting_night">Chúc ngủ ngon!</string>
+    <string name="weather_location_automatic">Vị trí tự động</string>
+    <string name="weather_location_automatic_desc">Lấy thời tiết dựa trên vị trí của bạn</string>
+    <string name="search_location_title">Tìm địa điểm</string>
+    <string name="search_location_placeholder">Nhập tên thành phố...</string>
 </resources>

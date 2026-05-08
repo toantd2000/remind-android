@@ -10,7 +10,8 @@ data class WeatherResponse(
     @SerialName("current") val current: CurrentWeather,
     @SerialName("daily_summary") val dailySummary: DailySummary,
     @SerialName("hourly_forecast") val hourlyForecast: List<HourlyForecast>,
-    @SerialName("ai_analysis") val aiAnalysis: AiAnalysis
+    @SerialName("ai_analysis") val aiAnalysis: AiAnalysis,
+    @SerialName("ai_status") val aiStatus: String = "completed"
 )
 
 @Serializable

@@ -61,4 +61,11 @@ class LocationSearchViewModel @Inject constructor(
             weatherRepository.refreshWeather(force = true)
         }
     }
+
+    fun onAutomaticLocationSelected() {
+        viewModelScope.launch {
+            weatherRepository.saveSelectedLocation("", "")
+            weatherRepository.refreshWeather(force = true)
+        }
+    }
 }

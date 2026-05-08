@@ -10,6 +10,7 @@ import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.MyLocation
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -46,6 +47,7 @@ fun LocationSearchRoute(
         selectedLocationCountry = selectedCountry,
         onSearchQueryChange = viewModel::onSearchQueryChange,
         onLocationSelected = viewModel::onLocationSelected,
+        onAutomaticLocationSelected = viewModel::onAutomaticLocationSelected,
         onBackClick = onBackClick,
         modifier = modifier
     )
@@ -61,13 +63,14 @@ fun LocationSearchScreen(
     selectedLocationCountry: String,
     onSearchQueryChange: (String) -> Unit,
     onLocationSelected: (LocationSearchResponse) -> Unit,
+    onAutomaticLocationSelected: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     ReMindScaffold(
         topBar = {
             ReMindTopAppBar(
-                title = "Tìm địa điểm",
+                title = stringResource(R.string.search_location_title),
                 onBackClick = onBackClick
             )
         }
@@ -82,7 +85,7 @@ fun LocationSearchScreen(
                 value = searchQuery,
                 onValueChange = onSearchQueryChange,
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Nhập tên thành phố...") },
+                placeholder = { Text(stringResource(R.string.search_location_placeholder)) },
                 leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null) },
                 trailingIcon = {
                     if (searchQuery.isNotEmpty()) {
@@ -105,6 +108,13 @@ fun LocationSearchScreen(
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
+                    item {
+                        AutomaticLocationItem(
+                            isSelected = selectedLocationName.isBlank(),
+                            onClick = onAutomaticLocationSelected
+                        )
+                    }
+
                     if (searchQuery.isBlank() && selectedLocationName.isNotBlank()) {
                         item {
                             Text(
@@ -139,6 +149,62 @@ fun LocationSearchScreen(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun AutomaticLocationItem(
+    isSelected: Boolean = false,
+    onClick: () -> Unit
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        shape = MaterialTheme.shapes.medium,
+        color = if (isSelected) {
+            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+        } else {
+            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+        },
+        border = androidx.compose.foundation.BorderStroke(
+            1.dp,
+            if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+            else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)
+        )
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                Icons.Rounded.MyLocation,
+                contentDescription = null,
+                tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(R.string.weather_location_automatic),
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = stringResource(R.string.weather_location_automatic_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            if (isSelected) {
+                Icon(
+                    imageVector = Icons.Rounded.Check,
+                    contentDescription = "Selected",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
+                )
             }
         }
     }

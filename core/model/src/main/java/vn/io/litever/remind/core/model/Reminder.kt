@@ -7,7 +7,8 @@ import kotlinx.serialization.Serializable
 data class ReminderResponse(
     @SerialName("messages") val messages: List<String>,
     @SerialName("ad_config") val adConfig: AdConfig,
-    @SerialName("metadata") val metadata: ReminderMetadata? = null
+    @SerialName("metadata") val metadata: ReminderMetadata? = null,
+    @SerialName("ai_status") val aiStatus: String = "completed"
 )
 
 @Serializable

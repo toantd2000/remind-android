@@ -21,6 +21,10 @@ class ReminderRepositoryImpl @Inject constructor(
     private val json: Json
 ) : ReminderRepository {
 
+    private fun getCurrentLanguage(): String {
+        return java.util.Locale.getDefault().language
+    }
+
     override fun getReminder(): Flow<ReminderResponse?> {
         return preferencesDataSource.reminderJson.map { jsonString ->
             if (jsonString != null) {
@@ -47,7 +51,7 @@ class ReminderRepositoryImpl @Inject constructor(
         try {
             // Always pass empty string for automatic fetch as per user request
             val finalQuery = query ?: ""
-            val response = reminderApi.getReminder(query = finalQuery)
+            val response = reminderApi.getReminder(query = finalQuery, lang = getCurrentLanguage())
             val jsonString = json.encodeToString(response)
             
             preferencesDataSource.saveReminder(jsonString, today)

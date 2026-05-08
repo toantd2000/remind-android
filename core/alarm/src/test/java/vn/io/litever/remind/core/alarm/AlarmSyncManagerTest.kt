@@ -38,23 +38,22 @@ class AlarmSyncManagerTest {
 
     @Test
     fun `sync should not mark skipped alarm as missed`() = runTest {
-        // Given: An alarm at 7:00 AM today, which was skipped
-        val now = LocalDateTime.of(2024, 1, 1, 8, 0) // It's 8:00 AM
-        val alarmTime = LocalTime.of(7, 0)
-        val skippedTime = LocalDateTime.of(2024, 1, 1, 7, 0)
+        // Given: An alarm that should have triggered 1 hour ago, but was skipped
+        val now = LocalDateTime.now().withSecond(0).withNano(0)
+        val alarmTime = now.minusHours(1).toLocalTime()
+        val skippedTime = now.minusHours(1)
         
         val alarm = Alarm(
             id = 1,
             time = alarmTime,
             isEnabled = true,
-            repeatDays = listOf(DayOfWeek.MONDAY), // Assume 2024-01-01 is Monday
+            repeatDays = listOf(DayOfWeek.values()[now.dayOfWeek.value - 1]), // Today
             skippedAt = skippedTime
         )
         
         coEvery { alarmRepository.getAllAlarms() } returns flowOf(listOf(alarm))
         every { preferencesDataSource.lastMissedCheckTime } returns flowOf(
-            LocalDateTime.of(2024, 1, 1, 6, 0)
-                .atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            now.minusHours(2).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         )
 
         // When: Syncing

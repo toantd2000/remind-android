@@ -1,3 +1,18 @@
+## [2026-05-09] Release v1.1.3 & AI Lifecycle Management
+
+### Context
+Integrating real-time AI status tracking for weather/reminder hints and implementing a smart refresh mechanism to handle asynchronous AI processing.
+
+### What happened
+- Added `aiStatus` to domain models and tracked processing states.
+- Implemented `checkAndRefreshIfProcessing` logic in `RemindViewModel` to poll for updates.
+- Refined UI to group reminders into a single card for a cleaner dashboard.
+
+### Lessons Learned
+- **AI UX Transparency**: Users are more patient with AI latency when they see a clear "processing" status rather than a static or empty state.
+- **Polling Strategy**: Using a time-based threshold (`lastProcessingRefreshMillis`) prevents excessive network calls while ensuring the UI stays fresh when the user returns to the app or after a short delay.
+- **UI Consolidation**: Grouping related features (like weather and reminders) into a unified card reduces visual noise and cognitive load, especially when using complex layouts like M3 Surface cards.
+
 ## [2026-05-08] Release v1.1.2 & Changelog Localization
 
 ### Context

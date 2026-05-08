@@ -1,8 +1,29 @@
 [
   {
+    "versionName": "1.1.3",
+    "date": "2026-05-09",
+    "isLatest": true,
+    "multiLangNotes": {
+      "vi": [
+        "Tích hợp trạng thái AI thời gian thực cho thời tiết và lời nhắc.",
+        "Cơ chế tự động cập nhật thông minh khi AI đang xử lý.",
+        "Tự động nhận diện vị trí để dự báo thời tiết chính xác hơn.",
+        "Gộp các lời nhắc vào một thẻ duy nhất giúp tập trung hơn.",
+        "Màn hình 'Ghi công' mới để vinh danh các tài nguyên mã nguồn mở."
+      ],
+      "en": [
+        "Real-time AI status tracking for weather and reminder hints.",
+        "Smart refresh mechanism when AI is processing.",
+        "Automatic location detection for precise weather forecasts.",
+        "Grouped reminders into a single card for better focus.",
+        "New Attributions screen to credit open-source resources."
+      ]
+    }
+  },
+  {
     "versionName": "1.1.2",
     "date": "2026-05-07",
-    "isLatest": true,
+    "isLatest": false,
     "multiLangNotes": {
       "vi": [
         "Cho phép chọn tệp âm thanh bất kỳ làm nhạc chuông báo thức.",

@@ -8,11 +8,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.3] - 2026-05-09
 
 ### Added
+- **AI-Powered Insights:** Integrated real-time AI status tracking for weather and reminder hints.
+- **Smart Refresh:** Added a smart refresh mechanism that automatically polls for updates when AI is processing.
+- **Location Awareness:** Implemented automatic location detection for precise weather forecasts.
 - **Attributions & Credits:** A new screen to properly credit open-source libraries and illustrations (Storyset).
 - **Personal Thanks:** Included a heartfelt thank you message to the resources and community.
 
 ### Changed
+- **UI Enhancements:**
+    - Grouped reminders into a single elegant card for better focus.
+    - Improved Next Alarm header visibility and styling.
+    - Redesigned Remind screen with a cleaner top bar and better scrolling.
 - **Settings Reorganization:** Moved "Open Source Licenses" into the new Attributions screen for a cleaner Settings layout.
+- **Performance:** Reduced advertisement cache duration for fresher content.
 
 ## [1.1.2] - 2026-05-08
 

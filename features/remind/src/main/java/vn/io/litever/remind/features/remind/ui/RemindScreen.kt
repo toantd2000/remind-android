@@ -6,8 +6,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,6 +18,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
+import vn.io.litever.remind.core.designsystem.components.ReMindLoadingIconButton
 import vn.io.litever.remind.core.designsystem.components.WeatherInfoView
 import vn.io.litever.remind.core.designsystem.components.ReminderInfoView
 import vn.io.litever.remind.core.designsystem.components.NativeAdView
@@ -88,23 +87,12 @@ fun RemindScreen(
             ReMindTopAppBar(
                 title = greeting,
                 actions = {
-                    IconButton(
+                    ReMindLoadingIconButton(
                         onClick = onRefresh,
-                        enabled = !isRefreshing && !isProcessing
-                    ) {
-                        if (isRefreshing || isProcessing) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
-                                strokeWidth = 2.dp,
-                                color = LiteverTheme.colors.primary
-                            )
-                        } else {
-                            Icon(
-                                Icons.Rounded.Refresh,
-                                contentDescription = stringResource(R.string.refresh)
-                            )
-                        }
-                    }
+                        icon = Icons.Rounded.Refresh,
+                        loading = isRefreshing,
+                        contentDescription = stringResource(R.string.refresh)
+                    )
                 }
             )
         }

@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -100,6 +101,7 @@ fun PhraseSelectionRoute(
         )
     }
 
+    val context = LocalContext.current
     if (showAddSheet) {
         ModalBottomSheet(
             onDismissRequest = { 
@@ -111,19 +113,21 @@ fun PhraseSelectionRoute(
             tonalElevation = 0.dp,
             dragHandle = { BottomSheetDefaults.DragHandle(color = MaterialTheme.colorScheme.outlineVariant) }
         ) {
-            AddCustomPhraseContent(
-                editingPhrase = phraseToEdit,
-                canBePrivate = viewModel.alarmId != 0L,
-                onDismiss = { 
-                    showAddSheet = false 
-                    phraseToEdit = null
-                },
-                onConfirm = { content, isShared ->
-                    viewModel.saveCustomPhrase(phraseToEdit?.id ?: 0, content, isShared)
-                    showAddSheet = false
-                    phraseToEdit = null
-                }
-            )
+            CompositionLocalProvider(LocalContext provides context) {
+                AddCustomPhraseContent(
+                    editingPhrase = phraseToEdit,
+                    canBePrivate = viewModel.alarmId != 0L,
+                    onDismiss = { 
+                        showAddSheet = false 
+                        phraseToEdit = null
+                    },
+                    onConfirm = { content, isShared ->
+                        viewModel.saveCustomPhrase(phraseToEdit?.id ?: 0, content, isShared)
+                        showAddSheet = false
+                        phraseToEdit = null
+                    }
+                )
+            }
         }
     }
 }

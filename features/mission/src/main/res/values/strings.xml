@@ -27,6 +27,13 @@
     <string name="mission_complete_title">Task complete</string>
     <string name="mission_complete_subtitle">One step closer to your day!</string>
     <string name="mission_complete_next">Next task starting...</string>
+    <string name="typing_mission_title">Typing Task</string>
+    <string name="phrases_to_type">Phrases to type</string>
+    <string name="phrase_list">Phrase List</string>
+    <string name="phrases_count">%d phrases selected</string>
+    <string name="more_phrases_count">+ %d more phrases...</string>
+    <string name="settings_title">Settings</string>
+    <string name="repetition_helper">You will need to type correctly %d phrases to dismiss the alarm.</string>
 </resources>
 
 

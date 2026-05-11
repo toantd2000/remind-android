@@ -27,6 +27,13 @@
     <string name="mission_complete_title">Hoàn thành</string>
     <string name="mission_complete_subtitle">Bắt đầu ngày mới thôi nào!</string>
     <string name="mission_complete_next">Nhiệm vụ tiếp theo...</string>
+    <string name="typing_mission_title">Nhiệm vụ Gõ phím</string>
+    <string name="phrases_to_type">Cụm từ cần gõ</string>
+    <string name="phrase_list">Danh sách cụm từ</string>
+    <string name="phrases_count">%d cụm từ đã chọn</string>
+    <string name="more_phrases_count">+ %d cụm từ đang ẩn...</string>
+    <string name="settings_title">Cài đặt</string>
+    <string name="repetition_helper">Bạn sẽ cần gõ đúng %d cụm từ để tắt báo thức.</string>
 </resources>
 
 

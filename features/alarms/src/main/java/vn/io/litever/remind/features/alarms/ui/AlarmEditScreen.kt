@@ -100,6 +100,7 @@ import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState
 import vn.io.litever.remind.features.alarms.viewmodel.AlarmEditUiState
 import vn.io.litever.remind.features.alarms.viewmodel.AlarmEditViewModel
 import androidx.activity.compose.BackHandler
+import androidx.compose.runtime.CompositionLocalProvider
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
@@ -385,6 +386,7 @@ fun AlarmEditScreen(
     var showGradualVolumeSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
 
+    val context = LocalContext.current
     if (showTimePicker) {
         ReMindTimePickerDialog(
             onDismissRequest = { showTimePicker = false },
@@ -399,7 +401,9 @@ fun AlarmEditScreen(
                 }
             }
         ) {
-            TimePicker(state = timePickerState)
+            CompositionLocalProvider(LocalContext provides context) {
+                TimePicker(state = timePickerState)
+            }
         }
     }
 
@@ -438,7 +442,9 @@ fun AlarmEditScreen(
                 }
             }
         ) {
-            DatePicker(state = datePickerState)
+            CompositionLocalProvider(LocalContext provides context) {
+                DatePicker(state = datePickerState)
+            }
         }
     }
 
@@ -467,13 +473,15 @@ fun AlarmEditScreen(
             containerColor = MaterialTheme.colorScheme.surface,
             tonalElevation = 0.dp
         ) {
-            AutoSilenceBottomSheetContent(
-                currentMinutes = uiState.autoSilenceMinutes,
-                onMinutesSelect = {
-                    onAutoSilenceChange(it)
-                    showAutoSilenceSheet = false
-                }
-            )
+            CompositionLocalProvider(LocalContext provides context) {
+                AutoSilenceBottomSheetContent(
+                    currentMinutes = uiState.autoSilenceMinutes,
+                    onMinutesSelect = {
+                        onAutoSilenceChange(it)
+                        showAutoSilenceSheet = false
+                    }
+                )
+            }
         }
     }
 
@@ -486,13 +494,15 @@ fun AlarmEditScreen(
             containerColor = MaterialTheme.colorScheme.surface,
             tonalElevation = 0.dp
         ) {
-            GentleAlarmBottomSheetContent(
-                currentDuration = uiState.gradualVolumeDurationSeconds,
-                onDurationSelect = {
-                    onGradualVolumeChange(it)
-                    showGradualVolumeSheet = false
-                }
-            )
+            CompositionLocalProvider(LocalContext provides context) {
+                GentleAlarmBottomSheetContent(
+                    currentDuration = uiState.gradualVolumeDurationSeconds,
+                    onDurationSelect = {
+                        onGradualVolumeChange(it)
+                        showGradualVolumeSheet = false
+                    }
+                )
+            }
         }
     }
 

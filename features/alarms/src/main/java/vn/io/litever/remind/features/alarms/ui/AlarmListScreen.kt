@@ -14,6 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -262,16 +263,18 @@ private fun AlarmActionBottomSheet(
     onCancelSkip: () -> Unit,
     onPreview: () -> Unit
 ) {
+    val context = LocalContext.current
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         dragHandle = { BottomSheetDefaults.DragHandle() },
         containerColor = MaterialTheme.colorScheme.surface,
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 32.dp)
-        ) {
+        CompositionLocalProvider(LocalContext provides context) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 32.dp)
+            ) {
             if (alarm.isEnabled) {
                 val isSkipped = alarm.skippedAt != null
                 ListItem(
@@ -321,6 +324,7 @@ private fun AlarmActionBottomSheet(
                 },
                 modifier = Modifier.clickable { onDelete() }
             )
+            }
         }
     }
 }

@@ -12,6 +12,8 @@
     <string name="mission_qr_code">QR/Barcode</string>
     <string name="mission_typing_desc">Type phrases to wake up</string>
     <string name="mission_math_desc">Solve math problems</string>
+    <string name="mission_shake_desc">Shake your phone to wake up</string>
+    <string name="mission_qr_code_desc">Scan a QR code or barcode to dismiss</string>
     <string name="mission_repetitions">Times</string>
     <string name="mission_select_phrases">Select Phrases</string>
     <string name="mission_phrases_motivation">Motivation</string>

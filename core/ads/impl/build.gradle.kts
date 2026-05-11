@@ -1,14 +1,14 @@
 plugins {
     alias(libs.plugins.android.library)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.compose)
 }
 
 android {
-    namespace = "vn.io.litever.remind.core.designsystem"
+    namespace = "vn.io.litever.remind.core.ads.impl"
 
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 26
@@ -19,29 +19,25 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-
-    buildFeatures {
-        compose = true
-        viewBinding = false
-    }
 }
 
 dependencies {
-    api(libs.litever.designsystem)
-    implementation(project(":core:model"))
+    implementation(project(":core:ads:api"))
     implementation(project(":core:common"))
-
+    implementation(project(":core:designsystem"))
+    
     implementation(libs.androidx.core.ktx)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.serialization.json)
+    
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
-    implementation(libs.material.icons.extended)
-    implementation(libs.androidx.compose.ui.text.google.fonts)
-    implementation(libs.coil.compose)
+    
     implementation(libs.hilt.android)
-
-
-    debugImplementation(libs.androidx.compose.ui.tooling)
+    ksp(libs.hilt.compiler)
+    
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.config)
+    implementation(libs.google.play.services.ads)
 }

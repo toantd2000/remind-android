@@ -1,4 +1,4 @@
-package vn.io.litever.remind.core.designsystem.components
+package vn.io.litever.remind.core.ads.impl.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -6,45 +6,27 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdLoader
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.nativead.NativeAd
-import com.google.android.gms.ads.nativead.NativeAdOptions
 import com.google.android.gms.ads.nativead.NativeAdView as GmsNativeAdView
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import vn.io.litever.remind.core.designsystem.R
-import dagger.hilt.EntryPoints
-import vn.io.litever.remind.core.common.ads.NativeAdManagerEntryPoint
-
-
+import vn.io.litever.remind.core.ads.api.AdPlacement
+import vn.io.litever.remind.core.ads.impl.AdMobManagerImpl
 
 @Composable
-fun NativeAdView(
-    adId: String?,
+internal fun AdMobNativeAdView(
+    placement: AdPlacement,
+    adManager: AdMobManagerImpl,
     modifier: Modifier = Modifier
 ) {
-    if (adId.isNullOrBlank()) return
-
-    val context = LocalContext.current
-    val adManager = remember(context) {
-        EntryPoints.get(
-            context.applicationContext,
-            NativeAdManagerEntryPoint::class.java
-        ).nativeAdManager()
-    }
-
     var nativeAd by remember { mutableStateOf<NativeAd?>(null) }
     var adFailed by remember { mutableStateOf(false) }
 
-    LaunchedEffect(adId) {
-        adManager.loadAd(adId) { ad ->
+    LaunchedEffect(placement) {
+        adManager.loadNativeAd(placement) { ad ->
             if (ad != null) {
                 nativeAd = ad
             } else {
@@ -54,7 +36,6 @@ fun NativeAdView(
     }
 
     if (adFailed) return
-
 
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -190,4 +171,3 @@ private fun NativeAdContent(nativeAd: NativeAd) {
         }
     )
 }
-

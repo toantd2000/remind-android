@@ -88,6 +88,8 @@ dependencies {
     implementation(project(":core:designsystem"))
     implementation(project(":core:datastore"))
     implementation(project(":core:common"))
+    implementation(project(":core:ads:api"))
+    implementation(project(":core:ads:impl"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)

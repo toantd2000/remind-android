@@ -44,6 +44,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.ads.api.AdManager
+import vn.io.litever.remind.core.ads.api.LocalAdManager
 import vn.io.litever.remind.features.alarms.ui.alarmGraph
 import vn.io.litever.remind.features.alarms.ui.AlarmListRoute
 import vn.io.litever.remind.features.alarms.ui.AlarmEditRoute
@@ -148,6 +150,9 @@ class MainViewModel @Inject constructor(
 class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModels()
 
+    @Inject
+    lateinit var adManager: AdManager
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
@@ -157,6 +162,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
+        
+        adManager.initialize()
         
         handleLockScreenBypass()
         
@@ -199,7 +206,10 @@ class MainActivity : ComponentActivity() {
                 else -> isSystemInDarkTheme()
             }
             
-            CompositionLocalProvider(LocalContext provides localizedContext) {
+            CompositionLocalProvider(
+                LocalContext provides localizedContext,
+                LocalAdManager provides adManager
+            ) {
                 ReMindTheme(darkTheme = darkTheme, colorPalette = colorPalette) {
                     var showBranding by remember { mutableStateOf(true) }
 

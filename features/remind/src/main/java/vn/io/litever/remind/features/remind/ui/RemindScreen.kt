@@ -1,33 +1,45 @@
 package vn.io.litever.remind.features.remind.ui
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import vn.io.litever.remind.core.ads.api.AdPlacement
+import vn.io.litever.remind.core.ads.api.LocalAdManager
+import vn.io.litever.remind.core.designsystem.components.ReMindLoadingIconButton
 import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
-import vn.io.litever.remind.core.designsystem.components.ReMindLoadingIconButton
-import vn.io.litever.remind.core.designsystem.components.WeatherInfoView
 import vn.io.litever.remind.core.designsystem.components.ReminderInfoView
-import vn.io.litever.remind.core.designsystem.components.NativeAdView
-import vn.io.litever.remind.features.remind.R
-import androidx.compose.ui.tooling.preview.Preview
-import vn.io.litever.designsystem.theme.LiteverTheme
-import vn.io.litever.designsystem.theme.LiteverTheme.typography
+import vn.io.litever.remind.core.designsystem.components.WeatherInfoView
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
-import vn.io.litever.remind.core.model.*
+import vn.io.litever.remind.core.model.AdConfig
+import vn.io.litever.remind.core.model.AiAnalysis
+import vn.io.litever.remind.core.model.CurrentWeather
+import vn.io.litever.remind.core.model.DailySummary
+import vn.io.litever.remind.core.model.ReminderMetadata
+import vn.io.litever.remind.core.model.ReminderResponse
+import vn.io.litever.remind.core.model.WeatherResponse
+import vn.io.litever.remind.features.remind.R
 
 @Composable
 fun RemindRoute(
@@ -118,10 +130,10 @@ fun RemindScreen(
 
             ReminderInfoView(reminder = reminder)
 
-            if (reminder?.adConfig?.enableAds == true) {
-                Spacer(modifier = Modifier.height(16.dp))
-                NativeAdView(adId = reminder?.adConfig?.nativeId)
-            }
+            LocalAdManager.current.NativeAdView(
+                placement = AdPlacement.REMIND_NATIVE,
+                modifier = Modifier.padding(top = 16.dp)
+            )
         }
     }
 }

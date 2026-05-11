@@ -106,6 +106,9 @@
     <string name="missed_alarms_dialog_title">Báo thức bị lỡ</string>
     <string name="missed_alarms_dialog_desc">Một số báo thức đã không thể đổ chuông đúng giờ. Nguyên nhân có thể do điện thoại bị tắt nguồn hoặc ứng dụng bị hạn chế quyền.</string>
     <string name="scheduled_time_format">Báo thức: %s</string>
+    <string name="discard_changes_title">Lưu thay đổi?</string>
+    <string name="discard_changes_message">Bạn có các thay đổi chưa lưu. Bạn có muốn lưu trước khi thoát không?</string>
+    <string name="action_discard">Bỏ qua</string>
 </resources>
 
 

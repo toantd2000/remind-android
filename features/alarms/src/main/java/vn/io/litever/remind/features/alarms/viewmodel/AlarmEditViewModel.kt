@@ -49,7 +49,8 @@ data class AlarmEditUiState(
     val snoozeRepeatCount: Int = 3,
     val autoSilenceMinutes: Int = 3,
     val gradualVolumeDurationSeconds: Int = 0,
-    val missions: List<vn.io.litever.remind.core.model.Mission> = emptyList()
+    val missions: List<vn.io.litever.remind.core.model.Mission> = emptyList(),
+    val isNewDraft: Boolean = false
 )
 
 @HiltViewModel
@@ -82,6 +83,8 @@ class AlarmEditViewModel @Inject constructor(
     )
     val uiState: StateFlow<AlarmEditUiState> = _uiState.asStateFlow()
 
+    private var originalAlarm: Alarm? = null
+
     val nextAlarmState: StateFlow<NextAlarmUiState> = _uiState
         .map { state ->
             calculateNextAlarm(
@@ -106,14 +109,41 @@ class AlarmEditViewModel @Inject constructor(
 
     fun loadAlarm(alarmId: Long) {
         if (alarmId == 0L) {
-            _uiState.update { it.copy(isLoading = false) }
+            if (_uiState.value.id != 0L && _uiState.value.isNewDraft) return
+            
+            // Reset to prevent stale data if VM is reused
+            originalAlarm = null
+            _uiState.update { it.copy(isLoading = true, id = 0L, isNewDraft = false) }
+
+            viewModelScope.launch {
+                val newAlarm = Alarm(
+                    id = 0,
+                    time = LocalTime.now().plusMinutes(1),
+                    isEnabled = false
+                )
+                val newId = repository.insertAlarm(newAlarm)
+                val finalNewAlarm = newAlarm.copy(id = newId)
+                originalAlarm = finalNewAlarm
+                _uiState.update { it.copy(
+                    isLoading = false,
+                    id = newId,
+                    isNewDraft = true,
+                    time = newAlarm.time
+                ) }
+            }
             return
         }
         if (_uiState.value.id == alarmId && !_uiState.value.isLoading) return
         
+        // Reset to prevent stale data if VM is reused
+        originalAlarm = null
+        _uiState.update { it.copy(isLoading = true, id = alarmId, isNewDraft = false) }
+
         viewModelScope.launch {
             repository.getAlarmById(alarmId)?.let { alarm ->
                 val missions = missionRepository.getMissionsForAlarm(alarmId).first()
+                val alarmWithMissions = alarm.copy(missions = missions)
+                originalAlarm = alarmWithMissions
                 _uiState.update { it.copy(
                         isLoading = false,
                         id = alarm.id,
@@ -311,7 +341,7 @@ class AlarmEditViewModel @Inject constructor(
 
     fun saveAlarm(onSuccess: () -> Unit) {
         // Automatically enable the alarm whenever the user saves it
-        _uiState.update { it.copy(isEnabled = true) }
+        _uiState.update { it.copy(isEnabled = true, isNewDraft = false) }
         val state = _uiState.value
         
         // Prevent saving enabled alarm if permissions are missing
@@ -332,29 +362,52 @@ class AlarmEditViewModel @Inject constructor(
         _uiState.update { it.copy(showPermissionDialog = false) }
     }
 
+    fun discardChanges(onDiscarded: () -> Unit) {
+        viewModelScope.launch {
+            if (_uiState.value.isNewDraft) {
+                repository.getAlarmById(_uiState.value.id)?.let {
+                    repository.deleteAlarm(it)
+                }
+            }
+            onDiscarded()
+        }
+    }
+
+    fun hasChanges(): Boolean {
+        val original = originalAlarm ?: return false // If not loaded yet, assume no changes to avoid dialog
+        val currentAlarm = createDraftAlarm()
+        return currentAlarm != original
+    }
+
     private fun performSave(onSuccess: () -> Unit) {
         viewModelScope.launch {
             val alarm = createDraftAlarm()
             val state = _uiState.value
             
-            if (state.id == 0L) {
-                val savedId = repository.insertAlarm(alarm)
+            if (state.isNewDraft) {
+                repository.updateAlarm(alarm) // It's already inserted, just update the properties
                 // Save missions for new alarm
                 state.missions.forEach { mission ->
-                    missionRepository.saveMission(mission.copy(alarmId = savedId))
+                    missionRepository.saveMission(mission.copy(alarmId = state.id))
                 }
+                // For new alarms, we always schedule
                 if (alarm.isEnabled) {
-                    alarmScheduler.schedule(alarm.copy(id = savedId))
+                    alarmScheduler.schedule(alarm)
                 }
             } else {
+                val hasChanged = alarm != originalAlarm
+                
                 repository.updateAlarm(alarm)
                 // Update missions for existing alarm
                 missionRepository.deleteMissionsForAlarm(state.id)
                 state.missions.forEach { mission ->
                     missionRepository.saveMission(mission)
                 }
+                
                 if (alarm.isEnabled) {
-                    alarmScheduler.schedule(alarm)
+                    if (hasChanged) {
+                        alarmScheduler.schedule(alarm)
+                    }
                 } else {
                     alarmScheduler.cancel(alarm)
                 }
@@ -381,13 +434,14 @@ class AlarmEditViewModel @Inject constructor(
             snoozeRepeatCount = state.snoozeRepeatCount,
             autoSilenceMinutes = state.autoSilenceMinutes,
             gradualVolumeDurationSeconds = state.gradualVolumeDurationSeconds,
-            missions = state.missions
+            missions = state.missions,
+            currentSnoozeCount = originalAlarm?.currentSnoozeCount ?: 0,
+            snoozeNextTriggerTime = originalAlarm?.snoozeNextTriggerTime,
+            skippedAt = originalAlarm?.skippedAt,
+            lastTriggeredTime = originalAlarm?.lastTriggeredTime
         )
     }
 }
-
-
-
 
 
 

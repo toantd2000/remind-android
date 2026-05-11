@@ -99,6 +99,7 @@ import vn.io.litever.remind.features.alarms.ui.components.getRepeatSummaryText
 import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState
 import vn.io.litever.remind.features.alarms.viewmodel.AlarmEditUiState
 import vn.io.litever.remind.features.alarms.viewmodel.AlarmEditViewModel
+import androidx.activity.compose.BackHandler
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
@@ -224,6 +225,36 @@ fun AlarmEditRoute(
         viewModel.loadAlarm(alarmId)
     }
 
+    var showDiscardDialog by remember { mutableStateOf(false) }
+
+    BackHandler {
+        if (viewModel.hasChanges()) {
+            showDiscardDialog = true
+        } else {
+            viewModel.discardChanges(onBackClick)
+        }
+    }
+
+    if (showDiscardDialog) {
+        ReMindAlertDialog(
+            onDismissRequest = { showDiscardDialog = false },
+            title = stringResource(R.string.discard_changes_title),
+            text = stringResource(R.string.discard_changes_message),
+            confirmButtonText = stringResource(R.string.save),
+            onConfirmClick = {
+                showDiscardDialog = false
+                viewModel.stopRingtonePlayback()
+                viewModel.saveAlarm(onBackClick)
+            },
+            dismissButtonText = stringResource(R.string.action_discard),
+            onDismissClick = {
+                showDiscardDialog = false
+                viewModel.stopRingtonePlayback()
+                viewModel.discardChanges(onBackClick)
+            }
+        )
+    }
+
     if (showMissionSelection) {
         MissionSelectionBottomSheet(
             onDismissRequest = { 
@@ -237,7 +268,7 @@ fun AlarmEditRoute(
                     isNavigatingToConfig = true
                     onMissionClick(
                         vn.io.litever.remind.core.model.Mission(
-                            alarmId = alarmId,
+                            alarmId = uiState.id,
                             type = type,
                             order = -1 // Indication for adding
                         )
@@ -254,8 +285,11 @@ fun AlarmEditRoute(
         nextAlarmState = nextAlarmState,
         is24HourFormat = is24HourFormat,
         onBackClick = {
-            viewModel.stopRingtonePlayback()
-            onBackClick()
+            if (viewModel.hasChanges()) {
+                showDiscardDialog = true
+            } else {
+                viewModel.discardChanges(onBackClick)
+            }
         },
         onSaveClick = {
             viewModel.stopRingtonePlayback()
@@ -300,7 +334,7 @@ fun AlarmEditRoute(
         onPreviewClick = { 
             viewModel.stopRingtonePlayback()
             viewModel.preparePreview()
-            onPreviewClick(alarmId) 
+            onPreviewClick(uiState.id) 
         }
     )
 }

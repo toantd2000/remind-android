@@ -106,6 +106,9 @@
     <string name="missed_alarms_dialog_title">Missed Alarms</string>
     <string name="missed_alarms_dialog_desc">Some alarms didn\'t go off at their scheduled time. This might be due to power off or missing permissions.</string>
     <string name="scheduled_time_format">Alarm: %s</string>
+    <string name="discard_changes_title">Save changes?</string>
+    <string name="discard_changes_message">You have unsaved changes. Do you want to save them before leaving?</string>
+    <string name="action_discard">Discard</string>
 </resources>
 
 

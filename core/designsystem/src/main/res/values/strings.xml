@@ -54,6 +54,7 @@
     <string name="mission_private_disabled_desc">Private phrases are only available after the alarm is saved for the first time.</string>
     <string name="mission_phrases_none_selected">None selected</string>
     <string name="mission_phrases_selected">%1$d phrases selected</string>
+    <string name="mission_typing_tip">Tip: Manually typing your important tasks helps you remember them more effectively throughout the day.</string>
     <string name="coming_soon">Coming Soon</string>
 
     <!-- Weather -->

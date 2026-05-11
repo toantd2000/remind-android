@@ -41,8 +41,8 @@ class MissionRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun saveMission(mission: Mission) {
-        missionDao.insertMission(mission.toEntity())
+    override suspend fun saveMission(mission: Mission): Long {
+        return missionDao.insertMission(mission.toEntity())
     }
 
     override suspend fun deleteMission(mission: Mission) {
@@ -82,9 +82,9 @@ class MissionRepositoryImpl @Inject constructor(
         return predefined + custom
     }
 
-    override suspend fun savePhrase(phrase: Phrase) {
+    override suspend fun savePhrase(phrase: Phrase): Long {
         val safePhrase = phrase.copy(content = phrase.content.take(128))
-        phraseDao.insertPhrase(safePhrase.toEntity())
+        return phraseDao.insertPhrase(safePhrase.toEntity())
     }
 
     override suspend fun deletePhrase(phrase: Phrase) {

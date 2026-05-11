@@ -14,8 +14,12 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import vn.io.litever.remind.core.common.util.PermissionChecker
 import vn.io.litever.remind.core.domain.repository.AlarmRepository
+import vn.io.litever.remind.core.domain.repository.MissionRepository
 import vn.io.litever.remind.core.domain.scheduler.AlarmScheduler
 import vn.io.litever.remind.core.model.Alarm
+import vn.io.litever.remind.core.model.Mission
+import vn.io.litever.remind.core.model.TypingMissionConfig
+import kotlinx.coroutines.flow.first
 import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState
 import vn.io.litever.remind.features.alarms.ui.state.calculateNextAlarm
 import java.time.LocalDateTime
@@ -26,6 +30,7 @@ import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 @HiltViewModel
 class AlarmListViewModel @Inject constructor(
     private val repository: AlarmRepository,
+    private val missionRepository: MissionRepository,
     private val alarmScheduler: AlarmScheduler,
     private val preferencesDataSource: AlarmPreferencesDataSource,
     private val permissionChecker: vn.io.litever.remind.core.common.util.PermissionChecker
@@ -162,7 +167,12 @@ class AlarmListViewModel @Inject constructor(
 
     fun duplicateAlarm(alarm: Alarm) {
         viewModelScope.launch {
-            // Create a copy with id = 0 to insert as a new record
+            // 1. Fetch existing missions and private phrases
+            val originalMissions = repository.getMissionsForAlarm(alarm.id)
+            val originalPhrases = missionRepository.getCustomPhrases(alarm.id).first()
+                .filter { !it.isShared && it.alarmId == alarm.id }
+
+            // 2. Create a copy of the alarm with id = 0 to insert as a new record
             val duplicated = alarm.copy(
                 id = 0,
                 isEnabled = alarm.isEnabled,
@@ -171,6 +181,35 @@ class AlarmListViewModel @Inject constructor(
                 snoozeNextTriggerTime = null
             )
             val newId = repository.insertAlarm(duplicated)
+
+            // 3. Duplicate private phrases and create mapping
+            val phraseIdMap = mutableMapOf<Long, Long>()
+            originalPhrases.forEach { phrase ->
+                val newPhrase = phrase.copy(id = 0, alarmId = newId)
+                val newPhraseId = missionRepository.savePhrase(newPhrase)
+                phraseIdMap[phrase.id] = newPhraseId
+            }
+
+            // 4. Duplicate missions with updated IDs and mapping
+            originalMissions.forEach { mission ->
+                val updatedConfig = mission.config?.let { config ->
+                    if (config is TypingMissionConfig) {
+                        config.copy(
+                            selectedPhraseIds = config.selectedPhraseIds.map { id ->
+                                phraseIdMap[id] ?: id
+                            }
+                        )
+                    } else config
+                }
+                val newMission = mission.copy(
+                    id = 0,
+                    alarmId = newId,
+                    config = updatedConfig
+                )
+                missionRepository.saveMission(newMission)
+            }
+
+            // 5. Schedule the new alarm if it's enabled
             if (duplicated.isEnabled) {
                 val alarmWithId = duplicated.copy(id = newId)
                 alarmScheduler.schedule(alarmWithId)

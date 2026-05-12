@@ -5,7 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.3] - 2026-05-09
+## [1.1.4] - 2026-05-12
+
+### Added
+- **Exit Verification:** Added an elegant exit dialog to confirm app closure.
+- **Improved Missions:** Modernized the Typing Mission UI with "Typing for Memory" insights to enhance cognitive reinforcement.
+- **Draft Support:** Implemented a draft pattern for alarm creation with change detection to prevent accidental loss of settings.
+- **UI Components:** Added `ReMindLoadingIconButton` for better interaction feedback during reload actions.
+
+### Changed
+- **UX Refinement:** Optimized the "Add Alarm" flow for a smoother configuration experience.
+- **Performance:** modularized advertisement logic using Firebase Remote Config for more dynamic and stable control.
+- **Design System:** Bumped `litever-designsystem` to `v1.0.4`.
+
+### Fixed
+- **Cloning Stability:** Fixed a bug where missions and private phrases were duplicated during alarm cloning.
+- **Localization:** Improved translations and fixed activity finish logic in the exit dialog when using language overrides.
+
+
 
 ### Added
 - **AI-Powered Insights:** Integrated real-time AI status tracking for weather and reminder hints.

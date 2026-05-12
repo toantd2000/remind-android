@@ -1,8 +1,29 @@
 [
   {
+    "versionName": "1.1.4",
+    "date": "2026-05-12",
+    "isLatest": true,
+    "multiLangNotes": {
+      "vi": [
+        "Thêm hộp thoại xác nhận khi thoát ứng dụng.",
+        "Cải tiến giao diện Nhiệm vụ Gõ phím giúp ghi nhớ tốt hơn.",
+        "Hỗ trợ lưu nháp khi tạo báo thức để tránh mất dữ liệu.",
+        "Sửa lỗi trùng lặp nhiệm vụ khi sao chép báo thức.",
+        "Cải thiện đa ngôn ngữ và tối ưu hóa hiệu năng hệ thống."
+      ],
+      "en": [
+        "Added confirmation dialog when exiting the app.",
+        "Improved Typing Mission UI with cognitive reinforcement.",
+        "Draft support for alarm creation to prevent data loss.",
+        "Fixed mission duplication bug when cloning alarms.",
+        "Enhanced multi-language support and system performance."
+      ]
+    }
+  },
+  {
     "versionName": "1.1.3",
     "date": "2026-05-09",
-    "isLatest": true,
+    "isLatest": false,
     "multiLangNotes": {
       "vi": [
         "Tích hợp trạng thái AI thời gian thực cho thời tiết và lời nhắc.",

@@ -111,8 +111,8 @@
     <string name="action_discard">Discard</string>
     <string name="exit_dialog_title">Exit App</string>
     <string name="exit_dialog_message">Are you sure you want to exit? Please consider interacting with the ad below to support our development team!</string>
-    <string name="exit_dialog_confirm">Exit Now</string>
-    <string name="exit_dialog_cancel">Stay</string>
+    <string name="exit_dialog_confirm">Exit</string>
+    <string name="exit_dialog_cancel">Cancel</string>
 </resources>
 
 

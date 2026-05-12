@@ -109,10 +109,10 @@
     <string name="discard_changes_title">Lưu thay đổi?</string>
     <string name="discard_changes_message">Bạn có các thay đổi chưa lưu. Bạn có muốn lưu trước khi thoát không?</string>
     <string name="action_discard">Bỏ qua</string>
-    <string name="exit_dialog_title">Thoát ứng dụng</string>
-    <string name="exit_dialog_message">Bạn có chắc chắn muốn thoát? Xin hãy cân nhắc tương tác với quảng cáo bên dưới để ủng hộ đội ngũ phát triển nhé!</string>
-    <string name="exit_dialog_confirm">Thoát ngay</string>
-    <string name="exit_dialog_cancel">Ở lại</string>
+    <string name="exit_dialog_title">Xác nhận thoát</string>
+    <string name="exit_dialog_message">Bạn có chắc chắn muốn thoát ứng dụng? Nếu yêu thích ứng dụng, hãy ủng hộ chúng mình bằng cách tương tác với quảng cáo bên dưới nhé!</string>
+    <string name="exit_dialog_confirm">Thoát</string>
+    <string name="exit_dialog_cancel">Hủy</string>
 </resources>
 
 

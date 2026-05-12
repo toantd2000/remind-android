@@ -20,18 +20,26 @@ fun ExitAppDialog(
     onConfirmExit: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // Note: The Ad content (Headline, Body, CTA) is provided by Google and might be in English 
+    // even if the app language is Vietnamese, depending on the user's Google account and location.
+    
+    val title = stringResource(R.string.exit_dialog_title)
+    val message = stringResource(R.string.exit_dialog_message)
+    val confirmText = stringResource(R.string.exit_dialog_confirm)
+    val cancelText = stringResource(R.string.exit_dialog_cancel)
+
     LiteverAlertDialog(
         onDismissRequest = onDismissRequest,
-        confirmButtonText = stringResource(R.string.exit_dialog_confirm),
+        confirmButtonText = confirmText,
         onConfirmClick = onConfirmExit,
-        dismissButtonText = stringResource(R.string.exit_dialog_cancel),
+        dismissButtonText = cancelText,
         onDismissClick = onDismissRequest,
-        title = stringResource(R.string.exit_dialog_title),
+        title = title,
         modifier = modifier
     ) {
         androidx.compose.foundation.layout.Column {
             androidx.compose.material3.Text(
-                text = stringResource(R.string.exit_dialog_message),
+                text = message,
                 style = vn.io.litever.designsystem.theme.LiteverTheme.typography.bodyMedium,
                 color = vn.io.litever.designsystem.theme.LiteverTheme.colors.onSurfaceVariant
             )
@@ -41,7 +49,7 @@ fun ExitAppDialog(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp)
+                    .padding(vertical = 4.dp)
             ) {
                 LocalAdManager.current.NativeAdView(
                     placement = AdPlacement.EXIT_NATIVE,

@@ -13,6 +13,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.rounded.*
+import androidx.activity.compose.BackHandler
+import android.app.Activity
+import android.content.ContextWrapper
+import vn.io.litever.remind.features.alarms.ui.components.ExitAppDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -142,6 +146,29 @@ fun AlarmListScreen(
 ) {
     var showTopMenu by remember { mutableStateOf(false) }
     var selectedAlarmForMenu by remember { mutableStateOf<Alarm?>(null) }
+    var showExitDialog by remember { mutableStateOf(false) }
+    
+    val context = LocalContext.current
+
+    BackHandler {
+        showExitDialog = true
+    }
+
+    if (showExitDialog) {
+        ExitAppDialog(
+            onDismissRequest = { showExitDialog = false },
+            onConfirmExit = {
+                var currentContext = context
+                while (currentContext is ContextWrapper) {
+                    if (currentContext is Activity) {
+                        currentContext.finish()
+                        return@ExitAppDialog
+                    }
+                    currentContext = currentContext.baseContext
+                }
+            }
+        )
+    }
 
     val actionMoreDescription = stringResource(R.string.action_more)
     val deleteDisabledAlarmsText = stringResource(R.string.delete_disabled_alarms)

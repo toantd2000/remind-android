@@ -44,4 +44,11 @@ This document records the solidified technical decisions and behavioral scenario
 - **Decision**:
     - **Unique Actions**: Use `ACTION_TRIGGER_ALARM` for main occurrences and `ACTION_TRIGGER_SNOOZE` for snoozes.
     - **Unique Request Codes**: Use `alarm.id.hashCode()` for main and `alarm.id.hashCode() + 1,000,000,000` for snooze.
-    - **Simultaneous Scheduling**: `AlarmSyncManager` (on boot) must schedule BOTH if a snooze is active, ensuring the long-term schedule is preserved even during a snooze session.
+  ## 5. UI & Navigation
+49: 
+50: ### Scenario: Exiting the App from Home Screen
+51: - **Expected Behavior**: Pressing "Back" on the home screen should show an Exit Dialog with a Native Ad. The app should only exit if the user confirms.
+52: - **Technical Decision**:
+53:     - **Back Interception**: Use `BackHandler` in `AlarmListScreen`.
+54:     - **Context Unwrapping**: Since `LocalContext` can be a `ContextWrapper` (due to Localization), use a loop to unwrap `baseContext` until an `Activity` is found to call `finish()`.
+55:     - **Soft Exit**: Integrate `NativeAdView` directly in the dialog to support development without intrusive interstitial ads.

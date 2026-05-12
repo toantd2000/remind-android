@@ -32,6 +32,13 @@ import vn.io.litever.remind.core.designsystem.components.WeatherInfoView
 import vn.io.litever.remind.core.model.*
 import vn.io.litever.remind.core.ads.api.LocalAdManager
 import vn.io.litever.remind.core.ads.api.AdPlacement
+import vn.io.litever.remind.core.ads.api.AdManager
+import vn.io.litever.remind.core.ads.api.AdState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import android.app.Activity
+import androidx.compose.runtime.CompositionLocalProvider
+import vn.io.litever.remind.core.designsystem.components.ReminderInfoView
 import java.time.LocalTime
 import java.util.Locale
 
@@ -62,14 +69,13 @@ fun AlarmMessageRoute(
 fun AlarmMessageScreen(
     alarm: Alarm?,
     is24HourFormat: Boolean,
-    weather: vn.io.litever.remind.core.model.WeatherResponse?,
-    reminder: vn.io.litever.remind.core.model.ReminderResponse?,
+    weather: WeatherResponse?,
+    reminder: ReminderResponse?,
     onFinish: () -> Unit
 ) {
     BackHandler { }
     ReMindScaffold { padding ->
         val statusColor = MaterialTheme.colorScheme.primary
-        val icon = Icons.Rounded.NotificationsActive
         val statusTitle = stringResource(vn.io.litever.remind.features.alarms.R.string.alarm_summary_title)
 
         // Subtle gradient background based on status
@@ -91,29 +97,17 @@ fun AlarmMessageScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(24.dp),
+                .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(48.dp))
-
-            // Header Section
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier.size(64.dp),
-                tint = statusColor
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
             Text(
                 text = statusTitle,
-                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.ExtraBold),
+                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                 color = statusColor,
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Main Info Card
             Card(
@@ -185,22 +179,22 @@ fun AlarmMessageScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             
             WeatherInfoView(
                 weather = weather,
                 isCompact = true
             )
 
-            LocalAdManager.current.NativeAdView(
-                placement = AdPlacement.MESSAGE_NATIVE,
-                modifier = Modifier.padding(top = 16.dp)
-            )
-
             Spacer(modifier = Modifier.height(16.dp))
 
-            vn.io.litever.remind.core.designsystem.components.ReminderInfoView(
+            ReminderInfoView(
                 reminder = reminder
+            )
+
+            LocalAdManager.current.NativeAdView(
+                placement = AdPlacement.MESSAGE_NATIVE,
+                modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -246,18 +240,20 @@ fun AlarmMessageScreenPreview() {
     )
 
     ReMindTheme {
-        AlarmMessageScreen(
-            alarm = Alarm(
-                id = 1,
-                time = LocalTime.of(7, 30),
-                label = "Morning Yoga",
-                message = "Time to stretch and start your day!"
-            ),
-            is24HourFormat = false,
-            weather = mockWeather,
-            reminder = mockReminder,
-            onFinish = {}
-        )
+        CompositionLocalProvider(LocalAdManager provides PreviewAdManager) {
+            AlarmMessageScreen(
+                alarm = Alarm(
+                    id = 1,
+                    time = LocalTime.of(7, 30),
+                    label = "Morning Yoga",
+                    message = "Time to stretch and start your day!"
+                ),
+                is24HourFormat = false,
+                weather = mockWeather,
+                reminder = mockReminder,
+                onFinish = {}
+            )
+        }
     }
 }
 
@@ -289,18 +285,43 @@ fun AlarmMessageMissedScreenPreview() {
     )
 
     ReMindTheme(darkTheme = true) {
-        AlarmMessageScreen(
-            alarm = Alarm(
-                id = 2,
-                time = LocalTime.of(8, 0),
-                label = "Important Meeting",
-                message = "You missed this important alarm.",
-            ),
-            is24HourFormat = true,
-            weather = mockWeather,
-            reminder = mockReminder,
-            onFinish = {}
-        )
+        CompositionLocalProvider(LocalAdManager provides PreviewAdManager) {
+            AlarmMessageScreen(
+                alarm = Alarm(
+                    id = 2,
+                    time = LocalTime.of(8, 0),
+                    label = "Important Meeting",
+                    message = "You missed this important alarm.",
+                ),
+                is24HourFormat = true,
+                weather = mockWeather,
+                reminder = mockReminder,
+                onFinish = {}
+            )
+        }
+    }
+}
+
+private object PreviewAdManager : AdManager {
+    override val adState: StateFlow<AdState> = MutableStateFlow(AdState.Idle)
+    override fun initialize() {}
+    override fun loadAd(placement: AdPlacement) {}
+    override fun showAd(activity: Activity, placement: AdPlacement, onAdDismissed: () -> Unit) {}
+    @Composable
+    override fun NativeAdView(placement: AdPlacement, modifier: Modifier) {
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(250.dp)
+                .background(MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.shapes.medium),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "Native Ad Preview ($placement)",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
 }
 

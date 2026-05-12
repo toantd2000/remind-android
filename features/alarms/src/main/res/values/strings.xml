@@ -109,6 +109,10 @@
     <string name="discard_changes_title">Save changes?</string>
     <string name="discard_changes_message">You have unsaved changes. Do you want to save them before leaving?</string>
     <string name="action_discard">Discard</string>
+    <string name="exit_dialog_title">Exit App</string>
+    <string name="exit_dialog_message">Are you sure you want to exit? Please consider interacting with the ad below to support our development team!</string>
+    <string name="exit_dialog_confirm">Exit Now</string>
+    <string name="exit_dialog_cancel">Stay</string>
 </resources>
 
 

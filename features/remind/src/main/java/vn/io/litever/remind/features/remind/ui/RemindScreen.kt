@@ -1,8 +1,11 @@
 package vn.io.litever.remind.features.remind.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -26,6 +29,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import vn.io.litever.remind.core.ads.api.AdPlacement
 import vn.io.litever.remind.core.ads.api.LocalAdManager
+import vn.io.litever.remind.core.ads.api.AdManager
+import vn.io.litever.remind.core.ads.api.AdState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import android.app.Activity
+import androidx.compose.runtime.CompositionLocalProvider
 import vn.io.litever.remind.core.designsystem.components.ReMindLoadingIconButton
 import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
@@ -134,6 +143,8 @@ fun RemindScreen(
                 placement = AdPlacement.REMIND_NATIVE,
                 modifier = Modifier.padding(top = 16.dp)
             )
+
+            Spacer(modifier = Modifier.weight(1f))
         }
     }
 }
@@ -171,12 +182,37 @@ fun RemindScreenPreview() {
     )
 
     ReMindTheme {
-        RemindScreen(
-            weather = mockWeather,
-            reminder = mockReminder,
-            isRefreshing = false,
-            isProcessing = false,
-            onRefresh = {}
-        )
+        CompositionLocalProvider(LocalAdManager provides PreviewAdManager) {
+            RemindScreen(
+                weather = mockWeather,
+                reminder = mockReminder,
+                isRefreshing = false,
+                isProcessing = false,
+                onRefresh = {}
+            )
+        }
+    }
+}
+
+private object PreviewAdManager : AdManager {
+    override val adState: StateFlow<AdState> = MutableStateFlow(AdState.Idle)
+    override fun initialize() {}
+    override fun loadAd(placement: AdPlacement) {}
+    override fun showAd(activity: Activity, placement: AdPlacement, onAdDismissed: () -> Unit) {}
+    @Composable
+    override fun NativeAdView(placement: AdPlacement, modifier: Modifier) {
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(250.dp)
+                .background(androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant, androidx.compose.material3.MaterialTheme.shapes.medium),
+            contentAlignment = androidx.compose.ui.Alignment.Center
+        ) {
+            androidx.compose.material3.Text(
+                text = "Native Ad Preview ($placement)",
+                style = androidx.compose.material3.MaterialTheme.typography.labelLarge,
+                color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
 }

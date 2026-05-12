@@ -96,7 +96,7 @@
     <string name="skipped_next_format">Bỏ qua lần tới: %s</string>
     <string name="alarm_summary_title">Nhắc bạn</string>
     <string name="alarm_message_greeting">Chúc bạn một ngày tốt lành!</string>
-    <string name="alarm_message_dismiss">Tôi nhớ rồi</string>
+    <string name="alarm_message_dismiss">Okay</string>
     <string name="action_preview">Xem trước</string>
     <string name="action_exit_preview">Thoát xem trước</string>
     <string name="missed_reason_timeout">Hết thời gian reo</string>
@@ -109,6 +109,10 @@
     <string name="discard_changes_title">Lưu thay đổi?</string>
     <string name="discard_changes_message">Bạn có các thay đổi chưa lưu. Bạn có muốn lưu trước khi thoát không?</string>
     <string name="action_discard">Bỏ qua</string>
+    <string name="exit_dialog_title">Thoát ứng dụng</string>
+    <string name="exit_dialog_message">Bạn có chắc chắn muốn thoát? Xin hãy cân nhắc tương tác với quảng cáo bên dưới để ủng hộ đội ngũ phát triển nhé!</string>
+    <string name="exit_dialog_confirm">Thoát ngay</string>
+    <string name="exit_dialog_cancel">Ở lại</string>
 </resources>
 
 

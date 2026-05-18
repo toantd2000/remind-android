@@ -27,7 +27,6 @@ import vn.io.litever.remind.core.model.Alarm
 import vn.io.litever.remind.features.alarms.viewmodel.AlarmRingingViewModel
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import androidx.compose.ui.tooling.preview.Preview
-import vn.io.litever.remind.core.designsystem.components.ReMindButton
 import vn.io.litever.remind.core.designsystem.components.WeatherInfoView
 import vn.io.litever.remind.core.model.*
 import vn.io.litever.remind.core.ads.api.LocalAdManager
@@ -38,6 +37,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import android.app.Activity
 import androidx.compose.runtime.CompositionLocalProvider
+import vn.io.litever.designsystem.components.LiteverButton
 import vn.io.litever.remind.core.designsystem.components.ReminderInfoView
 import java.time.LocalTime
 import java.util.Locale
@@ -199,13 +199,12 @@ fun AlarmMessageScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            ReMindButton(
+            LiteverButton(
                 onClick = onFinish,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
                     text = stringResource(vn.io.litever.remind.features.alarms.R.string.alarm_message_dismiss),
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                 )
             }
         }

@@ -78,10 +78,7 @@ fun NavGraphBuilder.missionGraph(
         )
     ) { backStackEntry ->
         val alarmId = backStackEntry.arguments?.getLong("alarmId") ?: 0L
-        val isPreview = backStackEntry.arguments?.getBoolean("isPreview") ?: false
         MissionRingingRoute(
-            alarmId = alarmId,
-            isPreview = isPreview,
             onFinish = { onMissionFinish(alarmId) },
             onAbandon = onBackClick,
             navController = navController

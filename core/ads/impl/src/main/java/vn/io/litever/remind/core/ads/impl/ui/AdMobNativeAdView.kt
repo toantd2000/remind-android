@@ -91,6 +91,7 @@ private fun NativeAdContent(nativeAd: NativeAd, isLarge: Boolean = false, isFill
     val colorOnSurface = MaterialTheme.colorScheme.onSurface
     val colorOnSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
     val colorPrimary = MaterialTheme.colorScheme.primary
+    val colorOnPrimary = MaterialTheme.colorScheme.onPrimary
 
     AndroidView(
         modifier = if (isFillSpace) Modifier.fillMaxSize() else Modifier.fillMaxWidth(),
@@ -136,7 +137,7 @@ private fun NativeAdContent(nativeAd: NativeAd, isLarge: Boolean = false, isFill
                         setTextColor(colorPrimary.toArgb())
                     } else {
                         bg.setColor(colorPrimary.toArgb())
-                        setTextColor(android.graphics.Color.WHITE)
+                        setTextColor(colorOnPrimary.toArgb())
                     }
                 }
             }

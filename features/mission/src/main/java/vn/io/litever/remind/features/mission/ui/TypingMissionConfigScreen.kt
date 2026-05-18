@@ -49,10 +49,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import vn.io.litever.designsystem.components.LiteverButton
 import vn.io.litever.designsystem.components.LiteverCard
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
-import vn.io.litever.remind.core.designsystem.components.ReMindButton
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.Mission
@@ -122,14 +122,13 @@ fun TypingMissionConfigScreen(
         bottomBar = {
             Box(Modifier.fillMaxWidth()) {
                 ReMindBottomBar {
-                    ReMindButton(
+                    LiteverButton(
                         onClick = onSave,
                         modifier = Modifier.fillMaxWidth(),
                         enabled = selectedPhrases.isNotEmpty()
                     ) {
                         Text(
                             text = stringResource(vn.io.litever.remind.core.designsystem.R.string.save),
-                            style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                         )
                     }
                 }

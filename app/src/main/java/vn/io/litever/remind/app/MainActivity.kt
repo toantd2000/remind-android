@@ -382,11 +382,6 @@ class MainActivity : ComponentActivity() {
                                         onNavigateBack = {
                                             navController.popBackStack()
                                         },
-                                        onAddMissionClick = {
-                                            // Handle showMissionSelection bottom sheet in AlarmEditRoute
-                                            // or navigate if it's a separate screen. 
-                                            // Actually, I'll pass a dummy here and handle it inside AlarmEditRoute.
-                                        },
                                         onMissionClick = { mission ->
                                             if (mission.type == vn.io.litever.remind.core.model.MissionType.TYPING) {
                                                 val config = mission.config as? vn.io.litever.remind.core.model.TypingMissionConfig

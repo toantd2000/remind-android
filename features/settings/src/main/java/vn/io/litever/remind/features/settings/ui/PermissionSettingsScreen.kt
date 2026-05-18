@@ -1,19 +1,40 @@
 package vn.io.litever.remind.features.settings.ui
 
-import android.app.AlarmManager
-import android.app.NotificationManager
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
-import android.os.PowerManager
 import android.provider.Settings
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.rounded.Alarm
+import androidx.compose.material.icons.rounded.BatteryChargingFull
+import androidx.compose.material.icons.rounded.ErrorOutline
+import androidx.compose.material.icons.rounded.Layers
+import androidx.compose.material.icons.rounded.Notifications
+import androidx.compose.material.icons.rounded.SettingsSuggest
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,12 +44,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import vn.io.litever.designsystem.components.LiteverButton
+import vn.io.litever.designsystem.components.LiteverOutlinedButton
+import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
+import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.features.settings.R
-import vn.io.litever.remind.core.designsystem.components.*
 
 @Composable
 fun PermissionSettingsRoute(
@@ -253,13 +278,12 @@ fun PermissionTile(
 
             if (!isGranted) {
                 Spacer(modifier = Modifier.height(16.dp))
-                ReMindButton(
+                LiteverButton(
                     onClick = onRequest,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
                         stringResource(R.string.permission_request_action),
-                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
                     )
                 }
             }
@@ -305,14 +329,13 @@ fun ManufacturerSettingsTile(onOpen: () -> Unit) {
             )
 
             Spacer(modifier = Modifier.height(16.dp))
-            
-            ReMindOutlinedButton(
+
+            LiteverOutlinedButton(
                 onClick = onOpen,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
                     stringResource(R.string.permission_request_action),
-                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
                 )
             }
         }
@@ -362,14 +385,15 @@ private fun requestExactAlarmPermission(context: Context) {
 private fun requestOverlayPermission(context: Context) {
     val intent = Intent(
         Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-        Uri.parse("package:${context.packageName}")
+        "package:${context.packageName}".toUri()
     )
     context.startActivity(intent)
 }
 
+@SuppressLint("BatteryLife")
 private fun requestIgnoreBatteryOptimization(context: Context) {
     val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
-        data = Uri.parse("package:${context.packageName}")
+        data = "package:${context.packageName}".toUri()
     }
     context.startActivity(intent)
 }
@@ -399,7 +423,7 @@ private fun openManufacturerSettings(context: Context) {
 
     // Default fallback: App Details page (users can find "Other permissions" here)
     val detailIntent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-        data = Uri.parse("package:$packageName")
+        data = "package:$packageName".toUri()
     }
     context.startActivity(detailIntent)
 }

@@ -22,6 +22,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import vn.io.litever.remind.features.alarms.R
 import androidx.hilt.navigation.compose.hiltViewModel
+import vn.io.litever.designsystem.components.LiteverButton
+import vn.io.litever.designsystem.components.LiteverOutlinedButton
 import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.features.alarms.viewmodel.RingtoneItem
@@ -83,13 +85,12 @@ fun RingtoneSelectionScreen(
         },
         bottomBar = {
             ReMindBottomBar {
-                ReMindButton(
+                LiteverButton(
                     onClick = onSaveClick,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
                         stringResource(R.string.save),
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                     )
                 }
             }
@@ -112,7 +113,7 @@ fun RingtoneSelectionScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp, vertical = 8.dp)
                     ) {
-                        ReMindOutlinedButton(
+                        LiteverOutlinedButton(
                             onClick = onPickCustomClick,
                             modifier = Modifier.fillMaxWidth()
                         ) {

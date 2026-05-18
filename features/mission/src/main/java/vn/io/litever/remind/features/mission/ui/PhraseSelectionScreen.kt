@@ -64,10 +64,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import vn.io.litever.designsystem.components.LiteverButton
+import vn.io.litever.designsystem.components.LiteverOutlinedButton
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
-import vn.io.litever.remind.core.designsystem.components.ReMindButton
-import vn.io.litever.remind.core.designsystem.components.ReMindOutlinedButton
 import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -200,7 +200,7 @@ fun PhraseSelectionScreen(
         },
         bottomBar = {
             ReMindBottomBar {
-                ReMindButton(
+                LiteverButton(
                     onClick = onComplete,
                     modifier = Modifier.fillMaxWidth(),
                     enabled = selectedIds.isNotEmpty()
@@ -561,7 +561,7 @@ fun AddCustomPhraseContent(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            ReMindOutlinedButton(
+            LiteverOutlinedButton(
                 onClick = onDismiss,
                 modifier = Modifier
                     .weight(1f),
@@ -569,8 +569,8 @@ fun AddCustomPhraseContent(
             ) {
                 Text(stringResource(R.string.cancel))
             }
-            
-            ReMindButton(
+
+            LiteverButton(
                 onClick = { onConfirm(text, isShared) },
                 enabled = text.isNotBlank(),
                 modifier = Modifier

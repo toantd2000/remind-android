@@ -22,7 +22,6 @@ fun NavGraphBuilder.alarmGraph(
     onNavigateToMissionRinging: (Long) -> Unit,
     onNavigateToMessage: (Long) -> Unit,
     onNavigateBack: () -> Unit,
-    onAddMissionClick: () -> Unit,
     onMissionClick: (vn.io.litever.remind.core.model.Mission) -> Unit,
     onNavigateToPreview: (Long) -> Unit,
     onNavigateToMissionPreview: (Long) -> Unit,
@@ -48,7 +47,6 @@ fun NavGraphBuilder.alarmGraph(
             onRingtoneSelectionClick = onNavigateToRingtoneSelection,
             onSnoozeSettingsClick = onNavigateToSnoozeSettings,
             onNavigateToPermissions = onNavigateToPermissions,
-            onAddMissionClick = onAddMissionClick,
             onMissionClick = onMissionClick,
             onPreviewClick = onNavigateToPreview,
             navController = navController

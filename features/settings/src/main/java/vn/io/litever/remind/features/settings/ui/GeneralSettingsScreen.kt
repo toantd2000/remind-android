@@ -1,6 +1,5 @@
 package vn.io.litever.remind.features.settings.ui
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -8,29 +7,26 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.DarkMode
-import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.SettingsBrightness
 import androidx.compose.material.icons.rounded.Wallpaper
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
-import vn.io.litever.remind.core.designsystem.components.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import vn.io.litever.designsystem.components.LiteverSegmentedButton
+import vn.io.litever.designsystem.components.LiteverSingleChoiceSegmentedButtonRow
+import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
+import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.features.settings.R
 
 @Composable
@@ -81,19 +77,19 @@ fun GeneralSettingsScreen(
                         "H24" to stringResource(R.string.time_format_24h)
                     )
 
-                    SingleChoiceSegmentedButtonRow(
+                    LiteverSingleChoiceSegmentedButtonRow(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp)
                     ) {
-                        timeOptions.forEachIndexed { index, pair ->
-                            SegmentedButton(
+                        timeOptions.forEachIndexed { _, pair ->
+                            LiteverSegmentedButton(
                                 selected = uiState.timeFormat == pair.first,
                                 onClick = { onTimeFormatChange(pair.first) },
-                                shape = SegmentedButtonDefaults.itemShape(index = index, count = timeOptions.size),
-                            ) {
-                                Text(pair.second)
-                            }
+                                label = {
+                                    Text(pair.second)
+                                }
+                            )
                         }
                     }
                 }
@@ -109,16 +105,15 @@ fun GeneralSettingsScreen(
                     )
                     val icons = listOf(Icons.Rounded.SettingsBrightness, Icons.Rounded.LightMode, Icons.Rounded.DarkMode)
 
-                    SingleChoiceSegmentedButtonRow(
+                    LiteverSingleChoiceSegmentedButtonRow(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp)
                     ) {
                         options.forEachIndexed { index, pair ->
-                            SegmentedButton(
+                            LiteverSegmentedButton(
                                 selected = uiState.themeMode == pair.first,
                                 onClick = { onThemeModeChange(pair.first) },
-                                shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
                                 icon = {
                                     SegmentedButtonDefaults.Icon(active = uiState.themeMode == pair.first) {
                                         Icon(
@@ -127,10 +122,9 @@ fun GeneralSettingsScreen(
                                             modifier = Modifier.size(SegmentedButtonDefaults.IconSize)
                                         )
                                     }
-                                }
-                            ) {
-                                Text(pair.second)
-                            }
+                                },
+                                label = { Text(pair.second) }
+                            )
                         }
                     }
                 }
@@ -144,16 +138,15 @@ fun GeneralSettingsScreen(
                         "DYNAMIC" to stringResource(R.string.color_source_wallpaper)
                     )
 
-                    SingleChoiceSegmentedButtonRow(
+                    LiteverSingleChoiceSegmentedButtonRow(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp)
                     ) {
-                        colorOptions.forEachIndexed { index, pair ->
-                            SegmentedButton(
+                        colorOptions.forEachIndexed { _, pair ->
+                            LiteverSegmentedButton(
                                 selected = uiState.colorPalette == pair.first,
                                 onClick = { onColorPaletteChange(pair.first) },
-                                shape = SegmentedButtonDefaults.itemShape(index = index, count = colorOptions.size),
                                 icon = {
                                     SegmentedButtonDefaults.Icon(active = uiState.colorPalette == pair.first) {
                                         Icon(
@@ -162,10 +155,9 @@ fun GeneralSettingsScreen(
                                             modifier = Modifier.size(SegmentedButtonDefaults.IconSize)
                                         )
                                     }
-                                }
-                            ) {
-                                Text(pair.second)
-                            }
+                                },
+                                label = { Text(pair.second) }
+                            )
                         }
                     }
                 }
@@ -179,19 +171,17 @@ fun GeneralSettingsScreen(
                         "vi" to stringResource(R.string.language_vietnamese)
                     )
 
-                    SingleChoiceSegmentedButtonRow(
+                    LiteverSingleChoiceSegmentedButtonRow(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp)
                     ) {
-                        languageOptions.forEachIndexed { index, pair ->
-                            SegmentedButton(
+                        languageOptions.forEachIndexed { _, pair ->
+                            LiteverSegmentedButton(
                                 selected = uiState.language == pair.first,
                                 onClick = { onLanguageChange(pair.first) },
-                                shape = SegmentedButtonDefaults.itemShape(index = index, count = languageOptions.size),
-                            ) {
-                                Text(pair.second)
-                            }
+                                label = { Text(pair.second) }
+                            )
                         }
                     }
                 }

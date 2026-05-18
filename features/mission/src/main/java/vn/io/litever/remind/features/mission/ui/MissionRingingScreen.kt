@@ -12,17 +12,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import vn.io.litever.designsystem.components.LiteverButton
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
-import vn.io.litever.remind.features.mission.R
-import vn.io.litever.remind.core.designsystem.components.ReMindButton
 import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
-import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.MathProblem
 import vn.io.litever.remind.core.model.MissionType
 import vn.io.litever.remind.core.model.Phrase
+import vn.io.litever.remind.features.mission.R
 import vn.io.litever.remind.features.mission.ui.components.MathMissionContent
 import vn.io.litever.remind.features.mission.ui.components.MissionCompleteContent
 import vn.io.litever.remind.features.mission.ui.components.TypingMissionContent
@@ -30,8 +28,6 @@ import vn.io.litever.remind.features.mission.viewmodel.MissionRingingViewModel
 
 @Composable
 fun MissionRingingRoute(
-    alarmId: Long,
-    isPreview: Boolean = false,
     onFinish: () -> Unit,
     onAbandon: () -> Unit,
     navController: androidx.navigation.NavController,
@@ -113,7 +109,7 @@ fun MissionRingingScreen(
         bottomBar = {
             if (!uiState.isMissionJustCompleted && !uiState.isDismissed) {
                 ReMindBottomBar {
-                    ReMindButton(
+                    LiteverButton(
                         onClick = onFinish,
                         modifier = Modifier.fillMaxWidth(),
                         enabled = when (uiState.currentMission?.type) {
@@ -123,7 +119,6 @@ fun MissionRingingScreen(
                     ) {
                         Text(
                             text = stringResource(R.string.mission_complete),
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                         )
                     }
                 }
@@ -230,6 +225,7 @@ fun MissionRingingScreenPreview() {
     vn.io.litever.remind.core.designsystem.theme.ReMindTheme {
         MissionRingingScreen(
             uiState = vn.io.litever.remind.features.mission.viewmodel.MissionRingingUiState(
+                isLoading = false,
                 alarm = vn.io.litever.remind.core.model.Alarm(
                     id = 1,
                     time = java.time.LocalTime.of(7, 30),

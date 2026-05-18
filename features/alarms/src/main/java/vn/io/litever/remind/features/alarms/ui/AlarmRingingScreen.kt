@@ -1,38 +1,70 @@
 package vn.io.litever.remind.features.alarms.ui
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Notifications
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.foundation.border
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.text.style.TextAlign
-import vn.io.litever.remind.core.designsystem.components.*
 import androidx.hilt.navigation.compose.hiltViewModel
+import vn.io.litever.designsystem.components.LiteverButton
+import vn.io.litever.designsystem.components.LiteverOutlinedButton
+import vn.io.litever.remind.core.common.util.TimeFormatUtils
+import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.model.Alarm
 import vn.io.litever.remind.features.alarms.R
 import vn.io.litever.remind.features.alarms.viewmodel.AlarmRingingViewModel
-import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
-import androidx.compose.ui.tooling.preview.Preview
-import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
-import vn.io.litever.remind.core.model.Alarm
 
 @Composable
 fun AlarmRingingRoute(
@@ -102,6 +134,7 @@ fun AlarmRingingScreen(
     alarm: Alarm? = null,
     is24HourFormat: Boolean = false,
     autoSilenceCountdown: Int? = null,
+    isPreview: Boolean = false,
 ) {
     AlarmRingingContent(
         onDismiss = onDismiss,
@@ -111,7 +144,7 @@ fun AlarmRingingScreen(
         alarm = alarm,
         is24HourFormat = is24HourFormat,
         autoSilenceCountdown = autoSilenceCountdown,
-        isPreview = false
+        isPreview = isPreview
     )
 }
 
@@ -190,7 +223,7 @@ fun AlarmRingingContent(
         label = "snoozeShakeOffset"
     )
 
-    var isVisible by remember { mutableStateOf(false) }
+    var isVisible by remember { mutableStateOf(isPreview) }
     LaunchedEffect(Unit) {
         isVisible = true
     }
@@ -247,13 +280,12 @@ fun AlarmRingingContent(
                     .padding(16.dp),
                 contentAlignment = Alignment.TopEnd
             ) {
-                ReMindOutlinedButton(
+                LiteverOutlinedButton(
                     onClick = onExitPreview,
                     modifier = Modifier.wrapContentSize()
                 ) {
                     Text(
                         text = stringResource(R.string.action_exit_preview),
-                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
                     )
                 }
             }
@@ -331,7 +363,7 @@ fun AlarmRingingContent(
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
                                 text = stringResource(
-                                    vn.io.litever.remind.features.alarms.R.string.scheduled_time_format,
+                                    R.string.scheduled_time_format,
                                     TimeFormatUtils.formatTime(alarm.time, is24HourFormat)
                                 ),
                                 style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium),
@@ -396,7 +428,7 @@ fun AlarmRingingContent(
                 }
                 
                 androidx.compose.animation.AnimatedVisibility(
-                    visible = (alarm == null || alarm.snoozeNextTriggerTime == null) && autoSilenceCountdown != null,
+                    visible = alarm.snoozeNextTriggerTime == null && autoSilenceCountdown != null,
                     enter = androidx.compose.animation.fadeIn() + androidx.compose.animation.expandVertically(),
                     exit = androidx.compose.animation.fadeOut() + androidx.compose.animation.shrinkVertically()
                 ) {
@@ -447,7 +479,7 @@ fun AlarmRingingContent(
                         alpha = bottomAlpha
                     },
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 val isNotSnoozing = alarm?.snoozeNextTriggerTime == null
                 
@@ -463,7 +495,7 @@ fun AlarmRingingContent(
                         stringResource(vn.io.litever.remind.core.designsystem.R.string.snooze)
                     }
 
-                    ReMindOutlinedButton(
+                    LiteverOutlinedButton(
                         onClick = onSnooze,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -471,12 +503,11 @@ fun AlarmRingingContent(
                     ) {
                         Text(
                             text = snoozeText,
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                         )
                     }
                 }
 
-                ReMindButton(
+                LiteverButton(
                     onClick = {
                         val hasMission = (alarm?.missions?.isNotEmpty() == true)
                         if (hasMission) {
@@ -522,7 +553,8 @@ fun AlarmRingingScreenPreview() {
                 snoozeRepeatCount = 3,
                 currentSnoozeCount = 1
             ),
-            is24HourFormat = false
+            is24HourFormat = false,
+            isPreview = true
         )
     }
 }
@@ -568,7 +600,8 @@ fun AlarmRingingScreenNoSnoozePreview() {
                 snoozeRepeatCount = 3,
                 currentSnoozeCount = 3 // Limit reached
             ),
-            is24HourFormat = true
+            is24HourFormat = true,
+            isPreview = true
         )
     }
 }

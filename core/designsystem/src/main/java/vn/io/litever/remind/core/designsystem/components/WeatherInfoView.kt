@@ -259,32 +259,25 @@ private fun CompactWeatherView(
                 .clickable { onLocationClick() }
         ) {
             Row(
-                modifier = Modifier.height(IntrinsicSize.Min),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Left: Pana Illustration - Sử dụng Box + matchParentSize để không làm bung chiều cao Row
+                // Left: Pana Illustration
                 val panaRes = getPanaIllustration(weather.aiAnalysis.hint)
-                Box(
+                Image(
+                    painter = painterResource(id = panaRes),
+                    contentDescription = null,
                     modifier = Modifier
-                        .fillMaxHeight()
-                        .aspectRatio(1f)
-                ) {
-                    Image(
-                        painter = painterResource(id = panaRes),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .matchParentSize()
-                            .padding(all = 2.dp),
-                        contentScale = ContentScale.Fit
-                    )
-                }
+                        .size(56.dp)
+                        .padding(start = 8.dp),
+                    contentScale = ContentScale.Fit
+                )
 
                 Spacer(modifier = Modifier.width(12.dp))
 
                 Column(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(top = 8.dp, bottom = 8.dp, end = 8.dp)
+                        .padding(top = 8.dp, bottom = 8.dp, end = 12.dp)
                 ) {
                     // Row 1: Temperature & Condition Summary
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -310,15 +303,16 @@ private fun CompactWeatherView(
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(4.dp))
-
                     // Row 2: AI Hint
-                    Text(
-                        text = "✨ " + weather.aiAnalysis.hint,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontWeight = FontWeight.Medium
-                    )
+                    if (weather.aiAnalysis.hint.isNotBlank()) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "✨ " + weather.aiAnalysis.hint,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
                 }
             }
         }
@@ -369,6 +363,16 @@ fun WeatherInfoViewPreview() {
 
             Text("Compact View", style = MaterialTheme.typography.titleMedium)
             WeatherInfoView(weather = mockWeather, isCompact = true)
+
+            Text("Compact View (Long Hint - No Limit)", style = MaterialTheme.typography.titleMedium)
+            WeatherInfoView(
+                weather = mockWeather.copy(
+                    aiAnalysis = AiAnalysis(
+                        hint = "Hôm nay trời có thể có mưa rào rải rác vào buổi chiều, quý khách nên mang theo ô và áo mưa khi đi ra ngoài để tránh bị ướt. Ngoài ra nhiệt độ có thể giảm mạnh vào buổi tối, hãy chú ý giữ ấm cơ thể khi ra ngoài."
+                    )
+                ),
+                isCompact = true
+            )
         }
     }
 }

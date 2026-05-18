@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AlarmOff
 import androidx.compose.material.icons.rounded.NotificationsPaused
 import androidx.compose.material.icons.rounded.PowerOff
 import androidx.compose.material.icons.rounded.Security
@@ -19,6 +18,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import vn.io.litever.designsystem.components.LiteverButton
+import vn.io.litever.designsystem.components.LiteverDialog
 import vn.io.litever.remind.core.model.MissedAlarm
 import vn.io.litever.remind.core.model.MissedReason
 import java.time.Instant
@@ -33,15 +34,8 @@ fun MissedAlarmDialog(
     missedAlarms: List<MissedAlarm>,
     onDismiss: () -> Unit
 ) {
-    AlertDialog(
+    LiteverDialog(
         onDismissRequest = onDismiss,
-        icon = {
-            Icon(
-                Icons.Rounded.AlarmOff,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.error
-            )
-        },
         title = {
             Text(
                 text = stringResource(R.string.missed_alarms_dialog_title),
@@ -70,8 +64,8 @@ fun MissedAlarmDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text("OK", fontWeight = FontWeight.Bold)
+            LiteverButton(onClick = onDismiss) {
+                Text("OK")
             }
         }
     )
@@ -83,7 +77,7 @@ private fun MissedAlarmItem(missed: MissedAlarm) {
         val instant = Instant.ofEpochMilli(missed.scheduledTime)
         val zoneId = try {
             ZoneId.systemDefault()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             ZoneId.of("UTC")
         }
         LocalDateTime.ofInstant(instant, zoneId)
@@ -135,10 +129,8 @@ private fun MissedAlarmItem(missed: MissedAlarm) {
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column {
-                val labelText = if (missed.alarmLabel.isEmpty()) {
+                val labelText = missed.alarmLabel.ifEmpty {
                     stringResource(R.string.no_label)
-                } else {
-                    missed.alarmLabel
                 }
                 Text(
                     text = labelText,
@@ -156,58 +148,62 @@ private fun MissedAlarmItem(missed: MissedAlarm) {
     }
 }
 
-@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@androidx.compose.ui.tooling.preview.Preview
 @Composable
 fun MissedAlarmDialogPreview() {
     ReMindTheme {
-        MissedAlarmDialog(
-            missedAlarms = listOf(
-                MissedAlarm(
-                    id = 1,
-                    alarmId = 101,
-                    alarmLabel = "Morning Yoga",
-                    scheduledTime = System.currentTimeMillis() - 3600000,
-                    missedTime = System.currentTimeMillis() - 3540000,
-                    reason = MissedReason.POWER_OFF
+        Box(modifier = Modifier.fillMaxSize()) {
+            MissedAlarmDialog(
+                missedAlarms = listOf(
+                    MissedAlarm(
+                        id = 1,
+                        alarmId = 101,
+                        alarmLabel = "Morning Yoga",
+                        scheduledTime = System.currentTimeMillis() - 3600000,
+                        missedTime = System.currentTimeMillis() - 3540000,
+                        reason = MissedReason.POWER_OFF
+                    ),
+                    MissedAlarm(
+                        id = 2,
+                        alarmId = 102,
+                        alarmLabel = "Medicine",
+                        scheduledTime = System.currentTimeMillis() - 7200000,
+                        missedTime = System.currentTimeMillis() - 7140000,
+                        reason = MissedReason.PERMISSION_MISSING
+                    ),
+                    MissedAlarm(
+                        id = 3,
+                        alarmId = 103,
+                        alarmLabel = "",
+                        scheduledTime = System.currentTimeMillis() - 10800000,
+                        missedTime = System.currentTimeMillis() - 10740000,
+                        reason = MissedReason.TIMEOUT
+                    )
                 ),
-                MissedAlarm(
-                    id = 2,
-                    alarmId = 102,
-                    alarmLabel = "Medicine",
-                    scheduledTime = System.currentTimeMillis() - 7200000,
-                    missedTime = System.currentTimeMillis() - 7140000,
-                    reason = MissedReason.PERMISSION_MISSING
-                ),
-                MissedAlarm(
-                    id = 3,
-                    alarmId = 103,
-                    alarmLabel = "",
-                    scheduledTime = System.currentTimeMillis() - 10800000,
-                    missedTime = System.currentTimeMillis() - 10740000,
-                    reason = MissedReason.TIMEOUT
-                )
-            ),
-            onDismiss = {}
-        )
+                onDismiss = {}
+            )
+        }
     }
 }
 
-@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@androidx.compose.ui.tooling.preview.Preview
 @Composable
 fun MissedAlarmDialogDarkPreview() {
     ReMindTheme(darkTheme = true) {
-        MissedAlarmDialog(
-            missedAlarms = listOf(
-                MissedAlarm(
-                    id = 1,
-                    alarmId = 101,
-                    alarmLabel = "Quick Nap",
-                    scheduledTime = System.currentTimeMillis() - 1800000,
-                    missedTime = System.currentTimeMillis() - 1740000,
-                    reason = MissedReason.UNKNOWN
-                )
-            ),
-            onDismiss = {}
-        )
+        Box(modifier = Modifier.fillMaxSize()) {
+            MissedAlarmDialog(
+                missedAlarms = listOf(
+                    MissedAlarm(
+                        id = 1,
+                        alarmId = 101,
+                        alarmLabel = "Quick Nap",
+                        scheduledTime = System.currentTimeMillis() - 1800000,
+                        missedTime = System.currentTimeMillis() - 1740000,
+                        reason = MissedReason.UNKNOWN
+                    )
+                ),
+                onDismiss = {}
+            )
+        }
     }
 }

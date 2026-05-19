@@ -110,9 +110,16 @@
     <string name="discard_changes_message">You have unsaved changes. Do you want to save them before leaving?</string>
     <string name="action_discard">Discard</string>
     <string name="exit_dialog_title">Exit App</string>
-    <string name="exit_dialog_message">Are you sure you want to exit? Please consider interacting with the ad below to support our development team!</string>
+    <string name="exit_dialog_message">Are you sure you want to leave? Thank you so much for choosing ReMind today. We wish you a beautiful day filled with joy and positive energy! ❤️ Please interact with the ad below to support us.</string>
+    <string name="exit_dialog_message_ad_free">Are you sure you want to leave? Thank you so much for choosing ReMind today. We wish you a beautiful day filled with joy and positive energy! ❤️</string>
     <string name="exit_dialog_confirm">Exit</string>
     <string name="exit_dialog_cancel">Cancel</string>
+    <string name="exit_watch_ad_support">Watch ad to support development</string>
+    <string name="watch_ad_dialog_title">Support App</string>
+    <string name="reward_ad_loading">Simulating Ad (%d)...</string>
+    <string name="watch_ad_dialog_message">Thank you so much for supporting us!</string>
+    <string name="ads_disabled_reward_message">Thank you for watching! Ads have been temporarily disabled for the next 24 hours.</string>
+    <string name="close_text">Close</string>
 </resources>
 
 

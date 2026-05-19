@@ -110,9 +110,16 @@
     <string name="discard_changes_message">Bạn có các thay đổi chưa lưu. Bạn có muốn lưu trước khi thoát không?</string>
     <string name="action_discard">Bỏ qua</string>
     <string name="exit_dialog_title">Xác nhận thoát</string>
-    <string name="exit_dialog_message">Bạn có chắc chắn muốn thoát ứng dụng? Nếu yêu thích ứng dụng, hãy ủng hộ chúng mình bằng cách tương tác với quảng cáo bên dưới nhé!</string>
+    <string name="exit_dialog_message">Bạn có chắc chắn muốn rời đi? Cảm ơn bạn rất nhiều vì đã đồng hành cùng ReMind hôm nay. Chúc bạn có một ngày tràn ngập niềm vui và năng lượng tích cực! ❤️ Hãy tương tác với quảng cáo phía dưới để ủng hộ chúng tôi nhé.</string>
+    <string name="exit_dialog_message_ad_free">Bạn có chắc chắn muốn rời đi? Cảm ơn bạn rất nhiều vì đã đồng hành cùng ReMind hôm nay. Chúc bạn có một ngày tràn ngập niềm vui và năng lượng tích cực! ❤️</string>
     <string name="exit_dialog_confirm">Thoát</string>
     <string name="exit_dialog_cancel">Hủy</string>
+    <string name="exit_watch_ad_support">Xem quảng cáo ủng hộ phát triển</string>
+    <string name="watch_ad_dialog_title">Ủng hộ ứng dụng</string>
+    <string name="reward_ad_loading">Đang giả lập QC (%d)...</string>
+    <string name="watch_ad_dialog_message">Cảm ơn bạn đã ủng hộ chúng tôi!</string>
+    <string name="ads_disabled_reward_message">Chân thành cảm ơn bạn! Quảng cáo đã được tạm tắt trong vòng 24 giờ tới.</string>
+    <string name="close_text">Đóng</string>
 </resources>
 
 

@@ -1,3 +1,37 @@
+## [2026-05-19] Trailing Lambda Resolution & Device-Specific Simulation Fallbacks
+
+### Context
+Upgrading `ExitAppDialog` and `SupportDeveloperDialog` based on revised design guidelines: removing close buttons, removing rewarded-ad triggers in exit dialogues, limiting rewarded ad counts/simulation exclusively to emulators, and prompting users to interact with native ads in the exit message to support.
+
+### What happened
+- Modified `SettingsScreen.kt` to pass the `text = { ... }` body explicitly as a named parameter inside `LiteverDialog`. This fixed a Kotlin compilation type mismatch where the compiler mistakenly resolved the trailing lambda as a default parameter (`properties: DialogProperties`).
+- Restructured `SettingsScreen.kt` using `DeviceUtils.isEmulator()` to gate `showRewardedAdSimulator = true`. On physical devices, it shows a non-disruptive native Toast (`rewarded_ad_not_ready`) warning instead.
+- Revised `exit_dialog_message` inside `strings.xml` resource files (both English and Vietnamese) to ask the user to support us by interacting with the native ad placed directly below.
+
+### Lessons Learned
+- **Kotlin Trailing Lambda Ambiguity**: In Kotlin, when calling a Composable (or function) that contains multiple optional/nullable functional parameters (such as `title`, `text` in `LiteverDialog`), if you pass a trailing lambda block at the end, the compiler may struggle to resolve which functional parameter it maps to or will map it to the first non-functional/default parameter that it can match. To ensure compiler safety and avoid type mismatch errors, **always pass the functional block explicitly as a named parameter** (e.g. `text = { ... }`).
+- **Device-Specific Simulation**: Presenting simulated interfaces (like a fake ad progress loader) is excellent for developers on emulators but can look deceptive or broken to real users on physical devices if AdMob fails to load a real ad. Gating the simulator via `DeviceUtils.isEmulator()` and presenting a standard, polite fallback notice (Toast) on real hardware maintains application integrity and professional UX.
+- **Explicit Ad Engagement Messages**: When a free tier app uses non-intrusive native ads, advising users explicitly about how they can support the developer (e.g., *"Please interact with the ad below to support us"* / *"Hãy tương tác với quảng cáo phía dưới để ủng hộ chúng tôi nhé"*) is a transparent and highly effective strategy compared to ambiguous support requests.
+
+## [2026-05-18] Settings Restructure & Rewarded Ad Supporter
+
+### Context
+Reorganizing the settings tab into three distinct groups, adding the Support Developer Card with premium gradient background, integrating AdMob Rewarded Ads and simulator fallback countdown, and upgrading `ExitAppDialog` by replacing native ads with a rewarded ad supporter button.
+
+### What happened
+- Modified `SettingsScreen.kt` to restructure the navigation layout.
+- Added `SupportDeveloperCard` with high-aesthetic modern gradient style.
+- Created `RewardedAdSimulatorDialog` countdown loader as a cached/offline ad fallback.
+- Added dynamic ad-free period (`ADS_DISABLED_UNTIL`) to DataStore and observed it in `AdMobManagerImpl` to instantly block all other native/banner ad loadings.
+- Upgraded `ExitAppDialog.kt` to present "Watch ad to support" button, launching simulator/real ad and keeping user in app.
+- Fixed a modularization compilation error by adding `:core:datastore` dependency to `:core:ads:impl`.
+- Standardized `AdManager` mock instances `PreviewAdManager` by implementing the new `isAdLoaded` method.
+
+### Lessons Learned
+- **Clean Architecture Modularization & Dagger Hilt**: When injecting preferences or database classes (from `:core:datastore` / `:core:database`) into an implementation module (like `:core:ads:impl`), always ensure the module's `build.gradle.kts` explicitly declares that project dependency. Hilt/KSP will fail compilation with unhelpful code generation errors if the dependency is missing in the classpath of the module where the injection occurs.
+- **Interface Compatibility & Mocks**: When extending a core interface that has multiple mock/preview implementations (like `PreviewAdManager` in Compose previews), remember to immediately implement the default/override methods in all previews. Failing to do so breaks Compose previews in other independent feature modules (like `:features:remind` and `:features:alarms`).
+- **Dynamic Ad Suppression Strategy**: Integrating ad-free suppression at the core network/ad manager implementation level is far more stable than trying to handle visibility conditionally on every single screen. By intercepting all `loadNativeAd` and `loadBannerAd` calls instantly in `AdMobManagerImpl` when the ad-free period is active, we guarantee zero flickering and prevent empty ad placeholders.
+
 ## [2026-05-09] Release v1.1.3 & AI Lifecycle Management
 
 ### Context

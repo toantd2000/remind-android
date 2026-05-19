@@ -11,6 +11,7 @@ interface AdManager {
     fun initialize()
     fun loadAd(placement: AdPlacement)
     fun showAd(activity: Activity, placement: AdPlacement, onAdDismissed: () -> Unit)
+    fun isAdLoaded(placement: AdPlacement): Boolean
 
     @Composable
     fun NativeAdView(placement: AdPlacement, modifier: Modifier)

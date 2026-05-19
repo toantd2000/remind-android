@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **Settings Restructure:** Reorganized the settings screen into three distinct groups: App Settings, Support & Community, and About & Legal.
+- **Support Developer Refactoring:** Converted the full-width premium card into a standard settings list item with a Heart icon under the Support category. Clicking it triggers a beautiful custom modal dialog with actions to Watch Ad or Donate. Decoupled the settings item subtitle (short & concise) from the dialog content (displays the full, heartfelt thank-you message).
+- **Rewarded Ad Support:** Implemented AdMob Rewarded Ads support (`SUPPORT_REWARDED`) to temporarily disable ads for 24 hours in exchange for watching an ad.
+- **Ad Placement Serialization Mapping:** Tagged the `SUPPORT_REWARDED` enum value with `@SerialName("SUPPORT_REWARD")` to automatically support the new ads configuration JSON placement key without renaming or breaking any existing references.
+- **Supporter Reward Tuning:** Added a dynamic build-type check that automatically limits the granted ad-free supporter duration to **30 seconds** on Debug variants instead of the standard 24 hours to support rapid, iterative developer verification.
+- **Ad Simulator Fallback:** Created a Compose-based interactive countdown `RewardedAdSimulatorDialog` as a graceful fallback when real ads are not loaded.
+- **FAQ Stub:** Added future plans FAQ dialog to notify users of upcoming updates.
+- **Exit Dialog Upgrades:** Re-embedded Native Ads (`EXIT_NATIVE`) into `ExitAppDialog` inside the original `Box` container structure. Upgraded both the exit and support developer dialogs with highly sincere, heartfelt messages and a warm daily wish.
+- **Conditional Ad-Free Exit UI:** Connected supporter reward state (`isAdFreeActive`) to the exit dialog, dynamically removing the support plea and hiding native ads entirely when the user is enjoying their ad-free status.
+
+### Changed
+- **Settings Dialog Refinements:** Removed the redundant close button from the Support Developer dialog using a custom `confirmButton = {}` layout wrapper.
+- **Exit Dialog Polish:** Removed the rewarded ad button ("Watch ad to support...") from `ExitAppDialog` completely, ensuring a lightweight and non-disruptive exit confirmation flow.
+- **Navigation Tweaks:** Hidden the unimplemented Alarm Settings menu item from the settings tab.
+
 ## [1.1.4] - 2026-05-12
 
 ### Added

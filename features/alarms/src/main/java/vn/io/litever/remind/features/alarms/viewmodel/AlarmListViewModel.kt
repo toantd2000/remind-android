@@ -57,6 +57,14 @@ class AlarmListViewModel @Inject constructor(
             initialValue = true
         )
 
+    val isAdFreeActive: StateFlow<Boolean> = preferencesDataSource.adsDisabledUntil
+        .map { System.currentTimeMillis() < it }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = false
+        )
+
     val alarms: StateFlow<List<Alarm>?> = repository.getAllAlarms()
         .map { list ->
             val now = LocalDateTime.now()
@@ -246,6 +254,12 @@ class AlarmListViewModel @Inject constructor(
 
     private fun calculateNextAlarm(enabledAlarms: List<Alarm>): NextAlarmUiState {
         return vn.io.litever.remind.features.alarms.ui.state.calculateNextAlarm(enabledAlarms)
+    }
+
+    fun disableAdsFor24Hours() {
+        viewModelScope.launch {
+            preferencesDataSource.setAdsDisabledUntil(System.currentTimeMillis() + 24 * 60 * 60 * 1000L)
+        }
     }
 }
 

@@ -468,9 +468,73 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
 468:   - Triển khai logic `Context.findActivity()` để thực hiện `finish()` Activity chính xác khi bọc trong `ContextWrapper` (do cơ chế Localization).
 469: - **Hệ quả:** Tối ưu hóa trải nghiệm người dùng (không gây phiền nhiễu như Interstitial Ad), đảm bảo tính nhất quán của Design System và xử lý thoát App ổn định.
 
+### [TDR-054] - Tái cấu trúc Giao diện Cài đặt và Cơ chế Quảng cáo Thưởng Ủng hộ (Rewarded Ads Supporter)
+- **Ngày thực hiện:** 2026-05-18
+- **Trạng thái:** Accepted
+- **Bối cảnh:** Giao diện cài đặt (tab setting) cần được tái cơ cấu gọn gàng hơn. Đồng thời, người dùng muốn ủng hộ nhà phát triển mà không bắt buộc dùng tiền mặt, qua việc xem video quảng cáo phần thưởng (Rewarded Ad) để tắt quảng cáo trong 24 giờ.
+- **Quyết định:**
+  - Gom cài đặt thành 3 nhóm: App Settings (ẩn Alarm Settings chưa triển khai), Support & Community (thêm Thẻ Ủng hộ, FAQ Dialog, Rate App, Share App), About & Legal.
+  - Tích hợp Google AdMob Rewarded Ad (`SUPPORT_REWARDED`) và cơ chế `RewardedAdSimulatorDialog` đếm ngược 5 giây làm fallback khi ad chưa load kịp.
+  - Loại bỏ hoàn toàn quảng cáo Native Ad ở hộp thoại thoát ứng dụng (`ExitAppDialog`), thay bằng nút xem quảng cáo phần thưởng để ủng hộ. Khi hoàn thành xem quảng cáo, hiển thị hộp thoại cảm ơn và giữ người dùng ở lại app.
+- **Hệ quả:** Giao diện cài đặt đẹp mắt, sang trọng (premium gradient card). Tăng doanh thu quảng cáo phần thưởng (Rewarded Ad), giảm thiểu sự khó chịu của Native Ad tại exit dialog và giữ chân người dùng trong app tốt hơn.
+
+### [TDR-055] - Tối ưu hóa Giao diện Cài đặt, Hộp thoại Thoát ứng dụng và Lời nhắn chân thành
+- **Ngày thực hiện:** 2026-05-19
+- **Trạng thái:** Accepted
+- **Bối cảnh:** 
+  - Thẻ Ủng hộ nhà phát triển dạng Premium Card tuy đẹp nhưng chiếm diện tích lớn và làm giảm tính đồng nhất của danh sách cài đặt. Người dùng mong muốn mục này hiển thị bình thường như các mục cài đặt khác và mở ra Dialog lựa chọn khi nhấn vào.
+  - Các hộp thoại thoát app (`ExitAppDialog`) và hộp thoại ủng hộ cần truyền tải lời nhắn chân thành, ấm áp hơn kèm lời chúc tốt đẹp gửi tới người dùng. Đồng thời, nhúng lại quảng cáo Native Ad (`EXIT_NATIVE`) vào trong Hộp thoại thoát app để tối ưu hóa doanh thu hiển thị.
+  - Người dùng mong muốn thông điệp kêu gọi ủng hộ ngắn gọn hơn, tránh sử dụng các từ ngữ mang tính cầu khẩn (ví dụ: "please..." hay "bạn có thể tương tác..."), mà thay bằng lời kêu gọi lịch sự, tinh tế: "Ủng hộ chúng tôi nếu bạn thích ứng dụng" hay "Hãy ủng hộ nếu bạn thích".
+- **Quyết định:**
+  - Loại bỏ hoàn toàn `SupportDeveloperCard` khỏi `LazyColumn` và xóa hàm Composable này để làm sạch mã nguồn.
+  - Thêm một `SettingsItem` tiêu chuẩn vào nhóm **Support & Community** với biểu tượng Trái Tim thân thiện (`Icons.Rounded.Favorite`) và dòng mô tả ngắn gọn: "Ủng hộ chúng tôi nếu bạn thích ứng dụng nhé! ❤️".
+  - Triển khai hộp thoại `SupportDeveloperDialog` thông qua `LiteverAlertDialog` để hiển thị nội dung kêu gọi và hai nút nhấn **Xem quảng cáo (Watch Ad)** & **Ủng hộ (Donate)** nằm cạnh nhau.
+  - Tách biệt hoàn toàn phần phụ đề cài đặt với nội dung hộp thoại: Định nghĩa chuỗi mới `support_dev_dialog_desc` hiển thị **lời cảm ơn đầy đủ, ấm áp và chân thành** bên trong hộp thoại, trong khi dòng phụ đề trong cài đặt vẫn được giữ ngắn gọn và tinh tế.
+  - Thay đổi toàn bộ chuỗi ký tự thông điệp ở cả hai Dialog (hỗ trợ đa ngôn ngữ EN/VI) với lời nhắn vô cùng chân thành, biểu thị lòng biết ơn sâu sắc cùng một lời chúc ngày mới tốt lành tràn ngập năng lượng tích cực gửi tới người dùng. Bỏ đi các câu cầu khẩn, sử dụng cấu trúc tự nhiên hơn: "Hãy ủng hộ nếu bạn thích nhé." / "Support us if you like."
+  - Nhúng lại quảng cáo Native Ad (`EXIT_NATIVE`) vào trong `ExitAppDialog`, khôi phục lại cách hiển thị nguyên bản từ lịch sử Git bằng cách bọc trong `Box(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp))` nhằm đảm bảo độ căn lề tối ưu.
+- **Hệ quả:** Giao diện cài đặt đồng bộ, gọn gàng và tinh tế hơn. Hộp thoại thoát và ủng hộ trở nên cực kỳ thân thiện, truyền tải sự chân thành và tình cảm của đội ngũ phát triển mà không gây cảm giác khó chịu cho người dùng. Việc nhúng lại quảng cáo Native Ad tại hộp thoại thoát giúp duy trì hiệu quả quảng cáo mà không gây phản cảm nhờ có thông điệp ấm áp và chân thành đi kèm.
+
+### [TDR-056] - Đồng bộ Key Cấu hình Quảng cáo, Quản lý Bộ nhớ đệm (Cache) động, và Hiển thị Trạng thái Tải Quảng cáo thời gian thực
+- **Ngày thực hiện:** 2026-05-19
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Cấu hình JSON từ xa chuyển đổi key quảng cáo thưởng từ `SUPPORT_REWARD` thành `SUPPORT_REWARDED`.
+  - Quản lý bộ nhớ đệm (Cache) cho quảng cáo phần thưởng cần linh hoạt theo tham số `enableCache` và `intervalSeconds` từ JSON: nếu bật thì dùng lại quảng cáo đã tải trong khoảng thời gian hiệu lực, nếu tắt thì luôn tải quảng cáo mới.
+  - Tiến trình tải quảng cáo test AdMob trên thiết bị thật (Physical device) trong quá trình debug bị chặn hiển thị do chính sách bảo vệ lưu lượng của AdMob, dẫn đến luôn báo lỗi "Quảng cáo chưa sẵn sàng" khi nhấn nút xem mà không cách nào chạy thử.
+  - Người dùng bấm nút "Xem quảng cáo" mong muốn nhận được thông tin phản hồi trực quan ngay lập tức nếu quảng cáo chưa tải xong (hiển thị vòng xoay loading) và tự động mở quảng cáo ngay khi tải xong mà không phải chờ đợi thủ công.
+- **Quyết định:**
+  - Khôi phục key ánh xạ cấu hình từ xa đồng bộ 100% với JSON: Sử dụng trực tiếp enum key `SUPPORT_REWARDED` thay thế cho `@SerialName("SUPPORT_REWARD")`.
+  - Tích hợp logic kiểm tra bộ nhớ đệm linh hoạt trong `AdMobManagerImpl.loadAd`: nếu `enableCache` là `true` và ad vẫn nằm trong khoảng hiệu lực `intervalSeconds`, dùng lại quảng cáo đã tải; ngược lại, bỏ qua cache và gửi yêu cầu tải mới từ AdMob.
+  - Ép buộc sử dụng Google official Test Ad Unit IDs (`ca-app-pub-3940256099942544/5224354917` cho rewarded và `ca-app-pub-3940256099942544/2247696110` cho native) đối với **toàn bộ các bản build debug** chạy trên thiết bị thật. Điều này cho phép máy thật tải quảng cáo test thành công 100% để phục vụ phát triển và kiểm thử.
+  - Tích hợp cơ chế tải quảng cáo theo yêu cầu (On-Demand Loading): Loại bỏ hoàn toàn khối lệnh tải trước (preload) khi mở màn hình để tối ưu hóa tài nguyên mạng.
+  - Triển khai bộ lắng nghe trạng thái quảng cáo thời gian thực (`collectAsState` từ flow `adState`) và hộp thoại Loading tròn xoay (`CircularProgressIndicator` bọc trong `LiteverDialog`). Khi người dùng nhấn nút "Xem quảng cáo", hệ thống lập tức xoay vòng loading và tự động bung màn hình quảng cáo toàn màn hình ngay khi trạng thái chuyển sang `Loaded`.
+- **Hệ quả:** Hoàn thành tối ưu hóa 100% cơ chế tải và quản lý quảng cáo AdMob, tăng tính chuyên nghiệp (premium UX), tối ưu hóa tài nguyên mạng nhờ cơ chế tải theo yêu cầu, và cho phép lập trình viên dễ dàng chạy thử quảng cáo test đầy đủ trên thiết bị thật.
+
 ---
 
 ## 🛠 Changelog (Tính năng mới)
+
+### [2026-05-19]
+- **Feature:** Chuyển đổi Thẻ Ủng hộ nhà phát triển thành mục danh sách (`SettingsItem`) tiêu chuẩn dưới nhóm Hỗ trợ với biểu tượng Trái tim (`Icons.Rounded.Favorite`).
+- **UI/UX:** Tích hợp Hộp thoại `SupportDeveloperDialog` sử dụng `LiteverAlertDialog` hiển thị mô tả ngắn và hai lựa chọn **Xem quảng cáo (Watch Ad)** & **Ủng hộ (Donate)** theo chuẩn Design System để tối giản giao diện cài đặt và nâng cao tính thẩm mỹ.
+- **UI/UX:** Bỏ nút "Đóng" (Close button) khỏi Hộp thoại Ủng hộ nhà phát triển trong mục Cài đặt bằng cách chuyển đổi từ `LiteverAlertDialog` sang dùng `LiteverDialog` với nút confirm rỗng (`confirmButton = {}`) để tuân thủ thiết kế tối giản, gọn gàng.
+- **UI/UX:** Nhúng lại quảng cáo Native Ad (`EXIT_NATIVE`) vào trong Hộp thoại thoát ứng dụng (`ExitAppDialog`), khôi phục chính xác cấu trúc Box container từ lịch sử Git.
+- **UI/UX:** Loại bỏ hoàn toàn nút xem quảng cáo ủng hộ khỏi Hộp thoại thoát ứng dụng (`ExitAppDialog`).
+- **UI/UX:** Loại bỏ hoàn toàn cơ chế preload quảng cáo khi mở màn hình, chuyển sang cơ chế tải theo yêu cầu (On-Demand Loading) chỉ khi người dùng click xem.
+- **UI/UX:** Triển khai cơ chế theo dõi trạng thái tải quảng cáo thời gian thực, tự động kích hoạt hộp thoại loading xoay tròn (`CircularProgressIndicator`) và mở quảng cáo ngay khi sẵn sàng, nâng cấp trải nghiệm mượt mà và cao cấp.
+- **Ad-Free Control:** Liên kết trạng thái ủng hộ (`isAdFreeActive`) vào `ExitAppDialog` để tự động hóa giao diện: ẩn toàn bộ quảng cáo Native Ad và loại bỏ thông điệp kêu gọi ủng hộ khi người dùng đang trong trạng thái không quảng cáo.
+- **Ad Configuration:** Cấu trúc lại và thiết lập ánh xạ tự động thông qua thẻ `@SerialName("SUPPORT_REWARD")` trên Enum `AdPlacement.SUPPORT_REWARDED`, giúp tương thích ngược hoàn toàn với key cấu hình JSON mới mà không cần chỉnh sửa/refactor diện rộng trong mã nguồn Kotlin.
+- **Ad Configuration:** Đồng bộ hóa hoàn toàn key remote config với JSON dạng `SUPPORT_REWARDED` và hỗ trợ cấu hình cache động (`enableCache` và `intervalSeconds`).
+- **Development & Testing:** Ép buộc sử dụng các ID quảng cáo thử nghiệm chính thức của Google cho tất cả các bản debug chạy trên thiết bị thật, loại bỏ hoàn toàn lỗi chặn tải quảng cáo và báo "Quảng cáo chưa sẵn sàng" khi phát triển.
+- **Supporter Reward Tuning:** Triển khai cơ chế thưởng thời gian không quảng cáo động dựa trên kiểu build (Build Variant): ở phiên bản Debug, thời gian miễn quảng cáo sẽ là **30 giây** thay vì 1 ngày (24 giờ) để hỗ trợ test nhanh và ổn định, trong khi bản Release vẫn giữ nguyên 24 giờ.
+- **Localization:** Tách biệt chuỗi mô tả Cài đặt (ngắn gọn) và nội dung Hộp thoại Ủng hộ nhà phát triển (lời cảm ơn chân thành đầy đủ), đồng thời tối ưu hóa thông điệp của cả hai Dialog loại bỏ các từ ngữ mang tính cầu khẩn gây phiền toái.
+
+### [2026-05-18]
+- **Feature:** Tái cấu trúc toàn diện màn hình Cài đặt thành 3 nhóm trực quan: App Settings, Support & Community, About & Legal.
+- **UI/UX:** Thêm Thẻ Ủng hộ nhà phát triển (Support Developer Card) cực kỳ sang trọng với hiệu ứng Premium Gradient.
+- **Feature:** Triển khai cơ chế Quảng cáo Thưởng Ủng hộ (Rewarded Ads Supporter) tích hợp Google AdMob và trình giả lập Ad Simulator (5s countdown) làm fallback. Xem quảng cáo sẽ tạm tắt toàn bộ quảng cáo trong ứng dụng trong vòng 24 giờ.
+- **UI/UX:** Loại bỏ Native Ad tại Hộp thoại thoát app (`ExitAppDialog`), thay thế bằng nút xem quảng cáo phần thưởng để ủng hộ. Hoàn thành xem sẽ hiện Dialog cảm ơn và giữ người dùng ở lại ứng dụng.
+- **Feature:** Thêm hộp thoại FAQ thông tin tính năng tương lai và cơ chế Rate App/Share App.
 
 ### [2026-05-12] - RELEASE v1.1.4 (Build 7)
 - **Feature:** Triển khai Hộp thoại thoát ứng dụng (Exit Dialog) tích hợp quảng cáo Native Ad và cơ chế thoát an toàn.

@@ -199,6 +199,8 @@ private object PreviewAdManager : AdManager {
     override fun initialize() {}
     override fun loadAd(placement: AdPlacement) {}
     override fun showAd(activity: Activity, placement: AdPlacement, onAdDismissed: () -> Unit) {}
+    override fun isAdLoaded(placement: AdPlacement): Boolean = false
+
     @Composable
     override fun NativeAdView(placement: AdPlacement, modifier: Modifier) {
         Box(

@@ -87,6 +87,27 @@
     <string name="pre_notification_title">Thông báo báo thức sắp đến</string>
     <string name="pre_notification_desc">Hiện thông báo trước khi báo thức reo.</string>
     <string name="minute_format">%d phút</string>
+
+    <!-- Support & Community -->
+    <string name="setting_support_dev_title">Ủng hộ nhà phát triển</string>
+    <string name="setting_support_dev_desc">Ủng hộ chúng tôi nếu bạn thích ứng dụng nhé! ❤️</string>
+    <string name="support_dev_dialog_desc">Sự ủng hộ của bạn là động lực lớn nhất để đội ngũ nhỏ của chúng mình tiếp tục hoàn thiện ReMind mỗi ngày. Cảm ơn bạn rất nhiều! ❤️</string>
+    <string name="watch_ad_action">Xem quảng cáo</string>
+    <string name="direct_support_action">Ủng hộ</string>
+    <string name="support_dev_dialog_title">Ủng hộ nhà phát triển</string>
+    <string name="support_dev_dialog_message">Tính năng ủng hộ trực tiếp qua ví/chuyển khoản vẫn đang được hoàn thiện. Tụi mình vô cùng trân quý và biết ơn tấm lòng vàng của bạn! Chúc bạn mọi điều bình an và hạnh phúc! ❤️</string>
+    <string name="watch_ad_dialog_title">Ủng hộ ứng dụng</string>
+    <string name="watch_ad_dialog_message">Đang phát quảng cáo phần thưởng...\nCảm ơn bạn đã ủng hộ chúng tôi!</string>
+    <string name="ads_disabled_reward_message">Chân thành cảm ơn bạn! Quảng cáo đã được tạm tắt trong vòng 24 giờ tới.</string>
+    <string name="faq_upcoming_title">Hỏi đáp (FAQs)</string>
+    <string name="faq_upcoming_message">Tính năng Hỏi đáp (FAQs) đang được phát triển và sẽ sớm ra mắt trong bản cập nhật tới! Cảm ơn bạn.</string>
+    <string name="exit_watch_ad_support">Xem quảng cáo ủng hộ phát triển</string>
+    <string name="reward_ad_loading">Đang giả lập QC (%d)...</string>
+    <string name="close_text">Đóng</string>
+    <string name="share_app_text">Chào bạn! Hãy dùng thử ReMind - ứng dụng báo thức tuyệt đẹp và hiện đại giúp bạn thức dậy đúng giờ và hiệu quả hơn: https://play.google.com/store/apps/details?id=vn.io.litever.remind</string>
+    <string name="share_title">Chia sẻ ReMind</string>
+    <string name="rewarded_ad_not_ready">Quảng cáo chưa sẵn sàng. Vui lòng thử lại sau nhé!</string>
+    <string name="loading_ad_message">Đang tải quảng cáo, vui lòng đợi...</string>
 </resources>
 
 

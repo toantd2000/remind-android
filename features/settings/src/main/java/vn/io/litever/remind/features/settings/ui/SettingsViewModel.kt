@@ -19,7 +19,8 @@ data class SettingsUiState(
     val colorPalette: String = "DEFAULT",
     val language: String = if (java.util.Locale.getDefault().language == "vi") "vi" else "en",
     val useBuiltInSpeaker: Boolean = true,
-    val isPreNotificationEnabled: Boolean = true
+    val isPreNotificationEnabled: Boolean = true,
+    val adsDisabledUntil: Long = 0L
 )
 
 @HiltViewModel
@@ -36,7 +37,8 @@ class SettingsViewModel @Inject constructor(
             preferencesDataSource.colorPalette,
             preferencesDataSource.language,
             preferencesDataSource.useBuiltInSpeaker,
-            preferencesDataSource.isPreNotificationEnabled
+            preferencesDataSource.isPreNotificationEnabled,
+            preferencesDataSource.adsDisabledUntil
         )
     ) { params ->
         SettingsUiState(
@@ -46,7 +48,8 @@ class SettingsViewModel @Inject constructor(
             colorPalette = params[3] as String,
             language = params[4] as String,
             useBuiltInSpeaker = params[5] as Boolean,
-            isPreNotificationEnabled = params[6] as Boolean
+            isPreNotificationEnabled = params[6] as Boolean,
+            adsDisabledUntil = params[7] as Long
         )
     }.stateIn(
         scope = viewModelScope,
@@ -94,6 +97,14 @@ class SettingsViewModel @Inject constructor(
     fun setPreNotificationEnabled(enabled: Boolean) {
         viewModelScope.launch {
             preferencesDataSource.setPreNotificationEnabled(enabled)
+        }
+    }
+
+    fun disableAdsFor24Hours(context: android.content.Context) {
+        viewModelScope.launch {
+            val isDebug = (context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
+            val duration = if (isDebug) 30 * 1000L else 24 * 60 * 60 * 1000L
+            preferencesDataSource.setAdsDisabledUntil(System.currentTimeMillis() + duration)
         }
     }
 }

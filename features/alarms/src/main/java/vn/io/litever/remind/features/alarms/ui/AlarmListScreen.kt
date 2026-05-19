@@ -60,6 +60,7 @@ fun AlarmListRoute(
     val nextAlarmTime by viewModel.nextAlarmTime.collectAsState()
     val is24HourFormat by viewModel.is24HourFormat.collectAsState()
     val hasCriticalPermissions by viewModel.hasCriticalPermissions.collectAsState()
+    val isAdFreeActive by viewModel.isAdFreeActive.collectAsState()
     
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -120,6 +121,8 @@ fun AlarmListRoute(
         onAlarmClick = onAlarmClick,
         onPreviewClick = { alarm -> onNavigateToPreview(alarm.id) },
         onNavigateToPermissions = onNavigateToPermissions,
+        onRewardGranted = viewModel::disableAdsFor24Hours,
+        isAdFreeActive = isAdFreeActive,
         modifier = modifier
     )
 }
@@ -142,6 +145,8 @@ fun AlarmListScreen(
     onAlarmClick: (Alarm) -> Unit,
     onPreviewClick: (Alarm) -> Unit,
     onNavigateToPermissions: () -> Unit,
+    onRewardGranted: () -> Unit,
+    isAdFreeActive: Boolean,
     modifier: Modifier = Modifier
 ) {
     var showTopMenu by remember { mutableStateOf(false) }
@@ -166,7 +171,8 @@ fun AlarmListScreen(
                     }
                     currentContext = currentContext.baseContext
                 }
-            }
+            },
+            isAdFreeActive = isAdFreeActive
         )
     }
 

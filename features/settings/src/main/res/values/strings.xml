@@ -87,6 +87,27 @@
     <string name="pre_notification_title">Upcoming alarm notification</string>
     <string name="pre_notification_desc">Show notification before the alarm triggers.</string>
     <string name="minute_format">%d minutes</string>
+
+    <!-- Support & Community -->
+    <string name="setting_support_dev_title">Support Developer</string>
+    <string name="setting_support_dev_desc">Support us if you like the app! ❤️</string>
+    <string name="support_dev_dialog_desc">Your support is the greatest motivation for our small team to continue improving ReMind every day. Thank you so much! ❤️</string>
+    <string name="watch_ad_action">Watch Ad</string>
+    <string name="direct_support_action">Donate</string>
+    <string name="support_dev_dialog_title">Support Developer</string>
+    <string name="support_dev_dialog_message">Direct donation via wallet/bank transfer is still in progress. We are extremely grateful for your gold-like heart and kindness! Wishing you peace and happiness! ❤️</string>
+    <string name="watch_ad_dialog_title">Support App</string>
+    <string name="watch_ad_dialog_message">Thank you so much for supporting us!</string>
+    <string name="ads_disabled_reward_message">Thank you for watching! Ads have been temporarily disabled for the next 24 hours.</string>
+    <string name="faq_upcoming_title">Q&amp;A (FAQs)</string>
+    <string name="faq_upcoming_message">FAQ screen will be available in the next update! Thank you for your patience.</string>
+    <string name="exit_watch_ad_support">Watch ad to support development</string>
+    <string name="reward_ad_loading">Simulating Ad (%d)...</string>
+    <string name="close_text">Close</string>
+    <string name="share_app_text">Hey! Check out ReMind - a beautiful and modern alarm app that helps you wake up on time: https://play.google.com/store/apps/details?id=vn.io.litever.remind</string>
+    <string name="share_title">Share ReMind</string>
+    <string name="rewarded_ad_not_ready">Ad is not ready yet. Please try again later!</string>
+    <string name="loading_ad_message">Loading ad, please wait...</string>
 </resources>
 
 

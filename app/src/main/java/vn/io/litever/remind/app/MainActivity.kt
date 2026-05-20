@@ -186,10 +186,11 @@ class MainActivity : ComponentActivity() {
             )
             
             val context = LocalContext.current
-            val localizedContext = remember(language) {
+            val currentConfiguration = androidx.compose.ui.platform.LocalConfiguration.current
+            val localizedContext = remember(language, currentConfiguration) {
                 val locale = Locale(language)
                 Locale.setDefault(locale)
-                val config = Configuration(context.resources.configuration)
+                val config = Configuration(currentConfiguration)
                 config.setLocale(locale)
                 config.setLayoutDirection(locale)
                 val configurationContext = context.createConfigurationContext(config)

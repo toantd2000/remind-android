@@ -1,8 +1,29 @@
 [
   {
+    "versionName": "1.1.5",
+    "date": "2026-05-20",
+    "isLatest": true,
+    "multiLangNotes": {
+      "vi": [
+        "Hỗ trợ tính năng Xem quảng cáo để tắt quảng cáo (Rewarded Ads).",
+        "Nâng cấp thiết kế giao diện nút bấm và làm mới mục Cài đặt.",
+        "Khắc phục lỗi Navigation crash khi mở ứng dụng.",
+        "Sửa lỗi màn hình chuông báo không bật sáng lại sau khi bấm Báo lại (Snooze).",
+        "Cập nhật nội dung thông báo và logic Audio Focus để chuông kêu ổn định hơn."
+      ],
+      "en": [
+        "Implemented Rewarded Ads to temporarily remove ads.",
+        "Upgraded button designs and reorganized Settings screen.",
+        "Fixed Navigation crash on app launch.",
+        "Fixed issue where ringing screen wouldn't wake up after snoozing.",
+        "Updated notification content and Audio Focus logic for better stability."
+      ]
+    }
+  },
+  {
     "versionName": "1.1.4",
     "date": "2026-05-12",
-    "isLatest": true,
+    "isLatest": false,
     "multiLangNotes": {
       "vi": [
         "Thêm hộp thoại xác nhận khi thoát ứng dụng.",

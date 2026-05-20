@@ -64,6 +64,7 @@
     <string name="weather_temp_celsius">%d°C</string>
     <string name="weather_feels_like">Feels like %d°</string>
     <string name="weather_powered_by">Powered by WeatherAPI</string>
+    <string name="action_back">Back</string>
 </resources>
 
 

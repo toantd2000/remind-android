@@ -66,6 +66,7 @@ class AdMobManagerImpl @Inject constructor(
         remoteAdConfigFetcher.fetchConfig()
     }
 
+    @android.annotation.SuppressLint("MissingPermission")
     override fun loadAd(placement: AdPlacement) {
         if (isAdFreeActive()) {
             _adState.value = AdState.Failed("Ads are currently disabled (supporter reward active)")
@@ -171,6 +172,7 @@ class AdMobManagerImpl @Inject constructor(
     }
 
     // internal method for AdMobNativeAdView to load native ads
+    @android.annotation.SuppressLint("MissingPermission")
     internal fun loadNativeAd(placement: AdPlacement, onComplete: (NativeAd?) -> Unit) {
         if (isAdFreeActive()) {
             onComplete(null)

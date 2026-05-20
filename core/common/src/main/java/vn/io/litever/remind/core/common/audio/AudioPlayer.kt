@@ -151,6 +151,7 @@ class AudioPlayer @Inject constructor(
         }
     }
 
+    @android.annotation.SuppressLint("MissingPermission")
     private fun startVibration() {
         vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val manager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
@@ -163,6 +164,7 @@ class AudioPlayer @Inject constructor(
         vibrator?.vibrate(VibrationEffect.createWaveform(pattern, 0))
     }
 
+    @android.annotation.SuppressLint("MissingPermission")
     fun stop() {
         volumeJob?.cancel()
         volumeJob = null

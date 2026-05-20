@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.5] - 2026-05-20
+
 ### Added
+- **Audio Focus & Streams:** Added Alarm Stream toggle and fixed Audio Focus logic for alarms.
+- **Notification Updates:** Updated notification content and importance when ringing.
 - **Settings Restructure:** Reorganized the settings screen into three distinct groups: App Settings, Support & Community, and About & Legal.
 - **Support Developer Refactoring:** Converted the full-width premium card into a standard settings list item with a Heart icon under the Support category. Clicking it triggers a beautiful custom modal dialog with actions to Watch Ad or Donate. Decoupled the settings item subtitle (short & concise) from the dialog content (displays the full, heartfelt thank-you message).
 - **Rewarded Ad Support:** Implemented AdMob Rewarded Ads support (`SUPPORT_REWARDED`) to temporarily disable ads for 24 hours in exchange for watching an ad.
@@ -19,9 +23,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Conditional Ad-Free Exit UI:** Connected supporter reward state (`isAdFreeActive`) to the exit dialog, dynamically removing the support plea and hiding native ads entirely when the user is enjoying their ad-free status.
 
 ### Changed
+- **Design System:** Upgraded `litever-designsystem` to `v1.0.5` and standardized buttons.
 - **Settings Dialog Refinements:** Removed the redundant close button from the Support Developer dialog using a custom `confirmButton = {}` layout wrapper.
 - **Exit Dialog Polish:** Removed the rewarded ad button ("Watch ad to support...") from `ExitAppDialog` completely, ensuring a lightweight and non-disruptive exit confirmation flow.
 - **Navigation Tweaks:** Hidden the unimplemented Alarm Settings menu item from the settings tab.
+
+### Fixed
+- **Navigation Crash:** Prevented Navigation crash by waiting for NavHost initialization in MainActivity.
+- **Lifecycle Fixes:** Bound RingingScreen visibility state to lifecycle events to ensure alarm can wake up screen again after snooze.
+- **UI:** Fixed preview and cleanup code in MissedAlarmDialog.
 
 ## [1.1.4] - 2026-05-12
 

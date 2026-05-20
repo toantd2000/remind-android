@@ -96,6 +96,7 @@ fun SettingsScreen(
 ) {
     val context = LocalContext.current
     val adManager = LocalAdManager.current
+    val notReadyMessage = stringResource(R.string.rewarded_ad_not_ready)
 
     val adState by adManager.adState.collectAsState()
     var showDonateDialog by remember { mutableStateOf(false) }
@@ -125,7 +126,7 @@ fun SettingsScreen(
                     } else {
                         android.widget.Toast.makeText(
                             context,
-                            context.getString(R.string.rewarded_ad_not_ready),
+                            notReadyMessage,
                             android.widget.Toast.LENGTH_SHORT
                         ).show()
                     }

@@ -99,9 +99,18 @@ fun AlarmRingingRoute(
         }
     }
 
-    DisposableEffect(Unit) {
-        viewModel.setRingingScreenVisible(true)
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
+            if (event == androidx.lifecycle.Lifecycle.Event.ON_START) {
+                viewModel.setRingingScreenVisible(true)
+            } else if (event == androidx.lifecycle.Lifecycle.Event.ON_STOP) {
+                viewModel.setRingingScreenVisible(false)
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
         onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
             viewModel.setRingingScreenVisible(false)
         }
     }

@@ -99,6 +99,7 @@ class AlarmService : Service() {
                 val targetId = targetAlarm?.id
                 val mainId = state.mainId
                 val isSnoozing = state.isSnoozing
+                val fullAlarm = state.fullAlarm
 
                 // Synchronize all lifecycle changes on Main thread to avoid race conditions
                 withContext(Dispatchers.Main) {
@@ -127,7 +128,7 @@ class AlarmService : Service() {
 
                     if (mainId != null) {
                         hasStartedRinging = true
-                        updateNotification(mainId, isVisible)
+                        updateNotification(mainId, isVisible, fullAlarm)
                     } else if (hasStartedRinging) {
                         stopForeground(STOP_FOREGROUND_REMOVE)
                         stopSelf()
@@ -232,13 +233,13 @@ class AlarmService : Service() {
         alarmRingManager.setAutoSilenceCountdown(null)
     }
 
-    private fun updateNotification(alarmId: Long, isVisible: Boolean) {
-        val notification = createNotification(alarmId, isVisible)
+    private fun updateNotification(alarmId: Long, isVisible: Boolean, alarm: Alarm? = null) {
+        val notification = createNotification(alarmId, isVisible, alarm)
         val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         manager.notify(1, notification)
     }
 
-    private fun createNotification(alarmId: Long, isVisible: Boolean): android.app.Notification {
+    private fun createNotification(alarmId: Long, isVisible: Boolean, alarm: Alarm? = null): android.app.Notification {
         val deepLinkIntent = alarmIntentProvider.createRingingIntent(alarmId).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
@@ -251,12 +252,15 @@ class AlarmService : Service() {
         )
 
         val channelId = if (isVisible) CHANNEL_ID_SILENT else CHANNEL_ID_HIGH
-        val priority = if (isVisible) NotificationCompat.PRIORITY_DEFAULT else NotificationCompat.PRIORITY_MAX
+        val priority = if (isVisible) NotificationCompat.PRIORITY_MIN else NotificationCompat.PRIORITY_MAX
+
+        val title = alarm?.label?.takeIf { it.isNotBlank() } ?: getString(R.string.notification_alarm_title)
+        val text = alarm?.message?.takeIf { it.isNotBlank() } ?: getString(R.string.notification_alarm_text)
 
         return NotificationCompat.Builder(this, channelId)
             .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
-            .setContentTitle(getString(R.string.notification_alarm_title))
-            .setContentText(getString(R.string.notification_alarm_text))
+            .setContentTitle(title)
+            .setContentText(text)
             .setPriority(priority)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -296,7 +300,7 @@ class AlarmService : Service() {
             val silentChannel = NotificationChannel(
                 CHANNEL_ID_SILENT,
                 getString(R.string.alarm_channel_name_silent),
-                NotificationManager.IMPORTANCE_LOW
+                NotificationManager.IMPORTANCE_MIN
             ).apply {
                 description = getString(R.string.alarm_channel_description_silent)
                 setSound(null, null) 

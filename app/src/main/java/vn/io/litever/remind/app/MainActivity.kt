@@ -243,7 +243,10 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
-                        LaunchedEffect(ringingAlarmId, activeSnoozingalarmId, acknowledgingAlarmId) {
+                        val isNavReady = navBackStackEntry != null
+                        LaunchedEffect(ringingAlarmId, activeSnoozingalarmId, acknowledgingAlarmId, isNavReady) {
+                            if (!isNavReady) return@LaunchedEffect
+                            
                             val idToRing = ringingAlarmId ?: activeSnoozingalarmId
                             val idMessage = acknowledgingAlarmId
                             

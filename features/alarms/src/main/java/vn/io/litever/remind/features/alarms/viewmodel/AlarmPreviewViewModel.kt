@@ -100,7 +100,7 @@ class AlarmPreviewViewModel @Inject constructor(
         val uri = getAccessibleRingtoneUri(context, alarm.ringtoneUri)
         audioPlayer.play(
             uri = uri,
-            usage = android.media.AudioAttributes.USAGE_ALARM,
+            useAlarmStream = alarm.useAlarmStream,
             volume = alarm.volume,
             gradualVolumeDurationSeconds = alarm.gradualVolumeDurationSeconds,
             vibrationEnabled = alarm.vibrationEnabled

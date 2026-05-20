@@ -187,6 +187,7 @@ class AlarmService : Service() {
         val uri = getAccessibleRingtoneUri(this@AlarmService, alarm.ringtoneUri)
         audioPlayer.play(
             uri = uri,
+            useAlarmStream = alarm.useAlarmStream,
             volume = alarm.volume,
             gradualVolumeDurationSeconds = alarm.gradualVolumeDurationSeconds,
             vibrationEnabled = alarm.vibrationEnabled

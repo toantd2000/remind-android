@@ -21,7 +21,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         PhraseEntity::class,
         MissedAlarmEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class RemindDatabase : RoomDatabase() {
@@ -43,6 +43,12 @@ abstract class RemindDatabase : RoomDatabase() {
 
                 db.execSQL("DROP TABLE `alarms`")
                 db.execSQL("ALTER TABLE `alarms_new` RENAME TO `alarms`")
+            }
+        }
+
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `alarms` ADD COLUMN `useAlarmStream` INTEGER NOT NULL DEFAULT 1")
             }
         }
     }

@@ -23,6 +23,7 @@ import androidx.compose.material.icons.automirrored.rounded.VolumeOff
 import androidx.compose.material.icons.automirrored.rounded.VolumeUp
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.AlarmOff
+import androidx.compose.material.icons.rounded.AlarmOn
 import androidx.compose.material.icons.rounded.Calculate
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.ChevronRight
@@ -31,6 +32,7 @@ import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Extension
 import androidx.compose.material.icons.rounded.GraphicEq
 import androidx.compose.material.icons.rounded.Keyboard
+import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.QrCodeScanner
@@ -335,6 +337,7 @@ fun AlarmEditRoute(
         onTogglePreview = viewModel::toggleRingtonePlayback,
         onDateChange = viewModel::updateDate,
         onGradualVolumeChange = viewModel::updateGradualVolumeDuration,
+        onUseAlarmStreamChange = viewModel::updateUseAlarmStream,
         onAddMissionClick = {
             viewModel.stopRingtonePlayback()
             showMissionSelection = true
@@ -375,6 +378,7 @@ fun AlarmEditScreen(
     onTogglePreview: () -> Unit,
     onDateChange: (LocalDate?) -> Unit,
     onGradualVolumeChange: (Int) -> Unit,
+    onUseAlarmStreamChange: (Boolean) -> Unit,
     onAddMissionClick: () -> Unit,
     onMissionClick: (vn.io.litever.remind.core.model.Mission) -> Unit,
     onMissionRemove: (vn.io.litever.remind.core.model.Mission) -> Unit,
@@ -912,6 +916,58 @@ fun AlarmEditScreen(
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                             )
                         }
+
+                        // Row 5: Alarm Stream Toggle
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(MaterialTheme.shapes.medium)
+                                .clickable { onUseAlarmStreamChange(!uiState.useAlarmStream) }
+                                .padding(vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(44.dp)
+                                    .clip(MaterialTheme.shapes.medium)
+                                    .background(
+                                        if (uiState.useAlarmStream) MaterialTheme.colorScheme.primaryContainer
+                                        else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = if (uiState.useAlarmStream) Icons.Rounded.AlarmOn else Icons.Rounded.MusicNote,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp),
+                                    tint = if (uiState.useAlarmStream) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(horizontal = 12.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.use_alarm_stream_title),
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                                Text(
+                                    text = if (uiState.useAlarmStream) 
+                                        stringResource(R.string.use_alarm_stream_desc) 
+                                    else 
+                                        stringResource(R.string.use_media_stream_desc),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+
+                            androidx.compose.material3.Switch(
+                                checked = uiState.useAlarmStream,
+                                onCheckedChange = onUseAlarmStreamChange
+                            )
+                        }
                     }
                 }
             }
@@ -1211,6 +1267,7 @@ fun AlarmEditScreenPreview() {
             onTogglePreview = {},
             onDateChange = {},
             onGradualVolumeChange = {},
+            onUseAlarmStreamChange = {},
             onAddMissionClick = {},
             onMissionClick = {},
             onMissionRemove = {},
@@ -1250,6 +1307,7 @@ fun AlarmEditScreenDarkPreview() {
             onTogglePreview = {},
             onDateChange = {},
             onGradualVolumeChange = {},
+            onUseAlarmStreamChange = {},
             onAddMissionClick = {},
             onMissionClick = {},
             onMissionRemove = {},

@@ -32,14 +32,21 @@ class AudioPlayer @Inject constructor(
             AudioManager.AUDIOFOCUS_LOSS,
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT,
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
-                stop()
+                if (isCallActive()) {
+                    mediaPlayer?.pause()
+                }
+            }
+            AudioManager.AUDIOFOCUS_GAIN -> {
+                if (mediaPlayer?.isPlaying == false) {
+                    mediaPlayer?.start()
+                }
             }
         }
     }
 
     fun play(
         uri: Uri,
-        usage: Int = AudioAttributes.USAGE_ALARM,
+        useAlarmStream: Boolean = true,
         contentType: Int = AudioAttributes.CONTENT_TYPE_SONIFICATION,
         loop: Boolean = true,
         volume: Int? = null,
@@ -50,6 +57,8 @@ class AudioPlayer @Inject constructor(
 
         // Don't start if a call is active or ringing
         if (isCallActive()) return
+
+        val usage = if (useAlarmStream) AudioAttributes.USAGE_ALARM else AudioAttributes.USAGE_MEDIA
 
         val attributes = AudioAttributes.Builder()
             .setUsage(usage)

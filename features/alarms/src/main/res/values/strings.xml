@@ -80,6 +80,9 @@
     <string name="auto_silence_title">Auto-silence duration</string>
     <string name="auto_silence_countdown">Auto-silence in %s</string>
     <string name="alarm_settings">Alarm Settings</string>
+    <string name="use_alarm_stream_title">Play on Alarm channel</string>
+    <string name="use_alarm_stream_desc">Unaffected by Silent mode. Ideal for waking up.</string>
+    <string name="use_media_stream_desc">Uses Media volume. Good for silent reminders.</string>
     <string name="off">Off</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_more">More options</string>

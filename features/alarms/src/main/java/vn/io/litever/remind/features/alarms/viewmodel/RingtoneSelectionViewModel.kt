@@ -104,7 +104,7 @@ class RingtoneSelectionViewModel @Inject constructor(
 
         audioPlayer.play(
             uri = uri,
-            usage = android.media.AudioAttributes.USAGE_MEDIA,
+            useAlarmStream = false,
             contentType = android.media.AudioAttributes.CONTENT_TYPE_MUSIC,
             loop = true
         )

@@ -27,7 +27,10 @@ object DatabaseModule {
             context,
             RemindDatabase::class.java,
             "remind_database"
-        ).addMigrations(RemindDatabase.MIGRATION_1_2)
+        ).addMigrations(
+            RemindDatabase.MIGRATION_1_2,
+            RemindDatabase.MIGRATION_2_3
+        )
         .fallbackToDestructiveMigration()
         .build()
     }

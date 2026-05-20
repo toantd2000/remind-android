@@ -50,7 +50,8 @@ data class AlarmEditUiState(
     val autoSilenceMinutes: Int = 3,
     val gradualVolumeDurationSeconds: Int = 0,
     val missions: List<vn.io.litever.remind.core.model.Mission> = emptyList(),
-    val isNewDraft: Boolean = false
+    val isNewDraft: Boolean = false,
+    val useAlarmStream: Boolean = true
 )
 
 @HiltViewModel
@@ -96,7 +97,8 @@ class AlarmEditViewModel @Inject constructor(
                         message = state.message,
                         isEnabled = true,
                         repeatDays = state.repeatDays,
-                        date = state.date
+                        date = state.date,
+                        useAlarmStream = state.useAlarmStream
                     )
                 )
             )
@@ -163,7 +165,8 @@ class AlarmEditViewModel @Inject constructor(
                         snoozeRepeatCount = alarm.snoozeRepeatCount,
                         autoSilenceMinutes = alarm.autoSilenceMinutes,
                         gradualVolumeDurationSeconds = alarm.gradualVolumeDurationSeconds,
-                        missions = missions
+                        missions = missions,
+                        useAlarmStream = alarm.useAlarmStream
                     )
                 }
             }
@@ -282,6 +285,10 @@ class AlarmEditViewModel @Inject constructor(
         _uiState.update { it.copy(gradualVolumeDurationSeconds = seconds) }
     }
 
+    fun updateUseAlarmStream(use: Boolean) {
+        _uiState.update { it.copy(useAlarmStream = use) }
+    }
+
     fun toggleRingtonePlayback() {
         val isCurrentlyPlaying = _uiState.value.isRingtonePlaying
         if (isCurrentlyPlaying) {
@@ -299,7 +306,7 @@ class AlarmEditViewModel @Inject constructor(
 
         audioPlayer.play(
             uri = uri,
-            usage = android.media.AudioAttributes.USAGE_MEDIA,
+            useAlarmStream = false,
             contentType = android.media.AudioAttributes.CONTENT_TYPE_MUSIC,
             volume = _uiState.value.volume,
             vibrationEnabled = _uiState.value.vibrationEnabled
@@ -435,6 +442,7 @@ class AlarmEditViewModel @Inject constructor(
             autoSilenceMinutes = state.autoSilenceMinutes,
             gradualVolumeDurationSeconds = state.gradualVolumeDurationSeconds,
             missions = state.missions,
+            useAlarmStream = state.useAlarmStream,
             currentSnoozeCount = originalAlarm?.currentSnoozeCount ?: 0,
             snoozeNextTriggerTime = originalAlarm?.snoozeNextTriggerTime,
             skippedAt = originalAlarm?.skippedAt,

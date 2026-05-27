@@ -259,6 +259,11 @@ fun SettingsScreen(
 
     // Support Developer Dialog
     if (showSupportDeveloperDialog) {
+        val watchAdAction = stringResource(R.string.watch_ad_action)
+        val directSupportAction = stringResource(R.string.direct_support_action)
+        val supportDevTitle = stringResource(R.string.setting_support_dev_title)
+        val supportDevDesc = stringResource(R.string.support_dev_dialog_desc)
+
         LiteverDialog(
             onDismissRequest = { showSupportDeveloperDialog = false },
             confirmButton = {
@@ -281,7 +286,7 @@ fun SettingsScreen(
                         }
                     },
                 ) {
-                    Text(text = stringResource(R.string.watch_ad_action))
+                    Text(text = watchAdAction)
                 }
             },
             dismissButton = {
@@ -296,19 +301,19 @@ fun SettingsScreen(
                         contentColor = MaterialTheme.colorScheme.tertiary
                     )
                 ) {
-                    Text(text = stringResource(R.string.direct_support_action))
+                    Text(text = directSupportAction)
                 }
             },
             title = {
                 Text(
-                    text = stringResource(R.string.setting_support_dev_title),
+                    text = supportDevTitle,
                     style = MaterialTheme.typography.headlineSmall
                 )
             },
             text = {
                 Column {
                     Text(
-                        text = stringResource(R.string.support_dev_dialog_desc),
+                        text = supportDevDesc,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -363,6 +368,7 @@ fun SettingsScreen(
 
     // Ad Loading Dialog Overlay
     if (showAdLoading) {
+        val loadingAdMessage = stringResource(R.string.loading_ad_message)
         LiteverDialog(
             onDismissRequest = { showAdLoading = false },
             confirmButton = {},
@@ -379,7 +385,7 @@ fun SettingsScreen(
                         modifier = Modifier.size(48.dp)
                     )
                     Text(
-                        text = stringResource(R.string.loading_ad_message),
+                        text = loadingAdMessage,
                         style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center
                     )
@@ -413,6 +419,8 @@ fun RewardedAdSimulatorDialog(
     onRewardEarned: () -> Unit
 ) {
     var countdown by remember { mutableStateOf(5) }
+    val rewardAdLoadingText = stringResource(R.string.reward_ad_loading, countdown)
+    val watchAdDialogMessage = stringResource(R.string.watch_ad_dialog_message)
     
     LaunchedEffect(Unit) {
         while (countdown > 0) {
@@ -441,14 +449,14 @@ fun RewardedAdSimulatorDialog(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = stringResource(R.string.reward_ad_loading, countdown),
+                    text = rewardAdLoadingText,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = stringResource(R.string.watch_ad_dialog_message),
+                    text = watchAdDialogMessage,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center

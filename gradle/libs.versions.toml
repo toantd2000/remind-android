@@ -31,6 +31,7 @@ okhttp = "5.3.2"
 coil = "2.7.0"
 liteverDesignsystem = "v1.0.5"
 playServicesAds = "23.6.0"
+emoji2-emojipicker = "1.6.0"
 mockk = "1.13.12"
 turbine = "1.1.0"
 
@@ -96,6 +97,7 @@ coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coi
 # Litever Design System
 litever-designsystem = { group = "com.github.toantd2000", name = "litever-designsystem", version.ref = "liteverDesignsystem" }
 google-play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playServicesAds" }
+androidx-emoji2-emojipicker = { group = "androidx.emoji2", name = "emoji2-emojipicker", version.ref = "emoji2-emojipicker" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 

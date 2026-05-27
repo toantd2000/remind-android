@@ -1,6 +1,18 @@
-## [2026-05-19] Trailing Lambda Resolution & Device-Specific Simulation Fallbacks
+## [2026-05-26] Jetpack Compose Dialog & stringResource Localization Bug
 
 ### Context
+User reported that "Support Developer" dialog and other nested dialogs were displaying strings in the wrong language (system default language instead of in-app selected language).
+
+### What happened
+- The app uses a custom `CompositionLocalProvider(LocalContext provides localizedContext)` to apply the user's selected language dynamically without recreating the Activity.
+- Jetpack Compose's `androidx.compose.ui.window.Dialog` (which `AlertDialog` and `LiteverDialog` use under the hood) creates a new Android `Window` using the `Activity`'s base context (`LocalView.current.context`), which resets `LocalContext` inside the dialog to the system locale.
+- Because the functional parameters of `LiteverDialog` (`text = { ... }`, `confirmButton = { ... }`) are composable lambdas evaluated *inside* the Dialog's Composition tree, any `stringResource()` calls inside them read the system language instead of the app's `localizedContext`.
+
+### Lessons Learned
+- **Dialog Context Override:** In Jetpack Compose, any Composable lambda executed inside a `Dialog` loses custom `LocalContext` or `LocalConfiguration` provided at the app root level because the Dialog creates a new View backed by the Activity's context.
+- **Pre-resolving Strings:** To fix localization issues in Dialogs without propagating `CompositionLocal`s globally to all windows, **always resolve `stringResource(...)` outside the Dialog scope** and pass the resolved `String` variable into the lambda.
+
+## [2026-05-19] Trailing Lambda Resolution & Device-Specific Simulation Fallbacks### Context
 Upgrading `ExitAppDialog` and `SupportDeveloperDialog` based on revised design guidelines: removing close buttons, removing rewarded-ad triggers in exit dialogues, limiting rewarded ad counts/simulation exclusively to emulators, and prompting users to interact with native ads in the exit message to support.
 
 ### What happened

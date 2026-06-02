@@ -14,9 +14,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import vn.io.litever.designsystem.components.LiteverButton
+import vn.io.litever.designsystem.components.LiteverScaffold
+import vn.io.litever.designsystem.components.LiteverTopAppBar
+import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
-import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
-import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.core.model.MathProblem
 import vn.io.litever.remind.core.model.MissionType
 import vn.io.litever.remind.core.model.Phrase
@@ -73,31 +74,31 @@ fun MissionRingingScreen(
     BackHandler { onAbandon() } // Back button abandons mission
 
     if (uiState.isLoading) {
-        Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
+        Box(modifier = Modifier.fillMaxSize().background(LiteverTheme.colors.background))
         return
     }
 
-    ReMindScaffold(
+    LiteverScaffold(
         topBar = {
             if (!uiState.isMissionJustCompleted && !uiState.isDismissed) {
-                ReMindTopAppBar(
+                LiteverTopAppBar(
                     title = stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_title),
                     onBackClick = onAbandon,
                     actions = {
                         Surface(
-                            shape = MaterialTheme.shapes.small,
-                            color = if (uiState.timeoutCountdown < 10) 
-                                MaterialTheme.colorScheme.errorContainer 
-                            else 
-                                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                            shape = LiteverTheme.shapes.small,
+                            color = if (uiState.timeoutCountdown < 10)
+                                LiteverTheme.colors.errorContainer 
+                            else
+                                LiteverTheme.colors.primaryContainer.copy(alpha = 0.5f)
                         ) {
                             Text(
                                 text = "${uiState.timeoutCountdown}s",
-                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                color = if (uiState.timeoutCountdown < 10) 
-                                    MaterialTheme.colorScheme.error 
-                                else 
-                                    MaterialTheme.colorScheme.primary,
+                                style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                color = if (uiState.timeoutCountdown < 10)
+                                    LiteverTheme.colors.error 
+                                else
+                                    LiteverTheme.colors.primary,
                                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
                             )
                         }
@@ -132,9 +133,9 @@ fun MissionRingingScreen(
                 .background(
                     brush = androidx.compose.ui.graphics.Brush.verticalGradient(
                         colors = listOf(
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.05f),
-                            MaterialTheme.colorScheme.background,
-                            MaterialTheme.colorScheme.background
+                            LiteverTheme.colors.primary.copy(alpha = 0.05f),
+                            LiteverTheme.colors.background,
+                            LiteverTheme.colors.background
                         )
                     )
                 )
@@ -170,10 +171,10 @@ fun MissionRingingScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(8.dp)
-                                .clip(MaterialTheme.shapes.medium),
+                                .clip(LiteverTheme.shapes.medium),
                             strokeCap = androidx.compose.ui.graphics.StrokeCap.Round,
-                            trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                            color = MaterialTheme.colorScheme.primary
+                            trackColor = LiteverTheme.colors.surfaceVariant,
+                            color = LiteverTheme.colors.primary
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
@@ -182,8 +183,8 @@ fun MissionRingingScreen(
                                 uiState.currentMissionIndex + 1,
                                 uiState.missions.size
                             ),
-                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            style = LiteverTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium),
+                            color = LiteverTheme.colors.onSurfaceVariant
                         )
                     }
                 }

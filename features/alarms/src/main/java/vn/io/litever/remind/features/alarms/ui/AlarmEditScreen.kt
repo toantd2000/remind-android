@@ -44,19 +44,14 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -84,16 +79,19 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import vn.io.litever.designsystem.components.LiteverAlertDialog
 import vn.io.litever.designsystem.components.LiteverButton
+import vn.io.litever.designsystem.components.LiteverIconButton
+import vn.io.litever.designsystem.components.LiteverModalBottomSheet
 import vn.io.litever.designsystem.components.LiteverOutlinedButton
 import vn.io.litever.designsystem.components.LiteverOutlinedCard
+import vn.io.litever.designsystem.components.LiteverRadioButton
+import vn.io.litever.designsystem.components.LiteverScaffold
+import vn.io.litever.designsystem.components.LiteverTimePickerDialog
+import vn.io.litever.designsystem.components.LiteverTopAppBar
 import vn.io.litever.remind.core.designsystem.components.MissionSelectionBottomSheet
 import vn.io.litever.remind.core.designsystem.components.ReMindAlertDialog
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
-import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
-import vn.io.litever.remind.core.designsystem.components.ReMindTextField
-import vn.io.litever.remind.core.designsystem.components.ReMindTimePickerDialog
-import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.DayOfWeek
 import vn.io.litever.remind.core.model.MissionType
@@ -109,6 +107,8 @@ import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
+import vn.io.litever.designsystem.components.LiteverFilledTonalIconButton
+import vn.io.litever.designsystem.components.LiteverTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -138,10 +138,23 @@ fun AlarmEditRoute(
         )
     }
 
-    // Observe result from TypingMissionConfig
-    val updatedMission by navController.currentBackStackEntry?.savedStateHandle
-        ?.getStateFlow<vn.io.litever.remind.core.model.Mission?>("updatedMission", null)
+    // Observe results from other screens
+    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
+
+    val updatedMission by savedStateHandle?.getStateFlow<vn.io.litever.remind.core.model.Mission?>("updatedMission", null)
         ?.collectAsState() ?: remember { mutableStateOf(null) }
+
+    val returnedSnoozeEnabled by savedStateHandle?.getStateFlow<Boolean?>("snoozeEnabled", null)
+        ?.collectAsState() ?: remember { mutableStateOf(null) }
+    val returnedSnoozeInterval by savedStateHandle?.getStateFlow<Int?>("snoozeInterval", null)
+        ?.collectAsState() ?: remember { mutableStateOf(null) }
+    val returnedSnoozeRepeatCount by savedStateHandle?.getStateFlow<Int?>("snoozeRepeatCount", null)
+        ?.collectAsState() ?: remember { mutableStateOf(null) }
+
+    val returnedRingtoneUri by savedStateHandle?.getStateFlow<String?>("selectedRingtoneUri", null)
+        ?.collectAsState() ?: remember { mutableStateOf(null) }
+    val ringtoneResultWasSet by savedStateHandle?.getStateFlow("selectedRingtoneUri_set", false)
+        ?.collectAsState() ?: remember { mutableStateOf(false) }
 
     LaunchedEffect(updatedMission) {
         updatedMission?.let {
@@ -152,81 +165,40 @@ fun AlarmEditRoute(
             } else {
                 viewModel.updateMission(it)
             }
-            navController.currentBackStackEntry?.savedStateHandle?.remove<vn.io.litever.remind.core.model.Mission>(
-                "updatedMission"
+            savedStateHandle?.remove<vn.io.litever.remind.core.model.Mission>("updatedMission")
+        }
+    }
+
+    LaunchedEffect(returnedSnoozeEnabled, returnedSnoozeInterval, returnedSnoozeRepeatCount) {
+        if (returnedSnoozeEnabled != null || returnedSnoozeInterval != null || returnedSnoozeRepeatCount != null) {
+            viewModel.updateSnoozeSettings(
+                enabled = returnedSnoozeEnabled ?: uiState.snoozeEnabled,
+                interval = returnedSnoozeInterval ?: uiState.snoozeInterval,
+                repeatCount = returnedSnoozeRepeatCount ?: uiState.snoozeRepeatCount
             )
+            savedStateHandle?.remove<Boolean>("snoozeEnabled")
+            savedStateHandle?.remove<Int>("snoozeInterval")
+            savedStateHandle?.remove<Int>("snoozeRepeatCount")
+        }
+    }
+
+    LaunchedEffect(returnedRingtoneUri, ringtoneResultWasSet) {
+        if (ringtoneResultWasSet) {
+            viewModel.updateRingtone(returnedRingtoneUri)
+            savedStateHandle?.remove<String>("selectedRingtoneUri")
+            savedStateHandle?.remove<Boolean>("selectedRingtoneUri_set")
         }
     }
 
     val lifecycleOwner = LocalLifecycleOwner.current
-
-    // Update snooze settings if returned from screen
-    val returnedSnoozeEnabled =
-        navController.currentBackStackEntry?.savedStateHandle?.getStateFlow<Boolean?>(
-            "snoozeEnabled",
-            null
-        )?.collectAsState()
-    val returnedSnoozeInterval =
-        navController.currentBackStackEntry?.savedStateHandle?.getStateFlow<Int?>(
-            "snoozeInterval",
-            null
-        )?.collectAsState()
-    val returnedSnoozeRepeatCount =
-        navController.currentBackStackEntry?.savedStateHandle?.getStateFlow<Int?>(
-            "snoozeRepeatCount",
-            null
-        )?.collectAsState()
-
-    LaunchedEffect(
-        returnedSnoozeEnabled?.value,
-        returnedSnoozeInterval?.value,
-        returnedSnoozeRepeatCount?.value
-    ) {
-        if (returnedSnoozeEnabled?.value != null || returnedSnoozeInterval?.value != null || returnedSnoozeRepeatCount?.value != null) {
-            viewModel.updateSnoozeSettings(
-                enabled = returnedSnoozeEnabled?.value ?: uiState.snoozeEnabled,
-                interval = returnedSnoozeInterval?.value ?: uiState.snoozeInterval,
-                repeatCount = returnedSnoozeRepeatCount?.value ?: uiState.snoozeRepeatCount
-            )
-            // Clear the handle
-            navController.currentBackStackEntry?.savedStateHandle?.remove<Boolean>("snoozeEnabled")
-            navController.currentBackStackEntry?.savedStateHandle?.remove<Int>("snoozeInterval")
-            navController.currentBackStackEntry?.savedStateHandle?.remove<Int>("snoozeRepeatCount")
-        }
-    }
-
-    // Update ringtone if selected from picker
-    val returnedRingtoneUri =
-        navController.currentBackStackEntry?.savedStateHandle?.getStateFlow<String?>(
-            "selectedRingtoneUri",
-            null
-        )?.collectAsState()
-
-    // Use a special key to detect if a result was SENT at all, even if it's null
-    val resultWasSet =
-        navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>("selectedRingtoneUri_set")
-            ?: false
-
-    LaunchedEffect(returnedRingtoneUri?.value, resultWasSet) {
-        if (resultWasSet) {
-            viewModel.updateRingtone(returnedRingtoneUri?.value)
-            // Clear the handle
-            navController.currentBackStackEntry?.savedStateHandle?.remove<String>("selectedRingtoneUri")
-            navController.currentBackStackEntry?.savedStateHandle?.remove<Boolean>("selectedRingtoneUri_set")
-        }
-    }
 
     // Reset navigation flag when returning to screen
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
                 viewModel.refreshPermissions()
-                if (isNavigatingToConfig) {
-                    val hasUpdatedMission =
-                        navController.currentBackStackEntry?.savedStateHandle?.contains("updatedMission") == true
-                    if (!hasUpdatedMission) {
-                        isNavigatingToConfig = false
-                    }
+                if (isNavigatingToConfig && savedStateHandle?.contains("updatedMission") == false) {
+                    isNavigatingToConfig = false
                 }
             }
         }
@@ -251,19 +223,19 @@ fun AlarmEditRoute(
     }
 
     if (showDiscardDialog) {
-        ReMindAlertDialog(
-            onDismissRequest = { showDiscardDialog = false },
+        LiteverAlertDialog(
+            onDismissRequest = { if (showDiscardDialog) showDiscardDialog = false },
             title = stringResource(R.string.discard_changes_title),
             text = stringResource(R.string.discard_changes_message),
             confirmButtonText = stringResource(R.string.save),
             onConfirmClick = {
-                showDiscardDialog = false
+                if (showDiscardDialog) showDiscardDialog = false
                 viewModel.stopRingtonePlayback()
                 viewModel.saveAlarm(onBackClick)
             },
             dismissButtonText = stringResource(R.string.action_discard),
             onDismissClick = {
-                showDiscardDialog = false
+                if (showDiscardDialog) showDiscardDialog = false
                 viewModel.stopRingtonePlayback()
                 viewModel.discardChanges(onBackClick)
             }
@@ -272,13 +244,9 @@ fun AlarmEditRoute(
 
     if (showMissionSelection) {
         MissionSelectionBottomSheet(
-            onDismissRequest = {
-                if (!isNavigatingToConfig) {
-                    showMissionSelection = false
-                }
-            },
+            onDismissRequest = { if (showMissionSelection) showMissionSelection = false },
             onMissionTypeSelected = { type ->
-                showMissionSelection = false
+                if (showMissionSelection) showMissionSelection = false
                 if (type == MissionType.TYPING) {
                     isNavigatingToConfig = true
                     onMissionClick(
@@ -408,15 +376,15 @@ fun AlarmEditScreen(
 
     val context = LocalContext.current
     if (showTimePicker) {
-        ReMindTimePickerDialog(
-            onDismissRequest = { showTimePicker = false },
+        LiteverTimePickerDialog(
+            onDismissRequest = { if (showTimePicker) showTimePicker = false },
             confirmButton = {
-                TextButton(onClick = { showTimePicker = false }) {
+                LiteverButton(onClick = { if (showTimePicker) showTimePicker = false }) {
                     Text(stringResource(R.string.save))
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showTimePicker = false }) {
+                LiteverOutlinedButton(onClick = { if (showTimePicker) showTimePicker = false }) {
                     Text(stringResource(R.string.action_cancel))
                 }
             }
@@ -443,22 +411,22 @@ fun AlarmEditScreen(
 
     if (showDatePicker) {
         DatePickerDialog(
-            onDismissRequest = { showDatePicker = false },
+            onDismissRequest = { if (showDatePicker) showDatePicker = false },
             confirmButton = {
-                TextButton(onClick = {
+                LiteverButton(onClick = {
                     datePickerState.selectedDateMillis?.let { millis ->
                         val date = Instant.ofEpochMilli(millis)
                             .atZone(ZoneId.of("UTC"))
                             .toLocalDate()
                         onDateChange(date)
                     }
-                    showDatePicker = false
+                    if (showDatePicker) showDatePicker = false
                 }) {
                     Text(stringResource(R.string.save))
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) {
+                LiteverOutlinedButton(onClick = { if (showDatePicker) showDatePicker = false }) {
                     Text(stringResource(R.string.action_cancel))
                 }
             }
@@ -489,8 +457,8 @@ fun AlarmEditScreen(
     var showAutoSilenceSheet by remember { mutableStateOf(false) }
 
     if (showAutoSilenceSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { showAutoSilenceSheet = false },
+        LiteverModalBottomSheet(
+            onDismissRequest = { if (showAutoSilenceSheet) showAutoSilenceSheet = false },
             containerColor = MaterialTheme.colorScheme.surface,
             tonalElevation = 0.dp
         ) {
@@ -499,7 +467,7 @@ fun AlarmEditScreen(
                     currentMinutes = uiState.autoSilenceMinutes,
                     onMinutesSelect = {
                         onAutoSilenceChange(it)
-                        showAutoSilenceSheet = false
+                        if (showAutoSilenceSheet) showAutoSilenceSheet = false
                     }
                 )
             }
@@ -507,8 +475,8 @@ fun AlarmEditScreen(
     }
 
     if (showGradualVolumeSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { showGradualVolumeSheet = false },
+        LiteverModalBottomSheet(
+            onDismissRequest = { if (showGradualVolumeSheet) showGradualVolumeSheet = false },
             sheetState = sheetState,
             containerColor = MaterialTheme.colorScheme.surface,
             tonalElevation = 0.dp
@@ -518,16 +486,16 @@ fun AlarmEditScreen(
                     currentDuration = uiState.gradualVolumeDurationSeconds,
                     onDurationSelect = {
                         onGradualVolumeChange(it)
-                        showGradualVolumeSheet = false
+                        if (showGradualVolumeSheet) showGradualVolumeSheet = false
                     }
                 )
             }
         }
     }
 
-    ReMindScaffold(
+    LiteverScaffold(
         topBar = {
-            ReMindTopAppBar(
+            LiteverTopAppBar(
                 title = stringResource(if (uiState.id == 0L) R.string.add_alarm_title else R.string.edit_alarm_title),
                 onBackClick = onBackClick
             )
@@ -687,7 +655,7 @@ fun AlarmEditScreen(
                             modifier = Modifier.padding(bottom = 12.dp)
                         )
 
-                        ReMindTextField(
+                        LiteverTextField(
                             value = uiState.label,
                             onValueChange = onLabelChange,
                             label = stringResource(R.string.alarm_label_title),
@@ -699,7 +667,7 @@ fun AlarmEditScreen(
 
                         Spacer(modifier = Modifier.height(12.dp))
 
-                        ReMindTextField(
+                        LiteverTextField(
                             value = uiState.message,
                             onValueChange = onMessageChange,
                             label = stringResource(R.string.alarm_message_title),
@@ -741,7 +709,7 @@ fun AlarmEditScreen(
                                 .clickable { onRingtoneClick() },
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            androidx.compose.material3.FilledTonalIconButton(
+                            LiteverFilledTonalIconButton(
                                 onClick = onTogglePreview,
                                 modifier = Modifier.size(44.dp),
                                 shape = MaterialTheme.shapes.medium
@@ -1124,7 +1092,7 @@ fun RepeatDaySelector(
                 modifier = Modifier.weight(1f)
             )
 
-            IconButton(onClick = onShowDatePicker) {
+            LiteverIconButton(onClick = onShowDatePicker) {
                 Icon(
                     imageVector = Icons.Rounded.CalendarMonth,
                     contentDescription = stringResource(R.string.select_date),
@@ -1386,7 +1354,7 @@ private fun MissionRow(
                 )
             }
 
-            IconButton(onClick = onDelete) {
+            LiteverIconButton(onClick = onDelete) {
                 Icon(
                     imageVector = Icons.Rounded.Delete,
                     contentDescription = null,
@@ -1441,7 +1409,7 @@ fun GentleAlarmBottomSheetContent(
                     )
                 },
                 leadingContent = {
-                    RadioButton(
+                    LiteverRadioButton(
                         selected = currentDuration == option,
                         onClick = { onDurationSelect(option) }
                     )
@@ -1481,7 +1449,7 @@ fun AutoSilenceBottomSheetContent(
                     )
                 },
                 leadingContent = {
-                    RadioButton(
+                    LiteverRadioButton(
                         selected = currentMinutes == option,
                         onClick = { onMinutesSelect(option) }
                     )

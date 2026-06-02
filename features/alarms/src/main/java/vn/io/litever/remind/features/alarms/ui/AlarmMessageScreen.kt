@@ -16,12 +16,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AlarmOff
-import androidx.compose.material.icons.rounded.Lightbulb
-import androidx.compose.material.icons.rounded.NotificationsActive
-import androidx.compose.material.icons.rounded.Star
-import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.Alarm
 import vn.io.litever.remind.features.alarms.viewmodel.AlarmRingingViewModel
@@ -38,9 +32,11 @@ import kotlinx.coroutines.flow.StateFlow
 import android.app.Activity
 import androidx.compose.runtime.CompositionLocalProvider
 import vn.io.litever.designsystem.components.LiteverButton
+import vn.io.litever.designsystem.components.LiteverScaffold
 import vn.io.litever.remind.core.designsystem.components.ReminderInfoView
 import java.time.LocalTime
 import java.util.Locale
+import vn.io.litever.designsystem.components.LiteverCard
 
 @Composable
 fun AlarmMessageRoute(
@@ -74,9 +70,10 @@ fun AlarmMessageScreen(
     onFinish: () -> Unit
 ) {
     BackHandler { }
-    ReMindScaffold { padding ->
+    LiteverScaffold { padding ->
         val statusColor = MaterialTheme.colorScheme.primary
-        val statusTitle = stringResource(vn.io.litever.remind.features.alarms.R.string.alarm_summary_title)
+        val statusTitle =
+            stringResource(vn.io.litever.remind.features.alarms.R.string.alarm_summary_title)
 
         // Subtle gradient background based on status
         Box(
@@ -110,25 +107,30 @@ fun AlarmMessageScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // Main Info Card
-            Card(
+            LiteverCard(
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.medium,
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
                 ),
                 border = androidx.compose.foundation.BorderStroke(
-                    1.dp, 
+                    1.dp,
                     statusColor.copy(alpha = 0.1f)
                 )
             ) {
                 Column(
-                    modifier = Modifier.fillMaxWidth().padding(24.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     // Time with small AM/PM
                     val displayTime = alarm?.time ?: LocalTime.now()
-                    val (timeStr, amPm) = TimeFormatUtils.formatTimeParts(displayTime, is24HourFormat)
-                    
+                    val (timeStr, amPm) = TimeFormatUtils.formatTimeParts(
+                        displayTime,
+                        is24HourFormat
+                    )
+
                     Row(
                         verticalAlignment = Alignment.Bottom,
                         horizontalArrangement = Arrangement.Center,
@@ -157,19 +159,13 @@ fun AlarmMessageScreen(
 
                     if (!alarm?.label.isNullOrBlank()) {
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = alarm?.label ?: "",
-                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
+                        Text(text = alarm.label, style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurface)
                     }
 
                     if (!alarm?.message.isNullOrBlank()) {
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = alarm?.message ?: "",
+                            text = alarm.message,
                             style = MaterialTheme.typography.bodyLarge,
                             modifier = Modifier.fillMaxWidth(),
                             textAlign = TextAlign.Center,
@@ -180,7 +176,7 @@ fun AlarmMessageScreen(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             WeatherInfoView(
                 weather = weather,
                 isCompact = true
@@ -194,7 +190,9 @@ fun AlarmMessageScreen(
 
             LocalAdManager.current.NativeAdView(
                 placement = AdPlacement.MESSAGE_NATIVE,
-                modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
             )
 
             Spacer(modifier = Modifier.weight(1f))

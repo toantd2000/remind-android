@@ -68,11 +68,12 @@ import vn.io.litever.designsystem.components.LiteverButton
 import vn.io.litever.designsystem.components.LiteverOutlinedButton
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
-import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
-import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.Phrase
 import vn.io.litever.remind.features.mission.viewmodel.PhraseSelectionViewModel
+import vn.io.litever.designsystem.components.LiteverModalBottomSheet
+import vn.io.litever.designsystem.components.LiteverScaffold
+import vn.io.litever.designsystem.components.LiteverTopAppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -140,7 +141,7 @@ fun PhraseSelectionRoute(
 
     val context = LocalContext.current
     if (showAddSheet) {
-        ModalBottomSheet(
+        LiteverModalBottomSheet(
             onDismissRequest = { 
                 showAddSheet = false 
                 phraseToEdit = null
@@ -191,9 +192,9 @@ fun PhraseSelectionScreen(
         stringResource(R.string.mission_phrases_my)
     )
 
-    ReMindScaffold(
+    LiteverScaffold(
         topBar = {
-            ReMindTopAppBar(
+            LiteverTopAppBar(
                 title = stringResource(R.string.mission_select_phrases),
                 onBackClick = onBackClick
             )

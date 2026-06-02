@@ -21,6 +21,9 @@ import kotlinx.serialization.json.Json
 import vn.io.litever.remind.features.settings.R
 import vn.io.litever.remind.core.designsystem.components.*
 import androidx.compose.foundation.BorderStroke
+import vn.io.litever.designsystem.components.LiteverScaffold
+import vn.io.litever.designsystem.components.LiteverTopAppBar
+import vn.io.litever.designsystem.components.LiteverCard
 
 @Serializable
 data class ChangelogItem(
@@ -43,9 +46,9 @@ fun UpdateHistoryScreen(
         changelogItems = loadChangelog(context)
     }
 
-    ReMindScaffold(
+    LiteverScaffold(
         topBar = {
-            ReMindTopAppBar(
+            LiteverTopAppBar(
                 title = stringResource(R.string.setting_history),
                 onBackClick = onNavigateBack
             )
@@ -110,11 +113,10 @@ fun TimelineItem(
         Spacer(modifier = Modifier.width(12.dp))
 
         // Content card
-        Card(
+        LiteverCard(
             modifier = Modifier
                 .padding(bottom = 24.dp)
                 .weight(1f),
-            shape = MaterialTheme.shapes.medium,
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
             ),

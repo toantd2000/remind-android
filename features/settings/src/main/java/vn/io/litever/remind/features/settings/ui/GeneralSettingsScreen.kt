@@ -21,12 +21,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import vn.io.litever.designsystem.components.LiteverScaffold
 import vn.io.litever.designsystem.components.LiteverSegmentedButton
+import vn.io.litever.designsystem.components.LiteverSettingsGroup
 import vn.io.litever.designsystem.components.LiteverSingleChoiceSegmentedButtonRow
-import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
-import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
-import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
+import vn.io.litever.designsystem.components.LiteverTopAppBar
 import vn.io.litever.remind.features.settings.R
 
 @Composable
@@ -55,9 +55,9 @@ fun GeneralSettingsScreen(
     onLanguageChange: (String) -> Unit,
     onNavigateBack: () -> Unit
 ) {
-    ReMindScaffold(
+    LiteverScaffold(
         topBar = {
-            ReMindTopAppBar(
+            LiteverTopAppBar(
                 title = stringResource(R.string.setting_general_title),
                 onBackClick = onNavigateBack
             )
@@ -70,7 +70,7 @@ fun GeneralSettingsScreen(
         ) {
             // Hour Format Group
             item {
-                ReMindSettingsGroup(title = stringResource(R.string.hour_format_24_headline)) {
+                LiteverSettingsGroup(title = stringResource(R.string.hour_format_24_headline)) {
                     val timeOptions = listOf(
                         "SYSTEM" to stringResource(R.string.time_format_system),
                         "H12" to stringResource(R.string.time_format_12h),
@@ -97,7 +97,7 @@ fun GeneralSettingsScreen(
 
             // Display Mode Group
             item {
-                ReMindSettingsGroup(title = stringResource(R.string.display_mode_headline)) {
+                LiteverSettingsGroup(title = stringResource(R.string.display_mode_headline)) {
                     val options = listOf(
                         "SYSTEM" to stringResource(R.string.theme_system),
                         "LIGHT" to stringResource(R.string.theme_light),
@@ -132,7 +132,7 @@ fun GeneralSettingsScreen(
 
             // Color Source Group
             item {
-                ReMindSettingsGroup(title = stringResource(R.string.color_source_headline)) {
+                LiteverSettingsGroup(title = stringResource(R.string.color_source_headline)) {
                     val colorOptions = listOf(
                         "DEFAULT" to stringResource(R.string.color_source_default),
                         "DYNAMIC" to stringResource(R.string.color_source_wallpaper)
@@ -165,7 +165,7 @@ fun GeneralSettingsScreen(
 
             // Language Group
             item {
-                ReMindSettingsGroup(title = stringResource(R.string.language_headline)) {
+                LiteverSettingsGroup(title = stringResource(R.string.language_headline)) {
                     val languageOptions = listOf(
                         "en" to stringResource(R.string.language_english),
                         "vi" to stringResource(R.string.language_vietnamese)

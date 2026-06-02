@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.remind.ui
 
+import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -27,17 +29,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import vn.io.litever.remind.core.ads.api.AdPlacement
-import vn.io.litever.remind.core.ads.api.LocalAdManager
-import vn.io.litever.remind.core.ads.api.AdManager
-import vn.io.litever.remind.core.ads.api.AdState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import android.app.Activity
-import androidx.compose.runtime.CompositionLocalProvider
+import vn.io.litever.designsystem.components.LiteverScaffold
+import vn.io.litever.designsystem.components.LiteverTopAppBar
+import vn.io.litever.remind.core.ads.api.AdManager
+import vn.io.litever.remind.core.ads.api.AdPlacement
+import vn.io.litever.remind.core.ads.api.AdState
+import vn.io.litever.remind.core.ads.api.LocalAdManager
 import vn.io.litever.remind.core.designsystem.components.ReMindLoadingIconButton
-import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
-import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReminderInfoView
 import vn.io.litever.remind.core.designsystem.components.WeatherInfoView
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -103,9 +103,9 @@ fun RemindScreen(
         else -> stringResource(R.string.greeting_night)
     }
 
-    ReMindScaffold(
+    LiteverScaffold(
         topBar = {
-            ReMindTopAppBar(
+            LiteverTopAppBar(
                 title = greeting,
                 actions = {
                     ReMindLoadingIconButton(

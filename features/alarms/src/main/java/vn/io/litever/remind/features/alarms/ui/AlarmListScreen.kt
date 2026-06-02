@@ -31,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -44,6 +43,15 @@ import vn.io.litever.remind.features.alarms.ui.components.PermissionWarningBanne
 import vn.io.litever.remind.features.alarms.ui.components.AlarmCard
 import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState
 import vn.io.litever.remind.features.alarms.viewmodel.AlarmListViewModel
+import androidx.compose.ui.platform.LocalResources
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import vn.io.litever.designsystem.components.LiteverFloatingActionButton
+import vn.io.litever.designsystem.components.LiteverIconButton
+import vn.io.litever.designsystem.components.LiteverModalBottomSheet
+import vn.io.litever.designsystem.components.LiteverScaffold
+import vn.io.litever.designsystem.components.LiteverTopAppBar
 
 @Suppress("LocalContextGetResourceValueCall")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,8 +69,8 @@ fun AlarmListRoute(
     val is24HourFormat by viewModel.is24HourFormat.collectAsState()
     val hasCriticalPermissions by viewModel.hasCriticalPermissions.collectAsState()
     val isAdFreeActive by viewModel.isAdFreeActive.collectAsState()
-    
-    val context = LocalContext.current
+
+    LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -79,7 +87,7 @@ fun AlarmListRoute(
         }
     }
 
-    val resources = LocalContext.current.resources
+    val resources = LocalResources.current
     // Handle UI messages (Snackbars)
     LaunchedEffect(viewModel.uiMessage) {
         viewModel.uiMessage.collectLatest { messageRes ->
@@ -161,8 +169,9 @@ fun AlarmListScreen(
 
     if (showExitDialog) {
         ExitAppDialog(
-            onDismissRequest = { showExitDialog = false },
+            onDismissRequest = { if (showExitDialog) showExitDialog = false },
             onConfirmExit = {
+                if (showExitDialog) showExitDialog = false
                 var currentContext = context
                 while (currentContext is ContextWrapper) {
                     if (currentContext is Activity) {
@@ -180,22 +189,23 @@ fun AlarmListScreen(
     val deleteDisabledAlarmsText = stringResource(R.string.delete_disabled_alarms)
     val actionAddDescription = stringResource(R.string.action_add)
 
-    ReMindScaffold(
+    LiteverScaffold(
         topBar = {
-            MainReMindTopAppBar(
+            LiteverTopAppBar(
+                titleContent = { ReMindLogo() },
                 actions = {
-                    IconButton(onClick = { showTopMenu = !showTopMenu }) {
+                    LiteverIconButton(onClick = { showTopMenu = !showTopMenu }) {
                         Icon(Icons.Rounded.MoreVert, contentDescription = actionMoreDescription)
                     }
                     DropdownMenu(
                         expanded = showTopMenu,
-                        onDismissRequest = { showTopMenu = false }
+                        onDismissRequest = { if (showTopMenu) showTopMenu = false }
                     ) {
                         DropdownMenuItem(
                             text = { Text(deleteDisabledAlarmsText) },
                             onClick = {
                                 onDeleteDisabledAlarms()
-                                showTopMenu = false
+                                if (showTopMenu) showTopMenu = false
                             }
                         )
                     }
@@ -203,7 +213,7 @@ fun AlarmListScreen(
             )
         },
         floatingActionButton = {
-            ReMindFloatingActionButton(onClick = onAddAlarmClick) {
+            LiteverFloatingActionButton(onClick = onAddAlarmClick) {
                 Icon(Icons.Rounded.Add, contentDescription = actionAddDescription)
             }
         },
@@ -260,26 +270,26 @@ fun AlarmListScreen(
     if (selectedAlarmForMenu != null) {
         AlarmActionBottomSheet(
             alarm = selectedAlarmForMenu!!,
-            onDismiss = { selectedAlarmForMenu = null },
+            onDismiss = { if (selectedAlarmForMenu != null) selectedAlarmForMenu = null },
             onDelete = {
                 onDeleteAlarm(selectedAlarmForMenu!!)
-                selectedAlarmForMenu = null
+                if (selectedAlarmForMenu != null) selectedAlarmForMenu = null
             },
             onDuplicate = {
                 onDuplicateAlarm(selectedAlarmForMenu!!)
-                selectedAlarmForMenu = null
+                if (selectedAlarmForMenu != null) selectedAlarmForMenu = null
             },
             onSkipOnce = {
                 onSkipOnce(selectedAlarmForMenu!!)
-                selectedAlarmForMenu = null
+                if (selectedAlarmForMenu != null) selectedAlarmForMenu = null
             },
             onCancelSkip = {
                 onCancelSkip(selectedAlarmForMenu!!)
-                selectedAlarmForMenu = null
+                if (selectedAlarmForMenu != null) selectedAlarmForMenu = null
             },
             onPreview = {
                 onPreviewClick(selectedAlarmForMenu!!)
-                selectedAlarmForMenu = null
+                if (selectedAlarmForMenu != null) selectedAlarmForMenu = null
             }
         )
     }
@@ -297,7 +307,7 @@ private fun AlarmActionBottomSheet(
     onPreview: () -> Unit
 ) {
     val context = LocalContext.current
-    ModalBottomSheet(
+    LiteverModalBottomSheet(
         onDismissRequest = onDismiss,
         dragHandle = { BottomSheetDefaults.DragHandle() },
         containerColor = MaterialTheme.colorScheme.surface,

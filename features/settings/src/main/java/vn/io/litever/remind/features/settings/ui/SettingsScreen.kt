@@ -3,7 +3,6 @@ package vn.io.litever.remind.features.settings.ui
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -42,18 +41,22 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import vn.io.litever.designsystem.components.LiteverAlertDialog
 import vn.io.litever.designsystem.components.LiteverButton
 import vn.io.litever.designsystem.components.LiteverDialog
 import vn.io.litever.designsystem.components.LiteverOutlinedButton
+import vn.io.litever.designsystem.components.LiteverScaffold
+import vn.io.litever.designsystem.components.LiteverSettingsGroup
+import vn.io.litever.designsystem.components.LiteverSettingsItem
+import vn.io.litever.designsystem.components.LiteverTopAppBar
 import vn.io.litever.remind.core.ads.api.AdPlacement
 import vn.io.litever.remind.core.ads.api.AdState
 import vn.io.litever.remind.core.common.util.DeviceUtils
 import vn.io.litever.remind.core.ads.api.LocalAdManager
-import vn.io.litever.remind.core.designsystem.components.*
 import vn.io.litever.remind.features.settings.BuildConfig
 import vn.io.litever.remind.features.settings.R
+import androidx.core.net.toUri
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
 fun SettingsRoute(
@@ -136,9 +139,9 @@ fun SettingsScreen(
         }
     }
 
-    ReMindScaffold(
+    LiteverScaffold(
         topBar = {
-            ReMindTopAppBar(title = stringResource(R.string.settings_title))
+            LiteverTopAppBar(title = stringResource(R.string.settings_title))
         }
     ) { paddingValues ->
         LazyColumn(
@@ -148,15 +151,15 @@ fun SettingsScreen(
         ) {
             // Group 1: App Settings
             item {
-                ReMindSettingsGroup(title = stringResource(R.string.category_app_settings)) {
-                    SettingsItem(
+                LiteverSettingsGroup(title = stringResource(R.string.category_app_settings)) {
+                    LiteverSettingsItem(
                         title = stringResource(R.string.setting_general_title),
                         subtitle = stringResource(R.string.setting_general_subtitle),
                         icon = Icons.Rounded.Language,
                         onClick = onNavigateToGeneralSettings
                     )
                     
-                    SettingsItem(
+                    LiteverSettingsItem(
                         title = stringResource(R.string.setting_permissions_title),
                         subtitle = stringResource(R.string.setting_permissions_subtitle),
                         icon = Icons.Rounded.Security,
@@ -169,26 +172,26 @@ fun SettingsScreen(
 
             // Group 2: Support & Community
             item {
-                ReMindSettingsGroup(title = stringResource(R.string.category_support)) {
+                LiteverSettingsGroup(title = stringResource(R.string.category_support)) {
                     // SettingsItem(
                     //     title = stringResource(R.string.setting_qa),
                     //     icon = Icons.Rounded.QuestionAnswer,
                     //     onClick = { showFaqDialog = true }
                     // )
 
-                    SettingsItem(
+                    LiteverSettingsItem(
                         title = stringResource(R.string.setting_rate),
                         icon = Icons.Rounded.Star,
                         onClick = { rateApp(context) }
                     )
 
-                    SettingsItem(
+                    LiteverSettingsItem(
                         title = stringResource(R.string.setting_share),
                         icon = Icons.Rounded.Share,
                         onClick = { shareApp(context) }
                     )
 
-                    SettingsItem(
+                    LiteverSettingsItem(
                         title = stringResource(R.string.setting_support_dev_title),
                         subtitle = stringResource(R.string.setting_support_dev_desc),
                         icon = Icons.Rounded.Favorite,
@@ -199,32 +202,32 @@ fun SettingsScreen(
 
             // Group 3: About & Legal
             item {
-                ReMindSettingsGroup(title = stringResource(R.string.category_about)) {
-                    SettingsItem(
+                LiteverSettingsGroup(title = stringResource(R.string.category_about)) {
+                    LiteverSettingsItem(
                         title = stringResource(R.string.setting_story),
                         icon = Icons.Rounded.History,
                         onClick = { launchCustomTab(context, BuildConfig.URL_AUTHOR) }
                     )
 
-                    SettingsItem(
+                    LiteverSettingsItem(
                         title = stringResource(R.string.setting_history),
                         icon = Icons.Rounded.Code,
                         onClick = onNavigateToUpdateHistory
                     )
-                    
-                    SettingsItem(
+
+                    LiteverSettingsItem(
                         title = stringResource(R.string.setting_terms),
                         icon = Icons.Rounded.Description,
                         onClick = { launchCustomTab(context, BuildConfig.URL_TERMS) }
                     )
-                    
-                    SettingsItem(
+
+                    LiteverSettingsItem(
                         title = stringResource(R.string.setting_privacy),
                         icon = Icons.Rounded.PrivacyTip,
                         onClick = { launchCustomTab(context, BuildConfig.URL_PRIVACY) }
                     )
-                    
-                    SettingsItem(
+
+                    LiteverSettingsItem(
                         title = stringResource(R.string.setting_attributions_title),
                         subtitle = stringResource(R.string.setting_attributions_subtitle),
                         icon = Icons.Rounded.Description,
@@ -244,8 +247,8 @@ fun SettingsScreen(
                     packageInfo.versionCode.toLong()
                 }
 
-                ReMindSettingsGroup {
-                    SettingsItem(
+                LiteverSettingsGroup {
+                    LiteverSettingsItem(
                         title = stringResource(R.string.setting_version_title),
                         subtitle = stringResource(R.string.app_version_format, versionName, versionCode),
                         icon = Icons.Rounded.Info
@@ -443,7 +446,7 @@ fun RewardedAdSimulatorDialog(
                 modifier = Modifier.padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                androidx.compose.material3.CircularProgressIndicator(
+                CircularProgressIndicator(
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(16.dp)
                 )
@@ -459,7 +462,7 @@ fun RewardedAdSimulatorDialog(
                     text = watchAdDialogMessage,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    textAlign = TextAlign.Center
                 )
             }
         }
@@ -481,15 +484,18 @@ fun Context.findActivity(): Activity? {
 private fun rateApp(context: Context) {
     val appId = context.packageName
     val playStoreIntent = Intent(
-        Intent.ACTION_VIEW, 
-        Uri.parse("market://details?id=$appId")
+        Intent.ACTION_VIEW,
+        "market://details?id=$appId".toUri()
     ).apply {
         addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_NEW_DOCUMENT or Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
     }
     try {
         context.startActivity(playStoreIntent)
-    } catch (e: android.content.ActivityNotFoundException) {
-        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$appId")))
+    } catch (_: android.content.ActivityNotFoundException) {
+        context.startActivity(
+            Intent(
+                Intent.ACTION_VIEW,
+                "https://play.google.com/store/apps/details?id=$appId".toUri()))
     }
 }
 
@@ -506,10 +512,10 @@ private fun shareApp(context: Context) {
 private fun launchCustomTab(context: Context, url: String) {
     try {
         val customTabsIntent = CustomTabsIntent.Builder().build()
-        customTabsIntent.launchUrl(context, Uri.parse(url))
+        customTabsIntent.launchUrl(context, url.toUri())
     } catch (e: Exception) {
         // Fallback to regular browser if Custom Tabs fails
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        val intent = Intent(Intent.ACTION_VIEW, url.toUri())
         context.startActivity(intent)
     }
 }

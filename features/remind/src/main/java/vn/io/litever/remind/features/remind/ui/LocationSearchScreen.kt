@@ -21,10 +21,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
-import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
+import vn.io.litever.designsystem.components.LiteverTopAppBar
 import vn.io.litever.remind.core.model.LocationSearchResponse
 import vn.io.litever.remind.features.remind.R
+import vn.io.litever.designsystem.components.LiteverIconButton
+import vn.io.litever.designsystem.components.LiteverScaffold
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,9 +68,9 @@ fun LocationSearchScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    ReMindScaffold(
+    LiteverScaffold(
         topBar = {
-            ReMindTopAppBar(
+            LiteverTopAppBar(
                 title = stringResource(R.string.search_location_title),
                 onBackClick = onBackClick
             )
@@ -89,7 +90,7 @@ fun LocationSearchScreen(
                 leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null) },
                 trailingIcon = {
                     if (searchQuery.isNotEmpty()) {
-                        IconButton(onClick = { onSearchQueryChange("") }) {
+                        LiteverIconButton(onClick = { onSearchQueryChange("") }) {
                             Icon(Icons.Rounded.Close, contentDescription = "Clear")
                         }
                     }

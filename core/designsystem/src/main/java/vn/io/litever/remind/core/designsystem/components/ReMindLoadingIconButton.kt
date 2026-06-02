@@ -8,11 +8,11 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import vn.io.litever.designsystem.components.LiteverIconButton
 import vn.io.litever.designsystem.theme.LiteverTheme
 
 /**
@@ -34,7 +34,7 @@ fun ReMindLoadingIconButton(
     contentDescription: String? = null,
     enabled: Boolean = true
 ) {
-    IconButton(
+    LiteverIconButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled && !loading

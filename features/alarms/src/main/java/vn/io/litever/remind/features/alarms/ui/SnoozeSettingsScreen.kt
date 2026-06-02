@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.alarms.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,11 +32,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import vn.io.litever.designsystem.components.LiteverButton
+import vn.io.litever.designsystem.components.LiteverScaffold
+import vn.io.litever.designsystem.components.LiteverTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
-import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
-import vn.io.litever.remind.core.designsystem.components.ReMindSwitch
-import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.features.alarms.R
+import vn.io.litever.designsystem.components.LiteverCard
+import vn.io.litever.designsystem.components.LiteverSwitch
 
 @Composable
 fun SnoozeSettingsRoute(
@@ -75,9 +77,9 @@ fun SnoozeSettingsScreen(
     val intervalOptions = listOf(1, 3, 5, 10, 30)
     val repeatOptions = listOf(-1, 1, 3, 5, 10)
 
-    ReMindScaffold(
+    LiteverScaffold(
         topBar = {
-            ReMindTopAppBar(
+            LiteverTopAppBar(
                 title = stringResource(R.string.snooze_settings),
                 onBackClick = onBackClick
             )
@@ -106,13 +108,12 @@ fun SnoozeSettingsScreen(
 
             // Enable Toggle Card
             item {
-                Card(
+                LiteverCard(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
                     ),
-                    shape = MaterialTheme.shapes.medium,
-                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
                 ) {
                     Row(
                         modifier = Modifier
@@ -127,7 +128,7 @@ fun SnoozeSettingsScreen(
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.Bold
                         )
-                        ReMindSwitch(
+                        LiteverSwitch(
                             checked = enabled,
                             onCheckedChange = onEnabledChange
                         )
@@ -145,13 +146,12 @@ fun SnoozeSettingsScreen(
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(bottom = 12.dp)
                         )
-                        Card(
+                        LiteverCard(
                             modifier = Modifier.fillMaxWidth(),
                             colors = CardDefaults.cardColors(
                                 containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
                             ),
-                            shape = MaterialTheme.shapes.medium,
-                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
                         ) {
                             Column {
                                 intervalOptions.forEachIndexed { index, option ->
@@ -187,7 +187,7 @@ fun SnoozeSettingsScreen(
                                 containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
                             ),
                             shape = MaterialTheme.shapes.medium,
-                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
                         ) {
                             Column {
                                 repeatOptions.forEachIndexed { index, option ->

@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -16,9 +17,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import vn.io.litever.designsystem.components.LiteverScaffold
 import vn.io.litever.remind.features.settings.R
+import vn.io.litever.designsystem.components.LiteverTopAppBar
+import vn.io.litever.designsystem.components.LiteverIconButton
 
 @Composable
 fun AlarmSettingsRoute(
@@ -44,13 +47,13 @@ fun AlarmSettingsScreen(
     onPreNotificationChange: (Boolean) -> Unit
 ) {
 
-    ReMindScaffold(
+    LiteverScaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.setting_alarm_title)) },
+            LiteverTopAppBar(
+                title = stringResource(R.string.setting_alarm_title),
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Rounded.ArrowBack, contentDescription = "Back")
+                    LiteverIconButton(onClick = onNavigateBack) {
+                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
                     }
                 }
             )

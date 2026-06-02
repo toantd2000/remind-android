@@ -24,8 +24,8 @@ import vn.io.litever.remind.features.alarms.R
 import androidx.hilt.navigation.compose.hiltViewModel
 import vn.io.litever.designsystem.components.LiteverButton
 import vn.io.litever.designsystem.components.LiteverOutlinedButton
-import vn.io.litever.remind.core.designsystem.components.ReMindScaffold
-import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
+import vn.io.litever.designsystem.components.LiteverScaffold
+import vn.io.litever.designsystem.components.LiteverTopAppBar
 import vn.io.litever.remind.features.alarms.viewmodel.RingtoneItem
 import vn.io.litever.remind.features.alarms.viewmodel.RingtoneSelectionViewModel
 import vn.io.litever.remind.core.designsystem.components.*
@@ -75,10 +75,10 @@ fun RingtoneSelectionScreen(
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    ReMindScaffold(
+    LiteverScaffold(
         modifier = modifier,
         topBar = {
-            ReMindTopAppBar(
+            LiteverTopAppBar(
                 title = stringResource(R.string.ringtone_selection_title),
                 onBackClick = onBackClick
             )

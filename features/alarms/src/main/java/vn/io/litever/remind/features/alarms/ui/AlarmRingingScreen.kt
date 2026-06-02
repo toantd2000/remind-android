@@ -192,19 +192,17 @@ fun AlarmRingingContent(
     }
 
     LaunchedEffect(alarm) {
-        if (alarm != null) {
-            val triggerTime = alarm.snoozeNextTriggerTime
-            if (triggerTime != null) {
-                while (true) {
-                    val now = System.currentTimeMillis()
-                    val diff = (triggerTime - now) / 1000
-                    if (diff >= 0) {
-                        remainingSnoozeSeconds = diff
-                    } else {
-                        remainingSnoozeSeconds = 0
-                    }
-                    kotlinx.coroutines.delay(1000L)
+        val triggerTime = alarm.snoozeNextTriggerTime
+        if (triggerTime != null) {
+            while (true) {
+                val now = System.currentTimeMillis()
+                val diff = (triggerTime - now) / 1000
+                if (diff >= 0) {
+                    remainingSnoozeSeconds = diff
+                } else {
+                    remainingSnoozeSeconds = 0
                 }
+                kotlinx.coroutines.delay(1000L)
             }
         }
     }
@@ -353,32 +351,30 @@ fun AlarmRingingContent(
                     textAlign = TextAlign.Center
                 )
 
-                if (alarm != null) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Surface(
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.08f),
-                        shape = CircleShape
+                Spacer(modifier = Modifier.height(8.dp))
+                Surface(
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.08f),
+                    shape = CircleShape
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.Notifications,
-                                contentDescription = null,
-                                modifier = Modifier.size(14.dp),
-                                tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = stringResource(
-                                    R.string.scheduled_time_format,
-                                    TimeFormatUtils.formatTime(alarm.time, is24HourFormat)
-                                ),
-                                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium),
-                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
-                            )
-                        }
+                        Icon(
+                            imageVector = Icons.Rounded.Notifications,
+                            contentDescription = null,
+                            modifier = Modifier.size(14.dp),
+                            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = stringResource(
+                                R.string.scheduled_time_format,
+                                TimeFormatUtils.formatTime(alarm.time, is24HourFormat)
+                            ),
+                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium),
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                        )
                     }
                 }
 
@@ -393,7 +389,7 @@ fun AlarmRingingContent(
                     )
                 }
 
-                if (!alarm?.message.isNullOrBlank()) {
+                if (alarm.message.isNotBlank()) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = alarm.message,
@@ -405,7 +401,7 @@ fun AlarmRingingContent(
                 }
 
                 androidx.compose.animation.AnimatedVisibility(
-                    visible = alarm != null && alarm.snoozeNextTriggerTime != null,
+                    visible = alarm.snoozeNextTriggerTime != null,
                     enter = androidx.compose.animation.fadeIn() + androidx.compose.animation.expandVertically(),
                     exit = androidx.compose.animation.fadeOut() + androidx.compose.animation.shrinkVertically()
                 ) {
@@ -490,15 +486,15 @@ fun AlarmRingingContent(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                val isNotSnoozing = alarm?.snoozeNextTriggerTime == null
+                val isNotSnoozing = alarm.snoozeNextTriggerTime == null
                 
                 androidx.compose.animation.AnimatedVisibility(
-                    visible = isNotSnoozing && (alarm == null || (alarm.snoozeEnabled && alarm.currentSnoozeCount < alarm.snoozeRepeatCount)),
+                    visible = isNotSnoozing && (alarm.snoozeEnabled && alarm.currentSnoozeCount < alarm.snoozeRepeatCount),
                     enter = androidx.compose.animation.fadeIn() + androidx.compose.animation.expandVertically(),
                     exit = androidx.compose.animation.fadeOut() + androidx.compose.animation.shrinkVertically()
                 ) {
-                    val remainingSnoozes = if (alarm != null) alarm.snoozeRepeatCount - alarm.currentSnoozeCount else 0
-                    val snoozeText = if (alarm != null && remainingSnoozes > 0) {
+                    val remainingSnoozes = alarm.snoozeRepeatCount - alarm.currentSnoozeCount
+                    val snoozeText = if (remainingSnoozes > 0) {
                         stringResource(vn.io.litever.remind.features.alarms.R.string.snooze_limit_format, remainingSnoozes)
                     } else {
                         stringResource(vn.io.litever.remind.core.designsystem.R.string.snooze)

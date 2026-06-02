@@ -16,8 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import vn.io.litever.remind.core.designsystem.components.*
+import vn.io.litever.designsystem.components.LiteverScaffold
+import vn.io.litever.designsystem.components.LiteverSettingsGroup
+import vn.io.litever.designsystem.components.LiteverSettingsItem
+import vn.io.litever.designsystem.components.LiteverTopAppBar
 import vn.io.litever.remind.features.settings.R
+import androidx.core.net.toUri
 
 @Composable
 fun AttributionsScreen(
@@ -26,9 +30,9 @@ fun AttributionsScreen(
 ) {
     val context = LocalContext.current
 
-    ReMindScaffold(
+    LiteverScaffold(
         topBar = {
-            ReMindTopAppBar(
+            LiteverTopAppBar(
                 title = stringResource(R.string.setting_attributions_title),
                 onBackClick = onNavigateBack
             )
@@ -49,15 +53,15 @@ fun AttributionsScreen(
             }
 
             item {
-                ReMindSettingsGroup {
-                    SettingsItem(
+                LiteverSettingsGroup() {
+                    LiteverSettingsItem(
                         title = stringResource(R.string.attribution_oss_title),
                         subtitle = stringResource(R.string.attribution_oss_desc),
                         icon = Icons.Rounded.Code,
                         onClick = onNavigateToLicenses
                     )
 
-                    SettingsItem(
+                    LiteverSettingsItem(
                         title = stringResource(R.string.attribution_storyset_title),
                         subtitle = stringResource(R.string.attribution_storyset_desc),
                         icon = Icons.Rounded.Palette,
@@ -74,9 +78,9 @@ fun AttributionsScreen(
 private fun launchCustomTab(context: Context, url: String) {
     try {
         val customTabsIntent = CustomTabsIntent.Builder().build()
-        customTabsIntent.launchUrl(context, Uri.parse(url))
+        customTabsIntent.launchUrl(context, url.toUri())
     } catch (e: Exception) {
-        val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, Uri.parse(url))
+        val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, url.toUri())
         context.startActivity(intent)
     }
 }

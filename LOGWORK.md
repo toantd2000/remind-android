@@ -510,11 +510,25 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
   - Triển khai bộ lắng nghe trạng thái quảng cáo thời gian thực (`collectAsState` từ flow `adState`) và hộp thoại Loading tròn xoay (`CircularProgressIndicator` bọc trong `LiteverDialog`). Khi người dùng nhấn nút "Xem quảng cáo", hệ thống lập tức xoay vòng loading và tự động bung màn hình quảng cáo toàn màn hình ngay khi trạng thái chuyển sang `Loaded`.
 - **Hệ quả:** Hoàn thành tối ưu hóa 100% cơ chế tải và quản lý quảng cáo AdMob, tăng tính chuyên nghiệp (premium UX), tối ưu hóa tài nguyên mạng nhờ cơ chế tải theo yêu cầu, và cho phép lập trình viên dễ dàng chạy thử quảng cáo test đầy đủ trên thiết bị thật.
 
+### [TDR-057] - Chuẩn hóa Quan sát State và Xử lý Trạng thái Dialog/Sheet
+- **Ngày thực hiện:** 2026-05-19
+- **Trạng thái:** Accepted
+- **Bối cảnh:** 
+  - Xuất hiện các cảnh báo "Assigned value is never read" tại các callback đóng Dialog/Sheet.
+  - Cách quan sát dữ liệu từ `SavedStateHandle` không đồng nhất giữa các màn hình (dùng `.value` thay vì delegate).
+- **Quyết định:** 
+  - Sử dụng property delegate `by ... collectAsState()` cho toàn bộ các biến nhận kết quả từ `SavedStateHandle`.
+  - Áp dụng pattern kiểm tra trạng thái trước khi thay đổi: `if (showDialog) showDialog = false` để đảm bảo biến State luôn được "đọc" trước khi gán giá trị mới, giúp xóa bỏ cảnh báo của compiler.
+  - Đồng bộ hóa logic reset cờ điều hướng (`isNavigatingToConfig`) trong `LifecycleEventObserver`.
+- **Hệ quả:** Mã nguồn sạch hơn, không còn cảnh báo vàng từ IDE, đảm bảo tính ổn định của UI State khi điều hướng phức tạp giữa các màn hình Feature.
+
 ---
 
 ## 🛠 Changelog (Tính năng mới)
 
 ### [2026-05-19]
+- **Refactor:** Chuẩn hóa cơ chế quan sát `SavedStateHandle` và xử lý triệt để cảnh báo "Assigned value is never read" trên toàn bộ module `:features:alarms`.
+- **UI/UX:** Đồng bộ hóa trải nghiệm đóng/mở Dialog và BottomSheet giữa màn hình Danh sách và Chỉnh sửa báo thức.
 - **Feature:** Chuyển đổi Thẻ Ủng hộ nhà phát triển thành mục danh sách (`SettingsItem`) tiêu chuẩn dưới nhóm Hỗ trợ với biểu tượng Trái tim (`Icons.Rounded.Favorite`).
 - **UI/UX:** Tích hợp Hộp thoại `SupportDeveloperDialog` sử dụng `LiteverAlertDialog` hiển thị mô tả ngắn và hai lựa chọn **Xem quảng cáo (Watch Ad)** & **Ủng hộ (Donate)** theo chuẩn Design System để tối giản giao diện cài đặt và nâng cao tính thẩm mỹ.
 - **UI/UX:** Bỏ nút "Đóng" (Close button) khỏi Hộp thoại Ủng hộ nhà phát triển trong mục Cài đặt bằng cách chuyển đổi từ `LiteverAlertDialog` sang dùng `LiteverDialog` với nút confirm rỗng (`confirmButton = {}`) để tuân thủ thiết kế tối giản, gọn gàng.

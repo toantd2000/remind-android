@@ -7,28 +7,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.background
-import vn.io.litever.remind.core.designsystem.components.ReMindSwitch
 import vn.io.litever.remind.core.model.Alarm
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ContentCopy
-import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.automirrored.rounded.DirectionsWalk
 import androidx.compose.material.icons.rounded.MoreVert
-import androidx.compose.material.icons.rounded.SkipNext
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import vn.io.litever.remind.features.alarms.R
 
@@ -40,6 +32,9 @@ import vn.io.litever.remind.core.model.Mission
 import vn.io.litever.remind.core.model.MissionType
 
 import java.time.format.DateTimeFormatter
+import vn.io.litever.designsystem.components.LiteverCard
+import vn.io.litever.designsystem.components.LiteverSwitch
+import vn.io.litever.designsystem.components.LiteverIconButton
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -60,11 +55,10 @@ fun AlarmCard(
         MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
     }
 
-    Card(
+    LiteverCard(
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
-            .clip(MaterialTheme.shapes.large)
             .clickable(
                 onClick = onClick
             ),
@@ -195,12 +189,12 @@ fun AlarmCard(
                     }
                 }
 
-                ReMindSwitch(
+                LiteverSwitch(
                     checked = alarm.isEnabled && !isSkipped,
                     onCheckedChange = onToggle
                 )
 
-                IconButton(
+                LiteverIconButton(
                     onClick = onMoreClick,
                     modifier = Modifier.size(32.dp)
                 ) {
@@ -264,7 +258,7 @@ private fun getMissionIcon(type: MissionType): ImageVector {
         MissionType.MATH -> Icons.Rounded.Calculate
         MissionType.QR_CODE -> Icons.Rounded.QrCodeScanner
         MissionType.SHAKE -> Icons.Rounded.Smartphone
-        MissionType.STEP -> Icons.Rounded.DirectionsWalk
+        MissionType.STEP -> Icons.AutoMirrored.Rounded.DirectionsWalk
         MissionType.COLOR_MATCH -> Icons.Rounded.Palette
         MissionType.TAP_CHALLENGE -> Icons.Rounded.TouchApp
         MissionType.FIND_ITEM -> Icons.Rounded.Search

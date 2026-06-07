@@ -7,11 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.6] - 2026-05-30
+
 ### Added
 - **UI:** Added smooth item placement animations in the alarm list using `Modifier.animateItem()`.
 
+### Changed
+- **Update History:** Moved changelog parsing logic to ViewModel and migrated `UpdateHistoryScreen` to use `LiteverTheme`.
+- **Infrastructure:** Updated dependencies and synchronized UI state management for better stability.
+
 ### Fixed
 - **UI:** Fixed a bug in `AlarmCard` where the click animation (ripple) and the left accent bar would leak outside the rounded corners.
+- **Localization:** Fixed a bug where Dialogs were showing the wrong language by resolving `stringResource` outside the Dialog scope.
 
 ## [1.1.5] - 2026-05-20
 
@@ -34,9 +41,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Exit Dialog Polish:** Removed the rewarded ad button ("Watch ad to support...") from `ExitAppDialog` completely, ensuring a lightweight and non-disruptive exit confirmation flow.
 - **Navigation Tweaks:** Hidden the unimplemented Alarm Settings menu item from the settings tab.
 
-### Added
-- **UI:** Added smooth item placement animations in the alarm list using `Modifier.animateItem()`.
-
 ### Fixed
 - **Navigation Crash:** Prevented Navigation crash by waiting for NavHost initialization in MainActivity.
 - **Lifecycle Fixes:** Bound RingingScreen visibility state to lifecycle events to ensure alarm can wake up screen again after snooze.
@@ -55,14 +59,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Performance:** modularized advertisement logic using Firebase Remote Config for more dynamic and stable control.
 - **Design System:** Bumped `litever-designsystem` to `v1.0.4`.
 
-### Added
-- **UI:** Added smooth item placement animations in the alarm list using `Modifier.animateItem()`.
-
 ### Fixed
 - **Cloning Stability:** Fixed a bug where missions and private phrases were duplicated during alarm cloning.
 - **Localization:** Improved translations and fixed activity finish logic in the exit dialog when using language overrides.
 
-
+## [1.1.3] - 2026-05-09
 
 ### Added
 - **AI-Powered Insights:** Integrated real-time AI status tracking for weather and reminder hints.
@@ -84,9 +85,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **Custom Ringtone Selection:** Users can now pick any audio file from their device to use as an alarm sound.
 - **Permission Optimization:** Implemented using Storage Access Framework (SAF), eliminating the need for `READ_EXTERNAL_STORAGE` permission while maintaining persistent access across reboots.
-
-### Added
-- **UI:** Added smooth item placement animations in the alarm list using `Modifier.animateItem()`.
 
 ### Fixed
 - **Alarm Skip Logic:** Fixed a bug where skipped alarms were incorrectly marked as "Missed due to power off" if the alarm time passed while the app was closed.

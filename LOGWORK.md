@@ -7,8 +7,8 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
 ## 🚀 Trạng Thái Dự Án
 - **Phase Hiện Tại:** Phase 6 (Maintenance & Optimization)
 - **Tiến Độ:** 100%
-- **Ngày cập nhật cuối:** 2026-05-12
-- **Phiên bản hiện tại:** 1.1.4 (Build 7)
+- **Ngày cập nhật cuối:** 2026-05-30
+- **Phiên bản hiện tại:** 1.1.6 (Build 9)
 
 
 
@@ -525,6 +525,20 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
 ---
 
 ## 🛠 Changelog (Tính năng mới)
+
+### [2026-05-30] - RELEASE v1.1.6 (Build 9)
+- **UI:** Thêm hiệu ứng chuyển động mượt mà khi thay đổi vị trí báo thức trong danh sách sử dụng `Modifier.animateItem()`.
+- **Bug Fix:** Khắc phục lỗi animation click (ripple) và dải màu trang trí bị lem ra ngoài bo góc của `AlarmCard`.
+- **Bug Fix:** Sửa lỗi đa ngôn ngữ trong Dialog bằng cách resolve `stringResource` sớm.
+- **Refactor:** Di chuyển logic xử lý `changelog.json` sang ViewModel trong màn hình Lịch sử cập nhật.
+- **Documentation:** Cập nhật Learning Journal về các kỹ thuật clipping nội dung và animation trong danh sách.
+
+### [2026-05-20] - RELEASE v1.1.5 (Build 8)
+- **Feature:** Tích hợp Rewarded Ads để tạm thời tắt quảng cáo trong 24 giờ.
+- **UX:** Tái cấu trúc màn hình Cài đặt và nâng cấp giao diện nút bấm.
+- **Bug Fix:** Khắc phục lỗi Navigation crash khi khởi động ứng dụng.
+- **Bug Fix:** Sửa lỗi màn hình chuông không sáng lại sau khi bấm Báo lại (Snooze).
+- **Architecture:** Cập nhật nội dung thông báo và logic Audio Focus để chuông kêu ổn định hơn.
 
 ### [2026-05-19]
 - **Refactor:** Chuẩn hóa cơ chế quan sát `SavedStateHandle` và xử lý triệt để cảnh báo "Assigned value is never read" trên toàn bộ module `:features:alarms`.

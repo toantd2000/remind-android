@@ -257,7 +257,8 @@ fun AlarmListScreen(
                                 is24HourFormat = is24HourFormat,
                                 onToggle = { onToggleAlarm(alarm) },
                                 onClick = { onAlarmClick(alarm) },
-                                onMoreClick = { selectedAlarmForMenu = alarm }
+                                onMoreClick = { selectedAlarmForMenu = alarm },
+                                modifier = Modifier.animateItem()
                             )
                         }
                     }

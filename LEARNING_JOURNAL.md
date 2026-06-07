@@ -1,4 +1,18 @@
+## [2026-05-30] Smooth List Reordering with animateItem
+
+### Context
+When toggling an alarm, its position in the list changes (due to sorting logic in the ViewModel), but the transition was abrupt.
+
+### What happened
+- The `LazyColumn` items were being re-composed in their new positions instantly, which was jarring for the user.
+- Even though `key` was provided, Compose doesn't automatically animate the movement of items unless explicitly told to.
+
+### Lessons Learned
+- **Item Placement Animation:** In Jetpack Compose (Modern versions/BOM 2024+), `Modifier.animateItem()` is the standard way to animate an item's movement, appearance, and disappearance within a `LazyColumn` or `LazyGrid`.
+- **Requirement for Keys:** `animateItem()` only works if the `items` block has a stable `key` defined. This allows the internal `LazyLayout` to track the identity of the item across different scroll positions and sorting orders.
+
 ## [2026-05-30] Ripple Leak & Content Clipping in Custom Cards
+
 
 ### Context
 `AlarmCard` was showing a ripple effect (click animation) that leaked outside its rounded corners. Additionally, the left accent bar was not following the card's rounded corners.

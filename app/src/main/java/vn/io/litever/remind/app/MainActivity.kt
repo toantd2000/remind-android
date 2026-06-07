@@ -182,7 +182,7 @@ class MainActivity : ComponentActivity() {
             val themeMode by viewModel.themeMode.collectAsState(initial = "SYSTEM")
             val colorPalette by viewModel.colorPalette.collectAsState(initial = "DYNAMIC")
             val language by viewModel.language.collectAsState(
-                initial = if (java.util.Locale.getDefault().language == "vi") "vi" else "en"
+                initial = if (Locale.getDefault().language == "vi") "vi" else "en"
             )
             
             val context = LocalContext.current
@@ -234,7 +234,7 @@ class MainActivity : ComponentActivity() {
                         val missedAlarms by viewModel.missedAlarms.collectAsState()
                         
                         val navBackStackEntry by navController.currentBackStackEntryAsState()
-                        val currentRoute = navBackStackEntry?.destination?.route
+                            navBackStackEntry?.destination?.route
                         val acknowledgingAlarmId by viewModel.acknowledgingAlarmId.collectAsState(initial = null as Long?)
 
                         if (missedAlarms.isNotEmpty()) {
@@ -349,7 +349,7 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         ) { paddingValues ->
-                            androidx.compose.foundation.layout.Box(
+                            Box(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .padding(paddingValues)
@@ -453,16 +453,16 @@ class MainActivity : ComponentActivity() {
     private fun handleLockScreenBypass() {
         val isRingingIntent = intent?.data?.toString()?.contains("remind/ring") == true
         if (isRingingIntent) {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O_MR1) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
                 setShowWhenLocked(true)
                 setTurnScreenOn(true)
             } else {
                 @Suppress("DEPRECATION")
                 window.addFlags(
-                    android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
-                    android.view.WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON or
-                    android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-                    android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
+                    WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON or
+                    WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+                    WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
                 )
             }
         }

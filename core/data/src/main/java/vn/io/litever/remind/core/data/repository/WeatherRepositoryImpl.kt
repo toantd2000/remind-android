@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
+import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import vn.io.litever.remind.core.datastore.WeatherPreferencesDataSource
 import vn.io.litever.remind.core.domain.repository.WeatherRepository
 import vn.io.litever.remind.core.model.WeatherResponse
@@ -17,11 +18,12 @@ import javax.inject.Singleton
 class WeatherRepositoryImpl @Inject constructor(
     private val weatherApi: WeatherApi,
     private val preferencesDataSource: WeatherPreferencesDataSource,
+    private val alarmPreferencesDataSource: AlarmPreferencesDataSource,
     private val json: Json
 ) : WeatherRepository {
 
-    private fun getCurrentLanguage(): String {
-        return Locale.getDefault().language
+    private suspend fun getCurrentLanguage(): String {
+        return alarmPreferencesDataSource.language.first()
     }
 
     override fun getRemindWeather(): Flow<WeatherResponse?> {

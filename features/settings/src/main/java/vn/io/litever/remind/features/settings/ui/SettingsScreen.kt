@@ -4,12 +4,14 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Code
@@ -22,8 +24,6 @@ import androidx.compose.material.icons.rounded.PrivacyTip
 import androidx.compose.material.icons.rounded.Security
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.Star
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -41,22 +41,20 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import vn.io.litever.designsystem.components.LiteverAlertDialog
-import vn.io.litever.designsystem.components.LiteverButton
 import vn.io.litever.designsystem.components.LiteverDialog
-import vn.io.litever.designsystem.components.LiteverOutlinedButton
 import vn.io.litever.designsystem.components.LiteverScaffold
 import vn.io.litever.designsystem.components.LiteverSettingsGroup
 import vn.io.litever.designsystem.components.LiteverSettingsItem
 import vn.io.litever.designsystem.components.LiteverTopAppBar
 import vn.io.litever.remind.core.ads.api.AdPlacement
 import vn.io.litever.remind.core.ads.api.AdState
-import vn.io.litever.remind.core.common.util.DeviceUtils
 import vn.io.litever.remind.core.ads.api.LocalAdManager
+import vn.io.litever.remind.core.common.util.DeviceUtils
 import vn.io.litever.remind.features.settings.BuildConfig
 import vn.io.litever.remind.features.settings.R
-import androidx.core.net.toUri
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
 fun SettingsRoute(
@@ -122,6 +120,7 @@ fun SettingsScreen(
                         }
                     }
                 }
+
                 is AdState.Failed -> {
                     showAdLoading = false
                     if (DeviceUtils.isEmulator()) {
@@ -134,6 +133,7 @@ fun SettingsScreen(
                         ).show()
                     }
                 }
+
                 else -> {}
             }
         }
@@ -158,14 +158,14 @@ fun SettingsScreen(
                         icon = Icons.Rounded.Language,
                         onClick = onNavigateToGeneralSettings
                     )
-                    
+
                     LiteverSettingsItem(
                         title = stringResource(R.string.setting_permissions_title),
                         subtitle = stringResource(R.string.setting_permissions_subtitle),
                         icon = Icons.Rounded.Security,
                         onClick = onNavigateToPermissions
                     )
-                    
+
                     // Alarm Settings is kept hidden (tạm ẩn) since it is not yet fully implemented
                 }
             }
@@ -240,87 +240,60 @@ fun SettingsScreen(
             item {
                 val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
                 val versionName = packageInfo.versionName ?: "1.0"
-                val versionCode = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-                    packageInfo.longVersionCode
-                } else {
-                    @Suppress("DEPRECATION")
-                    packageInfo.versionCode.toLong()
-                }
+                val versionCode =
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                        packageInfo.longVersionCode
+                    } else {
+                        @Suppress("DEPRECATION")
+                        packageInfo.versionCode.toLong()
+                    }
 
                 LiteverSettingsGroup {
                     LiteverSettingsItem(
                         title = stringResource(R.string.setting_version_title),
-                        subtitle = stringResource(R.string.app_version_format, versionName, versionCode),
+                        subtitle = stringResource(
+                            R.string.app_version_format,
+                            versionName,
+                            versionCode
+                        ),
                         icon = Icons.Rounded.Info
                     )
                 }
             }
-            
+
             item { Spacer(modifier = Modifier.height(16.dp)) }
         }
     }
 
     // Support Developer Dialog
     if (showSupportDeveloperDialog) {
-        val watchAdAction = stringResource(R.string.watch_ad_action)
-        val directSupportAction = stringResource(R.string.direct_support_action)
-        val supportDevTitle = stringResource(R.string.setting_support_dev_title)
-        val supportDevDesc = stringResource(R.string.support_dev_dialog_desc)
-
-        LiteverDialog(
-            onDismissRequest = { showSupportDeveloperDialog = false },
-            confirmButton = {
-                // Watch Ad Button (Primary-colored Solid Button)
-                LiteverButton(
-                    onClick = {
-                        showSupportDeveloperDialog = false
-                        val activity = context.findActivity()
-                        if (activity != null && adManager.isAdLoaded(AdPlacement.SUPPORT_REWARDED)) {
-                            adManager.showAd(activity, AdPlacement.SUPPORT_REWARDED) {
-                                showThankYouDialog = true
-                            }
-                        } else {
-                            if (DeviceUtils.isEmulator()) {
-                                showRewardedAdSimulator = true
-                            } else {
-                                adManager.loadAd(AdPlacement.SUPPORT_REWARDED)
-                                showAdLoading = true
-                            }
-                        }
-                    },
-                ) {
-                    Text(text = watchAdAction)
+        LiteverAlertDialog(
+            onDismissRequest = {
+                if (showSupportDeveloperDialog) showSupportDeveloperDialog = false
+            },
+            title = stringResource(R.string.setting_support_dev_title),
+            text = stringResource(R.string.support_dev_dialog_desc),
+            confirmButtonText = stringResource(R.string.watch_ad_action),
+            onConfirmClick = {
+                if (showSupportDeveloperDialog) showSupportDeveloperDialog = false
+                val activity = context.findActivity()
+                if (activity != null && adManager.isAdLoaded(AdPlacement.SUPPORT_REWARDED)) {
+                    adManager.showAd(activity, AdPlacement.SUPPORT_REWARDED) {
+                        showThankYouDialog = true
+                    }
+                } else {
+                    if (DeviceUtils.isEmulator()) {
+                        showRewardedAdSimulator = true
+                    } else {
+                        adManager.loadAd(AdPlacement.SUPPORT_REWARDED)
+                        showAdLoading = true
+                    }
                 }
             },
-            dismissButton = {
-                // Direct Donate Button (Tertiary-colored Outlined Button)
-                LiteverOutlinedButton(
-                    onClick = {
-                        showSupportDeveloperDialog = false
-                        showDonateDialog = true
-                    },
-                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
-                    colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.tertiary
-                    )
-                ) {
-                    Text(text = directSupportAction)
-                }
-            },
-            title = {
-                Text(
-                    text = supportDevTitle,
-                    style = MaterialTheme.typography.headlineSmall
-                )
-            },
-            text = {
-                Column {
-                    Text(
-                        text = supportDevDesc,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
+            dismissButtonText = stringResource(R.string.direct_support_action),
+            onDismissClick = {
+                if (showSupportDeveloperDialog) showSupportDeveloperDialog = false
+                showDonateDialog = true
             }
         )
     }
@@ -331,14 +304,9 @@ fun SettingsScreen(
             onDismissRequest = { showDonateDialog = false },
             confirmButtonText = stringResource(R.string.close_text),
             onConfirmClick = { showDonateDialog = false },
-            title = stringResource(R.string.support_dev_dialog_title)
-        ) {
-            Text(
-                text = stringResource(R.string.support_dev_dialog_message),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
+            title = stringResource(R.string.support_dev_dialog_title),
+            text = stringResource(R.string.support_dev_dialog_message),
+        )
     }
 
     // FAQ / Q&A Upcoming Dialog
@@ -347,14 +315,9 @@ fun SettingsScreen(
             onDismissRequest = { showFaqDialog = false },
             confirmButtonText = stringResource(R.string.close_text),
             onConfirmClick = { showFaqDialog = false },
-            title = stringResource(R.string.faq_upcoming_title)
-        ) {
-            Text(
-                text = stringResource(R.string.faq_upcoming_message),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
+            title = stringResource(R.string.faq_upcoming_title),
+            text = stringResource(R.string.faq_upcoming_message)
+        )
     }
 
     // Rewarded Ad Simulator
@@ -403,17 +366,11 @@ fun SettingsScreen(
             onDismissRequest = { showThankYouDialog = false },
             confirmButtonText = stringResource(R.string.close_text),
             onConfirmClick = { showThankYouDialog = false },
-            title = stringResource(R.string.watch_ad_dialog_title)
-        ) {
-            Text(
-                text = stringResource(R.string.ads_disabled_reward_message),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
+            title = stringResource(R.string.watch_ad_dialog_title),
+            text = stringResource(R.string.ads_disabled_reward_message),
+        )
     }
 }
-
 
 
 @Composable
@@ -424,7 +381,7 @@ fun RewardedAdSimulatorDialog(
     var countdown by remember { mutableStateOf(5) }
     val rewardAdLoadingText = stringResource(R.string.reward_ad_loading, countdown)
     val watchAdDialogMessage = stringResource(R.string.watch_ad_dialog_message)
-    
+
     LaunchedEffect(Unit) {
         while (countdown > 0) {
             kotlinx.coroutines.delay(1000L)
@@ -432,7 +389,7 @@ fun RewardedAdSimulatorDialog(
         }
         onRewardEarned()
     }
-    
+
     androidx.compose.ui.window.Dialog(onDismissRequest = {}) {
         androidx.compose.material3.Surface(
             shape = MaterialTheme.shapes.medium,
@@ -495,7 +452,9 @@ private fun rateApp(context: Context) {
         context.startActivity(
             Intent(
                 Intent.ACTION_VIEW,
-                "https://play.google.com/store/apps/details?id=$appId".toUri()))
+                "https://play.google.com/store/apps/details?id=$appId".toUri()
+            )
+        )
     }
 }
 

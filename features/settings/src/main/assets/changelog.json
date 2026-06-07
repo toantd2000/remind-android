@@ -1,8 +1,27 @@
 [
   {
+    "versionName": "1.1.6",
+    "date": "2026-05-30",
+    "isLatest": true,
+    "multiLangNotes": {
+      "vi": [
+        "Thêm hiệu ứng chuyển động mượt mà khi thay đổi vị trí báo thức trong danh sách.",
+        "Khắc phục lỗi hiển thị và hiệu ứng click trên thẻ báo thức.",
+        "Sửa lỗi ngôn ngữ hiển thị sai trong các hộp thoại (Dialog).",
+        "Cập nhật giao diện Lịch sử cập nhật đồng bộ với hệ thống thiết kế mới."
+      ],
+      "en": [
+        "Added smooth item placement animations in the alarm list.",
+        "Fixed visual bugs and click animation on alarm cards.",
+        "Fixed localization bug where Dialogs showed the wrong language.",
+        "Refactored Update History screen to align with the new design system."
+      ]
+    }
+  },
+  {
     "versionName": "1.1.5",
     "date": "2026-05-20",
-    "isLatest": true,
+    "isLatest": false,
     "multiLangNotes": {
       "vi": [
         "Hỗ trợ tính năng Xem quảng cáo để tắt quảng cáo (Rewarded Ads).",

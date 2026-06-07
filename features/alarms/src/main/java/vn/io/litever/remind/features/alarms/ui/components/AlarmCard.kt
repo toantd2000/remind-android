@@ -1,40 +1,36 @@
 package vn.io.litever.remind.features.alarms.ui.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.background
-import vn.io.litever.remind.core.model.Alarm
-import vn.io.litever.remind.core.common.util.TimeFormatUtils
-
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.DirectionsWalk
-import androidx.compose.material.icons.rounded.MoreVert
-import androidx.compose.runtime.remember
-import androidx.compose.ui.res.stringResource
-import vn.io.litever.remind.features.alarms.R
-
-import androidx.compose.material.icons.rounded.NotificationsPaused
 import androidx.compose.material.icons.rounded.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import vn.io.litever.designsystem.components.LiteverCard
+import vn.io.litever.designsystem.components.LiteverIconButton
+import vn.io.litever.designsystem.components.LiteverSwitch
+import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.common.util.TimeFormatUtils
+import vn.io.litever.remind.core.model.Alarm
 import vn.io.litever.remind.core.model.Mission
 import vn.io.litever.remind.core.model.MissionType
-
+import vn.io.litever.remind.features.alarms.R
 import java.time.format.DateTimeFormatter
-import vn.io.litever.designsystem.components.LiteverCard
-import vn.io.litever.designsystem.components.LiteverSwitch
-import vn.io.litever.designsystem.components.LiteverIconButton
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -50,25 +46,26 @@ fun AlarmCard(
     val alpha = if (alarm.isEnabled && !isSkipped) 1f else 0.6f
 
     val containerColor = if (alarm.isEnabled && !isSkipped) {
-        MaterialTheme.colorScheme.surface
+        LiteverTheme.colors.surface
     } else {
-        MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+        LiteverTheme.colors.surface.copy(alpha = 0.5f)
     }
 
     LiteverCard(
+        onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .clickable(
-                onClick = onClick
-            ),
+            .padding(vertical = 4.dp),
         colors = CardDefaults.cardColors(
             containerColor = containerColor,
         ),
-        shape = MaterialTheme.shapes.large,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
+        shape = LiteverTheme.shapes.large,
+        border = BorderStroke(1.dp, LiteverTheme.colors.outlineVariant.copy(alpha = 0.3f))
     ) {
-        Box(modifier = Modifier.fillMaxWidth()) {
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .clip(LiteverTheme.shapes.large)
+        ) {
             // Left Accent Bar - Thinner and more subtle
             if (alarm.isEnabled && !isSkipped) {
                 Box(
@@ -80,7 +77,7 @@ fun AlarmCard(
                             .fillMaxHeight()
                             .width(3.dp)
                             .background(
-                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+                                color = LiteverTheme.colors.primary.copy(alpha = 0.7f)
                             )
                     )
                 }
@@ -106,11 +103,11 @@ fun AlarmCard(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = getRepeatText(alarm),
-                            style = MaterialTheme.typography.labelMedium,
+                            style = LiteverTheme.typography.labelMedium,
                             color = if (alarm.isEnabled && !isSkipped) 
-                                MaterialTheme.colorScheme.primary 
+                                LiteverTheme.colors.primary 
                             else 
-                                MaterialTheme.colorScheme.onSurfaceVariant,
+                                LiteverTheme.colors.onSurfaceVariant,
                             fontWeight = FontWeight.Medium
                         )
                         
@@ -120,7 +117,7 @@ fun AlarmCard(
                                 imageVector = Icons.Rounded.NotificationsPaused,
                                 contentDescription = null,
                                 modifier = Modifier.size(14.dp),
-                                tint = MaterialTheme.colorScheme.secondary
+                                tint = LiteverTheme.colors.secondary
                             )
                         }
                     }
@@ -132,17 +129,17 @@ fun AlarmCard(
                     Row(verticalAlignment = Alignment.Bottom) {
                         Text(
                             text = timeStr,
-                            style = MaterialTheme.typography.displaySmall.copy(
+                            style = LiteverTheme.typography.displaySmall.copy(
                                 fontWeight = FontWeight.SemiBold,
                                 letterSpacing = (-0.5).sp
                             ),
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = LiteverTheme.colors.onSurface
                         )
                         if (amPm != null) {
                             Text(
                                 text = amPm.uppercase(),
-                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Medium),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                style = LiteverTheme.typography.titleSmall.copy(fontWeight = FontWeight.Medium),
+                                color = LiteverTheme.colors.onSurfaceVariant,
                                 modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
                             )
                         }
@@ -158,12 +155,12 @@ fun AlarmCard(
                     val labelText = alarm.label.ifEmpty { stringResource(R.string.no_label) }
                     Text(
                         text = labelText,
-                        style = MaterialTheme.typography.bodyMedium.copy(
+                        style = LiteverTheme.typography.bodyMedium.copy(
                             fontStyle = if (alarm.label.isEmpty()) FontStyle.Italic else FontStyle.Normal,
                             color = if (alarm.label.isEmpty()) 
-                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f) 
+                                LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.5f) 
                             else 
-                                MaterialTheme.colorScheme.onSurfaceVariant
+                                LiteverTheme.colors.onSurfaceVariant
                         ),
                         maxLines = 1,
                         overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
@@ -175,13 +172,13 @@ fun AlarmCard(
                         Spacer(modifier = Modifier.height(4.dp))
                         val dateFormatter = remember { DateTimeFormatter.ofPattern("dd/MM") }
                         Surface(
-                            color = MaterialTheme.colorScheme.secondaryContainer,
-                            shape = MaterialTheme.shapes.small
+                            color = LiteverTheme.colors.secondaryContainer,
+                            shape = LiteverTheme.shapes.small
                         ) {
                             Text(
                                 text = stringResource(R.string.skipped_next_format, skippedAt.format(dateFormatter)),
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                style = LiteverTheme.typography.labelSmall,
+                                color = LiteverTheme.colors.onSecondaryContainer,
                                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                                 fontWeight = FontWeight.Bold
                             )
@@ -202,7 +199,7 @@ fun AlarmCard(
                         imageVector = Icons.Rounded.MoreVert,
                         contentDescription = stringResource(R.string.action_more),
                         modifier = Modifier.size(20.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                        tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.6f)
                     )
                 }
             }
@@ -224,7 +221,7 @@ private fun MissionIcons(missions: List<Mission>, modifier: Modifier = Modifier)
                     imageVector = getMissionIcon(mission.type),
                     contentDescription = null,
                     modifier = Modifier.size(16.dp).padding(horizontal = 2.dp),
-                    tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+                    tint = LiteverTheme.colors.primary.copy(alpha = 0.6f)
                 )
             }
         } else {
@@ -232,17 +229,17 @@ private fun MissionIcons(missions: List<Mission>, modifier: Modifier = Modifier)
                 imageVector = getMissionIcon(missions[0].type),
                 contentDescription = null,
                 modifier = Modifier.size(16.dp),
-                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+                tint = LiteverTheme.colors.primary.copy(alpha = 0.6f)
             )
             Spacer(modifier = Modifier.width(4.dp))
             Surface(
-                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f),
+                color = LiteverTheme.colors.primaryContainer.copy(alpha = 0.6f),
                 shape = CircleShape
             ) {
                 Text(
                     text = "+${missions.size - 1}",
-                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    style = LiteverTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                    color = LiteverTheme.colors.onPrimaryContainer,
                     modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
                     fontWeight = FontWeight.Bold
                 )

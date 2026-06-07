@@ -1,3 +1,16 @@
+## [2026-05-30] Ripple Leak & Content Clipping in Custom Cards
+
+### Context
+`AlarmCard` was showing a ripple effect (click animation) that leaked outside its rounded corners. Additionally, the left accent bar was not following the card's rounded corners.
+
+### What happened
+- The card used a `.clickable()` modifier on the root `LiteverCard`. In Compose, applying `.clickable()` outside a Surface/Card that has its own `shape` can sometimes result in the ripple being drawn to the rectangular bounds of the modifier rather than the clipped shape of the component, especially if the component doesn't handle the interaction internally.
+- The inner content (the vertical accent bar) was a simple `Box` without clipping, so it remained rectangular even though the parent Card was rounded, causing it to "peek out" at the top-left and bottom-left corners.
+
+### Lessons Learned
+- **Internal Interaction Handling:** When using Material 3 `Card` or similar components that provide an `onClick` parameter, always prefer using that internal parameter over applying an external `.clickable()` modifier. The internal implementation is designed to handle the interaction (ripple, state layers) correctly within the component's defined `shape`.
+- **Explicit Content Clipping:** If a container has rounded corners (like a Card) and contains children that are aligned to its edges (like a background strip or accent bar), the container's *content* must be explicitly clipped to the same shape using `.clip(shape)` to ensure the children don't bleed out of the rounded bounds.
+
 ## [2026-05-26] Jetpack Compose Dialog & stringResource Localization Bug
 
 ### Context

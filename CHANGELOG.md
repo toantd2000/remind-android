@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **UI:** Fixed a bug in `AlarmCard` where the click animation (ripple) and the left accent bar would leak outside the rounded corners.
+
 ## [1.1.5] - 2026-05-20
 
 ### Added

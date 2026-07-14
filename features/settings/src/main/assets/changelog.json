@@ -1,8 +1,27 @@
 [
   {
+    "versionName": "1.1.7",
+    "date": "2026-07-15",
+    "isLatest": true,
+    "multiLangNotes": {
+      "vi": [
+        "Sửa lỗi hiển thị sai ngôn ngữ trong các hộp thoại chọn thời gian.",
+        "Chuẩn hóa màu sắc hệ thống và các biểu tượng cài đặt.",
+        "Tối ưu giao diện thanh điều hướng và kích thước nút bấm.",
+        "Cập nhật công cụ xây dựng (AGP) và dọn dẹp mã nguồn."
+      ],
+      "en": [
+        "Fixed incorrect language localization in time picker dialogs.",
+        "Standardized system colors and setting icons.",
+        "Optimized bottom bar layout and button dimensions.",
+        "Updated Android Gradle Plugin (AGP) and cleaned up codebase."
+      ]
+    }
+  },
+  {
     "versionName": "1.1.6",
     "date": "2026-05-30",
-    "isLatest": true,
+    "isLatest": false,
     "multiLangNotes": {
       "vi": [
         "Thêm hiệu ứng chuyển động mượt mà khi thay đổi vị trí báo thức trong danh sách.",

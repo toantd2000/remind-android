@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.7] - 2026-07-15
+
+### Changed
+- **UI:** Standardized `TailwindColors`, unified `ReMindSettingIcon` component, updated bottom bar and button dimensions.
+- **Infrastructure:** Updated AGP and cleaned up `MainActivity`.
+
+### Fixed
+- **Localization:** Fixed language localization issues in time picker dialogs.
+
 ## [1.1.6] - 2026-05-30
 
 ### Added

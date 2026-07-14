@@ -23,6 +23,7 @@ import vn.io.litever.designsystem.theme.LiteverShapes
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.model.MissionType
+import vn.io.litever.designsystem.components.LiteverModalBottomSheet
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,7 +35,7 @@ fun MissionSelectionBottomSheet(
     val coroutineScope = rememberCoroutineScope()
     val context = androidx.compose.ui.platform.LocalContext.current
     
-    ModalBottomSheet(
+    LiteverModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
         containerColor = LiteverTheme.colors.surface,
@@ -132,23 +133,11 @@ fun MissionSelectionBottomSheet(
                                 ) 
                             },
                             leadingContent = {
-                                Surface(
-                                    shape = LiteverShapes.medium,
-                                    color = if (isAvailable) 
-                                        LiteverTheme.colors.primaryContainer.copy(alpha = 0.5f)
-                                    else 
-                                        LiteverTheme.colors.surfaceVariant,
-                                    border = if (isAvailable)
-                                        androidx.compose.foundation.BorderStroke(1.dp, LiteverTheme.colors.primary.copy(alpha = 0.1f))
-                                    else null
-                                ) {
-                                    Icon(
-                                        imageVector = item.icon,
-                                        contentDescription = null,
-                                        modifier = Modifier.padding(10.dp).size(24.dp),
-                                        tint = if (isAvailable) LiteverTheme.colors.primary else LiteverTheme.colors.onSurfaceVariant
-                                    )
-                                }
+                                ReMindSettingIcon(
+                                    imageVector = item.icon,
+                                    selected = isAvailable,
+                                    enabled = isAvailable
+                                )
                             },
                             colors = ListItemDefaults.colors(
                                 containerColor = Color.Transparent

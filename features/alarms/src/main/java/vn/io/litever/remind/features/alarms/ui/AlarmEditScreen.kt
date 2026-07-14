@@ -44,6 +44,7 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -92,6 +93,7 @@ import vn.io.litever.designsystem.components.LiteverTopAppBar
 import vn.io.litever.remind.core.designsystem.components.MissionSelectionBottomSheet
 import vn.io.litever.remind.core.designsystem.components.ReMindAlertDialog
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingIcon
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.DayOfWeek
 import vn.io.litever.remind.core.model.MissionType
@@ -546,12 +548,12 @@ fun AlarmEditScreen(
                             alpha = 0.3f
                         ),
                     ),
-                    onClick = { showTimePicker = true },
                 ) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 24.dp),
+                            .padding(vertical = 24.dp)
+                            .clickable { showTimePicker = true },
                         contentAlignment = Alignment.Center
                     ) {
                         Column(
@@ -709,16 +711,11 @@ fun AlarmEditScreen(
                                 .clickable { onRingtoneClick() },
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            LiteverFilledTonalIconButton(
-                                onClick = onTogglePreview,
-                                modifier = Modifier.size(44.dp),
-                                shape = MaterialTheme.shapes.medium
-                            ) {
-                                Icon(
-                                    imageVector = if (uiState.isRingtonePlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
-                                    contentDescription = null
-                                )
-                            }
+                            ReMindSettingIcon(
+                                imageVector = if (uiState.isRingtonePlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
+                                selected = uiState.isRingtonePlaying,
+                                onClick = onTogglePreview
+                            )
 
                             Column(
                                 modifier = Modifier
@@ -766,24 +763,10 @@ fun AlarmEditScreen(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(44.dp)
-                                    .clip(MaterialTheme.shapes.medium)
-                                    .background(
-                                        MaterialTheme.colorScheme.surfaceVariant.copy(
-                                            alpha = 0.5f
-                                        )
-                                    ),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = if (uiState.volume == 0) Icons.AutoMirrored.Rounded.VolumeOff else Icons.AutoMirrored.Rounded.VolumeUp,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(20.dp),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
+                            ReMindSettingIcon(
+                                imageVector = if (uiState.volume == 0) Icons.AutoMirrored.Rounded.VolumeOff else Icons.AutoMirrored.Rounded.VolumeUp,
+                                selected = false
+                            )
 
                             Slider(
                                 value = uiState.volume.toFloat(),
@@ -800,24 +783,11 @@ fun AlarmEditScreen(
                                 )
                             )
 
-                            Box(
-                                modifier = Modifier
-                                    .size(44.dp)
-                                    .clip(MaterialTheme.shapes.medium)
-                                    .background(
-                                        if (uiState.vibrationEnabled) MaterialTheme.colorScheme.primaryContainer
-                                        else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                                    )
-                                    .clickable { onVibrationToggle(!uiState.vibrationEnabled) },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Rounded.Vibration,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(20.dp),
-                                    tint = if (uiState.vibrationEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
+                            ReMindSettingIcon(
+                                imageVector = Icons.Rounded.Vibration,
+                                selected = uiState.vibrationEnabled,
+                                onClick = { onVibrationToggle(!uiState.vibrationEnabled) }
+                            )
                         }
 
                         Spacer(modifier = Modifier.height(12.dp))
@@ -831,23 +801,10 @@ fun AlarmEditScreen(
                                 .padding(vertical = 8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(44.dp)
-                                    .clip(MaterialTheme.shapes.medium)
-                                    .background(
-                                        if (uiState.gradualVolumeDurationSeconds > 0) MaterialTheme.colorScheme.primaryContainer
-                                        else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                                    ),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Rounded.GraphicEq,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(20.dp),
-                                    tint = if (uiState.gradualVolumeDurationSeconds > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
+                            ReMindSettingIcon(
+                                imageVector = Icons.Rounded.GraphicEq,
+                                selected = uiState.gradualVolumeDurationSeconds > 0
+                            )
 
                             Column(
                                 modifier = Modifier
@@ -894,23 +851,10 @@ fun AlarmEditScreen(
                                 .padding(vertical = 8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(44.dp)
-                                    .clip(MaterialTheme.shapes.medium)
-                                    .background(
-                                        if (uiState.useAlarmStream) MaterialTheme.colorScheme.primaryContainer
-                                        else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                                    ),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = if (uiState.useAlarmStream) Icons.Rounded.AlarmOn else Icons.Rounded.MusicNote,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(20.dp),
-                                    tint = if (uiState.useAlarmStream) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
+                            ReMindSettingIcon(
+                                imageVector = if (uiState.useAlarmStream) Icons.Rounded.AlarmOn else Icons.Rounded.MusicNote,
+                                selected = uiState.useAlarmStream
+                            )
 
                             Column(
                                 modifier = Modifier
@@ -1165,20 +1109,10 @@ private fun AlarmSettingRow(
             .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            modifier = Modifier
-                .size(44.dp)
-                .clip(MaterialTheme.shapes.medium)
-                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
+        ReMindSettingIcon(
+            imageVector = icon,
+            selected = false
+        )
 
         Column(
             modifier = Modifier
@@ -1320,20 +1254,10 @@ private fun MissionRow(
                 else -> mission.type.name
             }
 
-            Box(
-                modifier = Modifier
-                    .size(44.dp)
-                    .clip(MaterialTheme.shapes.medium)
-                    .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
+            ReMindSettingIcon(
+                imageVector = icon,
+                selected = true
+            )
 
             Column(
                 modifier = Modifier

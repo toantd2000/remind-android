@@ -27,10 +27,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import vn.io.litever.designsystem.components.LiteverTextButton
-import vn.io.litever.designsystem.theme.TailwindColors
+import vn.io.litever.remind.core.designsystem.theme.TailwindColors
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.*
+import vn.io.litever.designsystem.components.LiteverCard
 
 @Composable
 fun WeatherInfoView(
@@ -80,9 +81,8 @@ private fun FullWeatherView(
     val weatherColors = getWeatherColors(weather.current.tempC, weather.current.isDay)
     val isNight = weather.current.isDay == 0
 
-    Card(
+    LiteverCard(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         border = androidx.compose.foundation.BorderStroke(
             1.dp,

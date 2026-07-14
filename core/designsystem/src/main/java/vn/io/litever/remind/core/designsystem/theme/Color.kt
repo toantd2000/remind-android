@@ -1,7 +1,6 @@
 package vn.io.litever.remind.core.designsystem.theme
 
 import vn.io.litever.designsystem.theme.LiteverColors
-import vn.io.litever.designsystem.theme.TailwindColors
 
 // Logo Colors (App Specific)
 val logo_up_light = TailwindColors.Zinc.c500
@@ -42,6 +41,16 @@ val remindLightColors = LiteverColors(
     onError = TailwindColors.White,
     errorContainer = TailwindColors.Red.c100,
     onErrorContainer = TailwindColors.Red.c900,
+
+    warning = TailwindColors.Amber.c500,
+    onWarning = TailwindColors.White,
+    warningContainer = TailwindColors.Amber.c100,
+    onWarningContainer = TailwindColors.Amber.c900,
+
+    success = TailwindColors.Green.c500,
+    onSuccess = TailwindColors.White,
+    successContainer = TailwindColors.Green.c100,
+    onSuccessContainer = TailwindColors.Green.c900,
 
     outline = TailwindColors.Zinc.c400,
     outlineVariant = TailwindColors.Zinc.c300,
@@ -88,6 +97,16 @@ val remindDarkColors = LiteverColors(
     onError = TailwindColors.Red.c900,
     errorContainer = TailwindColors.Red.c800,
     onErrorContainer = TailwindColors.Red.c100,
+
+    warning = TailwindColors.Amber.c400,
+    onWarning = TailwindColors.Amber.c900,
+    warningContainer = TailwindColors.Amber.c800,
+    onWarningContainer = TailwindColors.Amber.c100,
+
+    success = TailwindColors.Green.c400,
+    onSuccess = TailwindColors.Green.c900,
+    successContainer = TailwindColors.Green.c800,
+    onSuccessContainer = TailwindColors.Green.c100,
 
     outline = TailwindColors.Zinc.c500,
     outlineVariant = TailwindColors.Zinc.c600,

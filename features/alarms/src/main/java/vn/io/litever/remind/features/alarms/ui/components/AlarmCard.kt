@@ -3,6 +3,7 @@ package vn.io.litever.remind.features.alarms.ui.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -52,7 +53,6 @@ fun AlarmCard(
     }
 
     LiteverCard(
-        onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
@@ -62,9 +62,11 @@ fun AlarmCard(
         shape = LiteverTheme.shapes.large,
         border = BorderStroke(1.dp, LiteverTheme.colors.outlineVariant.copy(alpha = 0.3f))
     ) {
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .clip(LiteverTheme.shapes.large)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(LiteverTheme.shapes.large)
+                .clickable { onClick() }
         ) {
             // Left Accent Bar - Thinner and more subtle
             if (alarm.isEnabled && !isSkipped) {
@@ -220,7 +222,9 @@ private fun MissionIcons(missions: List<Mission>, modifier: Modifier = Modifier)
                 Icon(
                     imageVector = getMissionIcon(mission.type),
                     contentDescription = null,
-                    modifier = Modifier.size(16.dp).padding(horizontal = 2.dp),
+                    modifier = Modifier
+                        .size(16.dp)
+                        .padding(horizontal = 2.dp),
                     tint = LiteverTheme.colors.primary.copy(alpha = 0.6f)
                 )
             }

@@ -522,9 +522,28 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
   - Đồng bộ hóa logic reset cờ điều hướng (`isNavigatingToConfig`) trong `LifecycleEventObserver`.
 - **Hệ quả:** Mã nguồn sạch hơn, không còn cảnh báo vàng từ IDE, đảm bảo tính ổn định của UI State khi điều hướng phức tạp giữa các màn hình Feature.
 
+### [TDR-058] - Chuẩn hóa Bảng màu Tailwind và Tái cấu trúc Icon Cài đặt (UI Refactoring)
+- **Ngày thực hiện:** 2026-06-01
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Dự án sử dụng bảng màu Tailwind CSS nhưng bị phân mảnh (một phần trong thư viện, một phần hardcode).
+  - Giao diện chỉnh sửa báo thức (`AlarmEditScreen`) có nhiều đoạn code hiển thị icon lặp lại với logic màu sắc chưa tối ưu cho độ tương phản (Accessibility).
+- **Quyết định:**
+  - Trích xuất toàn bộ bảng màu Tailwind chuẩn vào file `TailwindColors.kt` nội bộ để làm chủ mã nguồn.
+  - Tạo helper component `SettingIcon` để gom nhóm logic hiển thị icon.
+  - Sử dụng `LiteverFilledTonalIconButton` cho các icon có tương tác (vibration toggle, ringtone preview).
+  - Áp dụng quy tắc màu sắc tương phản: Khi background là `primaryContainer`, tint icon bắt buộc phải là `onPrimaryContainer`.
+- **Hệ quả:** Mã nguồn gọn gàng, dễ bảo trì. Giao diện nhất quán và đạt chuẩn độ tương phản cao, giúp người dùng dễ dàng nhận diện trạng thái Kích hoạt/Vô hiệu của các thiết lập.
+
 ---
 
 ## 🛠 Changelog (Tính năng mới)
+
+### [2026-06-01]
+- **Design System:** Chuẩn hóa bảng màu Tailwind CSS toàn diện (`TailwindColors.kt`).
+- **Refactor:** Tái cấu trúc màn hình Chỉnh sửa báo thức, gom nhóm các icon thiết lập vào component `SettingIcon` dùng chung.
+- **UI/UX:** Tối ưu hóa độ tương phản màu sắc cho các icon trạng thái (PrimaryContainer -> OnPrimaryContainer).
+- **UX:** Nâng cấp trải nghiệm tương tác nút Rung và Nghe thử nhạc chuông bằng `LiteverFilledTonalIconButton`.
 
 ### [2026-05-30] - RELEASE v1.1.6 (Build 9)
 - **UI:** Thêm hiệu ứng chuyển động mượt mà khi thay đổi vị trí báo thức trong danh sách sử dụng `Modifier.animateItem()`.

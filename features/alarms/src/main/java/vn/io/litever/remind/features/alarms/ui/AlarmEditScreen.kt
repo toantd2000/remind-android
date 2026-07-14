@@ -44,7 +44,6 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -88,6 +87,7 @@ import vn.io.litever.designsystem.components.LiteverOutlinedButton
 import vn.io.litever.designsystem.components.LiteverOutlinedCard
 import vn.io.litever.designsystem.components.LiteverRadioButton
 import vn.io.litever.designsystem.components.LiteverScaffold
+import vn.io.litever.designsystem.components.LiteverTextField
 import vn.io.litever.designsystem.components.LiteverTimePickerDialog
 import vn.io.litever.designsystem.components.LiteverTopAppBar
 import vn.io.litever.remind.core.designsystem.components.MissionSelectionBottomSheet
@@ -109,8 +109,6 @@ import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
-import vn.io.litever.designsystem.components.LiteverFilledTonalIconButton
-import vn.io.litever.designsystem.components.LiteverTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -504,25 +502,22 @@ fun AlarmEditScreen(
         },
         bottomBar = {
             ReMindBottomBar {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                LiteverOutlinedButton(
+                    onClick = onPreviewClick,
+                    modifier = Modifier.height(48.dp)
                 ) {
-                    LiteverOutlinedButton(
-                        onClick = onPreviewClick
-                    ) {
-                        Text(
-                            stringResource(R.string.action_preview),
-                        )
-                    }
-                    LiteverButton(
-                        onClick = onSaveClick,
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text(
-                            stringResource(R.string.save),
-                        )
-                    }
+                    Text(
+                        stringResource(R.string.action_preview),
+                    )
+                }
+                LiteverButton(
+                    onClick = onSaveClick,
+                    modifier = Modifier.weight(1f)
+                        .height(48.dp)
+                ) {
+                    Text(
+                        stringResource(R.string.save),
+                    )
                 }
             }
         }

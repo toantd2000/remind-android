@@ -37,6 +37,7 @@ import vn.io.litever.remind.core.designsystem.components.ReminderInfoView
 import java.time.LocalTime
 import java.util.Locale
 import vn.io.litever.designsystem.components.LiteverCard
+import vn.io.litever.designsystem.theme.LiteverTheme
 
 @Composable
 fun AlarmMessageRoute(
@@ -71,7 +72,7 @@ fun AlarmMessageScreen(
 ) {
     BackHandler { }
     LiteverScaffold { padding ->
-        val statusColor = MaterialTheme.colorScheme.primary
+        val statusColor = LiteverTheme.colors.primary
         val statusTitle =
             stringResource(vn.io.litever.remind.features.alarms.R.string.alarm_summary_title)
 
@@ -83,8 +84,8 @@ fun AlarmMessageScreen(
                     brush = androidx.compose.ui.graphics.Brush.verticalGradient(
                         colors = listOf(
                             statusColor.copy(alpha = 0.08f),
-                            MaterialTheme.colorScheme.background,
-                            MaterialTheme.colorScheme.background
+                            LiteverTheme.colors.background,
+                            LiteverTheme.colors.background
                         )
                     )
                 )
@@ -99,7 +100,7 @@ fun AlarmMessageScreen(
         ) {
             Text(
                 text = statusTitle,
-                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                style = LiteverTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                 color = statusColor,
                 textAlign = TextAlign.Center
             )
@@ -109,9 +110,9 @@ fun AlarmMessageScreen(
             // Main Info Card
             LiteverCard(
                 modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.medium,
+                shape = LiteverTheme.shapes.medium,
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                    containerColor = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.3f)
                 ),
                 border = androidx.compose.foundation.BorderStroke(
                     1.dp,
@@ -133,25 +134,24 @@ fun AlarmMessageScreen(
 
                     Row(
                         verticalAlignment = Alignment.Bottom,
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier.fillMaxWidth()
+                        horizontalArrangement = Arrangement.Center
                     ) {
                         Text(
                             text = timeStr,
-                            style = MaterialTheme.typography.displayMedium.copy(
+                            style = LiteverTheme.typography.displayMedium.copy(
                                 fontWeight = FontWeight.Black,
                                 letterSpacing = (-1).sp
                             ),
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = LiteverTheme.colors.onSurface
                         )
                         if (amPm != null) {
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
                                 text = amPm.uppercase(Locale.getDefault()),
-                                style = MaterialTheme.typography.titleLarge.copy(
+                                style = LiteverTheme.typography.titleLarge.copy(
                                     fontWeight = FontWeight.Bold
                                 ),
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                color = LiteverTheme.colors.onSurface.copy(alpha = 0.6f),
                                 modifier = Modifier.padding(bottom = 8.dp)
                             )
                         }
@@ -159,17 +159,17 @@ fun AlarmMessageScreen(
 
                     if (!alarm?.label.isNullOrBlank()) {
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(text = alarm.label, style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurface)
+                        Text(text = alarm.label, style = LiteverTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center, color = LiteverTheme.colors.onSurface)
                     }
 
                     if (!alarm?.message.isNullOrBlank()) {
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = alarm.message,
-                            style = MaterialTheme.typography.bodyLarge,
+                            style = LiteverTheme.typography.bodyLarge,
                             modifier = Modifier.fillMaxWidth(),
                             textAlign = TextAlign.Center,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = LiteverTheme.colors.onSurfaceVariant
                         )
                     }
                 }
@@ -200,9 +200,11 @@ fun AlarmMessageScreen(
             LiteverButton(
                 onClick = onFinish,
                 modifier = Modifier.fillMaxWidth()
+                    .height(52.dp)
             ) {
                 Text(
                     text = stringResource(vn.io.litever.remind.features.alarms.R.string.alarm_message_dismiss),
+                    style = LiteverTheme.typography.labelLarge
                 )
             }
         }
@@ -312,13 +314,13 @@ private object PreviewAdManager : AdManager {
             modifier = modifier
                 .fillMaxWidth()
                 .height(250.dp)
-                .background(MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.shapes.medium),
+                .background(LiteverTheme.colors.surfaceVariant, LiteverTheme.shapes.medium),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "Native Ad Preview ($placement)",
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = LiteverTheme.typography.labelLarge,
+                color = LiteverTheme.colors.onSurfaceVariant
             )
         }
     }

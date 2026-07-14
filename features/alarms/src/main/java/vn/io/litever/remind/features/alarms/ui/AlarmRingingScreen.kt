@@ -31,7 +31,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,7 +44,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -56,6 +54,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import vn.io.litever.designsystem.components.LiteverButton
 import vn.io.litever.designsystem.components.LiteverOutlinedButton
+import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.Alarm
@@ -173,7 +172,7 @@ fun AlarmRingingContent(
     var remainingSnoozeSeconds by remember { mutableLongStateOf(0L) }
  
     if (alarm == null) {
-        Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
+        Box(modifier = Modifier.fillMaxSize().background(LiteverTheme.colors.background))
         return
     }
  
@@ -261,23 +260,7 @@ fun AlarmRingingContent(
 
     Surface(
         modifier = modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
     ) {
-        // Subtle gradient background
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.05f),
-                            MaterialTheme.colorScheme.background,
-                            MaterialTheme.colorScheme.secondary.copy(alpha = 0.05f)
-                        )
-                    )
-                )
-        )
-
         // Exit Preview Button
         if (isPreview) {
             Box(
@@ -325,35 +308,35 @@ fun AlarmRingingContent(
                 ) {
                     Text(
                         text = timeStr,
-                        style = MaterialTheme.typography.displayLarge.copy(
+                        style = LiteverTheme.typography.displayLarge.copy(
                             fontSize = 96.sp,
                             fontWeight = FontWeight.Black
                         ),
-                        color = MaterialTheme.colorScheme.onBackground
+                        color = LiteverTheme.colors.onBackground
                     )
                     if (amPm != null) {
                         Text(
                             text = amPm.uppercase(Locale.getDefault()),
-                            style = MaterialTheme.typography.displayLarge.copy(
+                            style = LiteverTheme.typography.displayLarge.copy(
                                 fontSize = 32.sp,
                                 fontWeight = FontWeight.Black
                             ),
-                            color = MaterialTheme.colorScheme.onBackground,
+                            color = LiteverTheme.colors.onBackground,
                             modifier = Modifier.padding(bottom = 16.dp, start = 8.dp)
                         )
                     }
                 }
                 Text(
                     text = currentTime.format(dateFormatter).replaceFirstChar { it.uppercase() },
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                    style = LiteverTheme.typography.titleLarge,
+                    color = LiteverTheme.colors.onBackground.copy(alpha = 0.7f),
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
                 Surface(
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.08f),
+                    color = LiteverTheme.colors.onBackground.copy(alpha = 0.08f),
                     shape = CircleShape
                 ) {
                     Row(
@@ -364,7 +347,7 @@ fun AlarmRingingContent(
                             imageVector = Icons.Rounded.Notifications,
                             contentDescription = null,
                             modifier = Modifier.size(14.dp),
-                            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                            tint = LiteverTheme.colors.onBackground.copy(alpha = 0.6f)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
@@ -372,8 +355,8 @@ fun AlarmRingingContent(
                                 R.string.scheduled_time_format,
                                 TimeFormatUtils.formatTime(alarm.time, is24HourFormat)
                             ),
-                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium),
-                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                            style = LiteverTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium),
+                            color = LiteverTheme.colors.onBackground.copy(alpha = 0.6f)
                         )
                     }
                 }
@@ -382,8 +365,8 @@ fun AlarmRingingContent(
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = alarm.label,
-                        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.primary,
+                        style = LiteverTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                        color = LiteverTheme.colors.primary,
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                         textAlign = TextAlign.Center
                     )
@@ -393,8 +376,8 @@ fun AlarmRingingContent(
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = alarm.message,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                        style = LiteverTheme.typography.bodyMedium,
+                        color = LiteverTheme.colors.onBackground.copy(alpha = 0.6f),
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
                         textAlign = TextAlign.Center
                     )
@@ -415,17 +398,17 @@ fun AlarmRingingContent(
                         val formattedTime = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
                         Text(
                             text = stringResource(R.string.snooze_countdown, formattedTime),
-                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
-                            color = MaterialTheme.colorScheme.primary,
+                            style = LiteverTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                            color = LiteverTheme.colors.primary,
                             modifier = Modifier
                                 .background(
-                                    color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
-                                    shape = MaterialTheme.shapes.medium
+                                    color = LiteverTheme.colors.primaryContainer.copy(alpha = 0.3f),
+                                    shape = LiteverTheme.shapes.medium
                                 )
                                 .border(
                                     width = 1.dp,
-                                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                                    shape = MaterialTheme.shapes.medium
+                                    color = LiteverTheme.colors.primary.copy(alpha = 0.1f),
+                                    shape = LiteverTheme.shapes.medium
                                 )
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
                         )
@@ -448,17 +431,17 @@ fun AlarmRingingContent(
                         val formattedTime = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
                         Text(
                         text = stringResource(R.string.auto_silence_countdown, formattedTime),
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
-                        color = MaterialTheme.colorScheme.error,
+                        style = LiteverTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                        color = LiteverTheme.colors.error,
                         modifier = Modifier
                             .background(
-                                color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f),
-                                shape = MaterialTheme.shapes.medium
+                                color = LiteverTheme.colors.errorContainer.copy(alpha = 0.3f),
+                                shape = LiteverTheme.shapes.medium
                             )
                             .border(
                                 width = 1.dp,
-                                color = MaterialTheme.colorScheme.error.copy(alpha = 0.1f),
-                                shape = MaterialTheme.shapes.medium
+                                color = LiteverTheme.colors.error.copy(alpha = 0.1f),
+                                shape = LiteverTheme.shapes.medium
                             )
                             .padding(horizontal = 16.dp, vertical = 8.dp)
                         )
@@ -484,7 +467,7 @@ fun AlarmRingingContent(
                         alpha = bottomAlpha
                     },
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 val isNotSnoozing = alarm.snoozeNextTriggerTime == null
                 
@@ -504,10 +487,12 @@ fun AlarmRingingContent(
                         onClick = onSnooze,
                         modifier = Modifier
                             .fillMaxWidth()
+                            .height(52.dp)
                             .offset { androidx.compose.ui.unit.IntOffset(x = snoozeShakeOffset.dp.roundToPx(), y = 0) } // Áp dụng rung nhẹ
                     ) {
                         Text(
                             text = snoozeText,
+                            style = LiteverTheme.typography.titleLarge
                         )
                     }
                 }
@@ -523,6 +508,7 @@ fun AlarmRingingContent(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
+                        .height(52.dp)
                         .offset { androidx.compose.ui.unit.IntOffset(x = shakeOffset.dp.roundToPx(), y = 0) } // Áp dụng hiệu ứng rung
                 ) {
                     val hasMission = (alarm?.missions?.isNotEmpty() == true)
@@ -533,7 +519,7 @@ fun AlarmRingingContent(
                     }
                     Text(
                         text = dismissText,
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                        style = LiteverTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                     )
                 }
             }

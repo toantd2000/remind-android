@@ -8,6 +8,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
+import vn.io.litever.designsystem.components.LiteverButton
+import vn.io.litever.designsystem.components.LiteverOutlinedButton
+import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 
 /**
  * A premium bottom bar for main actions.
@@ -24,29 +29,53 @@ fun ReMindBottomBar(
     Surface(
         modifier = modifier
             .fillMaxWidth(),
-        color = MaterialTheme.colorScheme.surface,
+        color = LiteverTheme.colors.surfaceContainer,
         tonalElevation = 1.dp,
-        shadowElevation = 8.dp,
+        shadowElevation = 4.dp,
         shape = shape
     ) {
         Row(
             modifier = Modifier
                 .navigationBarsPadding()
-                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .padding(horizontal = 24.dp, vertical = 16.dp)
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically,
             content = content
         )
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+private fun ReMindBottomBarPreview() {
+    ReMindTheme {
+        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            // Single button
+            ReMindBottomBar {
+                LiteverButton(
+                    onClick = {},
+                    modifier = Modifier.fillMaxWidth().height(48.dp)
+                ) {
+                    Text("Save Changes")
+                }
+            }
 
-
-
-
-
-
-
-
-
+            // Dual buttons - Automatically match heights
+            ReMindBottomBar {
+                LiteverOutlinedButton(
+                    onClick = {},
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Cancel")
+                }
+                LiteverButton(
+                    onClick = {},
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Confirm")
+                }
+            }
+        }
+    }
+}

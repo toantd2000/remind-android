@@ -88,6 +88,7 @@ fun RingtoneSelectionScreen(
                 LiteverButton(
                     onClick = onSaveClick,
                     modifier = Modifier.fillMaxWidth()
+                        .height(48.dp)
                 ) {
                     Text(
                         stringResource(R.string.save),

@@ -141,7 +141,10 @@ fun AlarmEditRoute(
     // Observe results from other screens
     val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
 
-    val updatedMission by savedStateHandle?.getStateFlow<vn.io.litever.remind.core.model.Mission?>("updatedMission", null)
+    val updatedMission by savedStateHandle?.getStateFlow<vn.io.litever.remind.core.model.Mission?>(
+        "updatedMission",
+        null
+    )
         ?.collectAsState() ?: remember { mutableStateOf(null) }
 
     val returnedSnoozeEnabled by savedStateHandle?.getStateFlow<Boolean?>("snoozeEnabled", null)
@@ -389,9 +392,7 @@ fun AlarmEditScreen(
                 }
             }
         ) {
-            CompositionLocalProvider(LocalContext provides context) {
-                TimePicker(state = timePickerState)
-            }
+            TimePicker(state = timePickerState)
         }
     }
 
@@ -413,21 +414,27 @@ fun AlarmEditScreen(
         DatePickerDialog(
             onDismissRequest = { if (showDatePicker) showDatePicker = false },
             confirmButton = {
-                LiteverButton(onClick = {
-                    datePickerState.selectedDateMillis?.let { millis ->
-                        val date = Instant.ofEpochMilli(millis)
-                            .atZone(ZoneId.of("UTC"))
-                            .toLocalDate()
-                        onDateChange(date)
+                CompositionLocalProvider(LocalContext provides context) {
+                    LiteverButton(onClick = {
+                        datePickerState.selectedDateMillis?.let { millis ->
+                            val date = Instant.ofEpochMilli(millis)
+                                .atZone(ZoneId.of("UTC"))
+                                .toLocalDate()
+                            onDateChange(date)
+                        }
+                        if (showDatePicker) showDatePicker = false
+                    }) {
+                        Text(stringResource(R.string.save))
                     }
-                    if (showDatePicker) showDatePicker = false
-                }) {
-                    Text(stringResource(R.string.save))
                 }
             },
             dismissButton = {
-                LiteverOutlinedButton(onClick = { if (showDatePicker) showDatePicker = false }) {
-                    Text(stringResource(R.string.action_cancel))
+                CompositionLocalProvider(LocalContext provides context) {
+                    LiteverOutlinedButton(onClick = {
+                        if (showDatePicker) showDatePicker = false
+                    }) {
+                        Text(stringResource(R.string.action_cancel))
+                    }
                 }
             }
         ) {
@@ -435,6 +442,7 @@ fun AlarmEditScreen(
                 DatePicker(state = datePickerState)
             }
         }
+
     }
 
     // Sync state time when picker changes
@@ -462,15 +470,13 @@ fun AlarmEditScreen(
             containerColor = MaterialTheme.colorScheme.surface,
             tonalElevation = 0.dp
         ) {
-            CompositionLocalProvider(LocalContext provides context) {
-                AutoSilenceBottomSheetContent(
-                    currentMinutes = uiState.autoSilenceMinutes,
-                    onMinutesSelect = {
-                        onAutoSilenceChange(it)
-                        if (showAutoSilenceSheet) showAutoSilenceSheet = false
-                    }
-                )
-            }
+            AutoSilenceBottomSheetContent(
+                currentMinutes = uiState.autoSilenceMinutes,
+                onMinutesSelect = {
+                    onAutoSilenceChange(it)
+                    if (showAutoSilenceSheet) showAutoSilenceSheet = false
+                }
+            )
         }
     }
 
@@ -481,15 +487,13 @@ fun AlarmEditScreen(
             containerColor = MaterialTheme.colorScheme.surface,
             tonalElevation = 0.dp
         ) {
-            CompositionLocalProvider(LocalContext provides context) {
-                GentleAlarmBottomSheetContent(
-                    currentDuration = uiState.gradualVolumeDurationSeconds,
-                    onDurationSelect = {
-                        onGradualVolumeChange(it)
-                        if (showGradualVolumeSheet) showGradualVolumeSheet = false
-                    }
-                )
-            }
+            GentleAlarmBottomSheetContent(
+                currentDuration = uiState.gradualVolumeDurationSeconds,
+                onDurationSelect = {
+                    onGradualVolumeChange(it)
+                    if (showGradualVolumeSheet) showGradualVolumeSheet = false
+                }
+            )
         }
     }
 
@@ -512,7 +516,8 @@ fun AlarmEditScreen(
                 }
                 LiteverButton(
                     onClick = onSaveClick,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .weight(1f)
                         .height(48.dp)
                 ) {
                     Text(
@@ -861,9 +866,9 @@ fun AlarmEditScreen(
                                     style = MaterialTheme.typography.bodyLarge
                                 )
                                 Text(
-                                    text = if (uiState.useAlarmStream) 
-                                        stringResource(R.string.use_alarm_stream_desc) 
-                                    else 
+                                    text = if (uiState.useAlarmStream)
+                                        stringResource(R.string.use_alarm_stream_desc)
+                                    else
                                         stringResource(R.string.use_media_stream_desc),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant

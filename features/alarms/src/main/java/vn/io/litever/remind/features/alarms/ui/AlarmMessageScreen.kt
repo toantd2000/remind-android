@@ -199,8 +199,7 @@ fun AlarmMessageScreen(
 
             LiteverButton(
                 onClick = onFinish,
-                modifier = Modifier.fillMaxWidth()
-                    .height(52.dp)
+                modifier = Modifier.fillMaxWidth().height(52.dp)
             ) {
                 Text(
                     text = stringResource(vn.io.litever.remind.features.alarms.R.string.alarm_message_dismiss),

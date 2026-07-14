@@ -33,8 +33,7 @@ fun MissionSelectionBottomSheet(
     sheetState: SheetState = rememberModalBottomSheetState()
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val context = androidx.compose.ui.platform.LocalContext.current
-    
+
     LiteverModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
@@ -42,108 +41,107 @@ fun MissionSelectionBottomSheet(
         tonalElevation = 0.dp,
         dragHandle = { BottomSheetDefaults.DragHandle(color = LiteverTheme.colors.outlineVariant) }
     ) {
-        androidx.compose.runtime.CompositionLocalProvider(
-            androidx.compose.ui.platform.LocalContext provides context
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 32.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 32.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.mission_selection_title),
-                    style = LiteverTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                    modifier = Modifier.padding(20.dp)
-                )
-                
-                val missionTypes = listOf(
-                    MissionItem(
-                        type = MissionType.TYPING,
-                        title = stringResource(R.string.mission_typing),
-                        description = stringResource(R.string.mission_typing_desc),
-                        icon = Icons.Rounded.Keyboard,
-                        isAvailable = true
-                    ),
-                    MissionItem(
-                        type = MissionType.MATH,
-                        title = stringResource(R.string.mission_math),
-                        description = stringResource(R.string.mission_math_desc),
-                        icon = Icons.Rounded.Calculate,
-                        isAvailable = false
-                    ),
-                    MissionItem(
-                        type = MissionType.SHAKE,
-                        title = stringResource(R.string.mission_shake),
-                        description = stringResource(R.string.mission_shake_desc),
-                        icon = Icons.Rounded.Smartphone,
-                        isAvailable = false
-                    ),
-                    MissionItem(
-                        type = MissionType.QR_CODE,
-                        title = stringResource(R.string.mission_qr_code),
-                        description = stringResource(R.string.mission_qr_code_desc),
-                        icon = Icons.Rounded.QrCodeScanner,
-                        isAvailable = false
-                    )
-                )
+            Text(
+                text = stringResource(R.string.mission_selection_title),
+                style = LiteverTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                modifier = Modifier.padding(20.dp)
+            )
 
-                LazyColumn(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(horizontal = 4.dp)
-                ) {
-                    items(missionTypes) { item ->
-                        val isAvailable = item.isAvailable
-                        
-                        ListItem(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .alpha(if (isAvailable) 1f else 0.5f)
-                                .clickable(enabled = isAvailable) {
-                                    coroutineScope.launch {
-                                        sheetState.hide()
-                                        onMissionTypeSelected(item.type)
-                                    }
-                                },
-                            headlineContent = { 
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Text(
-                                        text = item.title,
-                                        style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
-                                    )
-                                    if (!isAvailable) {
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                        Surface(
-                                            color = LiteverTheme.colors.surfaceVariant,
-                                            shape = LiteverShapes.extraSmall
-                                        ) {
-                                            Text(
-                                                text = stringResource(R.string.coming_soon),
-                                                style = LiteverTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                                                color = LiteverTheme.colors.onSurfaceVariant
-                                            )
-                                        }
-                                    }
+            val missionTypes = listOf(
+                MissionItem(
+                    type = MissionType.TYPING,
+                    title = stringResource(R.string.mission_typing),
+                    description = stringResource(R.string.mission_typing_desc),
+                    icon = Icons.Rounded.Keyboard,
+                    isAvailable = true
+                ),
+                MissionItem(
+                    type = MissionType.MATH,
+                    title = stringResource(R.string.mission_math),
+                    description = stringResource(R.string.mission_math_desc),
+                    icon = Icons.Rounded.Calculate,
+                    isAvailable = false
+                ),
+                MissionItem(
+                    type = MissionType.SHAKE,
+                    title = stringResource(R.string.mission_shake),
+                    description = stringResource(R.string.mission_shake_desc),
+                    icon = Icons.Rounded.Smartphone,
+                    isAvailable = false
+                ),
+                MissionItem(
+                    type = MissionType.QR_CODE,
+                    title = stringResource(R.string.mission_qr_code),
+                    description = stringResource(R.string.mission_qr_code_desc),
+                    icon = Icons.Rounded.QrCodeScanner,
+                    isAvailable = false
+                )
+            )
+
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(horizontal = 4.dp)
+            ) {
+                items(missionTypes) { item ->
+                    val isAvailable = item.isAvailable
+
+                    ListItem(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .alpha(if (isAvailable) 1f else 0.5f)
+                            .clickable(enabled = isAvailable) {
+                                coroutineScope.launch {
+                                    sheetState.hide()
+                                    onMissionTypeSelected(item.type)
                                 }
                             },
-                            supportingContent = { 
+                        headlineContent = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
-                                    text = item.description,
-                                    style = LiteverTheme.typography.bodySmall
-                                ) 
-                            },
-                            leadingContent = {
-                                ReMindSettingIcon(
-                                    imageVector = item.icon,
-                                    selected = isAvailable,
-                                    enabled = isAvailable
+                                    text = item.title,
+                                    style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
                                 )
-                            },
-                            colors = ListItemDefaults.colors(
-                                containerColor = Color.Transparent
+                                if (!isAvailable) {
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Surface(
+                                        color = LiteverTheme.colors.surfaceVariant,
+                                        shape = LiteverShapes.extraSmall
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.coming_soon),
+                                            style = LiteverTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                                            modifier = Modifier.padding(
+                                                horizontal = 6.dp,
+                                                vertical = 2.dp
+                                            ),
+                                            color = LiteverTheme.colors.onSurfaceVariant
+                                        )
+                                    }
+                                }
+                            }
+                        },
+                        supportingContent = {
+                            Text(
+                                text = item.description,
+                                style = LiteverTheme.typography.bodySmall
                             )
+                        },
+                        leadingContent = {
+                            ReMindSettingIcon(
+                                imageVector = item.icon,
+                                selected = isAvailable,
+                                enabled = isAvailable
+                            )
+                        },
+                        colors = ListItemDefaults.colors(
+                            containerColor = Color.Transparent
                         )
-                    }
+                    )
                 }
             }
         }

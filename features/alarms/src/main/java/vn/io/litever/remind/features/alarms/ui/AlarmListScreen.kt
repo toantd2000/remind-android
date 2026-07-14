@@ -1,24 +1,47 @@
 package vn.io.litever.remind.features.alarms.ui
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.MoreVert
-import androidx.compose.material.icons.rounded.Notifications
-import androidx.compose.material3.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.foundation.clickable
-import androidx.compose.material.icons.rounded.*
-import androidx.activity.compose.BackHandler
 import android.app.Activity
 import android.content.ContextWrapper
-import vn.io.litever.remind.features.alarms.ui.components.ExitAppDialog
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.ContentCopy
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.Notifications
+import androidx.compose.material.icons.rounded.NotificationsPaused
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.SkipNext
+import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -29,29 +52,30 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.flow.collectLatest
-import vn.io.litever.remind.core.designsystem.components.*
-import vn.io.litever.remind.core.model.Alarm
-import vn.io.litever.remind.features.alarms.R
-import vn.io.litever.remind.features.alarms.ui.components.NextAlarmHeader
-import vn.io.litever.remind.features.alarms.ui.components.PermissionWarningBanner
-import vn.io.litever.remind.features.alarms.ui.components.AlarmCard
-import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState
-import vn.io.litever.remind.features.alarms.viewmodel.AlarmListViewModel
-import androidx.compose.ui.platform.LocalResources
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.ViewModelStoreOwner
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import vn.io.litever.designsystem.components.LiteverFloatingActionButton
 import vn.io.litever.designsystem.components.LiteverIconButton
 import vn.io.litever.designsystem.components.LiteverModalBottomSheet
 import vn.io.litever.designsystem.components.LiteverScaffold
 import vn.io.litever.designsystem.components.LiteverTopAppBar
+import vn.io.litever.remind.core.designsystem.components.ReMindLogo
+import vn.io.litever.remind.core.model.Alarm
+import vn.io.litever.remind.features.alarms.R
+import vn.io.litever.remind.features.alarms.ui.components.AlarmCard
+import vn.io.litever.remind.features.alarms.ui.components.ExitAppDialog
+import vn.io.litever.remind.features.alarms.ui.components.NextAlarmHeader
+import vn.io.litever.remind.features.alarms.ui.components.PermissionWarningBanner
+import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState
+import vn.io.litever.remind.features.alarms.viewmodel.AlarmListViewModel
 
 @Suppress("LocalContextGetResourceValueCall")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -160,7 +184,7 @@ fun AlarmListScreen(
     var showTopMenu by remember { mutableStateOf(false) }
     var selectedAlarmForMenu by remember { mutableStateOf<Alarm?>(null) }
     var showExitDialog by remember { mutableStateOf(false) }
-    
+
     val context = LocalContext.current
 
     BackHandler {
@@ -242,7 +266,7 @@ fun AlarmListScreen(
                 } else {
                     LazyColumn(
                         modifier = Modifier.weight(1f),
-                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp).let { 
+                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp).let {
                             PaddingValues(
                                 start = it.calculateStartPadding(androidx.compose.ui.unit.LayoutDirection.Ltr),
                                 top = it.calculateTopPadding(),
@@ -307,29 +331,27 @@ private fun AlarmActionBottomSheet(
     onCancelSkip: () -> Unit,
     onPreview: () -> Unit
 ) {
-    val context = LocalContext.current
     LiteverModalBottomSheet(
         onDismissRequest = onDismiss,
         dragHandle = { BottomSheetDefaults.DragHandle() },
         containerColor = MaterialTheme.colorScheme.surface,
     ) {
-        CompositionLocalProvider(LocalContext provides context) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 32.dp)
-            ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 32.dp)
+        ) {
             if (alarm.isEnabled) {
                 val isSkipped = alarm.skippedAt != null
                 ListItem(
-                    headlineContent = { 
-                        Text(stringResource(if (isSkipped) R.string.action_cancel_skip else R.string.action_skip_once)) 
+                    headlineContent = {
+                        Text(stringResource(if (isSkipped) R.string.action_cancel_skip else R.string.action_skip_once))
                     },
-                    leadingContent = { 
+                    leadingContent = {
                         Icon(
-                            if (isSkipped) Icons.Rounded.NotificationsPaused else Icons.Rounded.SkipNext, 
+                            if (isSkipped) Icons.Rounded.NotificationsPaused else Icons.Rounded.SkipNext,
                             contentDescription = null
-                        ) 
+                        )
                     },
                     modifier = Modifier.clickable { if (isSkipped) onCancelSkip() else onSkipOnce() }
                 )
@@ -340,35 +362,29 @@ private fun AlarmActionBottomSheet(
                 leadingContent = { Icon(Icons.Rounded.PlayArrow, contentDescription = null) },
                 modifier = Modifier.clickable { onPreview() }
             )
-            
+
             ListItem(
                 headlineContent = { Text(stringResource(R.string.action_duplicate)) },
                 leadingContent = { Icon(Icons.Rounded.ContentCopy, contentDescription = null) },
                 modifier = Modifier.clickable { onDuplicate() }
             )
-            
-            HorizontalDivider(
-                modifier = Modifier.padding(vertical = 8.dp),
-                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
-            )
-            
+
             ListItem(
-                headlineContent = { 
+                headlineContent = {
                     Text(
-                        stringResource(R.string.action_delete), 
+                        stringResource(R.string.action_delete),
                         color = MaterialTheme.colorScheme.error
-                    ) 
+                    )
                 },
-                leadingContent = { 
+                leadingContent = {
                     Icon(
-                        Icons.Rounded.Delete, 
-                        contentDescription = null, 
+                        Icons.Rounded.Delete,
+                        contentDescription = null,
                         tint = MaterialTheme.colorScheme.error
-                    ) 
+                    )
                 },
                 modifier = Modifier.clickable { onDelete() }
             )
-            }
         }
     }
 }
@@ -397,9 +413,9 @@ fun EmptyState(modifier: Modifier = Modifier) {
                 )
             }
         }
-        
+
         Spacer(modifier = Modifier.height(24.dp))
-        
+
         Text(
             text = stringResource(R.string.no_alarms),
             style = MaterialTheme.typography.titleLarge,
@@ -407,9 +423,9 @@ fun EmptyState(modifier: Modifier = Modifier) {
             fontWeight = FontWeight.SemiBold,
             textAlign = TextAlign.Center
         )
-        
+
         Spacer(modifier = Modifier.height(8.dp))
-        
+
         Text(
             text = stringResource(R.string.empty_description),
             style = MaterialTheme.typography.bodyMedium,
@@ -421,7 +437,10 @@ fun EmptyState(modifier: Modifier = Modifier) {
 }
 
 
-@androidx.compose.ui.tooling.preview.Preview(showBackground = true, device = androidx.compose.ui.tooling.preview.Devices.PIXEL_7)
+@androidx.compose.ui.tooling.preview.Preview(
+    showBackground = true,
+    device = androidx.compose.ui.tooling.preview.Devices.PIXEL_7
+)
 @Composable
 fun EmptyStatePreview() {
     vn.io.litever.remind.core.designsystem.theme.ReMindTheme {

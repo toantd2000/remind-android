@@ -109,6 +109,16 @@ class MissionRingingViewModel @Inject constructor(
                 val config = mission.config as? MathMissionConfig
                 List(mission.repeatCount) { generateMathProblem(config?.difficulty ?: MathDifficulty.NORMAL) }
             }
+            MissionType.MEMORY_FIND_COLOR_TILES -> {
+                val config = mission.config as? MemoryTilesMissionConfig
+                val gridSize = config?.gridSize ?: 3
+                val targetCount = config?.targetTiles ?: 3
+                val totalTiles = gridSize * gridSize
+                List(mission.repeatCount) {
+                    val indices = (0 until totalTiles).shuffled().take(targetCount)
+                    MemoryGameBoard(gridSize, targetCount, indices)
+                }
+            }
             else -> emptyList<Any>()
         }
 
@@ -161,6 +171,9 @@ class MissionRingingViewModel @Inject constructor(
             MissionType.MATH -> {
                 val target = (state.currentTargetData as? MathProblem)?.answer?.toString() ?: return
                 input.trim() == target
+            }
+            MissionType.MEMORY_FIND_COLOR_TILES -> {
+                input == "SUCCESS"
             }
             else -> false
         }

@@ -14,6 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import vn.io.litever.designsystem.components.LiteverButton
+import vn.io.litever.designsystem.components.LiteverLinearProgressIndicator
 import vn.io.litever.designsystem.components.LiteverScaffold
 import vn.io.litever.designsystem.components.LiteverTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
@@ -25,8 +26,9 @@ import vn.io.litever.remind.features.mission.R
 import vn.io.litever.remind.features.mission.ui.components.MathMissionContent
 import vn.io.litever.remind.features.mission.ui.components.MissionCompleteContent
 import vn.io.litever.remind.features.mission.ui.components.TypingMissionContent
+import vn.io.litever.remind.features.mission.ui.components.MemoryTilesMissionContent
 import vn.io.litever.remind.features.mission.viewmodel.MissionRingingViewModel
-import vn.io.litever.designsystem.components.LiteverLinearProgressIndicator
+import vn.io.litever.remind.core.model.MemoryGameBoard
 
 @Composable
 fun MissionRingingRoute(
@@ -116,6 +118,7 @@ fun MissionRingingScreen(
                         modifier = Modifier.fillMaxWidth(),
                         enabled = when (uiState.currentMission?.type) {
                             MissionType.TYPING -> userInput == (uiState.currentTargetData as? Phrase)?.content
+                            MissionType.MEMORY_FIND_COLOR_TILES -> userInput == "SUCCESS"
                             else -> userInput.isNotBlank()
                         }
                     ) {
@@ -189,6 +192,17 @@ fun MissionRingingScreen(
                                 totalRepetitions = currentMission.repeatCount,
                                 userInput = userInput,
                                 onUserInputChange = onUserInputChange
+                            )
+                        }
+                        MissionType.MEMORY_FIND_COLOR_TILES -> {
+                            MemoryTilesMissionContent(
+                                board = uiState.currentTargetData as? MemoryGameBoard,
+                                currentRepetition = uiState.currentRepetition,
+                                totalRepetitions = currentMission.repeatCount,
+                                onSuccess = {
+                                    onUserInputChange("SUCCESS")
+                                    onFinish()
+                                }
                             )
                         }
                         else -> {

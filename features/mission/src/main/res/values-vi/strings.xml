@@ -34,8 +34,16 @@
     <string name="more_phrases_count">+ %d cụm từ đang ẩn...</string>
     <string name="settings_title">Cài đặt</string>
     <string name="repetition_helper">Bạn sẽ cần gõ đúng %d cụm từ để tắt báo thức.</string>
+    <string name="memory_game_config_title">Trò chơi ô nhớ</string>
+    <string name="memory_game_difficulty_settings">Cài đặt độ khó</string>
+    <string name="memory_game_difficulty_very_easy">Rất dễ</string>
+    <string name="memory_game_difficulty_easy">Dễ</string>
+    <string name="memory_game_difficulty_medium">Vừa</string>
+    <string name="memory_game_difficulty_hard">Khó</string>
+    <string name="memory_game_difficulty_very_hard">Rất khó</string>
+    <string name="memory_game_target_tiles_format">Số ô mục tiêu: %d</string>
+    <string name="memory_game_repetitions">Số vòng chơi</string>
+    <string name="memory_game_repetition_helper">Bạn cần hoàn thành đúng %d vòng để tắt báo thức.</string>
+    <string name="memory_game_memorize_instruction">Hãy ghi nhớ vị trí các ô màu (%1$d)</string>
+    <string name="memory_game_playing_instruction">Tìm các ô màu đã bị ẩn</string>
 </resources>
-
-
-
-

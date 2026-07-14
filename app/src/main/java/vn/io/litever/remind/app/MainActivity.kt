@@ -67,6 +67,7 @@ import vn.io.litever.remind.features.mission.ui.missionGraph
 import vn.io.litever.remind.features.mission.ui.navigateToMissionRinging
 import vn.io.litever.remind.features.mission.ui.navigateToPhraseSelection
 import vn.io.litever.remind.features.mission.ui.navigateToTypingMissionConfig
+import vn.io.litever.remind.features.mission.ui.navigateToMemoryGameConfig
 import vn.io.litever.remind.features.remind.ui.locationSearchRoute
 import vn.io.litever.remind.features.remind.ui.remindGraph
 import vn.io.litever.remind.features.remind.ui.remindRoute
@@ -426,6 +427,14 @@ class MainActivity : ComponentActivity() {
                                                         config?.mode?.name ?: vn.io.litever.remind.core.model.TypingMode.NORMAL.name
                                                     )
                                                     navController.navigateToTypingMissionConfig(
+                                                        mission.alarmId
+                                                    )
+                                                } else if (mission.type == vn.io.litever.remind.core.model.MissionType.MEMORY_FIND_COLOR_TILES) {
+                                                    navController.currentBackStackEntry?.savedStateHandle?.set(
+                                                        "repetitions",
+                                                        mission.repeatCount
+                                                    )
+                                                    navController.navigateToMemoryGameConfig(
                                                         mission.alarmId
                                                     )
                                                 }

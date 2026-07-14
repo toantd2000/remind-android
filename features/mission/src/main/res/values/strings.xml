@@ -34,6 +34,18 @@
     <string name="more_phrases_count">+ %d more phrases...</string>
     <string name="settings_title">Settings</string>
     <string name="repetition_helper">You will need to type correctly %d phrases to dismiss the alarm.</string>
+    <string name="memory_game_config_title">Memory Game</string>
+    <string name="memory_game_difficulty_settings">Difficulty Settings</string>
+    <string name="memory_game_difficulty_very_easy">Very Easy</string>
+    <string name="memory_game_difficulty_easy">Easy</string>
+    <string name="memory_game_difficulty_medium">Medium</string>
+    <string name="memory_game_difficulty_hard">Hard</string>
+    <string name="memory_game_difficulty_very_hard">Very Hard</string>
+    <string name="memory_game_target_tiles_format">Target tiles: %d</string>
+    <string name="memory_game_repetitions">Rounds</string>
+    <string name="memory_game_repetition_helper">You need to complete %d rounds to dismiss the alarm.</string>
+    <string name="memory_game_memorize_instruction">Memorize the colored tiles (%1$d)</string>
+    <string name="memory_game_playing_instruction">Find the hidden colored tiles</string>
 </resources>
 
 

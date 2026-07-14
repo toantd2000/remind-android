@@ -15,6 +15,9 @@ internal sealed class MissionConfigDto {
     
     @Serializable
     internal data class Math(val difficulty: MathDifficulty) : MissionConfigDto()
+    
+    @Serializable
+    internal data class MemoryTiles(val gridSize: Int, val targetTiles: Int) : MissionConfigDto()
 }
 
 private val json = Json { ignoreUnknownKeys = true }
@@ -26,8 +29,9 @@ fun MissionEntity.toModel(): Mission {
             when (dto) {
                 is MissionConfigDto.Typing -> TypingMissionConfig(dto.selectedPhraseIds, dto.mode)
                 is MissionConfigDto.Math -> MathMissionConfig(dto.difficulty)
+                is MissionConfigDto.MemoryTiles -> MemoryTilesMissionConfig(dto.gridSize, dto.targetTiles)
             }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
             null
         }
     }
@@ -47,6 +51,7 @@ fun Mission.toEntity(): MissionEntity {
         val dto = when (configModel) {
             is TypingMissionConfig -> MissionConfigDto.Typing(configModel.selectedPhraseIds, configModel.mode)
             is MathMissionConfig -> MissionConfigDto.Math(configModel.difficulty)
+            is MemoryTilesMissionConfig -> MissionConfigDto.MemoryTiles(configModel.gridSize, configModel.targetTiles)
         }
         dto.let { json.encodeToString(MissionConfigDto.serializer(), it) }
     }

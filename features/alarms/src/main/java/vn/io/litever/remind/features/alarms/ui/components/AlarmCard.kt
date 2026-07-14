@@ -263,6 +263,7 @@ private fun getMissionIcon(type: MissionType): ImageVector {
         MissionType.COLOR_MATCH -> Icons.Rounded.Palette
         MissionType.TAP_CHALLENGE -> Icons.Rounded.TouchApp
         MissionType.FIND_ITEM -> Icons.Rounded.Search
+        MissionType.MEMORY_FIND_COLOR_TILES -> Icons.Rounded.GridView
     }
 }
 

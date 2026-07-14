@@ -3,7 +3,7 @@ package vn.io.litever.remind.core.model
 import java.io.Serializable
 
 enum class MissionType : Serializable {
-    TYPING, MATH, QR_CODE, SHAKE, STEP, COLOR_MATCH, TAP_CHALLENGE, FIND_ITEM
+    TYPING, MATH, QR_CODE, SHAKE, STEP, COLOR_MATCH, TAP_CHALLENGE, FIND_ITEM, MEMORY_FIND_COLOR_TILES
 }
 
 data class Mission(
@@ -32,7 +32,16 @@ data class MathMissionConfig(
     val difficulty: MathDifficulty = MathDifficulty.NORMAL
 ) : MissionConfig
 
+data class MemoryTilesMissionConfig(
+    val gridSize: Int = 3,
+    val targetTiles: Int = 3
+) : MissionConfig
 
+data class MemoryGameBoard(
+    val gridSize: Int,
+    val targetTiles: Int,
+    val targetIndices: List<Int>
+)
 
 
 

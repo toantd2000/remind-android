@@ -38,6 +38,7 @@ import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.QrCodeScanner
 import androidx.compose.material.icons.rounded.Smartphone
 import androidx.compose.material.icons.rounded.Snooze
+import androidx.compose.material.icons.rounded.GridView
 import androidx.compose.material.icons.rounded.Vibration
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
@@ -250,7 +251,7 @@ fun AlarmEditRoute(
             onDismissRequest = { if (showMissionSelection) showMissionSelection = false },
             onMissionTypeSelected = { type ->
                 if (showMissionSelection) showMissionSelection = false
-                if (type == MissionType.TYPING) {
+                if (type == MissionType.TYPING || type == MissionType.MEMORY_FIND_COLOR_TILES) {
                     isNavigatingToConfig = true
                     onMissionClick(
                         vn.io.litever.remind.core.model.Mission(
@@ -1243,6 +1244,7 @@ private fun MissionRow(
                 MissionType.MATH -> Icons.Rounded.Calculate
                 MissionType.SHAKE -> Icons.Rounded.Smartphone
                 MissionType.QR_CODE -> Icons.Rounded.QrCodeScanner
+                MissionType.MEMORY_FIND_COLOR_TILES -> Icons.Rounded.GridView
                 else -> Icons.Rounded.Extension
             }
 
@@ -1251,6 +1253,7 @@ private fun MissionRow(
                 MissionType.MATH -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_math)
                 MissionType.SHAKE -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_shake)
                 MissionType.QR_CODE -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_qr_code)
+                MissionType.MEMORY_FIND_COLOR_TILES -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_memory_tiles)
                 else -> mission.type.name
             }
 

@@ -10,11 +10,16 @@ import androidx.compose.runtime.getValue
 import vn.io.litever.remind.core.model.TypingMode
 
 const val typingMissionConfigRoute = "typing_mission_config_route/{alarmId}"
+const val memoryGameConfigRoute = "memory_game_config_route/{alarmId}"
 const val phraseSelectionRoute = "phrase_selection_route/{alarmId}"
 const val missionRingingRoute = "mission_ringing_route/{alarmId}?isPreview={isPreview}"
 
 fun NavController.navigateToTypingMissionConfig(alarmId: Long) {
     this.navigate("typing_mission_config_route/$alarmId")
+}
+
+fun NavController.navigateToMemoryGameConfig(alarmId: Long) {
+    this.navigate("memory_game_config_route/$alarmId")
 }
 
 fun NavController.navigateToPhraseSelection(alarmId: Long) {
@@ -53,6 +58,22 @@ fun NavGraphBuilder.missionGraph(
             initialMode = initialMode,
             onBackClick = onBackClick,
             onNavigateToPhraseSelection = { ids -> onNavigateToPhraseSelection(alarmId, ids) },
+            onSaveMission = onSaveMission
+        )
+    }
+
+    composable(
+        route = memoryGameConfigRoute,
+        arguments = listOf(navArgument("alarmId") { type = NavType.LongType })
+    ) { backStackEntry ->
+        val alarmId = backStackEntry.arguments?.getLong("alarmId") ?: 0L
+        
+        val initialRepetitions = navController.previousBackStackEntry?.savedStateHandle?.get<Int>("repetitions") ?: 1
+        
+        MemoryGameConfigRoute(
+            alarmId = alarmId,
+            initialRepetitions = initialRepetitions,
+            onBackClick = onBackClick,
             onSaveMission = onSaveMission
         )
     }

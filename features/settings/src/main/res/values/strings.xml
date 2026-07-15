@@ -5,6 +5,7 @@
     <string name="time_format_12h">12h</string>
     <string name="time_format_24h">24h</string>
     <string name="appearance_and_color_group">Appearance &amp; Color</string>
+    <string name="display_headline">Display</string>
     <string name="display_mode_headline">Display mode</string>
     <string name="theme_system">System</string>
     <string name="theme_light">Light</string>
@@ -12,6 +13,7 @@
     <string name="color_source_headline">Primary color source</string>
     <string name="color_source_default">Default</string>
     <string name="color_source_wallpaper">Wallpaper</string>
+    <string name="color_source_simple">Simple</string>
     <string name="category_app_settings">App Settings</string>
     <string name="category_general">General</string>
     <string name="category_permissions">Permissions</string>

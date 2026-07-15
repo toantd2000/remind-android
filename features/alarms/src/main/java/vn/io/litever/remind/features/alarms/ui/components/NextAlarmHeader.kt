@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.features.alarms.R
 import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState
 
@@ -19,8 +20,8 @@ fun NextAlarmHeader(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f),
-        shape = MaterialTheme.shapes.extraLarge,
+        color = LiteverTheme.colors.warningContainer.copy(alpha = 0.2f),
+        shape = LiteverTheme.shapes.extraLarge,
         modifier = modifier
             .padding(horizontal = 20.dp, vertical = 6.dp)
             .fillMaxWidth()
@@ -32,14 +33,14 @@ fun NextAlarmHeader(
             Icon(
                 imageVector = Icons.Rounded.Alarm,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
+                tint = LiteverTheme.colors.onWarningContainer.copy(alpha = 0.8f),
                 modifier = Modifier.size(18.dp)
             )
             Spacer(modifier = Modifier.width(10.dp))
             Text(
                 text = formatNextAlarmText(state),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
+                style = LiteverTheme.typography.labelMedium,
+                color = LiteverTheme.colors.onWarningContainer.copy(alpha = 0.8f),
                 fontWeight = FontWeight.SemiBold
             )
         }

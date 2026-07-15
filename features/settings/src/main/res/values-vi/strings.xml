@@ -5,6 +5,7 @@
     <string name="time_format_12h">12h</string>
     <string name="time_format_24h">24h</string>
     <string name="appearance_and_color_group">Giao diện &amp; Màu sắc</string>
+    <string name="display_headline">Hiển thị</string>
     <string name="display_mode_headline">Chế độ hiển thị</string>
     <string name="theme_system">Hệ thống</string>
     <string name="theme_light">Sáng</string>
@@ -12,6 +13,7 @@
     <string name="color_source_headline">Nguồn màu chủ đạo</string>
     <string name="color_source_default">Mặc định</string>
     <string name="color_source_wallpaper">Hình nền</string>
+    <string name="color_source_simple">Đơn giản</string>
     <string name="category_app_settings">Cài đặt ứng dụng</string>
     <string name="category_general">Chung</string>
     <string name="category_permissions">Quyền</string>

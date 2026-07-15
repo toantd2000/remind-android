@@ -24,6 +24,7 @@ import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.model.MissionType
 import vn.io.litever.designsystem.components.LiteverModalBottomSheet
+import vn.io.litever.designsystem.components.LiteverListItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -90,7 +91,7 @@ fun MissionSelectionBottomSheet(
                 items(missionTypes) { item ->
                     val isAvailable = item.isAvailable
 
-                    ListItem(
+                    LiteverListItem(
                         modifier = Modifier
                             .fillMaxWidth()
                             .alpha(if (isAvailable) 1f else 0.5f)

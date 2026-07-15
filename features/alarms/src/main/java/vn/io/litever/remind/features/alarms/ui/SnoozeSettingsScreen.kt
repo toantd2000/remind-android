@@ -10,13 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,10 +27,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import vn.io.litever.designsystem.components.LiteverButton
 import vn.io.litever.designsystem.components.LiteverCard
-import vn.io.litever.designsystem.components.LiteverHorizontalDivider
 import vn.io.litever.designsystem.components.LiteverScaffold
 import vn.io.litever.designsystem.components.LiteverSwitch
 import vn.io.litever.designsystem.components.LiteverTopAppBar
+import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.features.alarms.R
 
@@ -110,9 +106,9 @@ fun SnoozeSettingsScreen(
                 LiteverCard(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                        containerColor = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.3f)
                     ),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
+                    border = BorderStroke(1.dp, LiteverTheme.colors.outlineVariant.copy(alpha = 0.2f))
                 ) {
                     Row(
                         modifier = Modifier
@@ -124,7 +120,7 @@ fun SnoozeSettingsScreen(
                     ) {
                         Text(
                             text = stringResource(R.string.enable_snooze),
-                            style = MaterialTheme.typography.bodyLarge,
+                            style = LiteverTheme.typography.bodyLarge,
                             fontWeight = FontWeight.Bold
                         )
                         LiteverSwitch(
@@ -141,27 +137,24 @@ fun SnoozeSettingsScreen(
                     Column {
                         Text(
                             text = stringResource(R.string.snooze_interval),
-                            style = MaterialTheme.typography.titleSmall,
-                            color = MaterialTheme.colorScheme.primary,
+                            style = LiteverTheme.typography.titleSmall,
+                            color = LiteverTheme.colors.primary,
                             modifier = Modifier.padding(bottom = 12.dp)
                         )
                         LiteverCard(
                             modifier = Modifier.fillMaxWidth(),
                             colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                                containerColor = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.3f)
                             ),
-                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
+                            border = BorderStroke(1.dp, LiteverTheme.colors.outlineVariant.copy(alpha = 0.2f))
                         ) {
                             Column {
-                                intervalOptions.forEachIndexed { index, option ->
+                                intervalOptions.forEach { option ->
                                     SnoozeOptionRow(
                                         label = stringResource(R.string.minutes_unit, option),
                                         isSelected = interval == option,
                                         onClick = { onIntervalChange(option) }
                                     )
-                                    if (index < intervalOptions.size - 1) {
-                                        LiteverHorizontalDivider()
-                                    }
                                 }
                             }
                         }
@@ -173,20 +166,20 @@ fun SnoozeSettingsScreen(
                     Column {
                         Text(
                             text = stringResource(R.string.snooze_repeat),
-                            style = MaterialTheme.typography.titleSmall,
-                            color = MaterialTheme.colorScheme.primary,
+                            style = LiteverTheme.typography.titleSmall,
+                            color = LiteverTheme.colors.primary,
                             modifier = Modifier.padding(bottom = 12.dp)
                         )
                         LiteverCard(
                             modifier = Modifier.fillMaxWidth(),
                             colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                                containerColor = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.3f)
                             ),
-                            shape = MaterialTheme.shapes.medium,
-                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
+                            shape = LiteverTheme.shapes.medium,
+                            border = BorderStroke(1.dp, LiteverTheme.colors.outlineVariant.copy(alpha = 0.2f))
                         ) {
                             Column {
-                                repeatOptions.forEachIndexed { index, option ->
+                                repeatOptions.forEach { option ->
                                     val label = if (option == -1) {
                                         stringResource(R.string.forever)
                                     } else if (option == 1) {
@@ -200,9 +193,6 @@ fun SnoozeSettingsScreen(
                                         isSelected = repeatCount == option,
                                         onClick = { onRepeatCountChange(option) }
                                     )
-                                    if (index < repeatOptions.size - 1) {
-                                        LiteverHorizontalDivider()
-                                    }
                                 }
                             }
                         }
@@ -225,24 +215,51 @@ fun SnoozeOptionRow(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
+        vn.io.litever.designsystem.components.LiteverRadioButton(
+            selected = isSelected,
+            onClick = onClick
+        )
+        Spacer(modifier = Modifier.width(16.dp))
         Text(
             text = label,
-            style = MaterialTheme.typography.bodyLarge,
-            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
+            style = LiteverTheme.typography.bodyLarge,
+            color = LiteverTheme.colors.onSurface
         )
-        if (isSelected) {
-            Icon(
-                imageVector = Icons.Rounded.Check,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(20.dp)
-            )
-        }
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@Composable
+fun SnoozeSettingsScreenPreview() {
+    vn.io.litever.remind.core.designsystem.theme.ReMindTheme {
+        SnoozeSettingsScreen(
+            enabled = true,
+            interval = 5,
+            repeatCount = 3,
+            onEnabledChange = {},
+            onIntervalChange = {},
+            onRepeatCountChange = {},
+            onBackClick = {}
+        )
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun SnoozeSettingsScreenDarkPreview() {
+    vn.io.litever.remind.core.designsystem.theme.ReMindTheme(darkTheme = true) {
+        SnoozeSettingsScreen(
+            enabled = true,
+            interval = 5,
+            repeatCount = 3,
+            onEnabledChange = {},
+            onIntervalChange = {},
+            onRepeatCountChange = {},
+            onBackClick = {}
+        )
     }
 }
 

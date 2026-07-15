@@ -24,9 +24,7 @@ import androidx.compose.material.icons.rounded.PrivacyTip
 import androidx.compose.material.icons.rounded.Security
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.Star
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -44,11 +42,13 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import vn.io.litever.designsystem.components.LiteverAlertDialog
+import vn.io.litever.designsystem.components.LiteverCircularProgressIndicator
 import vn.io.litever.designsystem.components.LiteverDialog
 import vn.io.litever.designsystem.components.LiteverScaffold
 import vn.io.litever.designsystem.components.LiteverSettingsGroup
 import vn.io.litever.designsystem.components.LiteverSettingsItem
 import vn.io.litever.designsystem.components.LiteverTopAppBar
+import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.ads.api.AdPlacement
 import vn.io.litever.remind.core.ads.api.AdState
 import vn.io.litever.remind.core.ads.api.LocalAdManager
@@ -346,13 +346,13 @@ fun SettingsScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    CircularProgressIndicator(
-                        color = MaterialTheme.colorScheme.primary,
+                    LiteverCircularProgressIndicator(
+                        color = LiteverTheme.colors.primary,
                         modifier = Modifier.size(48.dp)
                     )
                     Text(
                         text = loadingAdMessage,
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = LiteverTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center
                     )
                 }
@@ -392,8 +392,8 @@ fun RewardedAdSimulatorDialog(
 
     androidx.compose.ui.window.Dialog(onDismissRequest = {}) {
         androidx.compose.material3.Surface(
-            shape = MaterialTheme.shapes.medium,
-            color = MaterialTheme.colorScheme.surface,
+            shape = LiteverTheme.shapes.medium,
+            color = LiteverTheme.colors.surface,
             tonalElevation = 6.dp,
             modifier = Modifier
                 .fillMaxWidth()
@@ -403,22 +403,22 @@ fun RewardedAdSimulatorDialog(
                 modifier = Modifier.padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                CircularProgressIndicator(
-                    color = MaterialTheme.colorScheme.primary,
+                LiteverCircularProgressIndicator(
+                    color = LiteverTheme.colors.primary,
                     modifier = Modifier.padding(16.dp)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = rewardAdLoadingText,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = LiteverTheme.typography.titleMedium,
                     fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = LiteverTheme.colors.onSurface
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = watchAdDialogMessage,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = LiteverTheme.typography.bodySmall,
+                    color = LiteverTheme.colors.onSurfaceVariant,
                     textAlign = TextAlign.Center
                 )
             }

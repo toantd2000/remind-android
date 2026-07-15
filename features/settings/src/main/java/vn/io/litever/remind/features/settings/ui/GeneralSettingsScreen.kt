@@ -1,16 +1,17 @@
 package vn.io.litever.remind.features.settings.ui
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.LightMode
-import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.SettingsBrightness
-import androidx.compose.material.icons.rounded.Wallpaper
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -22,11 +23,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import vn.io.litever.designsystem.components.LiteverListItem
+import vn.io.litever.designsystem.components.LiteverRadioButton
 import vn.io.litever.designsystem.components.LiteverScaffold
 import vn.io.litever.designsystem.components.LiteverSegmentedButton
 import vn.io.litever.designsystem.components.LiteverSettingsGroup
 import vn.io.litever.designsystem.components.LiteverSingleChoiceSegmentedButtonRow
 import vn.io.litever.designsystem.components.LiteverTopAppBar
+import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.features.settings.R
 
 @Composable
@@ -95,9 +99,15 @@ fun GeneralSettingsScreen(
                 }
             }
 
-            // Display Mode Group
+            // Display Group
             item {
-                LiteverSettingsGroup(title = stringResource(R.string.display_mode_headline)) {
+                LiteverSettingsGroup(title = stringResource(R.string.display_headline)) {
+                    Text(
+                        text = stringResource(R.string.display_mode_headline),
+                        style = LiteverTheme.typography.titleSmall,
+                        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp)
+                    )
+
                     val options = listOf(
                         "SYSTEM" to stringResource(R.string.theme_system),
                         "LIGHT" to stringResource(R.string.theme_light),
@@ -108,7 +118,7 @@ fun GeneralSettingsScreen(
                     LiteverSingleChoiceSegmentedButtonRow(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp)
+                            .padding(horizontal = 16.dp)
                     ) {
                         options.forEachIndexed { index, pair ->
                             LiteverSegmentedButton(
@@ -127,36 +137,43 @@ fun GeneralSettingsScreen(
                             )
                         }
                     }
-                }
-            }
 
-            // Color Source Group
-            item {
-                LiteverSettingsGroup(title = stringResource(R.string.color_source_headline)) {
-                    val colorOptions = listOf(
-                        "DEFAULT" to stringResource(R.string.color_source_default),
-                        "DYNAMIC" to stringResource(R.string.color_source_wallpaper)
+                    Spacer(Modifier.height(LiteverTheme.spacing.medium))
+
+                    Text(
+                        text = stringResource(R.string.color_source_headline),
+                        style = LiteverTheme.typography.titleSmall,
+                        modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
                     )
 
-                    LiteverSingleChoiceSegmentedButtonRow(
+                    val colorOptions = listOf(
+                        "DEFAULT" to stringResource(R.string.color_source_default),
+                        "DYNAMIC" to stringResource(R.string.color_source_wallpaper),
+                        "SIMPLE" to stringResource(R.string.color_source_simple)
+                    )
+
+                    androidx.compose.foundation.layout.Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp)
+                            .padding(bottom = 8.dp)
                     ) {
-                        colorOptions.forEachIndexed { _, pair ->
-                            LiteverSegmentedButton(
-                                selected = uiState.colorPalette == pair.first,
-                                onClick = { onColorPaletteChange(pair.first) },
-                                icon = {
-                                    SegmentedButtonDefaults.Icon(active = uiState.colorPalette == pair.first) {
-                                        Icon(
-                                            imageVector = if (pair.first == "DYNAMIC") Icons.Rounded.Wallpaper else Icons.Rounded.Palette,
-                                            contentDescription = pair.second,
-                                            modifier = Modifier.size(SegmentedButtonDefaults.IconSize)
+                        colorOptions.forEach { pair ->
+                            LiteverListItem(
+                                headlineContent = {
+                                    Text(
+                                        text = pair.second,
+                                        style = LiteverTheme.typography.bodyLarge.copy(
+                                            fontWeight = androidx.compose.ui.text.font.FontWeight.Medium
                                         )
-                                    }
+                                    )
                                 },
-                                label = { Text(pair.second) }
+                                leadingContent = {
+                                    LiteverRadioButton(
+                                        selected = uiState.colorPalette == pair.first,
+                                        onClick = { onColorPaletteChange(pair.first) }
+                                    )
+                                },
+                                modifier = Modifier.clickable { onColorPaletteChange(pair.first) }
                             )
                         }
                     }

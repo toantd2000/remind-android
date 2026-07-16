@@ -542,9 +542,23 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
 - **Quyết định:** Bật `buildConfig = true` trong block `buildFeatures` của file `app/build.gradle.kts`.
 - **Hệ quả:** Cho phép truy cập vào class `BuildConfig` được tạo tự động để kiểm tra các flag như `DEBUG`, giúp thực hiện các logic có điều kiện theo loại build (build variant).
 
+### [TDR-060] - Áp dụng Bảng màu Material 3 đầy đủ (Amber, Brown, Green)
+- **Ngày thực hiện:** 2026-06-11
+- **Trạng thái:** Accepted
+- **Bối cảnh:** Cần áp dụng bộ màu Material 3 đầy đủ bao gồm các token background, surface, outline để đảm bảo giao diện nhất quán trên toàn bộ ứng dụng.
+- **Quyết định:**
+    - Cập nhật thông số Hex cho toàn bộ các token màu Material 3 (trừ Error, Success, Warning).
+    - Sử dụng bảng màu phối hợp: Amber (Primary), Brown (Secondary), và Green (Tertiary).
+    - Bổ sung các token `background`, `surface`, `outline`, `inverseSurface`, `surfaceContainer` để tối ưu giao diện Edge-to-Edge.
+- **Hệ quả:** Giao diện ứng dụng đạt độ hoàn thiện cao về mặt thẩm mỹ và khả năng tiếp cận (Accessibility), hỗ trợ tốt các thành phần UI phức tạp của Material 3.
+
 ---
 
 ## 🛠 Changelog (Tính năng mới)
+
+### [2026-06-11]
+- **Design System:** Áp dụng bảng màu Material 3 đầy đủ (30+ tokens) mang phong cách Amber, Brown, Green tự nhiên và ấm áp.
+- **Design System:** Loại bỏ phụ thuộc vào `TailwindColors` và chuyển đổi Logo colors sang mã màu hex trực tiếp.
 
 ### [2026-06-10]
 - **Infra:** Khắc phục lỗi `Unresolved reference BuildConfig` bằng cách kích hoạt `buildConfig` trong module `:app`.

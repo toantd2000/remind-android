@@ -41,7 +41,6 @@ import vn.io.litever.designsystem.components.LiteverCard
 import vn.io.litever.designsystem.components.LiteverTextButton
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
-import vn.io.litever.remind.core.designsystem.theme.TailwindColors
 import vn.io.litever.remind.core.model.AiAnalysis
 import vn.io.litever.remind.core.model.CurrentWeather
 import vn.io.litever.remind.core.model.DailySummary
@@ -67,10 +66,10 @@ fun WeatherInfoView(
 @Composable
 private fun getWeatherColors(temp: Double, isDay: Int): List<Color> {
     return when {
-        temp < 15 -> listOf(TailwindColors.Sky.c300, TailwindColors.Cyan.c200)    // Cold
-        temp < 25 -> listOf(TailwindColors.Emerald.c300, TailwindColors.Green.c100) // Mild
-        temp < 32 -> listOf(TailwindColors.Amber.c200, TailwindColors.Amber.c50)   // Warm
-        else -> listOf(TailwindColors.Orange.c300, TailwindColors.Rose.c100)       // Hot
+        temp < 15 -> listOf(Color(0xFF7DD3FC), Color(0xFFA5F3FC))    // Cold (Sky 300, Cyan 200)
+        temp < 25 -> listOf(Color(0xFF6EE7B7), Color(0xFFDCFCE7))    // Mild
+        temp < 32 -> listOf(Color(0xFFFDE68A), Color(0xFFFFFBEB))    // Warm (Amber 200, 50)
+        else -> listOf(Color(0xFFFDBA74), Color(0xFFFFE4E6))         // Hot (Orange 300, Rose 100)
     }
 }
 

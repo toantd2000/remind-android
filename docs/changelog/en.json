@@ -1,0 +1,103 @@
+[
+  {
+    "versionName": "1.1.7",
+    "date": "2026-07-15",
+    "isLatest": true,
+    "notes": [
+      "Fixed incorrect language localization in time picker dialogs.",
+      "Standardized system colors and setting icons.",
+      "Optimized bottom bar layout and button dimensions.",
+      "Updated Android Gradle Plugin (AGP) and cleaned up codebase."
+    ]
+  },
+  {
+    "versionName": "1.1.6",
+    "date": "2026-05-30",
+    "isLatest": false,
+    "notes": [
+      "Added smooth item placement animations in the alarm list.",
+      "Fixed visual bugs and click animation on alarm cards.",
+      "Fixed localization bug where Dialogs showed the wrong language.",
+      "Refactored Update History screen to align with the new design system."
+    ]
+  },
+  {
+    "versionName": "1.1.5",
+    "date": "2026-05-20",
+    "isLatest": false,
+    "notes": [
+      "Implemented Rewarded Ads to temporarily remove ads.",
+      "Upgraded button designs and reorganized Settings screen.",
+      "Fixed Navigation crash on app launch.",
+      "Fixed issue where ringing screen wouldn't wake up after snoozing.",
+      "Updated notification content and Audio Focus logic for better stability."
+    ]
+  },
+  {
+    "versionName": "1.1.4",
+    "date": "2026-05-12",
+    "isLatest": false,
+    "notes": [
+      "Added confirmation dialog when exiting the app.",
+      "Improved Typing Mission UI with cognitive reinforcement.",
+      "Draft support for alarm creation to prevent data loss.",
+      "Fixed mission duplication bug when cloning alarms.",
+      "Enhanced multi-language support and system performance."
+    ]
+  },
+  {
+    "versionName": "1.1.3",
+    "date": "2026-05-09",
+    "isLatest": false,
+    "notes": [
+      "Real-time AI status tracking for weather and reminder hints.",
+      "Smart refresh mechanism when AI is processing.",
+      "Automatic location detection for precise weather forecasts.",
+      "Grouped reminders into a single card for better focus.",
+      "New Attributions screen to credit open-source resources."
+    ]
+  },
+  {
+    "versionName": "1.1.2",
+    "date": "2026-05-07",
+    "isLatest": false,
+    "notes": [
+      "Custom Ringtone Selection: Pick any audio file as your alarm sound.",
+      "Uses SAF for file access without requiring storage permissions.",
+      "Fixed skipped alarms showing incorrect status when powered off.",
+      "Automatically cleans up 'Skip once' status after it has passed."
+    ]
+  },
+  {
+    "versionName": "1.1.1",
+    "date": "2026-05-05",
+    "isLatest": false,
+    "notes": [
+      "Fixed repeating alarms failing to reschedule after snooze/dismissal.",
+      "Improved alarm restoration reliability after device reboot."
+    ]
+  },
+  {
+    "versionName": "1.1.0",
+    "date": "2026-05-03",
+    "isLatest": false,
+    "notes": [
+      "Integrated AdMob (Native Ads) for optimized experience.",
+      "Edge-to-edge support & Android 15 compliance.",
+      "Improved Missed Alarm handling mechanism.",
+      "Optimized audio, Audio Focus, and ringtones.",
+      "Upgraded Design System."
+    ]
+  },
+  {
+    "versionName": "1.0.0",
+    "date": "2026-04-26",
+    "isLatest": false,
+    "notes": [
+      "Welcome to ReMind: Minimalist & Accurate.",
+      "Flexible alarm management, gentle wake-up.",
+      "Mission challenges to ensure you wake up.",
+      "Material 3 interface, multi-language support (VI/EN)."
+    ]
+  }
+]

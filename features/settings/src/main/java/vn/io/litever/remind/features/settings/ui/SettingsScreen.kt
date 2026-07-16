@@ -63,7 +63,6 @@ fun SettingsRoute(
     onNavigateToPermissions: () -> Unit,
     onNavigateToAlarmSettings: () -> Unit,
     onNavigateToLicenses: () -> Unit,
-    onNavigateToUpdateHistory: () -> Unit,
     onNavigateToAttributions: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
@@ -76,7 +75,6 @@ fun SettingsRoute(
         onNavigateToPermissions = onNavigateToPermissions,
         onNavigateToAlarmSettings = onNavigateToAlarmSettings,
         onNavigateToLicenses = onNavigateToLicenses,
-        onNavigateToUpdateHistory = onNavigateToUpdateHistory,
         onNavigateToAttributions = onNavigateToAttributions,
         onRewardGranted = { viewModel.disableAdsFor24Hours(context) }
     )
@@ -91,7 +89,6 @@ fun SettingsScreen(
     onNavigateToPermissions: () -> Unit,
     onNavigateToAlarmSettings: () -> Unit,
     onNavigateToLicenses: () -> Unit,
-    onNavigateToUpdateHistory: () -> Unit,
     onNavigateToAttributions: () -> Unit,
     onRewardGranted: () -> Unit
 ) {
@@ -212,7 +209,7 @@ fun SettingsScreen(
                     LiteverSettingsItem(
                         title = stringResource(R.string.setting_history),
                         icon = Icons.Rounded.Code,
-                        onClick = onNavigateToUpdateHistory
+                        onClick = { launchCustomTab(context, BuildConfig.URL_CHANGELOG) }
                     )
 
                     LiteverSettingsItem(
@@ -469,12 +466,14 @@ private fun shareApp(context: Context) {
 }
 
 private fun launchCustomTab(context: Context, url: String) {
+    val lang = java.util.Locale.getDefault().language
+    val finalUrl = if (url.contains("?")) "$url&lang=$lang" else "$url?lang=$lang"
     try {
         val customTabsIntent = CustomTabsIntent.Builder().build()
-        customTabsIntent.launchUrl(context, url.toUri())
+        customTabsIntent.launchUrl(context, finalUrl.toUri())
     } catch (e: Exception) {
         // Fallback to regular browser if Custom Tabs fails
-        val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+        val intent = Intent(Intent.ACTION_VIEW, finalUrl.toUri())
         context.startActivity(intent)
     }
 }

@@ -11,7 +11,6 @@ const val qaRoute = "qa_route"
 const val permissionsRoute = "permissions_route"
 const val alarmSettingsRoute = "alarm_settings_route"
 const val licensesRoute = "licenses_route"
-const val updateHistoryRoute = "update_history_route"
 const val attributionsRoute = "attributions_route"
 
 
@@ -39,10 +38,6 @@ fun NavController.navigateToLicenses() {
     this.navigate(licensesRoute)
 }
 
-fun NavController.navigateToUpdateHistory() {
-    this.navigate(updateHistoryRoute)
-}
-
 fun NavController.navigateToAttributions() {
     this.navigate(attributionsRoute)
 }
@@ -54,7 +49,6 @@ fun NavGraphBuilder.settingsGraph(
     onNavigateToPermissions: () -> Unit,
     onNavigateToAlarmSettings: () -> Unit,
     onNavigateToLicenses: () -> Unit,
-    onNavigateToUpdateHistory: () -> Unit,
     onNavigateToAttributions: () -> Unit,
     onNavigateBack: () -> Unit
 ) {
@@ -66,7 +60,6 @@ fun NavGraphBuilder.settingsGraph(
             onNavigateToPermissions = onNavigateToPermissions,
             onNavigateToAlarmSettings = onNavigateToAlarmSettings,
             onNavigateToLicenses = onNavigateToLicenses,
-            onNavigateToUpdateHistory = onNavigateToUpdateHistory,
             onNavigateToAttributions = onNavigateToAttributions
         )
     }
@@ -97,12 +90,6 @@ fun NavGraphBuilder.settingsGraph(
 
     composable(licensesRoute) {
         LicensesScreen(
-            onNavigateBack = onNavigateBack
-        )
-    }
-
-    composable(updateHistoryRoute) {
-        UpdateHistoryScreen(
             onNavigateBack = onNavigateBack
         )
     }

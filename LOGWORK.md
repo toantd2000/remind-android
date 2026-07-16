@@ -728,3 +728,13 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
 - **UI:** Thêm Gradient overlay phía dưới danh sách để làm nổi bật nút Lưu.
 - **UX:** Thêm cơ chế tự động cuộn đến item đang edit khi bàn phím hiện lên.
 - **Logic:** Xử lý post-trigger tự động Reschedule báo thức tuần hoàn ngay sau khi chuông reo.
+
+### [TDR-056] - Di chuyển Changelog thành tài liệu web nội bộ
+- **Ngày thực hiện:** 2026-07-16
+- **Trạng thái:** Accepted
+- **Bối cảnh:** Việc nhúng file changelog.json vào assets làm tăng kích thước bản build và khó cập nhật nội dung tức thời.
+- **Quyết định:**
+  - Xóa file changelog.json khỏi assets.
+  - Tách thành en.json và i.json đặt tại thư mục docs/changelog.
+  - Mở changelog thông qua web URL (sử dụng Custom Tabs) tương tự Term & Privacy, kèm theo tham số ?lang= để tự động chuyển ngôn ngữ.
+- **Hệ quả:** Giảm nhẹ dung lượng ứng dụng, đồng nhất cơ chế hiển thị tài liệu điều khoản và tăng tính linh hoạt khi cập nhật phiên bản.

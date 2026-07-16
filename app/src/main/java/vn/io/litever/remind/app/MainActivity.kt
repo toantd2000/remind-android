@@ -73,7 +73,6 @@ import vn.io.litever.remind.features.settings.ui.navigateToGeneralSettings
 import vn.io.litever.remind.features.settings.ui.navigateToLicenses
 import vn.io.litever.remind.features.settings.ui.navigateToPermissions
 import vn.io.litever.remind.features.settings.ui.navigateToQA
-import vn.io.litever.remind.features.settings.ui.navigateToUpdateHistory
 import vn.io.litever.remind.features.settings.ui.settingsGraph
 import vn.io.litever.remind.features.settings.ui.settingsRoute
 import java.util.Locale
@@ -468,7 +467,6 @@ class MainActivity : ComponentActivity() {
                                             onNavigateToPermissions = { navController.navigateToPermissions() },
                                             onNavigateToAlarmSettings = { navController.navigateToAlarmSettings() },
                                             onNavigateToLicenses = { navController.navigateToLicenses() },
-                                            onNavigateToUpdateHistory = { navController.navigateToUpdateHistory() },
                                             onNavigateToAttributions = { navController.navigateToAttributions() },
                                             onNavigateBack = { navController.popBackStack() }
 

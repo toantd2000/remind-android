@@ -23,8 +23,8 @@ fun MissionEntity.toModel(): Mission {
             when (dto) {
                 is MissionConfigDto.Typing -> TypingMissionConfig(dto.selectedPhraseIds)
                 is MissionConfigDto.Math -> MathMissionConfig(dto.difficulty)
-            } as MissionConfig
-        } catch (e: Exception) {
+            }
+        } catch (_: Exception) {
             null
         }
     }
@@ -44,9 +44,8 @@ fun Mission.toEntity(): MissionEntity {
         val dto = when (configModel) {
             is TypingMissionConfig -> MissionConfigDto.Typing(configModel.selectedPhraseIds)
             is MathMissionConfig -> MissionConfigDto.Math(configModel.difficulty)
-            else -> null
         }
-        dto?.let { json.encodeToString(MissionConfigDto.serializer(), it) }
+        dto.let { json.encodeToString(MissionConfigDto.serializer(), it) }
     }
     
     return MissionEntity(

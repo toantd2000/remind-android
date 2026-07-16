@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import vn.io.litever.designsystem.components.LiteverTopAppBar
 import vn.io.litever.remind.core.model.LocationSearchResponse
 import vn.io.litever.remind.features.remind.R

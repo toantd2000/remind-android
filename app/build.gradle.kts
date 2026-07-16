@@ -24,13 +24,13 @@ android {
     namespace = "vn.io.litever.remind.app"
 
     compileSdk {
-        version = release(36)
+        version = release(37)
     }
 
     defaultConfig {
         applicationId = "vn.io.litever.remind"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 37
         versionCode = libs.versions.app.versionCode.get().toInt()
         versionName = libs.versions.app.versionName.get()
 
@@ -51,6 +51,7 @@ android {
         }
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
             manifestPlaceholders["crashlyticsCollectionEnabled"] = "true"
             signingConfig = signingConfigs.getByName("release")
             proguardFiles(
@@ -73,7 +74,7 @@ android {
         viewBinding = false
         buildConfig = true
     }
-    buildToolsVersion = "36.0.0"
+    buildToolsVersion = "37.0.0"
 }
 
 dependencies {

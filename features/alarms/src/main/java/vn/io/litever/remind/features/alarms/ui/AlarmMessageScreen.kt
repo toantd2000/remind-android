@@ -15,7 +15,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.Alarm
 import vn.io.litever.remind.features.alarms.viewmodel.AlarmRingingViewModel
@@ -31,6 +30,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import android.app.Activity
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import vn.io.litever.designsystem.components.LiteverButton
 import vn.io.litever.designsystem.components.LiteverScaffold
 import vn.io.litever.remind.core.designsystem.components.ReminderInfoView

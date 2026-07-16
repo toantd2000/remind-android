@@ -77,6 +77,7 @@ import vn.io.litever.remind.features.settings.ui.settingsGraph
 import vn.io.litever.remind.features.settings.ui.settingsRoute
 import java.util.Locale
 import javax.inject.Inject
+import vn.io.litever.designsystem.components.LiteverScaffold
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -278,8 +279,7 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
 
-                            Scaffold(
-                                contentWindowInsets = WindowInsets(0, 0, 0, 0),
+                            LiteverScaffold(
                                 bottomBar = {
                                     val navBackStackEntry by navController.currentBackStackEntryAsState()
                                     val currentRoute = navBackStackEntry?.destination?.route

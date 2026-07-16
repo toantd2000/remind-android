@@ -51,7 +51,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import vn.io.litever.designsystem.components.LiteverButton
 import vn.io.litever.designsystem.components.LiteverOutlinedButton
 import vn.io.litever.designsystem.theme.LiteverTheme
@@ -361,7 +361,7 @@ fun AlarmRingingContent(
                     }
                 }
 
-                if (!alarm?.label.isNullOrBlank()) {
+                if (alarm.label.isNotBlank()) {
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = alarm.label,
@@ -499,7 +499,7 @@ fun AlarmRingingContent(
 
                 LiteverButton(
                     onClick = {
-                        val hasMission = (alarm?.missions?.isNotEmpty() == true)
+                        val hasMission = (alarm.missions.isNotEmpty())
                         if (hasMission) {
                             onStartMission()
                         } else {
@@ -511,7 +511,7 @@ fun AlarmRingingContent(
                         .height(52.dp)
                         .offset { androidx.compose.ui.unit.IntOffset(x = shakeOffset.dp.roundToPx(), y = 0) } // Áp dụng hiệu ứng rung
                 ) {
-                    val hasMission = (alarm?.missions?.isNotEmpty() == true)
+                    val hasMission = (alarm.missions.isNotEmpty())
                     val dismissText = if (hasMission) {
                         stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_start)
                     } else {

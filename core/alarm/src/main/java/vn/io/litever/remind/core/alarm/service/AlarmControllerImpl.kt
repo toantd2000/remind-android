@@ -27,7 +27,8 @@ class AlarmControllerImpl @Inject constructor(
     private val alarmRingManager: AlarmRingManager,
     private val alarmRepository: AlarmRepository,
     private val alarmScheduler: AlarmScheduler,
-    private val missedAlarmRepository: MissedAlarmRepository
+    private val missedAlarmRepository: MissedAlarmRepository,
+    private val analyticsLogger: vn.io.litever.remind.core.analytics.AnalyticsLogger
 ) : AlarmController {
 
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -41,6 +42,10 @@ class AlarmControllerImpl @Inject constructor(
                 if (alarm != null) {
                     alarmScheduler.cancelSnooze(alarm)
                     
+                    analyticsLogger.logEvent("alarm_dismissed", mapOf(
+                        "alarm_id" to alarm.id
+                    ))
+
                     val updatedAlarm = alarm.copy(
                         currentSnoozeCount = 0,
                         snoozeNextTriggerTime = null
@@ -64,6 +69,11 @@ class AlarmControllerImpl @Inject constructor(
             if (alarm != null && alarm.snoozeEnabled && alarm.currentSnoozeCount < alarm.snoozeRepeatCount) {
                 val interval = if (alarm.snoozeInterval > 0) alarm.snoozeInterval else 5
                 val triggerTime = System.currentTimeMillis() + interval * 60 * 1000L
+
+                analyticsLogger.logEvent("alarm_snoozed", mapOf(
+                    "alarm_id" to alarm.id,
+                    "snooze_count" to alarm.currentSnoozeCount + 1
+                ))
 
                 val updatedAlarm = alarm.copy(
                     currentSnoozeCount = alarm.currentSnoozeCount + 1,

@@ -57,6 +57,9 @@ class AlarmService : Service() {
     @Inject
     lateinit var audioPlayer: AudioPlayer
 
+    @Inject
+    lateinit var analyticsLogger: vn.io.litever.remind.core.analytics.AnalyticsLogger
+
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var autoSilenceJob: Job? = null
     
@@ -185,6 +188,24 @@ class AlarmService : Service() {
     }
 
     private fun startRinging(alarm: Alarm) {
+        val missionTypes = alarm.missions.joinToString(",") { it.type.name }
+        val missionRepeatCounts = alarm.missions.joinToString(",") { it.repeatCount.toString() }
+        val isSnoozed = alarm.currentSnoozeCount > 0
+
+        analyticsLogger.logEvent("alarm_fired", mapOf(
+            "alarm_id" to alarm.id,
+            "ringtone" to (alarm.ringtoneUri ?: "default"),
+            "is_vibrate" to alarm.vibrationEnabled,
+            "volume" to alarm.volume,
+            "is_snoozed" to isSnoozed,
+            "snooze_count" to alarm.currentSnoozeCount,
+            "snooze_interval" to alarm.snoozeInterval,
+            "snooze_repeat_count" to alarm.snoozeRepeatCount,
+            "auto_silence_minutes" to alarm.autoSilenceMinutes,
+            "gradual_volume_duration" to alarm.gradualVolumeDurationSeconds,
+            "mission_types" to missionTypes,
+            "mission_repeat_counts" to missionRepeatCounts
+        ))
         val uri = getAccessibleRingtoneUri(this@AlarmService, alarm.ringtoneUri)
         audioPlayer.play(
             uri = uri,

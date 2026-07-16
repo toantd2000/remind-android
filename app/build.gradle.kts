@@ -71,6 +71,7 @@ android {
     buildFeatures {
         compose = true
         viewBinding = false
+        buildConfig = true
     }
     buildToolsVersion = "36.0.0"
 }
@@ -90,6 +91,7 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:ads:api"))
     implementation(project(":core:ads:impl"))
+    implementation(project(":core:analytics"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)

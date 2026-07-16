@@ -535,9 +535,19 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
   - Áp dụng quy tắc màu sắc tương phản: Khi background là `primaryContainer`, tint icon bắt buộc phải là `onPrimaryContainer`.
 - **Hệ quả:** Mã nguồn gọn gàng, dễ bảo trì. Giao diện nhất quán và đạt chuẩn độ tương phản cao, giúp người dùng dễ dàng nhận diện trạng thái Kích hoạt/Vô hiệu của các thiết lập.
 
+### [TDR-059] - Kích hoạt buildConfig trong module :app
+- **Ngày thực hiện:** 2026-06-10
+- **Trạng thái:** Accepted
+- **Bối cảnh:** Kể từ AGP 8.0+, `buildConfig` bị vô hiệu hóa mặc định để tối ưu tốc độ build. Dự án gặp lỗi `Unresolved reference 'BuildConfig'` trong `ReMindApplication.kt`.
+- **Quyết định:** Bật `buildConfig = true` trong block `buildFeatures` của file `app/build.gradle.kts`.
+- **Hệ quả:** Cho phép truy cập vào class `BuildConfig` được tạo tự động để kiểm tra các flag như `DEBUG`, giúp thực hiện các logic có điều kiện theo loại build (build variant).
+
 ---
 
 ## 🛠 Changelog (Tính năng mới)
+
+### [2026-06-10]
+- **Infra:** Khắc phục lỗi `Unresolved reference BuildConfig` bằng cách kích hoạt `buildConfig` trong module `:app`.
 
 ### [2026-06-01]
 - **Design System:** Chuẩn hóa bảng màu Tailwind CSS toàn diện (`TailwindColors.kt`).

@@ -5,8 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "vn.io.litever.remind.core.alarm"
-
+    namespace = "vn.io.litever.remind.core.analytics"
     compileSdk {
         version = release(36)
     }
@@ -20,25 +19,15 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-
-    buildFeatures {
-        viewBinding = false
-    }
 }
 
 dependencies {
-    implementation(project(":core:model"))
-    implementation(project(":core:domain"))
-    implementation(project(":core:common"))
-    implementation(project(":core:datastore"))
-    implementation(project(":core:analytics"))
-
     implementation(libs.androidx.core.ktx)
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
-
-    testImplementation(libs.junit)
-    testImplementation(libs.mockk)
-    testImplementation(libs.turbine)
-    testImplementation(libs.kotlinx.coroutines.test)
+    implementation(project(":core:common"))
 }

@@ -22,7 +22,8 @@ class MissionRingingViewModel @Inject constructor(
     private val alarmRepository: AlarmRepository,
     private val alarmController: AlarmController,
     private val alarmRingManager: AlarmRingManager,
-    private val draftAlarmStore: DraftAlarmStore
+    private val draftAlarmStore: DraftAlarmStore,
+    private val analyticsLogger: vn.io.litever.remind.core.analytics.AnalyticsLogger
 ) : ViewModel() {
     private val MISSION_TIMEOUT_SECONDS = 30
 
@@ -163,6 +164,11 @@ class MissionRingingViewModel @Inject constructor(
     private fun onMissionCompleted() {
         val state = _uiState.value
         viewModelScope.launch {
+            analyticsLogger.logEvent("mission_completed", mapOf(
+                "alarm_id" to alarmId,
+                "mission_type" to (state.currentMission?.type?.name ?: "UNKNOWN")
+            ))
+
             // Show "Complete" for 1 second
             _uiState.update { it.copy(isMissionJustCompleted = true) }
             delay(1000L)

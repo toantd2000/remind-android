@@ -9,7 +9,7 @@ android {
     namespace = "vn.io.litever.remind.features.alarms"
 
     compileSdk {
-        version = release(36)
+        version = release(37)
     }
 
     defaultConfig {

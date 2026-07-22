@@ -9,7 +9,7 @@ plugins {
 android {
     namespace = "vn.io.litever.remind.core.ads.api"
 
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 26

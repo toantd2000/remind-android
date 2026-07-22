@@ -11,7 +11,7 @@ android {
     namespace = "vn.io.litever.remind.features.settings"
 
     compileSdk {
-        version = release(36)
+        version = release(37)
     }
 
     defaultConfig {

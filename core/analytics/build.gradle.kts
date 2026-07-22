@@ -7,7 +7,7 @@ plugins {
 android {
     namespace = "vn.io.litever.remind.core.analytics"
     compileSdk {
-        version = release(36)
+        version = release(37)
     }
 
     defaultConfig {

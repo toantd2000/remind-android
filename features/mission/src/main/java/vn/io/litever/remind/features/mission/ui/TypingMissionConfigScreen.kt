@@ -23,6 +23,8 @@ import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +32,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -54,6 +57,7 @@ import vn.io.litever.remind.core.model.Mission
 import vn.io.litever.remind.core.model.MissionType
 import vn.io.litever.remind.core.model.Phrase
 import vn.io.litever.remind.core.model.TypingMissionConfig
+import vn.io.litever.remind.core.model.TypingMode
 import vn.io.litever.remind.features.mission.viewmodel.TypingMissionConfigViewModel
 
 
@@ -62,12 +66,14 @@ fun TypingMissionConfigRoute(
     alarmId: Long,
     initialRepetitions: Int = 1,
     initialSelectedPhraseIds: List<Long> = emptyList(),
+    initialMode: TypingMode = TypingMode.NORMAL,
     onBackClick: () -> Unit,
     onNavigateToPhraseSelection: (List<Long>) -> Unit,
     onSaveMission: (Mission) -> Unit,
     viewModel: TypingMissionConfigViewModel = hiltViewModel()
 ) {
     var repetitions by rememberSaveable { mutableIntStateOf(initialRepetitions) }
+    var mode by rememberSaveable { mutableStateOf(initialMode) }
     val selectedPhrases by viewModel.selectedPhrases.collectAsState()
     
     LaunchedEffect(initialSelectedPhraseIds) {
@@ -77,8 +83,10 @@ fun TypingMissionConfigRoute(
     TypingMissionConfigScreen(
         repetitions = repetitions,
         selectedPhrases = selectedPhrases,
+        mode = mode,
         onBackClick = onBackClick,
         onRepetitionsChange = { repetitions = it },
+        onModeChange = { mode = it },
         onNavigateToPhraseSelection = { onNavigateToPhraseSelection(initialSelectedPhraseIds) },
         onSave = {
             onSaveMission(
@@ -87,7 +95,7 @@ fun TypingMissionConfigRoute(
                     type = MissionType.TYPING,
                     order = 0, // Will be set by the caller
                     repeatCount = repetitions,
-                    config = TypingMissionConfig(initialSelectedPhraseIds)
+                    config = TypingMissionConfig(initialSelectedPhraseIds, mode)
                 )
             )
         }
@@ -99,8 +107,10 @@ fun TypingMissionConfigRoute(
 fun TypingMissionConfigScreen(
     repetitions: Int,
     selectedPhrases: List<Phrase>,
+    mode: TypingMode,
     onBackClick: () -> Unit,
     onRepetitionsChange: (Int) -> Unit,
+    onModeChange: (TypingMode) -> Unit,
     onNavigateToPhraseSelection: () -> Unit,
     onSave: () -> Unit
 ) {
@@ -308,6 +318,64 @@ fun TypingMissionConfigScreen(
                 modifier = Modifier.padding(top = 8.dp, start = 8.dp)
             )
 
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Section 3: Modes
+            Text(
+                text = stringResource(vn.io.litever.remind.core.designsystem.R.string.typing_mode),
+                style = LiteverTheme.typography.labelLarge.copy(
+                    fontWeight = FontWeight.SemiBold,
+                    color = LiteverTheme.colors.primary,
+                    letterSpacing = 1.sp
+                )
+            )
+            
+            Spacer(modifier = Modifier.height(12.dp))
+
+            LiteverCard(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = LiteverTheme.colors.surface),
+                border = androidx.compose.foundation.BorderStroke(1.dp, LiteverTheme.colors.outlineVariant.copy(alpha = 0.5f)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    val modes = listOf(
+                        TypingMode.NORMAL to stringResource(vn.io.litever.remind.core.designsystem.R.string.typing_mode_normal),
+                        TypingMode.SHUFFLE_WORDS to stringResource(vn.io.litever.remind.core.designsystem.R.string.typing_mode_shuffle_words),
+                        TypingMode.SHUFFLE_CHARS to stringResource(vn.io.litever.remind.core.designsystem.R.string.typing_mode_shuffle_chars)
+                    )
+
+                    modes.forEachIndexed { index, (m, label) ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { onModeChange(m) }
+                                .padding(horizontal = 12.dp, vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = mode == m,
+                                onClick = { onModeChange(m) },
+                                colors = RadioButtonDefaults.colors(selectedColor = LiteverTheme.colors.primary)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = label,
+                                style = LiteverTheme.typography.bodyLarge,
+                                color = LiteverTheme.colors.onSurface
+                            )
+                        }
+                        if (index < modes.lastIndex) {
+                            androidx.compose.material3.Divider(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.3f)
+                            )
+                        }
+                    }
+                }
+            }
             Spacer(modifier = Modifier.weight(1f))
 
             // Placeholder for Ad
@@ -331,8 +399,10 @@ fun TypingMissionConfigScreenPreview() {
                 Phrase(id = 1, content = "I am wide awake", categoryId = "basic", alarmId = 0),
                 Phrase(id = 2, content = "Time to conquer the day", categoryId = "basic", alarmId = 0)
             ),
+            mode = TypingMode.NORMAL,
             onBackClick = {},
             onRepetitionsChange = {},
+            onModeChange = {},
             onNavigateToPhraseSelection = {},
             onSave = {}
         )
@@ -352,8 +422,10 @@ fun TypingMissionConfigScreenManyPhrasesPreview() {
                 Phrase(id = 4, content = "Morning is beautiful", categoryId = "basic", alarmId = 0),
                 Phrase(id = 5, content = "Let's get to work", categoryId = "basic", alarmId = 0)
             ),
+            mode = TypingMode.SHUFFLE_WORDS,
             onBackClick = {},
             onRepetitionsChange = {},
+            onModeChange = {},
             onNavigateToPhraseSelection = {},
             onSave = {}
         )

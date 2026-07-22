@@ -68,14 +68,40 @@ class MissionRingingViewModel @Inject constructor(
                     listOf(Phrase(content = "I am awake", categoryId = "basic"))
                 } else basePhrases
 
+                val transformedPhrases = phrases.map { phrase ->
+                    val newContent = when (config?.mode) {
+                        vn.io.litever.remind.core.model.TypingMode.SHUFFLE_WORDS -> {
+                            phrase.content.split(".").joinToString(".") { sentence ->
+                                val parts = sentence.split(" ")
+                                val words = parts.filter { it.isNotBlank() }.shuffled()
+                                var wordIdx = 0
+                                parts.joinToString(" ") { 
+                                    if (it.isNotBlank()) words[wordIdx++] else it 
+                                }
+                            }
+                        }
+                        vn.io.litever.remind.core.model.TypingMode.SHUFFLE_CHARS -> {
+                            phrase.content.split(" ").joinToString(" ") { word ->
+                                if (word.isNotBlank()) {
+                                    word.toList().shuffled().joinToString("")
+                                } else {
+                                    word
+                                }
+                            }
+                        }
+                        else -> phrase.content
+                    }
+                    phrase.copy(content = newContent)
+                }
+
                 val result = mutableListOf<Phrase>()
                 val repeatCount = mission.repeatCount
-                val fullRepeats = repeatCount / phrases.size
+                val fullRepeats = repeatCount / transformedPhrases.size
                 for (i in 0 until fullRepeats) {
-                    result.addAll(phrases)
+                    result.addAll(transformedPhrases)
                 }
-                val remainder = repeatCount % phrases.size
-                result.addAll(phrases.shuffled().take(remainder))
+                val remainder = repeatCount % transformedPhrases.size
+                result.addAll(transformedPhrases.shuffled().take(remainder))
                 result.shuffle()
                 result
             }

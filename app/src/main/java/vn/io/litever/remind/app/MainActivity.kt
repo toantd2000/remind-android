@@ -412,6 +412,10 @@ class MainActivity : ComponentActivity() {
                                                         "selectedPhraseIds",
                                                         config?.selectedPhraseIds ?: emptyList()
                                                     )
+                                                    navController.currentBackStackEntry?.savedStateHandle?.set(
+                                                        "typingMode",
+                                                        config?.mode?.name ?: vn.io.litever.remind.core.model.TypingMode.NORMAL.name
+                                                    )
                                                     navController.navigateToTypingMissionConfig(
                                                         mission.alarmId
                                                     )

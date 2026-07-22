@@ -8,7 +8,10 @@ import vn.io.litever.remind.core.model.*
 @Serializable
 internal sealed class MissionConfigDto {
     @Serializable
-    internal data class Typing(val selectedPhraseIds: List<Long>) : MissionConfigDto()
+    internal data class Typing(
+        val selectedPhraseIds: List<Long>,
+        val mode: vn.io.litever.remind.core.model.TypingMode = vn.io.litever.remind.core.model.TypingMode.NORMAL
+    ) : MissionConfigDto()
     
     @Serializable
     internal data class Math(val difficulty: MathDifficulty) : MissionConfigDto()
@@ -21,7 +24,7 @@ fun MissionEntity.toModel(): Mission {
         try {
             val dto = json.decodeFromString<MissionConfigDto>(it)
             when (dto) {
-                is MissionConfigDto.Typing -> TypingMissionConfig(dto.selectedPhraseIds)
+                is MissionConfigDto.Typing -> TypingMissionConfig(dto.selectedPhraseIds, dto.mode)
                 is MissionConfigDto.Math -> MathMissionConfig(dto.difficulty)
             }
         } catch (_: Exception) {
@@ -42,7 +45,7 @@ fun MissionEntity.toModel(): Mission {
 fun Mission.toEntity(): MissionEntity {
     val configJsonString = config?.let { configModel ->
         val dto = when (configModel) {
-            is TypingMissionConfig -> MissionConfigDto.Typing(configModel.selectedPhraseIds)
+            is TypingMissionConfig -> MissionConfigDto.Typing(configModel.selectedPhraseIds, configModel.mode)
             is MathMissionConfig -> MissionConfigDto.Math(configModel.difficulty)
         }
         dto.let { json.encodeToString(MissionConfigDto.serializer(), it) }

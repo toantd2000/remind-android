@@ -15,10 +15,15 @@ data class Mission(
     val config: MissionConfig? = null
 ) : Serializable
 
+enum class TypingMode : Serializable {
+    NORMAL, SHUFFLE_WORDS, SHUFFLE_CHARS
+}
+
 sealed interface MissionConfig : Serializable
 
 data class TypingMissionConfig(
-    val selectedPhraseIds: List<Long> = emptyList()
+    val selectedPhraseIds: List<Long> = emptyList(),
+    val mode: TypingMode = TypingMode.NORMAL
 ) : MissionConfig
 
 enum class MathDifficulty { EASY, NORMAL, HARD }

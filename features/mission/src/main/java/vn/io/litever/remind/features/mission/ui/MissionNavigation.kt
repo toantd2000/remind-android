@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import vn.io.litever.remind.core.model.TypingMode
 
 const val typingMissionConfigRoute = "typing_mission_config_route/{alarmId}"
 const val phraseSelectionRoute = "phrase_selection_route/{alarmId}"
@@ -40,6 +41,8 @@ fun NavGraphBuilder.missionGraph(
         
         val initialRepetitions = navController.previousBackStackEntry?.savedStateHandle?.get<Int>("repetitions") ?: 1
         val initialPhraseIds = navController.previousBackStackEntry?.savedStateHandle?.get<List<Long>>("selectedPhraseIds") ?: emptyList()
+        val initialModeStr = navController.previousBackStackEntry?.savedStateHandle?.get<String>("typingMode")
+        val initialMode = initialModeStr?.let { runCatching { TypingMode.valueOf(it) }.getOrNull() } ?: TypingMode.NORMAL
         
         val updatedPhraseIds by backStackEntry.savedStateHandle.getStateFlow<List<Long>?>("selectedPhraseIds", null).collectAsState()
         
@@ -47,6 +50,7 @@ fun NavGraphBuilder.missionGraph(
             alarmId = alarmId,
             initialRepetitions = initialRepetitions,
             initialSelectedPhraseIds = updatedPhraseIds ?: initialPhraseIds,
+            initialMode = initialMode,
             onBackClick = onBackClick,
             onNavigateToPhraseSelection = { ids -> onNavigateToPhraseSelection(alarmId, ids) },
             onSaveMission = onSaveMission

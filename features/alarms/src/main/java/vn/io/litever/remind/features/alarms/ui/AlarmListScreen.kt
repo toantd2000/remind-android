@@ -76,6 +76,8 @@ import vn.io.litever.remind.features.alarms.ui.components.NextAlarmHeader
 import vn.io.litever.remind.features.alarms.ui.components.PermissionWarningBanner
 import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState
 import vn.io.litever.remind.features.alarms.viewmodel.AlarmListViewModel
+import vn.io.litever.designsystem.components.LiteverListItem
+import vn.io.litever.designsystem.components.LiteverSnackbarHost
 
 @Suppress("LocalContextGetResourceValueCall")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -241,7 +243,7 @@ fun AlarmListScreen(
                 Icon(Icons.Rounded.Add, contentDescription = actionAddDescription)
             }
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { LiteverSnackbarHost(snackbarHostState) }
     ) { padding ->
         Column(
             modifier = modifier
@@ -343,7 +345,7 @@ private fun AlarmActionBottomSheet(
         ) {
             if (alarm.isEnabled) {
                 val isSkipped = alarm.skippedAt != null
-                ListItem(
+                LiteverListItem(
                     headlineContent = {
                         Text(stringResource(if (isSkipped) R.string.action_cancel_skip else R.string.action_skip_once))
                     },
@@ -357,19 +359,19 @@ private fun AlarmActionBottomSheet(
                 )
             }
 
-            ListItem(
+            LiteverListItem(
                 headlineContent = { Text(stringResource(R.string.action_preview)) },
                 leadingContent = { Icon(Icons.Rounded.PlayArrow, contentDescription = null) },
                 modifier = Modifier.clickable { onPreview() }
             )
 
-            ListItem(
+            LiteverListItem(
                 headlineContent = { Text(stringResource(R.string.action_duplicate)) },
                 leadingContent = { Icon(Icons.Rounded.ContentCopy, contentDescription = null) },
                 modifier = Modifier.clickable { onDuplicate() }
             )
 
-            ListItem(
+            LiteverListItem(
                 headlineContent = {
                     Text(
                         stringResource(R.string.action_delete),

@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="splash_background">#18120C</color>
+    <color name="splash_background">#1A120D</color>
+    <color name="logo_re_mono">#BBBBBB</color>
+    <color name="logo_mind_mono">#FFFFFF</color>
+    <color name="ic_launcher_background">#1A120D</color>
 </resources>
 
 

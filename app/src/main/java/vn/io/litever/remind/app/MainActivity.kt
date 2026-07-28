@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Alarm
 import androidx.compose.material.icons.rounded.Lightbulb
@@ -38,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -195,8 +198,7 @@ class MainActivity : ComponentActivity() {
                         BrandingSplashScreen(onFinished = { showBranding = false })
                     } else {
                         Surface(
-                            modifier = Modifier.fillMaxSize(),
-                            color = LiteverTheme.colors.background
+                            modifier = Modifier.fillMaxSize()
                         ) {
                             val navController = rememberNavController()
 
@@ -279,15 +281,14 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
 
+                            val currentRoute = navBackStackEntry?.destination?.route
+
+                            val isBottomBarVisible = currentRoute == AlarmListRoute ||
+                                    currentRoute == settingsRoute ||
+                                    currentRoute == remindRoute
+
                             LiteverScaffold(
                                 bottomBar = {
-                                    val navBackStackEntry by navController.currentBackStackEntryAsState()
-                                    val currentRoute = navBackStackEntry?.destination?.route
-
-                                    val isBottomBarVisible = currentRoute == AlarmListRoute ||
-                                            currentRoute == settingsRoute ||
-                                            currentRoute == remindRoute
-
                                     if (isBottomBarVisible) {
                                         NavigationBar {
                                             NavigationBarItem(
@@ -351,11 +352,19 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                             ) { paddingValues ->
+                                val layoutDirection = androidx.compose.ui.platform.LocalLayoutDirection.current
+                                val actualPadding = androidx.compose.foundation.layout.PaddingValues(
+                                    start = paddingValues.calculateStartPadding(layoutDirection),
+                                    top = paddingValues.calculateTopPadding(),
+                                    end = paddingValues.calculateEndPadding(layoutDirection),
+                                    bottom = if (isBottomBarVisible) paddingValues.calculateBottomPadding() else 0.dp
+                                )
+
                                 Box(
                                     modifier = Modifier
                                         .fillMaxSize()
-                                        .padding(paddingValues)
-                                        .consumeWindowInsets(paddingValues)
+                                        .padding(actualPadding)
+                                        .consumeWindowInsets(actualPadding)
                                 ) {
                                     NavHost(
                                         navController = navController,

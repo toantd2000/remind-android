@@ -63,6 +63,7 @@ import vn.io.litever.designsystem.components.LiteverDialog
 import vn.io.litever.designsystem.components.LiteverIconButton
 import vn.io.litever.designsystem.components.LiteverModalBottomSheet
 import vn.io.litever.designsystem.components.LiteverOutlinedButton
+import vn.io.litever.designsystem.components.LiteverOutlinedCard
 import vn.io.litever.designsystem.components.LiteverScaffold
 import vn.io.litever.designsystem.components.LiteverTextButton
 import vn.io.litever.designsystem.components.LiteverTopAppBar
@@ -522,17 +523,12 @@ fun AddCustomPhraseContent(
             }
         )
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         LiteverCard(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
-                containerColor = LiteverTheme.colors.secondaryContainer.copy(alpha = 0.4f)
-            ),
-            shape = LiteverTheme.shapes.medium,
-            border = androidx.compose.foundation.BorderStroke(
-                1.dp,
-                LiteverTheme.colors.secondaryContainer.copy(alpha = 0.5f)
+                containerColor = LiteverTheme.colors.tertiaryContainer
             )
         ) {
             Row(
@@ -542,45 +538,37 @@ fun AddCustomPhraseContent(
                 Icon(
                     imageVector = Icons.Rounded.Lightbulb,
                     contentDescription = null,
-                    tint = LiteverTheme.colors.primary,
+                    tint = LiteverTheme.colors.onTertiaryContainer,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
                     text = stringResource(R.string.mission_typing_tip),
                     style = LiteverTheme.typography.labelMedium,
-                    color = LiteverTheme.colors.onSecondaryContainer
+                    color = LiteverTheme.colors.onTertiaryContainer
                 )
             }
         }
 
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(LiteverTheme.shapes.medium)
-                .clickable { if (editingPhrase == null && canBePrivate) isShared = !isShared },
-            color = Color.Transparent
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(vertical = 16.dp)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(vertical = 8.dp)
-            ) {
-                LiteverCheckbox(
-                    checked = isShared,
-                    onCheckedChange = { isShared = it },
-                    enabled = editingPhrase == null && canBePrivate
+            LiteverCheckbox(
+                checked = isShared,
+                onCheckedChange = { isShared = it },
+                enabled = editingPhrase == null && canBePrivate
+            )
+            Column() {
+                Text(
+                    text = stringResource(R.string.mission_shared),
+                    style = LiteverTheme.typography.titleSmall
                 )
-                Column() {
-                    Text(
-                        text = stringResource(R.string.mission_shared),
-                        style = LiteverTheme.typography.titleSmall
-                    )
-                    Text(
-                        text = stringResource(if (canBePrivate) R.string.mission_shared_desc else R.string.mission_private_disabled_desc),
-                        style = LiteverTheme.typography.bodySmall,
-                        color = if (canBePrivate) LiteverTheme.colors.onSurfaceVariant else LiteverTheme.colors.error
-                    )
-                }
+                Text(
+                    text = stringResource(if (canBePrivate) R.string.mission_shared_desc else R.string.mission_private_disabled_desc),
+                    style = LiteverTheme.typography.bodySmall,
+                    color = if (canBePrivate) LiteverTheme.colors.onSurfaceVariant else LiteverTheme.colors.error
+                )
             }
         }
 
@@ -592,7 +580,6 @@ fun AddCustomPhraseContent(
                 onClick = onDismiss,
                 modifier = Modifier
                     .weight(1f),
-                shape = LiteverTheme.shapes.medium
             ) {
                 Text(stringResource(R.string.cancel))
             }

@@ -26,6 +26,7 @@ import vn.io.litever.remind.features.mission.ui.components.MathMissionContent
 import vn.io.litever.remind.features.mission.ui.components.MissionCompleteContent
 import vn.io.litever.remind.features.mission.ui.components.TypingMissionContent
 import vn.io.litever.remind.features.mission.viewmodel.MissionRingingViewModel
+import vn.io.litever.designsystem.components.LiteverLinearProgressIndicator
 
 @Composable
 fun MissionRingingRoute(
@@ -126,21 +127,6 @@ fun MissionRingingScreen(
             }
         }
     ) { padding ->
-        // Subtle gradient background
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    brush = androidx.compose.ui.graphics.Brush.verticalGradient(
-                        colors = listOf(
-                            LiteverTheme.colors.primary.copy(alpha = 0.05f),
-                            LiteverTheme.colors.background,
-                            LiteverTheme.colors.background
-                        )
-                    )
-                )
-        )
-
         if (uiState.isMissionJustCompleted) {
             val isLastMission = uiState.currentMissionIndex >= uiState.missions.size - 1
             MissionCompleteContent(
@@ -166,15 +152,10 @@ fun MissionRingingScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.padding(bottom = 32.dp)
                     ) {
-                        LinearProgressIndicator(
+                        LiteverLinearProgressIndicator(
                             progress = { (uiState.currentMissionIndex + 1).toFloat() / uiState.missions.size },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(8.dp)
-                                .clip(LiteverTheme.shapes.medium),
-                            strokeCap = androidx.compose.ui.graphics.StrokeCap.Round,
-                            trackColor = LiteverTheme.colors.surfaceVariant,
-                            color = LiteverTheme.colors.primary
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(

@@ -285,15 +285,15 @@ fun AlarmRingingContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Top: Time & Date
+            // Main Content: Centered in remaining space
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 100.dp)
+                    .weight(1f)
                     .graphicsLayer {
                         translationY = topOffset.toPx()
                         alpha = topAlpha
@@ -309,34 +309,33 @@ fun AlarmRingingContent(
                     Text(
                         text = timeStr,
                         style = LiteverTheme.typography.displayLarge.copy(
-                            fontSize = 96.sp,
+                            fontSize = 80.sp,
                             fontWeight = FontWeight.Black
                         ),
-                        color = LiteverTheme.colors.onBackground
+                        color = LiteverTheme.colors.primary
                     )
                     if (amPm != null) {
                         Text(
                             text = amPm.uppercase(Locale.getDefault()),
                             style = LiteverTheme.typography.displayLarge.copy(
-                                fontSize = 32.sp,
+                                fontSize = 24.sp,
                                 fontWeight = FontWeight.Black
                             ),
-                            color = LiteverTheme.colors.onBackground,
-                            modifier = Modifier.padding(bottom = 16.dp, start = 8.dp)
+                            color = LiteverTheme.colors.primary,
                         )
                     }
                 }
                 Text(
                     text = currentTime.format(dateFormatter).replaceFirstChar { it.uppercase() },
                     style = LiteverTheme.typography.titleLarge,
-                    color = LiteverTheme.colors.onBackground.copy(alpha = 0.7f),
+                    color = LiteverTheme.colors.secondary,
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
                 Surface(
-                    color = LiteverTheme.colors.onBackground.copy(alpha = 0.08f),
+                    color = LiteverTheme.colors.tertiaryContainer,
                     shape = CircleShape
                 ) {
                     Row(
@@ -347,7 +346,7 @@ fun AlarmRingingContent(
                             imageVector = Icons.Rounded.Notifications,
                             contentDescription = null,
                             modifier = Modifier.size(14.dp),
-                            tint = LiteverTheme.colors.onBackground.copy(alpha = 0.6f)
+                            tint = LiteverTheme.colors.onTertiaryContainer
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
@@ -356,7 +355,7 @@ fun AlarmRingingContent(
                                 TimeFormatUtils.formatTime(alarm.time, is24HourFormat)
                             ),
                             style = LiteverTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium),
-                            color = LiteverTheme.colors.onBackground.copy(alpha = 0.6f)
+                            color = LiteverTheme.colors.onTertiaryContainer
                         )
                     }
                 }
@@ -449,13 +448,6 @@ fun AlarmRingingContent(
                 }
             }
 
-            // Middle: Empty space for future custom background
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-            )
-
             // Bottom: Actions
             Column(
                 modifier = Modifier
@@ -492,7 +484,7 @@ fun AlarmRingingContent(
                     ) {
                         Text(
                             text = snoozeText,
-                            style = LiteverTheme.typography.titleLarge
+                            style = LiteverTheme.typography.titleMedium
                         )
                     }
                 }

@@ -1298,7 +1298,7 @@ fun GentleAlarmBottomSheetContent(
     currentDuration: Int,
     onDurationSelect: (Int) -> Unit
 ) {
-    val options = listOf(0, 15, 30, 60)
+    val options = listOf(0, 5, 10, 20)
 
     Column(
         modifier = Modifier

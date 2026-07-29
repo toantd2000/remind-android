@@ -164,7 +164,12 @@ class AlarmEditViewModel @Inject constructor(
                         snoozeInterval = alarm.snoozeInterval,
                         snoozeRepeatCount = alarm.snoozeRepeatCount,
                         autoSilenceMinutes = alarm.autoSilenceMinutes,
-                        gradualVolumeDurationSeconds = alarm.gradualVolumeDurationSeconds,
+                        gradualVolumeDurationSeconds = when {
+                            alarm.gradualVolumeDurationSeconds <= 0 -> 0
+                            alarm.gradualVolumeDurationSeconds <= 5 -> 5
+                            alarm.gradualVolumeDurationSeconds <= 10 -> 10
+                            else -> 20
+                        },
                         missions = missions,
                         useAlarmStream = alarm.useAlarmStream
                     )

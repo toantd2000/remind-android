@@ -72,6 +72,11 @@
     <string name="weather_feels_like">Feels like %d°</string>
     <string name="weather_powered_by">Powered by WeatherAPI</string>
     <string name="action_back">Back</string>
+
+    <string name="good_morning">Good morning</string>
+    <string name="good_afternoon">Good afternoon</string>
+    <string name="good_evening">Good evening</string>
+    <string name="good_night">Good night</string>
 </resources>
 
 

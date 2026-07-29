@@ -73,23 +73,6 @@ fun AlarmMessageScreen(
     BackHandler { }
     LiteverScaffold { padding ->
         val statusColor = LiteverTheme.colors.primary
-        val statusTitle =
-            stringResource(vn.io.litever.remind.features.alarms.R.string.alarm_summary_title)
-
-        // Subtle gradient background based on status
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    brush = androidx.compose.ui.graphics.Brush.verticalGradient(
-                        colors = listOf(
-                            statusColor.copy(alpha = 0.08f),
-                            LiteverTheme.colors.background,
-                            LiteverTheme.colors.background
-                        )
-                    )
-                )
-        )
 
         Column(
             modifier = Modifier
@@ -98,35 +81,27 @@ fun AlarmMessageScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = statusTitle,
-                style = LiteverTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-                color = statusColor,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Main Info Card
-            LiteverCard(
-                modifier = Modifier.fillMaxWidth(),
-                shape = LiteverTheme.shapes.medium,
-                colors = CardDefaults.cardColors(
-                    containerColor = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.3f)
-                ),
-                border = androidx.compose.foundation.BorderStroke(
-                    1.dp,
-                    statusColor.copy(alpha = 0.1f)
-                )
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                val displayTime = alarm?.time ?: LocalTime.now()
+                
+                Text(
+                    text = getGreetingByTime(displayTime),
+                    style = LiteverTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                    color = statusColor,
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(24.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     // Time with small AM/PM
-                    val displayTime = alarm?.time ?: LocalTime.now()
                     val (timeStr, amPm) = TimeFormatUtils.formatTimeParts(
                         displayTime,
                         is24HourFormat
@@ -173,29 +148,27 @@ fun AlarmMessageScreen(
                         )
                     }
                 }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                WeatherInfoView(
+                    weather = weather,
+                    isCompact = true
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                ReminderInfoView(
+                    reminder = reminder
+                )
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            WeatherInfoView(
-                weather = weather,
-                isCompact = true
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            ReminderInfoView(
-                reminder = reminder
-            )
 
             LocalAdManager.current.NativeAdView(
                 placement = AdPlacement.MESSAGE_NATIVE,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp)
+                    .padding(top = 16.dp, bottom = 16.dp)
             )
-
-            Spacer(modifier = Modifier.weight(1f))
 
             LiteverButton(
                 onClick = onFinish,
@@ -322,15 +295,16 @@ private object PreviewAdManager : AdManager {
                 color = LiteverTheme.colors.onSurfaceVariant
             )
         }
+    }}
+
+@Composable
+private fun getGreetingByTime(time: LocalTime): String {
+    val hour = time.hour
+    val resId = when (hour) {
+        in 5..11 -> vn.io.litever.remind.core.designsystem.R.string.good_morning
+        in 12..17 -> vn.io.litever.remind.core.designsystem.R.string.good_afternoon
+        in 18..21 -> vn.io.litever.remind.core.designsystem.R.string.good_evening
+        else -> vn.io.litever.remind.core.designsystem.R.string.good_night
     }
+    return stringResource(id = resId)
 }
-
-
-
-
-
-
-
-
-
-

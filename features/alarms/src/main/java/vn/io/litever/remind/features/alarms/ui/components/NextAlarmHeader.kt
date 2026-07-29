@@ -20,8 +20,8 @@ fun NextAlarmHeader(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        color = LiteverTheme.colors.warningContainer,
-        shape = LiteverTheme.shapes.extraLarge,
+        color = LiteverTheme.colors.tertiaryContainer,
+        shape = LiteverTheme.shapes.medium,
         modifier = modifier
             .padding(horizontal = 20.dp, vertical = 6.dp)
             .fillMaxWidth()
@@ -33,14 +33,14 @@ fun NextAlarmHeader(
             Icon(
                 imageVector = Icons.Rounded.Alarm,
                 contentDescription = null,
-                tint = LiteverTheme.colors.onWarningContainer,
+                tint = LiteverTheme.colors.onTertiaryContainer,
                 modifier = Modifier.size(18.dp)
             )
             Spacer(modifier = Modifier.width(10.dp))
             Text(
                 text = formatNextAlarmText(state),
                 style = LiteverTheme.typography.labelMedium,
-                color = LiteverTheme.colors.onWarningContainer,
+                color = LiteverTheme.colors.onTertiaryContainer,
                 fontWeight = FontWeight.SemiBold
             )
         }

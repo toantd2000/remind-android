@@ -151,7 +151,6 @@ class AlarmControllerImpl @Inject constructor(
                 alarmScheduler.cancelSnooze(alarm)
                 
                 val updatedAlarm = alarm.copy(
-                    currentSnoozeCount = 0,
                     snoozeNextTriggerTime = null
                 )
                 alarmRepository.updateAlarm(updatedAlarm)

@@ -343,7 +343,7 @@ private fun AlarmActionBottomSheet(
                 .fillMaxWidth()
                 .padding(bottom = 32.dp)
         ) {
-            if (alarm.isEnabled) {
+            if (alarm.isEnabled && alarm.repeatDays.isNotEmpty()) {
                 val isSkipped = alarm.skippedAt != null
                 LiteverListItem(
                     headlineContent = {

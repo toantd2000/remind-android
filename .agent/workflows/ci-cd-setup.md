@@ -12,9 +12,7 @@ Thiết lập hệ thống CI/CD chạy tại máy cá nhân (Local CI/CD) với
 - **Nhiệm vụ**: Đóng gói ứng dụng, tải Metadata (Release Notes) và Ảnh chụp màn hình, sau đó tự động phân phối lên Google Play (Internal Track hoặc Production) thông qua Google Play Developer API.
 - **Tuỳ biến**: Fastlane đã được thiết lập để có thể linh hoạt chỉ upload Metadata (không cần build lại APK/AAB) nếu không có thay đổi về mã nguồn.
 
-## 2. Kiểm thử và chụp ảnh (Roborazzi)
 - **Vị trí**: `features/alarms/src/test/`
-- **Nhiệm vụ**: Đảm bảo 100% tỷ lệ UI hiển thị đúng, đồng thời sinh ra các tệp `.png` phục vụ cho việc tự động làm ảnh tải lên Google Play Store. Roborazzi chạy siêu tốc trên JVM.
 
 ## 3. AI Agent (Hướng dẫn tự động hóa)
 - **Vị trí**: `.agent/workflows/release-preparation.md`

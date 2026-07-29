@@ -25,9 +25,7 @@ description: Quy trình chuẩn bị và đóng gói ứng dụng để phát h�
 ## Bước 3: Kiểm tra Thay đổi Giao diện (UI) & Sinh ảnh
 1. Chạy `git diff --name-only <last-tag> HEAD` để xem các file bị thay đổi.
 2. Cảnh báo người dùng nếu thấy có file thay đổi trong `features/`, `ui/` hoặc `components/`.
-3. **[CẦN XÁC NHẬN]** Hỏi người dùng: "Có vẻ có sự thay đổi về giao diện. Bạn có muốn chạy Roborazzi để chụp lại bộ ảnh mới (screenshot) đẩy lên Google Play không?".
 4. Nếu người dùng đồng ý (Y):
-   - Chạy lệnh: `./gradlew recordRoborazziDebug` (hoặc lệnh test tương ứng).
    - Kiểm tra xem các file ảnh đã được sinh ra đúng trong `fastlane/metadata/android/` chưa.
 
 ## Bước 4: Cập nhật Version Code & Name
@@ -55,4 +53,4 @@ description: Quy trình chuẩn bị và đóng gói ứng dụng để phát h�
 Mỗi khi cần phát hành, bạn chỉ cần:
 1. Đảm bảo tính năng đã code xong và pass các bài unit test cơ bản.
 2. Viết changelog vào `docs/changelog` (hoặc phó mặc cho AI đọc commit).
-3. Ra lệnh cho Agent: *"Bắt đầu quy trình release cho phiên bản vX.Y.Z"* và trả lời các câu hỏi xác nhận của nó.
+3. Ra lệnh cho Agent: *"Bắt đầu quy trình release cho phiên bản vX.Y.Z"* và trả lời các câu hỏi xác nhận của nó.

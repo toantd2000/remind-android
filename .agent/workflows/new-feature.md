@@ -45,4 +45,4 @@ Quy trình này áp dụng khi bắt đầu xây dựng một tính năng từ c
 3. **Cập nhật ARCHITECTURE_MAP.md:** Nếu có module mới được tạo.
 4. **Cập nhật DECISION_LOG.md:** Nếu có các kịch bản hành vi quan trọng được chốt.
 5. **Kích hoạt `@logwork-update`:** BẮT BUỘC ghi nhận TDR vào `LOGWORK.md` cho các quyết định kiến trúc.
-6. **Kích hoạt `@learning-journal`:** Ghi lại các lỗi gặp phải và bài học kinh nghiệm.
+6. **Kích hoạt `@learning-journal`:** Ghi lại các lỗi gặp phải và bài học kinh nghiệm.

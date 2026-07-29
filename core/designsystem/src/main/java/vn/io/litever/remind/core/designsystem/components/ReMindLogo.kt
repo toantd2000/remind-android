@@ -14,14 +14,19 @@ import androidx.compose.ui.unit.sp
 
 import vn.io.litever.designsystem.theme.LiteverFontFamily
 import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.theme.onSurfaceVariantDark
+import vn.io.litever.remind.core.designsystem.theme.onSurfaceVariantLight
+import vn.io.litever.remind.core.designsystem.theme.primaryDark
+import vn.io.litever.remind.core.designsystem.theme.primaryLight
 
 @Composable
 fun ReMindLogo(
     modifier: Modifier = Modifier,
     fontSize: TextUnit = 24.sp,
 ) {
-    val upColor = LiteverTheme.colors.onSurfaceVariant
-    val remindColor = LiteverTheme.colors.primary
+    val isDark = isSystemInDarkTheme()
+    val upColor = if (isDark) onSurfaceVariantDark else onSurfaceVariantLight
+    val remindColor = if (isDark) primaryDark else primaryLight
 
     Text(
         text = buildAnnotatedString {

@@ -11,9 +11,9 @@
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
     <string name="color_source_headline">Primary color source</string>
-    <string name="color_source_default">Default</string>
+    <string name="color_source_remind">ReMind</string>
     <string name="color_source_wallpaper">Wallpaper</string>
-    <string name="color_source_simple">Simple</string>
+    <string name="color_source_litever">LiteVer</string>
     <string name="category_app_settings">App Settings</string>
     <string name="category_general">General</string>
     <string name="category_permissions">Permissions</string>

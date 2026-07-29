@@ -11,9 +11,9 @@
     <string name="theme_light">Sáng</string>
     <string name="theme_dark">Tối</string>
     <string name="color_source_headline">Nguồn màu chủ đạo</string>
-    <string name="color_source_default">Mặc định</string>
+    <string name="color_source_remind">ReMind</string>
     <string name="color_source_wallpaper">Hình nền</string>
-    <string name="color_source_simple">Đơn giản</string>
+    <string name="color_source_litever">LiteVer</string>
     <string name="category_app_settings">Cài đặt ứng dụng</string>
     <string name="category_general">Chung</string>
     <string name="category_permissions">Quyền</string>

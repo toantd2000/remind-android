@@ -21,6 +21,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import vn.io.litever.designsystem.components.LiteverListItem
@@ -31,6 +32,9 @@ import vn.io.litever.designsystem.components.LiteverSettingsGroup
 import vn.io.litever.designsystem.components.LiteverSingleChoiceSegmentedButtonRow
 import vn.io.litever.designsystem.components.LiteverTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.components.BrandLogo
+import vn.io.litever.remind.core.designsystem.components.ReMindLogo
+import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.features.settings.R
 
 @Composable
@@ -138,7 +142,7 @@ fun GeneralSettingsScreen(
                         }
                     }
 
-                    Spacer(Modifier.height(LiteverTheme.spacing.medium))
+                    Spacer(Modifier.height(LiteverTheme.spacing.large))
 
                     Text(
                         text = stringResource(R.string.color_source_headline),
@@ -147,9 +151,9 @@ fun GeneralSettingsScreen(
                     )
 
                     val colorOptions = listOf(
-                        "DEFAULT" to stringResource(R.string.color_source_default),
+                        "REMIND" to stringResource(R.string.color_source_remind),
+                        "LITEVER" to stringResource(R.string.color_source_litever),
                         "DYNAMIC" to stringResource(R.string.color_source_wallpaper),
-                        "SIMPLE" to stringResource(R.string.color_source_simple)
                     )
 
                     androidx.compose.foundation.layout.Column(
@@ -160,12 +164,26 @@ fun GeneralSettingsScreen(
                         colorOptions.forEach { pair ->
                             LiteverListItem(
                                 headlineContent = {
-                                    Text(
-                                        text = pair.second,
-                                        style = LiteverTheme.typography.bodyLarge.copy(
-                                            fontWeight = androidx.compose.ui.text.font.FontWeight.Medium
-                                        )
-                                    )
+                                    when (pair.first) {
+                                        "REMIND" -> {
+                                            ReMindLogo(
+                                                fontSize = LiteverTheme.typography.bodyLarge.fontSize
+                                            )
+                                        }
+                                        "LITEVER" -> {
+                                            BrandLogo(
+                                                fontSize = LiteverTheme.typography.bodyLarge.fontSize
+                                            )
+                                        }
+                                        else -> {
+                                            Text(
+                                                text = pair.second,
+                                                style = LiteverTheme.typography.bodyLarge.copy(
+                                                    fontWeight = FontWeight.Medium
+                                                )
+                                            )
+                                        }
+                                    }
                                 },
                                 leadingContent = {
                                     LiteverRadioButton(
@@ -210,9 +228,9 @@ fun GeneralSettingsScreen(
 @androidx.compose.ui.tooling.preview.Preview(showBackground = true)
 @Composable
 fun GeneralSettingsScreenPreview() {
-    vn.io.litever.remind.core.designsystem.theme.ReMindTheme {
+    ReMindTheme {
         GeneralSettingsScreen(
-            uiState = SettingsUiState(is24HourFormat = true, timeFormat = "SYSTEM", themeMode = "SYSTEM", colorPalette = "DEFAULT"),
+            uiState = SettingsUiState(is24HourFormat = true, timeFormat = "SYSTEM", themeMode = "SYSTEM", colorPalette = "REMIND"),
             onTimeFormatChange = {},
             onThemeModeChange = {},
             onColorPaletteChange = {},

@@ -9,12 +9,12 @@ import vn.io.litever.designsystem.theme.LiteverTheme
 fun ReMindTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false,
-    colorPalette: String = "DEFAULT",
+    colorPalette: String = "REMIND",
     content: @Composable () -> Unit
 ) {
     val isDynamic = colorPalette == "DYNAMIC" || dynamicColor
     
-    val colors = if (colorPalette == "SIMPLE") {
+    val colors = if (colorPalette == "LITEVER") {
         null
     } else {
         if (darkTheme) remindDarkColors else remindLightColors

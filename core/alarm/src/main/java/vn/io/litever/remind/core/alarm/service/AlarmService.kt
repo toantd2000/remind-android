@@ -4,37 +4,31 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
-import android.content.Context
 import android.content.Intent
-import android.media.AudioAttributes
-import android.media.MediaPlayer
-import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
-import vn.io.litever.remind.core.common.audio.AudioPlayer
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import vn.io.litever.remind.core.alarm.AlarmRingManager
-import vn.io.litever.remind.core.domain.scheduler.AlarmScheduler
+import vn.io.litever.remind.core.alarm.R
+import vn.io.litever.remind.core.alarm.provider.AlarmIntentProvider
+import vn.io.litever.remind.core.common.audio.AudioPlayer
+import vn.io.litever.remind.core.common.util.getAccessibleRingtoneUri
 import vn.io.litever.remind.core.domain.repository.AlarmRepository
 import vn.io.litever.remind.core.domain.scheduler.AlarmController
+import vn.io.litever.remind.core.domain.scheduler.AlarmScheduler
 import vn.io.litever.remind.core.model.Alarm
-import vn.io.litever.remind.core.alarm.provider.AlarmIntentProvider
-import vn.io.litever.remind.core.common.util.getAccessibleRingtoneUri
-import vn.io.litever.remind.core.alarm.R
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -275,11 +269,17 @@ class AlarmService : Service() {
         val channelId = if (isVisible) CHANNEL_ID_SILENT else CHANNEL_ID_HIGH
         val priority = if (isVisible) NotificationCompat.PRIORITY_MIN else NotificationCompat.PRIORITY_MAX
 
-        val title = alarm?.label?.takeIf { it.isNotBlank() } ?: getString(R.string.notification_alarm_title)
-        val text = alarm?.message?.takeIf { it.isNotBlank() } ?: getString(R.string.notification_alarm_text)
+        val title = getString(R.string.notification_alarm_title)
+        val text = if (alarm != null) {
+            val timeString = alarm.time.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"))
+            val label = alarm.label.takeIf { it.isNotBlank() }
+            if (label != null) "$timeString, $label" else timeString
+        } else {
+            getString(R.string.notification_alarm_text)
+        }
 
         return NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
+            .setSmallIcon(R.drawable.ic_remind_notification)
             .setContentTitle(title)
             .setContentText(text)
             .setPriority(priority)
@@ -303,37 +303,35 @@ class AlarmService : Service() {
     }
 
     private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val manager = getSystemService(NotificationManager::class.java)
-            
-            // High priority channel for heads-up and full screen intent
-            val highChannel = NotificationChannel(
-                CHANNEL_ID_HIGH,
-                getString(R.string.alarm_channel_name),
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = getString(R.string.alarm_channel_description)
-                setSound(null, null) 
-                enableVibration(false)
-            }
-            
-            // Silent channel for when the ringing screen is already visible
-            val silentChannel = NotificationChannel(
-                CHANNEL_ID_SILENT,
-                getString(R.string.alarm_channel_name_silent),
-                NotificationManager.IMPORTANCE_MIN
-            ).apply {
-                description = getString(R.string.alarm_channel_description_silent)
-                setSound(null, null) 
-                enableVibration(false)
-            }
-            
-            manager.createNotificationChannel(highChannel)
-            manager.createNotificationChannel(silentChannel)
-            
-            // Cleanup old channel if exists
-            manager.deleteNotificationChannel("alarm_channel")
+        val manager = getSystemService(NotificationManager::class.java)
+
+        // High priority channel for heads-up and full screen intent
+        val highChannel = NotificationChannel(
+            CHANNEL_ID_HIGH,
+            getString(R.string.alarm_channel_name),
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            description = getString(R.string.alarm_channel_description)
+            setSound(null, null)
+            enableVibration(false)
         }
+
+        // Silent channel for when the ringing screen is already visible
+        val silentChannel = NotificationChannel(
+            CHANNEL_ID_SILENT,
+            getString(R.string.alarm_channel_name_silent),
+            NotificationManager.IMPORTANCE_MIN
+        ).apply {
+            description = getString(R.string.alarm_channel_description_silent)
+            setSound(null, null)
+            enableVibration(false)
+        }
+
+        manager.createNotificationChannel(highChannel)
+        manager.createNotificationChannel(silentChannel)
+
+        // Cleanup old channel if exists
+        manager.deleteNotificationChannel("alarm_channel")
     }
 
     companion object {

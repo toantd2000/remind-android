@@ -1,5 +1,5 @@
 <resources>
-    <string name="notification_alarm_title">Alarm!</string>
+    <string name="notification_alarm_title">Alarm is ringing</string>
     <string name="notification_alarm_text">Tap to view and dismiss</string>
     <string name="alarm_channel_name">Alarm Service</string>
     <string name="alarm_channel_description">Channel for alarm ringing</string>

@@ -1,5 +1,5 @@
 <resources>
-    <string name="notification_alarm_title">Báo thức!</string>
+    <string name="notification_alarm_title">Báo thức đang đổ chuông</string>
     <string name="notification_alarm_text">Nhấn vào đây để xem và tắt</string>
     <string name="alarm_channel_name">Kênh Báo thức</string>
     <string name="alarm_channel_description">Thông báo khi có báo thức</string>

@@ -110,6 +110,9 @@ import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
+import vn.io.litever.designsystem.components.LiteverListItem
+import vn.io.litever.designsystem.components.LiteverDatePickerDialog
+import vn.io.litever.designsystem.components.LiteverLinearProgressIndicator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -412,7 +415,7 @@ fun AlarmEditScreen(
     )
 
     if (showDatePicker) {
-        DatePickerDialog(
+        LiteverDatePickerDialog(
             onDismissRequest = { if (showDatePicker) showDatePicker = false },
             confirmButton = {
                 CompositionLocalProvider(LocalContext provides context) {
@@ -745,14 +748,10 @@ fun AlarmEditScreen(
                                 .padding(start = 56.dp, end = 32.dp)
                         ) {
                             if (uiState.isRingtonePlaying || uiState.ringtoneProgress > 0f) {
-                                LinearProgressIndicator(
+                                LiteverLinearProgressIndicator(
                                     progress = { uiState.ringtoneProgress },
                                     modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(2.dp)
-                                        .clip(RoundedCornerShape(1.dp)),
-                                    color = MaterialTheme.colorScheme.primary,
-                                    trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                                        .fillMaxWidth(),
                                 )
                             }
                         }
@@ -1328,7 +1327,7 @@ fun GentleAlarmBottomSheetContent(
                 stringResource(R.string.minutes_unit, option / 60)
             }
 
-            ListItem(
+            LiteverListItem(
                 headlineContent = {
                     Text(
                         label,
@@ -1368,7 +1367,7 @@ fun AutoSilenceBottomSheetContent(
         Spacer(modifier = Modifier.height(8.dp))
 
         options.forEach { option ->
-            ListItem(
+            LiteverListItem(
                 headlineContent = {
                     Text(
                         stringResource(R.string.minutes_unit, option),

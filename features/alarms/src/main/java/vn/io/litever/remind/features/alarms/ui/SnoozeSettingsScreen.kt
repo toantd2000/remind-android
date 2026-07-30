@@ -1,6 +1,5 @@
 package vn.io.litever.remind.features.alarms.ui
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,7 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import vn.io.litever.designsystem.components.LiteverButton
-import vn.io.litever.designsystem.components.LiteverCard
+import vn.io.litever.designsystem.components.LiteverOutlinedCard
 import vn.io.litever.designsystem.components.LiteverScaffold
 import vn.io.litever.designsystem.components.LiteverSwitch
 import vn.io.litever.designsystem.components.LiteverTopAppBar
@@ -103,12 +101,8 @@ fun SnoozeSettingsScreen(
 
             // Enable Toggle Card
             item {
-                LiteverCard(
+                LiteverOutlinedCard(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.3f)
-                    ),
-                    border = BorderStroke(1.dp, LiteverTheme.colors.outlineVariant.copy(alpha = 0.2f))
                 ) {
                     Row(
                         modifier = Modifier
@@ -141,14 +135,10 @@ fun SnoozeSettingsScreen(
                             color = LiteverTheme.colors.primary,
                             modifier = Modifier.padding(bottom = 12.dp)
                         )
-                        LiteverCard(
+                        LiteverOutlinedCard(
                             modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(
-                                containerColor = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.3f)
-                            ),
-                            border = BorderStroke(1.dp, LiteverTheme.colors.outlineVariant.copy(alpha = 0.2f))
                         ) {
-                            Column {
+                            Column(modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp)) {
                                 intervalOptions.forEach { option ->
                                     SnoozeOptionRow(
                                         label = stringResource(R.string.minutes_unit, option),
@@ -170,22 +160,21 @@ fun SnoozeSettingsScreen(
                             color = LiteverTheme.colors.primary,
                             modifier = Modifier.padding(bottom = 12.dp)
                         )
-                        LiteverCard(
+                        LiteverOutlinedCard(
                             modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(
-                                containerColor = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.3f)
-                            ),
-                            shape = LiteverTheme.shapes.medium,
-                            border = BorderStroke(1.dp, LiteverTheme.colors.outlineVariant.copy(alpha = 0.2f))
                         ) {
-                            Column {
+                            Column(modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp)) {
                                 repeatOptions.forEach { option ->
-                                    val label = if (option == -1) {
-                                        stringResource(R.string.forever)
-                                    } else if (option == 1) {
-                                        stringResource(R.string.one_time)
-                                    } else {
-                                        stringResource(R.string.times_unit, option)
+                                    val label = when (option) {
+                                        -1 -> {
+                                            stringResource(R.string.forever)
+                                        }
+                                        1 -> {
+                                            stringResource(R.string.one_time)
+                                        }
+                                        else -> {
+                                            stringResource(R.string.times_unit, option)
+                                        }
                                     }
                                     
                                     SnoozeOptionRow(
@@ -214,8 +203,7 @@ fun SnoozeOptionRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .clickable(onClick = onClick),
         verticalAlignment = Alignment.CenterVertically
     ) {
         vn.io.litever.designsystem.components.LiteverRadioButton(

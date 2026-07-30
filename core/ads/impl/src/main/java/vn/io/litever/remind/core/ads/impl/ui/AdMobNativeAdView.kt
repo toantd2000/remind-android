@@ -37,7 +37,7 @@ internal fun AdMobNativeAdView(
     var nativeAd by remember { mutableStateOf<NativeAd?>(null) }
     var adFailed by remember { mutableStateOf(false) }
 
-    val lifecycle = androidx.compose.ui.platform.LocalLifecycleOwner.current.lifecycle
+    val lifecycle = androidx.lifecycle.compose.LocalLifecycleOwner.current.lifecycle
 
     LaunchedEffect(placement, lifecycle) {
         lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {

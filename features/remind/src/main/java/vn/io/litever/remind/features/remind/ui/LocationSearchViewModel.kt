@@ -10,7 +10,7 @@ import vn.io.litever.remind.core.domain.repository.WeatherRepository
 import vn.io.litever.remind.core.model.LocationSearchResponse
 import javax.inject.Inject
 
-@OptIn(FlowPreview::class)
+@OptIn(FlowPreview::class, kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class LocationSearchViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository

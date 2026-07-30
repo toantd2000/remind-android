@@ -23,9 +23,6 @@ import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.RadioButtonDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,6 +45,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import vn.io.litever.designsystem.components.LiteverButton
 import vn.io.litever.designsystem.components.LiteverCard
 import vn.io.litever.designsystem.components.LiteverIconButton
+import vn.io.litever.designsystem.components.LiteverRadioButton
+import vn.io.litever.designsystem.components.LiteverScaffold
 import vn.io.litever.designsystem.components.LiteverTextField
 import vn.io.litever.designsystem.components.LiteverTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
@@ -114,7 +113,7 @@ fun TypingMissionConfigScreen(
     onNavigateToPhraseSelection: () -> Unit,
     onSave: () -> Unit
 ) {
-    Scaffold(
+    LiteverScaffold(
         modifier = Modifier.imePadding(),
         topBar = {
             Box(Modifier.fillMaxWidth()) {
@@ -156,8 +155,6 @@ fun TypingMissionConfigScreen(
                     letterSpacing = 1.sp
                 )
             )
-            
-            Spacer(modifier = Modifier.height(12.dp))
 
             LiteverCard(
                 modifier = Modifier.fillMaxWidth(),
@@ -195,7 +192,6 @@ fun TypingMissionConfigScreen(
                     }
 
                     if (selectedPhrases.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(16.dp))
                         Column(
                             modifier = Modifier.fillMaxWidth(),
                             verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -340,6 +336,7 @@ fun TypingMissionConfigScreen(
             ) {
                 Column(
                     modifier = Modifier.fillMaxWidth()
+                        .padding(vertical = 12.dp)
                 ) {
                     val modes = listOf(
                         TypingMode.NORMAL to stringResource(vn.io.litever.remind.core.designsystem.R.string.typing_mode_normal),
@@ -347,30 +344,23 @@ fun TypingMissionConfigScreen(
                         TypingMode.SHUFFLE_CHARS to stringResource(vn.io.litever.remind.core.designsystem.R.string.typing_mode_shuffle_chars)
                     )
 
-                    modes.forEachIndexed { index, (m, label) ->
+                    modes.forEachIndexed { _, (m, label) ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable { onModeChange(m) }
-                                .padding(horizontal = 12.dp, vertical = 8.dp),
+                                .padding(horizontal = 12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            RadioButton(
+                            LiteverRadioButton(
                                 selected = mode == m,
                                 onClick = { onModeChange(m) },
-                                colors = RadioButtonDefaults.colors(selectedColor = LiteverTheme.colors.primary)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = label,
                                 style = LiteverTheme.typography.bodyLarge,
                                 color = LiteverTheme.colors.onSurface
-                            )
-                        }
-                        if (index < modes.lastIndex) {
-                            androidx.compose.material3.Divider(
-                                modifier = Modifier.padding(horizontal = 16.dp),
-                                color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.3f)
                             )
                         }
                     }

@@ -153,6 +153,7 @@ class MainActivity : ComponentActivity() {
         )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             window.isNavigationBarContrastEnforced = false
+            @Suppress("DEPRECATION")
             window.isStatusBarContrastEnforced = false
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -169,7 +170,7 @@ class MainActivity : ComponentActivity() {
             val context = LocalContext.current
             val currentConfiguration = androidx.compose.ui.platform.LocalConfiguration.current
             val localizedContext = remember(language, currentConfiguration) {
-                val locale = Locale(language)
+                val locale = Locale.Builder().setLanguage(language).build()
                 Locale.setDefault(locale)
                 val config = Configuration(currentConfiguration)
                 config.setLocale(locale)

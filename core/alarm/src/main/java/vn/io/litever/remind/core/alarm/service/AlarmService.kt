@@ -278,7 +278,7 @@ class AlarmService : Service() {
             getString(R.string.notification_alarm_text)
         }
 
-        return NotificationCompat.Builder(this, channelId)
+        val notification = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.ic_remind_notification)
             .setContentTitle(title)
             .setContentText(text)
@@ -292,8 +292,12 @@ class AlarmService : Service() {
                 }
             }
             .setOngoing(true)
+            .setAutoCancel(false)
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
             .build()
+            
+        notification.flags = notification.flags or android.app.Notification.FLAG_NO_CLEAR or android.app.Notification.FLAG_ONGOING_EVENT
+        return notification
     }
 
     override fun onDestroy() {

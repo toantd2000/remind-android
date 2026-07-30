@@ -33,9 +33,7 @@ platform :android do
   desc "Deploy a new version to the Google Play (Production)"
   lane :deploy do
     gradle(task: "clean assembleRelease")
-    upload_to_play_store(
-        json_key_data: ENV["GPLAY_SERVICE_ACCOUNT_KEY"]
-    )
+    upload_to_play_store()
   end
 
   desc "Deploy a new version to the Google Play (Internal Track)"
@@ -47,7 +45,6 @@ platform :android do
 
     upload_to_play_store(
         track: "internal",
-        json_key_data: ENV["GPLAY_SERVICE_ACCOUNT_KEY"],
         skip_upload_apk: options[:skip_upload_apk] ? true : false,
         skip_upload_aab: options[:skip_upload_apk] ? true : false
     )

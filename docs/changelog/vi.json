@@ -1,8 +1,20 @@
 [
   {
+    "versionName": "1.2.0",
+    "date": "2026-07-30",
+    "isLatest": true,
+    "notes": [
+      "Ra mắt 2 nhiệm vụ thức dậy mới: Ghi nhớ (Memory Tiles) và Gõ phím.",
+      "Thêm thống kê Firebase Analytics để tối ưu trải nghiệm.",
+      "Hỗ trợ Android 37 và cập nhật thư viện mới nhất.",
+      "Cải tiến giao diện báo thức và màu sắc ứng dụng đồng bộ.",
+      "Thêm tính năng lời chào theo thời gian khi chuông reo."
+    ]
+  },
+  {
     "versionName": "1.1.7",
     "date": "2026-07-15",
-    "isLatest": true,
+    "isLatest": false,
     "notes": [
       "Sửa lỗi hiển thị sai ngôn ngữ trong các hộp thoại chọn thời gian.",
       "Chuẩn hóa màu sắc hệ thống và các biểu tượng cài đặt.",

@@ -1,8 +1,20 @@
 [
   {
+    "versionName": "1.2.0",
+    "date": "2026-07-30",
+    "isLatest": true,
+    "notes": [
+      "Introduced 2 new wake-up missions: Memory Tiles and Typing.",
+      "Integrated Firebase Analytics for better experience optimization.",
+      "Support Android 37 and updated dependencies.",
+      "Improved alarm UI and cohesive app colors.",
+      "Added time-based greetings when the alarm rings."
+    ]
+  },
+  {
     "versionName": "1.1.7",
     "date": "2026-07-15",
-    "isLatest": true,
+    "isLatest": false,
     "notes": [
       "Fixed incorrect language localization in time picker dialogs.",
       "Standardized system colors and setting icons.",

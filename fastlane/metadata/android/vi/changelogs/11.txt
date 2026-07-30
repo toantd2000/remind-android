@@ -1,0 +1,6 @@
+Bản cập nhật lớn v1.2.0:
+- Ra mắt 2 nhiệm vụ thức dậy mới: Ghi nhớ (Memory Tiles) và Gõ phím.
+- Thêm thống kê Firebase Analytics để tối ưu trải nghiệm.
+- Hỗ trợ Android 37 và cập nhật thư viện mới nhất.
+- Cải tiến giao diện báo thức và màu sắc ứng dụng đồng bộ.
+- Thêm tính năng lời chào theo thời gian khi chuông reo.

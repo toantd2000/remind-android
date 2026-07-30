@@ -17,9 +17,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.ChevronRight
-import androidx.compose.material.icons.rounded.Remove
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -47,7 +48,6 @@ import vn.io.litever.designsystem.components.LiteverCard
 import vn.io.litever.designsystem.components.LiteverIconButton
 import vn.io.litever.designsystem.components.LiteverRadioButton
 import vn.io.litever.designsystem.components.LiteverScaffold
-import vn.io.litever.designsystem.components.LiteverTextField
 import vn.io.litever.designsystem.components.LiteverTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
@@ -230,14 +230,31 @@ fun TypingMissionConfigScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             // Section 2: Repetitions
-            Text(
-                text = stringResource(vn.io.litever.remind.features.mission.R.string.settings_title),
-                style = LiteverTheme.typography.labelLarge.copy(
-                    fontWeight = FontWeight.SemiBold,
-                    color = LiteverTheme.colors.primary,
-                    letterSpacing = 1.sp
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(vn.io.litever.remind.features.mission.R.string.settings_title),
+                    style = LiteverTheme.typography.labelLarge.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        color = LiteverTheme.colors.primary,
+                        letterSpacing = 1.sp
+                    )
                 )
-            )
+                LiteverIconButton(
+                    onClick = { onRepetitionsChange(1) },
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Refresh,
+                        contentDescription = "Reset",
+                        tint = LiteverTheme.colors.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
             
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -248,70 +265,49 @@ fun TypingMissionConfigScreen(
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 Row(
-                    modifier = Modifier
-                        .padding(12.dp)
-                        .fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_repetitions),
-                        style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Medium),
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
-                    
-                    Row(
-                        modifier = Modifier.padding(4.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                    LiteverIconButton(
+                        onClick = { if (repetitions > 1) onRepetitionsChange(repetitions - 1) },
+                        modifier = Modifier.size(40.dp)
                     ) {
-                        LiteverIconButton(
-                            onClick = { if (repetitions > 1) onRepetitionsChange(repetitions - 1) },
-                            modifier = Modifier.size(40.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.Remove,
-                                contentDescription = null,
-                                tint = LiteverTheme.colors.primary,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                        
-                        LiteverTextField(
-                            value = repetitions.toString(),
-                            onValueChange = { newValue ->
-                                if (newValue.isEmpty()) {
-                                    onRepetitionsChange(1)
-                                } else {
-                                    newValue.toIntOrNull()?.let {
-                                        onRepetitionsChange(it.coerceIn(1, 99))
-                                    }
-                                }
-                            },
-                            modifier = Modifier.width(64.dp),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            singleLine = true,
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
+                            contentDescription = null,
+                            tint = if (repetitions > 1) LiteverTheme.colors.primary else LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.3f),
+                            modifier = Modifier.size(28.dp)
                         )
-                        
-                        LiteverIconButton(
-                            onClick = { if (repetitions < 99) onRepetitionsChange(repetitions + 1) },
-                            modifier = Modifier.size(40.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.Add,
-                                contentDescription = null,
-                                tint = LiteverTheme.colors.primary,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
+                    }
+
+                    Text(
+                        text = "$repetitions",
+                        style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                        color = LiteverTheme.colors.primary
+                    )
+
+                    LiteverIconButton(
+                        onClick = { if (repetitions < 99) onRepetitionsChange(repetitions + 1) },
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = if (repetitions < 99) LiteverTheme.colors.primary else LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.3f),
+                            modifier = Modifier.size(28.dp)
+                        )
                     }
                 }
             }
             
+            Spacer(modifier = Modifier.height(12.dp))
+            
             Text(
                 text = stringResource(vn.io.litever.remind.features.mission.R.string.repetition_helper, repetitions),
-                style = LiteverTheme.typography.labelSmall,
-                color = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.6f),
-                modifier = Modifier.padding(top = 8.dp, start = 8.dp)
+                style = LiteverTheme.typography.bodySmall,
+                color = LiteverTheme.colors.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 4.dp)
             )
 
             Spacer(modifier = Modifier.height(32.dp))

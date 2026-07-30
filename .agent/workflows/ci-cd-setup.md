@@ -3,26 +3,25 @@ description: Xây dựng cầu nối tích hợp và phân phối tự động C
 ---
 
 # Mục tiêu
-Triển khai hệ thống tự động kiểm tra code (Lint), chạy Test, và đóng gói App (Build Build/Release) nhằm giảm tải tay chân cho lập trình viên mỗi khi đẩy Push hoặc có Pull Request.
+Thiết lập hệ thống CI/CD chạy tại máy cá nhân (Local CI/CD) với mô hình Human-in-the-loop (Kết hợp giữa Con người và AI Agent). AI Agent sẽ đóng vai trò như một người trợ lý tự động gõ lệnh và rà soát, còn Lập trình viên sẽ là người duyệt và ra quyết định.
 
-# Các bước thực hiện
+# Các thành phần chính
 
-## Bước 1: Quyết định môi trường CI
-1. Nếu User không yêu cầu riêng hệ thống nào (GitLab CI, Bitrise), lấy **GitHub Actions** làm mặc định (bởi nó phổ biến nhất).
-2. Tạo thư mục `.github/workflows/` (nếu dùng GithubActions).
+## 1. Fastlane
+- **Vị trí**: `fastlane/Fastfile`
+- **Nhiệm vụ**: Đóng gói ứng dụng, tải Metadata (Release Notes) và Ảnh chụp màn hình, sau đó tự động phân phối lên Google Play (Internal Track hoặc Production) thông qua Google Play Developer API.
+- **Tuỳ biến**: Fastlane đã được thiết lập để có thể linh hoạt chỉ upload Metadata (không cần build lại APK/AAB) nếu không có thay đổi về mã nguồn.
 
-## Bước 2: Cài đặt CI Cơ bản (Linter & Testing)
-1. Thiết lập Runner: dùng `ubuntu-latest`.
-2. Thiết lập cấu hình JDK (thường là 17 hoặc 21).
-3. **Optimized Caching (BẮT BUỘC):** Cấu hình cache cho Gradle system để luồng chạy không quá 10 phút.
-4. Add permission thực thi cho Gradle wrapper.
-5. Tạo Job rà soát Static Analysis (như Detekt, Ktlint) -> Tạo Job chạy Unit Tests.
+## 2. Kiểm thử và chụp ảnh (Roborazzi)
+- **Vị trí**: `features/alarms/src/test/`
+- **Nhiệm vụ**: Đảm bảo 100% tỷ lệ UI hiển thị đúng, đồng thời sinh ra các tệp `.png` phục vụ cho việc tự động làm ảnh tải lên Google Play Store. Roborazzi chạy siêu tốc trên JVM.
 
-## Bước 3: Cài đặt CD Nâng cao (Distribution Release - Optional)
-*Nếu người dùng yêu cầu build xuất xưởng:*
-1. Thiết lập biến môi trường Secrets cho việc Sign APK (Keystore base64, Alias, Password).
-2. Thiết lập quy trình Build `assembleRelease` hoặc Bundle `bundleRelease`.
-3. Gắn lệnh upload các file build ra Artifact hoặc bắn vào kênh Slack/Telegram.
+## 3. AI Agent (Hướng dẫn tự động hóa)
+- **Vị trí**: `.agent/workflows/release-preparation.md`
+- **Nhiệm vụ**: Chứa "Prompt" và các quy tắc để bất kỳ AI Agent nào cũng có thể hiểu và tự động thực hiện tiến trình giải phóng phiên bản mới. AI sẽ rà soát `git diff`, phân tích thay đổi, chạy lệnh gradle, chạy fastlane và tạo `git tag`.
 
-## Bước 4: Tư vấn cho User
-- Hướng dẫn User cách đẩy các Keys bảo mật lên Github Secrets để file CI vừa tạo có thể chạy mượt mà không văng lỗi.
+# Các bước thực hiện chung
+1. Thêm các biến môi trường và file credential như `fastlane-credentials.json` (được đưa vào `.gitignore` để bảo mật).
+2. Khi muốn Release, người dùng sử dụng file quy trình ở `.agent/workflows/release-preparation.md` để khởi chạy quy trình (nhờ AI Agent đọc và thực thi).
+3. Đảm bảo file Changelog trong `docs/changelog` đã được viết.
+4. AI chạy quy trình và xin ý kiến duyệt ở các điểm chốt (như chuẩn bị push code hay upload AAB).

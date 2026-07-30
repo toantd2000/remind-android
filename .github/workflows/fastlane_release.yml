@@ -1,0 +1,59 @@
+name: Fastlane Release (Production)
+
+on:
+  push:
+    tags:
+      - 'v*'
+      - 'release*'
+
+jobs:
+  deploy:
+    name: Build & Deploy to Play Store
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+          
+      - name: Decode Keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          mkdir -p ~/.android
+          echo $KEYSTORE_BASE64 | base64 --decode > ~/.android/release.keystore
+          
+      - name: Decode Play Store JSON
+        env:
+          PLAY_STORE_JSON: ${{ secrets.PLAY_STORE_JSON }}
+        run: |
+          echo $PLAY_STORE_JSON > play_store.json
+
+      - name: Create local.properties
+        env:
+          LITEVER_KEYSTORE_PATH: /home/runner/.android/release.keystore
+          LITEVER_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          LITEVER_KEYSTORE_ALIAS: ${{ secrets.KEY_ALIAS }}
+          LITEVER_KEYSTORE_ALIAS_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          echo "LITEVER_KEYSTORE_PATH=$LITEVER_KEYSTORE_PATH" >> local.properties
+          echo "LITEVER_KEYSTORE_PASSWORD=$LITEVER_KEYSTORE_PASSWORD" >> local.properties
+          echo "LITEVER_KEYSTORE_ALIAS=$LITEVER_KEYSTORE_ALIAS" >> local.properties
+          echo "LITEVER_KEYSTORE_ALIAS_PASSWORD=$LITEVER_KEYSTORE_ALIAS_PASSWORD" >> local.properties
+
+      - name: Run Fastlane Deploy
+        env:
+          PLAY_STORE_JSON_PATH: play_store.json
+        run: bundle exec fastlane deploy_production

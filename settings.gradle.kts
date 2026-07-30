@@ -41,6 +41,7 @@ include(":features:settings")
 include(":features:mission")
 include(":features:remind")
 include(":core:analytics")
+include(":core:testing")
 
 
 

@@ -34,8 +34,8 @@ playServicesAds = "25.4.0"
 emoji2-emojipicker = "1.6.0"
 mockk = "1.14.11"
 turbine = "1.2.1"
-
-
+roborazzi = "1.70.0"
+robolectric = "4.16.1"
 
 
 [libraries]
@@ -101,7 +101,11 @@ androidx-emoji2-emojipicker = { group = "androidx.emoji2", name = "emoji2-emojip
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 
-
+# Testing
+roborazzi = { group = "io.github.takahirom.roborazzi", name = "roborazzi", version.ref = "roborazzi" }
+roborazzi-compose = { group = "io.github.takahirom.roborazzi", name = "roborazzi-compose", version.ref = "roborazzi" }
+roborazzi-junit-rule = { group = "io.github.takahirom.roborazzi", name = "roborazzi-junit-rule", version.ref = "roborazzi" }
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 
 
 [plugins]
@@ -114,5 +118,4 @@ aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "abo
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlyticsPlugin" }
-
-
+roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }

@@ -35,3 +35,11 @@ google-services.json
 
 #kotlin
 .kotlin
+
+# Fastlane and Env
+.env
+.env.*
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.html
+fastlane/litever-remind-9584c2ea7120.json

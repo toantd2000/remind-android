@@ -1,0 +1,2 @@
+- Localization: Fixed incorrect language localization in time picker dialogs.
+- UI Enhancements: Standardized system colors, unified setting icons, and optimized bottom bar layout.

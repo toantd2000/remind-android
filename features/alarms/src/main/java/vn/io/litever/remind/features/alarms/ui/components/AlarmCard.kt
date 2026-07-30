@@ -15,11 +15,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import vn.io.litever.designsystem.components.LiteverCard
@@ -52,74 +54,76 @@ fun AlarmCard(
         LiteverTheme.colors.surface.copy(alpha = 0.5f)
     }
 
+    val isEnabledAndNotSkipped = alarm.isEnabled && !isSkipped
+    val primaryColor = LiteverTheme.colors.primary
+
     LiteverCard(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .padding(vertical = 4.dp)
+            .clip(LiteverTheme.shapes.large)
+            .clickable { onClick() },
         colors = CardDefaults.cardColors(
             containerColor = containerColor,
         ),
         shape = LiteverTheme.shapes.large,
         border = BorderStroke(1.dp, LiteverTheme.colors.outlineVariant.copy(alpha = 0.3f))
     ) {
-        Box(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(LiteverTheme.shapes.large)
-                .clickable { onClick() }
-        ) {
-            // Left Accent Bar - Thinner and more subtle
-            if (alarm.isEnabled && !isSkipped) {
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .width(3.dp)
-                            .background(
-                                color = LiteverTheme.colors.primary.copy(alpha = 0.7f)
-                            )
-                    )
+                .drawBehind {
+                    if (isEnabledAndNotSkipped) {
+                        drawRect(
+                            color = primaryColor.copy(alpha = 0.7f),
+                            size = androidx.compose.ui.geometry.Size(3.dp.toPx(), size.height)
+                        )
+                    }
                 }
-            }
-
-            Row(
+                .padding(
+                    start = 16.dp,
+                    end = 0.dp,
+                    top = 12.dp,
+                    bottom = 12.dp
+                ),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        start = 16.dp,
-                        end = 0.dp,
-                        top = 12.dp,
-                        bottom = 12.dp
-                    ),
-                verticalAlignment = Alignment.CenterVertically
+                    .weight(1f)
+                    .graphicsLayer { this.alpha = alpha }
             ) {
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .graphicsLayer { this.alpha = alpha }
-                ) {
-                    // Top Row: Repeat Info
+                // Top Row: Repeat Info
+                    val skippedAt = alarm.skippedAt
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = getRepeatText(alarm),
-                            style = LiteverTheme.typography.labelMedium,
+                            style = LiteverTheme.typography.labelSmall,
                             color = if (alarm.isEnabled && !isSkipped) 
                                 LiteverTheme.colors.primary 
                             else 
                                 LiteverTheme.colors.onSurfaceVariant,
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.weight(1f, fill = false),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                         
-                        if (isSkipped) {
+                        if (isSkipped && skippedAt != null) {
                             Spacer(modifier = Modifier.width(6.dp))
-                            Icon(
-                                imageVector = Icons.Rounded.NotificationsPaused,
-                                contentDescription = null,
-                                modifier = Modifier.size(14.dp),
-                                tint = LiteverTheme.colors.secondary
+                            Box(
+                                modifier = Modifier
+                                    .size(4.dp)
+                                    .background(LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.6f), CircleShape)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            
+                            val dateFormatter = remember { DateTimeFormatter.ofPattern("dd/MM") }
+                            Text(
+                                text = stringResource(R.string.skipped_next_format, skippedAt.format(dateFormatter)),
+                                style = LiteverTheme.typography.labelSmall,
+                                color = LiteverTheme.colors.tertiary,
+                                fontWeight = FontWeight.Bold
                             )
                         }
                     }
@@ -168,24 +172,7 @@ fun AlarmCard(
                         overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                     )
 
-                    // Skipped Info Text
-                    val skippedAt = alarm.skippedAt
-                    if (isSkipped && skippedAt != null) {
-                        Spacer(modifier = Modifier.height(4.dp))
-                        val dateFormatter = remember { DateTimeFormatter.ofPattern("dd/MM") }
-                        Surface(
-                            color = LiteverTheme.colors.secondaryContainer,
-                            shape = LiteverTheme.shapes.small
-                        ) {
-                            Text(
-                                text = stringResource(R.string.skipped_next_format, skippedAt.format(dateFormatter)),
-                                style = LiteverTheme.typography.labelSmall,
-                                color = LiteverTheme.colors.onSecondaryContainer,
-                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
+
                 }
 
                 LiteverSwitch(
@@ -207,7 +194,6 @@ fun AlarmCard(
             }
         }
     }
-}
 
 @Composable
 private fun MissionIcons(missions: List<Mission>, modifier: Modifier = Modifier) {

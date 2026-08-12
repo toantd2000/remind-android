@@ -49,6 +49,7 @@ android {
         debug {
             manifestPlaceholders["crashlyticsCollectionEnabled"] = "false"
             manifestPlaceholders["analyticsCollectionEnabled"] = "false"
+            signingConfig = signingConfigs.getByName("release")
         }
         release {
             isMinifyEnabled = true

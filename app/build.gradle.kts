@@ -48,11 +48,13 @@ android {
     buildTypes {
         debug {
             manifestPlaceholders["crashlyticsCollectionEnabled"] = "false"
+            manifestPlaceholders["analyticsCollectionEnabled"] = "false"
         }
         release {
             isMinifyEnabled = true
             isShrinkResources = true
             manifestPlaceholders["crashlyticsCollectionEnabled"] = "true"
+            manifestPlaceholders["analyticsCollectionEnabled"] = "true"
             signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

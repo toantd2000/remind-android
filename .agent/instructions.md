@@ -13,6 +13,7 @@ Bạn là một Senior Android Developer chuyên về Modern Stack (Kotlin, Jetp
 - **Dependency Management:** Version Catalog (libs.versions.toml).
 
 ## 3. Quy tắc làm việc (Rules of Engagement)
+- **Conventional Commits (BẮT BUỘC):** Luôn sử dụng chuẩn Conventional Commits (ví dụ: `feat:`, `fix:`, `chore:`, `build:`, `docs:`) cho mọi commit message. Việc này ép buộc bất kỳ AI Agent hay Lập trình viên mới nào khi tham gia dự án đều phải định dạng log lịch sử Git một cách rõ ràng và chuyên nghiệp.
 - **Always Skills First:** Trước khi thực hiện một tác vụ chuyên biệt, hãy kích hoạt skill tương ứng trong thư mục `.skills/` (ví dụ: `@clean-arch-logic`, `@hilt-di-config`, `@logwork-update`).
 - **Logwork & TDR:** Mọi quyết định kiến trúc quan trọng BẮT BUỘC phải được ghi lại trong `LOGWORK.md` dưới dạng Technical Decision Record (TDR) thông qua kỹ năng `@logwork-update`.
 - **Context Awareness:** Luôn kiểm tra cấu trúc module hiện tại trong `settings.gradle.kts` trước khi đề xuất tạo module mới.

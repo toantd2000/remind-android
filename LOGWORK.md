@@ -290,6 +290,24 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
   - Khai báo `signingConfigs` và gán cho `release` build type.
 - **Hệ quả:** Bản build Release có thể được ký tự động mà vẫn đảm bảo tính bảo mật của KeyStore.
 
+### [TDR-061] - Hoàn thiện Nhập liệu Nhiệm vụ Gõ phím: Hiển thị nhiều lỗi và Ký tự thừa
+- **Ngày thực hiện:** 2026-08-18
+- **Trạng thái:** Accepted
+- **Bối cảnh:** 
+  - TDR-061 trước đó khóa con trỏ khi gặp lỗi, gây hạn chế cho người dùng muốn nhìn thấy toàn bộ nội dung mình gõ sai.
+  - Người dùng yêu cầu hiển thị đồng thời nhiều lỗi và các ký tự nhập thừa so với câu mẫu.
+- **Quyết định:** 
+  - Cập nhật logic `VisualTransformation`:
+    - Duyệt qua toàn bộ `userInput`.
+    - So khớp từng ký tự: Đúng hiện **Xanh**, Sai hiện **Đỏ** (hiển thị ký tự người dùng gõ).
+    - Mọi ký tự nhập thừa so với độ dài câu mẫu đều hiển thị màu **Đỏ**.
+    - Các ký tự còn lại của câu mẫu hiển thị màu **Mờ (Dimmed)**.
+  - Thiết lập `OffsetMapping` là 1:1 cho `originalToTransformed`, cho phép con trỏ tự do di chuyển theo nội dung nhập.
+- **Hệ quả:** 
+  - Phản hồi thị giác cực kỳ chi tiết: người dùng thấy chính xác những gì mình gõ sai và thừa.
+  - Trải nghiệm nhập liệu tự nhiên, không bị khựng lại khi có lỗi.
+  - Dễ dàng nhận diện và sửa lỗi tại bất kỳ vị trí nào.
+
 ### [TDR-033] - Chuyển đổi trạng thái Bỏ Lỡ sang Message Screen và Ưu tiên Điều hướng
 - **Ngày thực hiện:** 2026-04-22
 - **Trạng thái:** Accepted
@@ -555,6 +573,9 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
 ---
 
 ## 🛠 Changelog (Tính năng mới)
+
+### [2026-08-18]
+- **Feature:** Nâng cấp nhiệm vụ Gõ phím với giao diện nhập liệu trực tiếp (Immersive Input), gộp phần hiển thị và phần nhập thành một khối duy nhất giúp tăng độ tập trung.
 
 ### [2026-06-11]
 - **Design System:** Áp dụng bảng màu Material 3 đầy đủ (30+ tokens) mang phong cách Amber, Brown, Green tự nhiên và ấm áp.

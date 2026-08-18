@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "vn.io.litever.remind.features.remind"
+    namespace = "vn.io.litever.remind.features.today"
 
     compileSdk {
         version = release(37)

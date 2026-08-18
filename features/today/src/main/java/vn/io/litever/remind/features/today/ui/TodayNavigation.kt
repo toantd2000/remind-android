@@ -1,17 +1,17 @@
-package vn.io.litever.remind.features.remind.ui
+package vn.io.litever.remind.features.today.ui
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 
-const val remindRoute = "remind_route"
+const val todayRoute = "today_route"
 const val locationSearchRoute = "location_search_route"
 
-fun NavGraphBuilder.remindGraph(
+fun NavGraphBuilder.todayGraph(
     onNavigateToLocationSearch: () -> Unit,
     onBackClick: () -> Unit
 ) {
-    composable(remindRoute) {
-        RemindRoute(
+    composable(todayRoute) {
+        TodayRoute(
             onLocationClick = onNavigateToLocationSearch
         )
     }

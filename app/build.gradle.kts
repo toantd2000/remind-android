@@ -84,7 +84,7 @@ dependencies {
     implementation(project(":features:alarms"))
     implementation(project(":features:settings"))
     implementation(project(":features:mission"))
-    implementation(project(":features:remind"))
+    implementation(project(":features:today"))
     implementation(project(":core:network"))
     implementation(project(":core:data"))
     implementation(project(":core:domain"))

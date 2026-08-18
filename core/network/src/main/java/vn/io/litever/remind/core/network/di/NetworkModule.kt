@@ -11,7 +11,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import vn.io.litever.remind.core.network.WeatherApi
-import vn.io.litever.remind.core.network.ReminderApi
+import vn.io.litever.remind.core.network.TodayApi
 import vn.io.litever.remind.core.network.BuildConfig
 import javax.inject.Singleton
 
@@ -55,7 +55,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideReminderApi(retrofit: Retrofit): ReminderApi {
-        return retrofit.create(ReminderApi::class.java)
+    fun provideTodayApi(retrofit: Retrofit): TodayApi {
+        return retrofit.create(TodayApi::class.java)
     }
 }

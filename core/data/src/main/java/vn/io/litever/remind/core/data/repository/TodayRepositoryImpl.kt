@@ -7,31 +7,31 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import vn.io.litever.remind.core.datastore.WeatherPreferencesDataSource
-import vn.io.litever.remind.core.domain.repository.ReminderRepository
-import vn.io.litever.remind.core.model.ReminderResponse
-import vn.io.litever.remind.core.network.ReminderApi
+import vn.io.litever.remind.core.domain.repository.TodayRepository
+import vn.io.litever.remind.core.model.TodayBriefing
+import vn.io.litever.remind.core.network.TodayApi
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ReminderRepositoryImpl @Inject constructor(
-    private val reminderApi: ReminderApi,
+class TodayRepositoryImpl @Inject constructor(
+    private val TodayApi: TodayApi,
     private val preferencesDataSource: WeatherPreferencesDataSource,
     private val alarmPreferencesDataSource: AlarmPreferencesDataSource,
     private val json: Json
-) : ReminderRepository {
+) : TodayRepository {
 
     private suspend fun getCurrentLanguage(): String {
         return alarmPreferencesDataSource.language.first()
     }
 
-    override fun getReminder(): Flow<ReminderResponse?> {
+    override fun getTodayBriefing(): Flow<TodayBriefing?> {
         return preferencesDataSource.reminderJson.map { jsonString ->
             if (jsonString != null) {
                 try {
-                    json.decodeFromString<ReminderResponse>(jsonString)
+                    json.decodeFromString<TodayBriefing>(jsonString)
                 } catch (e: Exception) {
                     null
                 }
@@ -41,7 +41,7 @@ class ReminderRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun refreshReminder(query: String?, force: Boolean) {
+    override suspend fun refreshTodayBriefing(query: String?, force: Boolean) {
         val today = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
         val lastUpdatedDate = preferencesDataSource.reminderLastUpdatedDate.first()
         val cachedLang = preferencesDataSource.reminderCachedLanguage.first()
@@ -55,7 +55,7 @@ class ReminderRepositoryImpl @Inject constructor(
         try {
             // Always pass empty string for automatic fetch as per user request
             val finalQuery = query ?: ""
-            val response = reminderApi.getReminder(query = finalQuery, lang = currentLang)
+            val response = TodayApi.getTodayBriefing(query = finalQuery, lang = currentLang)
             val jsonString = json.encodeToString(response)
             
             // Save reminder data and update the cached language

@@ -1,4 +1,4 @@
-package vn.io.litever.remind.features.remind.ui
+package vn.io.litever.remind.features.today.ui
 
 import android.app.Activity
 import androidx.compose.foundation.background
@@ -13,7 +13,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Refresh
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -31,33 +31,35 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import vn.io.litever.designsystem.components.LiteverCircularProgressIndicator
 import vn.io.litever.designsystem.components.LiteverScaffold
 import vn.io.litever.designsystem.components.LiteverTopAppBar
+import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.ads.api.AdManager
 import vn.io.litever.remind.core.ads.api.AdPlacement
 import vn.io.litever.remind.core.ads.api.AdState
 import vn.io.litever.remind.core.ads.api.LocalAdManager
 import vn.io.litever.remind.core.designsystem.components.ReMindLoadingIconButton
-import vn.io.litever.remind.core.designsystem.components.ReminderInfoView
+import vn.io.litever.remind.core.designsystem.components.TodayQuoteView
 import vn.io.litever.remind.core.designsystem.components.WeatherInfoView
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.AdConfig
 import vn.io.litever.remind.core.model.AiAnalysis
 import vn.io.litever.remind.core.model.CurrentWeather
 import vn.io.litever.remind.core.model.DailySummary
-import vn.io.litever.remind.core.model.ReminderMetadata
-import vn.io.litever.remind.core.model.ReminderResponse
+import vn.io.litever.remind.core.model.TodayBriefing
+import vn.io.litever.remind.core.model.TodayMetadata
 import vn.io.litever.remind.core.model.WeatherResponse
-import vn.io.litever.remind.features.remind.R
+import vn.io.litever.remind.features.today.R
 
 @Composable
-fun RemindRoute(
+fun TodayRoute(
     modifier: Modifier = Modifier,
     onLocationClick: () -> Unit = {},
-    viewModel: RemindViewModel = hiltViewModel()
+    viewModel: TodayViewModel = hiltViewModel()
 ) {
     val weather by viewModel.weather.collectAsState()
-    val reminder by viewModel.reminder.collectAsState()
+    val todayBriefing by viewModel.todayBriefing.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val isProcessing by viewModel.isProcessing.collectAsState()
 
@@ -74,9 +76,9 @@ fun RemindRoute(
         }
     }
 
-    RemindScreen(
+    TodayScreen(
         weather = weather,
-        reminder = reminder,
+        todayBriefing = todayBriefing,
         isRefreshing = isRefreshing,
         isProcessing = isProcessing,
         onRefresh = viewModel::refresh,
@@ -86,9 +88,9 @@ fun RemindRoute(
 }
 
 @Composable
-fun RemindScreen(
+fun TodayScreen(
     weather: WeatherResponse?,
-    reminder: ReminderResponse?,
+    todayBriefing: TodayBriefing?,
     isRefreshing: Boolean,
     isProcessing: Boolean,
     onRefresh: () -> Unit,
@@ -132,12 +134,12 @@ fun RemindScreen(
                     onLocationClick = onLocationClick
                 )
             } else if (isRefreshing) {
-                CircularProgressIndicator()
+                LiteverCircularProgressIndicator()
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            ReminderInfoView(reminder = reminder)
+            TodayQuoteView(todayBriefing = todayBriefing)
 
             LocalAdManager.current.NativeAdView(
                 placement = AdPlacement.REMIND_NATIVE,
@@ -151,7 +153,7 @@ fun RemindScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun RemindScreenPreview() {
+fun TodayScreenPreview() {
     val mockWeather = WeatherResponse(
         locationName = "Hanoi",
         current = CurrentWeather(
@@ -171,21 +173,21 @@ fun RemindScreenPreview() {
         aiStatus = "completed"
     )
 
-    val mockReminder = ReminderResponse(
+    val mockTodayBriefing = TodayBriefing(
         messages = listOf(
             "Hãy bắt đầu ngày mới bằng một nụ cười rạng rỡ!",
             "Đừng quên uống đủ nước trong ngày nhé."
         ),
         adConfig = AdConfig(enableAds = true, nativeId = "mock-native-ad-id"),
-        metadata = ReminderMetadata(date = "04-26", isHoliday = false),
+        metadata = TodayMetadata(date = "04-26", isHoliday = false),
         aiStatus = "completed"
     )
 
     ReMindTheme {
         CompositionLocalProvider(LocalAdManager provides PreviewAdManager) {
-            RemindScreen(
+            TodayScreen(
                 weather = mockWeather,
-                reminder = mockReminder,
+                todayBriefing = mockTodayBriefing,
                 isRefreshing = false,
                 isProcessing = false,
                 onRefresh = {}
@@ -207,13 +209,13 @@ private object PreviewAdManager : AdManager {
             modifier = modifier
                 .fillMaxWidth()
                 .height(250.dp)
-                .background(androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant, androidx.compose.material3.MaterialTheme.shapes.medium),
-            contentAlignment = androidx.compose.ui.Alignment.Center
+                .background(LiteverTheme.colors.surfaceVariant, LiteverTheme.shapes.medium),
+            contentAlignment = Alignment.Center
         ) {
-            androidx.compose.material3.Text(
+            Text(
                 text = "Native Ad Preview ($placement)",
-                style = androidx.compose.material3.MaterialTheme.typography.labelLarge,
-                color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
+                style = LiteverTheme.typography.labelLarge,
+                color = LiteverTheme.colors.onSurfaceVariant
             )
         }
     }

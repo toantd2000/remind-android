@@ -1,4 +1,4 @@
-package vn.io.litever.remind.features.remind.ui
+package vn.io.litever.remind.features.today.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

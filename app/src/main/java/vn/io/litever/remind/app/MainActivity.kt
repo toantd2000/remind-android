@@ -14,12 +14,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Alarm
 import androidx.compose.material.icons.rounded.Lightbulb
@@ -27,7 +26,6 @@ import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.CompositionLocalProvider
@@ -53,7 +51,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.designsystem.components.LiteverScaffold
 import vn.io.litever.remind.core.ads.api.AdManager
 import vn.io.litever.remind.core.ads.api.LocalAdManager
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
@@ -64,13 +62,10 @@ import vn.io.litever.remind.features.alarms.ui.AlarmListRoute
 import vn.io.litever.remind.features.alarms.ui.alarmGraph
 import vn.io.litever.remind.features.alarms.ui.ringtoneSelectionRoute
 import vn.io.litever.remind.features.mission.ui.missionGraph
+import vn.io.litever.remind.features.mission.ui.navigateToMemoryGameConfig
 import vn.io.litever.remind.features.mission.ui.navigateToMissionRinging
 import vn.io.litever.remind.features.mission.ui.navigateToPhraseSelection
 import vn.io.litever.remind.features.mission.ui.navigateToTypingMissionConfig
-import vn.io.litever.remind.features.mission.ui.navigateToMemoryGameConfig
-import vn.io.litever.remind.features.remind.ui.locationSearchRoute
-import vn.io.litever.remind.features.remind.ui.remindGraph
-import vn.io.litever.remind.features.remind.ui.remindRoute
 import vn.io.litever.remind.features.settings.ui.navigateToAlarmSettings
 import vn.io.litever.remind.features.settings.ui.navigateToAttributions
 import vn.io.litever.remind.features.settings.ui.navigateToGeneralSettings
@@ -79,9 +74,11 @@ import vn.io.litever.remind.features.settings.ui.navigateToPermissions
 import vn.io.litever.remind.features.settings.ui.navigateToQA
 import vn.io.litever.remind.features.settings.ui.settingsGraph
 import vn.io.litever.remind.features.settings.ui.settingsRoute
+import vn.io.litever.remind.features.today.ui.locationSearchRoute
+import vn.io.litever.remind.features.today.ui.todayGraph
+import vn.io.litever.remind.features.today.ui.todayRoute
 import java.util.Locale
 import javax.inject.Inject
-import vn.io.litever.designsystem.components.LiteverScaffold
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -287,7 +284,7 @@ class MainActivity : ComponentActivity() {
 
                             val isBottomBarVisible = currentRoute == AlarmListRoute ||
                                     currentRoute == settingsRoute ||
-                                    currentRoute == remindRoute
+                                    currentRoute == todayRoute
 
                             LiteverScaffold(
                                 bottomBar = {
@@ -316,13 +313,13 @@ class MainActivity : ComponentActivity() {
                                                 icon = {
                                                     Icon(
                                                         Icons.Rounded.Lightbulb,
-                                                        contentDescription = "Remind"
+                                                        contentDescription = "Today"
                                                     )
                                                 },
-                                                label = { Text(stringResource(R.string.navigation_remind)) },
-                                                selected = currentRoute == remindRoute,
+                                                label = { Text(stringResource(R.string.navigation_today)) },
+                                                selected = currentRoute == todayRoute,
                                                 onClick = {
-                                                    navController.navigate(remindRoute) {
+                                                    navController.navigate(todayRoute) {
                                                         popUpTo(navController.graph.startDestinationId) {
                                                             saveState = true
                                                         }
@@ -476,7 +473,7 @@ class MainActivity : ComponentActivity() {
                                             onBackClick = { navController.popBackStack() },
                                             navController = navController
                                         )
-                                        remindGraph(
+                                        todayGraph(
                                             onNavigateToLocationSearch = {
                                                 navController.navigate(locationSearchRoute)
                                             },

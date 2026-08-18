@@ -39,7 +39,7 @@ include(":core:ads:impl")
 include(":features:alarms")
 include(":features:settings")
 include(":features:mission")
-include(":features:remind")
+include(":features:today")
 include(":core:analytics")
 include(":core:testing")
 

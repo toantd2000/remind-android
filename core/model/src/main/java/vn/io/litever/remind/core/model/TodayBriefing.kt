@@ -4,10 +4,10 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ReminderResponse(
+data class TodayBriefing(
     @SerialName("messages") val messages: List<String>,
     @SerialName("ad_config") val adConfig: AdConfig,
-    @SerialName("metadata") val metadata: ReminderMetadata? = null,
+    @SerialName("metadata") val metadata: TodayMetadata? = null,
     @SerialName("ai_status") val aiStatus: String = "completed"
 )
 
@@ -18,7 +18,7 @@ data class AdConfig(
 )
 
 @Serializable
-data class ReminderMetadata(
+data class TodayMetadata(
     @SerialName("date") val date: String,
     @SerialName("is_holiday") val isHoliday: Boolean
 )

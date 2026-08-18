@@ -1,4 +1,4 @@
-package vn.io.litever.remind.features.remind.ui
+package vn.io.litever.remind.features.today.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import vn.io.litever.designsystem.components.LiteverTopAppBar
 import vn.io.litever.remind.core.model.LocationSearchResponse
-import vn.io.litever.remind.features.remind.R
+import vn.io.litever.remind.features.today.R
 import vn.io.litever.designsystem.components.LiteverIconButton
 import vn.io.litever.designsystem.components.LiteverScaffold
 

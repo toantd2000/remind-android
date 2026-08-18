@@ -33,7 +33,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import vn.io.litever.designsystem.components.LiteverButton
 import vn.io.litever.designsystem.components.LiteverScaffold
-import vn.io.litever.remind.core.designsystem.components.ReminderInfoView
+import vn.io.litever.remind.core.designsystem.components.TodayQuoteView
 import java.time.LocalTime
 import java.util.Locale
 import vn.io.litever.designsystem.components.LiteverCard
@@ -48,13 +48,13 @@ fun AlarmMessageRoute(
     val alarm by viewModel.alarm.collectAsState()
     val is24HourFormat by viewModel.is24HourFormat.collectAsState()
     val weather by viewModel.weather.collectAsState()
-    val reminder by viewModel.reminder.collectAsState()
+    val todayBriefing by viewModel.todayBriefing.collectAsState()
 
     AlarmMessageScreen(
         alarm = alarm,
         is24HourFormat = is24HourFormat,
         weather = weather,
-        reminder = reminder,
+        todayBriefing = todayBriefing,
         onFinish = {
             viewModel.onFinishMessage()
             onFinish()
@@ -67,7 +67,7 @@ fun AlarmMessageScreen(
     alarm: Alarm?,
     is24HourFormat: Boolean,
     weather: WeatherResponse?,
-    reminder: ReminderResponse?,
+    todayBriefing: TodayBriefing?,
     onFinish: () -> Unit
 ) {
     BackHandler { }
@@ -158,8 +158,8 @@ fun AlarmMessageScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                ReminderInfoView(
-                    reminder = reminder
+                TodayQuoteView(
+                    todayBriefing = todayBriefing
                 )
             }
 
@@ -204,10 +204,10 @@ fun AlarmMessageScreenPreview() {
         aiAnalysis = AiAnalysis(hint = "Trời mát, mang theo ô vì có thể có mưa rào.")
     )
 
-    val mockReminder = ReminderResponse(
+    val mockTodayBriefing = TodayBriefing(
         messages = listOf("Hãy trân trọng từng phút giây tĩnh lặng để hiểu rõ hơn về những mong muốn của bản thân."),
         adConfig = AdConfig(enableAds = true, nativeId = "ca-app-pub-3940256099942544/2247696110"),
-        metadata = ReminderMetadata(date = "04-26", isHoliday = false)
+        metadata = TodayMetadata(date = "04-26", isHoliday = false)
     )
 
     ReMindTheme {
@@ -221,7 +221,7 @@ fun AlarmMessageScreenPreview() {
                 ),
                 is24HourFormat = false,
                 weather = mockWeather,
-                reminder = mockReminder,
+                todayBriefing = mockTodayBriefing,
                 onFinish = {}
             )
         }
@@ -249,10 +249,10 @@ fun AlarmMessageMissedScreenPreview() {
         aiAnalysis = AiAnalysis(hint = "Trời rất nóng, hãy uống đủ nước và mặc đồ thoáng mát.")
     )
 
-    val mockReminder = ReminderResponse(
+    val mockTodayBriefing = TodayBriefing(
         messages = listOf("Nắng nóng gay gắt, hạn chế ra ngoài vào giờ trưa nhé!"),
         adConfig = AdConfig(enableAds = false),
-        metadata = ReminderMetadata(date = "04-26", isHoliday = false)
+        metadata = TodayMetadata(date = "04-26", isHoliday = false)
     )
 
     ReMindTheme(darkTheme = true) {
@@ -266,7 +266,7 @@ fun AlarmMessageMissedScreenPreview() {
                 ),
                 is24HourFormat = true,
                 weather = mockWeather,
-                reminder = mockReminder,
+                todayBriefing = mockTodayBriefing,
                 onFinish = {}
             )
         }

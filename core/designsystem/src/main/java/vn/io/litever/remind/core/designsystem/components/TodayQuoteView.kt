@@ -7,14 +7,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
-import vn.io.litever.remind.core.model.ReminderResponse
+import vn.io.litever.remind.core.model.TodayBriefing
 
 @Composable
-fun ReminderInfoView(
-    reminder: ReminderResponse?,
+fun TodayQuoteView(
+    todayBriefing: TodayBriefing?,
     modifier: Modifier = Modifier
 ) {
-    if (reminder == null) return
+    if (todayBriefing == null) return
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -49,7 +49,7 @@ fun ReminderInfoView(
                     .padding(start = 4.dp)
                     .padding(vertical = 8.dp)
             ) {
-                reminder.messages.forEachIndexed { index, msg ->
+                todayBriefing.messages.forEachIndexed { index, msg ->
                     Text(
                         text = msg,
                         modifier = Modifier.padding(start = 12.dp, end = 16.dp)
@@ -60,7 +60,7 @@ fun ReminderInfoView(
                         )
                     )
                     
-                    if (index < reminder.messages.size - 1) {
+                    if (index < todayBriefing.messages.size - 1) {
                         HorizontalDivider(
                             modifier = Modifier.padding(horizontal = 16.dp),
                             thickness = 0.5.dp,
@@ -75,8 +75,8 @@ fun ReminderInfoView(
 
 @androidx.compose.ui.tooling.preview.Preview(showBackground = true)
 @Composable
-fun ReminderInfoViewPreview() {
-    val mockReminder = ReminderResponse(
+fun TodayQuoteViewPreview() {
+    val mockTodayBriefing = TodayBriefing(
         messages = listOf(
             "Đừng quên mang theo tài liệu họp lúc 9h sáng nhé!",
             "Uống thuốc sau khi ăn sáng."
@@ -85,7 +85,7 @@ fun ReminderInfoViewPreview() {
     )
     vn.io.litever.remind.core.designsystem.theme.ReMindTheme {
         Box(modifier = Modifier.padding(16.dp)) {
-            ReminderInfoView(reminder = mockReminder)
+            TodayQuoteView(todayBriefing = mockTodayBriefing)
         }
     }
 }

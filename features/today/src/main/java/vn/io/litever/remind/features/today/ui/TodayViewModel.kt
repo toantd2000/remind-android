@@ -1,4 +1,4 @@
-package vn.io.litever.remind.features.remind.ui
+package vn.io.litever.remind.features.today.ui
 
 import android.content.ContentValues.TAG
 import androidx.lifecycle.ViewModel
@@ -10,9 +10,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RemindViewModel @Inject constructor(
+class TodayViewModel @Inject constructor(
     private val weatherRepository: vn.io.litever.remind.core.domain.repository.WeatherRepository,
-    private val reminderRepository: vn.io.litever.remind.core.domain.repository.ReminderRepository
+    private val todayRepository: vn.io.litever.remind.core.domain.repository.TodayRepository
 ) : ViewModel() {
     private var lastProcessingRefreshMillis = 0L
 
@@ -26,14 +26,14 @@ class RemindViewModel @Inject constructor(
             initialValue = null
         )
 
-    val reminder: StateFlow<vn.io.litever.remind.core.model.ReminderResponse?> = reminderRepository.getReminder()
+    val todayBriefing: StateFlow<vn.io.litever.remind.core.model.TodayBriefing?> = todayRepository.getTodayBriefing()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = null
         )
 
-    val isProcessing: StateFlow<Boolean> = combine(weather, reminder) { w, r ->
+    val isProcessing: StateFlow<Boolean> = combine(weather, todayBriefing) { w, r ->
         w?.aiStatus == "processing" || r?.aiStatus == "processing"
     }.stateIn(
         scope = viewModelScope,
@@ -54,7 +54,7 @@ class RemindViewModel @Inject constructor(
             try {
                 coroutineScope {
                     launch { weatherRepository.refreshWeather(force = true) }
-                    launch { reminderRepository.refreshReminder(force = true) }
+                    launch { todayRepository.refreshTodayBriefing(force = true) }
                 }
                 lastProcessingRefreshMillis = System.currentTimeMillis()
                 android.util.Log.d(TAG, "Refresh completed successfully.")

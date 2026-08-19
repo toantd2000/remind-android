@@ -5,15 +5,17 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import vn.io.litever.remind.core.data.repository.AlarmRepositoryImpl
-import vn.io.litever.remind.core.data.repository.MissionRepositoryImpl
-import vn.io.litever.remind.core.domain.repository.AlarmRepository
-import vn.io.litever.remind.core.domain.repository.MissionRepository
-import vn.io.litever.remind.core.domain.repository.WeatherRepository
-import vn.io.litever.remind.core.domain.repository.TodayRepository
-import vn.io.litever.remind.core.data.repository.WeatherRepositoryImpl
-import vn.io.litever.remind.core.data.repository.TodayRepositoryImpl
 import vn.io.litever.remind.core.data.repository.MissedAlarmRepositoryImpl
+import vn.io.litever.remind.core.data.repository.MissionRepositoryImpl
+import vn.io.litever.remind.core.data.repository.ReminderRepositoryImpl
+import vn.io.litever.remind.core.data.repository.TodayRepositoryImpl
+import vn.io.litever.remind.core.data.repository.WeatherRepositoryImpl
+import vn.io.litever.remind.core.domain.repository.AlarmRepository
 import vn.io.litever.remind.core.domain.repository.MissedAlarmRepository
+import vn.io.litever.remind.core.domain.repository.MissionRepository
+import vn.io.litever.remind.core.domain.repository.ReminderRepository
+import vn.io.litever.remind.core.domain.repository.TodayRepository
+import vn.io.litever.remind.core.domain.repository.WeatherRepository
 import javax.inject.Singleton
 
 @Module
@@ -41,7 +43,7 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindTodayRepository(
-        TodayRepositoryImpl: TodayRepositoryImpl
+        todayRepositoryImpl: TodayRepositoryImpl
     ): TodayRepository
 
     @Binds
@@ -49,6 +51,12 @@ abstract class RepositoryModule {
     abstract fun bindMissedAlarmRepository(
         missedAlarmRepositoryImpl: MissedAlarmRepositoryImpl
     ): MissedAlarmRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindReminderRepository(
+        reminderRepositoryImpl: ReminderRepositoryImpl
+    ): ReminderRepository
 }
 
 

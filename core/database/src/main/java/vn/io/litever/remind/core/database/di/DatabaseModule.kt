@@ -10,9 +10,11 @@ import dagger.hilt.components.SingletonComponent
 import vn.io.litever.remind.core.database.RemindDatabase
 import vn.io.litever.remind.core.database.callback.RemindDatabaseCallback
 import vn.io.litever.remind.core.database.dao.AlarmDao
+import vn.io.litever.remind.core.database.dao.ChecklistItemDao
+import vn.io.litever.remind.core.database.dao.MissedAlarmDao
 import vn.io.litever.remind.core.database.dao.MissionDao
 import vn.io.litever.remind.core.database.dao.PhraseDao
-import vn.io.litever.remind.core.database.dao.MissedAlarmDao
+import vn.io.litever.remind.core.database.dao.ReminderDao
 import javax.inject.Singleton
 
 @Module
@@ -31,7 +33,8 @@ object DatabaseModule {
         ).addMigrations(
             RemindDatabase.MIGRATION_1_2,
             RemindDatabase.MIGRATION_2_3,
-            RemindDatabase.MIGRATION_3_4
+            RemindDatabase.MIGRATION_3_4,
+            RemindDatabase.MIGRATION_4_5
         )
         .addCallback(RemindDatabaseCallback())
         .fallbackToDestructiveMigration(true)
@@ -56,5 +59,15 @@ object DatabaseModule {
     @Provides
     fun provideMissedAlarmDao(database: RemindDatabase): MissedAlarmDao {
         return database.missedAlarmDao()
+    }
+
+    @Provides
+    fun provideReminderDao(database: RemindDatabase): ReminderDao {
+        return database.reminderDao()
+    }
+
+    @Provides
+    fun provideChecklistItemDao(database: RemindDatabase): ChecklistItemDao {
+        return database.checklistItemDao()
     }
 }

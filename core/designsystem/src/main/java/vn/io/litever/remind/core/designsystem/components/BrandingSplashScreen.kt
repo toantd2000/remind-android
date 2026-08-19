@@ -7,7 +7,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -22,7 +21,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import vn.io.litever.remind.core.designsystem.R
+import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun BrandingSplashScreen(
@@ -33,29 +34,29 @@ fun BrandingSplashScreen(
 
     LaunchedEffect(Unit) {
         if (!isPreview) {
-            delay(300) // Small delay before animation
+            delay(100.milliseconds) // Small delay before animation
             visible = true
+            delay(900.milliseconds) // Wait for animations to finish
         }
-        delay(700) // Show for 2 seconds
         onFinished()
     }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+            .background(LiteverTheme.colors.background),
         contentAlignment = Alignment.Center
     ) {
         val scale by animateFloatAsState(
             targetValue = if (visible) 1f else 0.8f,
-            animationSpec = tween(durationMillis = 1000, easing = LinearOutSlowInEasing),
+            animationSpec = tween(durationMillis = 600, easing = LinearOutSlowInEasing),
             label = "logoScale"
         )
 
         // Main Logo Content
         AnimatedVisibility(
             visible = isPreview || visible,
-            enter = fadeIn(tween(800)),
+            enter = fadeIn(tween(600)),
             exit = fadeOut(tween(400))
         ) {
             Column(
@@ -66,14 +67,14 @@ fun BrandingSplashScreen(
             ) {
                 // App Logo
                 ReMindLogo(fontSize = 42.sp)
-                
+
                 Spacer(modifier = Modifier.height(8.dp))
-                
+
                 // Slogan
                 Text(
                     text = stringResource(R.string.app_slogan),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                    style = LiteverTheme.typography.titleMedium,
+                    color = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.6f),
                     fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Center,
                     letterSpacing = 1.5.sp
@@ -84,7 +85,7 @@ fun BrandingSplashScreen(
         // Bottom Brand Attribution
         AnimatedVisibility(
             visible = isPreview || visible,
-            enter = fadeIn(tween(1200, delayMillis = 500)),
+            enter = fadeIn(tween(500, delayMillis = 200)),
             exit = fadeOut(tween(400)),
             modifier = Modifier.align(Alignment.BottomCenter)
         ) {
@@ -95,8 +96,8 @@ fun BrandingSplashScreen(
             ) {
                 Text(
                     text = "from",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                    style = LiteverTheme.typography.labelMedium,
+                    color = LiteverTheme.colors.outline.copy(alpha = 0.5f),
                     modifier = Modifier.padding(bottom = 4.dp),
                     letterSpacing = 1.sp
                 )
@@ -124,13 +125,3 @@ fun BrandingSplashScreenDarkPreview() {
         BrandingSplashScreen()
     }
 }
-
-
-
-
-
-
-
-
-
-

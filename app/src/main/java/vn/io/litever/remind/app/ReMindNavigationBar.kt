@@ -17,7 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.material.icons.rounded.Notifications
 import vn.io.litever.remind.features.alarms.ui.AlarmListRoute
+import vn.io.litever.remind.features.reminders.ui.RemindersListRoute
 import vn.io.litever.remind.features.settings.ui.settingsRoute
 import vn.io.litever.remind.features.today.ui.todayRoute
 
@@ -38,6 +40,11 @@ enum class TopLevelDestination(
         route = AlarmListRoute,
         icon = Icons.Rounded.Alarm,
         labelResId = R.string.navigation_alarms
+    ),
+    REMINDERS(
+        route = RemindersListRoute,
+        icon = Icons.Rounded.Notifications,
+        labelResId = R.string.navigation_reminders
     ),
     SETTINGS(
         route = settingsRoute,

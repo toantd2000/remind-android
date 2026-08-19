@@ -40,6 +40,7 @@ include(":features:alarms")
 include(":features:settings")
 include(":features:mission")
 include(":features:today")
+include(":features:reminders")
 include(":core:analytics")
 include(":core:testing")
 

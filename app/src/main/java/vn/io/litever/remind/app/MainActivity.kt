@@ -75,6 +75,11 @@ import vn.io.litever.remind.features.settings.ui.settingsRoute
 import vn.io.litever.remind.features.today.ui.locationSearchRoute
 import vn.io.litever.remind.features.today.ui.todayGraph
 import vn.io.litever.remind.features.today.ui.todayRoute
+import androidx.compose.material.icons.rounded.Notifications
+import vn.io.litever.remind.core.alarm.ReminderSyncManager
+import vn.io.litever.remind.features.reminders.ui.RemindersListRoute
+import vn.io.litever.remind.features.reminders.ui.navigateToReminderEdit
+import vn.io.litever.remind.features.reminders.ui.remindersGraph
 import java.util.Locale
 import javax.inject.Inject
 import androidx.compose.ui.platform.LocalLocale
@@ -88,11 +93,13 @@ class MainViewModel @Inject constructor(
     private val alarmRingManager: vn.io.litever.remind.core.alarm.AlarmRingManager,
     private val missedAlarmRepository: vn.io.litever.remind.core.domain.repository.MissedAlarmRepository,
     private val alarmSyncManager: vn.io.litever.remind.core.alarm.AlarmSyncManager,
+    private val reminderSyncManager: ReminderSyncManager,
     alarmRepository: AlarmRepository
 ) : ViewModel() {
     init {
         viewModelScope.launch {
             alarmSyncManager.sync()
+            reminderSyncManager.sync()
         }
     }
 
@@ -270,28 +277,28 @@ class MainActivity : ComponentActivity() {
                             val currentRoute = navBackStackEntry?.destination?.route
 
                             val isBottomBarVisible = currentRoute == AlarmListRoute ||
-                                    currentRoute == settingsRoute ||
-                                    currentRoute == todayRoute
+                                    currentRoute == todayRoute ||
+                                    currentRoute == RemindersListRoute ||
+                                    currentRoute == settingsRoute
 
                             Scaffold(
                                 snackbarHost = { LvSnackbarHost(hostState = snackbarHostState) },
                                 bottomBar = {
-                                        if (isBottomBarVisible) {
-                                            ReMindNavigationBar(
-                                                currentRoute = currentRoute,
-                                                onNavigateToDestination = { route ->
-                                                    navController.navigate(route) {
-                                                        popUpTo(navController.graph.startDestinationId) {
-                                                            saveState = true
-                                                        }
-                                                        launchSingleTop = true
-                                                        restoreState = true
+                                    if (isBottomBarVisible) {
+                                        ReMindNavigationBar(
+                                            currentRoute = currentRoute,
+                                            onNavigateToDestination = { route ->
+                                                navController.navigate(route) {
+                                                    popUpTo(navController.graph.startDestinationId) {
+                                                        saveState = true
                                                     }
+                                                    launchSingleTop = true
+                                                    restoreState = true
                                                 }
-                                            )
-                                        }
+                                            }
+                                        )
                                     }
-                                ) { paddingValues ->
+                                }) { paddingValues ->
                                     val layoutDirection = LocalLayoutDirection.current
                                     val actualPadding = PaddingValues(
                                         start = paddingValues.calculateStartPadding(layoutDirection),
@@ -407,6 +414,18 @@ class MainActivity : ComponentActivity() {
                                                     navController.popBackStack()
                                                 }
                                             )
+                                            remindersGraph(
+                                                onNavigateToEdit = { reminderId ->
+                                                    navController.navigateToReminderEdit(reminderId)
+                                                },
+                                                onNavigateToPermissions = {
+                                                    navController.navigateToPermissions()
+                                                },
+                                                onNavigateBack = {
+                                                    navController.popBackStack()
+                                                },
+                                                navController = navController
+                                            )
                                             settingsGraph(
                                                 onNavigateToGeneralSettings = { navController.navigateToGeneralSettings() },
                                                 onNavigateToQA = { navController.navigateToQA() },
@@ -427,7 +446,9 @@ class MainActivity : ComponentActivity() {
         }
 
     private fun handleLockScreenBypass() {
-        val isRingingIntent = intent?.data?.toString()?.contains("remind/ring") == true
+        val uriString = intent?.data?.toString()
+        val isRingingIntent = uriString?.contains("remind/ring") == true ||
+                uriString?.contains("remind/ringing") == true
         if (isRingingIntent) {
             setShowWhenLocked(true)
             setTurnScreenOn(true)

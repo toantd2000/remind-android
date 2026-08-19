@@ -1,10 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Boot & Alarm Permissions -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+
+    <!-- Foreground Services -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+
+    <!-- Location & Wi-Fi Permissions -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+
+    <!-- Audio, Notification & Power -->
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
@@ -13,6 +28,7 @@
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <application>
+        <!-- Existing Alarm Components -->
         <receiver
             android:name=".receiver.AlarmReceiver"
             android:exported="false" />
@@ -23,6 +39,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
             </intent-filter>
         </receiver>
 
@@ -30,6 +47,24 @@
             android:name=".service.AlarmService"
             android:exported="false"
             android:foregroundServiceType="specialUse" />
+
+        <!-- New Reminder Components -->
+        <receiver
+            android:name=".receiver.ReminderReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="vn.io.litever.remind.core.alarm.ACTION_TRIGGER_REMINDER" />
+                <action android:name="vn.io.litever.remind.core.alarm.ACTION_TRIGGER_REMINDER_SNOOZE" />
+                <action android:name="vn.io.litever.remind.core.alarm.ACTION_REMINDER_SNOOZE" />
+                <action android:name="vn.io.litever.remind.core.alarm.ACTION_REMINDER_DISMISS" />
+                <action android:name="vn.io.litever.remind.core.alarm.ACTION_REMINDER_CHECKLIST_TOGGLE" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".service.ReminderMonitorService"
+            android:exported="false"
+            android:foregroundServiceType="location" />
     </application>
 </manifest>
 

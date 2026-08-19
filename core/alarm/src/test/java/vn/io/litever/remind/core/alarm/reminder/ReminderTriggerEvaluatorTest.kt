@@ -383,4 +383,128 @@ class ReminderTriggerEvaluatorTest {
             )
         )
     }
+
+    @Test
+    fun evaluateLocationReminder_directEngine_stateTransitions() {
+        val reminder = Reminder(
+            id = 10,
+            title = "Enter Store",
+            triggerType = ReminderTriggerType.LOCATION,
+            locationTrigger = LocationTrigger(
+                latitude = 10.0,
+                longitude = 106.0,
+                radiusMeters = 100f,
+                transitionType = GeofenceTransitionType.ENTER
+            )
+        )
+
+        // Was outside, now inside -> triggered!
+        val res1 = ReminderTriggerEvaluator.evaluateLocationReminder(
+            reminder = reminder,
+            currentLatitude = 10.0001,
+            currentLongitude = 106.0,
+            wasInside = false
+        )
+        assertTrue(res1.isTriggered)
+        assertTrue(res1.isInsideGeofence == true)
+
+        // Was inside, still inside -> NOT triggered (no rising edge)
+        val res2 = ReminderTriggerEvaluator.evaluateLocationReminder(
+            reminder = reminder,
+            currentLatitude = 10.0001,
+            currentLongitude = 106.0,
+            wasInside = true
+        )
+        assertFalse(res2.isTriggered)
+        assertTrue(res2.isInsideGeofence == true)
+
+        // Was inside, now outside with EXIT trigger -> triggered!
+        val exitReminder = reminder.copy(
+            locationTrigger = reminder.locationTrigger?.copy(transitionType = GeofenceTransitionType.EXIT)
+        )
+        val res3 = ReminderTriggerEvaluator.evaluateLocationReminder(
+            reminder = exitReminder,
+            currentLatitude = 10.1,
+            currentLongitude = 106.0,
+            wasInside = true
+        )
+        assertTrue(res3.isTriggered)
+        assertFalse(res3.isInsideGeofence == true)
+    }
+
+    @Test
+    fun evaluateWifiReminder_directEngine_connectAndDisconnect() {
+        val onConnectReminder = Reminder(
+            id = 20,
+            title = "Wifi Connect",
+            triggerType = ReminderTriggerType.WIFI,
+            wifiTrigger = WifiTrigger(
+                ssid = "Cafe_WiFi",
+                bssid = "AA:BB:CC:DD:EE:FF",
+                triggerType = WifiTriggerType.ON_CONNECT
+            )
+        )
+
+        // Connects to target SSID and matching BSSID
+        val res1 = ReminderTriggerEvaluator.evaluateWifiReminder(
+            reminder = onConnectReminder,
+            currentSsid = "\"Cafe_WiFi\"",
+            currentBssid = "aa:bb:cc:dd:ee:ff",
+            isConnected = true,
+            wasConnected = false
+        )
+        assertTrue(res1.isTriggered)
+
+        // Connects to target SSID but mismatching BSSID
+        val res2 = ReminderTriggerEvaluator.evaluateWifiReminder(
+            reminder = onConnectReminder,
+            currentSsid = "\"Cafe_WiFi\"",
+            currentBssid = "00:11:22:33:44:55",
+            isConnected = true,
+            wasConnected = false
+        )
+        assertFalse(res2.isTriggered)
+
+        // On Disconnect
+        val onDisconnectReminder = onConnectReminder.copy(
+            wifiTrigger = onConnectReminder.wifiTrigger?.copy(triggerType = WifiTriggerType.ON_DISCONNECT, bssid = null)
+        )
+        val res3 = ReminderTriggerEvaluator.evaluateWifiReminder(
+            reminder = onDisconnectReminder,
+            currentSsid = null,
+            currentBssid = null,
+            isConnected = false,
+            wasConnected = true
+        )
+        assertTrue(res3.isTriggered)
+    }
+
+    @Test
+    fun batchEvaluations_processMultipleReminders() {
+        val reminders = listOf(
+            Reminder(
+                id = 1,
+                title = "Loc1",
+                triggerType = ReminderTriggerType.LOCATION,
+                locationTrigger = LocationTrigger(latitude = 10.0, longitude = 106.0, radiusMeters = 100f)
+            ),
+            Reminder(
+                id = 2,
+                title = "Loc2",
+                triggerType = ReminderTriggerType.LOCATION,
+                locationTrigger = LocationTrigger(latitude = 20.0, longitude = 105.0, radiusMeters = 100f)
+            )
+        )
+
+        val results = ReminderTriggerEvaluator.evaluateLocationReminders(
+            reminders = reminders,
+            currentLatitude = 10.0001,
+            currentLongitude = 106.0,
+            previousInsideStates = mapOf(1L to false, 2L to false)
+        )
+
+        assertEquals(2, results.size)
+        assertTrue(results[0].isTriggered)
+        assertFalse(results[1].isTriggered)
+    }
 }

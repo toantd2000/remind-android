@@ -1,0 +1,156 @@
+<resources>
+    <!-- App & Navigation -->
+    <string name="reminders_title">Reminders</string>
+    <string name="add_reminder_title">Add Reminder</string>
+    <string name="edit_reminder_title">Edit Reminder</string>
+    <string name="navigation_reminders">Reminders</string>
+
+    <!-- Filters -->
+    <string name="filter_all">All</string>
+    <string name="filter_active">Active</string>
+    <string name="filter_completed">Completed</string>
+    <string name="filter_time">Time</string>
+    <string name="filter_location">Location</string>
+    <string name="filter_wifi">Wi-Fi</string>
+
+    <!-- Empty States -->
+    <string name="no_reminders">No Reminders Available</string>
+    <string name="empty_reminders_description">Tap + to create a new reminder</string>
+    <string name="no_active_reminders">No Active Reminders</string>
+    <string name="empty_active_description">All your reminders are currently completed or disabled</string>
+    <string name="no_completed_reminders">No Completed Reminders</string>
+    <string name="empty_completed_description">Check off items or dismiss reminders to see them here</string>
+    <string name="no_time_reminders">No Time Reminders</string>
+    <string name="no_location_reminders">No Location Reminders</string>
+    <string name="no_wifi_reminders">No Wi-Fi Reminders</string>
+
+    <!-- List Item Card & Actions -->
+    <string name="action_more">More options</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_duplicate">Duplicate</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_mark_completed">Mark as completed</string>
+    <string name="action_mark_active">Mark as active</string>
+    <string name="delete_completed_reminders">Delete completed reminders</string>
+    <string name="delete_disabled_reminders">Delete disabled reminders</string>
+    <string name="reminder_deleted">Reminder deleted</string>
+    <string name="undo">Undo</string>
+    <string name="checklist_progress_format">%1$d/%2$d done</string>
+    <string name="snoozing_badge_format">Snoozing (%s)</string>
+    <string name="defined_time_window_badge">Time Window: %1$s - %2$s</string>
+
+    <!-- Basic Info Section -->
+    <string name="section_basic_info">General Information</string>
+    <string name="reminder_title_label">Title</string>
+    <string name="reminder_title_placeholder">What do you need to be reminded of?</string>
+    <string name="reminder_title_required">Title cannot be empty</string>
+    <string name="reminder_notes_label">Notes &amp; Details</string>
+    <string name="reminder_notes_placeholder">Additional notes, links, or instructions (optional)</string>
+
+    <!-- Trigger Type Selector -->
+    <string name="section_trigger_type">Trigger Condition</string>
+    <string name="trigger_time">Time</string>
+    <string name="trigger_location">Location</string>
+    <string name="trigger_wifi">Wi-Fi</string>
+
+    <!-- Time Trigger Section -->
+    <string name="section_time_trigger">Schedule</string>
+    <string name="select_time">Select Time</string>
+    <string name="select_date">Select Date (Optional)</string>
+    <string name="repeat_days_label">Repeat Days</string>
+    <string name="once_only">One-time</string>
+    <string name="daily">Daily</string>
+    <string name="day_mon">Mo</string>
+    <string name="day_tue">Tu</string>
+    <string name="day_wed">We</string>
+    <string name="day_thu">Th</string>
+    <string name="day_fri">Fr</string>
+    <string name="day_sat">Sa</string>
+    <string name="day_sun">Su</string>
+
+    <!-- Location Trigger Section -->
+    <string name="section_location_trigger">Geofence Location</string>
+    <string name="location_name_label">Location Name</string>
+    <string name="location_name_placeholder">e.g. Home, Office, Supermarket</string>
+    <string name="latitude_label">Latitude</string>
+    <string name="longitude_label">Longitude</string>
+    <string name="radius_label">Geofence Radius: %d m</string>
+    <string name="geofence_transition_label">Trigger When</string>
+    <string name="transition_enter">Arriving (Enter)</string>
+    <string name="transition_exit">Leaving (Exit)</string>
+    <string name="transition_both">Arriving &amp; Leaving</string>
+
+    <!-- Wi-Fi Trigger Section -->
+    <string name="section_wifi_trigger">Wi-Fi Network</string>
+    <string name="wifi_ssid_label">Wi-Fi SSID (Network Name)</string>
+    <string name="wifi_ssid_placeholder">e.g. Home_5G, Office_Guest</string>
+    <string name="wifi_bssid_label">BSSID (Optional Router MAC)</string>
+    <string name="wifi_bssid_placeholder">e.g. 00:11:22:33:44:55</string>
+    <string name="wifi_trigger_type_label">Trigger Event</string>
+    <string name="wifi_on_connect">When connected</string>
+    <string name="wifi_on_disconnect">When disconnected</string>
+    <string name="wifi_while_connected">While connected (in window)</string>
+
+    <!-- Defined Time Window -->
+    <string name="time_window_section_title">Defined Time Window</string>
+    <string name="time_window_desc">Only trigger this reminder within specific hours</string>
+    <string name="time_window_enabled">Enabled</string>
+    <string name="time_window_start_time">Start Time</string>
+    <string name="time_window_end_time">End Time</string>
+    <string name="time_window_active_days">Active Days</string>
+    <string name="configure_time_window">Configure Time Window</string>
+    <string name="clear_time_window">Remove Time Window</string>
+
+    <!-- Checklist Builder Section -->
+    <string name="section_checklist">Checklist</string>
+    <string name="add_checklist_item">Add item</string>
+    <string name="checklist_item_placeholder">Checklist item…</string>
+    <string name="no_checklist_items">No checklist items added</string>
+
+    <!-- Alert & Notification Settings Section -->
+    <string name="section_alert_settings">Alert &amp; Notification</string>
+    <string name="notification_style_label">Notification Style</string>
+    <string name="style_standard">Standard Heads-Up</string>
+    <string name="style_full_screen">Full-Screen Alarm</string>
+    <string name="persistent_alert_title">Persistent Alert Loop</string>
+    <string name="persistent_alert_desc">Continuous sound/vibration until dismissed</string>
+    <string name="sound_settings_title">Sound &amp; Vibration</string>
+    <string name="ringtone_title">Ringtone</string>
+    <string name="default_ringtone">Default Notification Sound</string>
+    <string name="vibration_label">Vibration</string>
+    <string name="volume_label">Volume: %d%%</string>
+    <string name="snooze_settings_title">Snooze Settings</string>
+    <string name="snooze_enabled_label">Enable Snooze</string>
+    <string name="snooze_interval_label">Snooze Interval</string>
+    <string name="snooze_repeat_count_label">Maximum Repeat Count</string>
+    <string name="minutes_format">%d minutes</string>
+    <string name="times_format">%d times</string>
+    <string name="snooze_unlimited">Unlimited</string>
+
+    <!-- Ringing Screen -->
+    <string name="ringing_screen_title">Reminder Alert</string>
+    <string name="auto_silence_countdown_format">Auto-silencing in %ds</string>
+    <string name="snooze_action">Snooze</string>
+    <string name="snooze_limit_reached">Snooze limit reached</string>
+    <string name="dismiss_action">Dismiss</string>
+    <string name="mark_item_done">Completed</string>
+    <string name="interactive_checklist_title">Interactive Checklist</string>
+
+    <!-- Permissions Warning & Save Anyway Dialog -->
+    <string name="reminder_permission_warning_banner_title">Missing Permissions</string>
+    <string name="reminder_permission_warning_banner_desc">Notifications, Location, or Alarm permissions are required for reminders to trigger reliably in the background.</string>
+    <string name="permission_warning_banner_action">Fix Now</string>
+    <string name="reminder_permission_dialog_title">Permission Required</string>
+    <string name="reminder_permission_dialog_message">To ensure this reminder triggers reliably in the background, required permissions must be granted. If you save now, the reminder will be saved as disabled.</string>
+    <string name="action_save_anyway">Save Anyway (Disabled)</string>
+    <string name="action_go_to_settings">Go to Settings</string>
+    <string name="error_missing_permissions_reminder">Missing required permissions for this reminder. Please grant permissions to enable.</string>
+
+    <!-- Common Actions & Dialogs -->
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_back">Back</string>
+    <string name="discard_changes_title">Discard Changes?</string>
+    <string name="discard_changes_message">You have unsaved changes. Are you sure you want to discard them?</string>
+    <string name="action_discard">Discard</string>
+</resources>

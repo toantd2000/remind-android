@@ -10,6 +10,22 @@
     <string name="missed_dnd_notification_content">Báo thức %s bị lỡ do Không làm phiền.</string>
     <string name="missed_timeout_notification_content">Báo thức %s đã bị lỡ.</string>
     <string name="missed_permission_notification_content">Báo thức %s bị lỡ do thiếu quyền hệ thống.</string>
+    <string name="reminder_channel_name_monitor">Giám sát nhắc nhở</string>
+    <string name="reminder_channel_desc_monitor">Giám sát kích hoạt vị trí và Wi-Fi trong nền</string>
+    <string name="reminder_monitor_title">Giám sát nhắc nhở ReMind</string>
+    <string name="reminder_monitor_text">Đang giám sát nhắc nhở hoạt động</string>
+
+    <!-- Reminder Notification Strings (Vietnamese) -->
+    <string name="reminder_channel_name_standard">Nhắc nhở</string>
+    <string name="reminder_channel_desc_standard">Thông báo cho các nhắc nhở theo giờ và vị trí/Wi-Fi</string>
+    <string name="reminder_channel_name_urgent">Nhắc nhở khẩn cấp &amp; Báo thức</string>
+    <string name="reminder_channel_desc_urgent">Cảnh báo toàn màn hình và chuông lặp cho nhắc nhở khẩn cấp</string>
+    <string name="reminder_default_title">Nhắc nhở</string>
+    <string name="reminder_default_triggered">Đến giờ nhắc nhở</string>
+    <string name="reminder_action_snooze">Báo lại</string>
+    <string name="reminder_action_snooze_interval">Báo lại (%1$d ph)</string>
+    <string name="reminder_action_dismiss">Bỏ qua</string>
+    <string name="reminder_checklist_summary_header">Danh sách kiểm tra (đã xong %1$d/%2$d):</string>
 </resources>
 
 

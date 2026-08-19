@@ -1,0 +1,156 @@
+<resources>
+    <!-- App & Navigation -->
+    <string name="reminders_title">Lời nhắc</string>
+    <string name="add_reminder_title">Thêm lời nhắc</string>
+    <string name="edit_reminder_title">Sửa lời nhắc</string>
+    <string name="navigation_reminders">Lời nhắc</string>
+
+    <!-- Filters -->
+    <string name="filter_all">Tất cả</string>
+    <string name="filter_active">Đang bật</string>
+    <string name="filter_completed">Đã xong</string>
+    <string name="filter_time">Thời gian</string>
+    <string name="filter_location">Vị trí</string>
+    <string name="filter_wifi">Wi-Fi</string>
+
+    <!-- Empty States -->
+    <string name="no_reminders">Chưa có lời nhắc nào</string>
+    <string name="empty_reminders_description">Nhấn + để tạo lời nhắc mới</string>
+    <string name="no_active_reminders">Không có lời nhắc đang hoạt động</string>
+    <string name="empty_active_description">Tất cả lời nhắc đã hoàn thành hoặc đang tắt</string>
+    <string name="no_completed_reminders">Chưa có lời nhắc hoàn thành</string>
+    <string name="empty_completed_description">Đánh dấu xong các mục để xem tại đây</string>
+    <string name="no_time_reminders">Không có lời nhắc thời gian</string>
+    <string name="no_location_reminders">Không có lời nhắc vị trí</string>
+    <string name="no_wifi_reminders">Không có lời nhắc Wi-Fi</string>
+
+    <!-- List Item Card & Actions -->
+    <string name="action_more">Tùy chọn khác</string>
+    <string name="action_edit">Chỉnh sửa</string>
+    <string name="action_duplicate">Nhân bản</string>
+    <string name="action_delete">Xóa</string>
+    <string name="action_mark_completed">Đánh dấu đã xong</string>
+    <string name="action_mark_active">Đánh dấu đang bật</string>
+    <string name="delete_completed_reminders">Xóa các lời nhắc đã xong</string>
+    <string name="delete_disabled_reminders">Xóa các lời nhắc đã tắt</string>
+    <string name="reminder_deleted">Đã xóa lời nhắc</string>
+    <string name="undo">Hoàn tác</string>
+    <string name="checklist_progress_format">%1$d/%2$d xong</string>
+    <string name="snoozing_badge_format">Đang hoãn (%s)</string>
+    <string name="defined_time_window_badge">Khung giờ: %1$s - %2$s</string>
+
+    <!-- Basic Info Section -->
+    <string name="section_basic_info">Thông tin chung</string>
+    <string name="reminder_title_label">Tiêu đề</string>
+    <string name="reminder_title_placeholder">Bạn cần được nhắc việc gì?</string>
+    <string name="reminder_title_required">Tiêu đề không được để trống</string>
+    <string name="reminder_notes_label">Ghi chú chi tiết</string>
+    <string name="reminder_notes_placeholder">Ghi chú thêm, liên kết, hoặc chỉ dẫn (tùy chọn)</string>
+
+    <!-- Trigger Type Selector -->
+    <string name="section_trigger_type">Điều kiện kích hoạt</string>
+    <string name="trigger_time">Thời gian</string>
+    <string name="trigger_location">Vị trí</string>
+    <string name="trigger_wifi">Wi-Fi</string>
+
+    <!-- Time Trigger Section -->
+    <string name="section_time_trigger">Lịch nhắc</string>
+    <string name="select_time">Chọn giờ</string>
+    <string name="select_date">Chọn ngày (Tùy chọn)</string>
+    <string name="repeat_days_label">Lặp lại các ngày</string>
+    <string name="once_only">Một lần</string>
+    <string name="daily">Hàng ngày</string>
+    <string name="day_mon">T2</string>
+    <string name="day_tue">T3</string>
+    <string name="day_wed">T4</string>
+    <string name="day_thu">T5</string>
+    <string name="day_fri">T6</string>
+    <string name="day_sat">T7</string>
+    <string name="day_sun">CN</string>
+
+    <!-- Location Trigger Section -->
+    <string name="section_location_trigger">Vị trí địa lý (Geofence)</string>
+    <string name="location_name_label">Tên địa điểm</string>
+    <string name="location_name_placeholder">Ví dụ: Nhà, Công ty, Siêu thị</string>
+    <string name="latitude_label">Vĩ độ (Latitude)</string>
+    <string name="longitude_label">Kinh độ (Longitude)</string>
+    <string name="radius_label">Bán kính nhận diện: %d m</string>
+    <string name="geofence_transition_label">Kích hoạt khi</string>
+    <string name="transition_enter">Khi đến nơi (Đến)</string>
+    <string name="transition_exit">Khi rời đi (Rời)</string>
+    <string name="transition_both">Cả khi đến và rời đi</string>
+
+    <!-- Wi-Fi Trigger Section -->
+    <string name="section_wifi_trigger">Mạng Wi-Fi</string>
+    <string name="wifi_ssid_label">Tên mạng Wi-Fi (SSID)</string>
+    <string name="wifi_ssid_placeholder">Ví dụ: Home_5G, CongTy_Khach</string>
+    <string name="wifi_bssid_label">BSSID (Địa chỉ MAC Router - tùy chọn)</string>
+    <string name="wifi_bssid_placeholder">Ví dụ: 00:11:22:33:44:55</string>
+    <string name="wifi_trigger_type_label">Sự kiện kích hoạt</string>
+    <string name="wifi_on_connect">Khi vừa kết nối</string>
+    <string name="wifi_on_disconnect">Khi vừa ngắt kết nối</string>
+    <string name="wifi_while_connected">Trong khi đang kết nối (theo khung giờ)</string>
+
+    <!-- Defined Time Window -->
+    <string name="time_window_section_title">Khung thời gian giới hạn</string>
+    <string name="time_window_desc">Chỉ kích hoạt lời nhắc này trong khoảng giờ xác định</string>
+    <string name="time_window_enabled">Đã bật</string>
+    <string name="time_window_start_time">Giờ bắt đầu</string>
+    <string name="time_window_end_time">Giờ kết thúc</string>
+    <string name="time_window_active_days">Ngày áp dụng</string>
+    <string name="configure_time_window">Thiết lập khung giờ</string>
+    <string name="clear_time_window">Xóa khung giờ</string>
+
+    <!-- Checklist Builder Section -->
+    <string name="section_checklist">Danh sách mục cần làm (Checklist)</string>
+    <string name="add_checklist_item">Thêm mục</string>
+    <string name="checklist_item_placeholder">Nội dung mục cần làm…</string>
+    <string name="no_checklist_items">Chưa có mục nào được thêm</string>
+
+    <!-- Alert & Notification Settings Section -->
+    <string name="section_alert_settings">Cảnh báo &amp; Thông báo</string>
+    <string name="notification_style_label">Kiểu thông báo</string>
+    <string name="style_standard">Thông báo nổi chuẩn</string>
+    <string name="style_full_screen">Báo thức toàn màn hình</string>
+    <string name="persistent_alert_title">Lặp chuông liên tục</string>
+    <string name="persistent_alert_desc">Đổ chuông/rung liên tục cho đến khi tắt</string>
+    <string name="sound_settings_title">Âm thanh &amp; Rung</string>
+    <string name="ringtone_title">Nhạc chuông</string>
+    <string name="default_ringtone">Âm thanh thông báo mặc định</string>
+    <string name="vibration_label">Rung</string>
+    <string name="volume_label">Âm lượng: %d%%</string>
+    <string name="snooze_settings_title">Cài đặt báo lại (Hoãn)</string>
+    <string name="snooze_enabled_label">Bật báo lại</string>
+    <string name="snooze_interval_label">Khoảng thời gian hoãn</string>
+    <string name="snooze_repeat_count_label">Số lần hoãn tối đa</string>
+    <string name="minutes_format">%d phút</string>
+    <string name="times_format">%d lần</string>
+    <string name="snooze_unlimited">Không giới hạn</string>
+
+    <!-- Ringing Screen -->
+    <string name="ringing_screen_title">Cảnh báo lời nhắc</string>
+    <string name="auto_silence_countdown_format">Tự tắt tiếng sau %ds</string>
+    <string name="snooze_action">Báo lại</string>
+    <string name="snooze_limit_reached">Đã đạt giới hạn báo lại</string>
+    <string name="dismiss_action">Đã xong</string>
+    <string name="mark_item_done">Hoàn thành</string>
+    <string name="interactive_checklist_title">Danh sách mục cần làm</string>
+
+    <!-- Permissions Warning & Save Anyway Dialog -->
+    <string name="reminder_permission_warning_banner_title">Thiếu quyền hệ thống</string>
+    <string name="reminder_permission_warning_banner_desc">Quyền Thông báo, Vị trí hoặc Báo thức là bắt buộc để nhắc nhở có thể kích hoạt chính xác trong nền.</string>
+    <string name="permission_warning_banner_action">Sửa ngay</string>
+    <string name="reminder_permission_dialog_title">Yêu cầu cấp quyền</string>
+    <string name="reminder_permission_dialog_message">Để đảm bảo nhắc nhở hoạt động chính xác trong nền, các quyền bắt buộc cần được cấp. Nếu bạn lưu bây giờ, nhắc nhở sẽ được lưu ở trạng thái tắt.</string>
+    <string name="action_save_anyway">Vẫn lưu (Tắt nhắc nhở)</string>
+    <string name="action_go_to_settings">Đi đến Cài đặt</string>
+    <string name="error_missing_permissions_reminder">Thiếu quyền cần thiết cho nhắc nhở này. Vui lòng cấp quyền để bật.</string>
+
+    <!-- Common Actions & Dialogs -->
+    <string name="action_save">Lưu</string>
+    <string name="action_cancel">Hủy</string>
+    <string name="action_back">Quay lại</string>
+    <string name="discard_changes_title">Hủy thay đổi?</string>
+    <string name="discard_changes_message">Bạn có các thay đổi chưa lưu. Bạn có chắc muốn hủy?</string>
+    <string name="action_discard">Hủy thay đổi</string>
+</resources>

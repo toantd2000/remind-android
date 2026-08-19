@@ -13,6 +13,22 @@
     <string name="missed_dnd_notification_content">Alarm %s was missed because Do Not Disturb is active.</string>
     <string name="missed_timeout_notification_content">Alarm %s was missed.</string>
     <string name="missed_permission_notification_content">Alarm %s was missed due to missing permissions.</string>
+    <string name="reminder_channel_name_monitor">Reminder Monitoring</string>
+    <string name="reminder_channel_desc_monitor">Background location and Wi-Fi trigger monitoring</string>
+    <string name="reminder_monitor_title">ReMind Background Monitor</string>
+    <string name="reminder_monitor_text">Monitoring active reminders</string>
+
+    <!-- Reminder Notification Strings -->
+    <string name="reminder_channel_name_standard">Reminders</string>
+    <string name="reminder_channel_desc_standard">Notifications for scheduled and location/Wi-Fi reminders</string>
+    <string name="reminder_channel_name_urgent">Urgent Reminders &amp; Alarms</string>
+    <string name="reminder_channel_desc_urgent">Full-screen alerts and persistent alarms for urgent reminders</string>
+    <string name="reminder_default_title">Reminder</string>
+    <string name="reminder_default_triggered">Reminder triggered</string>
+    <string name="reminder_action_snooze">Snooze</string>
+    <string name="reminder_action_snooze_interval">Snooze (%1$dm)</string>
+    <string name="reminder_action_dismiss">Dismiss</string>
+    <string name="reminder_checklist_summary_header">Checklist (%1$d/%2$d completed):</string>
 </resources>
 
 

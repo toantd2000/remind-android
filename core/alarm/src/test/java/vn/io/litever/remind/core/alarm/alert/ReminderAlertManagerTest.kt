@@ -1,5 +1,8 @@
 package vn.io.litever.remind.core.alarm.alert
 
+import org.robolectric.RobolectricTestRunner
+import org.junit.runner.RunWith
+
 import android.content.Context
 import android.media.AudioManager
 import io.mockk.every
@@ -19,6 +22,7 @@ import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderTriggerType
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(RobolectricTestRunner::class)
 class ReminderAlertManagerTest {
 
     private val context = mockk<Context>(relaxed = true)

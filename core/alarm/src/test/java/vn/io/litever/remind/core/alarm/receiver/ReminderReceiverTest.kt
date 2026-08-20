@@ -1,5 +1,6 @@
 package vn.io.litever.remind.core.alarm.receiver
 
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import io.mockk.coEvery
@@ -18,6 +19,8 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import vn.io.litever.remind.core.alarm.alert.ReminderAlertManager
 import vn.io.litever.remind.core.alarm.notification.ReminderNotificationManager
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
@@ -30,6 +33,7 @@ import vn.io.litever.remind.core.model.ReminderTriggerType
 import vn.io.litever.remind.core.model.TimeTrigger
 import java.time.LocalTime
 
+@RunWith(RobolectricTestRunner::class)
 class ReminderReceiverTest {
 
     private val context = mockk<Context>(relaxed = true)
@@ -49,6 +53,26 @@ class ReminderReceiverTest {
             reminderScheduler = scheduler
             reminderNotificationManager = notificationManager
             reminderAlertManager = alertManager
+        }
+        markHiltInjected(receiver)
+    }
+
+    /**
+     * Bypasses automatic Hilt dependency injection in unit tests with mocked dependencies.
+     */
+    private fun markHiltInjected(receiver: BroadcastReceiver) {
+        var clazz: Class<*>? = receiver.javaClass
+        while (clazz != null && clazz != Any::class.java) {
+            try {
+                val field = clazz.getDeclaredField("injected")
+                field.isAccessible = true
+                field.set(receiver, true)
+                return
+            } catch (e: NoSuchFieldException) {
+                clazz = clazz.superclass
+            } catch (e: Exception) {
+                return
+            }
         }
     }
 

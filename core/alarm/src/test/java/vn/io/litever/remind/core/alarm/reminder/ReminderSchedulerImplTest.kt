@@ -1,5 +1,8 @@
 package vn.io.litever.remind.core.alarm.reminder
 
+import org.robolectric.RobolectricTestRunner
+import org.junit.runner.RunWith
+
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
@@ -26,6 +29,7 @@ import vn.io.litever.remind.core.model.TimeTrigger
 import java.time.LocalDate
 import java.time.LocalTime
 
+@RunWith(RobolectricTestRunner::class)
 class ReminderSchedulerImplTest {
 
     private val context = mockk<Context>(relaxed = true)

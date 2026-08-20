@@ -1,5 +1,8 @@
 package vn.io.litever.remind.core.alarm.service
 
+import org.robolectric.RobolectricTestRunner
+import org.junit.runner.RunWith
+
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
@@ -16,6 +19,7 @@ import vn.io.litever.remind.core.model.ReminderTriggerType
 import vn.io.litever.remind.core.model.WifiTrigger
 import vn.io.litever.remind.core.model.WifiTriggerType
 
+@RunWith(RobolectricTestRunner::class)
 class WifiTrackerTest {
 
     private val context = mockk<Context>(relaxed = true)

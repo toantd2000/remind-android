@@ -519,7 +519,7 @@ class ReminderChallengerStressTest {
             0L, 1L, 2L, 100L, 1000L, 999999L,
             Long.MAX_VALUE, Long.MIN_VALUE,
             123456789L, -123456789L,
-            0x7FFFFFFF_L, 0x10000000_L
+            0x7FFFFFFFL, 0x10000000L
         )
 
         for (id in testIds) {

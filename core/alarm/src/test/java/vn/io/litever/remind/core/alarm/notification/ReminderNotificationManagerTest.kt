@@ -1,7 +1,11 @@
 package vn.io.litever.remind.core.alarm.notification
 
+import org.robolectric.RobolectricTestRunner
+import org.junit.runner.RunWith
+
 import android.app.Notification
 import android.app.NotificationManager
+import androidx.core.app.NotificationCompat
 import android.content.Context
 import io.mockk.every
 import io.mockk.mockk
@@ -22,6 +26,7 @@ import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderTriggerType
 
+@RunWith(RobolectricTestRunner::class)
 class ReminderNotificationManagerTest {
 
     private val context = mockk<Context>(relaxed = true)

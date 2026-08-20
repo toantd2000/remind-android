@@ -1,5 +1,8 @@
 package vn.io.litever.remind.core.alarm.notification
 
+import org.robolectric.RobolectricTestRunner
+import org.junit.runner.RunWith
+
 import android.app.Notification
 import android.app.NotificationManager
 import android.content.Context
@@ -45,6 +48,7 @@ import vn.io.litever.remind.core.model.ReminderTriggerType
  * 6. Notification ID isolation and PendingIntent request code determinism.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(RobolectricTestRunner::class)
 class ReminderNotificationAndAlertStressTest {
 
     private val context = mockk<Context>(relaxed = true)

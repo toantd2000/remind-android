@@ -28,8 +28,9 @@ object ReminderSchedulerTestHelper {
         if (!reminder.isEnabled || reminder.isCompleted) return null
 
         // Check if currently snoozed
-        if (reminder.snoozeNextTriggerTime != null && reminder.snoozeNextTriggerTime > 0) {
-            return reminder.snoozeNextTriggerTime
+        val snoozeTime = reminder.snoozeNextTriggerTime
+        if (snoozeTime != null && snoozeTime > 0) {
+            return snoozeTime
         }
 
         val timeTrigger = reminder.timeTrigger ?: return null

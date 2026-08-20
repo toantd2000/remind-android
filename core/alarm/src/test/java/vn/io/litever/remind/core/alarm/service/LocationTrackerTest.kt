@@ -1,5 +1,8 @@
 package vn.io.litever.remind.core.alarm.service
 
+import org.robolectric.RobolectricTestRunner
+import org.junit.runner.RunWith
+
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
@@ -17,6 +20,7 @@ import vn.io.litever.remind.core.model.LocationTrigger
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderTriggerType
 
+@RunWith(RobolectricTestRunner::class)
 class LocationTrackerTest {
 
     private val context = mockk<Context>(relaxed = true)
@@ -50,7 +54,7 @@ class LocationTrackerTest {
         locationTracker.startTracking(listOf(reminder))
 
         verify(atLeast = 1) {
-            locationManager.requestLocationUpdates(any<String>(), any<Long>(), any<Float>(), any(), any())
+            locationManager.requestLocationUpdates(any<String>(), any<Long>(), any<Float>(), any<android.location.LocationListener>(), any())
         }
     }
 

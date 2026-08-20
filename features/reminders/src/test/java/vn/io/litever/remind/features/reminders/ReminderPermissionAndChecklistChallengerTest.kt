@@ -127,7 +127,7 @@ class ReminderPermissionAndChecklistChallengerTest {
             isEnabled = true
         )
         coEvery { repository.getReminderById(702L) } returns existing
-        every { permissionChecker.getMissingPermissions(any()) } returns listOf(ReminderPermissionType.NEARBY_WIFI_DEVICES)
+        every { permissionChecker.getMissingPermissions(any()) } returns listOf(ReminderPermissionType.WIFI)
 
         val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 702L))
         val viewModel = ReminderEditViewModel(
@@ -237,7 +237,7 @@ class ReminderPermissionAndChecklistChallengerTest {
             wifiTrigger = WifiTrigger(ssid = "HomeNet")
         )
         // Initially missing
-        every { permissionChecker.getMissingPermissions(any()) } returns listOf(ReminderPermissionType.NEARBY_WIFI_DEVICES)
+        every { permissionChecker.getMissingPermissions(any()) } returns listOf(ReminderPermissionType.WIFI)
         every { permissionChecker.hasPermissionsForReminder(any()) } returns false
 
         val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))

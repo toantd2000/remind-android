@@ -257,13 +257,14 @@ class ReminderNotificationManager @Inject constructor(
             null
         }
 
-        val style = NotificationCompat.BigTextStyle()
+        return NotificationCompat.BigTextStyle()
             .setBigContentTitle(title)
             .bigText(bigText)
-        if (summaryText != null) {
-            style.setSummaryText(summaryText)
-        }
-        return style
+            .also {
+                if (summaryText != null) {
+                    it.setSummaryText(summaryText)
+                }
+            }
     }
 
     private fun createContentPendingIntent(reminderId: Long): PendingIntent {

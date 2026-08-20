@@ -219,9 +219,14 @@ fun ReminderTimeWindowDialog(
         )
         LiteverTimePickerDialog(
             onDismissRequest = { isPickingStart = false },
-            onConfirm = {
-                startTime = LocalTime.of(startPickerState.hour, startPickerState.minute)
-                isPickingStart = false
+            confirmButton = {
+                TextButton(onClick = {
+                    startTime = LocalTime.of(startPickerState.hour, startPickerState.minute)
+                    isPickingStart = false
+                }) { Text(stringResource(android.R.string.ok)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { isPickingStart = false }) { Text(stringResource(android.R.string.cancel)) }
             }
         ) {
             androidx.compose.material3.TimePicker(state = startPickerState)
@@ -236,9 +241,14 @@ fun ReminderTimeWindowDialog(
         )
         LiteverTimePickerDialog(
             onDismissRequest = { isPickingEnd = false },
-            onConfirm = {
-                endTime = LocalTime.of(endPickerState.hour, endPickerState.minute)
-                isPickingEnd = false
+            confirmButton = {
+                TextButton(onClick = {
+                    endTime = LocalTime.of(endPickerState.hour, endPickerState.minute)
+                    isPickingEnd = false
+                }) { Text(stringResource(android.R.string.ok)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { isPickingEnd = false }) { Text(stringResource(android.R.string.cancel)) }
             }
         ) {
             androidx.compose.material3.TimePicker(state = endPickerState)

@@ -4,7 +4,8 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -12,7 +13,9 @@ import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -33,6 +36,7 @@ import vn.io.litever.designsystem.components.button.LvIconButton
 import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.components.snackbar.LvSnackbarHost
 import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 
 @Composable
 fun LiteverScaffold(
@@ -58,13 +62,23 @@ fun LiteverScaffold(
 fun LiteverTopAppBar(
     title: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    navigationIcon: @Composable () -> Unit = {},
+    onBackClick: (() -> Unit)? = null,
+    navigationIcon: (@Composable () -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
     TopAppBar(
         title = title,
         modifier = modifier,
-        navigationIcon = navigationIcon,
+        navigationIcon = navigationIcon ?: {
+            if (onBackClick != null) {
+                LvIconButton(onClick = onBackClick) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                        contentDescription = "Back"
+                    )
+                }
+            }
+        },
         actions = actions
     )
 }
@@ -74,18 +88,14 @@ fun LiteverTopAppBar(
 fun LiteverTopAppBar(
     title: String,
     modifier: Modifier = Modifier,
-    navigationIcon: @Composable () -> Unit = {},
+    onBackClick: (() -> Unit)? = null,
+    navigationIcon: (@Composable () -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
-    TopAppBar(
-        title = {
-            Text(
-                text = title,
-                style = LiteverTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-            )
-        },
+    LvTopAppBar(
+        title = title,
         modifier = modifier,
-        navigationIcon = navigationIcon,
+        onBackClick = onBackClick,
         actions = actions
     )
 }
@@ -179,20 +189,6 @@ fun LiteverCard(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun LiteverModalBottomSheet(
-    onDismissRequest: () -> Unit,
-    modifier: Modifier = Modifier,
-    content: @Composable ColumnScope.() -> Unit
-) {
-    ModalBottomSheet(
-        onDismissRequest = onDismissRequest,
-        modifier = modifier,
-        content = content
-    )
-}
-
 @Composable
 fun LiteverOutlinedCard(
     modifier: Modifier = Modifier,
@@ -236,13 +232,27 @@ fun LiteverListItem(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LiteverModalBottomSheet(
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    ModalBottomSheet(
+        onDismissRequest = onDismissRequest,
+        modifier = modifier,
+        content = content
+    )
+}
+
 @Composable
 fun LiteverTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    placeholder: (@Composable () -> Unit)? = null,
-    label: (@Composable () -> Unit)? = null,
+    placeholder: String? = null,
+    label: String? = null,
     isError: Boolean = false,
     supportingText: (@Composable () -> Unit)? = null,
     singleLine: Boolean = false,
@@ -253,8 +263,8 @@ fun LiteverTextField(
         value = value,
         onValueChange = onValueChange,
         modifier = modifier,
-        placeholder = placeholder,
-        label = label,
+        placeholder = placeholder?.let { { Text(it) } },
+        label = label?.let { { Text(it) } },
         isError = isError,
         supportingText = supportingText,
         singleLine = singleLine,

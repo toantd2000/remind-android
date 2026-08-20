@@ -236,9 +236,14 @@ fun ReminderTimeConfigSection(
         )
         LiteverTimePickerDialog(
             onDismissRequest = { showTimePicker = false },
-            onConfirm = {
-                onTimeChange(LocalTime.of(timePickerState.hour, timePickerState.minute))
-                showTimePicker = false
+            confirmButton = {
+                TextButton(onClick = {
+                    onTimeChange(LocalTime.of(timePickerState.hour, timePickerState.minute))
+                    showTimePicker = false
+                }) { Text(stringResource(android.R.string.ok)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showTimePicker = false }) { Text(stringResource(android.R.string.cancel)) }
             }
         ) {
             androidx.compose.material3.TimePicker(state = timePickerState)

@@ -91,6 +91,15 @@
     
     <string name="permission_manufacturer_title">Manufacturer Settings</string>
     <string name="permission_manufacturer_desc">Manage Auto-start and background activity for your specific device model.</string>
+    
+    <string name="permission_location_title">Location Access</string>
+    <string name="permission_location_desc">Required for Geofenced location reminders and identifying Wi-Fi networks in the background.</string>
+    <string name="permission_background_location_title">Background Location</string>
+    <string name="permission_background_location_desc">Allow the app to monitor your location even when closed so geofence reminders trigger promptly.</string>
+    <string name="permission_full_screen_intent_title">Full-Screen Alerts</string>
+    <string name="permission_full_screen_intent_desc">Allows urgent reminders and alarms to display over the lock screen immediately.</string>
+    <string name="permission_wifi_title">Wi-Fi State</string>
+    <string name="permission_wifi_desc">Enables monitoring Wi-Fi connection and disconnection events for reminders.</string>
 
     <!-- Alarm Settings -->
     <string name="snooze_duration_title">Snooze duration</string>

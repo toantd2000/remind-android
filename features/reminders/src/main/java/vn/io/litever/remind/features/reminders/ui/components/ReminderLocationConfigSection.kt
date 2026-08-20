@@ -80,8 +80,8 @@ fun ReminderLocationConfigSection(
                 value = locationName,
                 onValueChange = onLocationNameChange,
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text(stringResource(R.string.location_name_placeholder)) },
-                label = { Text(stringResource(R.string.location_name_label)) },
+                placeholder = stringResource(R.string.location_name_placeholder),
+                label = stringResource(R.string.location_name_label),
                 singleLine = true
             )
 
@@ -98,8 +98,8 @@ fun ReminderLocationConfigSection(
                         str.toDoubleOrNull()?.let { onLatitudeChange(it) } ?: if (str.isEmpty()) onLatitudeChange(0.0) else Unit
                     },
                     modifier = Modifier.weight(1f),
-                    label = { Text(stringResource(R.string.latitude_label)) },
-                    placeholder = { Text("21.0285") },
+                    label = stringResource(R.string.latitude_label),
+                    placeholder = "21.0285",
                     singleLine = true
                 )
                 LiteverTextField(
@@ -108,8 +108,8 @@ fun ReminderLocationConfigSection(
                         str.toDoubleOrNull()?.let { onLongitudeChange(it) } ?: if (str.isEmpty()) onLongitudeChange(0.0) else Unit
                     },
                     modifier = Modifier.weight(1f),
-                    label = { Text(stringResource(R.string.longitude_label)) },
-                    placeholder = { Text("105.8542") },
+                    label = stringResource(R.string.longitude_label),
+                    placeholder = "105.8542",
                     singleLine = true
                 )
             }

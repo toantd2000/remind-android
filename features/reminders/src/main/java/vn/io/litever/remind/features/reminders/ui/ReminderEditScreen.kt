@@ -172,26 +172,8 @@ fun ReminderEditScreen(
         modifier = modifier.fillMaxSize(),
         topBar = {
             LiteverTopAppBar(
-                title = {
-                    Text(
-                        text = if (uiState.id == 0L) {
-                            stringResource(R.string.add_reminder_title)
-                        } else {
-                            stringResource(R.string.edit_reminder_title)
-                        },
-                        style = LiteverTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                navigationIcon = {
-                    LiteverIconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.action_back),
-                            tint = LiteverTheme.colors.onSurface
-                        )
-                    }
-                },
+                title = stringResource(if (uiState.id == 0L) R.string.add_reminder_title else R.string.edit_reminder_title),
+                onBackClick = onBackClick,
                 actions = {
                     LiteverButton(
                         onClick = onSaveClick,

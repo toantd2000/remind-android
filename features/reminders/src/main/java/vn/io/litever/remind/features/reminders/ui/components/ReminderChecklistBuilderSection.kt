@@ -177,7 +177,7 @@ fun ReminderChecklistBuilderSection(
                 LiteverTextField(
                     value = newItemText,
                     onValueChange = { newItemText = it },
-                    placeholder = { Text(stringResource(R.string.checklist_item_placeholder)) },
+                    placeholder = stringResource(R.string.checklist_item_placeholder),
                     modifier = Modifier.weight(1f),
                     singleLine = true
                 )

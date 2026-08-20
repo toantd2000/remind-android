@@ -48,16 +48,7 @@ fun ReminderBasicInfoSection(
                 value = title,
                 onValueChange = onTitleChange,
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text(stringResource(R.string.reminder_title_placeholder)) },
-                isError = showTitleError,
-                supportingText = if (showTitleError) {
-                    {
-                        Text(
-                            text = stringResource(R.string.reminder_title_required),
-                            color = LiteverTheme.colors.error
-                        )
-                    }
-                } else null,
+                label = stringResource(R.string.reminder_title_placeholder),
                 singleLine = true
             )
 
@@ -67,7 +58,7 @@ fun ReminderBasicInfoSection(
                 value = notes,
                 onValueChange = onNotesChange,
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text(stringResource(R.string.reminder_notes_placeholder)) },
+                label = stringResource(R.string.reminder_notes_placeholder),
                 minLines = 3,
                 maxLines = 5,
                 singleLine = false

@@ -239,12 +239,14 @@ private fun TriggerBadge(
                         day.name.take(2).lowercase().replaceFirstChar { it.uppercase() }
                     }
                     "$formattedTime • $daysStr"
-                } else if (timeTrigger.date != null) {
-                    val targetDate = timeTrigger.date
-                    val dateStr = targetDate?.format(DateTimeFormatter.ofPattern("MMM dd")) ?: ""
-                    "$formattedTime • $dateStr"
                 } else {
-                    formattedTime
+                    val date = timeTrigger.date
+                    if (date != null) {
+                        val dateStr = date.format(DateTimeFormatter.ofPattern("MMM dd"))
+                        "$formattedTime • $dateStr"
+                    } else {
+                        formattedTime
+                    }
                 }
             } else {
                 stringResource(R.string.trigger_time)

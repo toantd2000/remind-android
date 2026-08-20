@@ -75,8 +75,8 @@ fun ReminderWifiConfigSection(
                 value = ssid,
                 onValueChange = onSsidChange,
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text(stringResource(R.string.wifi_ssid_placeholder)) },
-                label = { Text(stringResource(R.string.wifi_ssid_label)) },
+                placeholder = stringResource(R.string.wifi_ssid_placeholder),
+                label = stringResource(R.string.wifi_ssid_label),
                 singleLine = true
             )
 
@@ -87,8 +87,8 @@ fun ReminderWifiConfigSection(
                 value = bssid ?: "",
                 onValueChange = { onBssidChange(it.ifBlank { null }) },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text(stringResource(R.string.wifi_bssid_placeholder)) },
-                label = { Text(stringResource(R.string.wifi_bssid_label)) },
+                placeholder = stringResource(R.string.wifi_bssid_placeholder),
+                label = stringResource(R.string.wifi_bssid_label),
                 singleLine = true
             )
 

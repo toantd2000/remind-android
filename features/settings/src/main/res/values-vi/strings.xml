@@ -91,6 +91,15 @@
     
     <string name="permission_manufacturer_title">Cài đặt riêng của nhà sản xuất</string>
     <string name="permission_manufacturer_desc">Quản lý Tự khởi chạy và hoạt động nền cho riêng dòng máy của bạn.</string>
+    
+    <string name="permission_location_title">Truy cập Vị trí</string>
+    <string name="permission_location_desc">Bắt buộc cho nhắc nhở theo Vị trí (Geofence) và nhận diện mạng Wi-Fi khi chạy nền.</string>
+    <string name="permission_background_location_title">Vị trí trong nền</string>
+    <string name="permission_background_location_desc">Cho phép ứng dụng theo dõi vị trí cả khi đóng ứng dụng để kích hoạt nhắc nhở vị trí kịp thời.</string>
+    <string name="permission_full_screen_intent_title">Cảnh báo toàn màn hình</string>
+    <string name="permission_full_screen_intent_desc">Cho phép nhắc nhở khẩn cấp và báo thức hiển thị ngay lập tức trên màn hình khóa.</string>
+    <string name="permission_wifi_title">Trạng thái Wi-Fi</string>
+    <string name="permission_wifi_desc">Cho phép theo dõi các sự kiện kết nối và ngắt kết nối Wi-Fi cho nhắc nhở.</string>
 
     <!-- Alarm Settings -->
     <string name="snooze_duration_title">Thời gian tạm dừng</string>

@@ -138,13 +138,7 @@ fun ReminderListScreen(
         modifier = modifier.fillMaxSize(),
         topBar = {
             LiteverTopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.reminders_title),
-                        style = LiteverTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
-                    )
-                },
+                title = stringResource(R.string.reminders_title),
                 actions = {
                     Box {
                         LiteverIconButton(onClick = { showTopMenu = true }) {

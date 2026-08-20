@@ -43,3 +43,9 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.html
 fastlane/litever-remind-9584c2ea7120.json
+# Teamwork orchestrator files
+.agents/
+PROJECT.md
+TEST_INFRA.md
+TEST_READY.md
+ORIGINAL_REQUEST.md

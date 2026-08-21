@@ -1,8 +1,6 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,9 +11,7 @@ import androidx.compose.material.icons.rounded.AccessTime
 import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -24,6 +20,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import vn.io.litever.designsystem.components.LiteverOutlinedCard
+import vn.io.litever.designsystem.components.LiteverSegmentedButton
+import vn.io.litever.designsystem.components.LiteverSingleChoiceSegmentedButtonRow
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.model.ReminderTriggerType
 import vn.io.litever.remind.features.reminders.R
@@ -53,7 +51,7 @@ fun ReminderTriggerSection(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            SingleChoiceSegmentedButtonRow(
+            LiteverSingleChoiceSegmentedButtonRow(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 ReminderTriggerType.entries.forEachIndexed { index, triggerType ->
@@ -63,11 +61,7 @@ fun ReminderTriggerSection(
                         ReminderTriggerType.WIFI -> R.string.trigger_wifi to Icons.Rounded.Wifi
                     }
 
-                    SegmentedButton(
-                        shape = SegmentedButtonDefaults.itemShape(
-                            index = index,
-                            count = ReminderTriggerType.entries.size
-                        ),
+                    LiteverSegmentedButton(
                         onClick = { onTriggerTypeSelected(triggerType) },
                         selected = triggerType == selectedTriggerType,
                         icon = {

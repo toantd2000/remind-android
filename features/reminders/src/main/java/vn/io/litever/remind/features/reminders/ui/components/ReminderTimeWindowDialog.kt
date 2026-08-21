@@ -10,15 +10,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimePicker
@@ -35,7 +29,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import vn.io.litever.designsystem.components.LiteverButton
+import vn.io.litever.designsystem.components.LiteverDialog
+import vn.io.litever.designsystem.components.LiteverFilterChip
 import vn.io.litever.designsystem.components.LiteverOutlinedButton
+import vn.io.litever.designsystem.components.LiteverSegmentedButton
+import vn.io.litever.designsystem.components.LiteverSingleChoiceSegmentedButtonRow
 import vn.io.litever.designsystem.components.LiteverTimePickerDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
@@ -59,7 +57,7 @@ fun ReminderTimeWindowDialog(
     var isPickingStart by remember { mutableStateOf(false) }
     var isPickingEnd by remember { mutableStateOf(false) }
 
-    AlertDialog(
+    LiteverDialog(
         onDismissRequest = onDismissRequest,
         title = {
             Text(
@@ -150,17 +148,15 @@ fun ReminderTimeWindowDialog(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                SingleChoiceSegmentedButtonRow(
+                LiteverSingleChoiceSegmentedButtonRow(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    SegmentedButton(
-                        shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
+                    LiteverSegmentedButton(
                         onClick = { activeDays = emptyList() },
                         selected = !isRepeatingDays,
                         label = { Text(stringResource(R.string.time_window_all_days), style = LiteverTheme.typography.labelSmall) }
                     )
-                    SegmentedButton(
-                        shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
+                    LiteverSegmentedButton(
                         onClick = {
                             if (!isRepeatingDays) {
                                 activeDays = DayOfWeek.entries
@@ -191,7 +187,7 @@ fun ReminderTimeWindowDialog(
                                 DayOfWeek.SUNDAY -> R.string.day_sun
                             }
 
-                            FilterChip(
+                            LiteverFilterChip(
                                 selected = isSelected,
                                 onClick = {
                                     activeDays = if (isSelected) {

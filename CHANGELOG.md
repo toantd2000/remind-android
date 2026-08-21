@@ -69,6 +69,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Infrastructure:** Updated AGP and cleaned up `MainActivity`.
 
 ### Fixed
+- **UI:** Fixed a compilation error in `ReminderTimeConfigSection` where `@Composable` functions were illegally called inside `joinToString` lambdas.
 - **Localization:** Fixed language localization issues in time picker dialogs.
 
 ## [1.1.6] - 2026-05-30
@@ -81,6 +82,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Infrastructure:** Updated dependencies and synchronized UI state management for better stability.
 
 ### Fixed
+- **UI:** Fixed a compilation error in `ReminderTimeConfigSection` where `@Composable` functions were illegally called inside `joinToString` lambdas.
 - **UI:** Fixed a bug in `AlarmCard` where the click animation (ripple) and the left accent bar would leak outside the rounded corners.
 - **Localization:** Fixed a bug where Dialogs were showing the wrong language by resolving `stringResource` outside the Dialog scope.
 
@@ -106,6 +108,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Navigation Tweaks:** Hidden the unimplemented Alarm Settings menu item from the settings tab.
 
 ### Fixed
+- **UI:** Fixed a compilation error in `ReminderTimeConfigSection` where `@Composable` functions were illegally called inside `joinToString` lambdas.
 - **Navigation Crash:** Prevented Navigation crash by waiting for NavHost initialization in MainActivity.
 - **Lifecycle Fixes:** Bound RingingScreen visibility state to lifecycle events to ensure alarm can wake up screen again after snooze.
 - **UI:** Fixed preview and cleanup code in MissedAlarmDialog.
@@ -124,6 +127,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Design System:** Bumped `litever-designsystem` to `v1.0.4`.
 
 ### Fixed
+- **UI:** Fixed a compilation error in `ReminderTimeConfigSection` where `@Composable` functions were illegally called inside `joinToString` lambdas.
 - **Cloning Stability:** Fixed a bug where missions and private phrases were duplicated during alarm cloning.
 - **Localization:** Improved translations and fixed activity finish logic in the exit dialog when using language overrides.
 
@@ -151,6 +155,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Permission Optimization:** Implemented using Storage Access Framework (SAF), eliminating the need for `READ_EXTERNAL_STORAGE` permission while maintaining persistent access across reboots.
 
 ### Fixed
+- **UI:** Fixed a compilation error in `ReminderTimeConfigSection` where `@Composable` functions were illegally called inside `joinToString` lambdas.
 - **Alarm Skip Logic:** Fixed a bug where skipped alarms were incorrectly marked as "Missed due to power off" if the alarm time passed while the app was closed.
 - **Database Maintenance:** Implemented automatic cleanup of expired "Skip once" statuses. Alarms will now correctly reset their skipped state once the skipped occurrence has passed, ensuring both DB and UI stay consistent.
 

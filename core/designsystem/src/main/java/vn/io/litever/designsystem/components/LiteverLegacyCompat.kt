@@ -19,6 +19,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -344,4 +345,106 @@ fun LiteverRadioButton(
         enabled = enabled
     )
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LiteverSingleChoiceSegmentedButtonRow(
+    modifier: Modifier = Modifier,
+    space: androidx.compose.ui.unit.Dp = androidx.compose.material3.SegmentedButtonDefaults.BorderWidth,
+    content: @Composable androidx.compose.material3.SingleChoiceSegmentedButtonRowScope.() -> Unit
+) {
+    androidx.compose.material3.SingleChoiceSegmentedButtonRow(
+        modifier = modifier,
+        space = space,
+        content = content
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun androidx.compose.material3.SingleChoiceSegmentedButtonRowScope.LiteverSegmentedButton(
+    selected: Boolean,
+    onClick: () -> Unit,
+    shape: Shape = androidx.compose.material3.SegmentedButtonDefaults.baseShape,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    colors: androidx.compose.material3.SegmentedButtonColors = androidx.compose.material3.SegmentedButtonDefaults.colors(),
+    border: BorderStroke = androidx.compose.material3.SegmentedButtonDefaults.borderStroke(androidx.compose.material3.MaterialTheme.colorScheme.outline),
+    interactionSource: androidx.compose.foundation.interaction.MutableInteractionSource? = null,
+    icon: @Composable () -> Unit = { androidx.compose.material3.SegmentedButtonDefaults.Icon(selected) },
+    label: @Composable () -> Unit
+) {
+    SegmentedButton(
+        selected = selected,
+        onClick = onClick,
+        shape = shape,
+        modifier = modifier,
+        enabled = enabled,
+        colors = colors,
+        border = border,
+        interactionSource = interactionSource,
+        icon = icon,
+        label = label
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LiteverFilterChip(
+    selected: Boolean,
+    onClick: () -> Unit,
+    label: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    shape: Shape = androidx.compose.material3.FilterChipDefaults.shape,
+    colors: androidx.compose.material3.SelectableChipColors = androidx.compose.material3.FilterChipDefaults.filterChipColors(),
+    elevation: androidx.compose.material3.SelectableChipElevation? = androidx.compose.material3.FilterChipDefaults.filterChipElevation(),
+    border: BorderStroke? = null,
+    interactionSource: androidx.compose.foundation.interaction.MutableInteractionSource? = null
+) {
+    androidx.compose.material3.FilterChip(
+        selected = selected,
+        onClick = onClick,
+        label = label,
+        modifier = modifier,
+        enabled = enabled,
+        leadingIcon = leadingIcon,
+        trailingIcon = trailingIcon,
+        shape = shape,
+        colors = colors,
+        elevation = elevation,
+        border = border,
+        interactionSource = interactionSource
+    )
+}
+
+@Composable
+fun LiteverDialog(
+    onDismissRequest: () -> Unit,
+    confirmButton: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+    dismissButton: @Composable (() -> Unit)? = null,
+    icon: @Composable (() -> Unit)? = null,
+    title: @Composable (() -> Unit)? = null,
+    text: @Composable (() -> Unit)? = null,
+    shape: Shape = androidx.compose.material3.AlertDialogDefaults.shape,
+    containerColor: androidx.compose.ui.graphics.Color = androidx.compose.material3.AlertDialogDefaults.containerColor,
+    tonalElevation: androidx.compose.ui.unit.Dp = androidx.compose.material3.AlertDialogDefaults.TonalElevation
+) {
+    androidx.compose.material3.AlertDialog(
+        onDismissRequest = onDismissRequest,
+        confirmButton = confirmButton,
+        modifier = modifier,
+        dismissButton = dismissButton,
+        icon = icon,
+        title = title,
+        text = text,
+        shape = shape,
+        containerColor = containerColor,
+        tonalElevation = tonalElevation
+    )
+}
+
 

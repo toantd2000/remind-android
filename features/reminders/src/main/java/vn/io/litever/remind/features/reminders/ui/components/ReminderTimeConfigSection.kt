@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
+import android.content.Context
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -39,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -89,7 +91,7 @@ fun ReminderTimeConfigSection(
     var showTimePicker by remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
     var showRepeatSheet by remember { mutableStateOf(false) }
-    val context = androidx.compose.ui.platform.LocalContext.current
+    val context = LocalContext.current
 
     LiteverOutlinedCard(
         modifier = modifier
@@ -201,7 +203,7 @@ fun ReminderTimeConfigSection(
                                     if (repeatDays.isEmpty()) {
                                         stringResource(R.string.repeat_interval_weekly)
                                     } else {
-                                        val dayNames = repeatDays.joinToString(", ") { context.getString(getDayResId(it)) }
+                                        val dayNames = repeatDays.joinToString(", ") { getDayLabel(context, it) }
                                         "${stringResource(R.string.repeat_interval_weekly)} ($dayNames)"
                                     }
                                 }
@@ -681,13 +683,8 @@ fun ReminderTimeConfigSection(
     }
 }
 
-@Composable
-private fun getDayLabel(day: DayOfWeek): String {
-    return stringResource(getDayResId(day))
-}
-
-private fun getDayResId(day: DayOfWeek): Int {
-    return when (day) {
+private fun getDayLabel(context: Context, day: DayOfWeek): String {
+    val res = when (day) {
         DayOfWeek.MONDAY -> R.string.day_mon
         DayOfWeek.TUESDAY -> R.string.day_tue
         DayOfWeek.WEDNESDAY -> R.string.day_wed
@@ -696,6 +693,6 @@ private fun getDayResId(day: DayOfWeek): Int {
         DayOfWeek.SATURDAY -> R.string.day_sat
         DayOfWeek.SUNDAY -> R.string.day_sun
     }
+    return context.getString(res)
 }
-
 

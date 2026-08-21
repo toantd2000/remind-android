@@ -20,12 +20,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.DateRange
-import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material.icons.rounded.WifiFind
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,6 +39,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import vn.io.litever.designsystem.components.LiteverOutlinedButton
 import vn.io.litever.designsystem.components.LiteverOutlinedCard
+import vn.io.litever.designsystem.components.LiteverSegmentedButton
+import vn.io.litever.designsystem.components.LiteverSingleChoiceSegmentedButtonRow
 import vn.io.litever.designsystem.components.LiteverTextField
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
@@ -152,7 +151,7 @@ fun ReminderWifiConfigSection(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            SingleChoiceSegmentedButtonRow(
+            LiteverSingleChoiceSegmentedButtonRow(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 WifiTriggerType.entries.forEachIndexed { index, type ->
@@ -163,8 +162,7 @@ fun ReminderWifiConfigSection(
                         WifiTriggerType.WHILE_CONNECTED -> R.string.wifi_while_connected
                     }
 
-                    SegmentedButton(
-                        shape = SegmentedButtonDefaults.itemShape(index = index, count = WifiTriggerType.entries.size),
+                    LiteverSegmentedButton(
                         onClick = { onTriggerTypeChange(type) },
                         selected = isSelected,
                         label = {

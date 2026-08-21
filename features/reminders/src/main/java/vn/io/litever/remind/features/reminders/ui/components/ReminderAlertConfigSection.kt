@@ -19,9 +19,7 @@ import androidx.compose.material.icons.rounded.Snooze
 import androidx.compose.material.icons.rounded.Vibration
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
@@ -34,6 +32,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import vn.io.litever.designsystem.components.LiteverOutlinedCard
+import vn.io.litever.designsystem.components.LiteverSegmentedButton
+import vn.io.litever.designsystem.components.LiteverSingleChoiceSegmentedButtonRow
 import vn.io.litever.designsystem.components.LiteverSwitch
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingIcon
@@ -88,7 +88,7 @@ fun ReminderAlertConfigSection(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            SingleChoiceSegmentedButtonRow(
+            LiteverSingleChoiceSegmentedButtonRow(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 NotificationStyle.entries.forEachIndexed { index, style ->
@@ -96,11 +96,7 @@ fun ReminderAlertConfigSection(
                         NotificationStyle.STANDARD -> R.string.style_standard
                         NotificationStyle.FULL_SCREEN -> R.string.style_full_screen
                     }
-                    SegmentedButton(
-                        shape = SegmentedButtonDefaults.itemShape(
-                            index = index,
-                            count = NotificationStyle.entries.size
-                        ),
+                    LiteverSegmentedButton(
                         onClick = { onNotificationStyleChange(style) },
                         selected = style == notificationStyle,
                         label = {
@@ -175,35 +171,46 @@ fun ReminderAlertConfigSection(
             Spacer(modifier = Modifier.height(12.dp))
 
             // Grouped Volume & Vibration Row (Matching feature:alarms design)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(LiteverTheme.shapes.medium)
+                    .clickable(onClick = onRingtoneClick),
+                color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.4f),
+                shape = LiteverTheme.shapes.medium
             ) {
-                ReMindSettingIcon(
-                    imageVector = if (volume == 0) Icons.AutoMirrored.Rounded.VolumeOff else Icons.AutoMirrored.Rounded.VolumeUp,
-                    selected = false
-                )
-
-                Slider(
-                    value = volume.toFloat(),
-                    onValueChange = { onVolumeChange(it.roundToInt()) },
-                    valueRange = 0f..100f,
-                    steps = 9,
+                Row(
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 12.dp),
-                    colors = SliderDefaults.colors(
-                        thumbColor = MaterialTheme.colorScheme.primary,
-                        activeTrackColor = MaterialTheme.colorScheme.primary,
-                        inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    ReMindSettingIcon(
+                        imageVector = if (volume == 0) Icons.AutoMirrored.Rounded.VolumeOff else Icons.AutoMirrored.Rounded.VolumeUp,
+                        selected = false
                     )
-                )
 
-                ReMindSettingIcon(
-                    imageVector = Icons.Rounded.Vibration,
-                    selected = vibrationEnabled,
-                    onClick = { onVibrationChange(!vibrationEnabled) }
-                )
+                    Slider(
+                        value = volume.toFloat(),
+                        onValueChange = { onVolumeChange(it.roundToInt()) },
+                        valueRange = 0f..100f,
+                        steps = 9,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 12.dp),
+                        colors = SliderDefaults.colors(
+                            thumbColor = MaterialTheme.colorScheme.primary,
+                            activeTrackColor = MaterialTheme.colorScheme.primary,
+                            inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
+                    )
+
+                    ReMindSettingIcon(
+                        imageVector = Icons.Rounded.Vibration,
+                        selected = vibrationEnabled,
+                        onClick = { onVibrationChange(!vibrationEnabled) }
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -308,7 +315,12 @@ fun ReminderAlertConfigSection(
                                 else -> stringResource(R.string.times_format, snoozeRepeatCount)
                             }
                             val summary = if (snoozeEnabled) {
-                                "${stringResource(R.string.minutes_format, snoozeIntervalMinutes)}, $repeatText"
+                                "${
+                                    stringResource(
+                                        R.string.minutes_format,
+                                        snoozeIntervalMinutes
+                                    )
+                                }, $repeatText"
                             } else {
                                 stringResource(R.string.off)
                             }
@@ -331,5 +343,3 @@ fun ReminderAlertConfigSection(
         }
     }
 }
-
-

@@ -16,13 +16,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccessTime
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Clear
+import androidx.compose.material.icons.rounded.Repeat
+import androidx.compose.material.icons.rounded.Today
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -66,6 +70,8 @@ fun ReminderTimeConfigSection(
 ) {
     var showTimePicker by remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
+
+    val isRepeating = repeatDays.isNotEmpty()
 
     LiteverOutlinedCard(
         modifier = modifier
@@ -124,104 +130,187 @@ fun ReminderTimeConfigSection(
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Date Selector (Optional)
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(LiteverTheme.shapes.medium)
-                    .clickable { showDatePicker = true },
-                color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.5f),
-                shape = LiteverTheme.shapes.medium
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Rounded.CalendarMonth,
-                            contentDescription = null,
-                            tint = LiteverTheme.colors.secondary
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = if (date != null) {
-                                date.format(DateTimeFormatter.ofPattern("EEEE, MMM dd, yyyy"))
-                            } else {
-                                stringResource(R.string.select_date)
-                            },
-                            style = LiteverTheme.typography.bodyMedium,
-                            color = if (date != null) LiteverTheme.colors.onSurface else LiteverTheme.colors.onSurfaceVariant
-                        )
-                    }
-                    if (date != null) {
-                        LiteverIconButton(
-                            onClick = { onDateChange(null) },
-                            modifier = Modifier.size(24.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.Clear,
-                                contentDescription = "Clear Date",
-                                tint = LiteverTheme.colors.onSurfaceVariant
-                            )
-                        }
-                    }
-                }
-            }
-
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Repeat Days Chips
-            Text(
-                text = stringResource(R.string.repeat_days_label),
-                style = LiteverTheme.typography.labelLarge,
-                fontWeight = FontWeight.SemiBold,
-                color = LiteverTheme.colors.onSurface
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp),
+            // Schedule Mode: One-time vs Repeat
+            SingleChoiceSegmentedButtonRow(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                DayOfWeek.entries.forEach { day ->
-                    val isSelected = repeatDays.contains(day)
-                    val labelRes = when (day) {
-                        DayOfWeek.MONDAY -> R.string.day_mon
-                        DayOfWeek.TUESDAY -> R.string.day_tue
-                        DayOfWeek.WEDNESDAY -> R.string.day_wed
-                        DayOfWeek.THURSDAY -> R.string.day_thu
-                        DayOfWeek.FRIDAY -> R.string.day_fri
-                        DayOfWeek.SATURDAY -> R.string.day_sat
-                        DayOfWeek.SUNDAY -> R.string.day_sun
-                    }
+                SegmentedButton(
+                    shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
+                    onClick = {
+                        if (isRepeating) {
+                            onRepeatDaysChange(emptyList())
+                        }
+                    },
+                    selected = !isRepeating,
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Rounded.Today,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    },
+                    label = { Text(stringResource(R.string.once_only)) }
+                )
+                SegmentedButton(
+                    shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
+                    onClick = {
+                        if (!isRepeating) {
+                            onDateChange(null)
+                            onRepeatDaysChange(DayOfWeek.entries) // Default to Daily
+                        }
+                    },
+                    selected = isRepeating,
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Rounded.Repeat,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    },
+                    label = { Text(stringResource(R.string.daily)) }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            // If Repeating: Date selection is omitted in favor of repetition rules
+            if (isRepeating) {
+                Text(
+                    text = stringResource(R.string.repeat_days_label),
+                    style = LiteverTheme.typography.labelLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    color = LiteverTheme.colors.onSurface
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Quick presets
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+                ) {
+                    val isAllDaily = repeatDays.size == 7
+                    val isWeekdays = repeatDays.size == 5 && !repeatDays.contains(DayOfWeek.SATURDAY) && !repeatDays.contains(DayOfWeek.SUNDAY)
+                    val isWeekends = repeatDays.size == 2 && repeatDays.contains(DayOfWeek.SATURDAY) && repeatDays.contains(DayOfWeek.SUNDAY)
 
                     FilterChip(
-                        selected = isSelected,
+                        selected = isAllDaily,
                         onClick = {
-                            val newRepeat = if (isSelected) {
-                                repeatDays - day
-                            } else {
-                                (repeatDays + day).sortedBy { it.toJavaDayValue() }
-                            }
-                            onRepeatDaysChange(newRepeat)
-                            if (newRepeat.isNotEmpty() && date != null) {
-                                onDateChange(null) // Recurring clears specific single date
-                            }
+                            onDateChange(null)
+                            onRepeatDaysChange(DayOfWeek.entries)
                         },
-                        label = { Text(stringResource(labelRes)) },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = LiteverTheme.colors.primary,
-                            selectedLabelColor = LiteverTheme.colors.onPrimary
-                        )
+                        label = { Text(stringResource(R.string.daily), style = LiteverTheme.typography.labelSmall) }
                     )
+                    FilterChip(
+                        selected = isWeekdays,
+                        onClick = {
+                            onDateChange(null)
+                            onRepeatDaysChange(listOf(
+                                DayOfWeek.MONDAY,
+                                DayOfWeek.TUESDAY,
+                                DayOfWeek.WEDNESDAY,
+                                DayOfWeek.THURSDAY,
+                                DayOfWeek.FRIDAY
+                            ))
+                        },
+                        label = { Text(stringResource(R.string.weekdays), style = LiteverTheme.typography.labelSmall) }
+                    )
+                    FilterChip(
+                        selected = isWeekends,
+                        onClick = {
+                            onDateChange(null)
+                            onRepeatDaysChange(listOf(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY))
+                        },
+                        label = { Text(stringResource(R.string.weekends), style = LiteverTheme.typography.labelSmall) }
+                    )
+                }
+
+                // Individual Day of week chips
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    DayOfWeek.entries.forEach { day ->
+                        val isSelected = repeatDays.contains(day)
+                        val labelRes = when (day) {
+                            DayOfWeek.MONDAY -> R.string.day_mon
+                            DayOfWeek.TUESDAY -> R.string.day_tue
+                            DayOfWeek.WEDNESDAY -> R.string.day_wed
+                            DayOfWeek.THURSDAY -> R.string.day_thu
+                            DayOfWeek.FRIDAY -> R.string.day_fri
+                            DayOfWeek.SATURDAY -> R.string.day_sat
+                            DayOfWeek.SUNDAY -> R.string.day_sun
+                        }
+
+                        FilterChip(
+                            selected = isSelected,
+                            onClick = {
+                                val newRepeat = if (isSelected) {
+                                    repeatDays - day
+                                } else {
+                                    (repeatDays + day).sortedBy { it.toJavaDayValue() }
+                                }
+                                onDateChange(null)
+                                onRepeatDaysChange(newRepeat)
+                            },
+                            label = { Text(stringResource(labelRes)) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = LiteverTheme.colors.primary,
+                                selectedLabelColor = LiteverTheme.colors.onPrimary
+                            )
+                        )
+                    }
+                }
+            } else {
+                // One-time: Show Date Selector
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(LiteverTheme.shapes.medium)
+                        .clickable { showDatePicker = true },
+                    color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.5f),
+                    shape = LiteverTheme.shapes.medium
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Rounded.CalendarMonth,
+                                contentDescription = null,
+                                tint = LiteverTheme.colors.secondary
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text(
+                                text = if (date != null) {
+                                    date.format(DateTimeFormatter.ofPattern("EEEE, MMM dd, yyyy"))
+                                } else {
+                                    stringResource(R.string.select_date)
+                                },
+                                style = LiteverTheme.typography.bodyMedium,
+                                color = if (date != null) LiteverTheme.colors.onSurface else LiteverTheme.colors.onSurfaceVariant
+                            )
+                        }
+                        if (date != null) {
+                            LiteverIconButton(
+                                onClick = { onDateChange(null) },
+                                modifier = Modifier.size(24.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.Clear,
+                                    contentDescription = "Clear Date",
+                                    tint = LiteverTheme.colors.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -285,3 +374,4 @@ fun ReminderTimeConfigSection(
         }
     }
 }
+

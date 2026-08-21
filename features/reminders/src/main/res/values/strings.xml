@@ -153,4 +153,13 @@
     <string name="discard_changes_title">Discard Changes?</string>
     <string name="discard_changes_message">You have unsaved changes. Are you sure you want to discard them?</string>
     <string name="action_discard">Discard</string>
+    <string name="off">Off</string>
+    <string name="alert_behavior_snooze_title">Alert Behavior &amp; Snooze</string>
+    <string name="use_connected_wifi">Use Current Connected Wi-Fi</string>
+    <string name="no_connected_wifi_msg">No connected Wi-Fi detected. Please ensure Wi-Fi &amp; Location are enabled.</string>
+    <string name="time_window_all_days">Every Day / One-time</string>
+    <string name="time_window_selected_days">Selected Days</string>
+    <string name="weekdays">Weekdays</string>
+    <string name="weekends">Weekends</string>
+    <string name="reorder_handle">Reorder handle</string>
 </resources>

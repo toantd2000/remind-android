@@ -15,6 +15,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -134,7 +137,8 @@ fun ReminderTimeWindowDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Active Days
+                // Schedule Type: All Days / One-time vs Selected Days
+                val isRepeatingDays = activeDays.isNotEmpty()
                 Text(
                     text = stringResource(R.string.time_window_active_days),
                     style = LiteverTheme.typography.labelMedium,
@@ -143,38 +147,63 @@ fun ReminderTimeWindowDialog(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                SingleChoiceSegmentedButtonRow(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    DayOfWeek.entries.forEach { day ->
-                        val isSelected = activeDays.contains(day)
-                        val labelRes = when (day) {
-                            DayOfWeek.MONDAY -> R.string.day_mon
-                            DayOfWeek.TUESDAY -> R.string.day_tue
-                            DayOfWeek.WEDNESDAY -> R.string.day_wed
-                            DayOfWeek.THURSDAY -> R.string.day_thu
-                            DayOfWeek.FRIDAY -> R.string.day_fri
-                            DayOfWeek.SATURDAY -> R.string.day_sat
-                            DayOfWeek.SUNDAY -> R.string.day_sun
-                        }
+                    SegmentedButton(
+                        shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
+                        onClick = { activeDays = emptyList() },
+                        selected = !isRepeatingDays,
+                        label = { Text(stringResource(R.string.time_window_all_days), style = LiteverTheme.typography.labelSmall) }
+                    )
+                    SegmentedButton(
+                        shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
+                        onClick = {
+                            if (!isRepeatingDays) {
+                                activeDays = DayOfWeek.entries
+                            }
+                        },
+                        selected = isRepeatingDays,
+                        label = { Text(stringResource(R.string.time_window_selected_days), style = LiteverTheme.typography.labelSmall) }
+                    )
+                }
 
-                        FilterChip(
-                            selected = isSelected,
-                            onClick = {
-                                activeDays = if (isSelected) {
-                                    activeDays - day
-                                } else {
-                                    (activeDays + day).sortedBy { it.toJavaDayValue() }
-                                }
-                            },
-                            label = { Text(stringResource(labelRes)) },
-                            colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = LiteverTheme.colors.primary,
-                                selectedLabelColor = LiteverTheme.colors.onPrimary
+                if (isRepeatingDays) {
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        DayOfWeek.entries.forEach { day ->
+                            val isSelected = activeDays.contains(day)
+                            val labelRes = when (day) {
+                                DayOfWeek.MONDAY -> R.string.day_mon
+                                DayOfWeek.TUESDAY -> R.string.day_tue
+                                DayOfWeek.WEDNESDAY -> R.string.day_wed
+                                DayOfWeek.THURSDAY -> R.string.day_thu
+                                DayOfWeek.FRIDAY -> R.string.day_fri
+                                DayOfWeek.SATURDAY -> R.string.day_sat
+                                DayOfWeek.SUNDAY -> R.string.day_sun
+                            }
+
+                            FilterChip(
+                                selected = isSelected,
+                                onClick = {
+                                    activeDays = if (isSelected) {
+                                        activeDays - day
+                                    } else {
+                                        (activeDays + day).sortedBy { it.toJavaDayValue() }
+                                    }
+                                },
+                                label = { Text(stringResource(labelRes)) },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = LiteverTheme.colors.primary,
+                                    selectedLabelColor = LiteverTheme.colors.onPrimary
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }

@@ -10,13 +10,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.DragHandle
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material.icons.rounded.Checklist
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -104,14 +103,13 @@ fun ReminderChecklistBuilderSection(
                             .fillMaxWidth()
                             .padding(vertical = 4.dp)
                     ) {
-                        Checkbox(
-                            checked = item.isCompleted,
-                            onCheckedChange = { isChecked ->
-                                onToggleItemInitialCheck(index, isChecked)
-                            },
-                            colors = CheckboxDefaults.colors(
-                                checkedColor = LiteverTheme.colors.primary
-                            )
+                        Icon(
+                            imageVector = Icons.Rounded.DragHandle,
+                            contentDescription = stringResource(R.string.reorder_handle),
+                            tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.6f),
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp)
+                                .size(20.dp)
                         )
 
                         LiteverTextField(

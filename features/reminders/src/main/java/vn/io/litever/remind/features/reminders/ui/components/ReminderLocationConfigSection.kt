@@ -12,9 +12,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.DateRange
 import androidx.compose.material.icons.rounded.LocationOn
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -143,11 +144,10 @@ fun ReminderLocationConfigSection(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            SingleChoiceSegmentedButtonRow(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                GeofenceTransitionType.entries.forEach { type ->
+                GeofenceTransitionType.entries.forEachIndexed { index, type ->
                     val isSelected = type == transitionType
                     val labelRes = when (type) {
                         GeofenceTransitionType.ENTER -> R.string.transition_enter
@@ -155,14 +155,16 @@ fun ReminderLocationConfigSection(
                         GeofenceTransitionType.BOTH -> R.string.transition_both
                     }
 
-                    FilterChip(
-                        selected = isSelected,
+                    SegmentedButton(
+                        shape = SegmentedButtonDefaults.itemShape(index = index, count = GeofenceTransitionType.entries.size),
                         onClick = { onTransitionTypeChange(type) },
-                        label = { Text(stringResource(labelRes)) },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = LiteverTheme.colors.primary,
-                            selectedLabelColor = LiteverTheme.colors.onPrimary
-                        )
+                        selected = isSelected,
+                        label = {
+                            Text(
+                                text = stringResource(labelRes),
+                                style = LiteverTheme.typography.labelSmall
+                            )
+                        }
                     )
                 }
             }

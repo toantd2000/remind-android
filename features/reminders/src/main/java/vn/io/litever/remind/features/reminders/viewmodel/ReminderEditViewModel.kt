@@ -1,9 +1,13 @@
 package vn.io.litever.remind.features.reminders.viewmodel
 
+import android.content.Context
+import android.media.RingtoneManager
+import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -64,6 +68,7 @@ data class ReminderEditUiState(
     val notificationStyle: NotificationStyle = NotificationStyle.STANDARD,
     val isPersistentAlert: Boolean = false,
     val ringtoneUri: String? = null,
+    val ringtoneTitle: String = "Default",
     val vibrationEnabled: Boolean = true,
     val volume: Int = 80,
     val snoozeEnabled: Boolean = true,
@@ -85,7 +90,8 @@ class ReminderEditViewModel @Inject constructor(
     private val reminderScheduler: ReminderScheduler,
     private val permissionChecker: PermissionChecker,
     private val preferencesDataSource: AlarmPreferencesDataSource,
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    @ApplicationContext private val context: Context? = null
 ) : ViewModel() {
 
     val reminderId: Long = savedStateHandle.get<Long>("reminderId") ?: 0L
@@ -126,6 +132,7 @@ class ReminderEditViewModel @Inject constructor(
                             notificationStyle = existing.notificationStyle,
                             isPersistentAlert = existing.isPersistentAlert,
                             ringtoneUri = existing.ringtoneUri,
+                            ringtoneTitle = getRingtoneTitle(existing.ringtoneUri),
                             vibrationEnabled = existing.vibrationEnabled,
                             volume = existing.volume,
                             snoozeEnabled = existing.snoozeEnabled,
@@ -291,6 +298,32 @@ class ReminderEditViewModel @Inject constructor(
 
     fun setSnoozeRepeatCount(count: Int) {
         _uiState.update { it.copy(snoozeRepeatCount = count) }
+    }
+
+    fun updateRingtone(uri: String?) {
+        val title = getRingtoneTitle(uri)
+        _uiState.update { it.copy(ringtoneUri = uri, ringtoneTitle = title) }
+    }
+
+    fun updateSnoozeSettings(enabled: Boolean, interval: Int, repeatCount: Int) {
+        _uiState.update {
+            it.copy(
+                snoozeEnabled = enabled,
+                snoozeIntervalMinutes = interval,
+                snoozeRepeatCount = repeatCount
+            )
+        }
+    }
+
+    private fun getRingtoneTitle(uriString: String?): String {
+        if (uriString.isNullOrBlank()) return "Default"
+        val ctx = context ?: return "Custom Ringtone"
+        return try {
+            val r = RingtoneManager.getRingtone(ctx, Uri.parse(uriString))
+            r?.getTitle(ctx) ?: "Custom Ringtone"
+        } catch (_: Exception) {
+            "Custom Ringtone"
+        }
     }
 
     fun dismissPermissionDialog() {

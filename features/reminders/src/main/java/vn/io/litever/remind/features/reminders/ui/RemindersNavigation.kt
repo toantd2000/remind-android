@@ -31,6 +31,8 @@ fun NavController.navigateToReminderRinging(reminderId: Long, navOptions: NavOpt
 
 fun NavGraphBuilder.remindersGraph(
     onNavigateToEdit: (Long) -> Unit,
+    onNavigateToRingtoneSelection: (String?) -> Unit = {},
+    onNavigateToSnoozeSettings: (Boolean, Int, Int) -> Unit = { _, _, _ -> },
     onNavigateToPermissions: () -> Unit,
     onNavigateBack: () -> Unit,
     navController: NavController
@@ -64,6 +66,8 @@ fun NavGraphBuilder.remindersGraph(
         ReminderEditRoute(
             reminderId = reminderId,
             onBackClick = onNavigateBack,
+            onNavigateToRingtoneSelection = onNavigateToRingtoneSelection,
+            onNavigateToSnoozeSettings = onNavigateToSnoozeSettings,
             onNavigateToPermissions = onNavigateToPermissions,
             navController = navController
         )

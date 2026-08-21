@@ -153,4 +153,13 @@
     <string name="discard_changes_title">Hủy thay đổi?</string>
     <string name="discard_changes_message">Bạn có các thay đổi chưa lưu. Bạn có chắc muốn hủy?</string>
     <string name="action_discard">Hủy thay đổi</string>
+    <string name="off">Tắt</string>
+    <string name="alert_behavior_snooze_title">Hành vi cảnh báo &amp; Báo lại</string>
+    <string name="use_connected_wifi">Dùng Wi-Fi đang kết nối</string>
+    <string name="no_connected_wifi_msg">Không tìm thấy Wi-Fi đang kết nối. Vui lòng đảm bảo Wi-Fi và Vị trí đã được bật.</string>
+    <string name="time_window_all_days">Hàng ngày / Một lần</string>
+    <string name="time_window_selected_days">Ngày đã chọn</string>
+    <string name="weekdays">Ngày trong tuần</string>
+    <string name="weekends">Cuối tuần</string>
+    <string name="reorder_handle">Kéo để sắp xếp lại</string>
 </resources>

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -20,7 +21,7 @@ import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,6 +34,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import vn.io.litever.designsystem.components.LiteverButton
+import vn.io.litever.designsystem.components.LiteverOutlinedButton
 import vn.io.litever.designsystem.components.LiteverTimePickerDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
@@ -209,7 +212,7 @@ fun ReminderTimeWindowDialog(
             }
         },
         confirmButton = {
-            TextButton(
+            LiteverButton(
                 onClick = {
                     onConfirm(
                         ReminderTimeWindow(
@@ -224,16 +227,16 @@ fun ReminderTimeWindowDialog(
             }
         },
         dismissButton = {
-            Row {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 if (initialTimeWindow != null) {
-                    TextButton(onClick = { onConfirm(null) }) {
+                    LiteverOutlinedButton(onClick = { onConfirm(null) }) {
                         Text(
                             text = stringResource(R.string.clear_time_window),
                             color = LiteverTheme.colors.error
                         )
                     }
                 }
-                TextButton(onClick = onDismissRequest) {
+                LiteverOutlinedButton(onClick = onDismissRequest) {
                     Text(stringResource(R.string.action_cancel))
                 }
             }
@@ -249,16 +252,16 @@ fun ReminderTimeWindowDialog(
         LiteverTimePickerDialog(
             onDismissRequest = { isPickingStart = false },
             confirmButton = {
-                TextButton(onClick = {
+                LiteverButton(onClick = {
                     startTime = LocalTime.of(startPickerState.hour, startPickerState.minute)
                     isPickingStart = false
-                }) { Text(stringResource(android.R.string.ok)) }
+                }) { Text(stringResource(R.string.action_save)) }
             },
             dismissButton = {
-                TextButton(onClick = { isPickingStart = false }) { Text(stringResource(android.R.string.cancel)) }
+                LiteverOutlinedButton(onClick = { isPickingStart = false }) { Text(stringResource(R.string.action_cancel)) }
             }
         ) {
-            androidx.compose.material3.TimePicker(state = startPickerState)
+            TimePicker(state = startPickerState)
         }
     }
 
@@ -271,16 +274,16 @@ fun ReminderTimeWindowDialog(
         LiteverTimePickerDialog(
             onDismissRequest = { isPickingEnd = false },
             confirmButton = {
-                TextButton(onClick = {
+                LiteverButton(onClick = {
                     endTime = LocalTime.of(endPickerState.hour, endPickerState.minute)
                     isPickingEnd = false
-                }) { Text(stringResource(android.R.string.ok)) }
+                }) { Text(stringResource(R.string.action_save)) }
             },
             dismissButton = {
-                TextButton(onClick = { isPickingEnd = false }) { Text(stringResource(android.R.string.cancel)) }
+                LiteverOutlinedButton(onClick = { isPickingEnd = false }) { Text(stringResource(R.string.action_cancel)) }
             }
         ) {
-            androidx.compose.material3.TimePicker(state = endPickerState)
+            TimePicker(state = endPickerState)
         }
     }
 }

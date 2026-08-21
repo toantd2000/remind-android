@@ -67,6 +67,20 @@
     <string name="day_fri">Fr</string>
     <string name="day_sat">Sa</string>
     <string name="day_sun">Su</string>
+    <string name="repeat_title">Repeat</string>
+    <string name="repeat_interval_once">Once only</string>
+    <string name="repeat_interval_daily">Daily</string>
+    <string name="repeat_interval_weekly">Weekly</string>
+    <string name="repeat_interval_monthly">Monthly</string>
+    <string name="repeat_interval_yearly">Yearly</string>
+    <string name="repeat_monthly_day_summary">Monthly (Day %d)</string>
+    <string name="repeat_yearly_summary">Yearly (%1$s %2$d)</string>
+    <string name="select_repeat_interval">Select Repeat Interval</string>
+    <string name="select_day_of_month">Select Day of Month</string>
+    <string name="day_of_month_format">Day %d of every month</string>
+    <string name="select_month_label">Month</string>
+    <string name="select_day_label">Day</string>
+    <string name="day_format">Day %d</string>
 
     <!-- Location Trigger Section -->
     <string name="section_location_trigger">Geofence Location</string>

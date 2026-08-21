@@ -8,21 +8,22 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.rounded.VolumeOff
+import androidx.compose.material.icons.automirrored.rounded.VolumeUp
+import androidx.compose.material.icons.rounded.AlarmOn
 import androidx.compose.material.icons.rounded.MusicNote
-import androidx.compose.material.icons.rounded.Notifications
-import androidx.compose.material.icons.rounded.Repeat
 import androidx.compose.material.icons.rounded.Snooze
-import androidx.compose.material.icons.rounded.VolumeUp
+import androidx.compose.material.icons.rounded.Vibration
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,6 +39,7 @@ import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingIcon
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.features.reminders.R
+import kotlin.math.roundToInt
 
 @Composable
 fun ReminderAlertConfigSection(
@@ -139,7 +141,10 @@ fun ReminderAlertConfigSection(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
+                    ) {
                         ReMindSettingIcon(
                             imageVector = Icons.Rounded.MusicNote
                         )
@@ -162,45 +167,42 @@ fun ReminderAlertConfigSection(
                     Icon(
                         imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
                         contentDescription = null,
-                        tint = LiteverTheme.colors.onSurfaceVariant
+                        tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.5f)
                     )
                 }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Volume Slider
-            Text(
-                text = stringResource(R.string.volume_label, volume),
-                style = LiteverTheme.typography.labelMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = LiteverTheme.colors.onSurface
-            )
-            Slider(
-                value = volume.toFloat(),
-                onValueChange = { onVolumeChange(it.toInt()) },
-                valueRange = 0f..100f,
-                steps = 9,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Vibration Toggle
+            // Grouped Volume & Vibration Row (Matching feature:alarms design)
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = stringResource(R.string.vibration_label),
-                    style = LiteverTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = LiteverTheme.colors.onSurface
+                ReMindSettingIcon(
+                    imageVector = if (volume == 0) Icons.AutoMirrored.Rounded.VolumeOff else Icons.AutoMirrored.Rounded.VolumeUp,
+                    selected = false
                 )
-                LiteverSwitch(
-                    checked = vibrationEnabled,
-                    onCheckedChange = onVibrationChange
+
+                Slider(
+                    value = volume.toFloat(),
+                    onValueChange = { onVolumeChange(it.roundToInt()) },
+                    valueRange = 0f..100f,
+                    steps = 9,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 12.dp),
+                    colors = SliderDefaults.colors(
+                        thumbColor = MaterialTheme.colorScheme.primary,
+                        activeTrackColor = MaterialTheme.colorScheme.primary,
+                        inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
+                )
+
+                ReMindSettingIcon(
+                    imageVector = Icons.Rounded.Vibration,
+                    selected = vibrationEnabled,
+                    onClick = { onVibrationChange(!vibrationEnabled) }
                 )
             }
 
@@ -218,28 +220,50 @@ fun ReminderAlertConfigSection(
 
             // If Full-Screen Alarm: Show Persistent Alert Loop toggle
             if (notificationStyle == NotificationStyle.FULL_SCREEN) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(LiteverTheme.shapes.medium)
+                        .clickable { onPersistentAlertChange(!isPersistentAlert) },
+                    color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.4f),
+                    shape = LiteverTheme.shapes.medium
                 ) {
-                    Column(modifier = Modifier.weight(1f).padding(end = 8.dp)) {
-                        Text(
-                            text = stringResource(R.string.persistent_alert_title),
-                            style = LiteverTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.SemiBold,
-                            color = LiteverTheme.colors.onSurface
-                        )
-                        Text(
-                            text = stringResource(R.string.persistent_alert_desc),
-                            style = LiteverTheme.typography.bodySmall,
-                            color = LiteverTheme.colors.onSurfaceVariant
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 14.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            ReMindSettingIcon(
+                                imageVector = Icons.Rounded.AlarmOn,
+                                selected = isPersistentAlert
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column {
+                                Text(
+                                    text = stringResource(R.string.persistent_alert_title),
+                                    style = LiteverTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = LiteverTheme.colors.onSurface
+                                )
+                                Text(
+                                    text = stringResource(R.string.persistent_alert_desc),
+                                    style = LiteverTheme.typography.bodySmall,
+                                    color = LiteverTheme.colors.onSurfaceVariant
+                                )
+                            }
+                        }
+
+                        LiteverSwitch(
+                            checked = isPersistentAlert,
+                            onCheckedChange = onPersistentAlertChange
                         )
                     }
-                    LiteverSwitch(
-                        checked = isPersistentAlert,
-                        onCheckedChange = onPersistentAlertChange
-                    )
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -261,9 +285,13 @@ fun ReminderAlertConfigSection(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
+                    ) {
                         ReMindSettingIcon(
-                            imageVector = Icons.Rounded.Snooze
+                            imageVector = Icons.Rounded.Snooze,
+                            selected = snoozeEnabled
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         Column {
@@ -296,11 +324,12 @@ fun ReminderAlertConfigSection(
                     Icon(
                         imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
                         contentDescription = null,
-                        tint = LiteverTheme.colors.onSurfaceVariant
+                        tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.5f)
                     )
                 }
             }
         }
     }
 }
+
 

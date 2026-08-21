@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.DateRange
 import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material.icons.rounded.WifiFind
@@ -184,21 +185,23 @@ fun ReminderWifiConfigSection(
                     .fillMaxWidth()
                     .clip(LiteverTheme.shapes.medium)
                     .clickable { showTimeWindowDialog = true },
-                color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.5f),
+                color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.4f),
                 shape = LiteverTheme.shapes.medium
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(14.dp),
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        vn.io.litever.remind.core.designsystem.components.ReMindSettingIcon(
                             imageVector = Icons.Rounded.DateRange,
-                            contentDescription = null,
-                            tint = LiteverTheme.colors.secondary
+                            selected = timeWindow != null
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         Column {
@@ -222,6 +225,12 @@ fun ReminderWifiConfigSection(
                             )
                         }
                     }
+
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.5f)
+                    )
                 }
             }
         }

@@ -51,6 +51,7 @@ import vn.io.litever.remind.features.reminders.ui.components.ReminderTriggerSect
 import vn.io.litever.remind.features.reminders.ui.components.ReminderWifiConfigSection
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderEditUiState
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderEditViewModel
+import vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -146,6 +147,10 @@ fun ReminderEditRoute(
         onTimeChange = viewModel::setTime,
         onDateChange = viewModel::setDate,
         onRepeatDaysChange = viewModel::setRepeatDays,
+        onRepeatDayToggle = viewModel::toggleRepeatDay,
+        onRepeatIntervalChange = viewModel::setRepeatInterval,
+        onMonthlyDayChange = viewModel::setMonthlyDay,
+        onYearlyMonthAndDayChange = viewModel::setYearlyMonthAndDay,
         onLocationNameChange = viewModel::setLocationName,
         onLatitudeChange = viewModel::setLatitude,
         onLongitudeChange = viewModel::setLongitude,
@@ -196,6 +201,10 @@ fun ReminderEditScreen(
     onTimeChange: (LocalTime) -> Unit,
     onDateChange: (LocalDate?) -> Unit,
     onRepeatDaysChange: (List<DayOfWeek>) -> Unit,
+    onRepeatDayToggle: (DayOfWeek) -> Unit,
+    onRepeatIntervalChange: (ReminderRepeatInterval) -> Unit,
+    onMonthlyDayChange: (Int) -> Unit,
+    onYearlyMonthAndDayChange: (Int, Int) -> Unit,
     onLocationNameChange: (String) -> Unit,
     onLatitudeChange: (Double) -> Unit,
     onLongitudeChange: (Double) -> Unit,
@@ -274,6 +283,14 @@ fun ReminderEditScreen(
                                 onDateChange = onDateChange,
                                 repeatDays = uiState.repeatDays,
                                 onRepeatDaysChange = onRepeatDaysChange,
+                                onRepeatDayToggle = onRepeatDayToggle,
+                                repeatInterval = uiState.repeatInterval,
+                                onRepeatIntervalChange = onRepeatIntervalChange,
+                                monthlyDay = uiState.monthlyDay,
+                                onMonthlyDayChange = onMonthlyDayChange,
+                                yearlyMonth = uiState.yearlyMonth,
+                                yearlyDay = uiState.yearlyDay,
+                                onYearlyMonthAndDayChange = onYearlyMonthAndDayChange,
                                 is24HourFormat = uiState.is24HourFormat
                             )
                         }

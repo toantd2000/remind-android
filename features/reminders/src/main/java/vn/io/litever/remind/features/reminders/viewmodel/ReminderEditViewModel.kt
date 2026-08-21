@@ -31,8 +31,17 @@ import vn.io.litever.remind.core.model.TimeTrigger
 import vn.io.litever.remind.core.model.WifiTrigger
 import vn.io.litever.remind.core.model.WifiTriggerType
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import javax.inject.Inject
+
+enum class ReminderRepeatInterval {
+    ONCE,
+    DAILY,
+    WEEKLY,
+    MONTHLY,
+    YEARLY
+}
 
 data class ReminderEditUiState(
     val isLoading: Boolean = true,
@@ -46,6 +55,10 @@ data class ReminderEditUiState(
     val time: LocalTime = LocalTime.now().plusMinutes(5).withSecond(0).withNano(0),
     val date: LocalDate? = null,
     val repeatDays: List<DayOfWeek> = emptyList(),
+    val repeatInterval: ReminderRepeatInterval = ReminderRepeatInterval.ONCE,
+    val monthlyDay: Int = 1,
+    val yearlyMonth: Int = 1,
+    val yearlyDay: Int = 1,
 
     // Location Trigger
     val locationName: String = "",
@@ -104,9 +117,21 @@ class ReminderEditViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             val is24h = preferencesDataSource.is24HourFormat.first()
+            val now = LocalDate.now()
             if (reminderId > 0L) {
                 val existing = reminderRepository.getReminderById(reminderId)
                 if (existing != null) {
+                    val timeTrigger = existing.timeTrigger
+                    val initialRepeatInterval = when {
+                        timeTrigger?.repeatDays?.size == 7 -> ReminderRepeatInterval.DAILY
+                        !timeTrigger?.repeatDays.isNullOrEmpty() -> ReminderRepeatInterval.WEEKLY
+                        timeTrigger?.date != null -> ReminderRepeatInterval.ONCE
+                        else -> ReminderRepeatInterval.ONCE
+                    }
+                    val initialMonthlyDay = timeTrigger?.date?.dayOfMonth ?: now.dayOfMonth
+                    val initialYearlyMonth = timeTrigger?.date?.monthValue ?: now.monthValue
+                    val initialYearlyDay = timeTrigger?.date?.dayOfMonth ?: now.dayOfMonth
+
                     _uiState.update {
                         it.copy(
                             isLoading = false,
@@ -115,9 +140,13 @@ class ReminderEditViewModel @Inject constructor(
                             notes = existing.notes,
                             isEnabled = existing.isEnabled,
                             triggerType = existing.triggerType,
-                            time = existing.timeTrigger?.time ?: LocalTime.now().plusMinutes(5).withSecond(0).withNano(0),
-                            date = existing.timeTrigger?.date,
-                            repeatDays = existing.timeTrigger?.repeatDays ?: emptyList(),
+                            time = timeTrigger?.time ?: LocalTime.now().plusMinutes(5).withSecond(0).withNano(0),
+                            date = timeTrigger?.date,
+                            repeatDays = timeTrigger?.repeatDays ?: emptyList(),
+                            repeatInterval = initialRepeatInterval,
+                            monthlyDay = initialMonthlyDay,
+                            yearlyMonth = initialYearlyMonth,
+                            yearlyDay = initialYearlyDay,
                             locationName = existing.locationTrigger?.locationName ?: "",
                             latitude = existing.locationTrigger?.latitude ?: 0.0,
                             longitude = existing.locationTrigger?.longitude ?: 0.0,
@@ -150,6 +179,9 @@ class ReminderEditViewModel @Inject constructor(
                 it.copy(
                     isLoading = false,
                     is24HourFormat = is24h,
+                    monthlyDay = now.dayOfMonth,
+                    yearlyMonth = now.monthValue,
+                    yearlyDay = now.dayOfMonth,
                     isNewDraft = true
                 )
             }
@@ -170,13 +202,21 @@ class ReminderEditViewModel @Inject constructor(
     }
 
     fun setTime(time: LocalTime) {
-        _uiState.update { it.copy(time = time) }
+        _uiState.update { state ->
+            val updatedDate = when (state.repeatInterval) {
+                ReminderRepeatInterval.MONTHLY -> calculateNextMonthlyDate(state.monthlyDay, time)
+                ReminderRepeatInterval.YEARLY -> calculateNextYearlyDate(state.yearlyMonth, state.yearlyDay, time)
+                else -> state.date
+            }
+            state.copy(time = time, date = updatedDate)
+        }
     }
 
     fun setDate(date: LocalDate?) {
         _uiState.update {
             it.copy(
                 date = date,
+                repeatInterval = if (date != null) ReminderRepeatInterval.ONCE else it.repeatInterval,
                 repeatDays = if (date != null) emptyList() else it.repeatDays
             )
         }
@@ -184,10 +224,152 @@ class ReminderEditViewModel @Inject constructor(
 
     fun setRepeatDays(days: List<DayOfWeek>) {
         _uiState.update {
+            val interval = when {
+                days.size == 7 -> ReminderRepeatInterval.DAILY
+                days.isNotEmpty() -> ReminderRepeatInterval.WEEKLY
+                else -> it.repeatInterval
+            }
             it.copy(
                 repeatDays = days,
+                repeatInterval = interval,
                 date = if (days.isNotEmpty()) null else it.date
             )
+        }
+    }
+
+    fun setRepeatInterval(interval: ReminderRepeatInterval) {
+        _uiState.update { state ->
+            when (interval) {
+                ReminderRepeatInterval.ONCE -> {
+                    state.copy(
+                        repeatInterval = interval,
+                        repeatDays = emptyList(),
+                        date = state.date ?: LocalDate.now()
+                    )
+                }
+                ReminderRepeatInterval.DAILY -> {
+                    state.copy(
+                        repeatInterval = interval,
+                        repeatDays = DayOfWeek.entries,
+                        date = null
+                    )
+                }
+                ReminderRepeatInterval.WEEKLY -> {
+                    val currentWeeklyDays = if (state.repeatDays.isNotEmpty() && state.repeatDays.size < 7) {
+                        state.repeatDays
+                    } else {
+                        listOf(DayOfWeek.MONDAY)
+                    }
+                    state.copy(
+                        repeatInterval = interval,
+                        repeatDays = currentWeeklyDays,
+                        date = null
+                    )
+                }
+                ReminderRepeatInterval.MONTHLY -> {
+                    val targetDay = if (state.monthlyDay in 1..31) state.monthlyDay else (state.date?.dayOfMonth ?: LocalDate.now().dayOfMonth)
+                    val calculatedDate = calculateNextMonthlyDate(targetDay, state.time)
+                    state.copy(
+                        repeatInterval = interval,
+                        monthlyDay = targetDay,
+                        repeatDays = emptyList(),
+                        date = calculatedDate
+                    )
+                }
+                ReminderRepeatInterval.YEARLY -> {
+                    val targetMonth = if (state.yearlyMonth in 1..12) state.yearlyMonth else (state.date?.monthValue ?: LocalDate.now().monthValue)
+                    val maxDayForMonth = java.time.Month.of(targetMonth).maxLength()
+                    val targetDay = if (state.yearlyDay in 1..maxDayForMonth) state.yearlyDay else (state.date?.dayOfMonth ?: LocalDate.now().dayOfMonth).coerceIn(1, maxDayForMonth)
+                    val calculatedDate = calculateNextYearlyDate(targetMonth, targetDay, state.time)
+                    state.copy(
+                        repeatInterval = interval,
+                        yearlyMonth = targetMonth,
+                        yearlyDay = targetDay,
+                        repeatDays = emptyList(),
+                        date = calculatedDate
+                    )
+                }
+            }
+        }
+    }
+
+    fun toggleRepeatDay(day: DayOfWeek) {
+        _uiState.update { state ->
+            val newDays = if (state.repeatDays.contains(day)) {
+                state.repeatDays - day
+            } else {
+                (state.repeatDays + day).sortedBy { it.toJavaDayValue() }
+            }
+            val interval = when {
+                newDays.size == 7 -> ReminderRepeatInterval.DAILY
+                newDays.isNotEmpty() -> ReminderRepeatInterval.WEEKLY
+                else -> state.repeatInterval
+            }
+            state.copy(
+                repeatDays = newDays,
+                repeatInterval = interval,
+                date = null
+            )
+        }
+    }
+
+    fun setMonthlyDay(day: Int) {
+        val clamped = day.coerceIn(1, 31)
+        _uiState.update { state ->
+            val nextDate = calculateNextMonthlyDate(clamped, state.time)
+            state.copy(
+                monthlyDay = clamped,
+                date = nextDate,
+                repeatDays = emptyList()
+            )
+        }
+    }
+
+    fun setYearlyMonthAndDay(month: Int, day: Int) {
+        val clampedMonth = month.coerceIn(1, 12)
+        val maxDaysForMonth = java.time.Month.of(clampedMonth).maxLength()
+        val clampedDay = day.coerceIn(1, maxDaysForMonth)
+        _uiState.update { state ->
+            val nextDate = calculateNextYearlyDate(clampedMonth, clampedDay, state.time)
+            state.copy(
+                yearlyMonth = clampedMonth,
+                yearlyDay = clampedDay,
+                date = nextDate,
+                repeatDays = emptyList()
+            )
+        }
+    }
+
+    private fun calculateNextMonthlyDate(dayOfMonth: Int, time: LocalTime): LocalDate {
+        val now = LocalDateTime.now()
+        val today = now.toLocalDate()
+        val maxDaysThisMonth = today.lengthOfMonth()
+        val clampedDay = dayOfMonth.coerceAtMost(maxDaysThisMonth)
+        val thisMonthCandidate = today.withDayOfMonth(clampedDay)
+
+        return if (thisMonthCandidate.atTime(time).isAfter(now)) {
+            thisMonthCandidate
+        } else {
+            val nextMonth = today.plusMonths(1)
+            val maxDaysNextMonth = nextMonth.lengthOfMonth()
+            nextMonth.withDayOfMonth(dayOfMonth.coerceAtMost(maxDaysNextMonth))
+        }
+    }
+
+    private fun calculateNextYearlyDate(month: Int, day: Int, time: LocalTime): LocalDate {
+        val now = LocalDateTime.now()
+        val today = now.toLocalDate()
+        val targetMonth = java.time.Month.of(month)
+        val maxDaysThisYear = targetMonth.length(java.time.Year.isLeap(today.year.toLong()))
+        val clampedDayThisYear = day.coerceAtMost(maxDaysThisYear)
+        val thisYearCandidate = LocalDate.of(today.year, month, clampedDayThisYear)
+
+        return if (thisYearCandidate.atTime(time).isAfter(now)) {
+            thisYearCandidate
+        } else {
+            val nextYear = today.year + 1
+            val maxDaysNextYear = targetMonth.length(java.time.Year.isLeap(nextYear.toLong()))
+            LocalDate.of(nextYear, month, day.coerceAtMost(maxDaysNextYear))
         }
     }
 
@@ -473,6 +655,10 @@ class ReminderEditViewModel @Inject constructor(
                 curr.time != init.time ||
                 curr.date != init.date ||
                 curr.repeatDays != init.repeatDays ||
+                curr.repeatInterval != init.repeatInterval ||
+                curr.monthlyDay != init.monthlyDay ||
+                curr.yearlyMonth != init.yearlyMonth ||
+                curr.yearlyDay != init.yearlyDay ||
                 curr.locationName != init.locationName ||
                 curr.latitude != init.latitude ||
                 curr.longitude != init.longitude ||

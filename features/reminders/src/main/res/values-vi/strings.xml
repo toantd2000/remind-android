@@ -67,6 +67,20 @@
     <string name="day_fri">T6</string>
     <string name="day_sat">T7</string>
     <string name="day_sun">CN</string>
+    <string name="repeat_title">Lặp lại</string>
+    <string name="repeat_interval_once">Một lần</string>
+    <string name="repeat_interval_daily">Hàng ngày</string>
+    <string name="repeat_interval_weekly">Hàng tuần</string>
+    <string name="repeat_interval_monthly">Hàng tháng</string>
+    <string name="repeat_interval_yearly">Hàng năm</string>
+    <string name="repeat_monthly_day_summary">Hàng tháng (Ngày %d)</string>
+    <string name="repeat_yearly_summary">Hàng năm (%1$s, ngày %2$d)</string>
+    <string name="select_repeat_interval">Chọn chu kỳ lặp lại</string>
+    <string name="select_day_of_month">Chọn ngày trong tháng</string>
+    <string name="day_of_month_format">Ngày %d hàng tháng</string>
+    <string name="select_month_label">Tháng</string>
+    <string name="select_day_label">Ngày</string>
+    <string name="day_format">Ngày %d</string>
 
     <!-- Location Trigger Section -->
     <string name="section_location_trigger">Vị trí địa lý (Geofence)</string>

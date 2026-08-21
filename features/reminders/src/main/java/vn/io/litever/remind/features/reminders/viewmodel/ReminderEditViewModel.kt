@@ -174,11 +174,21 @@ class ReminderEditViewModel @Inject constructor(
     }
 
     fun setDate(date: LocalDate?) {
-        _uiState.update { it.copy(date = date) }
+        _uiState.update {
+            it.copy(
+                date = date,
+                repeatDays = if (date != null) emptyList() else it.repeatDays
+            )
+        }
     }
 
     fun setRepeatDays(days: List<DayOfWeek>) {
-        _uiState.update { it.copy(repeatDays = days) }
+        _uiState.update {
+            it.copy(
+                repeatDays = days,
+                date = if (days.isNotEmpty()) null else it.date
+            )
+        }
     }
 
     fun setLocationName(name: String) {
@@ -273,7 +283,12 @@ class ReminderEditViewModel @Inject constructor(
     }
 
     fun setNotificationStyle(style: NotificationStyle) {
-        _uiState.update { it.copy(notificationStyle = style) }
+        _uiState.update {
+            it.copy(
+                notificationStyle = style,
+                isPersistentAlert = if (style == NotificationStyle.STANDARD) false else it.isPersistentAlert
+            )
+        }
     }
 
     fun setPersistentAlert(isPersistent: Boolean) {
@@ -375,7 +390,7 @@ class ReminderEditViewModel @Inject constructor(
             wifiTrigger = wifiTrigger,
             checklist = state.checklist,
             notificationStyle = state.notificationStyle,
-            isPersistentAlert = state.isPersistentAlert,
+            isPersistentAlert = if (state.notificationStyle == NotificationStyle.FULL_SCREEN) state.isPersistentAlert else false,
             ringtoneUri = state.ringtoneUri,
             vibrationEnabled = state.vibrationEnabled,
             volume = state.volume,
@@ -462,9 +477,20 @@ class ReminderEditViewModel @Inject constructor(
                 curr.latitude != init.latitude ||
                 curr.longitude != init.longitude ||
                 curr.radiusMeters != init.radiusMeters ||
+                curr.geofenceTransitionType != init.geofenceTransitionType ||
+                curr.locationTimeWindow != init.locationTimeWindow ||
                 curr.wifiSsid != init.wifiSsid ||
+                curr.wifiBssid != init.wifiBssid ||
+                curr.wifiTriggerType != init.wifiTriggerType ||
+                curr.wifiTimeWindow != init.wifiTimeWindow ||
                 curr.checklist != init.checklist ||
                 curr.notificationStyle != init.notificationStyle ||
-                curr.isPersistentAlert != init.isPersistentAlert
+                curr.isPersistentAlert != init.isPersistentAlert ||
+                curr.ringtoneUri != init.ringtoneUri ||
+                curr.vibrationEnabled != init.vibrationEnabled ||
+                curr.volume != init.volume ||
+                curr.snoozeEnabled != init.snoozeEnabled ||
+                curr.snoozeIntervalMinutes != init.snoozeIntervalMinutes ||
+                curr.snoozeRepeatCount != init.snoozeRepeatCount
     }
 }

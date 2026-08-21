@@ -53,6 +53,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - **Obsolete Wrappers:** Removed all dependencies on 24 pass-through wrapper components previously provided by `litever-designsystem` v1.x (such as `LiteverButton`, `LiteverScaffold`, `LiteverTopAppBar`, `LiteverTextField`, `LiteverCard`, `LiteverCircularProgressIndicator`, `LiteverIconButton`, `LiteverSwitch`, etc.).
 
+### Added
+- **Shared Audio & Snooze Components:** Extracted `RingtoneSelectionScreen` and `SnoozeSettingsScreen` into `:core:designsystem` for shared usage across Alarms and Reminders.
+- **Wi-Fi Picker:** Added automatic detection and selection of currently connected Wi-Fi networks in Reminder Edit.
+- **Ringing Navigation Priority:** Priority routing in `MainActivity` ensuring active Alarms take precedence over Reminders.
+
+### Changed
+- **Reminder Edit UI:** Visually unified trigger sections, linked Date with Repeat rules, replaced checklist checkboxes with drag handles in edit mode, and integrated `ReMindBottomBar` for the Save button.
+- **Reminder Alert Behavior:** Refined Standard Notification (single sound/vibrate via Notification Channel) and Full-Screen Alarm (persistent audio loop with auto-silence countdown).
+
 ## [1.1.7] - 2026-07-15
 
 ### Changed

@@ -91,10 +91,12 @@ import vn.io.litever.remind.core.model.TypingMode
 class MainViewModel @Inject constructor(
     private val preferencesDataSource: AlarmPreferencesDataSource,
     private val alarmRingManager: vn.io.litever.remind.core.alarm.AlarmRingManager,
+    private val reminderAlertManager: vn.io.litever.remind.core.alarm.alert.ReminderAlertManager,
     private val missedAlarmRepository: vn.io.litever.remind.core.domain.repository.MissedAlarmRepository,
     private val alarmSyncManager: vn.io.litever.remind.core.alarm.AlarmSyncManager,
     private val reminderSyncManager: ReminderSyncManager,
-    alarmRepository: AlarmRepository
+    alarmRepository: AlarmRepository,
+    reminderRepository: vn.io.litever.remind.core.domain.repository.ReminderRepository
 ) : ViewModel() {
     init {
         viewModelScope.launch {
@@ -108,9 +110,28 @@ class MainViewModel @Inject constructor(
     val language = preferencesDataSource.language
     val acknowledgingAlarmId = alarmRingManager.acknowledgingAlarmId
 
+    val ringingAlarmId = alarmRingManager.ringingAlarmId
+    val ringingReminderId = reminderAlertManager.activeAlertReminderIds
+        .map { it.firstOrNull() }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
+        )
+
     val activeSnoozingAlarmId = alarmRepository.getAllAlarms()
         .map { alarms ->
             alarms.firstOrNull { it.snoozeNextTriggerTime != null }?.id
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
+        )
+
+    val activeSnoozingReminderId = reminderRepository.getAllReminders()
+        .map { reminders ->
+            reminders.firstOrNull { it.snoozeNextTriggerTime != null }?.id
         }
         .stateIn(
             scope = viewModelScope,
@@ -203,10 +224,11 @@ class MainActivity : ComponentActivity() {
                             val alarmRingManager = alarmRingManagerEntryPoint.alarmRingManager()
                             val ringingAlarmId by alarmRingManager.ringingAlarmId.collectAsState()
                             val activeSnoozingalarmId by viewModel.activeSnoozingAlarmId.collectAsState()
+                            val ringingReminderId by viewModel.ringingReminderId.collectAsState()
+                            val activeSnoozingReminderId by viewModel.activeSnoozingReminderId.collectAsState()
                             val missedAlarms by viewModel.missedAlarms.collectAsState()
 
                             val navBackStackEntry by navController.currentBackStackEntryAsState()
-                            navBackStackEntry?.destination?.route
                             val acknowledgingAlarmId by viewModel.acknowledgingAlarmId.collectAsState(
                                 initial = null as Long?
                             )
@@ -223,20 +245,24 @@ class MainActivity : ComponentActivity() {
                                 ringingAlarmId,
                                 activeSnoozingalarmId,
                                 acknowledgingAlarmId,
+                                ringingReminderId,
+                                activeSnoozingReminderId,
                                 isNavReady
                             ) {
                                 if (!isNavReady) return@LaunchedEffect
 
-                                val idToRing = ringingAlarmId ?: activeSnoozingalarmId
+                                val idAlarmToRing = ringingAlarmId ?: activeSnoozingalarmId
+                                val idReminderToRing = ringingReminderId
                                 val idMessage = acknowledgingAlarmId
 
                                 val currentEntry = navController.currentBackStackEntry
                                 val currentDest = currentEntry?.destination?.route
-                                val currentId = currentEntry?.arguments?.getLong("alarmId")
+                                val currentAlarmId = currentEntry?.arguments?.getLong("alarmId")
+                                val currentReminderId = currentEntry?.arguments?.getLong("reminderId")
 
                                 if (idMessage != null) {
                                     val isAlreadyMessageId =
-                                        currentDest == "alarm_message_route/{alarmId}" && currentId == idMessage
+                                        currentDest == "alarm_message_route/{alarmId}" && currentAlarmId == idMessage
 
                                     if (!isAlreadyMessageId) {
                                         navController.navigate("alarm_message_route/$idMessage") {
@@ -246,17 +272,16 @@ class MainActivity : ComponentActivity() {
                                             launchSingleTop = true
                                         }
                                     }
-                                } else if (idToRing != null) {
-                                    // NO OVERLAP RULE: Don't interrupt if user is in a mission
-                                    // But DO interrupt if user is just viewing a missed message
+                                } else if (idAlarmToRing != null) {
+                                    // PRIORITY 1: Alarm evaluated FIRST
                                     val isUserInMission =
                                         currentDest?.startsWith("mission_ringing_route") == true
 
                                     if (!isUserInMission) {
                                         val isAlreadyRingingId =
-                                            currentDest == "alarm_ringing_route/{alarmId}" && currentId == idToRing
+                                            currentDest == "alarm_ringing_route/{alarmId}" && currentAlarmId == idAlarmToRing
                                         if (!isAlreadyRingingId) {
-                                            navController.navigate("alarm_ringing_route/$idToRing") {
+                                            navController.navigate("alarm_ringing_route/$idAlarmToRing") {
                                                 popUpTo(navController.graph.startDestinationId) {
                                                     inclusive = false
                                                 }
@@ -264,11 +289,24 @@ class MainActivity : ComponentActivity() {
                                             }
                                         }
                                     }
+                                } else if (idReminderToRing != null) {
+                                    // PRIORITY 2: Reminder evaluated when no alarm is active
+                                    val isAlreadyRingingId =
+                                        currentDest == "reminder_ringing_route/{reminderId}" && currentReminderId == idReminderToRing
+                                    if (!isAlreadyRingingId) {
+                                        navController.navigate("reminder_ringing_route/$idReminderToRing") {
+                                            popUpTo(AlarmListRoute) {
+                                                inclusive = false
+                                            }
+                                            launchSingleTop = true
+                                        }
+                                    }
                                 } else {
                                     if (currentDest == "alarm_ringing_route/{alarmId}" ||
-                                        currentDest == "alarm_message_route/{alarmId}"
+                                        currentDest == "alarm_message_route/{alarmId}" ||
+                                        currentDest == "reminder_ringing_route/{reminderId}"
                                     ) {
-                                        // Only pop if we were blocking the app and the state is now cleared
+                                        // Only pop if we were on a ringing screen and the state is now cleared
                                         navController.popBackStack()
                                     }
                                 }
@@ -298,7 +336,8 @@ class MainActivity : ComponentActivity() {
                                             }
                                         )
                                     }
-                                }) { paddingValues ->
+                                }
+                            ) { paddingValues ->
                                     val layoutDirection = LocalLayoutDirection.current
                                     val actualPadding = PaddingValues(
                                         start = paddingValues.calculateStartPadding(layoutDirection),
@@ -417,6 +456,13 @@ class MainActivity : ComponentActivity() {
                                             remindersGraph(
                                                 onNavigateToEdit = { reminderId ->
                                                     navController.navigateToReminderEdit(reminderId)
+                                                },
+                                                onNavigateToRingtoneSelection = { currentUri ->
+                                                    navController.currentBackStackEntry?.savedStateHandle?.set(
+                                                        "initialUri",
+                                                        currentUri
+                                                    )
+                                                    navController.navigate(ringtoneSelectionRoute)
                                                 },
                                                 onNavigateToPermissions = {
                                                     navController.navigateToPermissions()

@@ -147,8 +147,8 @@ class ReminderNotificationManager @Inject constructor(
         val contentText = formatContentText(reminder)
         val bigTextStyle = formatBigTextStyle(reminder, title)
 
-        // Content intent (tap notification body to view ringing screen)
-        val contentPendingIntent = createContentPendingIntent(reminder.id)
+        // Content intent (tap notification body to view reminder or ringing screen)
+        val contentPendingIntent = createContentPendingIntent(reminder.id, isFullScreenStyle)
 
         val builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_remind_notification)
@@ -159,6 +159,17 @@ class ReminderNotificationManager @Inject constructor(
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setOnlyAlertOnce(true)
             .setAutoCancel(!isFullScreenStyle && !reminder.isPersistentAlert)
+
+        // Custom ringtone sound for standard notification if specified
+        if (!isFullScreenStyle && !reminder.ringtoneUri.isNullOrBlank()) {
+            try {
+                builder.setSound(Uri.parse(reminder.ringtoneUri))
+            } catch (_: Exception) {}
+        }
+
+        if (!reminder.vibrationEnabled) {
+            builder.setVibrate(longArrayOf(0))
+        }
 
         // Configure Full-Screen Intent or Graceful Fallback
         if (isFullScreenStyle && canUseFsi) {
@@ -267,8 +278,13 @@ class ReminderNotificationManager @Inject constructor(
             }
     }
 
-    private fun createContentPendingIntent(reminderId: Long): PendingIntent {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("app://remind/ringing/$reminderId")).apply {
+    private fun createContentPendingIntent(reminderId: Long, isFullScreenStyle: Boolean): PendingIntent {
+        val uriString = if (isFullScreenStyle) {
+            "app://remind/ringing/$reminderId"
+        } else {
+            "app://remind/reminder/$reminderId"
+        }
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uriString)).apply {
             setPackage(context.packageName)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }

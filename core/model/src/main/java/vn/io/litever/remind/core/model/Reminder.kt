@@ -40,6 +40,6 @@ data class Reminder(
         get() = checklist.isNotEmpty() && checklist.all { it.isCompleted }
 
     fun canSnooze(): Boolean {
-        return snoozeEnabled && currentSnoozeCount < snoozeRepeatCount
+        return snoozeEnabled && (snoozeRepeatCount == -1 || currentSnoozeCount < snoozeRepeatCount)
     }
 }

@@ -37,7 +37,9 @@ import vn.io.litever.remind.core.model.TimeTrigger
 import vn.io.litever.remind.core.model.WifiTrigger
 import vn.io.litever.remind.core.model.WifiTriggerType
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderEditViewModel
+import java.time.LocalDate
 import java.time.LocalTime
+import vn.io.litever.remind.core.model.ReminderTimeWindow
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ReminderEditViewModelTest {
@@ -256,4 +258,176 @@ class ReminderEditViewModelTest {
         coVerify { repository.insertReminder(match { it.title == "Wi-Fi Sync" && !it.isEnabled }) }
         coVerify(exactly = 0) { scheduler.schedule(any()) }
     }
+
+    @Test
+    fun updateRingtone_and_updateSnoozeSettings_updatesUiState() = runTest {
+        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
+        val viewModel = ReminderEditViewModel(
+            reminderRepository = repository,
+            reminderScheduler = scheduler,
+            permissionChecker = permissionChecker,
+            preferencesDataSource = preferencesDataSource,
+            savedStateHandle = savedStateHandle
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // 1. Ringtone
+        viewModel.updateRingtone("content://media/internal/audio/media/42")
+        assertEquals("content://media/internal/audio/media/42", viewModel.uiState.value.ringtoneUri)
+
+        // 2. Snooze settings
+        viewModel.updateSnoozeSettings(enabled = true, interval = 10, repeatCount = 5)
+        assertTrue(viewModel.uiState.value.snoozeEnabled)
+        assertEquals(10, viewModel.uiState.value.snoozeIntervalMinutes)
+        assertEquals(5, viewModel.uiState.value.snoozeRepeatCount)
+    }
+
+    @Test
+    fun setNotificationStyle_standard_resetsPersistentAlert() = runTest {
+        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
+        val viewModel = ReminderEditViewModel(
+            reminderRepository = repository,
+            reminderScheduler = scheduler,
+            permissionChecker = permissionChecker,
+            preferencesDataSource = preferencesDataSource,
+            savedStateHandle = savedStateHandle
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.setNotificationStyle(NotificationStyle.FULL_SCREEN)
+        viewModel.setPersistentAlert(true)
+        assertTrue(viewModel.uiState.value.isPersistentAlert)
+
+        viewModel.setNotificationStyle(NotificationStyle.STANDARD)
+        assertFalse(viewModel.uiState.value.isPersistentAlert)
+
+        val draft = viewModel.createDraftReminder()
+        assertFalse(draft.isPersistentAlert)
+    }
+
+    @Test
+    fun date_and_repeatDays_mutuallyClearEachOther() = runTest {
+        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
+        val viewModel = ReminderEditViewModel(
+            reminderRepository = repository,
+            reminderScheduler = scheduler,
+            permissionChecker = permissionChecker,
+            preferencesDataSource = preferencesDataSource,
+            savedStateHandle = savedStateHandle
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Setting repeat days clears specific date
+        viewModel.setDate(LocalDate.of(2026, 9, 1))
+        assertEquals(LocalDate.of(2026, 9, 1), viewModel.uiState.value.date)
+
+        viewModel.setRepeatDays(listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY))
+        assertNull(viewModel.uiState.value.date)
+        assertEquals(2, viewModel.uiState.value.repeatDays.size)
+
+        // Setting specific date clears repeat days
+        viewModel.setDate(LocalDate.of(2026, 9, 5))
+        assertEquals(LocalDate.of(2026, 9, 5), viewModel.uiState.value.date)
+        assertTrue(viewModel.uiState.value.repeatDays.isEmpty())
+    }
+
+    @Test
+    fun onBackClick_withAlertSettingsChanges_showsDiscardDialog() = runTest {
+        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
+        val viewModel = ReminderEditViewModel(
+            reminderRepository = repository,
+            reminderScheduler = scheduler,
+            permissionChecker = permissionChecker,
+            preferencesDataSource = preferencesDataSource,
+            savedStateHandle = savedStateHandle
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Change ringtone
+        viewModel.updateRingtone("content://media/test")
+        var backNavigated = false
+        viewModel.onBackClick(onNavigateBack = { backNavigated = true })
+
+        assertTrue(viewModel.uiState.value.showDiscardDialog)
+        assertFalse(backNavigated)
+    }
+
+    @Test
+    fun onBackClick_withTimeWindowChanges_showsDiscardDialog() = runTest {
+        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
+        val viewModel = ReminderEditViewModel(
+            reminderRepository = repository,
+            reminderScheduler = scheduler,
+            permissionChecker = permissionChecker,
+            preferencesDataSource = preferencesDataSource,
+            savedStateHandle = savedStateHandle
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Change Location Time Window
+        val window = ReminderTimeWindow(startTime = LocalTime.of(9, 0), endTime = LocalTime.of(17, 0))
+        viewModel.setLocationTimeWindow(window)
+        var backNavigated = false
+        viewModel.onBackClick(onNavigateBack = { backNavigated = true })
+
+        assertTrue(viewModel.uiState.value.showDiscardDialog)
+        assertFalse(backNavigated)
+    }
+
+    @Test
+    fun moveChecklistItem_reordersItemsCorrectly() = runTest {
+        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
+        val viewModel = ReminderEditViewModel(
+            reminderRepository = repository,
+            reminderScheduler = scheduler,
+            permissionChecker = permissionChecker,
+            preferencesDataSource = preferencesDataSource,
+            savedStateHandle = savedStateHandle
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.addChecklistItem("Task 1")
+        viewModel.addChecklistItem("Task 2")
+        viewModel.addChecklistItem("Task 3")
+
+        assertEquals("Task 1", viewModel.uiState.value.checklist[0].text)
+        assertEquals("Task 2", viewModel.uiState.value.checklist[1].text)
+        assertEquals("Task 3", viewModel.uiState.value.checklist[2].text)
+
+        // Move Task 1 (index 0) to index 2
+        viewModel.moveChecklistItem(0, 2)
+
+        val updated = viewModel.uiState.value.checklist
+        assertEquals("Task 2", updated[0].text)
+        assertEquals(0, updated[0].orderIndex)
+        assertEquals("Task 3", updated[1].text)
+        assertEquals(1, updated[1].orderIndex)
+        assertEquals("Task 1", updated[2].text)
+        assertEquals(2, updated[2].orderIndex)
+    }
+
+    @Test
+    fun wifiConfigUpdates_createsExpectedDraft() = runTest {
+        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
+        val viewModel = ReminderEditViewModel(
+            reminderRepository = repository,
+            reminderScheduler = scheduler,
+            permissionChecker = permissionChecker,
+            preferencesDataSource = preferencesDataSource,
+            savedStateHandle = savedStateHandle
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.setTriggerType(ReminderTriggerType.WIFI)
+        viewModel.setWifiSsid("MyOffice_5G")
+        viewModel.setWifiBssid("00:11:22:33:44:55")
+        viewModel.setWifiTriggerType(WifiTriggerType.ON_DISCONNECT)
+
+        val draft = viewModel.createDraftReminder()
+        assertEquals(ReminderTriggerType.WIFI, draft.triggerType)
+        assertEquals("MyOffice_5G", draft.wifiTrigger?.ssid)
+        assertEquals("00:11:22:33:44:55", draft.wifiTrigger?.bssid)
+        assertEquals(WifiTriggerType.ON_DISCONNECT, draft.wifiTrigger?.triggerType)
+    }
 }
+

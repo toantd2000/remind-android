@@ -109,6 +109,18 @@ class ChecklistAndSnoozeChallengerTest {
     }
 
     @Test
+    fun snoozeRepeatCountUnlimited_canAlwaysSnooze() {
+        val reminder = Reminder(
+            title = "Unlimited Snoozes Allowed",
+            triggerType = ReminderTriggerType.TIME,
+            snoozeEnabled = true,
+            snoozeRepeatCount = -1,
+            currentSnoozeCount = 100
+        )
+        assertTrue(reminder.canSnooze())
+    }
+
+    @Test
     fun javaSerializationRoundTrip_preservesFullStateAndChecklist() {
         val original = Reminder(
             id = 777L,

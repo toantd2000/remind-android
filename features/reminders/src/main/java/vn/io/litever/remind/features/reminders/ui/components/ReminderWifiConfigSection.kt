@@ -33,6 +33,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -59,7 +61,9 @@ fun ReminderWifiConfigSection(
     timeWindow: ReminderTimeWindow?,
     onTimeWindowChange: (ReminderTimeWindow?) -> Unit,
     is24HourFormat: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    showWifiError: Boolean = false,
+    wifiFocusRequester: FocusRequester? = null
 ) {
     val context = LocalContext.current
     var showTimeWindowDialog by remember { mutableStateOf(false) }
@@ -83,15 +87,31 @@ fun ReminderWifiConfigSection(
 
             Spacer(modifier = Modifier.height(12.dp))
 
+            val ssidFieldModifier = if (wifiFocusRequester != null) {
+                Modifier.fillMaxWidth().focusRequester(wifiFocusRequester)
+            } else {
+                Modifier.fillMaxWidth()
+            }
+
             // SSID input
             LiteverTextField(
                 value = ssid,
                 onValueChange = onSsidChange,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = ssidFieldModifier,
                 placeholder = stringResource(R.string.wifi_ssid_placeholder),
                 label = stringResource(R.string.wifi_ssid_label),
                 singleLine = true
             )
+
+            if (showWifiError) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = stringResource(R.string.reminder_wifi_required),
+                    style = LiteverTheme.typography.bodySmall,
+                    color = LiteverTheme.colors.error,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
 

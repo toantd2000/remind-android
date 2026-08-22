@@ -147,8 +147,8 @@ class ReminderNotificationManager @Inject constructor(
         val contentText = formatContentText(reminder)
         val bigTextStyle = formatBigTextStyle(reminder, title)
 
-        // Content intent (tap notification body to view reminder or ringing screen)
-        val contentPendingIntent = createContentPendingIntent(reminder.id, isFullScreenStyle)
+        // Content intent (tap notification body to view ringing screen)
+        val contentPendingIntent = createContentPendingIntent(reminder.id)
 
         val builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_remind_notification)
@@ -188,16 +188,8 @@ class ReminderNotificationManager @Inject constructor(
             builder.setCategory(NotificationCompat.CATEGORY_REMINDER)
         }
 
-        // Action: Inline Checklist Toggle (first incomplete item)
-        val nextIncompleteItem = reminder.checklist.sortedBy { it.orderIndex }.firstOrNull { !it.isCompleted }
-        if (nextIncompleteItem != null) {
-            val togglePendingIntent = createChecklistTogglePendingIntent(reminder.id, nextIncompleteItem.id)
-            val toggleLabel = "✓ ${nextIncompleteItem.text.take(20)}"
-            builder.addAction(0, toggleLabel, togglePendingIntent)
-        }
-
-        // Action: Snooze (omitted if snooze limit reached)
-        if (reminder.canSnooze()) {
+        // Action: Snooze (omitted if snooze disabled or snooze limit reached)
+        if (reminder.snoozeEnabled && reminder.canSnooze()) {
             val snoozePendingIntent = createSnoozePendingIntent(reminder.id)
             val snoozeLabel = context.getString(
                 R.string.reminder_action_snooze_interval,
@@ -205,11 +197,6 @@ class ReminderNotificationManager @Inject constructor(
             )
             builder.addAction(0, snoozeLabel, snoozePendingIntent)
         }
-
-        // Action: Dismiss
-        val dismissPendingIntent = createDismissPendingIntent(reminder.id)
-        val dismissLabel = context.getString(R.string.reminder_action_dismiss)
-        builder.addAction(0, dismissLabel, dismissPendingIntent)
 
         val notification = builder.build()
         if (isFullScreenStyle || reminder.isPersistentAlert) {
@@ -278,12 +265,8 @@ class ReminderNotificationManager @Inject constructor(
             }
     }
 
-    private fun createContentPendingIntent(reminderId: Long, isFullScreenStyle: Boolean): PendingIntent {
-        val uriString = if (isFullScreenStyle) {
-            "app://remind/ringing/$reminderId"
-        } else {
-            "app://remind/reminder/$reminderId"
-        }
+    private fun createContentPendingIntent(reminderId: Long): PendingIntent {
+        val uriString = "app://remind/ringing/$reminderId"
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uriString)).apply {
             setPackage(context.packageName)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP

@@ -24,6 +24,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -52,7 +54,9 @@ fun ReminderLocationConfigSection(
     timeWindow: ReminderTimeWindow?,
     onTimeWindowChange: (ReminderTimeWindow?) -> Unit,
     is24HourFormat: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    showLocationError: Boolean = false,
+    locationFocusRequester: FocusRequester? = null
 ) {
     var showTimeWindowDialog by remember { mutableStateOf(false) }
 
@@ -75,15 +79,31 @@ fun ReminderLocationConfigSection(
 
             Spacer(modifier = Modifier.height(12.dp))
 
+            val locationFieldModifier = if (locationFocusRequester != null) {
+                Modifier.fillMaxWidth().focusRequester(locationFocusRequester)
+            } else {
+                Modifier.fillMaxWidth()
+            }
+
             // Location Name
             LiteverTextField(
                 value = locationName,
                 onValueChange = onLocationNameChange,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = locationFieldModifier,
                 placeholder = stringResource(R.string.location_name_placeholder),
                 label = stringResource(R.string.location_name_label),
                 singleLine = true
             )
+
+            if (showLocationError) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = stringResource(R.string.reminder_location_required),
+                    style = LiteverTheme.typography.bodySmall,
+                    color = LiteverTheme.colors.error,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(12.dp))
 

@@ -230,4 +230,42 @@ class ReminderNotificationManagerTest {
         manager.cancelAll()
         verify(atLeast = 1) { notificationManager.cancelAll() }
     }
+
+    @Test
+    fun buildNotification_onlyContainsSnoozeAction_noDismissOrChecklistActions() {
+        val reminder = Reminder(
+            id = 100L,
+            title = "Task with checklist",
+            triggerType = ReminderTriggerType.TIME,
+            snoozeEnabled = true,
+            snoozeIntervalMinutes = 10,
+            checklist = listOf(
+                ChecklistItem(id = 1L, reminderId = 100L, text = "Subtask 1", isCompleted = false)
+            )
+        )
+
+        val notification = manager.buildNotification(reminder)
+        assertNotNull(notification)
+        // Should only contain the Snooze action (1 action)
+        assertEquals(1, notification.actions?.size ?: 0)
+        assertEquals("Snooze (10m)", notification.actions?.firstOrNull()?.title?.toString())
+    }
+
+    @Test
+    fun buildNotification_whenSnoozeDisabled_containsNoActions() {
+        val reminder = Reminder(
+            id = 101L,
+            title = "Task without snooze",
+            triggerType = ReminderTriggerType.TIME,
+            snoozeEnabled = false,
+            checklist = listOf(
+                ChecklistItem(id = 1L, reminderId = 101L, text = "Subtask 1", isCompleted = false)
+            )
+        )
+
+        val notification = manager.buildNotification(reminder)
+        assertNotNull(notification)
+        // No actions should be present
+        assertTrue(notification.actions == null || notification.actions.isEmpty())
+    }
 }

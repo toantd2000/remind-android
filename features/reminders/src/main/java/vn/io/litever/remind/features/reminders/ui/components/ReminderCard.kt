@@ -205,10 +205,12 @@ fun ReminderCard(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                LiteverSwitch(
-                    checked = reminder.isEnabled,
-                    onCheckedChange = onToggle
-                )
+                if (reminder.snoozeNextTriggerTime == null) {
+                    LiteverSwitch(
+                        checked = reminder.isEnabled,
+                        onCheckedChange = onToggle
+                    )
+                }
                 LiteverIconButton(
                     onClick = onMoreClick,
                     modifier = Modifier.size(36.dp)

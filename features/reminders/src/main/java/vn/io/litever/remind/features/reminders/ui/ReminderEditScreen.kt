@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -22,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -52,6 +54,7 @@ import vn.io.litever.remind.features.reminders.ui.components.ReminderWifiConfigS
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderEditUiState
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderEditViewModel
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval
+import vn.io.litever.remind.features.reminders.viewmodel.ReminderValidationErrorField
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -228,6 +231,37 @@ fun ReminderEditScreen(
     onSnoozeSettingsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val lazyListState = rememberLazyListState()
+    val titleFocusRequester = remember { FocusRequester() }
+    val locationFocusRequester = remember { FocusRequester() }
+    val wifiFocusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(uiState.validationErrorTrigger) {
+        if (uiState.validationErrorTrigger > 0L) {
+            when (uiState.validationErrorField) {
+                ReminderValidationErrorField.TITLE -> {
+                    lazyListState.animateScrollToItem(0)
+                    try {
+                        titleFocusRequester.requestFocus()
+                    } catch (_: Exception) {}
+                }
+                ReminderValidationErrorField.LOCATION -> {
+                    lazyListState.animateScrollToItem(1)
+                    try {
+                        locationFocusRequester.requestFocus()
+                    } catch (_: Exception) {}
+                }
+                ReminderValidationErrorField.WIFI_SSID -> {
+                    lazyListState.animateScrollToItem(1)
+                    try {
+                        wifiFocusRequester.requestFocus()
+                    } catch (_: Exception) {}
+                }
+                null -> {}
+            }
+        }
+    }
+
     LiteverScaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
@@ -250,6 +284,7 @@ fun ReminderEditScreen(
         }
     ) { paddingValues ->
         LazyColumn(
+            state = lazyListState,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
@@ -262,7 +297,8 @@ fun ReminderEditScreen(
                     onTitleChange = onTitleChange,
                     notes = uiState.notes,
                     onNotesChange = onNotesChange,
-                    showTitleError = uiState.showTitleError
+                    showTitleError = uiState.showTitleError,
+                    titleFocusRequester = titleFocusRequester
                 )
             }
 
@@ -308,7 +344,9 @@ fun ReminderEditScreen(
                                 onTransitionTypeChange = onTransitionTypeChange,
                                 timeWindow = uiState.locationTimeWindow,
                                 onTimeWindowChange = onLocationTimeWindowChange,
-                                is24HourFormat = uiState.is24HourFormat
+                                is24HourFormat = uiState.is24HourFormat,
+                                showLocationError = uiState.showLocationError,
+                                locationFocusRequester = locationFocusRequester
                             )
                         }
                         ReminderTriggerType.WIFI -> {
@@ -321,7 +359,9 @@ fun ReminderEditScreen(
                                 onTriggerTypeChange = onWifiTriggerTypeChange,
                                 timeWindow = uiState.wifiTimeWindow,
                                 onTimeWindowChange = onWifiTimeWindowChange,
-                                is24HourFormat = uiState.is24HourFormat
+                                is24HourFormat = uiState.is24HourFormat,
+                                showWifiError = uiState.showWifiError,
+                                wifiFocusRequester = wifiFocusRequester
                             )
                         }
                     }

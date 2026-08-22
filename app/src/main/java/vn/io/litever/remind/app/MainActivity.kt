@@ -87,6 +87,14 @@ import vn.io.litever.remind.core.model.MissionType
 import vn.io.litever.remind.core.model.TypingMissionConfig
 import vn.io.litever.remind.core.model.TypingMode
 
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import vn.io.litever.remind.core.alarm.receiver.ReminderReceiver
+import androidx.core.content.ContextCompat
+import android.content.BroadcastReceiver
+import android.content.IntentFilter
+
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val preferencesDataSource: AlarmPreferencesDataSource,
@@ -118,6 +126,17 @@ class MainViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = null
         )
+
+    private val _foregroundReminderAlertId = MutableStateFlow<Long?>(null)
+    val foregroundReminderAlertId: StateFlow<Long?> = _foregroundReminderAlertId.asStateFlow()
+
+    fun onForegroundReminderAlertReceived(reminderId: Long) {
+        _foregroundReminderAlertId.value = reminderId
+    }
+
+    fun clearForegroundReminderAlert() {
+        _foregroundReminderAlertId.value = null
+    }
 
     val activeSnoozingAlarmId = alarmRepository.getAllAlarms()
         .map { alarms ->
@@ -159,6 +178,35 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var adManager: AdManager
+
+    private val reminderAlertReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == ReminderReceiver.ACTION_FIRE_REMINDER_ALERT) {
+                val reminderId = intent.getLongExtra(ReminderReceiver.EXTRA_REMINDER_ID, -1L)
+                if (reminderId != -1L) {
+                    viewModel.onForegroundReminderAlertReceived(reminderId)
+                }
+            }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val filter = IntentFilter(ReminderReceiver.ACTION_FIRE_REMINDER_ALERT)
+        ContextCompat.registerReceiver(
+            this,
+            reminderAlertReceiver,
+            filter,
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
+    }
+
+    override fun onStop() {
+        super.onStop()
+        try {
+            unregisterReceiver(reminderAlertReceiver)
+        } catch (_: Exception) {}
+    }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
@@ -225,6 +273,7 @@ class MainActivity : ComponentActivity() {
                             val ringingAlarmId by alarmRingManager.ringingAlarmId.collectAsState()
                             val activeSnoozingalarmId by viewModel.activeSnoozingAlarmId.collectAsState()
                             val ringingReminderId by viewModel.ringingReminderId.collectAsState()
+                            val foregroundReminderAlertId by viewModel.foregroundReminderAlertId.collectAsState()
                             val activeSnoozingReminderId by viewModel.activeSnoozingReminderId.collectAsState()
                             val missedAlarms by viewModel.missedAlarms.collectAsState()
 
@@ -246,13 +295,14 @@ class MainActivity : ComponentActivity() {
                                 activeSnoozingalarmId,
                                 acknowledgingAlarmId,
                                 ringingReminderId,
+                                foregroundReminderAlertId,
                                 activeSnoozingReminderId,
                                 isNavReady
                             ) {
                                 if (!isNavReady) return@LaunchedEffect
 
                                 val idAlarmToRing = ringingAlarmId ?: activeSnoozingalarmId
-                                val idReminderToRing = ringingReminderId
+                                val idReminderToRing = ringingReminderId ?: foregroundReminderAlertId
                                 val idMessage = acknowledgingAlarmId
 
                                 val currentEntry = navController.currentBackStackEntry
@@ -302,6 +352,9 @@ class MainActivity : ComponentActivity() {
                                         }
                                     }
                                 } else {
+                                    if (foregroundReminderAlertId != null) {
+                                        viewModel.clearForegroundReminderAlert()
+                                    }
                                     if (currentDest == "alarm_ringing_route/{alarmId}" ||
                                         currentDest == "alarm_message_route/{alarmId}" ||
                                         currentDest == "reminder_ringing_route/{reminderId}"

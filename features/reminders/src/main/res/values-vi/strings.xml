@@ -86,6 +86,7 @@
     <string name="section_location_trigger">Vị trí địa lý (Geofence)</string>
     <string name="location_name_label">Tên địa điểm</string>
     <string name="location_name_placeholder">Ví dụ: Nhà, Công ty, Siêu thị</string>
+    <string name="reminder_location_required">Vị trí không được để trống</string>
     <string name="latitude_label">Vĩ độ (Latitude)</string>
     <string name="longitude_label">Kinh độ (Longitude)</string>
     <string name="radius_label">Bán kính nhận diện: %d m</string>
@@ -98,6 +99,7 @@
     <string name="section_wifi_trigger">Mạng Wi-Fi</string>
     <string name="wifi_ssid_label">Tên mạng Wi-Fi (SSID)</string>
     <string name="wifi_ssid_placeholder">Ví dụ: Home_5G, CongTy_Khach</string>
+    <string name="reminder_wifi_required">Tên mạng Wi-Fi không được để trống</string>
     <string name="wifi_bssid_label">BSSID (Địa chỉ MAC Router - tùy chọn)</string>
     <string name="wifi_bssid_placeholder">Ví dụ: 00:11:22:33:44:55</string>
     <string name="wifi_trigger_type_label">Sự kiện kích hoạt</string>

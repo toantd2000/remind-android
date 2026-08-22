@@ -24,6 +24,7 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import vn.io.litever.remind.core.alarm.ReminderSyncManager
 import vn.io.litever.remind.core.alarm.alert.ReminderAlertManager
 import vn.io.litever.remind.core.alarm.notification.ReminderNotificationManager
 import vn.io.litever.remind.core.common.util.PermissionChecker
@@ -56,6 +57,7 @@ class ReminderPermissionAndChecklistChallengerTest {
     private val testDispatcher = StandardTestDispatcher()
     private val repository = mockk<ReminderRepository>(relaxed = true)
     private val scheduler = mockk<ReminderScheduler>(relaxed = true)
+    private val reminderSyncManager = mockk<ReminderSyncManager>(relaxed = true)
     private val permissionChecker = mockk<PermissionChecker>(relaxed = true)
     private val alertManager = mockk<ReminderAlertManager>(relaxed = true)
     private val notificationManager = mockk<ReminderNotificationManager>(relaxed = true)
@@ -88,6 +90,7 @@ class ReminderPermissionAndChecklistChallengerTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -133,6 +136,7 @@ class ReminderPermissionAndChecklistChallengerTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -180,6 +184,7 @@ class ReminderPermissionAndChecklistChallengerTest {
         val listViewModel = ReminderListViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource
         )
@@ -214,6 +219,7 @@ class ReminderPermissionAndChecklistChallengerTest {
         val listViewModel = ReminderListViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource
         )
@@ -244,6 +250,7 @@ class ReminderPermissionAndChecklistChallengerTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle

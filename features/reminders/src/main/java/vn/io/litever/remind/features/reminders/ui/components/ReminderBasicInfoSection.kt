@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -23,7 +25,8 @@ fun ReminderBasicInfoSection(
     notes: String,
     onNotesChange: (String) -> Unit,
     showTitleError: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    titleFocusRequester: FocusRequester? = null
 ) {
     LiteverOutlinedCard(
         modifier = modifier
@@ -44,13 +47,29 @@ fun ReminderBasicInfoSection(
 
             Spacer(modifier = Modifier.height(12.dp))
 
+            val titleFieldModifier = if (titleFocusRequester != null) {
+                Modifier.fillMaxWidth().focusRequester(titleFocusRequester)
+            } else {
+                Modifier.fillMaxWidth()
+            }
+
             LiteverTextField(
                 value = title,
                 onValueChange = onTitleChange,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = titleFieldModifier,
                 label = stringResource(R.string.reminder_title_placeholder),
                 singleLine = true
             )
+
+            if (showTitleError) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = stringResource(R.string.reminder_title_required),
+                    style = LiteverTheme.typography.bodySmall,
+                    color = LiteverTheme.colors.error,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(12.dp))
 

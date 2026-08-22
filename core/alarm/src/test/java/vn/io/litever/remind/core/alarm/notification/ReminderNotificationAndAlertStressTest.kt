@@ -252,12 +252,12 @@ class ReminderNotificationAndAlertStressTest {
 
         val notification = reminderNotificationManager.buildNotification(reminder)
         assertNotNull(notification)
-        // With snoozeEnabled = false and all checklist items completed, only Dismiss action should be present
-        assertEquals(1, notification.actions?.size ?: 0)
+        // With snoozeEnabled = false, no actions should be present
+        assertEquals(0, notification.actions?.size ?: 0)
     }
 
     @Test
-    fun buildNotification_actionToggleLabel_truncatesLongItemTextTo20Chars() {
+    fun buildNotification_omitsInlineChecklistToggle_andDismissActions() {
         val longItemText = "Super Long Checklist Item Description That Exceeds Normal Length"
         val reminder = Reminder(
             id = 2005L,
@@ -265,15 +265,15 @@ class ReminderNotificationAndAlertStressTest {
             triggerType = ReminderTriggerType.TIME,
             checklist = listOf(
                 ChecklistItem(id = 1L, reminderId = 2005L, text = longItemText, isCompleted = false)
-            )
+            ),
+            snoozeEnabled = true
         )
 
         val notification = reminderNotificationManager.buildNotification(reminder)
         assertNotNull(notification)
-        val toggleAction = notification.actions?.firstOrNull { it.title.startsWith("✓") }
-        assertNotNull(toggleAction)
-        val expectedLabel = "✓ ${longItemText.take(20)}"
-        assertEquals(expectedLabel, toggleAction?.title.toString())
+        // Only Snooze action should be present
+        assertEquals(1, notification.actions?.size ?: 0)
+        assertTrue(notification.actions?.firstOrNull()?.title?.startsWith("Snooze") == true)
     }
 
     // =========================================================================

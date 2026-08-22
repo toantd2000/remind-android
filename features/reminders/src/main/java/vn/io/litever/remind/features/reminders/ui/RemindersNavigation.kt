@@ -45,7 +45,13 @@ fun NavGraphBuilder.remindersGraph(
     ) {
         ReminderListRoute(
             onAddReminderClick = { onNavigateToEdit(0L) },
-            onReminderClick = { reminder -> onNavigateToEdit(reminder.id) },
+            onReminderClick = { reminder ->
+                if (reminder.snoozeNextTriggerTime != null) {
+                    navController.navigateToReminderRinging(reminder.id)
+                } else {
+                    onNavigateToEdit(reminder.id)
+                }
+            },
             onNavigateToPermissions = onNavigateToPermissions
         )
     }

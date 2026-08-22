@@ -27,6 +27,7 @@ import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderTimeWindow
 import vn.io.litever.remind.core.model.ReminderTriggerType
+import vn.io.litever.remind.core.alarm.ReminderSyncManager
 import vn.io.litever.remind.core.model.TimeTrigger
 import vn.io.litever.remind.core.model.WifiTrigger
 import vn.io.litever.remind.core.model.WifiTriggerType
@@ -41,6 +42,12 @@ enum class ReminderRepeatInterval {
     WEEKLY,
     MONTHLY,
     YEARLY
+}
+
+enum class ReminderValidationErrorField {
+    TITLE,
+    LOCATION,
+    WIFI_SSID
 }
 
 data class ReminderEditUiState(
@@ -93,6 +100,10 @@ data class ReminderEditUiState(
     val showPermissionDialog: Boolean = false,
     val showDiscardDialog: Boolean = false,
     val showTitleError: Boolean = false,
+    val showLocationError: Boolean = false,
+    val showWifiError: Boolean = false,
+    val validationErrorField: ReminderValidationErrorField? = null,
+    val validationErrorTrigger: Long = 0L,
     val missingPermissions: List<ReminderPermissionType> = emptyList(),
     val isNewDraft: Boolean = true
 )
@@ -101,6 +112,7 @@ data class ReminderEditUiState(
 class ReminderEditViewModel @Inject constructor(
     private val reminderRepository: ReminderRepository,
     private val reminderScheduler: ReminderScheduler,
+    private val reminderSyncManager: ReminderSyncManager,
     private val permissionChecker: PermissionChecker,
     private val preferencesDataSource: AlarmPreferencesDataSource,
     savedStateHandle: SavedStateHandle,
@@ -374,15 +386,15 @@ class ReminderEditViewModel @Inject constructor(
     }
 
     fun setLocationName(name: String) {
-        _uiState.update { it.copy(locationName = name) }
+        _uiState.update { it.copy(locationName = name, showLocationError = false) }
     }
 
     fun setLatitude(lat: Double) {
-        _uiState.update { it.copy(latitude = lat) }
+        _uiState.update { it.copy(latitude = lat, showLocationError = false) }
     }
 
     fun setLongitude(lng: Double) {
-        _uiState.update { it.copy(longitude = lng) }
+        _uiState.update { it.copy(longitude = lng, showLocationError = false) }
     }
 
     fun setRadiusMeters(radius: Float) {
@@ -398,7 +410,7 @@ class ReminderEditViewModel @Inject constructor(
     }
 
     fun setWifiSsid(ssid: String) {
-        _uiState.update { it.copy(wifiSsid = ssid) }
+        _uiState.update { it.copy(wifiSsid = ssid, showWifiError = false) }
     }
 
     fun setWifiBssid(bssid: String?) {
@@ -585,8 +597,43 @@ class ReminderEditViewModel @Inject constructor(
 
     fun saveReminder(onSuccess: () -> Unit) {
         if (_uiState.value.title.isBlank()) {
-            _uiState.update { it.copy(showTitleError = true) }
+            _uiState.update {
+                it.copy(
+                    showTitleError = true,
+                    validationErrorField = ReminderValidationErrorField.TITLE,
+                    validationErrorTrigger = System.currentTimeMillis()
+                )
+            }
             return
+        }
+
+        if (_uiState.value.triggerType == ReminderTriggerType.LOCATION) {
+            val state = _uiState.value
+            val isLocationEmpty = state.locationName.isBlank() && state.latitude == 0.0 && state.longitude == 0.0
+            if (isLocationEmpty) {
+                _uiState.update {
+                    it.copy(
+                        showLocationError = true,
+                        validationErrorField = ReminderValidationErrorField.LOCATION,
+                        validationErrorTrigger = System.currentTimeMillis()
+                    )
+                }
+                return
+            }
+        }
+
+        if (_uiState.value.triggerType == ReminderTriggerType.WIFI) {
+            val state = _uiState.value
+            if (state.wifiSsid.isBlank()) {
+                _uiState.update {
+                    it.copy(
+                        showWifiError = true,
+                        validationErrorField = ReminderValidationErrorField.WIFI_SSID,
+                        validationErrorTrigger = System.currentTimeMillis()
+                    )
+                }
+                return
+            }
         }
 
         val draft = createDraftReminder()
@@ -622,6 +669,7 @@ class ReminderEditViewModel @Inject constructor(
                     reminderScheduler.cancel(reminderToSave)
                 }
             }
+            reminderSyncManager.sync()
             onSuccess()
         }
     }

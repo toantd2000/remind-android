@@ -86,6 +86,7 @@
     <string name="section_location_trigger">Geofence Location</string>
     <string name="location_name_label">Location Name</string>
     <string name="location_name_placeholder">e.g. Home, Office, Supermarket</string>
+    <string name="reminder_location_required">Location name or coordinates must be specified</string>
     <string name="latitude_label">Latitude</string>
     <string name="longitude_label">Longitude</string>
     <string name="radius_label">Geofence Radius: %d m</string>
@@ -98,6 +99,7 @@
     <string name="section_wifi_trigger">Wi-Fi Network</string>
     <string name="wifi_ssid_label">Wi-Fi SSID (Network Name)</string>
     <string name="wifi_ssid_placeholder">e.g. Home_5G, Office_Guest</string>
+    <string name="reminder_wifi_required">Wi-Fi SSID cannot be empty</string>
     <string name="wifi_bssid_label">BSSID (Optional Router MAC)</string>
     <string name="wifi_bssid_placeholder">e.g. 00:11:22:33:44:55</string>
     <string name="wifi_trigger_type_label">Trigger Event</string>

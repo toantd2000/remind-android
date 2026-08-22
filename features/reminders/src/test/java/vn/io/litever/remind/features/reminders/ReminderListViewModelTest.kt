@@ -34,12 +34,15 @@ import vn.io.litever.remind.features.reminders.ui.components.ReminderFilterType
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderListViewModel
 import java.time.LocalTime
 
+import vn.io.litever.remind.core.alarm.ReminderSyncManager
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class ReminderListViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
     private val repository = mockk<ReminderRepository>(relaxed = true)
     private val scheduler = mockk<ReminderScheduler>(relaxed = true)
+    private val reminderSyncManager = mockk<ReminderSyncManager>(relaxed = true)
     private val permissionChecker = mockk<PermissionChecker>(relaxed = true)
     private val preferencesDataSource = mockk<AlarmPreferencesDataSource>(relaxed = true)
 
@@ -61,7 +64,8 @@ class ReminderListViewModelTest {
             reminderRepository = repository,
             reminderScheduler = scheduler,
             permissionChecker = permissionChecker,
-            preferencesDataSource = preferencesDataSource
+            preferencesDataSource = preferencesDataSource,
+            reminderSyncManager = reminderSyncManager
         )
     }
 
@@ -224,5 +228,35 @@ class ReminderListViewModelTest {
 
         coVerify { repository.updateReminder(match { it.id == 1L && it.isCompleted && !it.isEnabled }) }
         coVerify { scheduler.cancel(match { it.id == 1L }) }
+    }
+
+    @Test
+    fun snoozedReminders_pinnedToTopOfFilteredList() = runTest {
+        val normalOld = Reminder(id = 1, title = "Normal Old", triggerType = ReminderTriggerType.TIME, createdAt = 1000L)
+        val snoozedOld = Reminder(id = 2, title = "Snoozed Old", triggerType = ReminderTriggerType.TIME, snoozeNextTriggerTime = 50000L, createdAt = 2000L)
+        val normalNew = Reminder(id = 3, title = "Normal New", triggerType = ReminderTriggerType.TIME, createdAt = 3000L)
+        val snoozedNew = Reminder(id = 4, title = "Snoozed New", triggerType = ReminderTriggerType.TIME, snoozeNextTriggerTime = 60000L, createdAt = 4000L)
+
+        allRemindersFlow.value = listOf(normalOld, snoozedOld, normalNew, snoozedNew)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val filtered = viewModel.uiState.value.filteredReminders
+        assertEquals(4, filtered.size)
+        // Snoozed items must be first, ordered by createdAt descending
+        assertEquals(4L, filtered[0].id)
+        assertEquals(2L, filtered[1].id)
+        // Non-snoozed items follow, ordered by createdAt descending
+        assertEquals(3L, filtered[2].id)
+        assertEquals(1L, filtered[3].id)
+    }
+
+    @Test
+    fun toggleReminder_callsSync() = runTest {
+        val reminder = Reminder(id = 1, title = "Active", triggerType = ReminderTriggerType.TIME, isEnabled = true, isCompleted = false)
+
+        viewModel.toggleReminder(reminder)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        io.mockk.verify(atLeast = 1) { reminderSyncManager.sync() }
     }
 }

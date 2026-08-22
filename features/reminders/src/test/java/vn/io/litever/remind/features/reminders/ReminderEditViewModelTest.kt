@@ -21,6 +21,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import vn.io.litever.remind.core.alarm.ReminderSyncManager
 import vn.io.litever.remind.core.common.util.PermissionChecker
 import vn.io.litever.remind.core.common.util.ReminderPermissionType
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
@@ -37,6 +38,7 @@ import vn.io.litever.remind.core.model.TimeTrigger
 import vn.io.litever.remind.core.model.WifiTrigger
 import vn.io.litever.remind.core.model.WifiTriggerType
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderEditViewModel
+import vn.io.litever.remind.features.reminders.viewmodel.ReminderValidationErrorField
 import java.time.LocalDate
 import java.time.LocalTime
 import vn.io.litever.remind.core.model.ReminderTimeWindow
@@ -47,6 +49,7 @@ class ReminderEditViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
     private val repository = mockk<ReminderRepository>(relaxed = true)
     private val scheduler = mockk<ReminderScheduler>(relaxed = true)
+    private val reminderSyncManager = mockk<ReminderSyncManager>(relaxed = true)
     private val permissionChecker = mockk<PermissionChecker>(relaxed = true)
     private val preferencesDataSource = mockk<AlarmPreferencesDataSource>(relaxed = true)
 
@@ -69,6 +72,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -107,6 +111,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -131,6 +136,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -153,6 +159,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -189,6 +196,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -215,6 +223,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -240,6 +249,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -265,6 +275,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -288,6 +299,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -311,6 +323,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -337,6 +350,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -358,6 +372,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -380,6 +395,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -412,6 +428,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -436,6 +453,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -455,6 +473,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -479,6 +498,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -502,6 +522,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -527,6 +548,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -551,6 +573,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -573,6 +596,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -596,6 +620,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -619,6 +644,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -641,6 +667,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -661,6 +688,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -682,6 +710,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -706,6 +735,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -726,6 +756,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -746,6 +777,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -766,6 +798,7 @@ class ReminderEditViewModelTest {
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
             reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
             permissionChecker = permissionChecker,
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
@@ -778,6 +811,124 @@ class ReminderEditViewModelTest {
 
         assertTrue(viewModel.uiState.value.showDiscardDialog)
         assertFalse(backNavigated)
+    }
+
+    @Test
+    fun saveReminder_callsSyncOnSave() = runTest {
+        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
+        val viewModel = ReminderEditViewModel(
+            reminderRepository = repository,
+            reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
+            permissionChecker = permissionChecker,
+            preferencesDataSource = preferencesDataSource,
+            savedStateHandle = savedStateHandle
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.setTitle("New Reminder")
+        var saved = false
+        viewModel.saveReminder(onSuccess = { saved = true })
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertTrue(saved)
+        io.mockk.verify(exactly = 1) { reminderSyncManager.sync() }
+    }
+
+    @Test
+    fun saveReminder_locationTrigger_emptyLocation_showsLocationError() = runTest {
+        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
+        val viewModel = ReminderEditViewModel(
+            reminderRepository = repository,
+            reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
+            permissionChecker = permissionChecker,
+            preferencesDataSource = preferencesDataSource,
+            savedStateHandle = savedStateHandle
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.setTitle("Location Reminder")
+        viewModel.setTriggerType(ReminderTriggerType.LOCATION)
+        var saved = false
+        viewModel.saveReminder(onSuccess = { saved = true })
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertFalse(saved)
+        assertTrue(viewModel.uiState.value.showLocationError)
+        assertEquals(ReminderValidationErrorField.LOCATION, viewModel.uiState.value.validationErrorField)
+        assertTrue(viewModel.uiState.value.validationErrorTrigger > 0L)
+    }
+
+    @Test
+    fun saveReminder_wifiTrigger_emptySsid_showsWifiError() = runTest {
+        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
+        val viewModel = ReminderEditViewModel(
+            reminderRepository = repository,
+            reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
+            permissionChecker = permissionChecker,
+            preferencesDataSource = preferencesDataSource,
+            savedStateHandle = savedStateHandle
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.setTitle("Wi-Fi Reminder")
+        viewModel.setTriggerType(ReminderTriggerType.WIFI)
+        var saved = false
+        viewModel.saveReminder(onSuccess = { saved = true })
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertFalse(saved)
+        assertTrue(viewModel.uiState.value.showWifiError)
+        assertEquals(ReminderValidationErrorField.WIFI_SSID, viewModel.uiState.value.validationErrorField)
+        assertTrue(viewModel.uiState.value.validationErrorTrigger > 0L)
+    }
+
+    @Test
+    fun setLocationName_clearsLocationError() = runTest {
+        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
+        val viewModel = ReminderEditViewModel(
+            reminderRepository = repository,
+            reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
+            permissionChecker = permissionChecker,
+            preferencesDataSource = preferencesDataSource,
+            savedStateHandle = savedStateHandle
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.setTitle("Location Reminder")
+        viewModel.setTriggerType(ReminderTriggerType.LOCATION)
+        viewModel.saveReminder(onSuccess = {})
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertTrue(viewModel.uiState.value.showLocationError)
+
+        viewModel.setLocationName("Supermarket")
+        assertFalse(viewModel.uiState.value.showLocationError)
+    }
+
+    @Test
+    fun setWifiSsid_clearsWifiError() = runTest {
+        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
+        val viewModel = ReminderEditViewModel(
+            reminderRepository = repository,
+            reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
+            permissionChecker = permissionChecker,
+            preferencesDataSource = preferencesDataSource,
+            savedStateHandle = savedStateHandle
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.setTitle("Wi-Fi Reminder")
+        viewModel.setTriggerType(ReminderTriggerType.WIFI)
+        viewModel.saveReminder(onSuccess = {})
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertTrue(viewModel.uiState.value.showWifiError)
+
+        viewModel.setWifiSsid("Home_Network")
+        assertFalse(viewModel.uiState.value.showWifiError)
     }
 }
 

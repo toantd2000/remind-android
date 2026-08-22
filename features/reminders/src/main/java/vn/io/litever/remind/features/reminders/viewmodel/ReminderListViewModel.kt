@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import vn.io.litever.remind.core.alarm.ReminderSyncManager
 import vn.io.litever.remind.core.common.util.PermissionChecker
 import vn.io.litever.remind.core.common.util.ReminderPermissionType
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
@@ -39,7 +40,8 @@ class ReminderListViewModel @Inject constructor(
     private val reminderRepository: ReminderRepository,
     private val reminderScheduler: ReminderScheduler,
     private val permissionChecker: PermissionChecker,
-    private val preferencesDataSource: AlarmPreferencesDataSource
+    private val preferencesDataSource: AlarmPreferencesDataSource,
+    private val reminderSyncManager: ReminderSyncManager? = null
 ) : ViewModel() {
 
     private val _selectedFilter = MutableStateFlow(ReminderFilterType.ALL)
@@ -73,13 +75,18 @@ class ReminderListViewModel @Inject constructor(
             ReminderFilterType.WIFI -> allReminders.filter { it.triggerType == ReminderTriggerType.WIFI }
         }
 
+        val sortedFiltered = filtered.sortedWith(
+            compareByDescending<Reminder> { it.snoozeNextTriggerTime != null }
+                .thenByDescending { it.createdAt }
+        )
+
         val hasMissingForActive = allReminders.filter { it.isEnabled && !it.isCompleted }
             .any { !permissionChecker.hasPermissionsForReminder(it) }
         val warningVisible = permissionWarning || !permissionChecker.hasNotificationPermission() || hasMissingForActive
 
         ReminderListUiState(
             reminders = allReminders,
-            filteredReminders = filtered,
+            filteredReminders = sortedFiltered,
             selectedFilter = filter,
             filterCounts = counts,
             is24HourFormat = is24Hour,
@@ -115,6 +122,7 @@ class ReminderListViewModel @Inject constructor(
             } else {
                 reminderScheduler.cancel(updated)
             }
+            reminderSyncManager?.sync()
         }
     }
 
@@ -123,6 +131,7 @@ class ReminderListViewModel @Inject constructor(
             recentlyDeletedReminder = reminder
             reminderScheduler.cancel(reminder)
             reminderRepository.deleteReminder(reminder)
+            reminderSyncManager?.sync()
             _uiMessage.emit(R.string.reminder_deleted)
         }
     }
@@ -136,6 +145,7 @@ class ReminderListViewModel @Inject constructor(
                     reminderScheduler.schedule(restored)
                 }
                 recentlyDeletedReminder = null
+                reminderSyncManager?.sync()
             }
         }
     }
@@ -147,6 +157,7 @@ class ReminderListViewModel @Inject constructor(
                 reminderScheduler.cancel(reminder)
                 reminderRepository.deleteReminder(reminder)
             }
+            reminderSyncManager?.sync()
         }
     }
 
@@ -157,6 +168,7 @@ class ReminderListViewModel @Inject constructor(
                 reminderScheduler.cancel(reminder)
                 reminderRepository.deleteReminder(reminder)
             }
+            reminderSyncManager?.sync()
         }
     }
 
@@ -180,6 +192,7 @@ class ReminderListViewModel @Inject constructor(
             if (scheduledCopy.isEnabled && permissionChecker.hasPermissionsForReminder(scheduledCopy)) {
                 reminderScheduler.schedule(scheduledCopy)
             }
+            reminderSyncManager?.sync()
         }
     }
 
@@ -209,6 +222,7 @@ class ReminderListViewModel @Inject constructor(
             } else {
                 reminderScheduler.cancel(updated)
             }
+            reminderSyncManager?.sync()
         }
     }
 

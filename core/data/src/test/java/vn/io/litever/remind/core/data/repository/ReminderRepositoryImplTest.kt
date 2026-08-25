@@ -131,9 +131,13 @@ class ReminderRepositoryImplTest {
 
         repository.updateReminder(reminder)
 
-        coVerify(exactly = 1) { reminderDao.updateReminder(match { it.id == 7L && it.title == "Updated Task" }) }
-        coVerify(exactly = 1) { checklistItemDao.deleteChecklistItemsForReminder(7L) }
-        coVerify(exactly = 1) { checklistItemDao.insertChecklistItems(match { it.size == 1 && it[0].reminderId == 7L }) }
+        coVerify(exactly = 1) {
+            reminderDao.updateReminderWithChecklist(
+                match { it.id == 7L && it.title == "Updated Task" },
+                match { it.size == 1 && it[0].reminderId == 7L },
+                checklistItemDao
+            )
+        }
     }
 
     @Test

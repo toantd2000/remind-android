@@ -389,6 +389,14 @@ class ReminderEditViewModel @Inject constructor(
         _uiState.update { it.copy(locationName = name, showLocationError = false) }
     }
 
+    fun setLocationCoordinates(lat: Double, lng: Double) {
+        _uiState.update { it.copy(latitude = lat, longitude = lng, showLocationError = false) }
+    }
+
+    fun setIsEnabled(enabled: Boolean) {
+        _uiState.update { it.copy(isEnabled = enabled) }
+    }
+
     fun setLatitude(lat: Double) {
         _uiState.update { it.copy(latitude = lat, showLocationError = false) }
     }
@@ -644,13 +652,28 @@ class ReminderEditViewModel @Inject constructor(
             return
         }
 
-        performSave(draft.copy(isEnabled = true), onSuccess)
+        performSave(draft, onSuccess)
     }
 
     fun saveAnyway(onSuccess: () -> Unit) {
         _uiState.update { it.copy(showPermissionDialog = false) }
         val draft = createDraftReminder().copy(isEnabled = false)
         performSave(draft, onSuccess)
+    }
+
+    fun deleteReminder(onSuccess: () -> Unit = {}) {
+        viewModelScope.launch {
+            if (reminderId > 0L) {
+                val existing = reminderRepository.getReminderById(reminderId)
+                if (existing != null) {
+                    reminderScheduler.cancel(existing)
+                    reminderScheduler.cancelSnooze(existing)
+                    reminderRepository.deleteReminder(existing)
+                    reminderSyncManager.sync()
+                }
+            }
+            onSuccess()
+        }
     }
 
     private fun performSave(reminderToSave: Reminder, onSuccess: () -> Unit) {
@@ -662,6 +685,7 @@ class ReminderEditViewModel @Inject constructor(
                     reminderScheduler.schedule(saved)
                 }
             } else {
+                reminderScheduler.cancelSnooze(reminderToSave)
                 reminderRepository.updateReminder(reminderToSave)
                 if (reminderToSave.isEnabled) {
                     reminderScheduler.schedule(reminderToSave)
@@ -699,6 +723,7 @@ class ReminderEditViewModel @Inject constructor(
         val curr = _uiState.value
         return curr.title != init.title ||
                 curr.notes != init.notes ||
+                curr.isEnabled != init.isEnabled ||
                 curr.triggerType != init.triggerType ||
                 curr.time != init.time ||
                 curr.date != init.date ||

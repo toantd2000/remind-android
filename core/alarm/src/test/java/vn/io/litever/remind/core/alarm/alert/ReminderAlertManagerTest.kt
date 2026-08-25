@@ -21,18 +21,28 @@ import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderTriggerType
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+
+import androidx.test.core.app.ApplicationProvider
+import io.mockk.spyk
+
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class ReminderAlertManagerTest {
 
-    private val context = mockk<Context>(relaxed = true)
+    private val testDispatcher = UnconfinedTestDispatcher()
+    private val appContext: Context = ApplicationProvider.getApplicationContext()
+    private val context = spyk(appContext)
     private val audioManager = mockk<AudioManager>(relaxed = true)
 
     private lateinit var alertManager: ReminderAlertManagerImpl
 
     @Before
     fun setup() {
-        every { context.packageName } returns "vn.io.litever.remind"
+        Dispatchers.setMain(testDispatcher)
         every { context.getSystemService(Context.AUDIO_SERVICE) } returns audioManager
         every { audioManager.mode } returns AudioManager.MODE_NORMAL
 
@@ -42,6 +52,7 @@ class ReminderAlertManagerTest {
     @After
     fun tearDown() {
         alertManager.stopAllAlerts()
+        Dispatchers.resetMain()
         unmockkAll()
     }
 
@@ -57,7 +68,7 @@ class ReminderAlertManagerTest {
         )
 
         alertManager.startAlert(reminder)
-        testScheduler.advanceUntilIdle()
+        testScheduler.runCurrent()
 
         val state = alertManager.playbackState.value
         assertTrue(state is AlertPlaybackState.Playing)
@@ -80,7 +91,7 @@ class ReminderAlertManagerTest {
         )
 
         alertManager.startAlert(reminder)
-        testScheduler.advanceUntilIdle()
+        testScheduler.runCurrent()
 
         val state = alertManager.playbackState.value
         assertTrue(state is AlertPlaybackState.Playing)
@@ -98,11 +109,11 @@ class ReminderAlertManagerTest {
         )
 
         alertManager.startAlert(reminder)
-        testScheduler.advanceUntilIdle()
+        testScheduler.runCurrent()
         assertTrue(alertManager.isAlerting(103L))
 
         alertManager.stopAlert(103L)
-        testScheduler.advanceUntilIdle()
+        testScheduler.runCurrent()
 
         assertFalse(alertManager.isAlerting(103L))
         assertEquals(AlertPlaybackState.Idle, alertManager.playbackState.value)
@@ -115,13 +126,13 @@ class ReminderAlertManagerTest {
 
         alertManager.startAlert(reminder1)
         alertManager.startAlert(reminder2)
-        testScheduler.advanceUntilIdle()
+        testScheduler.runCurrent()
 
         assertTrue(alertManager.isAlerting(104L))
         assertTrue(alertManager.isAlerting(105L))
 
         alertManager.stopAllAlerts()
-        testScheduler.advanceUntilIdle()
+        testScheduler.runCurrent()
 
         assertFalse(alertManager.isAlerting(104L))
         assertFalse(alertManager.isAlerting(105L))
@@ -133,16 +144,16 @@ class ReminderAlertManagerTest {
         val reminder = Reminder(id = 106L, title = "Mute Test", triggerType = ReminderTriggerType.TIME, isPersistentAlert = true)
 
         alertManager.startAlert(reminder)
-        testScheduler.advanceUntilIdle()
+        testScheduler.runCurrent()
         assertTrue(alertManager.isAlerting(106L))
 
         alertManager.mute(106L)
-        testScheduler.advanceUntilIdle()
+        testScheduler.runCurrent()
         // Alert is still in queue
         assertTrue(alertManager.isAlerting(106L))
 
         alertManager.unmute(106L)
-        testScheduler.advanceUntilIdle()
+        testScheduler.runCurrent()
         assertTrue(alertManager.isAlerting(106L))
     }
 

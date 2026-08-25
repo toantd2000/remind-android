@@ -107,8 +107,8 @@ class ReminderReceiverTest {
         val updatedSlot = slot<Reminder>()
         coVerify(atLeast = 1) { repository.updateReminder(capture(updatedSlot)) }
 
-        assertTrue(updatedSlot.captured.isCompleted)
-        assertFalse(updatedSlot.captured.isEnabled)
+        assertFalse(updatedSlot.captured.isCompleted)
+        assertTrue(updatedSlot.captured.isEnabled)
         assertNotNull(updatedSlot.captured.lastTriggeredTime)
 
         verify(atLeast = 1) { notificationManager.showNotification(match { it.id == 10L }) }

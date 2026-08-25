@@ -26,10 +26,14 @@ import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderTriggerType
 
+import androidx.test.core.app.ApplicationProvider
+import io.mockk.spyk
+
 @RunWith(RobolectricTestRunner::class)
 class ReminderNotificationManagerTest {
 
-    private val context = mockk<Context>(relaxed = true)
+    private val appContext: Context = ApplicationProvider.getApplicationContext()
+    private val context = spyk(appContext)
     private val notificationManager = mockk<NotificationManager>(relaxed = true)
     private val permissionChecker = mockk<PermissionChecker>(relaxed = true)
 
@@ -37,21 +41,7 @@ class ReminderNotificationManagerTest {
 
     @Before
     fun setup() {
-        every { context.packageName } returns "vn.io.litever.remind"
         every { context.getSystemService(Context.NOTIFICATION_SERVICE) } returns notificationManager
-        every { context.getString(R.string.reminder_channel_name_standard) } returns "Reminders"
-        every { context.getString(R.string.reminder_channel_desc_standard) } returns "Notifications for scheduled reminders"
-        every { context.getString(R.string.reminder_channel_name_urgent) } returns "Urgent Reminders & Alarms"
-        every { context.getString(R.string.reminder_channel_desc_urgent) } returns "Urgent notifications"
-        every { context.getString(R.string.reminder_default_title) } returns "Reminder"
-        every { context.getString(R.string.reminder_default_triggered) } returns "Reminder triggered"
-        every { context.getString(R.string.reminder_action_snooze) } returns "Snooze"
-        every { context.getString(R.string.reminder_action_snooze_interval, any()) } answers { "Snooze (${args[1]}m)" }
-        every { context.getString(R.string.reminder_action_dismiss) } returns "Dismiss"
-        every { context.getString(R.string.reminder_checklist_summary_header, any(), any()) } answers {
-            "Checklist (${args[1]}/${args[2]} completed):"
-        }
-
         every { permissionChecker.hasNotificationPermission() } returns true
         every { permissionChecker.hasFullScreenIntentPermission() } returns true
 
@@ -232,7 +222,7 @@ class ReminderNotificationManagerTest {
     }
 
     @Test
-    fun buildNotification_onlyContainsSnoozeAction_noDismissOrChecklistActions() {
+    fun buildNotification_containsSnoozeAndDismissActions() {
         val reminder = Reminder(
             id = 100L,
             title = "Task with checklist",
@@ -246,13 +236,14 @@ class ReminderNotificationManagerTest {
 
         val notification = manager.buildNotification(reminder)
         assertNotNull(notification)
-        // Should only contain the Snooze action (1 action)
-        assertEquals(1, notification.actions?.size ?: 0)
-        assertEquals("Snooze (10m)", notification.actions?.firstOrNull()?.title?.toString())
+        // Should contain Snooze and Dismiss actions (2 actions)
+        assertEquals(2, notification.actions?.size ?: 0)
+        assertEquals("Snooze (10m)", notification.actions?.get(0)?.title?.toString())
+        assertEquals("Dismiss", notification.actions?.get(1)?.title?.toString())
     }
 
     @Test
-    fun buildNotification_whenSnoozeDisabled_containsNoActions() {
+    fun buildNotification_whenSnoozeDisabled_containsDismissAction() {
         val reminder = Reminder(
             id = 101L,
             title = "Task without snooze",
@@ -265,7 +256,8 @@ class ReminderNotificationManagerTest {
 
         val notification = manager.buildNotification(reminder)
         assertNotNull(notification)
-        // No actions should be present
-        assertTrue(notification.actions == null || notification.actions.isEmpty())
+        // Only Dismiss action should be present
+        assertEquals(1, notification.actions?.size ?: 0)
+        assertEquals("Dismiss", notification.actions?.firstOrNull()?.title?.toString())
     }
 }

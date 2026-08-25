@@ -49,18 +49,17 @@ class ReminderRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateReminder(reminder: Reminder) {
-        // 1. Update parent entity
-        reminderDao.updateReminder(reminder.toEntity())
-
-        // 2. Synchronize checklist items
-        checklistItemDao.deleteChecklistItemsForReminder(reminder.id)
-        if (reminder.checklist.isNotEmpty()) {
-            val checklistEntities = reminder.checklist.mapIndexed { index, item ->
+        val reminderEntity = reminder.toEntity()
+        val checklistEntities = if (reminder.checklist.isNotEmpty()) {
+            reminder.checklist.mapIndexed { index, item ->
                 item.copy(reminderId = reminder.id, orderIndex = index)
                     .toEntity(parentReminderId = reminder.id)
             }
-            checklistItemDao.insertChecklistItems(checklistEntities)
+        } else {
+            emptyList()
         }
+
+        reminderDao.updateReminderWithChecklist(reminderEntity, checklistEntities, checklistItemDao)
     }
 
     override suspend fun deleteReminder(reminder: Reminder) {

@@ -54,13 +54,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Obsolete Wrappers:** Removed all dependencies on 24 pass-through wrapper components previously provided by `litever-designsystem` v1.x (such as `LiteverButton`, `LiteverScaffold`, `LiteverTopAppBar`, `LiteverTextField`, `LiteverCard`, `LiteverCircularProgressIndicator`, `LiteverIconButton`, `LiteverSwitch`, etc.).
 
 ### Added
+- **Master Audit & Stability Hardening:** Comprehensive audit covering all 10 edge cases and architectural friction points across Reminders and Alarms (`REMINDERS_AUDIT_REPORT.md`).
+- **Snooze Pinning & Switch Guard:** Snoozed reminders pinned to the top of all filter tabs (`ALL`, `ACTIVE`, `TIME`, `LOCATION`, `WIFI`), and toggle switches hidden while snoozing to prevent unintended cancellation loops.
+- **Immediate Checklist DB Persistence:** Ringing checklist completions saved immediately to Room DB to guarantee full preservation across multi-snooze cycles.
+- **Permission Warning Banners:** Proactive UI warning banners when critical background/geofence or notification permissions are missing or revoked, preventing silent scheduling failures.
+- **Empirical Test Suites:** Added comprehensive unit test suites (`ReminderR1R2EmpiricalChallengerTest`, `ReminderPermissionAndChecklistChallengerTest`) verifying edge cases and sync invariants.
+
+### Changed
+- **Synchronization Integrity:** Enforced universal `ReminderSyncManager.sync()` invocations across all single and batch delete/restore operations.
+- **Audio Scoping:** Scoped audio playback coroutines in `ReminderEditViewModel` to eliminate coroutine leaks during rapid sound preview changes and screen teardown.
+- **Trigger Switching:** Explicit cancellation of previous geofence and Wi-Fi monitoring jobs when switching trigger types in `ReminderEditViewModel`.
 - **Shared Audio & Snooze Components:** Extracted `RingtoneSelectionScreen` and `SnoozeSettingsScreen` into `:core:designsystem` for shared usage across Alarms and Reminders.
 - **Wi-Fi Picker:** Added automatic detection and selection of currently connected Wi-Fi networks in Reminder Edit.
 - **Ringing Navigation Priority:** Priority routing in `MainActivity` ensuring active Alarms take precedence over Reminders.
-
-### Changed
-- **Reminder Edit UI:** Visually unified trigger sections, linked Date with Repeat rules, replaced checklist checkboxes with drag handles in edit mode, and integrated `ReMindBottomBar` for the Save button.
-- **Reminder Alert Behavior:** Refined Standard Notification (single sound/vibrate via Notification Channel) and Full-Screen Alarm (persistent audio loop with auto-silence countdown).
 
 ## [1.1.7] - 2026-07-15
 

@@ -198,6 +198,11 @@ class ReminderNotificationManager @Inject constructor(
             builder.addAction(0, snoozeLabel, snoozePendingIntent)
         }
 
+        // Action: Dismiss
+        val dismissPendingIntent = createDismissPendingIntent(reminder.id)
+        val dismissLabel = context.getString(R.string.reminder_action_dismiss)
+        builder.addAction(0, dismissLabel, dismissPendingIntent)
+
         val notification = builder.build()
         if (isFullScreenStyle || reminder.isPersistentAlert) {
             notification.flags = notification.flags or Notification.FLAG_NO_CLEAR or Notification.FLAG_ONGOING_EVENT

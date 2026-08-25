@@ -110,69 +110,50 @@ class ReminderAlertManagerImpl @Inject constructor(
     }
 
     override fun startAlert(reminder: Reminder) {
-        scope.launch {
-            stateMutex.withLock {
-                val currentList = _activeAlertQueue.value
-                val existingIndex = currentList.indexOfFirst { it.id == reminder.id }
-                val updatedList = if (existingIndex >= 0) {
-                    currentList.toMutableList().apply { set(existingIndex, reminder) }
-                } else {
-                    currentList + reminder
-                }
-                _activeAlertQueue.value = updatedList
-                evaluateAlertQueue()
-            }
+        val currentList = _activeAlertQueue.value
+        val existingIndex = currentList.indexOfFirst { it.id == reminder.id }
+        val updatedList = if (existingIndex >= 0) {
+            currentList.toMutableList().apply { set(existingIndex, reminder) }
+        } else {
+            currentList + reminder
         }
+        _activeAlertQueue.value = updatedList
+        evaluateAlertQueue()
     }
 
     override fun stopAlert(reminderId: Long) {
-        scope.launch {
-            stateMutex.withLock {
-                _activeAlertQueue.update { list -> list.filterNot { it.id == reminderId } }
-                _mutedAlertIds.update { set -> set - reminderId }
-                evaluateAlertQueue()
-            }
-        }
+        _activeAlertQueue.update { list -> list.filterNot { it.id == reminderId } }
+        _mutedAlertIds.update { set -> set - reminderId }
+        evaluateAlertQueue()
     }
 
     override fun stopAllAlerts() {
-        scope.launch {
-            stateMutex.withLock {
-                _activeAlertQueue.value = emptyList()
-                _mutedAlertIds.value = emptySet()
-                stopAudiblePlayback()
-                stopAutoSilenceTimer()
-                _playbackState.value = AlertPlaybackState.Idle
-            }
-        }
+        _activeAlertQueue.value = emptyList()
+        _mutedAlertIds.value = emptySet()
+        stopAudiblePlayback()
+        stopAutoSilenceTimer()
+        _playbackState.value = AlertPlaybackState.Idle
     }
 
     override fun mute(reminderId: Long) {
-        scope.launch {
-            stateMutex.withLock {
-                _mutedAlertIds.update { it + reminderId }
-                val currentPlaying = _playbackState.value
-                if (currentPlaying is AlertPlaybackState.Playing && currentPlaying.reminderId == reminderId) {
-                    stopAudiblePlayback()
-                }
-            }
+        _mutedAlertIds.update { it + reminderId }
+        val currentPlaying = _playbackState.value
+        if (currentPlaying is AlertPlaybackState.Playing && currentPlaying.reminderId == reminderId) {
+            stopAudiblePlayback()
+            evaluateAlertQueue()
         }
     }
 
     override fun unmute(reminderId: Long) {
-        scope.launch {
-            stateMutex.withLock {
-                _mutedAlertIds.update { it - reminderId }
-                evaluateAlertQueue()
-            }
-        }
+        _mutedAlertIds.update { it - reminderId }
+        evaluateAlertQueue()
     }
 
     override fun isAlerting(reminderId: Long): Boolean {
         return _activeAlertQueue.value.any { it.id == reminderId }
     }
 
-    private suspend fun evaluateAlertQueue() {
+    private fun evaluateAlertQueue() {
         val queue = _activeAlertQueue.value
         val mutedIds = _mutedAlertIds.value
         val nextAudible = queue.firstOrNull { it.id !in mutedIds }

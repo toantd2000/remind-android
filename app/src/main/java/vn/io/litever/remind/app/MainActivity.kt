@@ -301,14 +301,16 @@ class MainActivity : ComponentActivity() {
                             ) {
                                 if (!isNavReady) return@LaunchedEffect
 
-                                val idAlarmToRing = ringingAlarmId ?: activeSnoozingalarmId
-                                val idReminderToRing = ringingReminderId ?: foregroundReminderAlertId
-                                val idMessage = acknowledgingAlarmId
-
                                 val currentEntry = navController.currentBackStackEntry
                                 val currentDest = currentEntry?.destination?.route
                                 val currentAlarmId = currentEntry?.arguments?.getLong("alarmId")
                                 val currentReminderId = currentEntry?.arguments?.getLong("reminderId")
+
+                                val idMessage = acknowledgingAlarmId
+                                val idRingingAlarm = ringingAlarmId
+                                val idRingingReminder = ringingReminderId ?: foregroundReminderAlertId
+                                val idSnoozingAlarm = activeSnoozingalarmId
+                                val idSnoozingReminder = activeSnoozingReminderId
 
                                 if (idMessage != null) {
                                     val isAlreadyMessageId =
@@ -322,16 +324,16 @@ class MainActivity : ComponentActivity() {
                                             launchSingleTop = true
                                         }
                                     }
-                                } else if (idAlarmToRing != null) {
-                                    // PRIORITY 1: Alarm evaluated FIRST
+                                } else if (idRingingAlarm != null) {
+                                    // PRIORITY 1: Actively ringing alarm
                                     val isUserInMission =
                                         currentDest?.startsWith("mission_ringing_route") == true
 
                                     if (!isUserInMission) {
                                         val isAlreadyRingingId =
-                                            currentDest == "alarm_ringing_route/{alarmId}" && currentAlarmId == idAlarmToRing
+                                            currentDest == "alarm_ringing_route/{alarmId}" && currentAlarmId == idRingingAlarm
                                         if (!isAlreadyRingingId) {
-                                            navController.navigate("alarm_ringing_route/$idAlarmToRing") {
+                                            navController.navigate("alarm_ringing_route/$idRingingAlarm") {
                                                 popUpTo(navController.graph.startDestinationId) {
                                                     inclusive = false
                                                 }
@@ -339,13 +341,42 @@ class MainActivity : ComponentActivity() {
                                             }
                                         }
                                     }
-                                } else if (idReminderToRing != null) {
-                                    // PRIORITY 2: Reminder evaluated when no alarm is active
+                                } else if (idRingingReminder != null) {
+                                    // PRIORITY 2: Actively ringing reminder
                                     val isAlreadyRingingId =
-                                        currentDest == "reminder_ringing_route/{reminderId}" && currentReminderId == idReminderToRing
+                                        currentDest == "reminder_ringing_route/{reminderId}" && currentReminderId == idRingingReminder
                                     if (!isAlreadyRingingId) {
-                                        navController.navigate("reminder_ringing_route/$idReminderToRing") {
-                                            popUpTo(AlarmListRoute) {
+                                        navController.navigate("reminder_ringing_route/$idRingingReminder") {
+                                            popUpTo(navController.graph.startDestinationId) {
+                                                inclusive = false
+                                            }
+                                            launchSingleTop = true
+                                        }
+                                    }
+                                } else if (idSnoozingAlarm != null) {
+                                    // PRIORITY 3: Snoozing alarm countdown
+                                    val isUserInMission =
+                                        currentDest?.startsWith("mission_ringing_route") == true
+
+                                    if (!isUserInMission) {
+                                        val isAlreadyRingingId =
+                                            currentDest == "alarm_ringing_route/{alarmId}" && currentAlarmId == idSnoozingAlarm
+                                        if (!isAlreadyRingingId) {
+                                            navController.navigate("alarm_ringing_route/$idSnoozingAlarm") {
+                                                popUpTo(navController.graph.startDestinationId) {
+                                                    inclusive = false
+                                                }
+                                                launchSingleTop = true
+                                            }
+                                        }
+                                    }
+                                } else if (idSnoozingReminder != null) {
+                                    // PRIORITY 4: Snoozing reminder countdown
+                                    val isAlreadyRingingId =
+                                        currentDest == "reminder_ringing_route/{reminderId}" && currentReminderId == idSnoozingReminder
+                                    if (!isAlreadyRingingId) {
+                                        navController.navigate("reminder_ringing_route/$idSnoozingReminder") {
+                                            popUpTo(navController.graph.startDestinationId) {
                                                 inclusive = false
                                             }
                                             launchSingleTop = true

@@ -7,8 +7,11 @@ import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -75,7 +78,8 @@ class ReminderListViewModelTest {
     }
 
     @Test
-    fun initialLoad_emptyReminders_stateReflectsEmpty() = runTest {
+    fun initialLoad_emptyReminders_stateReflectsEmpty() = runTest(testDispatcher) {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
         testDispatcher.scheduler.advanceUntilIdle()
 
         val state = viewModel.uiState.value
@@ -86,7 +90,8 @@ class ReminderListViewModelTest {
     }
 
     @Test
-    fun filterSwitching_filtersCorrectly() = runTest {
+    fun filterSwitching_filtersCorrectly() = runTest(testDispatcher) {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
         val rTime = Reminder(id = 1, title = "Time", triggerType = ReminderTriggerType.TIME, isEnabled = true, isCompleted = false)
         val rLoc = Reminder(id = 2, title = "Loc", triggerType = ReminderTriggerType.LOCATION, isEnabled = true, isCompleted = false)
         val rWifi = Reminder(id = 3, title = "Wifi", triggerType = ReminderTriggerType.WIFI, isEnabled = false, isCompleted = false)
@@ -136,7 +141,8 @@ class ReminderListViewModelTest {
     }
 
     @Test
-    fun toggleReminder_whenPermissionsGranted_updatesAndSchedules() = runTest {
+    fun toggleReminder_whenPermissionsGranted_updatesAndSchedules() = runTest(testDispatcher) {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
         val reminder = Reminder(id = 1, title = "Test", triggerType = ReminderTriggerType.TIME, isEnabled = false)
         every { permissionChecker.getMissingPermissions(any()) } returns emptyList()
 
@@ -148,7 +154,8 @@ class ReminderListViewModelTest {
     }
 
     @Test
-    fun toggleReminder_whenPermissionsMissing_blocksAndWarns() = runTest {
+    fun toggleReminder_whenPermissionsMissing_blocksAndWarns() = runTest(testDispatcher) {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
         val reminder = Reminder(id = 1, title = "Test", triggerType = ReminderTriggerType.LOCATION, isEnabled = false)
         every { permissionChecker.getMissingPermissions(any()) } returns listOf(ReminderPermissionType.LOCATION)
 
@@ -161,7 +168,8 @@ class ReminderListViewModelTest {
     }
 
     @Test
-    fun deleteReminder_andUndo_cancelsAndRestores() = runTest {
+    fun deleteReminder_andUndo_cancelsAndRestores() = runTest(testDispatcher) {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
         val reminder = Reminder(id = 5, title = "To Delete", triggerType = ReminderTriggerType.TIME, isEnabled = true)
         coEvery { repository.insertReminder(any()) } returns 55L
 
@@ -180,7 +188,8 @@ class ReminderListViewModelTest {
     }
 
     @Test
-    fun deleteCompletedReminders_deletesOnlyCompleted() = runTest {
+    fun deleteCompletedReminders_deletesOnlyCompleted() = runTest(testDispatcher) {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
         val active = Reminder(id = 1, title = "Active", triggerType = ReminderTriggerType.TIME, isCompleted = false)
         val done1 = Reminder(id = 2, title = "Done 1", triggerType = ReminderTriggerType.TIME, isCompleted = true)
         val done2 = Reminder(id = 3, title = "Done 2", triggerType = ReminderTriggerType.TIME, isCompleted = true)
@@ -197,7 +206,8 @@ class ReminderListViewModelTest {
     }
 
     @Test
-    fun duplicateReminder_createsDeepCopy() = runTest {
+    fun duplicateReminder_createsDeepCopy() = runTest(testDispatcher) {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
         val original = Reminder(
             id = 10,
             title = "Original",
@@ -220,7 +230,8 @@ class ReminderListViewModelTest {
     }
 
     @Test
-    fun toggleCompleted_marksCompletedAndCancelsSchedule() = runTest {
+    fun toggleCompleted_marksCompletedAndCancelsSchedule() = runTest(testDispatcher) {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
         val active = Reminder(id = 1, title = "Active", triggerType = ReminderTriggerType.TIME, isEnabled = true, isCompleted = false)
 
         viewModel.toggleCompleted(active)
@@ -231,7 +242,8 @@ class ReminderListViewModelTest {
     }
 
     @Test
-    fun snoozedReminders_pinnedToTopOfFilteredList() = runTest {
+    fun snoozedReminders_pinnedToTopOfFilteredList() = runTest(testDispatcher) {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
         val normalOld = Reminder(id = 1, title = "Normal Old", triggerType = ReminderTriggerType.TIME, createdAt = 1000L)
         val snoozedOld = Reminder(id = 2, title = "Snoozed Old", triggerType = ReminderTriggerType.TIME, snoozeNextTriggerTime = 50000L, createdAt = 2000L)
         val normalNew = Reminder(id = 3, title = "Normal New", triggerType = ReminderTriggerType.TIME, createdAt = 3000L)
@@ -251,12 +263,13 @@ class ReminderListViewModelTest {
     }
 
     @Test
-    fun toggleReminder_callsSync() = runTest {
+    fun toggleReminder_callsSync() = runTest(testDispatcher) {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
         val reminder = Reminder(id = 1, title = "Active", triggerType = ReminderTriggerType.TIME, isEnabled = true, isCompleted = false)
 
         viewModel.toggleReminder(reminder)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        io.mockk.verify(atLeast = 1) { reminderSyncManager.sync() }
+        io.mockk.coVerify(atLeast = 1) { reminderSyncManager.sync() }
     }
 }

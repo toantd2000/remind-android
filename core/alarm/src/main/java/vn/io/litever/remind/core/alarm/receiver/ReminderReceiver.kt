@@ -43,7 +43,7 @@ class ReminderReceiver : BroadcastReceiver() {
         scope.launch {
             try {
                 val reminder = reminderRepository.getReminderById(reminderId)
-                if (reminder == null || (!reminder.isEnabled && action != ACTION_REMINDER_DISMISS)) {
+                if (reminder == null || (!reminder.isEnabled && action != ACTION_REMINDER_DISMISS && action != ACTION_REMINDER_SNOOZE && action != ACTION_REMINDER_CHECKLIST_TOGGLE)) {
                     return@launch
                 }
 
@@ -82,13 +82,9 @@ class ReminderReceiver : BroadcastReceiver() {
 
         if (updatedReminder.triggerType == ReminderTriggerType.TIME) {
             val timeTrigger = updatedReminder.timeTrigger
-            if (timeTrigger != null && timeTrigger.repeatDays.isEmpty() && !isSnooze) {
-                reminderRepository.updateReminder(updatedReminder.copy(isCompleted = true, isEnabled = false))
-            } else {
-                reminderRepository.updateReminder(updatedReminder)
-                if (!isSnooze && timeTrigger != null && timeTrigger.repeatDays.isNotEmpty()) {
-                    reminderScheduler.schedule(updatedReminder)
-                }
+            reminderRepository.updateReminder(updatedReminder)
+            if (!isSnooze && timeTrigger != null && timeTrigger.repeatDays.isNotEmpty()) {
+                reminderScheduler.schedule(updatedReminder)
             }
         } else {
             reminderRepository.updateReminder(updatedReminder)

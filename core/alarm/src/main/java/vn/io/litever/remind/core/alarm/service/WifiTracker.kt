@@ -57,14 +57,14 @@ class WifiTracker @Inject constructor(
                 val ssid = ReminderTriggerEvaluator.sanitizeSsid(rawSsid)
 
                 if (ssid.isNotBlank() && ssid != "<unknown ssid>") {
-                    val isNewConnection = lastConnectedSsid != ssid
-                    lastConnectedSsid = ssid
-                    lastConnectedBssid = bssid
-
+                    val isNewConnection = lastConnectedSsid != ssid || lastConnectedBssid != bssid
                     if (isNewConnection) {
+                        lastConnectedSsid = ssid
+                        lastConnectedBssid = bssid
+
                         evaluateWifiEvent(ssid, bssid, isConnected = true, event = WifiTriggerType.ON_CONNECT)
+                        evaluateWifiEvent(ssid, bssid, isConnected = true, event = WifiTriggerType.WHILE_CONNECTED)
                     }
-                    evaluateWifiEvent(ssid, bssid, isConnected = true, event = WifiTriggerType.WHILE_CONNECTED)
                 }
             }
         }
@@ -119,7 +119,29 @@ class WifiTracker @Inject constructor(
             if (ssid.isNotBlank() && ssid != "<unknown ssid>") {
                 lastConnectedSsid = ssid
                 lastConnectedBssid = info?.bssid
-                evaluateWifiEvent(ssid, info?.bssid, isConnected = true, event = WifiTriggerType.WHILE_CONNECTED)
+                activeReminders.forEach { reminder ->
+                    val wifiTrigger = reminder.wifiTrigger
+                    if (wifiTrigger != null) {
+                        val targetSsid = ReminderTriggerEvaluator.sanitizeSsid(wifiTrigger.ssid)
+                        val isSsidMatch = targetSsid.isNotEmpty() && targetSsid.equals(ssid, ignoreCase = true)
+                        val isBssidMatch = wifiTrigger.bssid.isNullOrBlank() || wifiTrigger.bssid.equals(info?.bssid, ignoreCase = true)
+                        val isTargetNetwork = isSsidMatch && isBssidMatch
+                        wifiConnectedStateMap[reminder.id] = isTargetNetwork
+
+                        if (wifiTrigger.triggerType == WifiTriggerType.WHILE_CONNECTED && isTargetNetwork) {
+                            val result = ReminderTriggerEvaluator.evaluateWifiReminder(
+                                reminder = reminder,
+                                currentSsid = ssid,
+                                currentBssid = info?.bssid,
+                                isConnected = true,
+                                wasConnected = false
+                            )
+                            if (result.isTriggered) {
+                                dispatchTrigger(reminder)
+                            }
+                        }
+                    }
+                }
             }
         } catch (e: Exception) {
             e.printStackTrace()

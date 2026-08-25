@@ -46,15 +46,13 @@ class LocationTracker @Inject constructor(
     }
 
     fun stopTracking() {
-        if (isTracking) {
-            try {
-                locationManager.removeUpdates(this)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-            isTracking = false
-            geofenceStateMap.clear()
+        try {
+            locationManager.removeUpdates(this)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
+        isTracking = false
+        geofenceStateMap.clear()
     }
 
     private fun registerLocationUpdates() {
@@ -122,7 +120,19 @@ class LocationTracker @Inject constructor(
                 gpsLoc != null -> gpsLoc
                 else -> netLoc
             }
-            bestLoc?.let { evaluateLocation(it.latitude, it.longitude) }
+            bestLoc?.let { loc ->
+                // Pre-populate initial geofence state without firing premature triggers on startup
+                activeReminders.forEach { reminder ->
+                    val locTrigger = reminder.locationTrigger
+                    if (locTrigger != null) {
+                        val distance = ReminderTriggerEvaluator.calculateHaversineDistanceMeters(
+                            locTrigger.latitude, locTrigger.longitude,
+                            loc.latitude, loc.longitude
+                        )
+                        geofenceStateMap[reminder.id] = distance <= locTrigger.radiusMeters
+                    }
+                }
+            }
         } catch (e: SecurityException) {
             e.printStackTrace()
         } catch (e: Exception) {

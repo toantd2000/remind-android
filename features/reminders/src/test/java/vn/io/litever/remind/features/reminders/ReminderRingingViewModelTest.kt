@@ -8,8 +8,11 @@ import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -57,7 +60,7 @@ class ReminderRingingViewModelTest {
     }
 
     @Test
-    fun initialLoad_observesReminderAndCountdown() = runTest {
+    fun initialLoad_observesReminderAndCountdown() = runTest(testDispatcher) {
         val reminder = Reminder(
             id = 1L,
             title = "Morning Medicine",
@@ -76,6 +79,7 @@ class ReminderRingingViewModelTest {
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
         )
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
         testDispatcher.scheduler.advanceUntilIdle()
 
         val state = viewModel.uiState.value
@@ -85,7 +89,7 @@ class ReminderRingingViewModelTest {
     }
 
     @Test
-    fun toggleChecklistItem_persistsToRepositoryAndUpdatesNotification() = runTest {
+    fun toggleChecklistItem_persistsToRepositoryAndUpdatesNotification() = runTest(testDispatcher) {
         val reminder = Reminder(
             id = 1L,
             title = "Morning Medicine",
@@ -107,6 +111,7 @@ class ReminderRingingViewModelTest {
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
         )
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
         testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.toggleChecklistItem(10L, true)
@@ -117,7 +122,7 @@ class ReminderRingingViewModelTest {
     }
 
     @Test
-    fun snoozeAction_stopsAlert_schedulesSnooze_andFinishes() = runTest {
+    fun snoozeAction_stopsAlert_schedulesSnooze_andFinishes() = runTest(testDispatcher) {
         val reminder = Reminder(
             id = 1L,
             title = "Morning Medicine",
@@ -139,6 +144,7 @@ class ReminderRingingViewModelTest {
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
         )
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
         testDispatcher.scheduler.advanceUntilIdle()
 
         var finishCalled = false
@@ -158,7 +164,7 @@ class ReminderRingingViewModelTest {
     }
 
     @Test
-    fun dismissAction_stopsAlert_marksCompleted_cancelsScheduler_andFinishes() = runTest {
+    fun dismissAction_stopsAlert_marksCompleted_cancelsScheduler_andFinishes() = runTest(testDispatcher) {
         val reminder = Reminder(
             id = 1L,
             title = "Morning Medicine",
@@ -177,6 +183,7 @@ class ReminderRingingViewModelTest {
             preferencesDataSource = preferencesDataSource,
             savedStateHandle = savedStateHandle
         )
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
         testDispatcher.scheduler.advanceUntilIdle()
 
         var finishCalled = false

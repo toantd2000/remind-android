@@ -232,6 +232,8 @@ class ReminderEditViewModelTest {
 
         viewModel.setTitle("Office Arrival")
         viewModel.setTriggerType(ReminderTriggerType.LOCATION)
+        viewModel.setLocationCoordinates(37.7749, -122.4194)
+        viewModel.setLocationName("Office")
 
         var saved = false
         viewModel.saveReminder(onSuccess = { saved = true })
@@ -832,7 +834,7 @@ class ReminderEditViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertTrue(saved)
-        io.mockk.verify(exactly = 1) { reminderSyncManager.sync() }
+        io.mockk.coVerify(exactly = 1) { reminderSyncManager.sync() }
     }
 
     @Test

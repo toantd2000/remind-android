@@ -59,6 +59,19 @@ interface ReminderDao {
     @Query("UPDATE reminders SET isEnabled = :isEnabled WHERE id = :id")
     suspend fun updateReminderEnabled(id: Long, isEnabled: Boolean)
 
+    @Transaction
+    suspend fun updateReminderWithChecklist(
+        reminder: ReminderEntity,
+        checklist: List<vn.io.litever.remind.core.database.entity.ChecklistItemEntity>,
+        checklistItemDao: ChecklistItemDao
+    ) {
+        updateReminder(reminder)
+        checklistItemDao.deleteChecklistItemsForReminder(reminder.id)
+        if (checklist.isNotEmpty()) {
+            checklistItemDao.insertChecklistItems(checklist)
+        }
+    }
+
     @Query("UPDATE reminders SET isCompleted = :isCompleted WHERE id = :id")
     suspend fun updateReminderCompleted(id: Long, isCompleted: Boolean)
 

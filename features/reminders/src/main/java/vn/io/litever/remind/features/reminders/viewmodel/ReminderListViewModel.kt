@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import vn.io.litever.remind.core.alarm.ReminderSyncManager
@@ -115,6 +116,7 @@ class ReminderListViewModel @Inject constructor(
             }
 
             val updated = reminder.copy(isEnabled = isEnabling)
+            reminderScheduler.cancelSnooze(reminder)
             reminderRepository.updateReminder(updated)
 
             if (updated.isEnabled && !updated.isCompleted) {
@@ -130,6 +132,7 @@ class ReminderListViewModel @Inject constructor(
         viewModelScope.launch {
             recentlyDeletedReminder = reminder
             reminderScheduler.cancel(reminder)
+            reminderScheduler.cancelSnooze(reminder)
             reminderRepository.deleteReminder(reminder)
             reminderSyncManager?.sync()
             _uiMessage.emit(R.string.reminder_deleted)
@@ -152,9 +155,11 @@ class ReminderListViewModel @Inject constructor(
 
     fun deleteCompletedReminders() {
         viewModelScope.launch {
-            val completed = uiState.value.reminders?.filter { it.isCompleted } ?: emptyList()
+            val allReminders = reminderRepository.getAllReminders().first()
+            val completed = allReminders.filter { it.isCompleted }
             completed.forEach { reminder ->
                 reminderScheduler.cancel(reminder)
+                reminderScheduler.cancelSnooze(reminder)
                 reminderRepository.deleteReminder(reminder)
             }
             reminderSyncManager?.sync()
@@ -163,9 +168,11 @@ class ReminderListViewModel @Inject constructor(
 
     fun deleteDisabledReminders() {
         viewModelScope.launch {
-            val disabled = uiState.value.reminders?.filter { !it.isEnabled && !it.isCompleted } ?: emptyList()
+            val allReminders = reminderRepository.getAllReminders().first()
+            val disabled = allReminders.filter { !it.isEnabled && !it.isCompleted }
             disabled.forEach { reminder ->
                 reminderScheduler.cancel(reminder)
+                reminderScheduler.cancelSnooze(reminder)
                 reminderRepository.deleteReminder(reminder)
             }
             reminderSyncManager?.sync()
@@ -213,6 +220,7 @@ class ReminderListViewModel @Inject constructor(
                 )
             }
 
+            reminderScheduler.cancelSnooze(reminder)
             reminderRepository.updateReminder(updated)
 
             if (updated.isEnabled && !updated.isCompleted) {

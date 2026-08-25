@@ -1,6 +1,7 @@
 package vn.io.litever.remind.core.alarm
 
 import android.content.Context
+import android.content.Intent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
 import vn.io.litever.remind.core.alarm.service.ReminderMonitorService
@@ -31,8 +32,18 @@ class ReminderSyncManager @Inject constructor(
             when (reminder.triggerType) {
                 ReminderTriggerType.TIME -> {
                     val snoozeTime = reminder.snoozeNextTriggerTime
-                    if (snoozeTime != null && snoozeTime > nowMillis) {
-                        reminderScheduler.scheduleSnooze(reminder, snoozeTime)
+                    if (snoozeTime != null) {
+                        if (snoozeTime > nowMillis) {
+                            reminderScheduler.scheduleSnooze(reminder, snoozeTime)
+                        } else {
+                            // Snooze expired while device was off/rebooting: trigger immediately
+                            val intent = Intent(context, vn.io.litever.remind.core.alarm.receiver.ReminderReceiver::class.java).apply {
+                                action = ReminderScheduler.ACTION_TRIGGER_REMINDER_SNOOZE
+                                putExtra(ReminderScheduler.EXTRA_REMINDER_ID, reminder.id)
+                                putExtra(ReminderScheduler.EXTRA_IS_SNOOZE, true)
+                            }
+                            context.sendBroadcast(intent)
+                        }
                     } else {
                         val timeTrigger = reminder.timeTrigger
                         if (timeTrigger != null) {

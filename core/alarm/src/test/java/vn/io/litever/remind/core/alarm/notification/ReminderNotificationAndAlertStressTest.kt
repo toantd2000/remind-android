@@ -47,11 +47,20 @@ import vn.io.litever.remind.core.model.ReminderTriggerType
  * 5. Sound URI fallback hierarchy and audio exception resilience.
  * 6. Notification ID isolation and PendingIntent request code determinism.
  */
+import androidx.test.core.app.ApplicationProvider
+import io.mockk.spyk
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class ReminderNotificationAndAlertStressTest {
 
-    private val context = mockk<Context>(relaxed = true)
+    private val testDispatcher = UnconfinedTestDispatcher()
+    private val appContext: Context = ApplicationProvider.getApplicationContext()
+    private val context = spyk(appContext)
     private val notificationManager = mockk<NotificationManager>(relaxed = true)
     private val audioManager = mockk<AudioManager>(relaxed = true)
     private val permissionChecker = mockk<PermissionChecker>(relaxed = true)
@@ -61,23 +70,10 @@ class ReminderNotificationAndAlertStressTest {
 
     @Before
     fun setup() {
-        every { context.packageName } returns "vn.io.litever.remind"
+        Dispatchers.setMain(testDispatcher)
         every { context.getSystemService(Context.NOTIFICATION_SERVICE) } returns notificationManager
         every { context.getSystemService(Context.AUDIO_SERVICE) } returns audioManager
         every { audioManager.mode } returns AudioManager.MODE_NORMAL
-
-        every { context.getString(R.string.reminder_channel_name_standard) } returns "Reminders"
-        every { context.getString(R.string.reminder_channel_desc_standard) } returns "Notifications for scheduled reminders"
-        every { context.getString(R.string.reminder_channel_name_urgent) } returns "Urgent Reminders & Alarms"
-        every { context.getString(R.string.reminder_channel_desc_urgent) } returns "Urgent notifications"
-        every { context.getString(R.string.reminder_default_title) } returns "Reminder"
-        every { context.getString(R.string.reminder_default_triggered) } returns "Reminder triggered"
-        every { context.getString(R.string.reminder_action_snooze) } returns "Snooze"
-        every { context.getString(R.string.reminder_action_snooze_interval, any()) } answers { "Snooze (${args[1]}m)" }
-        every { context.getString(R.string.reminder_action_dismiss) } returns "Dismiss"
-        every { context.getString(R.string.reminder_checklist_summary_header, any(), any()) } answers {
-            "Checklist (${args[1]}/${args[2]} completed):"
-        }
 
         every { permissionChecker.hasNotificationPermission() } returns true
         every { permissionChecker.hasFullScreenIntentPermission() } returns true
@@ -89,6 +85,7 @@ class ReminderNotificationAndAlertStressTest {
     @After
     fun tearDown() {
         reminderAlertManager.stopAllAlerts()
+        Dispatchers.resetMain()
         unmockkAll()
     }
 
@@ -252,8 +249,9 @@ class ReminderNotificationAndAlertStressTest {
 
         val notification = reminderNotificationManager.buildNotification(reminder)
         assertNotNull(notification)
-        // With snoozeEnabled = false, no actions should be present
-        assertEquals(0, notification.actions?.size ?: 0)
+        // With snoozeEnabled = false, only Dismiss action should be present
+        assertEquals(1, notification.actions?.size ?: 0)
+        assertEquals("Dismiss", notification.actions?.firstOrNull()?.title?.toString())
     }
 
     @Test
@@ -271,8 +269,8 @@ class ReminderNotificationAndAlertStressTest {
 
         val notification = reminderNotificationManager.buildNotification(reminder)
         assertNotNull(notification)
-        // Only Snooze action should be present
-        assertEquals(1, notification.actions?.size ?: 0)
+        // Snooze and Dismiss actions should be present
+        assertEquals(2, notification.actions?.size ?: 0)
         assertTrue(notification.actions?.firstOrNull()?.title?.startsWith("Snooze") == true)
     }
 
@@ -293,7 +291,7 @@ class ReminderNotificationAndAlertStressTest {
 
         // Rapid concurrent start calls
         reminders.forEach { reminderAlertManager.startAlert(it) }
-        testScheduler.advanceUntilIdle()
+        testScheduler.runCurrent()
 
         assertEquals(20, reminderAlertManager.activeAlertReminderIds.value.size)
         val state = reminderAlertManager.playbackState.value
@@ -304,7 +302,7 @@ class ReminderNotificationAndAlertStressTest {
         for (i in 1..10) {
             reminderAlertManager.stopAlert(3000L + i)
         }
-        testScheduler.advanceUntilIdle()
+        testScheduler.runCurrent()
 
         assertEquals(10, reminderAlertManager.activeAlertReminderIds.value.size)
         val nextState = reminderAlertManager.playbackState.value
@@ -313,7 +311,7 @@ class ReminderNotificationAndAlertStressTest {
 
         // Stop all
         reminderAlertManager.stopAllAlerts()
-        testScheduler.advanceUntilIdle()
+        testScheduler.runCurrent()
 
         assertTrue(reminderAlertManager.activeAlertReminderIds.value.isEmpty())
         assertEquals(AlertPlaybackState.Idle, reminderAlertManager.playbackState.value)
@@ -328,26 +326,26 @@ class ReminderNotificationAndAlertStressTest {
         reminderAlertManager.startAlert(reminder1)
         reminderAlertManager.startAlert(reminder2)
         reminderAlertManager.startAlert(reminder3)
-        testScheduler.advanceUntilIdle()
+        testScheduler.runCurrent()
 
         // 1 is currently playing
         assertEquals(3101L, (reminderAlertManager.playbackState.value as AlertPlaybackState.Playing).reminderId)
 
         // Dismiss 1 -> Should immediately switch to 2
         reminderAlertManager.stopAlert(3101L)
-        testScheduler.advanceUntilIdle()
+        testScheduler.runCurrent()
 
         assertEquals(3102L, (reminderAlertManager.playbackState.value as AlertPlaybackState.Playing).reminderId)
 
         // Dismiss 2 -> Should immediately switch to 3
         reminderAlertManager.stopAlert(3102L)
-        testScheduler.advanceUntilIdle()
+        testScheduler.runCurrent()
 
         assertEquals(3103L, (reminderAlertManager.playbackState.value as AlertPlaybackState.Playing).reminderId)
 
         // Dismiss 3 -> Queue is empty, Idle
         reminderAlertManager.stopAlert(3103L)
-        testScheduler.advanceUntilIdle()
+        testScheduler.runCurrent()
 
         assertEquals(AlertPlaybackState.Idle, reminderAlertManager.playbackState.value)
     }
@@ -359,13 +357,13 @@ class ReminderNotificationAndAlertStressTest {
 
         reminderAlertManager.startAlert(r1)
         reminderAlertManager.startAlert(r2)
-        testScheduler.advanceUntilIdle()
+        testScheduler.runCurrent()
 
         assertEquals(3201L, (reminderAlertManager.playbackState.value as AlertPlaybackState.Playing).reminderId)
 
         // Mute 1 -> Evaluation selects r2
         reminderAlertManager.mute(3201L)
-        testScheduler.advanceUntilIdle()
+        testScheduler.runCurrent()
 
         // Note: r1 is still in queue, but r2 becomes the active audible playback!
         assertTrue(reminderAlertManager.isAlerting(3201L))
@@ -374,7 +372,7 @@ class ReminderNotificationAndAlertStressTest {
 
         // Unmute 1 -> r1 is before r2 in queue, so r1 takes precedence again
         reminderAlertManager.unmute(3201L)
-        testScheduler.advanceUntilIdle()
+        testScheduler.runCurrent()
 
         assertEquals(3201L, (reminderAlertManager.playbackState.value as AlertPlaybackState.Playing).reminderId)
     }
@@ -392,7 +390,7 @@ class ReminderNotificationAndAlertStressTest {
         )
 
         reminderAlertManager.startAlert(reminder)
-        testScheduler.advanceUntilIdle()
+        testScheduler.runCurrent()
 
         assertTrue(reminderAlertManager.isAlerting(3301L))
         // Audio focus request should NOT be requested to avoid interrupting active call
@@ -407,19 +405,19 @@ class ReminderNotificationAndAlertStressTest {
     fun alertManager_autoSilenceCountdown_emitsAccurateSecondsAndStopsOnDismiss() = runTest {
         val reminder = Reminder(id = 4001L, title = "Timeout Test", triggerType = ReminderTriggerType.TIME, isPersistentAlert = true)
         reminderAlertManager.startAlert(reminder)
-        testScheduler.advanceUntilIdle()
+        testScheduler.runCurrent()
 
         // At T=0, countdown should be initialized to 300 seconds (5 min)
         assertEquals(300, reminderAlertManager.autoSilenceCountdown.value)
 
         // Advance 60 seconds -> countdown should be ~240
         testScheduler.advanceTimeBy(60_000L)
-        testScheduler.advanceUntilIdle()
+        testScheduler.runCurrent()
         assertEquals(240, reminderAlertManager.autoSilenceCountdown.value)
 
         // Dismiss before timeout -> timer cancels immediately and countdown resets to null
         reminderAlertManager.stopAlert(4001L)
-        testScheduler.advanceUntilIdle()
+        testScheduler.runCurrent()
 
         assertNull(reminderAlertManager.autoSilenceCountdown.value)
         assertEquals(AlertPlaybackState.Idle, reminderAlertManager.playbackState.value)

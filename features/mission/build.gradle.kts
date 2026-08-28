@@ -18,9 +18,6 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    testOptions {
-        unitTests.isIncludeAndroidResources = true
-    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -56,11 +53,4 @@ dependencies {
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
-
-    testImplementation(project(":core:testing"))
-    testImplementation(libs.junit)
-    testImplementation(libs.robolectric)
-    testImplementation(platform(libs.androidx.compose.bom))
-    testImplementation(libs.androidx.compose.ui.test.junit4)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }

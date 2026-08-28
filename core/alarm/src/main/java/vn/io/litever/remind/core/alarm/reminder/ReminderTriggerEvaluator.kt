@@ -1,10 +1,13 @@
 package vn.io.litever.remind.core.alarm.reminder
 
+import vn.io.litever.remind.core.model.DayOfWeek
 import vn.io.litever.remind.core.model.GeofenceTransitionType
 import vn.io.litever.remind.core.model.Reminder
+import vn.io.litever.remind.core.model.ReminderMonthDay
 import vn.io.litever.remind.core.model.ReminderTimeWindow
 import vn.io.litever.remind.core.model.ReminderTriggerType
 import vn.io.litever.remind.core.model.WifiTriggerType
+import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -63,11 +66,105 @@ object ReminderTriggerEvaluator {
     }
 
     /**
-     * Evaluates whether a given time is within a ReminderTimeWindow.
+     * Evaluates whether a target date matches the configured Date / Repeat schedule.
+     * Unified for all trigger types (Time, Location, Wi-Fi).
+     */
+    fun isDateScheduleActive(
+        date: LocalDate?,
+        repeatDays: List<DayOfWeek>,
+        monthlyDays: List<Int>,
+        yearlyDates: List<ReminderMonthDay>,
+        targetDate: LocalDate
+    ): Boolean {
+        if (yearlyDates.isNotEmpty()) {
+            val targetMonth = targetDate.monthValue
+            val maxDaysThisMonth = targetDate.lengthOfMonth()
+            return yearlyDates.any { ym ->
+                val m = ym.month.coerceIn(1, 12)
+                if (m != targetMonth) return@any false
+                val effectiveDay = ym.day.coerceIn(1, maxDaysThisMonth)
+                effectiveDay == targetDate.dayOfMonth
+            }
+        }
+        if (monthlyDays.isNotEmpty()) {
+            val maxDaysThisMonth = targetDate.lengthOfMonth()
+            return monthlyDays.any { mDay ->
+                val effectiveDay = mDay.coerceIn(1, maxDaysThisMonth)
+                effectiveDay == targetDate.dayOfMonth
+            }
+        }
+        if (date != null) {
+            return targetDate == date
+        }
+        if (repeatDays.isNotEmpty()) {
+            val currentDayOfWeek = runCatching { DayOfWeek.valueOf(targetDate.dayOfWeek.name) }.getOrNull()
+            return currentDayOfWeek != null && repeatDays.contains(currentDayOfWeek)
+        }
+        return true
+    }
+
+    /**
+     * Evaluates whether the given date/time is active based on BOTH the Date / Repeat schedule
+     * and the configured Time Windows (or All-Day).
+     */
+    fun isScheduleAndWindowActive(
+        date: LocalDate?,
+        repeatDays: List<DayOfWeek>,
+        monthlyDays: List<Int>,
+        yearlyDates: List<ReminderMonthDay>,
+        windows: List<ReminderTimeWindow>?,
+        now: LocalDateTime
+    ): Boolean {
+        val hasWindows = !windows.isNullOrEmpty()
+        if (!hasWindows) {
+            return isDateScheduleActive(date, repeatDays, monthlyDays, yearlyDates, now.toLocalDate())
+        }
+
+        val currentTime = now.toLocalTime()
+        val today = now.toLocalDate()
+        val yesterday = today.minusDays(1)
+
+        return windows.any { window ->
+            if (!window.startTime.isAfter(window.endTime)) {
+                // Same-day window (e.g. 09:00 -> 17:00, or 00:00 -> 23:59)
+                val inTimeRange = !currentTime.isBefore(window.startTime) && !currentTime.isAfter(window.endTime)
+                if (!inTimeRange) return@any false
+
+                val windowDayMatches = window.activeDays.isEmpty() ||
+                        window.activeDays.contains(runCatching { DayOfWeek.valueOf(today.dayOfWeek.name) }.getOrNull())
+                val dateMatches = isDateScheduleActive(date, repeatDays, monthlyDays, yearlyDates, today)
+                windowDayMatches && dateMatches
+            } else {
+                // Overnight window crossing midnight (e.g. 22:00 -> 04:00)
+                val isEveningPart = !currentTime.isBefore(window.startTime)
+                val isMorningPart = !currentTime.isAfter(window.endTime)
+
+                val eveningDayMatches = window.activeDays.isEmpty() ||
+                        window.activeDays.contains(runCatching { DayOfWeek.valueOf(today.dayOfWeek.name) }.getOrNull())
+                val eveningMatches = isEveningPart && eveningDayMatches &&
+                        isDateScheduleActive(date, repeatDays, monthlyDays, yearlyDates, today)
+
+                val morningDayMatches = window.activeDays.isEmpty() ||
+                        window.activeDays.contains(runCatching { DayOfWeek.valueOf(yesterday.dayOfWeek.name) }.getOrNull())
+                val morningMatches = isMorningPart && morningDayMatches &&
+                        isDateScheduleActive(date, repeatDays, monthlyDays, yearlyDates, yesterday)
+
+                eveningMatches || morningMatches
+            }
+        }
+    }
+
+    /**
+     * Evaluates whether a given time is within a list of ReminderTimeWindows (or single window).
      */
     fun isWithinTimeWindow(window: ReminderTimeWindow?, dateTime: LocalDateTime): Boolean {
         if (window == null) return true
         return window.isWithinWindow(dateTime)
+    }
+
+    fun isWithinTimeWindows(windows: List<ReminderTimeWindow>?, dateTime: LocalDateTime): Boolean {
+        if (windows.isNullOrEmpty()) return true
+        return windows.any { it.isWithinWindow(dateTime) }
     }
 
     /**
@@ -95,9 +192,17 @@ object ReminderTriggerEvaluator {
         )
         if (distance > locTrigger.radiusMeters) return false
 
-        // Check time window if present
-        val timeWindow = locTrigger.timeWindow
-        if (timeWindow != null && !timeWindow.isWithinWindow(now)) {
+        // Check date/repeat schedule and time windows
+        val windows = locTrigger.activeTimeWindows
+        if (!isScheduleAndWindowActive(
+                locTrigger.date,
+                locTrigger.repeatDays,
+                locTrigger.monthlyDays,
+                locTrigger.yearlyDates,
+                windows,
+                now
+            )
+        ) {
             return false
         }
 
@@ -132,8 +237,16 @@ object ReminderTriggerEvaluator {
             return false
         }
 
-        val timeWindow = wifiTrigger.timeWindow
-        if (timeWindow != null && !timeWindow.isWithinWindow(now)) {
+        val windows = wifiTrigger.activeTimeWindows
+        if (!isScheduleAndWindowActive(
+                wifiTrigger.date,
+                wifiTrigger.repeatDays,
+                wifiTrigger.monthlyDays,
+                wifiTrigger.yearlyDates,
+                windows,
+                now
+            )
+        ) {
             return false
         }
 
@@ -190,15 +303,23 @@ object ReminderTriggerEvaluator {
             )
         }
 
-        // Check time window
-        val isWithinWindow = isWithinTimeWindow(locationTrigger.timeWindow, currentDateTime)
+        // Check date/repeat schedule and time windows
+        val windows = locationTrigger.activeTimeWindows
+        val isWithinWindow = isScheduleAndWindowActive(
+            locationTrigger.date,
+            locationTrigger.repeatDays,
+            locationTrigger.monthlyDays,
+            locationTrigger.yearlyDates,
+            windows,
+            currentDateTime
+        )
         if (!isWithinWindow) {
             return ReminderEvaluationResult(
                 reminder = reminder,
                 isTriggered = false,
                 isInsideGeofence = isCurrentlyInside,
                 distanceMeters = distance,
-                reason = "Transition matched but outside active time window"
+                reason = "Transition matched but outside active schedule or time window"
             )
         }
 
@@ -258,14 +379,22 @@ object ReminderTriggerEvaluator {
             )
         }
 
-        // Check time window
-        val isWithinWindow = isWithinTimeWindow(wifiTrigger.timeWindow, currentDateTime)
+        // Check date/repeat schedule and time windows
+        val windows = wifiTrigger.activeTimeWindows
+        val isWithinWindow = isScheduleAndWindowActive(
+            wifiTrigger.date,
+            wifiTrigger.repeatDays,
+            wifiTrigger.monthlyDays,
+            wifiTrigger.yearlyDates,
+            windows,
+            currentDateTime
+        )
         if (!isWithinWindow) {
             return ReminderEvaluationResult(
                 reminder = reminder,
                 isTriggered = false,
                 isConnectedWifi = isTargetNetwork,
-                reason = "Wi-Fi matched but outside active time window"
+                reason = "Wi-Fi matched but outside active schedule or time window"
             )
         }
 

@@ -108,8 +108,9 @@
     <string name="wifi_while_connected">While connected (in window)</string>
 
     <!-- Defined Time Window -->
-    <string name="time_window_section_title">Defined Time Window</string>
-    <string name="time_window_desc">Only trigger this reminder within specific hours</string>
+    <string name="time_window_section_title">Time Window</string>
+    <string name="time_window_desc">Only trigger within specific hours</string>
+    <string name="time_window_24_7_desc">Active 24/7 (All day)</string>
     <string name="time_window_enabled">Enabled</string>
     <string name="time_window_start_time">Start Time</string>
     <string name="time_window_end_time">End Time</string>
@@ -125,9 +126,9 @@
 
     <!-- Alert & Notification Settings Section -->
     <string name="section_alert_settings">Alert &amp; Notification</string>
-    <string name="notification_style_label">Notification Style</string>
-    <string name="style_standard">Standard Heads-Up</string>
-    <string name="style_full_screen">Full-Screen Alarm</string>
+    <string name="notification_style_label">Alert Mode</string>
+    <string name="style_standard">Standard Notification</string>
+    <string name="style_full_screen">Alarm Ringing</string>
     <string name="persistent_alert_title">Persistent Alert Loop</string>
     <string name="persistent_alert_desc">Continuous sound/vibration until dismissed</string>
     <string name="sound_settings_title">Sound &amp; Vibration</string>
@@ -178,4 +179,35 @@
     <string name="weekdays">Weekdays</string>
     <string name="weekends">Weekends</string>
     <string name="reorder_handle">Reorder handle</string>
+
+    <!-- AutoSilence & Audio Stream -->
+    <string name="auto_silence_title">Auto-Silence</string>
+    <string name="auto_silence_never">Never</string>
+    <string name="auto_silence_option_1">1 minute</string>
+    <string name="auto_silence_option_5">5 minutes</string>
+    <string name="auto_silence_option_10">10 minutes</string>
+    <string name="auto_silence_option_15">15 minutes</string>
+    <string name="use_alarm_stream_title">Alarm Audio Stream</string>
+    <string name="use_alarm_stream_desc">Play sound on Alarm channel (STREAM_ALARM) to ring even in vibrate/silent mode</string>
+    <string name="use_notification_stream_desc">Follow system notification volume</string>
+
+    <!-- Multi Time Windows & Preset -->
+    <string name="preset_all_day">All day (00:00 - 23:59)</string>
+    <string name="add_time_window">Add Time Window</string>
+    <string name="time_window_count_format">Time Window #%d</string>
+
+    <!-- Snooze Puzzle Dialog -->
+    <string name="puzzle_dialog_title">Confirm Turn Off</string>
+    <string name="puzzle_dialog_message">Enter the matching code below to turn off this snoozed reminder:</string>
+    <string name="puzzle_input_placeholder">Enter code</string>
+    <string name="puzzle_input_hint">Enter code</string>
+    <string name="puzzle_confirm">Confirm &amp; Turn Off</string>
+    <string name="puzzle_confirm_button">Confirm &amp; Turn Off</string>
+    <string name="puzzle_incorrect">Code does not match. Please try again.</string>
+    <string name="monthly_days_selected_format">Days: %s</string>
+    <string name="yearly_dates_selected_format">Dates: %s</string>
+    <string name="selected_dates">Selected Dates</string>
+    <string name="add_date">Add Date</string>
+    <string name="select_day">Select Day</string>
+    <string name="day_number_format">%d</string>
 </resources>

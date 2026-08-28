@@ -99,8 +99,7 @@ class ReminderRingingViewModel @Inject constructor(
             reminderNotificationManager.cancelNotification(reminderId)
 
             if (reminder != null) {
-                val isRecurring = reminder.triggerType == ReminderTriggerType.TIME &&
-                        !reminder.timeTrigger?.repeatDays.isNullOrEmpty()
+                val isRecurring = reminder.isRecurring
                 val completedReminder = reminder.copy(
                     isCompleted = true,
                     isEnabled = if (isRecurring) reminder.isEnabled else false,

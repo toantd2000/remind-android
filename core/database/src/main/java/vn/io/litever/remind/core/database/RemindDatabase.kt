@@ -26,7 +26,7 @@ import vn.io.litever.remind.core.database.model.PhraseEntity
         ReminderEntity::class,
         ChecklistItemEntity::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 abstract class RemindDatabase : RoomDatabase() {
@@ -126,6 +126,25 @@ abstract class RemindDatabase : RoomDatabase() {
                 db.execSQL(
                     "CREATE INDEX IF NOT EXISTS `index_checklist_items_reminderId` ON `checklist_items` (`reminderId`)"
                 )
+            }
+        }
+
+        val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `reminders` ADD COLUMN `timeTriggerMonthlyDays` TEXT")
+                db.execSQL("ALTER TABLE `reminders` ADD COLUMN `timeTriggerYearlyDates` TEXT")
+                db.execSQL("ALTER TABLE `reminders` ADD COLUMN `locationTimeWindows` TEXT")
+                db.execSQL("ALTER TABLE `reminders` ADD COLUMN `wifiTimeWindows` TEXT")
+                db.execSQL("ALTER TABLE `reminders` ADD COLUMN `autoSilenceMinutes` INTEGER NOT NULL DEFAULT 5")
+                db.execSQL("ALTER TABLE `reminders` ADD COLUMN `useAlarmStream` INTEGER NOT NULL DEFAULT 1")
+                db.execSQL("ALTER TABLE `reminders` ADD COLUMN `locationDate` TEXT")
+                db.execSQL("ALTER TABLE `reminders` ADD COLUMN `locationRepeatDays` TEXT")
+                db.execSQL("ALTER TABLE `reminders` ADD COLUMN `locationMonthlyDays` TEXT")
+                db.execSQL("ALTER TABLE `reminders` ADD COLUMN `locationYearlyDates` TEXT")
+                db.execSQL("ALTER TABLE `reminders` ADD COLUMN `wifiDate` TEXT")
+                db.execSQL("ALTER TABLE `reminders` ADD COLUMN `wifiRepeatDays` TEXT")
+                db.execSQL("ALTER TABLE `reminders` ADD COLUMN `wifiMonthlyDays` TEXT")
+                db.execSQL("ALTER TABLE `reminders` ADD COLUMN `wifiYearlyDates` TEXT")
             }
         }
     }

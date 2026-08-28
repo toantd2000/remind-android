@@ -54,12 +54,10 @@ class PermissionChecker @Inject constructor(
      * Checks if either FINE or COARSE location permission is granted.
      */
     fun hasLocationPermission(): Boolean {
-        val hasFine = ContextCompat.checkSelfPermission(
-            context,
+        val hasFine = context.checkSelfPermission(
             Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
-        val hasCoarse = ContextCompat.checkSelfPermission(
-            context,
+        val hasCoarse = context.checkSelfPermission(
             Manifest.permission.ACCESS_COARSE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
         return hasFine || hasCoarse
@@ -69,8 +67,7 @@ class PermissionChecker @Inject constructor(
      * Checks if FINE location permission is granted (required for high-accuracy geofencing).
      */
     fun hasFineLocationPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(
-            context,
+        return context.checkSelfPermission(
             Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
     }
@@ -80,8 +77,7 @@ class PermissionChecker @Inject constructor(
      */
     fun hasBackgroundLocationPermission(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            ContextCompat.checkSelfPermission(
-                context,
+            context.checkSelfPermission(
                 Manifest.permission.ACCESS_BACKGROUND_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         } else {
@@ -93,8 +89,7 @@ class PermissionChecker @Inject constructor(
      * Checks if Wi-Fi state permission is granted.
      */
     fun hasWifiStatePermission(): Boolean {
-        return ContextCompat.checkSelfPermission(
-            context,
+        return context.checkSelfPermission(
             Manifest.permission.ACCESS_WIFI_STATE
         ) == PackageManager.PERMISSION_GRANTED
     }
@@ -103,8 +98,7 @@ class PermissionChecker @Inject constructor(
      * Checks if Network state permission is granted.
      */
     fun hasNetworkStatePermission(): Boolean {
-        return ContextCompat.checkSelfPermission(
-            context,
+        return context.checkSelfPermission(
             Manifest.permission.ACCESS_NETWORK_STATE
         ) == PackageManager.PERMISSION_GRANTED
     }

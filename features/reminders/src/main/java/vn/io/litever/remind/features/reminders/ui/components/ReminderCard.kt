@@ -23,7 +23,6 @@ import androidx.compose.material.icons.rounded.Snooze
 import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -33,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import vn.io.litever.designsystem.components.LiteverCard
 import vn.io.litever.designsystem.components.LiteverIconButton
+import vn.io.litever.designsystem.components.LiteverLinearProgressIndicator
 import vn.io.litever.designsystem.components.LiteverSwitch
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
@@ -66,6 +67,7 @@ fun ReminderCard(
     onMoreClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val isSnoozed = reminder.snoozeNextTriggerTime != null
     val isCardActive = reminder.isEnabled && !reminder.isCompleted
     val alpha = if (isCardActive) 1f else 0.6f
     val containerColor = if (isCardActive) {
@@ -73,12 +75,29 @@ fun ReminderCard(
     } else {
         LiteverTheme.colors.surface.copy(alpha = 0.6f)
     }
-    val primaryColor = LiteverTheme.colors.primary
+
+    val accentColor = if (isSnoozed) {
+        LiteverTheme.colors.secondary
+    } else {
+        LiteverTheme.colors.primary
+    }
+
+    val accentContainerColor = if (isSnoozed) {
+        LiteverTheme.colors.secondaryContainer
+    } else {
+        LiteverTheme.colors.primaryContainer
+    }
+
+    val onAccentContainerColor = if (isSnoozed) {
+        LiteverTheme.colors.onSecondaryContainer
+    } else {
+        LiteverTheme.colors.onPrimaryContainer
+    }
 
     LiteverCard(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp, horizontal = 16.dp)
+            .padding(vertical = 4.dp)
             .clip(LiteverTheme.shapes.large)
             .clickable { onClick() },
         colors = CardDefaults.cardColors(
@@ -93,12 +112,17 @@ fun ReminderCard(
                 .drawBehind {
                     if (isCardActive) {
                         drawRect(
-                            color = primaryColor.copy(alpha = 0.8f),
+                            color = accentColor.copy(alpha = 0.8f),
                             size = Size(3.dp.toPx(), size.height)
                         )
                     }
                 }
-                .padding(start = 16.dp, end = 8.dp, top = 12.dp, bottom = 12.dp),
+                .padding(
+                    start = 16.dp,
+                    end = 0.dp,
+                    top = 12.dp,
+                    bottom = 12.dp
+                ),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
@@ -112,24 +136,33 @@ fun ReminderCard(
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                     modifier = Modifier.padding(bottom = 6.dp)
                 ) {
-                    TriggerBadge(reminder = reminder, is24HourFormat = is24HourFormat)
+                    TriggerBadge(
+                        reminder = reminder,
+                        is24HourFormat = is24HourFormat,
+                        containerColor = accentContainerColor.copy(alpha = 0.7f),
+                        contentColor = onAccentContainerColor
+                    )
 
-                    if (reminder.snoozeNextTriggerTime != null) {
+                    if (isSnoozed) {
                         SnoozingBadge(
                             snoozeTimeMillis = reminder.snoozeNextTriggerTime!!,
                             is24HourFormat = is24HourFormat
                         )
                     }
 
-                    val timeWindow = when (reminder.triggerType) {
-                        ReminderTriggerType.LOCATION -> reminder.locationTrigger?.timeWindow
-                        ReminderTriggerType.WIFI -> reminder.wifiTrigger?.timeWindow
-                        else -> null
+                    val timeWindows = when (reminder.triggerType) {
+                        ReminderTriggerType.LOCATION -> reminder.locationTrigger?.activeTimeWindows?.ifEmpty {
+                            reminder.locationTrigger?.timeWindow?.let { listOf(it) } ?: emptyList()
+                        } ?: emptyList()
+                        ReminderTriggerType.WIFI -> reminder.wifiTrigger?.activeTimeWindows?.ifEmpty {
+                            reminder.wifiTrigger?.timeWindow?.let { listOf(it) } ?: emptyList()
+                        } ?: emptyList()
+                        else -> emptyList()
                     }
-                    if (timeWindow != null) {
+                    timeWindows.forEach { window ->
                         TimeWindowBadge(
-                            startTime = TimeFormatUtils.formatTime(timeWindow.startTime, is24HourFormat),
-                            endTime = TimeFormatUtils.formatTime(timeWindow.endTime, is24HourFormat)
+                            startTime = TimeFormatUtils.formatTime(window.startTime, is24HourFormat),
+                            endTime = TimeFormatUtils.formatTime(window.endTime, is24HourFormat)
                         )
                     }
                 }
@@ -141,10 +174,10 @@ fun ReminderCard(
                         fontWeight = FontWeight.SemiBold,
                         textDecoration = if (reminder.isCompleted) TextDecoration.LineThrough else null
                     ),
-                    color = if (reminder.isCompleted) {
-                        LiteverTheme.colors.onSurface.copy(alpha = 0.5f)
-                    } else {
-                        LiteverTheme.colors.onSurface
+                    color = when {
+                        reminder.isCompleted -> LiteverTheme.colors.onSurface.copy(alpha = 0.5f)
+                        isSnoozed -> LiteverTheme.colors.secondary
+                        else -> LiteverTheme.colors.onSurface
                     },
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
@@ -172,7 +205,7 @@ fun ReminderCard(
                         Icon(
                             imageVector = Icons.Rounded.Checklist,
                             contentDescription = null,
-                            tint = LiteverTheme.colors.primary,
+                            tint = accentColor,
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
@@ -182,17 +215,17 @@ fun ReminderCard(
                                 reminder.totalChecklistCount
                             ),
                             style = LiteverTheme.typography.labelSmall,
-                            color = LiteverTheme.colors.primary,
+                            color = accentColor,
                             fontWeight = FontWeight.Medium
                         )
-                        LinearProgressIndicator(
+                        LiteverLinearProgressIndicator(
                             progress = { reminder.checklistProgress },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(4.dp)
                                 .clip(MaterialTheme.shapes.small),
-                            color = LiteverTheme.colors.primary,
-                            trackColor = LiteverTheme.colors.primaryContainer.copy(alpha = 0.4f),
+                            color = accentColor,
+                            trackColor = accentContainerColor.copy(alpha = 0.4f),
                         )
                     }
                 }
@@ -200,25 +233,37 @@ fun ReminderCard(
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            // Switch & More button
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceBetween
+            // Options menu button (3-dots) positioned immediately to the left of the Switch
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-                if (reminder.snoozeNextTriggerTime == null) {
+
+                MaterialTheme(
+                    colorScheme = if (isSnoozed) {
+                        MaterialTheme.colorScheme.copy(
+                            primary = LiteverTheme.colors.secondary,
+                            primaryContainer = LiteverTheme.colors.secondaryContainer
+                        )
+                    } else {
+                        MaterialTheme.colorScheme
+                    }
+                ) {
                     LiteverSwitch(
                         checked = reminder.isEnabled,
                         onCheckedChange = onToggle
                     )
                 }
+
                 LiteverIconButton(
                     onClick = onMoreClick,
-                    modifier = Modifier.size(36.dp)
+                    modifier = Modifier.size(32.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.MoreVert,
                         contentDescription = stringResource(R.string.action_more),
-                        tint = LiteverTheme.colors.onSurfaceVariant
+                        modifier = Modifier.size(20.dp),
+                        tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.6f)
                     )
                 }
             }
@@ -229,7 +274,9 @@ fun ReminderCard(
 @Composable
 private fun TriggerBadge(
     reminder: Reminder,
-    is24HourFormat: Boolean
+    is24HourFormat: Boolean,
+    containerColor: Color,
+    contentColor: Color
 ) {
     val (icon: ImageVector, text: String) = when (reminder.triggerType) {
         ReminderTriggerType.TIME -> {
@@ -241,6 +288,12 @@ private fun TriggerBadge(
                         day.name.take(2).lowercase().replaceFirstChar { it.uppercase() }
                     }
                     "$formattedTime • $daysStr"
+                } else if (timeTrigger.monthlyDays.isNotEmpty()) {
+                    val daysStr = timeTrigger.monthlyDays.joinToString(",")
+                    "$formattedTime • d.$daysStr"
+                } else if (timeTrigger.yearlyDates.isNotEmpty()) {
+                    val datesStr = timeTrigger.yearlyDates.joinToString(", ") { "${it.day}/${it.month}" }
+                    "$formattedTime • $datesStr"
                 } else {
                     val date = timeTrigger.date
                     if (date != null) {
@@ -264,7 +317,21 @@ private fun TriggerBadge(
                     GeofenceTransitionType.EXIT -> stringResource(R.string.transition_exit)
                     GeofenceTransitionType.BOTH -> stringResource(R.string.transition_both)
                 }
-                "$name • $transition"
+                val date = loc.date
+                val scheduleStr = if (loc.repeatDays.isNotEmpty()) {
+                    " • " + loc.repeatDays.joinToString(", ") { day ->
+                        day.name.take(2).lowercase().replaceFirstChar { it.uppercase() }
+                    }
+                } else if (loc.monthlyDays.isNotEmpty()) {
+                    " • d." + loc.monthlyDays.joinToString(",")
+                } else if (loc.yearlyDates.isNotEmpty()) {
+                    " • " + loc.yearlyDates.joinToString(", ") { "${it.day}/${it.month}" }
+                } else if (date != null) {
+                    " • " + date.format(DateTimeFormatter.ofPattern("MMM dd"))
+                } else {
+                    ""
+                }
+                "$name • $transition$scheduleStr"
             } else {
                 stringResource(R.string.trigger_location)
             }
@@ -279,7 +346,21 @@ private fun TriggerBadge(
                     WifiTriggerType.ON_DISCONNECT -> stringResource(R.string.wifi_on_disconnect)
                     WifiTriggerType.WHILE_CONNECTED -> stringResource(R.string.wifi_while_connected)
                 }
-                "$ssid • $event"
+                val date = wifi.date
+                val scheduleStr = if (wifi.repeatDays.isNotEmpty()) {
+                    " • " + wifi.repeatDays.joinToString(", ") { day ->
+                        day.name.take(2).lowercase().replaceFirstChar { it.uppercase() }
+                    }
+                } else if (wifi.monthlyDays.isNotEmpty()) {
+                    " • d." + wifi.monthlyDays.joinToString(",")
+                } else if (wifi.yearlyDates.isNotEmpty()) {
+                    " • " + wifi.yearlyDates.joinToString(", ") { "${it.day}/${it.month}" }
+                } else if (date != null) {
+                    " • " + date.format(DateTimeFormatter.ofPattern("MMM dd"))
+                } else {
+                    ""
+                }
+                "$ssid • $event$scheduleStr"
             } else {
                 stringResource(R.string.trigger_wifi)
             }
@@ -287,7 +368,12 @@ private fun TriggerBadge(
         }
     }
 
-    BadgeContainer(icon = icon, text = text)
+    BadgeContainer(
+        icon = icon,
+        text = text,
+        containerColor = containerColor,
+        contentColor = contentColor
+    )
 }
 
 @Composable
@@ -302,7 +388,7 @@ private fun SnoozingBadge(
     val formattedTime = TimeFormatUtils.formatTime(snoozeTime, is24HourFormat)
 
     Surface(
-        color = LiteverTheme.colors.tertiaryContainer,
+        color = LiteverTheme.colors.secondaryContainer,
         shape = MaterialTheme.shapes.extraSmall
     ) {
         Row(
@@ -312,14 +398,14 @@ private fun SnoozingBadge(
             Icon(
                 imageVector = Icons.Rounded.Snooze,
                 contentDescription = null,
-                tint = LiteverTheme.colors.onTertiaryContainer,
+                tint = LiteverTheme.colors.onSecondaryContainer,
                 modifier = Modifier.size(12.dp)
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = stringResource(R.string.snoozing_badge_format, formattedTime),
                 style = LiteverTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                color = LiteverTheme.colors.onTertiaryContainer,
+                color = LiteverTheme.colors.onSecondaryContainer,
                 fontWeight = FontWeight.Medium
             )
         }
@@ -354,9 +440,14 @@ private fun TimeWindowBadge(startTime: String, endTime: String) {
 }
 
 @Composable
-private fun BadgeContainer(icon: ImageVector, text: String) {
+private fun BadgeContainer(
+    icon: ImageVector,
+    text: String,
+    containerColor: Color,
+    contentColor: Color
+) {
     Surface(
-        color = LiteverTheme.colors.primaryContainer.copy(alpha = 0.7f),
+        color = containerColor,
         shape = MaterialTheme.shapes.extraSmall
     ) {
         Row(
@@ -366,14 +457,14 @@ private fun BadgeContainer(icon: ImageVector, text: String) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = LiteverTheme.colors.onPrimaryContainer,
+                tint = contentColor,
                 modifier = Modifier.size(12.dp)
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = text,
                 style = LiteverTheme.typography.labelSmall.copy(fontSize = 11.sp),
-                color = LiteverTheme.colors.onPrimaryContainer,
+                color = contentColor,
                 fontWeight = FontWeight.Medium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis

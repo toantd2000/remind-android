@@ -81,13 +81,13 @@ class ReminderAlertManagerTest {
     }
 
     @Test
-    fun startAlert_fullScreenNotificationStyle_treatedAsPersistent() = runTest {
+    fun startAlert_fullScreenNotificationStyle_withPersistentAlert_treatedAsPersistent() = runTest {
         val reminder = Reminder(
             id = 102L,
             title = "Alarm Style",
             triggerType = ReminderTriggerType.TIME,
             notificationStyle = NotificationStyle.FULL_SCREEN,
-            isPersistentAlert = false
+            isPersistentAlert = true
         )
 
         alertManager.startAlert(reminder)
@@ -97,6 +97,25 @@ class ReminderAlertManagerTest {
         assertTrue(state is AlertPlaybackState.Playing)
         val playingState = state as AlertPlaybackState.Playing
         assertTrue(playingState.isPersistent)
+    }
+
+    @Test
+    fun startAlert_standardNotificationStyle_nonPersistent() = runTest {
+        val reminder = Reminder(
+            id = 102L,
+            title = "Standard Style",
+            triggerType = ReminderTriggerType.TIME,
+            notificationStyle = NotificationStyle.STANDARD,
+            isPersistentAlert = false
+        )
+
+        alertManager.startAlert(reminder)
+        testScheduler.runCurrent()
+
+        val state = alertManager.playbackState.value
+        assertTrue(state is AlertPlaybackState.Playing)
+        val playingState = state as AlertPlaybackState.Playing
+        assertFalse(playingState.isPersistent)
     }
 
     @Test

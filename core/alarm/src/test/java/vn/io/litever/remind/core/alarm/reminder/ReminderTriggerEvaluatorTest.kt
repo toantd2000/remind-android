@@ -507,4 +507,271 @@ class ReminderTriggerEvaluatorTest {
         assertTrue(results[0].isTriggered)
         assertFalse(results[1].isTriggered)
     }
+
+    @Test
+    fun isDateScheduleActive_evaluatesAllRepeatModes() {
+        val targetDate = java.time.LocalDate.of(2026, 8, 28) // Friday, Aug 28
+
+        // One-time exact date match
+        assertTrue(
+            ReminderTriggerEvaluator.isDateScheduleActive(
+                date = java.time.LocalDate.of(2026, 8, 28),
+                repeatDays = emptyList(),
+                monthlyDays = emptyList(),
+                yearlyDates = emptyList(),
+                targetDate = targetDate
+            )
+        )
+        // One-time different date
+        assertFalse(
+            ReminderTriggerEvaluator.isDateScheduleActive(
+                date = java.time.LocalDate.of(2026, 8, 29),
+                repeatDays = emptyList(),
+                monthlyDays = emptyList(),
+                yearlyDates = emptyList(),
+                targetDate = targetDate
+            )
+        )
+
+        // Weekly repeat matching Friday
+        assertTrue(
+            ReminderTriggerEvaluator.isDateScheduleActive(
+                date = null,
+                repeatDays = listOf(DayOfWeek.MONDAY, DayOfWeek.FRIDAY),
+                monthlyDays = emptyList(),
+                yearlyDates = emptyList(),
+                targetDate = targetDate
+            )
+        )
+        // Weekly repeat not containing Friday
+        assertFalse(
+            ReminderTriggerEvaluator.isDateScheduleActive(
+                date = null,
+                repeatDays = listOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY),
+                monthlyDays = emptyList(),
+                yearlyDates = emptyList(),
+                targetDate = targetDate
+            )
+        )
+
+        // Monthly repeat matching 28th
+        assertTrue(
+            ReminderTriggerEvaluator.isDateScheduleActive(
+                date = null,
+                repeatDays = emptyList(),
+                monthlyDays = listOf(1, 15, 28),
+                yearlyDates = emptyList(),
+                targetDate = targetDate
+            )
+        )
+        // Monthly repeat not matching 28th
+        assertFalse(
+            ReminderTriggerEvaluator.isDateScheduleActive(
+                date = null,
+                repeatDays = emptyList(),
+                monthlyDays = listOf(1, 15, 30),
+                yearlyDates = emptyList(),
+                targetDate = targetDate
+            )
+        )
+
+        // Yearly repeat matching Aug 28 (month=8, day=28)
+        assertTrue(
+            ReminderTriggerEvaluator.isDateScheduleActive(
+                date = null,
+                repeatDays = emptyList(),
+                monthlyDays = emptyList(),
+                yearlyDates = listOf(vn.io.litever.remind.core.model.ReminderMonthDay(8, 28)),
+                targetDate = targetDate
+            )
+        )
+        // Yearly repeat not matching Aug 28
+        assertFalse(
+            ReminderTriggerEvaluator.isDateScheduleActive(
+                date = null,
+                repeatDays = emptyList(),
+                monthlyDays = emptyList(),
+                yearlyDates = listOf(vn.io.litever.remind.core.model.ReminderMonthDay(12, 25)),
+                targetDate = targetDate
+            )
+        )
+    }
+
+    @Test
+    fun locationTrigger_withWeeklyRepeat_onlyTriggersOnMatchingDays() {
+        val reminder = Reminder(
+            id = 30,
+            title = "Office Arrival Mon/Fri",
+            triggerType = ReminderTriggerType.LOCATION,
+            locationTrigger = LocationTrigger(
+                latitude = 21.0285,
+                longitude = 105.8542,
+                radiusMeters = 100f,
+                transitionType = GeofenceTransitionType.ENTER,
+                repeatDays = listOf(DayOfWeek.MONDAY, DayOfWeek.FRIDAY),
+                timeWindows = listOf(
+                    ReminderTimeWindow(startTime = LocalTime.of(8, 0), endTime = LocalTime.of(17, 0))
+                )
+            )
+        )
+
+        // Friday 2026-08-28 at 09:00 -> Active!
+        val friday = LocalDateTime.of(2026, 8, 28, 9, 0)
+        val resFriday = ReminderTriggerEvaluator.evaluateLocationReminder(
+            reminder = reminder,
+            currentLatitude = 21.0285,
+            currentLongitude = 105.8542,
+            wasInside = false,
+            currentDateTime = friday
+        )
+        assertTrue(resFriday.isTriggered)
+
+        // Thursday 2026-08-27 at 09:00 -> NOT active day!
+        val thursday = LocalDateTime.of(2026, 8, 27, 9, 0)
+        val resThursday = ReminderTriggerEvaluator.evaluateLocationReminder(
+            reminder = reminder,
+            currentLatitude = 21.0285,
+            currentLongitude = 105.8542,
+            wasInside = false,
+            currentDateTime = thursday
+        )
+        assertFalse(resThursday.isTriggered)
+    }
+
+    @Test
+    fun wifiTrigger_withMonthlyRepeat_onlyTriggersOnMatchingMonthlyDays() {
+        val reminder = Reminder(
+            id = 40,
+            title = "Connect Wifi on 1st & 15th",
+            triggerType = ReminderTriggerType.WIFI,
+            wifiTrigger = WifiTrigger(
+                ssid = "Company_Office",
+                triggerType = WifiTriggerType.ON_CONNECT,
+                monthlyDays = listOf(1, 15),
+                timeWindows = listOf(ReminderTimeWindow.ALL_DAY)
+            )
+        )
+
+        // 15th of the month -> Active!
+        val onFifteenth = LocalDateTime.of(2026, 8, 15, 10, 0)
+        val res15 = ReminderTriggerEvaluator.evaluateWifiReminder(
+            reminder = reminder,
+            currentSsid = "Company_Office",
+            currentBssid = null,
+            isConnected = true,
+            wasConnected = false,
+            currentDateTime = onFifteenth
+        )
+        assertTrue(res15.isTriggered)
+
+        // 16th of the month -> Inactive!
+        val onSixteenth = LocalDateTime.of(2026, 8, 16, 10, 0)
+        val res16 = ReminderTriggerEvaluator.evaluateWifiReminder(
+            reminder = reminder,
+            currentSsid = "Company_Office",
+            currentBssid = null,
+            isConnected = true,
+            wasConnected = false,
+            currentDateTime = onSixteenth
+        )
+        assertFalse(res16.isTriggered)
+    }
+
+    @Test
+    fun isDateScheduleActive_monthlyDay31_clampsOnShorterMonths() {
+        // Day 31 recurrence in February 2026 (28 days) -> should be active on Feb 28
+        val feb28 = java.time.LocalDate.of(2026, 2, 28)
+        assertTrue(
+            ReminderTriggerEvaluator.isDateScheduleActive(
+                date = null,
+                repeatDays = emptyList(),
+                monthlyDays = listOf(31),
+                yearlyDates = emptyList(),
+                targetDate = feb28
+            )
+        )
+
+        // Day 31 recurrence in February 2026 on Feb 27 -> should NOT be active
+        val feb27 = java.time.LocalDate.of(2026, 2, 27)
+        assertFalse(
+            ReminderTriggerEvaluator.isDateScheduleActive(
+                date = null,
+                repeatDays = emptyList(),
+                monthlyDays = listOf(31),
+                yearlyDates = emptyList(),
+                targetDate = feb27
+            )
+        )
+
+        // Day 31 recurrence in April 2026 (30 days) -> should be active on Apr 30
+        val apr30 = java.time.LocalDate.of(2026, 4, 30)
+        assertTrue(
+            ReminderTriggerEvaluator.isDateScheduleActive(
+                date = null,
+                repeatDays = emptyList(),
+                monthlyDays = listOf(31),
+                yearlyDates = emptyList(),
+                targetDate = apr30
+            )
+        )
+
+        // Day 31 recurrence in August 2026 (31 days) -> should be active on Aug 31, but NOT Aug 30
+        val aug30 = java.time.LocalDate.of(2026, 8, 30)
+        val aug31 = java.time.LocalDate.of(2026, 8, 31)
+        assertFalse(
+            ReminderTriggerEvaluator.isDateScheduleActive(
+                date = null,
+                repeatDays = emptyList(),
+                monthlyDays = listOf(31),
+                yearlyDates = emptyList(),
+                targetDate = aug30
+            )
+        )
+        assertTrue(
+            ReminderTriggerEvaluator.isDateScheduleActive(
+                date = null,
+                repeatDays = emptyList(),
+                monthlyDays = listOf(31),
+                yearlyDates = emptyList(),
+                targetDate = aug31
+            )
+        )
+    }
+
+    @Test
+    fun isDateScheduleActive_yearlyLeapDay_handlesNonLeapYears() {
+        // Feb 29 yearly reminder in non-leap year (2026) -> active on Feb 28
+        val nonLeapFeb28 = java.time.LocalDate.of(2026, 2, 28)
+        assertTrue(
+            ReminderTriggerEvaluator.isDateScheduleActive(
+                date = null,
+                repeatDays = emptyList(),
+                monthlyDays = emptyList(),
+                yearlyDates = listOf(vn.io.litever.remind.core.model.ReminderMonthDay(2, 29)),
+                targetDate = nonLeapFeb28
+            )
+        )
+
+        // Feb 29 yearly reminder in leap year (2024) -> active on Feb 29, NOT Feb 28
+        val leapFeb28 = java.time.LocalDate.of(2024, 2, 28)
+        val leapFeb29 = java.time.LocalDate.of(2024, 2, 29)
+        assertFalse(
+            ReminderTriggerEvaluator.isDateScheduleActive(
+                date = null,
+                repeatDays = emptyList(),
+                monthlyDays = emptyList(),
+                yearlyDates = listOf(vn.io.litever.remind.core.model.ReminderMonthDay(2, 29)),
+                targetDate = leapFeb28
+            )
+        )
+        assertTrue(
+            ReminderTriggerEvaluator.isDateScheduleActive(
+                date = null,
+                repeatDays = emptyList(),
+                monthlyDays = emptyList(),
+                yearlyDates = listOf(vn.io.litever.remind.core.model.ReminderMonthDay(2, 29)),
+                targetDate = leapFeb29
+            )
+        )
+    }
 }

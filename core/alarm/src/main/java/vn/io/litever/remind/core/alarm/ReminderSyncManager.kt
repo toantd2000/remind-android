@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
+import vn.io.litever.remind.core.alarm.alert.ReminderAlertManager
 import vn.io.litever.remind.core.alarm.service.ReminderMonitorService
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
@@ -17,7 +18,8 @@ import javax.inject.Singleton
 class ReminderSyncManager @Inject constructor(
     @ApplicationContext private val context: Context,
     private val reminderRepository: ReminderRepository,
-    private val reminderScheduler: ReminderScheduler
+    private val reminderScheduler: ReminderScheduler,
+    private val reminderAlertManager: ReminderAlertManager? = null
 ) {
 
     suspend fun sync() {
@@ -49,16 +51,37 @@ class ReminderSyncManager @Inject constructor(
                         if (timeTrigger != null) {
                             val nextOccurrence = timeTrigger.getNextOccurrence(LocalDateTime.now())
                             val nextEpoch = nextOccurrence.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-                            if (nextEpoch > nowMillis) {
+                            if (timeTrigger.isRecurring) {
                                 reminderScheduler.schedule(reminder)
-                            } else if (timeTrigger.repeatDays.isEmpty()) {
-                                reminderRepository.updateReminder(reminder.copy(isEnabled = false, isCompleted = true))
+                                if (reminder.lastTriggeredTime != null) {
+                                    reminderAlertManager?.startAlert(reminder)
+                                }
+                            } else {
+                                if (nextEpoch > nowMillis) {
+                                    reminderScheduler.schedule(reminder)
+                                } else {
+                                    // One-time reminder whose time has passed or arrived:
+                                    // If already triggered and unhandled, enqueue in reminderAlertManager
+                                    if (reminder.lastTriggeredTime != null) {
+                                        reminderAlertManager?.startAlert(reminder)
+                                    } else {
+                                        // Due while device was off: trigger it!
+                                        val intent = Intent(context, vn.io.litever.remind.core.alarm.receiver.ReminderReceiver::class.java).apply {
+                                            action = ReminderScheduler.ACTION_TRIGGER_REMINDER
+                                            putExtra(ReminderScheduler.EXTRA_REMINDER_ID, reminder.id)
+                                        }
+                                        context.sendBroadcast(intent)
+                                    }
+                                }
                             }
                         }
                     }
                 }
                 ReminderTriggerType.LOCATION, ReminderTriggerType.WIFI -> {
                     hasActiveLocationOrWifi = true
+                    if (reminder.lastTriggeredTime != null && reminder.snoozeNextTriggerTime == null) {
+                        reminderAlertManager?.startAlert(reminder)
+                    }
                 }
             }
         }

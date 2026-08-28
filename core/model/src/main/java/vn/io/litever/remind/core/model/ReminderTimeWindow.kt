@@ -33,4 +33,12 @@ data class ReminderTimeWindow(
             (isEveningPart && isEveningActive) || (isMorningPart && isMorningActive)
         }
     }
+
+    companion object {
+        val ALL_DAY = ReminderTimeWindow(
+            startTime = LocalTime.of(0, 0),
+            endTime = LocalTime.of(23, 59),
+            activeDays = emptyList()
+        )
+    }
 }

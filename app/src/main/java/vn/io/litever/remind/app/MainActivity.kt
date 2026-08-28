@@ -87,14 +87,6 @@ import vn.io.litever.remind.core.model.MissionType
 import vn.io.litever.remind.core.model.TypingMissionConfig
 import vn.io.litever.remind.core.model.TypingMode
 
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import vn.io.litever.remind.core.alarm.receiver.ReminderReceiver
-import androidx.core.content.ContextCompat
-import android.content.BroadcastReceiver
-import android.content.IntentFilter
-
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val preferencesDataSource: AlarmPreferencesDataSource,
@@ -103,8 +95,7 @@ class MainViewModel @Inject constructor(
     private val missedAlarmRepository: vn.io.litever.remind.core.domain.repository.MissedAlarmRepository,
     private val alarmSyncManager: vn.io.litever.remind.core.alarm.AlarmSyncManager,
     private val reminderSyncManager: ReminderSyncManager,
-    alarmRepository: AlarmRepository,
-    reminderRepository: vn.io.litever.remind.core.domain.repository.ReminderRepository
+    alarmRepository: AlarmRepository
 ) : ViewModel() {
     init {
         viewModelScope.launch {
@@ -127,30 +118,9 @@ class MainViewModel @Inject constructor(
             initialValue = null
         )
 
-    private val _foregroundReminderAlertId = MutableStateFlow<Long?>(null)
-    val foregroundReminderAlertId: StateFlow<Long?> = _foregroundReminderAlertId.asStateFlow()
-
-    fun onForegroundReminderAlertReceived(reminderId: Long) {
-        _foregroundReminderAlertId.value = reminderId
-    }
-
-    fun clearForegroundReminderAlert() {
-        _foregroundReminderAlertId.value = null
-    }
-
     val activeSnoozingAlarmId = alarmRepository.getAllAlarms()
         .map { alarms ->
             alarms.firstOrNull { it.snoozeNextTriggerTime != null }?.id
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = null
-        )
-
-    val activeSnoozingReminderId = reminderRepository.getAllReminders()
-        .map { reminders ->
-            reminders.firstOrNull { it.snoozeNextTriggerTime != null }?.id
         }
         .stateIn(
             scope = viewModelScope,
@@ -178,35 +148,6 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var adManager: AdManager
-
-    private val reminderAlertReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent?.action == ReminderReceiver.ACTION_FIRE_REMINDER_ALERT) {
-                val reminderId = intent.getLongExtra(ReminderReceiver.EXTRA_REMINDER_ID, -1L)
-                if (reminderId != -1L) {
-                    viewModel.onForegroundReminderAlertReceived(reminderId)
-                }
-            }
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        val filter = IntentFilter(ReminderReceiver.ACTION_FIRE_REMINDER_ALERT)
-        ContextCompat.registerReceiver(
-            this,
-            reminderAlertReceiver,
-            filter,
-            ContextCompat.RECEIVER_NOT_EXPORTED
-        )
-    }
-
-    override fun onStop() {
-        super.onStop()
-        try {
-            unregisterReceiver(reminderAlertReceiver)
-        } catch (_: Exception) {}
-    }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
@@ -273,8 +214,6 @@ class MainActivity : ComponentActivity() {
                             val ringingAlarmId by alarmRingManager.ringingAlarmId.collectAsState()
                             val activeSnoozingalarmId by viewModel.activeSnoozingAlarmId.collectAsState()
                             val ringingReminderId by viewModel.ringingReminderId.collectAsState()
-                            val foregroundReminderAlertId by viewModel.foregroundReminderAlertId.collectAsState()
-                            val activeSnoozingReminderId by viewModel.activeSnoozingReminderId.collectAsState()
                             val missedAlarms by viewModel.missedAlarms.collectAsState()
 
                             val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -290,13 +229,13 @@ class MainActivity : ComponentActivity() {
                             }
 
                             val isNavReady = navBackStackEntry != null
+                            var lastNavigatedRingingReminderId by remember { mutableStateOf<Long?>(null) }
+
                             LaunchedEffect(
                                 ringingAlarmId,
                                 activeSnoozingalarmId,
                                 acknowledgingAlarmId,
                                 ringingReminderId,
-                                foregroundReminderAlertId,
-                                activeSnoozingReminderId,
                                 isNavReady
                             ) {
                                 if (!isNavReady) return@LaunchedEffect
@@ -308,9 +247,8 @@ class MainActivity : ComponentActivity() {
 
                                 val idMessage = acknowledgingAlarmId
                                 val idRingingAlarm = ringingAlarmId
-                                val idRingingReminder = ringingReminderId ?: foregroundReminderAlertId
+                                val idRingingReminder = ringingReminderId
                                 val idSnoozingAlarm = activeSnoozingalarmId
-                                val idSnoozingReminder = activeSnoozingReminderId
 
                                 if (idMessage != null) {
                                     val isAlreadyMessageId =
@@ -341,20 +279,8 @@ class MainActivity : ComponentActivity() {
                                             }
                                         }
                                     }
-                                } else if (idRingingReminder != null) {
-                                    // PRIORITY 2: Actively ringing reminder
-                                    val isAlreadyRingingId =
-                                        currentDest == "reminder_ringing_route/{reminderId}" && currentReminderId == idRingingReminder
-                                    if (!isAlreadyRingingId) {
-                                        navController.navigate("reminder_ringing_route/$idRingingReminder") {
-                                            popUpTo(navController.graph.startDestinationId) {
-                                                inclusive = false
-                                            }
-                                            launchSingleTop = true
-                                        }
-                                    }
                                 } else if (idSnoozingAlarm != null) {
-                                    // PRIORITY 3: Snoozing alarm countdown
+                                    // PRIORITY 2: Snoozing alarm countdown
                                     val isUserInMission =
                                         currentDest?.startsWith("mission_ringing_route") == true
 
@@ -370,22 +296,25 @@ class MainActivity : ComponentActivity() {
                                             }
                                         }
                                     }
-                                } else if (idSnoozingReminder != null) {
-                                    // PRIORITY 4: Snoozing reminder countdown
-                                    val isAlreadyRingingId =
-                                        currentDest == "reminder_ringing_route/{reminderId}" && currentReminderId == idSnoozingReminder
-                                    if (!isAlreadyRingingId) {
-                                        navController.navigate("reminder_ringing_route/$idSnoozingReminder") {
-                                            popUpTo(navController.graph.startDestinationId) {
-                                                inclusive = false
+                                } else if (idRingingReminder != null) {
+                                    // PRIORITY 3: Actively ringing reminder (Single Source of Truth)
+                                    if (idRingingReminder != lastNavigatedRingingReminderId) {
+                                        val isAlreadyRingingId =
+                                            currentDest == "reminder_ringing_route/{reminderId}" && currentReminderId == idRingingReminder
+                                        if (!isAlreadyRingingId) {
+                                            lastNavigatedRingingReminderId = idRingingReminder
+                                            navController.navigate("reminder_ringing_route/$idRingingReminder") {
+                                                popUpTo(navController.graph.startDestinationId) {
+                                                    inclusive = false
+                                                }
+                                                launchSingleTop = true
                                             }
-                                            launchSingleTop = true
+                                        } else {
+                                            lastNavigatedRingingReminderId = idRingingReminder
                                         }
                                     }
                                 } else {
-                                    if (foregroundReminderAlertId != null) {
-                                        viewModel.clearForegroundReminderAlert()
-                                    }
+                                    lastNavigatedRingingReminderId = null
                                     if (currentDest == "alarm_ringing_route/{alarmId}" ||
                                         currentDest == "alarm_message_route/{alarmId}" ||
                                         currentDest == "reminder_ringing_route/{reminderId}"

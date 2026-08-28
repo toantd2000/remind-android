@@ -37,7 +37,7 @@ class ReminderReceiver : BroadcastReceiver() {
         val reminderId = intent.getLongExtra(EXTRA_REMINDER_ID, -1L)
         if (reminderId == -1L) return
 
-        val pendingResult = goAsync()
+        val pendingResult = try { goAsync() } catch (_: Exception) { null }
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
         scope.launch {
@@ -63,7 +63,7 @@ class ReminderReceiver : BroadcastReceiver() {
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {
-                pendingResult.finish()
+                pendingResult?.finish()
             }
         }
     }
@@ -83,7 +83,7 @@ class ReminderReceiver : BroadcastReceiver() {
         if (updatedReminder.triggerType == ReminderTriggerType.TIME) {
             val timeTrigger = updatedReminder.timeTrigger
             reminderRepository.updateReminder(updatedReminder)
-            if (!isSnooze && timeTrigger != null && timeTrigger.repeatDays.isNotEmpty()) {
+            if (!isSnooze && timeTrigger != null && timeTrigger.isRecurring) {
                 reminderScheduler.schedule(updatedReminder)
             }
         } else {
@@ -91,11 +91,7 @@ class ReminderReceiver : BroadcastReceiver() {
         }
 
         reminderNotificationManager.showNotification(updatedReminder)
-
-        if (updatedReminder.isPersistentAlert || updatedReminder.notificationStyle == NotificationStyle.FULL_SCREEN) {
-            reminderAlertManager.startAlert(updatedReminder)
-        }
-
+        reminderAlertManager.startAlert(updatedReminder)
         fireReminderAlert(context, updatedReminder)
     }
 
@@ -122,7 +118,7 @@ class ReminderReceiver : BroadcastReceiver() {
         reminderAlertManager.stopAlert(reminder.id)
         reminderNotificationManager.cancelNotification(reminder.id)
 
-        val isRecurring = reminder.triggerType == ReminderTriggerType.TIME && !reminder.timeTrigger?.repeatDays.isNullOrEmpty()
+        val isRecurring = reminder.isRecurring
         val completedReminder = reminder.copy(
             isCompleted = true,
             isEnabled = if (isRecurring) reminder.isEnabled else false,

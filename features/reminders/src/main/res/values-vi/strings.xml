@@ -108,8 +108,9 @@
     <string name="wifi_while_connected">Trong khi đang kết nối (theo khung giờ)</string>
 
     <!-- Defined Time Window -->
-    <string name="time_window_section_title">Khung thời gian giới hạn</string>
-    <string name="time_window_desc">Chỉ kích hoạt lời nhắc này trong khoảng giờ xác định</string>
+    <string name="time_window_section_title">Khung thời gian áp dụng</string>
+    <string name="time_window_desc">Chỉ kích hoạt trong khung giờ đã đặt</string>
+    <string name="time_window_24_7_desc">Hoạt động 24/7 (Cả ngày)</string>
     <string name="time_window_enabled">Đã bật</string>
     <string name="time_window_start_time">Giờ bắt đầu</string>
     <string name="time_window_end_time">Giờ kết thúc</string>
@@ -125,9 +126,9 @@
 
     <!-- Alert & Notification Settings Section -->
     <string name="section_alert_settings">Cảnh báo &amp; Thông báo</string>
-    <string name="notification_style_label">Kiểu thông báo</string>
-    <string name="style_standard">Thông báo nổi chuẩn</string>
-    <string name="style_full_screen">Báo thức toàn màn hình</string>
+    <string name="notification_style_label">Kiểu cảnh báo</string>
+    <string name="style_standard">Thông báo tiêu chuẩn</string>
+    <string name="style_full_screen">Đổ chuông báo thức</string>
     <string name="persistent_alert_title">Lặp chuông liên tục</string>
     <string name="persistent_alert_desc">Đổ chuông/rung liên tục cho đến khi tắt</string>
     <string name="sound_settings_title">Âm thanh &amp; Rung</string>
@@ -178,4 +179,35 @@
     <string name="weekdays">Ngày trong tuần</string>
     <string name="weekends">Cuối tuần</string>
     <string name="reorder_handle">Kéo để sắp xếp lại</string>
+
+    <!-- AutoSilence & Audio Stream -->
+    <string name="auto_silence_title">Tự động tắt chuông</string>
+    <string name="auto_silence_never">Không bao giờ</string>
+    <string name="auto_silence_option_1">1 phút</string>
+    <string name="auto_silence_option_5">5 phút</string>
+    <string name="auto_silence_option_10">10 phút</string>
+    <string name="auto_silence_option_15">15 phút</string>
+    <string name="use_alarm_stream_title">Kênh âm thanh báo thức</string>
+    <string name="use_alarm_stream_desc">Phát chuông qua kênh Báo thức (STREAM_ALARM) để reo ngay cả khi máy ở chế độ Rung/Im lặng</string>
+    <string name="use_notification_stream_desc">Theo âm lượng thông báo của hệ thống</string>
+
+    <!-- Multi Time Windows & Preset -->
+    <string name="preset_all_day">Cả ngày (00:00 - 23:59)</string>
+    <string name="add_time_window">Thêm khung giờ</string>
+    <string name="time_window_count_format">Khung giờ #%d</string>
+
+    <!-- Snooze Puzzle Dialog -->
+    <string name="puzzle_dialog_title">Xác nhận tắt Báo lại</string>
+    <string name="puzzle_dialog_message">Nhập lại dãy số ngẫu nhiên dưới đây để xác nhận tắt và hủy lượt snooze:</string>
+    <string name="puzzle_input_placeholder">Nhập dãy số</string>
+    <string name="puzzle_input_hint">Nhập dãy số</string>
+    <string name="puzzle_confirm">Xác nhận &amp; Tắt</string>
+    <string name="puzzle_confirm_button">Xác nhận &amp; Tắt</string>
+    <string name="puzzle_incorrect">Dãy số không khớp. Vui lòng thử lại.</string>
+    <string name="monthly_days_selected_format">Ngày: %s</string>
+    <string name="yearly_dates_selected_format">Ngày: %s</string>
+    <string name="selected_dates">Các ngày đã chọn</string>
+    <string name="add_date">Thêm ngày</string>
+    <string name="select_day">Chọn ngày</string>
+    <string name="day_number_format">%d</string>
 </resources>

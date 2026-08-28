@@ -8,6 +8,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
@@ -67,6 +68,8 @@ class ReminderPermissionAndChecklistChallengerTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         every { preferencesDataSource.is24HourFormat } returns flowOf(true)
+        every { permissionChecker.hasNotificationPermission() } returns true
+        every { alertManager.autoSilenceCountdown } returns MutableStateFlow(null)
     }
 
     @After
@@ -157,7 +160,7 @@ class ReminderPermissionAndChecklistChallengerTest {
             id = 702L,
             title = "Office Wi-Fi Connection",
             triggerType = ReminderTriggerType.WIFI,
-            wifiTrigger = WifiTrigger(ssid = "Lab_Net_Secure", triggerType = WifiTriggerType.CONNECTED),
+            wifiTrigger = WifiTrigger(ssid = "Lab_Net_Secure", triggerType = WifiTriggerType.WHILE_CONNECTED),
             isEnabled = true,
             isCompleted = false
         )
@@ -226,6 +229,7 @@ class ReminderPermissionAndChecklistChallengerTest {
         val activeReminder = Reminder(
             id = 704L,
             title = "Morning Coffee",
+            triggerType = ReminderTriggerType.TIME,
             isEnabled = true
         )
         val allFlow = MutableStateFlow(listOf(activeReminder))
@@ -328,6 +332,7 @@ class ReminderPermissionAndChecklistChallengerTest {
         val reminderV1 = Reminder(
             id = 901L,
             title = "Medication",
+            triggerType = ReminderTriggerType.TIME,
             checklist = listOf(item1),
             snoozeEnabled = true
         )

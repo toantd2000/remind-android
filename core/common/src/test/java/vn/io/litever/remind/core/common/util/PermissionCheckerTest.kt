@@ -95,6 +95,7 @@ class PermissionCheckerTest {
 
         every { notificationManager.areNotificationsEnabled() } returns false
         every { context.checkPermission(any(), any(), any()) } returns PackageManager.PERMISSION_DENIED
+        every { context.checkSelfPermission(any()) } returns PackageManager.PERMISSION_DENIED
 
         val missing = permissionChecker.getMissingPermissions(reminder)
         assertTrue(missing.contains(ReminderPermissionType.NOTIFICATION))
@@ -111,6 +112,7 @@ class PermissionCheckerTest {
 
         every { notificationManager.areNotificationsEnabled() } returns false
         every { context.checkPermission(any(), any(), any()) } returns PackageManager.PERMISSION_DENIED
+        every { context.checkSelfPermission(any()) } returns PackageManager.PERMISSION_DENIED
 
         val missing = permissionChecker.getMissingPermissions(reminder)
         assertTrue(missing.contains(ReminderPermissionType.NOTIFICATION))

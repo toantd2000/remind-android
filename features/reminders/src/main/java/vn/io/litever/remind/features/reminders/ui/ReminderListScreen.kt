@@ -3,6 +3,8 @@ package vn.io.litever.remind.features.reminders.ui
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -58,6 +60,7 @@ import vn.io.litever.remind.features.reminders.viewmodel.ReminderListViewModel
 fun ReminderListRoute(
     onAddReminderClick: () -> Unit,
     onReminderClick: (Reminder) -> Unit,
+    onEditReminderClick: (Long) -> Unit,
     onNavigateToPermissions: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ReminderListViewModel = hiltViewModel()
@@ -103,6 +106,7 @@ fun ReminderListRoute(
         onFilterSelected = viewModel::setFilter,
         onToggleReminder = viewModel::toggleReminder,
         onReminderClick = onReminderClick,
+        onEditReminderClick = onEditReminderClick,
         onAddReminderClick = onAddReminderClick,
         onNavigateToPermissions = onNavigateToPermissions,
         onDeleteReminder = viewModel::deleteReminder,
@@ -122,6 +126,7 @@ fun ReminderListScreen(
     onFilterSelected: (vn.io.litever.remind.features.reminders.ui.components.ReminderFilterType) -> Unit,
     onToggleReminder: (Reminder) -> Unit,
     onReminderClick: (Reminder) -> Unit,
+    onEditReminderClick: (Long) -> Unit = {},
     onAddReminderClick: () -> Unit,
     onNavigateToPermissions: () -> Unit,
     onDeleteReminder: (Reminder) -> Unit,
@@ -133,6 +138,7 @@ fun ReminderListScreen(
 ) {
     var showTopMenu by remember { mutableStateOf(false) }
     var selectedReminderForAction by remember { mutableStateOf<Reminder?>(null) }
+    var reminderForSnoozePuzzle by remember { mutableStateOf<Reminder?>(null) }
 
     LiteverScaffold(
         modifier = modifier.fillMaxSize(),
@@ -212,10 +218,15 @@ fun ReminderListScreen(
                 )
             } else {
                 LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    contentPadding = PaddingValues(top = 4.dp, bottom = 88.dp)
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp).let {
+                        PaddingValues(
+                            start = it.calculateStartPadding(androidx.compose.ui.unit.LayoutDirection.Ltr),
+                            top = it.calculateTopPadding(),
+                            end = it.calculateEndPadding(androidx.compose.ui.unit.LayoutDirection.Ltr),
+                            bottom = it.calculateBottomPadding() + 80.dp
+                        )
+                    }
                 ) {
                     items(
                         items = uiState.filteredReminders,
@@ -224,7 +235,13 @@ fun ReminderListScreen(
                         ReminderCard(
                             reminder = reminder,
                             is24HourFormat = uiState.is24HourFormat,
-                            onToggle = { onToggleReminder(reminder) },
+                            onToggle = {
+                                if (reminder.snoozeNextTriggerTime != null) {
+                                    reminderForSnoozePuzzle = reminder
+                                } else {
+                                    onToggleReminder(reminder)
+                                }
+                            },
                             onClick = { onReminderClick(reminder) },
                             onMoreClick = { selectedReminderForAction = reminder }
                         )
@@ -239,10 +256,21 @@ fun ReminderListScreen(
         ReminderActionBottomSheet(
             reminder = reminder,
             onDismissRequest = { selectedReminderForAction = null },
-            onEditClick = { onReminderClick(reminder) },
+            onEditClick = { onEditReminderClick(reminder.id) },
             onDuplicateClick = { onDuplicateReminder(reminder) },
             onToggleCompletedClick = { onToggleCompleted(reminder) },
             onDeleteClick = { onDeleteReminder(reminder) }
+        )
+    }
+
+    // Snooze Cancel Confirmation Puzzle Dialog
+    reminderForSnoozePuzzle?.let { snoozedReminder ->
+        vn.io.litever.remind.features.reminders.ui.components.ReminderPuzzleDialog(
+            onDismissRequest = { reminderForSnoozePuzzle = null },
+            onConfirmed = {
+                onToggleReminder(snoozedReminder)
+                reminderForSnoozePuzzle = null
+            }
         )
     }
 }

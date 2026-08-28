@@ -17,6 +17,8 @@ data class ReminderEntity(
     val timeTriggerMinute: Int? = null,
     val timeTriggerDate: String? = null, // ISO "yyyy-MM-dd"
     val timeTriggerRepeatDays: String? = null, // Comma-separated enum names e.g. "MONDAY,TUESDAY"
+    val timeTriggerMonthlyDays: String? = null, // Comma-separated ints e.g. "1,15,30"
+    val timeTriggerYearlyDates: String? = null, // Comma-separated M-D e.g. "3-8,10-20,12-25"
     
     // LocationTrigger fields
     val locationLatitude: Double? = null,
@@ -27,6 +29,11 @@ data class ReminderEntity(
     val locationWindowStartTime: String? = null, // ISO LocalTime "HH:mm"
     val locationWindowEndTime: String? = null, // ISO LocalTime "HH:mm"
     val locationWindowDays: String? = null, // Comma-separated enum names
+    val locationTimeWindows: String? = null,
+    val locationDate: String? = null,
+    val locationRepeatDays: String? = null,
+    val locationMonthlyDays: String? = null,
+    val locationYearlyDates: String? = null,
     
     // WifiTrigger fields
     val wifiSsid: String? = null,
@@ -35,10 +42,17 @@ data class ReminderEntity(
     val wifiWindowStartTime: String? = null, // ISO LocalTime "HH:mm"
     val wifiWindowEndTime: String? = null, // ISO LocalTime "HH:mm"
     val wifiWindowDays: String? = null, // Comma-separated enum names
+    val wifiTimeWindows: String? = null,
+    val wifiDate: String? = null,
+    val wifiRepeatDays: String? = null,
+    val wifiMonthlyDays: String? = null,
+    val wifiYearlyDates: String? = null,
     
     // Notification & Alert settings
     val notificationStyle: String = "STANDARD", // STANDARD, FULL_SCREEN
     val isPersistentAlert: Boolean = false,
+    val autoSilenceMinutes: Int = 5,
+    val useAlarmStream: Boolean = true,
     val ringtoneUri: String? = null,
     val vibrationEnabled: Boolean = true,
     val volume: Int = 100,

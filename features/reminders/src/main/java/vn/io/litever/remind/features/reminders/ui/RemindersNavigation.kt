@@ -26,7 +26,9 @@ fun NavController.navigateToReminderEdit(reminderId: Long = 0L, navOptions: NavO
 }
 
 fun NavController.navigateToReminderRinging(reminderId: Long, navOptions: NavOptions? = null) {
-    this.navigate(createReminderRingingRoute(reminderId), navOptions)
+    this.navigate(createReminderRingingRoute(reminderId), navOptions ?: androidx.navigation.navOptions {
+        launchSingleTop = true
+    })
 }
 
 fun NavGraphBuilder.remindersGraph(
@@ -51,6 +53,9 @@ fun NavGraphBuilder.remindersGraph(
                 } else {
                     onNavigateToEdit(reminder.id)
                 }
+            },
+            onEditReminderClick = { reminderId ->
+                onNavigateToEdit(reminderId)
             },
             onNavigateToPermissions = onNavigateToPermissions
         )
@@ -94,7 +99,11 @@ fun NavGraphBuilder.remindersGraph(
         val reminderId = backStackEntry.arguments?.getLong("reminderId") ?: -1L
         ReminderRingingRoute(
             reminderId = reminderId,
-            onFinish = onNavigateBack,
+            onFinish = {
+                if (navController.currentBackStackEntry?.destination?.route == ReminderRingingRoute) {
+                    navController.popBackStack()
+                }
+            },
             navController = navController
         )
     }

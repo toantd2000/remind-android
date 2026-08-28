@@ -5,6 +5,7 @@ import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.media.MediaPlayer
+import android.media.RingtoneManager
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -28,7 +29,11 @@ import kotlinx.coroutines.sync.withLock
 import vn.io.litever.remind.core.common.util.getAccessibleRingtoneUri
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder
+import vn.io.litever.remind.core.alarm.notification.ReminderNotificationManager
+import vn.io.litever.remind.core.domain.repository.ReminderRepository
+import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
 import javax.inject.Inject
+import javax.inject.Provider
 import javax.inject.Singleton
 
 sealed interface AlertPlaybackState {
@@ -59,7 +64,10 @@ interface ReminderAlertManager {
 
 @Singleton
 class ReminderAlertManagerImpl @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val reminderRepositoryProvider: Provider<ReminderRepository>? = null,
+    private val reminderSchedulerProvider: Provider<ReminderScheduler>? = null,
+    private val reminderNotificationManagerProvider: Provider<ReminderNotificationManager>? = null
 ) : ReminderAlertManager {
 
     private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
@@ -170,12 +178,14 @@ class ReminderAlertManagerImpl @Inject constructor(
             return // Already playing target reminder
         }
 
-        stopAudiblePlayback()
-        stopAutoSilenceTimer()
-
-        val isPersistent = nextAudible.isPersistentAlert || nextAudible.notificationStyle == NotificationStyle.FULL_SCREEN
+        val isAlarmStyle = nextAudible.notificationStyle == NotificationStyle.FULL_SCREEN
+        val isPersistent = if (isAlarmStyle) true else nextAudible.isPersistentAlert
         startAudiblePlayback(nextAudible, isPersistent)
-        startAutoSilenceTimer(nextAudible)
+        if (isPersistent && nextAudible.autoSilenceMinutes > 0) {
+            startAutoSilenceTimer(nextAudible)
+        } else {
+            stopAutoSilenceTimer()
+        }
 
         _playbackState.value = AlertPlaybackState.Playing(
             reminderId = nextAudible.id,
@@ -192,7 +202,14 @@ class ReminderAlertManagerImpl @Inject constructor(
             return
         }
 
-        val usage = if (isPersistent) AudioAttributes.USAGE_ALARM else AudioAttributes.USAGE_NOTIFICATION_EVENT
+        val isAlarmStyle = reminder.notificationStyle == NotificationStyle.FULL_SCREEN
+        val usage = if (isAlarmStyle && reminder.useAlarmStream) {
+            AudioAttributes.USAGE_ALARM
+        } else if (isAlarmStyle) {
+            AudioAttributes.USAGE_MEDIA
+        } else {
+            AudioAttributes.USAGE_NOTIFICATION_EVENT
+        }
         val audioAttributes = AudioAttributes.Builder()
             .setUsage(usage)
             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
@@ -206,7 +223,11 @@ class ReminderAlertManagerImpl @Inject constructor(
         focusRequest = request
         audioManager.requestAudioFocus(request)
 
-        val uri = getAccessibleRingtoneUri(context, reminder.ringtoneUri)
+        val uri = if (isAlarmStyle) {
+            getAccessibleRingtoneUri(context, reminder.ringtoneUri)
+        } else {
+            RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION) ?: getAccessibleRingtoneUri(context, null)
+        }
 
         try {
             val player = MediaPlayer().apply {
@@ -217,7 +238,11 @@ class ReminderAlertManagerImpl @Inject constructor(
             mediaPlayer = player
 
             player.setOnPreparedListener { mp ->
-                val volumeScale = (reminder.volume.coerceIn(0, 100)).toFloat() / 100f
+                val volumeScale = if (isAlarmStyle) {
+                    (reminder.volume.coerceIn(0, 100)).toFloat() / 100f
+                } else {
+                    1.0f
+                }
                 mp.setVolume(volumeScale, volumeScale)
                 mp.start()
                 if (reminder.vibrationEnabled) {
@@ -267,21 +292,60 @@ class ReminderAlertManagerImpl @Inject constructor(
 
     private fun startAutoSilenceTimer(reminder: Reminder) {
         stopAutoSilenceTimer()
-        autoSilenceJob = scope.launch {
-            val totalSeconds = DEFAULT_AUTO_SILENCE_MINUTES * 60
-            var remaining = totalSeconds
-            while (remaining > 0) {
-                _autoSilenceCountdown.value = remaining
-                delay(1000L)
-                remaining--
+        val minutes = reminder.autoSilenceMinutes
+        if (minutes > 0) {
+            autoSilenceJob = scope.launch {
+                val totalSeconds = minutes * 60
+                var remaining = totalSeconds
+                while (remaining > 0) {
+                    _autoSilenceCountdown.value = remaining
+                    delay(1000L)
+                    remaining--
+                }
+                _autoSilenceCountdown.value = null
+                handleAutoSilenceTimeout(reminder.id)
             }
-            _autoSilenceCountdown.value = null
-            handleAutoSilenceTimeout(reminder.id)
         }
     }
 
     private fun handleAutoSilenceTimeout(reminderId: Long) {
         stopAlert(reminderId)
+        scope.launch(Dispatchers.IO) {
+            try {
+                val repository = reminderRepositoryProvider?.get()
+                val scheduler = reminderSchedulerProvider?.get()
+                val notificationManager = reminderNotificationManagerProvider?.get()
+                if (repository != null) {
+                    val reminder = repository.getReminderById(reminderId)
+                    if (reminder != null && reminder.isEnabled && !reminder.isCompleted) {
+                        if (reminder.canSnooze()) {
+                            val nextSnoozeCount = reminder.currentSnoozeCount + 1
+                            val snoozeIntervalMillis = reminder.snoozeIntervalMinutes * 60 * 1000L
+                            val nextTriggerTime = System.currentTimeMillis() + snoozeIntervalMillis
+                            val snoozedReminder = reminder.copy(
+                                currentSnoozeCount = nextSnoozeCount,
+                                snoozeNextTriggerTime = nextTriggerTime
+                            )
+                            repository.updateReminder(snoozedReminder)
+                            scheduler?.scheduleSnooze(snoozedReminder, nextTriggerTime)
+                            notificationManager?.cancelNotification(reminderId)
+                        } else {
+                            val isRecurring = reminder.isRecurring
+                            val completedReminder = reminder.copy(
+                                isCompleted = !isRecurring,
+                                isEnabled = isRecurring,
+                                snoozeNextTriggerTime = null
+                            )
+                            repository.updateReminder(completedReminder)
+                            scheduler?.cancelSnooze(reminder)
+                            notificationManager?.cancelNotification(reminderId)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
         autoSilenceListener?.invoke(reminderId)
     }
 

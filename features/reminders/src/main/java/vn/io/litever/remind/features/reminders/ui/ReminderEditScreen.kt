@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +31,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import vn.io.litever.designsystem.components.LiteverButton
+import vn.io.litever.designsystem.components.LiteverCircularProgressIndicator
 import vn.io.litever.designsystem.components.LiteverScaffold
 import vn.io.litever.designsystem.components.LiteverTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
@@ -127,7 +127,7 @@ fun ReminderEditRoute(
 
     if (uiState.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(color = LiteverTheme.colors.primary)
+            LiteverCircularProgressIndicator(color = LiteverTheme.colors.primary)
         }
         return
     }
@@ -152,25 +152,33 @@ fun ReminderEditRoute(
         onRepeatDaysChange = viewModel::setRepeatDays,
         onRepeatDayToggle = viewModel::toggleRepeatDay,
         onRepeatIntervalChange = viewModel::setRepeatInterval,
-        onMonthlyDayChange = viewModel::setMonthlyDay,
-        onYearlyMonthAndDayChange = viewModel::setYearlyMonthAndDay,
+        onMonthlyDayToggle = viewModel::toggleMonthlyDay,
+        onAddYearlyDate = viewModel::addYearlyDate,
+        onRemoveYearlyDate = viewModel::removeYearlyDate,
         onLocationNameChange = viewModel::setLocationName,
         onLatitudeChange = viewModel::setLatitude,
         onLongitudeChange = viewModel::setLongitude,
         onRadiusChange = viewModel::setRadiusMeters,
         onTransitionTypeChange = viewModel::setGeofenceTransitionType,
-        onLocationTimeWindowChange = viewModel::setLocationTimeWindow,
+        onLocationTimeWindowsChange = viewModel::setLocationTimeWindows,
+        onAddLocationTimeWindow = viewModel::addLocationTimeWindow,
+        onRemoveLocationTimeWindow = viewModel::removeLocationTimeWindow,
+        onSetAllDayPresetLocation = viewModel::setAllDayPresetLocation,
         onWifiSsidChange = viewModel::setWifiSsid,
         onWifiBssidChange = viewModel::setWifiBssid,
         onWifiTriggerTypeChange = viewModel::setWifiTriggerType,
-        onWifiTimeWindowChange = viewModel::setWifiTimeWindow,
+        onWifiTimeWindowsChange = viewModel::setWifiTimeWindows,
+        onAddWifiTimeWindow = viewModel::addWifiTimeWindow,
+        onRemoveWifiTimeWindow = viewModel::removeWifiTimeWindow,
+        onSetAllDayPresetWifi = viewModel::setAllDayPresetWifi,
         onAddChecklistItem = viewModel::addChecklistItem,
         onUpdateChecklistItemText = viewModel::updateChecklistItemText,
         onToggleChecklistItemInitial = viewModel::toggleChecklistItemInitial,
         onDeleteChecklistItem = viewModel::deleteChecklistItem,
         onMoveChecklistItem = viewModel::moveChecklistItem,
         onNotificationStyleChange = viewModel::setNotificationStyle,
-        onPersistentAlertChange = viewModel::setPersistentAlert,
+        onAutoSilenceMinutesChange = viewModel::setAutoSilenceMinutes,
+        onUseAlarmStreamChange = viewModel::setUseAlarmStream,
         onRingtoneClick = {
             onNavigateToRingtoneSelection(uiState.ringtoneUri)
         },
@@ -206,25 +214,33 @@ fun ReminderEditScreen(
     onRepeatDaysChange: (List<DayOfWeek>) -> Unit,
     onRepeatDayToggle: (DayOfWeek) -> Unit,
     onRepeatIntervalChange: (ReminderRepeatInterval) -> Unit,
-    onMonthlyDayChange: (Int) -> Unit,
-    onYearlyMonthAndDayChange: (Int, Int) -> Unit,
+    onMonthlyDayToggle: (Int) -> Unit,
+    onAddYearlyDate: (Int, Int) -> Unit,
+    onRemoveYearlyDate: (Int) -> Unit,
     onLocationNameChange: (String) -> Unit,
     onLatitudeChange: (Double) -> Unit,
     onLongitudeChange: (Double) -> Unit,
     onRadiusChange: (Float) -> Unit,
     onTransitionTypeChange: (GeofenceTransitionType) -> Unit,
-    onLocationTimeWindowChange: (ReminderTimeWindow?) -> Unit,
+    onLocationTimeWindowsChange: (List<ReminderTimeWindow>) -> Unit,
+    onAddLocationTimeWindow: (ReminderTimeWindow) -> Unit,
+    onRemoveLocationTimeWindow: (Int) -> Unit,
+    onSetAllDayPresetLocation: () -> Unit,
     onWifiSsidChange: (String) -> Unit,
     onWifiBssidChange: (String?) -> Unit,
     onWifiTriggerTypeChange: (WifiTriggerType) -> Unit,
-    onWifiTimeWindowChange: (ReminderTimeWindow?) -> Unit,
+    onWifiTimeWindowsChange: (List<ReminderTimeWindow>) -> Unit,
+    onAddWifiTimeWindow: (ReminderTimeWindow) -> Unit,
+    onRemoveWifiTimeWindow: (Int) -> Unit,
+    onSetAllDayPresetWifi: () -> Unit,
     onAddChecklistItem: (String) -> Unit,
     onUpdateChecklistItemText: (Int, String) -> Unit,
     onToggleChecklistItemInitial: (Int, Boolean) -> Unit,
     onDeleteChecklistItem: (Int) -> Unit,
     onMoveChecklistItem: (Int, Int) -> Unit,
     onNotificationStyleChange: (NotificationStyle) -> Unit,
-    onPersistentAlertChange: (Boolean) -> Unit,
+    onAutoSilenceMinutesChange: (Int) -> Unit,
+    onUseAlarmStreamChange: (Boolean) -> Unit,
     onRingtoneClick: () -> Unit,
     onVibrationChange: (Boolean) -> Unit,
     onVolumeChange: (Int) -> Unit,
@@ -322,15 +338,18 @@ fun ReminderEditScreen(
                                 onRepeatDayToggle = onRepeatDayToggle,
                                 repeatInterval = uiState.repeatInterval,
                                 onRepeatIntervalChange = onRepeatIntervalChange,
-                                monthlyDay = uiState.monthlyDay,
-                                onMonthlyDayChange = onMonthlyDayChange,
-                                yearlyMonth = uiState.yearlyMonth,
-                                yearlyDay = uiState.yearlyDay,
-                                onYearlyMonthAndDayChange = onYearlyMonthAndDayChange,
+                                monthlyDays = uiState.monthlyDays,
+                                onMonthlyDayToggle = onMonthlyDayToggle,
+                                yearlyDates = uiState.yearlyDates,
+                                onAddYearlyDate = onAddYearlyDate,
+                                onRemoveYearlyDate = onRemoveYearlyDate,
                                 is24HourFormat = uiState.is24HourFormat
                             )
                         }
                         ReminderTriggerType.LOCATION -> {
+                            val locWindows = uiState.locationTimeWindows.ifEmpty {
+                                if (uiState.locationTimeWindow != null) listOf(uiState.locationTimeWindow) else emptyList()
+                            }
                             ReminderLocationConfigSection(
                                 locationName = uiState.locationName,
                                 onLocationNameChange = onLocationNameChange,
@@ -342,14 +361,32 @@ fun ReminderEditScreen(
                                 onRadiusChange = onRadiusChange,
                                 transitionType = uiState.geofenceTransitionType,
                                 onTransitionTypeChange = onTransitionTypeChange,
-                                timeWindow = uiState.locationTimeWindow,
-                                onTimeWindowChange = onLocationTimeWindowChange,
+                                repeatInterval = uiState.repeatInterval,
+                                onRepeatIntervalChange = onRepeatIntervalChange,
+                                date = uiState.date,
+                                onDateChange = onDateChange,
+                                repeatDays = uiState.repeatDays,
+                                onRepeatDaysChange = onRepeatDaysChange,
+                                onRepeatDayToggle = onRepeatDayToggle,
+                                monthlyDays = uiState.monthlyDays,
+                                onMonthlyDayToggle = onMonthlyDayToggle,
+                                yearlyDates = uiState.yearlyDates,
+                                onAddYearlyDate = onAddYearlyDate,
+                                onRemoveYearlyDate = onRemoveYearlyDate,
+                                timeWindows = locWindows,
+                                onTimeWindowsChange = onLocationTimeWindowsChange,
+                                onAddTimeWindow = onAddLocationTimeWindow,
+                                onRemoveTimeWindow = onRemoveLocationTimeWindow,
+                                onSetAllDayPreset = onSetAllDayPresetLocation,
                                 is24HourFormat = uiState.is24HourFormat,
                                 showLocationError = uiState.showLocationError,
                                 locationFocusRequester = locationFocusRequester
                             )
                         }
                         ReminderTriggerType.WIFI -> {
+                            val wifiWindows = uiState.wifiTimeWindows.ifEmpty {
+                                if (uiState.wifiTimeWindow != null) listOf(uiState.wifiTimeWindow) else emptyList()
+                            }
                             ReminderWifiConfigSection(
                                 ssid = uiState.wifiSsid,
                                 onSsidChange = onWifiSsidChange,
@@ -357,8 +394,23 @@ fun ReminderEditScreen(
                                 onBssidChange = onWifiBssidChange,
                                 triggerType = uiState.wifiTriggerType,
                                 onTriggerTypeChange = onWifiTriggerTypeChange,
-                                timeWindow = uiState.wifiTimeWindow,
-                                onTimeWindowChange = onWifiTimeWindowChange,
+                                repeatInterval = uiState.repeatInterval,
+                                onRepeatIntervalChange = onRepeatIntervalChange,
+                                date = uiState.date,
+                                onDateChange = onDateChange,
+                                repeatDays = uiState.repeatDays,
+                                onRepeatDaysChange = onRepeatDaysChange,
+                                onRepeatDayToggle = onRepeatDayToggle,
+                                monthlyDays = uiState.monthlyDays,
+                                onMonthlyDayToggle = onMonthlyDayToggle,
+                                yearlyDates = uiState.yearlyDates,
+                                onAddYearlyDate = onAddYearlyDate,
+                                onRemoveYearlyDate = onRemoveYearlyDate,
+                                timeWindows = wifiWindows,
+                                onTimeWindowsChange = onWifiTimeWindowsChange,
+                                onAddTimeWindow = onAddWifiTimeWindow,
+                                onRemoveTimeWindow = onRemoveWifiTimeWindow,
+                                onSetAllDayPreset = onSetAllDayPresetWifi,
                                 is24HourFormat = uiState.is24HourFormat,
                                 showWifiError = uiState.showWifiError,
                                 wifiFocusRequester = wifiFocusRequester
@@ -391,8 +443,10 @@ fun ReminderEditScreen(
                     onVolumeChange = onVolumeChange,
                     vibrationEnabled = uiState.vibrationEnabled,
                     onVibrationChange = onVibrationChange,
-                    isPersistentAlert = uiState.isPersistentAlert,
-                    onPersistentAlertChange = onPersistentAlertChange,
+                    autoSilenceMinutes = uiState.autoSilenceMinutes,
+                    onAutoSilenceMinutesChange = onAutoSilenceMinutesChange,
+                    useAlarmStream = uiState.useAlarmStream,
+                    onUseAlarmStreamChange = onUseAlarmStreamChange,
                     snoozeEnabled = uiState.snoozeEnabled,
                     snoozeIntervalMinutes = uiState.snoozeIntervalMinutes,
                     snoozeRepeatCount = uiState.snoozeRepeatCount,

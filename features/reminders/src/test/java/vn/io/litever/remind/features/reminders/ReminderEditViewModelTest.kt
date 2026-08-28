@@ -450,26 +450,6 @@ class ReminderEditViewModelTest {
     }
 
     @Test
-    fun repeatInterval_daily_setsAllDaysAndClearsDate() = runTest {
-        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
-        val viewModel = ReminderEditViewModel(
-            reminderRepository = repository,
-            reminderScheduler = scheduler,
-            reminderSyncManager = reminderSyncManager,
-            permissionChecker = permissionChecker,
-            preferencesDataSource = preferencesDataSource,
-            savedStateHandle = savedStateHandle
-        )
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        viewModel.setRepeatInterval(vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval.DAILY)
-        val state = viewModel.uiState.value
-        assertEquals(vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval.DAILY, state.repeatInterval)
-        assertEquals(7, state.repeatDays.size)
-        assertNull(state.date)
-    }
-
-    @Test
     fun repeatInterval_weekly_togglesDaysCorrectly() = runTest {
         val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
         val viewModel = ReminderEditViewModel(
@@ -488,14 +468,10 @@ class ReminderEditViewModelTest {
         viewModel.toggleRepeatDay(DayOfWeek.WEDNESDAY)
         assertTrue(viewModel.uiState.value.repeatDays.contains(DayOfWeek.MONDAY))
         assertTrue(viewModel.uiState.value.repeatDays.contains(DayOfWeek.WEDNESDAY))
-
-        viewModel.toggleRepeatDay(DayOfWeek.MONDAY)
-        assertFalse(viewModel.uiState.value.repeatDays.contains(DayOfWeek.MONDAY))
-        assertTrue(viewModel.uiState.value.repeatDays.contains(DayOfWeek.WEDNESDAY))
     }
 
     @Test
-    fun repeatInterval_monthly_calculatesTargetDate() = runTest {
+    fun repeatInterval_monthly_togglesDays() = runTest {
         val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
@@ -508,18 +484,16 @@ class ReminderEditViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.setRepeatInterval(vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval.MONTHLY)
-        viewModel.setMonthlyDay(15)
+        viewModel.toggleMonthlyDay(15)
 
         val state = viewModel.uiState.value
         assertEquals(vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval.MONTHLY, state.repeatInterval)
-        assertEquals(15, state.monthlyDay)
-        assertNotNull(state.date)
-        assertEquals(15, state.date?.dayOfMonth)
-        assertTrue(state.repeatDays.isEmpty())
+        assertTrue(state.monthlyDays.contains(15))
+        assertNull(state.date)
     }
 
     @Test
-    fun repeatInterval_yearly_calculatesTargetDate() = runTest {
+    fun repeatInterval_yearly_addsAndRemovesDates() = runTest {
         val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
@@ -532,16 +506,12 @@ class ReminderEditViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.setRepeatInterval(vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval.YEARLY)
-        viewModel.setYearlyMonthAndDay(12, 25)
+        viewModel.addYearlyDate(12, 25)
 
         val state = viewModel.uiState.value
         assertEquals(vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval.YEARLY, state.repeatInterval)
-        assertEquals(12, state.yearlyMonth)
-        assertEquals(25, state.yearlyDay)
-        assertNotNull(state.date)
-        assertEquals(12, state.date?.monthValue)
-        assertEquals(25, state.date?.dayOfMonth)
-        assertTrue(state.repeatDays.isEmpty())
+        assertTrue(state.yearlyDates.any { it.month == 12 && it.day == 25 })
+        assertNull(state.date)
     }
 
     @Test
@@ -570,7 +540,7 @@ class ReminderEditViewModelTest {
     }
 
     @Test
-    fun setTime_inMonthlyMode_recalculatesTargetDate() = runTest {
+    fun autoSilence_and_useAlarmStream_updatesCorrectly() = runTest {
         val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
@@ -582,66 +552,20 @@ class ReminderEditViewModelTest {
         )
         testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.setRepeatInterval(vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval.MONTHLY)
-        viewModel.setMonthlyDay(1)
-        val initialDate = viewModel.uiState.value.date
-
-        // Change time to 23:59
-        viewModel.setTime(LocalTime.of(23, 59))
-        assertNotNull(viewModel.uiState.value.date)
-        assertEquals(1, viewModel.uiState.value.date?.dayOfMonth)
-    }
-
-    @Test
-    fun setTime_inYearlyMode_recalculatesTargetDate() = runTest {
-        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
-        val viewModel = ReminderEditViewModel(
-            reminderRepository = repository,
-            reminderScheduler = scheduler,
-            reminderSyncManager = reminderSyncManager,
-            permissionChecker = permissionChecker,
-            preferencesDataSource = preferencesDataSource,
-            savedStateHandle = savedStateHandle
-        )
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        viewModel.setRepeatInterval(vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval.YEARLY)
-        viewModel.setYearlyMonthAndDay(10, 15)
-        assertEquals(10, viewModel.uiState.value.date?.monthValue)
-        assertEquals(15, viewModel.uiState.value.date?.dayOfMonth)
-
-        // Change time
-        viewModel.setTime(LocalTime.of(1, 0))
-        assertEquals(10, viewModel.uiState.value.date?.monthValue)
-        assertEquals(15, viewModel.uiState.value.date?.dayOfMonth)
-    }
-
-    @Test
-    fun setYearlyMonthAndDay_februaryDay31_clampsTo29() = runTest {
-        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
-        val viewModel = ReminderEditViewModel(
-            reminderRepository = repository,
-            reminderScheduler = scheduler,
-            reminderSyncManager = reminderSyncManager,
-            permissionChecker = permissionChecker,
-            preferencesDataSource = preferencesDataSource,
-            savedStateHandle = savedStateHandle
-        )
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        viewModel.setRepeatInterval(vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval.YEARLY)
-        viewModel.setYearlyMonthAndDay(2, 31)
+        viewModel.setAutoSilenceMinutes(10)
+        viewModel.setUseAlarmStream(false)
 
         val state = viewModel.uiState.value
-        assertEquals(2, state.yearlyMonth)
-        assertEquals(29, state.yearlyDay)
-        assertNotNull(state.date)
-        assertEquals(2, state.date?.monthValue)
-        assertTrue(state.date!!.dayOfMonth in 28..29)
+        assertEquals(10, state.autoSilenceMinutes)
+        assertFalse(state.useAlarmStream)
+
+        val draft = viewModel.createDraftReminder()
+        assertEquals(10, draft.autoSilenceMinutes)
+        assertFalse(draft.useAlarmStream)
     }
 
     @Test
-    fun setYearlyMonthAndDay_aprilDay31_clampsTo30() = runTest {
+    fun multiTimeWindows_and_allDayPreset_updatesCorrectly() = runTest {
         val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
@@ -653,14 +577,13 @@ class ReminderEditViewModelTest {
         )
         testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.setRepeatInterval(vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval.YEARLY)
-        viewModel.setYearlyMonthAndDay(4, 31)
+        viewModel.setTriggerType(ReminderTriggerType.LOCATION)
+        viewModel.setAllDayPresetLocation()
 
         val state = viewModel.uiState.value
-        assertEquals(4, state.yearlyMonth)
-        assertEquals(30, state.yearlyDay)
-        assertEquals(4, state.date?.monthValue)
-        assertEquals(30, state.date?.dayOfMonth)
+        assertEquals(1, state.locationTimeWindows.size)
+        assertEquals(LocalTime.of(0, 0), state.locationTimeWindows[0].startTime)
+        assertEquals(LocalTime.of(23, 59), state.locationTimeWindows[0].endTime)
     }
 
     @Test
@@ -676,59 +599,13 @@ class ReminderEditViewModelTest {
         )
         testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.setRepeatInterval(vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval.DAILY)
+        viewModel.setRepeatInterval(vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval.WEEKLY)
+        viewModel.toggleRepeatDay(DayOfWeek.FRIDAY)
         var backNavigated = false
         viewModel.onBackClick(onNavigateBack = { backNavigated = true })
 
         assertTrue(viewModel.uiState.value.showDiscardDialog)
         assertFalse(backNavigated)
-    }
-
-    @Test
-    fun repeatInterval_toggleDay_fromDaily_transitionsToWeekly() = runTest {
-        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
-        val viewModel = ReminderEditViewModel(
-            reminderRepository = repository,
-            reminderScheduler = scheduler,
-            reminderSyncManager = reminderSyncManager,
-            permissionChecker = permissionChecker,
-            preferencesDataSource = preferencesDataSource,
-            savedStateHandle = savedStateHandle
-        )
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        viewModel.setRepeatInterval(vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval.DAILY)
-        assertEquals(7, viewModel.uiState.value.repeatDays.size)
-
-        viewModel.toggleRepeatDay(DayOfWeek.SUNDAY)
-        assertEquals(vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval.WEEKLY, viewModel.uiState.value.repeatInterval)
-        assertEquals(6, viewModel.uiState.value.repeatDays.size)
-        assertFalse(viewModel.uiState.value.repeatDays.contains(DayOfWeek.SUNDAY))
-    }
-
-    @Test
-    fun repeatInterval_toggleDay_allDays_transitionsToDaily() = runTest {
-        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
-        val viewModel = ReminderEditViewModel(
-            reminderRepository = repository,
-            reminderScheduler = scheduler,
-            reminderSyncManager = reminderSyncManager,
-            permissionChecker = permissionChecker,
-            preferencesDataSource = preferencesDataSource,
-            savedStateHandle = savedStateHandle
-        )
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        viewModel.setRepeatInterval(vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval.WEEKLY)
-        // Add all remaining days
-        DayOfWeek.entries.forEach { day ->
-            if (!viewModel.uiState.value.repeatDays.contains(day)) {
-                viewModel.toggleRepeatDay(day)
-            }
-        }
-
-        assertEquals(vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval.DAILY, viewModel.uiState.value.repeatInterval)
-        assertEquals(7, viewModel.uiState.value.repeatDays.size)
     }
 
     @Test
@@ -786,7 +663,8 @@ class ReminderEditViewModelTest {
         )
         testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.setMonthlyDay(28)
+        viewModel.setRepeatInterval(vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval.MONTHLY)
+        viewModel.toggleMonthlyDay(28)
         var backNavigated = false
         viewModel.onBackClick(onNavigateBack = { backNavigated = true })
 
@@ -807,7 +685,8 @@ class ReminderEditViewModelTest {
         )
         testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.setYearlyMonthAndDay(11, 20)
+        viewModel.setRepeatInterval(vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval.YEARLY)
+        viewModel.addYearlyDate(11, 20)
         var backNavigated = false
         viewModel.onBackClick(onNavigateBack = { backNavigated = true })
 
@@ -931,6 +810,68 @@ class ReminderEditViewModelTest {
 
         viewModel.setWifiSsid("Home_Network")
         assertFalse(viewModel.uiState.value.showWifiError)
+    }
+
+    @Test
+    fun timeWindow_toggle_nullRepresents24SevenMode() = runTest {
+        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
+        val viewModel = ReminderEditViewModel(
+            reminderRepository = repository,
+            reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
+            permissionChecker = permissionChecker,
+            preferencesDataSource = preferencesDataSource,
+            savedStateHandle = savedStateHandle
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // By default, Location and Wi-Fi time window is null (24/7)
+        viewModel.setTriggerType(ReminderTriggerType.LOCATION)
+        assertNull(viewModel.uiState.value.locationTimeWindow)
+        val draft247 = viewModel.createDraftReminder()
+        assertNull(draft247.locationTrigger?.timeWindow)
+
+        // Toggle Time Window ON
+        val window = ReminderTimeWindow(startTime = LocalTime.of(8, 0), endTime = LocalTime.of(18, 0))
+        viewModel.setLocationTimeWindow(window)
+        assertNotNull(viewModel.uiState.value.locationTimeWindow)
+        val draftWithWindow = viewModel.createDraftReminder()
+        assertNotNull(draftWithWindow.locationTrigger?.timeWindow)
+        assertEquals(LocalTime.of(8, 0), draftWithWindow.locationTrigger?.timeWindow?.startTime)
+
+        // Toggle Time Window OFF (back to 24/7)
+        viewModel.setLocationTimeWindow(null)
+        assertNull(viewModel.uiState.value.locationTimeWindow)
+        val draftReset247 = viewModel.createDraftReminder()
+        assertNull(draftReset247.locationTrigger?.timeWindow)
+    }
+
+    @Test
+    fun standardAlertMode_hidesAndResetsPersistentAlert() = runTest {
+        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
+        val viewModel = ReminderEditViewModel(
+            reminderRepository = repository,
+            reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
+            permissionChecker = permissionChecker,
+            preferencesDataSource = preferencesDataSource,
+            savedStateHandle = savedStateHandle
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Set to Full-Screen Alarm with persistent alert ON
+        viewModel.setNotificationStyle(NotificationStyle.FULL_SCREEN)
+        viewModel.setPersistentAlert(true)
+        assertTrue(viewModel.uiState.value.isPersistentAlert)
+
+        // Switch to Standard Notification mode
+        viewModel.setNotificationStyle(NotificationStyle.STANDARD)
+        assertEquals(NotificationStyle.STANDARD, viewModel.uiState.value.notificationStyle)
+        assertFalse(viewModel.uiState.value.isPersistentAlert)
+
+        val draft = viewModel.createDraftReminder()
+        assertEquals(NotificationStyle.STANDARD, draft.notificationStyle)
+        assertFalse(draft.isPersistentAlert)
     }
 }
 

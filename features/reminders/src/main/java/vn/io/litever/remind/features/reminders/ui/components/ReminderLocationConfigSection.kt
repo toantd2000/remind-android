@@ -1,6 +1,5 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,22 +7,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
-import androidx.compose.material.icons.rounded.DateRange
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Slider
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
@@ -34,10 +21,13 @@ import vn.io.litever.designsystem.components.LiteverSegmentedButton
 import vn.io.litever.designsystem.components.LiteverSingleChoiceSegmentedButtonRow
 import vn.io.litever.designsystem.components.LiteverTextField
 import vn.io.litever.designsystem.theme.LiteverTheme
-import vn.io.litever.remind.core.common.util.TimeFormatUtils
+import vn.io.litever.remind.core.model.DayOfWeek
 import vn.io.litever.remind.core.model.GeofenceTransitionType
+import vn.io.litever.remind.core.model.ReminderMonthDay
 import vn.io.litever.remind.core.model.ReminderTimeWindow
 import vn.io.litever.remind.features.reminders.R
+import vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval
+import java.time.LocalDate
 
 @Composable
 fun ReminderLocationConfigSection(
@@ -51,15 +41,28 @@ fun ReminderLocationConfigSection(
     onRadiusChange: (Float) -> Unit,
     transitionType: GeofenceTransitionType,
     onTransitionTypeChange: (GeofenceTransitionType) -> Unit,
-    timeWindow: ReminderTimeWindow?,
-    onTimeWindowChange: (ReminderTimeWindow?) -> Unit,
+    repeatInterval: ReminderRepeatInterval = ReminderRepeatInterval.ONCE,
+    onRepeatIntervalChange: (ReminderRepeatInterval) -> Unit = {},
+    date: LocalDate? = null,
+    onDateChange: (LocalDate?) -> Unit = {},
+    repeatDays: List<DayOfWeek> = emptyList(),
+    onRepeatDaysChange: (List<DayOfWeek>) -> Unit = {},
+    onRepeatDayToggle: (DayOfWeek) -> Unit = {},
+    monthlyDays: List<Int> = emptyList(),
+    onMonthlyDayToggle: (Int) -> Unit = {},
+    yearlyDates: List<ReminderMonthDay> = emptyList(),
+    onAddYearlyDate: (Int, Int) -> Unit = { _, _ -> },
+    onRemoveYearlyDate: (Int) -> Unit = {},
+    timeWindows: List<ReminderTimeWindow>,
+    onTimeWindowsChange: (List<ReminderTimeWindow>) -> Unit,
+    onAddTimeWindow: (ReminderTimeWindow) -> Unit,
+    onRemoveTimeWindow: (Int) -> Unit,
+    onSetAllDayPreset: () -> Unit,
     is24HourFormat: Boolean,
     modifier: Modifier = Modifier,
     showLocationError: Boolean = false,
     locationFocusRequester: FocusRequester? = null
 ) {
-    var showTimeWindowDialog by remember { mutableStateOf(false) }
-
     LiteverOutlinedCard(
         modifier = modifier
             .fillMaxWidth()
@@ -189,72 +192,33 @@ fun ReminderLocationConfigSection(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Defined Time Window Trigger
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(LiteverTheme.shapes.medium)
-                    .clickable { showTimeWindowDialog = true },
-                color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.4f),
-                shape = LiteverTheme.shapes.medium
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 14.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        vn.io.litever.remind.core.designsystem.components.ReMindSettingIcon(
-                            imageVector = Icons.Rounded.DateRange,
-                            selected = timeWindow != null
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Column {
-                            Text(
-                                text = stringResource(R.string.time_window_section_title),
-                                style = LiteverTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.SemiBold,
-                                color = LiteverTheme.colors.onSurface
-                            )
-                            val summary = if (timeWindow != null) {
-                                val s = TimeFormatUtils.formatTime(timeWindow.startTime, is24HourFormat)
-                                val e = TimeFormatUtils.formatTime(timeWindow.endTime, is24HourFormat)
-                                "$s - $e"
-                            } else {
-                                stringResource(R.string.time_window_desc)
-                            }
-                            Text(
-                                text = summary,
-                                style = LiteverTheme.typography.bodySmall,
-                                color = LiteverTheme.colors.onSurfaceVariant
-                            )
-                        }
-                    }
+            // Unified Date & Repeat Configuration
+            ReminderRepeatConfigSection(
+                repeatInterval = repeatInterval,
+                onRepeatIntervalChange = onRepeatIntervalChange,
+                date = date,
+                onDateChange = onDateChange,
+                repeatDays = repeatDays,
+                onRepeatDaysChange = onRepeatDaysChange,
+                onRepeatDayToggle = onRepeatDayToggle,
+                monthlyDays = monthlyDays,
+                onMonthlyDayToggle = onMonthlyDayToggle,
+                yearlyDates = yearlyDates,
+                onAddYearlyDate = onAddYearlyDate,
+                onRemoveYearlyDate = onRemoveYearlyDate
+            )
 
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
-                        contentDescription = null,
-                        tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.5f)
-                    )
-                }
-            }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Defined Multi Time Window Trigger with 24/7 vs Time Window Toggle
+            ReminderTimeWindowConfigSection(
+                timeWindows = timeWindows,
+                onTimeWindowsChange = onTimeWindowsChange,
+                onAddTimeWindow = onAddTimeWindow,
+                onRemoveTimeWindow = onRemoveTimeWindow,
+                onSetAllDayPreset = onSetAllDayPreset,
+                is24HourFormat = is24HourFormat
+            )
         }
-    }
-
-    if (showTimeWindowDialog) {
-        ReminderTimeWindowDialog(
-            initialTimeWindow = timeWindow,
-            is24HourFormat = is24HourFormat,
-            onDismissRequest = { showTimeWindowDialog = false },
-            onConfirm = { newWindow ->
-                onTimeWindowChange(newWindow)
-                showTimeWindowDialog = false
-            }
-        )
     }
 }

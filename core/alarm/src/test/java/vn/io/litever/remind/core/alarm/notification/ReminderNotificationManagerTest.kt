@@ -172,7 +172,7 @@ class ReminderNotificationManagerTest {
         val notification = manager.buildNotification(reminder)
         assertNotNull(notification)
         // Fallback category
-        assertEquals(NotificationCompat.CATEGORY_REMINDER, notification.category)
+        assertEquals(NotificationCompat.CATEGORY_ALARM, notification.category)
     }
 
     @Test

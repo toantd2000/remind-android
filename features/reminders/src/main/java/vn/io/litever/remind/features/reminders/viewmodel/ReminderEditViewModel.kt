@@ -14,6 +14,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import vn.io.litever.remind.core.alarm.alert.ReminderAlertManager
+import vn.io.litever.remind.core.alarm.notification.ReminderNotificationManager
+import vn.io.litever.remind.core.alarm.ReminderSyncManager
 import vn.io.litever.remind.core.common.util.PermissionChecker
 import vn.io.litever.remind.core.common.util.ReminderPermissionType
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
@@ -25,20 +28,18 @@ import vn.io.litever.remind.core.model.GeofenceTransitionType
 import vn.io.litever.remind.core.model.LocationTrigger
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder
+import vn.io.litever.remind.core.model.ReminderMonthDay
 import vn.io.litever.remind.core.model.ReminderTimeWindow
 import vn.io.litever.remind.core.model.ReminderTriggerType
-import vn.io.litever.remind.core.alarm.ReminderSyncManager
 import vn.io.litever.remind.core.model.TimeTrigger
 import vn.io.litever.remind.core.model.WifiTrigger
 import vn.io.litever.remind.core.model.WifiTriggerType
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.LocalTime
 import javax.inject.Inject
 
 enum class ReminderRepeatInterval {
     ONCE,
-    DAILY,
     WEEKLY,
     MONTHLY,
     YEARLY
@@ -57,53 +58,44 @@ data class ReminderEditUiState(
     val notes: String = "",
     val isEnabled: Boolean = true,
     val triggerType: ReminderTriggerType = ReminderTriggerType.TIME,
-
-    // Time Trigger
     val time: LocalTime = LocalTime.now().plusMinutes(5).withSecond(0).withNano(0),
-    val date: LocalDate? = null,
+    val date: LocalDate? = LocalDate.now(),
     val repeatDays: List<DayOfWeek> = emptyList(),
     val repeatInterval: ReminderRepeatInterval = ReminderRepeatInterval.ONCE,
-    val monthlyDay: Int = 1,
-    val yearlyMonth: Int = 1,
-    val yearlyDay: Int = 1,
-
-    // Location Trigger
+    val monthlyDays: List<Int> = emptyList(),
+    val yearlyDates: List<ReminderMonthDay> = emptyList(),
     val locationName: String = "",
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
     val radiusMeters: Float = 100f,
     val geofenceTransitionType: GeofenceTransitionType = GeofenceTransitionType.ENTER,
     val locationTimeWindow: ReminderTimeWindow? = null,
-
-    // Wi-Fi Trigger
+    val locationTimeWindows: List<ReminderTimeWindow> = emptyList(),
     val wifiSsid: String = "",
     val wifiBssid: String? = null,
     val wifiTriggerType: WifiTriggerType = WifiTriggerType.ON_CONNECT,
     val wifiTimeWindow: ReminderTimeWindow? = null,
-
-    // Checklist
+    val wifiTimeWindows: List<ReminderTimeWindow> = emptyList(),
     val checklist: List<ChecklistItem> = emptyList(),
-
-    // Alert & Notification Settings
     val notificationStyle: NotificationStyle = NotificationStyle.STANDARD,
     val isPersistentAlert: Boolean = false,
+    val autoSilenceMinutes: Int = 5,
+    val useAlarmStream: Boolean = true,
     val ringtoneUri: String? = null,
     val ringtoneTitle: String = "Default",
     val vibrationEnabled: Boolean = true,
-    val volume: Int = 80,
+    val volume: Int = 100,
     val snoozeEnabled: Boolean = true,
     val snoozeIntervalMinutes: Int = 5,
     val snoozeRepeatCount: Int = 3,
-
-    // Preferences & UX Dialogs
-    val is24HourFormat: Boolean = true,
-    val showPermissionDialog: Boolean = false,
     val showDiscardDialog: Boolean = false,
+    val showPermissionDialog: Boolean = false,
     val showTitleError: Boolean = false,
     val showLocationError: Boolean = false,
     val showWifiError: Boolean = false,
     val validationErrorField: ReminderValidationErrorField? = null,
     val validationErrorTrigger: Long = 0L,
+    val is24HourFormat: Boolean = true,
     val missingPermissions: List<ReminderPermissionType> = emptyList(),
     val isNewDraft: Boolean = true
 )
@@ -116,7 +108,9 @@ class ReminderEditViewModel @Inject constructor(
     private val permissionChecker: PermissionChecker,
     private val preferencesDataSource: AlarmPreferencesDataSource,
     savedStateHandle: SavedStateHandle,
-    @ApplicationContext private val context: Context? = null
+    @ApplicationContext private val context: Context? = null,
+    private val reminderAlertManager: ReminderAlertManager? = null,
+    private val reminderNotificationManager: ReminderNotificationManager? = null
 ) : ViewModel() {
 
     val reminderId: Long = savedStateHandle.get<Long>("reminderId") ?: 0L
@@ -134,15 +128,50 @@ class ReminderEditViewModel @Inject constructor(
                 val existing = reminderRepository.getReminderById(reminderId)
                 if (existing != null) {
                     val timeTrigger = existing.timeTrigger
+                    val locTrigger = existing.locationTrigger
+                    val wifiTrigger = existing.wifiTrigger
+
+                    val activeTriggerDate = when (existing.triggerType) {
+                        ReminderTriggerType.TIME -> timeTrigger?.date
+                        ReminderTriggerType.LOCATION -> locTrigger?.date
+                        ReminderTriggerType.WIFI -> wifiTrigger?.date
+                    }
+                    val activeRepeatDays = when (existing.triggerType) {
+                        ReminderTriggerType.TIME -> timeTrigger?.repeatDays ?: emptyList()
+                        ReminderTriggerType.LOCATION -> locTrigger?.repeatDays ?: emptyList()
+                        ReminderTriggerType.WIFI -> wifiTrigger?.repeatDays ?: emptyList()
+                    }
+                    val activeMonthlyDays = when (existing.triggerType) {
+                        ReminderTriggerType.TIME -> timeTrigger?.monthlyDays ?: emptyList()
+                        ReminderTriggerType.LOCATION -> locTrigger?.monthlyDays ?: emptyList()
+                        ReminderTriggerType.WIFI -> wifiTrigger?.monthlyDays ?: emptyList()
+                    }
+                    val activeYearlyDates = when (existing.triggerType) {
+                        ReminderTriggerType.TIME -> timeTrigger?.yearlyDates ?: emptyList()
+                        ReminderTriggerType.LOCATION -> locTrigger?.yearlyDates ?: emptyList()
+                        ReminderTriggerType.WIFI -> wifiTrigger?.yearlyDates ?: emptyList()
+                    }
+
                     val initialRepeatInterval = when {
-                        timeTrigger?.repeatDays?.size == 7 -> ReminderRepeatInterval.DAILY
-                        !timeTrigger?.repeatDays.isNullOrEmpty() -> ReminderRepeatInterval.WEEKLY
-                        timeTrigger?.date != null -> ReminderRepeatInterval.ONCE
+                        activeYearlyDates.isNotEmpty() -> ReminderRepeatInterval.YEARLY
+                        activeMonthlyDays.isNotEmpty() -> ReminderRepeatInterval.MONTHLY
+                        activeRepeatDays.isNotEmpty() -> ReminderRepeatInterval.WEEKLY
+                        activeTriggerDate != null -> ReminderRepeatInterval.ONCE
                         else -> ReminderRepeatInterval.ONCE
                     }
-                    val initialMonthlyDay = timeTrigger?.date?.dayOfMonth ?: now.dayOfMonth
-                    val initialYearlyMonth = timeTrigger?.date?.monthValue ?: now.monthValue
-                    val initialYearlyDay = timeTrigger?.date?.dayOfMonth ?: now.dayOfMonth
+                    val initialMonthlyDays = if (activeMonthlyDays.isNotEmpty()) {
+                        activeMonthlyDays
+                    } else {
+                        listOf(activeTriggerDate?.dayOfMonth ?: now.dayOfMonth)
+                    }
+                    val initialYearlyDates = if (activeYearlyDates.isNotEmpty()) {
+                        activeYearlyDates
+                    } else {
+                        listOf(ReminderMonthDay(activeTriggerDate?.monthValue ?: now.monthValue, activeTriggerDate?.dayOfMonth ?: now.dayOfMonth))
+                    }
+
+                    val locWindows = locTrigger?.activeTimeWindows ?: emptyList()
+                    val wifiWindows = wifiTrigger?.activeTimeWindows ?: emptyList()
 
                     _uiState.update {
                         it.copy(
@@ -153,25 +182,28 @@ class ReminderEditViewModel @Inject constructor(
                             isEnabled = existing.isEnabled,
                             triggerType = existing.triggerType,
                             time = timeTrigger?.time ?: LocalTime.now().plusMinutes(5).withSecond(0).withNano(0),
-                            date = timeTrigger?.date,
-                            repeatDays = timeTrigger?.repeatDays ?: emptyList(),
+                            date = activeTriggerDate,
+                            repeatDays = activeRepeatDays,
                             repeatInterval = initialRepeatInterval,
-                            monthlyDay = initialMonthlyDay,
-                            yearlyMonth = initialYearlyMonth,
-                            yearlyDay = initialYearlyDay,
+                            monthlyDays = initialMonthlyDays,
+                            yearlyDates = initialYearlyDates,
                             locationName = existing.locationTrigger?.locationName ?: "",
                             latitude = existing.locationTrigger?.latitude ?: 0.0,
                             longitude = existing.locationTrigger?.longitude ?: 0.0,
                             radiusMeters = existing.locationTrigger?.radiusMeters ?: 100f,
                             geofenceTransitionType = existing.locationTrigger?.transitionType ?: GeofenceTransitionType.ENTER,
                             locationTimeWindow = existing.locationTrigger?.timeWindow,
+                            locationTimeWindows = locWindows,
                             wifiSsid = existing.wifiTrigger?.ssid ?: "",
                             wifiBssid = existing.wifiTrigger?.bssid,
                             wifiTriggerType = existing.wifiTrigger?.triggerType ?: WifiTriggerType.ON_CONNECT,
                             wifiTimeWindow = existing.wifiTrigger?.timeWindow,
+                            wifiTimeWindows = wifiWindows,
                             checklist = existing.checklist,
                             notificationStyle = existing.notificationStyle,
                             isPersistentAlert = existing.isPersistentAlert,
+                            autoSilenceMinutes = existing.autoSilenceMinutes,
+                            useAlarmStream = existing.useAlarmStream,
                             ringtoneUri = existing.ringtoneUri,
                             ringtoneTitle = getRingtoneTitle(existing.ringtoneUri),
                             vibrationEnabled = existing.vibrationEnabled,
@@ -191,9 +223,8 @@ class ReminderEditViewModel @Inject constructor(
                 it.copy(
                     isLoading = false,
                     is24HourFormat = is24h,
-                    monthlyDay = now.dayOfMonth,
-                    yearlyMonth = now.monthValue,
-                    yearlyDay = now.dayOfMonth,
+                    monthlyDays = listOf(now.dayOfMonth),
+                    yearlyDates = listOf(ReminderMonthDay(now.monthValue, now.dayOfMonth)),
                     isNewDraft = true
                 )
             }
@@ -215,12 +246,7 @@ class ReminderEditViewModel @Inject constructor(
 
     fun setTime(time: LocalTime) {
         _uiState.update { state ->
-            val updatedDate = when (state.repeatInterval) {
-                ReminderRepeatInterval.MONTHLY -> calculateNextMonthlyDate(state.monthlyDay, time)
-                ReminderRepeatInterval.YEARLY -> calculateNextYearlyDate(state.yearlyMonth, state.yearlyDay, time)
-                else -> state.date
-            }
-            state.copy(time = time, date = updatedDate)
+            state.copy(time = time)
         }
     }
 
@@ -236,14 +262,9 @@ class ReminderEditViewModel @Inject constructor(
 
     fun setRepeatDays(days: List<DayOfWeek>) {
         _uiState.update {
-            val interval = when {
-                days.size == 7 -> ReminderRepeatInterval.DAILY
-                days.isNotEmpty() -> ReminderRepeatInterval.WEEKLY
-                else -> it.repeatInterval
-            }
             it.copy(
                 repeatDays = days,
-                repeatInterval = interval,
+                repeatInterval = if (days.isNotEmpty()) ReminderRepeatInterval.WEEKLY else it.repeatInterval,
                 date = if (days.isNotEmpty()) null else it.date
             )
         }
@@ -251,23 +272,17 @@ class ReminderEditViewModel @Inject constructor(
 
     fun setRepeatInterval(interval: ReminderRepeatInterval) {
         _uiState.update { state ->
+            val now = LocalDate.now()
             when (interval) {
                 ReminderRepeatInterval.ONCE -> {
                     state.copy(
                         repeatInterval = interval,
                         repeatDays = emptyList(),
-                        date = state.date ?: LocalDate.now()
-                    )
-                }
-                ReminderRepeatInterval.DAILY -> {
-                    state.copy(
-                        repeatInterval = interval,
-                        repeatDays = DayOfWeek.entries,
-                        date = null
+                        date = state.date ?: now
                     )
                 }
                 ReminderRepeatInterval.WEEKLY -> {
-                    val currentWeeklyDays = if (state.repeatDays.isNotEmpty() && state.repeatDays.size < 7) {
+                    val currentWeeklyDays = if (state.repeatDays.isNotEmpty()) {
                         state.repeatDays
                     } else {
                         listOf(DayOfWeek.MONDAY)
@@ -279,26 +294,21 @@ class ReminderEditViewModel @Inject constructor(
                     )
                 }
                 ReminderRepeatInterval.MONTHLY -> {
-                    val targetDay = if (state.monthlyDay in 1..31) state.monthlyDay else (state.date?.dayOfMonth ?: LocalDate.now().dayOfMonth)
-                    val calculatedDate = calculateNextMonthlyDate(targetDay, state.time)
+                    val currentDays = if (state.monthlyDays.isNotEmpty()) state.monthlyDays else listOf(now.dayOfMonth)
                     state.copy(
                         repeatInterval = interval,
-                        monthlyDay = targetDay,
+                        monthlyDays = currentDays,
                         repeatDays = emptyList(),
-                        date = calculatedDate
+                        date = null
                     )
                 }
                 ReminderRepeatInterval.YEARLY -> {
-                    val targetMonth = if (state.yearlyMonth in 1..12) state.yearlyMonth else (state.date?.monthValue ?: LocalDate.now().monthValue)
-                    val maxDayForMonth = java.time.Month.of(targetMonth).maxLength()
-                    val targetDay = if (state.yearlyDay in 1..maxDayForMonth) state.yearlyDay else (state.date?.dayOfMonth ?: LocalDate.now().dayOfMonth).coerceIn(1, maxDayForMonth)
-                    val calculatedDate = calculateNextYearlyDate(targetMonth, targetDay, state.time)
+                    val currentDates = if (state.yearlyDates.isNotEmpty()) state.yearlyDates else listOf(ReminderMonthDay(now.monthValue, now.dayOfMonth))
                     state.copy(
                         repeatInterval = interval,
-                        yearlyMonth = targetMonth,
-                        yearlyDay = targetDay,
+                        yearlyDates = currentDates,
                         repeatDays = emptyList(),
-                        date = calculatedDate
+                        date = null
                     )
                 }
             }
@@ -312,76 +322,56 @@ class ReminderEditViewModel @Inject constructor(
             } else {
                 (state.repeatDays + day).sortedBy { it.toJavaDayValue() }
             }
-            val interval = when {
-                newDays.size == 7 -> ReminderRepeatInterval.DAILY
-                newDays.isNotEmpty() -> ReminderRepeatInterval.WEEKLY
-                else -> state.repeatInterval
-            }
             state.copy(
                 repeatDays = newDays,
-                repeatInterval = interval,
+                repeatInterval = ReminderRepeatInterval.WEEKLY,
                 date = null
             )
         }
     }
 
-    fun setMonthlyDay(day: Int) {
+    fun setMonthlyDays(days: List<Int>) {
+        val clamped = days.map { it.coerceIn(1, 31) }.distinct().sorted()
+        _uiState.update { it.copy(monthlyDays = clamped, date = null, repeatDays = emptyList()) }
+    }
+
+    fun toggleMonthlyDay(day: Int) {
         val clamped = day.coerceIn(1, 31)
         _uiState.update { state ->
-            val nextDate = calculateNextMonthlyDate(clamped, state.time)
-            state.copy(
-                monthlyDay = clamped,
-                date = nextDate,
-                repeatDays = emptyList()
-            )
+            val current = state.monthlyDays
+            val updated = if (current.contains(clamped)) {
+                if (current.size > 1) current - clamped else current
+            } else {
+                (current + clamped).sorted()
+            }
+            state.copy(monthlyDays = updated, date = null, repeatDays = emptyList())
         }
     }
 
-    fun setYearlyMonthAndDay(month: Int, day: Int) {
-        val clampedMonth = month.coerceIn(1, 12)
-        val maxDaysForMonth = java.time.Month.of(clampedMonth).maxLength()
-        val clampedDay = day.coerceIn(1, maxDaysForMonth)
+    fun setYearlyDates(dates: List<ReminderMonthDay>) {
+        _uiState.update { it.copy(yearlyDates = dates, date = null, repeatDays = emptyList()) }
+    }
+
+    fun addYearlyDate(month: Int, day: Int) {
+        val m = month.coerceIn(1, 12)
+        val maxDays = java.time.Month.of(m).maxLength()
+        val d = day.coerceIn(1, maxDays)
+        val newEntry = ReminderMonthDay(m, d)
         _uiState.update { state ->
-            val nextDate = calculateNextYearlyDate(clampedMonth, clampedDay, state.time)
-            state.copy(
-                yearlyMonth = clampedMonth,
-                yearlyDay = clampedDay,
-                date = nextDate,
-                repeatDays = emptyList()
-            )
+            if (state.yearlyDates.none { it.month == m && it.day == d }) {
+                state.copy(yearlyDates = state.yearlyDates + newEntry, date = null, repeatDays = emptyList())
+            } else {
+                state
+            }
         }
     }
 
-    private fun calculateNextMonthlyDate(dayOfMonth: Int, time: LocalTime): LocalDate {
-        val now = LocalDateTime.now()
-        val today = now.toLocalDate()
-        val maxDaysThisMonth = today.lengthOfMonth()
-        val clampedDay = dayOfMonth.coerceAtMost(maxDaysThisMonth)
-        val thisMonthCandidate = today.withDayOfMonth(clampedDay)
-
-        return if (thisMonthCandidate.atTime(time).isAfter(now)) {
-            thisMonthCandidate
-        } else {
-            val nextMonth = today.plusMonths(1)
-            val maxDaysNextMonth = nextMonth.lengthOfMonth()
-            nextMonth.withDayOfMonth(dayOfMonth.coerceAtMost(maxDaysNextMonth))
-        }
-    }
-
-    private fun calculateNextYearlyDate(month: Int, day: Int, time: LocalTime): LocalDate {
-        val now = LocalDateTime.now()
-        val today = now.toLocalDate()
-        val targetMonth = java.time.Month.of(month)
-        val maxDaysThisYear = targetMonth.length(java.time.Year.isLeap(today.year.toLong()))
-        val clampedDayThisYear = day.coerceAtMost(maxDaysThisYear)
-        val thisYearCandidate = LocalDate.of(today.year, month, clampedDayThisYear)
-
-        return if (thisYearCandidate.atTime(time).isAfter(now)) {
-            thisYearCandidate
-        } else {
-            val nextYear = today.year + 1
-            val maxDaysNextYear = targetMonth.length(java.time.Year.isLeap(nextYear.toLong()))
-            LocalDate.of(nextYear, month, day.coerceAtMost(maxDaysNextYear))
+    fun removeYearlyDate(index: Int) {
+        _uiState.update { state ->
+            if (index in state.yearlyDates.indices && state.yearlyDates.size > 1) {
+                val updated = state.yearlyDates.toMutableList().apply { removeAt(index) }
+                state.copy(yearlyDates = updated)
+            } else state
         }
     }
 
@@ -414,7 +404,41 @@ class ReminderEditViewModel @Inject constructor(
     }
 
     fun setLocationTimeWindow(timeWindow: ReminderTimeWindow?) {
-        _uiState.update { it.copy(locationTimeWindow = timeWindow) }
+        _uiState.update {
+            it.copy(
+                locationTimeWindow = timeWindow,
+                locationTimeWindows = if (timeWindow != null) listOf(timeWindow) else emptyList()
+            )
+        }
+    }
+
+    fun setLocationTimeWindows(windows: List<ReminderTimeWindow>) {
+        _uiState.update {
+            it.copy(
+                locationTimeWindows = windows,
+                locationTimeWindow = windows.firstOrNull()
+            )
+        }
+    }
+
+    fun addLocationTimeWindow(window: ReminderTimeWindow) {
+        _uiState.update {
+            val updated = it.locationTimeWindows + window
+            it.copy(locationTimeWindows = updated, locationTimeWindow = updated.firstOrNull())
+        }
+    }
+
+    fun removeLocationTimeWindow(index: Int) {
+        _uiState.update {
+            if (index in it.locationTimeWindows.indices) {
+                val updated = it.locationTimeWindows.toMutableList().apply { removeAt(index) }
+                it.copy(locationTimeWindows = updated, locationTimeWindow = updated.firstOrNull())
+            } else it
+        }
+    }
+
+    fun setAllDayPresetLocation() {
+        setLocationTimeWindows(listOf(ReminderTimeWindow.ALL_DAY))
     }
 
     fun setWifiSsid(ssid: String) {
@@ -430,7 +454,41 @@ class ReminderEditViewModel @Inject constructor(
     }
 
     fun setWifiTimeWindow(timeWindow: ReminderTimeWindow?) {
-        _uiState.update { it.copy(wifiTimeWindow = timeWindow) }
+        _uiState.update {
+            it.copy(
+                wifiTimeWindow = timeWindow,
+                wifiTimeWindows = if (timeWindow != null) listOf(timeWindow) else emptyList()
+            )
+        }
+    }
+
+    fun setWifiTimeWindows(windows: List<ReminderTimeWindow>) {
+        _uiState.update {
+            it.copy(
+                wifiTimeWindows = windows,
+                wifiTimeWindow = windows.firstOrNull()
+            )
+        }
+    }
+
+    fun addWifiTimeWindow(window: ReminderTimeWindow) {
+        _uiState.update {
+            val updated = it.wifiTimeWindows + window
+            it.copy(wifiTimeWindows = updated, wifiTimeWindow = updated.firstOrNull())
+        }
+    }
+
+    fun removeWifiTimeWindow(index: Int) {
+        _uiState.update {
+            if (index in it.wifiTimeWindows.indices) {
+                val updated = it.wifiTimeWindows.toMutableList().apply { removeAt(index) }
+                it.copy(wifiTimeWindows = updated, wifiTimeWindow = updated.firstOrNull())
+            } else it
+        }
+    }
+
+    fun setAllDayPresetWifi() {
+        setWifiTimeWindows(listOf(ReminderTimeWindow.ALL_DAY))
     }
 
     fun addChecklistItem(text: String) {
@@ -497,6 +555,14 @@ class ReminderEditViewModel @Inject constructor(
         _uiState.update { it.copy(isPersistentAlert = isPersistent) }
     }
 
+    fun setAutoSilenceMinutes(minutes: Int) {
+        _uiState.update { it.copy(autoSilenceMinutes = minutes) }
+    }
+
+    fun setUseAlarmStream(useAlarmStream: Boolean) {
+        _uiState.update { it.copy(useAlarmStream = useAlarmStream) }
+    }
+
     fun setVibrationEnabled(enabled: Boolean) {
         _uiState.update { it.copy(vibrationEnabled = enabled) }
     }
@@ -556,28 +622,46 @@ class ReminderEditViewModel @Inject constructor(
         val timeTrigger = if (state.triggerType == ReminderTriggerType.TIME) {
             TimeTrigger(
                 time = state.time,
-                date = state.date,
-                repeatDays = state.repeatDays
+                date = if (state.repeatInterval == ReminderRepeatInterval.ONCE) state.date else null,
+                repeatDays = if (state.repeatInterval == ReminderRepeatInterval.WEEKLY) state.repeatDays else emptyList(),
+                monthlyDays = if (state.repeatInterval == ReminderRepeatInterval.MONTHLY) state.monthlyDays else emptyList(),
+                yearlyDates = if (state.repeatInterval == ReminderRepeatInterval.YEARLY) state.yearlyDates else emptyList()
             )
         } else null
 
         val locationTrigger = if (state.triggerType == ReminderTriggerType.LOCATION) {
+            val windows = state.locationTimeWindows.ifEmpty {
+                if (state.locationTimeWindow != null) listOf(state.locationTimeWindow) else emptyList()
+            }
             LocationTrigger(
                 latitude = state.latitude,
                 longitude = state.longitude,
                 radiusMeters = state.radiusMeters,
                 locationName = state.locationName,
                 transitionType = state.geofenceTransitionType,
-                timeWindow = state.locationTimeWindow
+                timeWindow = windows.firstOrNull(),
+                timeWindows = windows,
+                date = if (state.repeatInterval == ReminderRepeatInterval.ONCE) state.date else null,
+                repeatDays = if (state.repeatInterval == ReminderRepeatInterval.WEEKLY) state.repeatDays else emptyList(),
+                monthlyDays = if (state.repeatInterval == ReminderRepeatInterval.MONTHLY) state.monthlyDays else emptyList(),
+                yearlyDates = if (state.repeatInterval == ReminderRepeatInterval.YEARLY) state.yearlyDates else emptyList()
             )
         } else null
 
         val wifiTrigger = if (state.triggerType == ReminderTriggerType.WIFI) {
+            val windows = state.wifiTimeWindows.ifEmpty {
+                if (state.wifiTimeWindow != null) listOf(state.wifiTimeWindow) else emptyList()
+            }
             WifiTrigger(
                 ssid = state.wifiSsid,
                 bssid = state.wifiBssid,
                 triggerType = state.wifiTriggerType,
-                timeWindow = state.wifiTimeWindow
+                timeWindow = windows.firstOrNull(),
+                timeWindows = windows,
+                date = if (state.repeatInterval == ReminderRepeatInterval.ONCE) state.date else null,
+                repeatDays = if (state.repeatInterval == ReminderRepeatInterval.WEEKLY) state.repeatDays else emptyList(),
+                monthlyDays = if (state.repeatInterval == ReminderRepeatInterval.MONTHLY) state.monthlyDays else emptyList(),
+                yearlyDates = if (state.repeatInterval == ReminderRepeatInterval.YEARLY) state.yearlyDates else emptyList()
             )
         } else null
 
@@ -593,6 +677,8 @@ class ReminderEditViewModel @Inject constructor(
             checklist = state.checklist,
             notificationStyle = state.notificationStyle,
             isPersistentAlert = if (state.notificationStyle == NotificationStyle.FULL_SCREEN) state.isPersistentAlert else false,
+            autoSilenceMinutes = state.autoSilenceMinutes,
+            useAlarmStream = state.useAlarmStream,
             ringtoneUri = state.ringtoneUri,
             vibrationEnabled = state.vibrationEnabled,
             volume = state.volume,
@@ -668,6 +754,8 @@ class ReminderEditViewModel @Inject constructor(
                 if (existing != null) {
                     reminderScheduler.cancel(existing)
                     reminderScheduler.cancelSnooze(existing)
+                    reminderAlertManager?.stopAlert(existing.id)
+                    reminderNotificationManager?.cancelNotification(existing.id)
                     reminderRepository.deleteReminder(existing)
                     reminderSyncManager.sync()
                 }
@@ -686,6 +774,8 @@ class ReminderEditViewModel @Inject constructor(
                 }
             } else {
                 reminderScheduler.cancelSnooze(reminderToSave)
+                reminderAlertManager?.stopAlert(reminderToSave.id)
+                reminderNotificationManager?.cancelNotification(reminderToSave.id)
                 reminderRepository.updateReminder(reminderToSave)
                 if (reminderToSave.isEnabled) {
                     reminderScheduler.schedule(reminderToSave)
@@ -713,8 +803,12 @@ class ReminderEditViewModel @Inject constructor(
 
     fun refreshPermissions() {
         val draft = createDraftReminder()
-        if (permissionChecker.hasPermissionsForReminder(draft)) {
-            _uiState.update { it.copy(showPermissionDialog = false) }
+        val missing = permissionChecker.getMissingPermissions(draft)
+        _uiState.update {
+            it.copy(
+                missingPermissions = missing,
+                showPermissionDialog = it.showPermissionDialog && missing.isNotEmpty()
+            )
         }
     }
 
@@ -729,22 +823,25 @@ class ReminderEditViewModel @Inject constructor(
                 curr.date != init.date ||
                 curr.repeatDays != init.repeatDays ||
                 curr.repeatInterval != init.repeatInterval ||
-                curr.monthlyDay != init.monthlyDay ||
-                curr.yearlyMonth != init.yearlyMonth ||
-                curr.yearlyDay != init.yearlyDay ||
+                curr.monthlyDays != init.monthlyDays ||
+                curr.yearlyDates != init.yearlyDates ||
                 curr.locationName != init.locationName ||
                 curr.latitude != init.latitude ||
                 curr.longitude != init.longitude ||
                 curr.radiusMeters != init.radiusMeters ||
                 curr.geofenceTransitionType != init.geofenceTransitionType ||
                 curr.locationTimeWindow != init.locationTimeWindow ||
+                curr.locationTimeWindows != init.locationTimeWindows ||
                 curr.wifiSsid != init.wifiSsid ||
                 curr.wifiBssid != init.wifiBssid ||
                 curr.wifiTriggerType != init.wifiTriggerType ||
                 curr.wifiTimeWindow != init.wifiTimeWindow ||
+                curr.wifiTimeWindows != init.wifiTimeWindows ||
                 curr.checklist != init.checklist ||
                 curr.notificationStyle != init.notificationStyle ||
                 curr.isPersistentAlert != init.isPersistentAlert ||
+                curr.autoSilenceMinutes != init.autoSilenceMinutes ||
+                curr.useAlarmStream != init.useAlarmStream ||
                 curr.ringtoneUri != init.ringtoneUri ||
                 curr.vibrationEnabled != init.vibrationEnabled ||
                 curr.volume != init.volume ||

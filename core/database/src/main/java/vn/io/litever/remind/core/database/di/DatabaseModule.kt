@@ -34,7 +34,8 @@ object DatabaseModule {
             RemindDatabase.MIGRATION_1_2,
             RemindDatabase.MIGRATION_2_3,
             RemindDatabase.MIGRATION_3_4,
-            RemindDatabase.MIGRATION_4_5
+            RemindDatabase.MIGRATION_4_5,
+            RemindDatabase.MIGRATION_5_6
         )
         .addCallback(RemindDatabaseCallback())
         .fallbackToDestructiveMigration(true)

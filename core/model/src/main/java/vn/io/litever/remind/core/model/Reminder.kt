@@ -14,6 +14,8 @@ data class Reminder(
     val checklist: List<ChecklistItem> = emptyList(),
     val notificationStyle: NotificationStyle = NotificationStyle.STANDARD,
     val isPersistentAlert: Boolean = false,
+    val autoSilenceMinutes: Int = 5,
+    val useAlarmStream: Boolean = true,
     val ringtoneUri: String? = null,
     val vibrationEnabled: Boolean = true,
     val volume: Int = 100,
@@ -38,6 +40,13 @@ data class Reminder(
 
     val isAllChecklistCompleted: Boolean
         get() = checklist.isNotEmpty() && checklist.all { it.isCompleted }
+
+    val isRecurring: Boolean
+        get() = when (triggerType) {
+            ReminderTriggerType.TIME -> timeTrigger?.isRecurring == true
+            ReminderTriggerType.LOCATION -> locationTrigger?.isRecurring == true
+            ReminderTriggerType.WIFI -> wifiTrigger?.isRecurring == true
+        }
 
     fun canSnooze(): Boolean {
         return snoozeEnabled && (snoozeRepeatCount == -1 || currentSnoozeCount < snoozeRepeatCount)

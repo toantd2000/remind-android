@@ -280,7 +280,9 @@ fun LiteverTextField(
     supportingText: (@Composable () -> Unit)? = null,
     singleLine: Boolean = false,
     minLines: Int = 1,
-    maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE
+    maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
+    keyboardOptions: androidx.compose.foundation.text.KeyboardOptions = androidx.compose.foundation.text.KeyboardOptions.Default,
+    keyboardActions: androidx.compose.foundation.text.KeyboardActions = androidx.compose.foundation.text.KeyboardActions.Default
 ) {
     OutlinedTextField(
         value = value,
@@ -292,7 +294,60 @@ fun LiteverTextField(
         supportingText = supportingText,
         singleLine = singleLine,
         minLines = minLines,
-        maxLines = maxLines
+        maxLines = maxLines,
+        keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions
+    )
+}
+
+@Composable
+fun LiteverCircularProgressIndicator(
+    modifier: Modifier = Modifier,
+    color: androidx.compose.ui.graphics.Color = androidx.compose.material3.ProgressIndicatorDefaults.circularColor,
+    strokeWidth: androidx.compose.ui.unit.Dp = androidx.compose.material3.ProgressIndicatorDefaults.CircularStrokeWidth,
+    trackColor: androidx.compose.ui.graphics.Color = androidx.compose.material3.ProgressIndicatorDefaults.circularTrackColor,
+    strokeCap: androidx.compose.ui.graphics.StrokeCap = androidx.compose.material3.ProgressIndicatorDefaults.CircularDeterminateStrokeCap
+) {
+    androidx.compose.material3.CircularProgressIndicator(
+        modifier = modifier,
+        color = color,
+        strokeWidth = strokeWidth,
+        trackColor = trackColor,
+        strokeCap = strokeCap
+    )
+}
+
+@Composable
+fun LiteverLinearProgressIndicator(
+    progress: () -> Float,
+    modifier: Modifier = Modifier,
+    color: androidx.compose.ui.graphics.Color = androidx.compose.material3.ProgressIndicatorDefaults.linearColor,
+    trackColor: androidx.compose.ui.graphics.Color = androidx.compose.material3.ProgressIndicatorDefaults.linearTrackColor,
+    strokeCap: androidx.compose.ui.graphics.StrokeCap = androidx.compose.material3.ProgressIndicatorDefaults.LinearStrokeCap
+) {
+    androidx.compose.material3.LinearProgressIndicator(
+        progress = progress,
+        modifier = modifier,
+        color = color,
+        trackColor = trackColor,
+        strokeCap = strokeCap
+    )
+}
+
+@Composable
+fun LiteverLinearProgressIndicator(
+    progress: Float,
+    modifier: Modifier = Modifier,
+    color: androidx.compose.ui.graphics.Color = androidx.compose.material3.ProgressIndicatorDefaults.linearColor,
+    trackColor: androidx.compose.ui.graphics.Color = androidx.compose.material3.ProgressIndicatorDefaults.linearTrackColor,
+    strokeCap: androidx.compose.ui.graphics.StrokeCap = androidx.compose.material3.ProgressIndicatorDefaults.LinearStrokeCap
+) {
+    androidx.compose.material3.LinearProgressIndicator(
+        progress = { progress },
+        modifier = modifier,
+        color = color,
+        trackColor = trackColor,
+        strokeCap = strokeCap
     )
 }
 

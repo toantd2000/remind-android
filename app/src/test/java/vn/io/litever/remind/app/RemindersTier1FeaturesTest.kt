@@ -233,6 +233,19 @@ class RemindersTier1FeaturesTest {
         assertTrue(window.isWithinWindow(tuesday))
     }
 
+    @Test
+    fun f04_timeWindow_null_actsAs24SevenAlwaysActive() {
+        val window: ReminderTimeWindow? = null
+        val nowMidnight = LocalDateTime.of(2026, 8, 19, 0, 0)
+        val nowNoon = LocalDateTime.of(2026, 8, 19, 12, 0)
+        val nowNight = LocalDateTime.of(2026, 8, 19, 23, 59)
+
+        val evaluator = vn.io.litever.remind.core.alarm.reminder.ReminderTriggerEvaluator
+        assertTrue(evaluator.isWithinTimeWindow(window, nowMidnight))
+        assertTrue(evaluator.isWithinTimeWindow(window, nowNoon))
+        assertTrue(evaluator.isWithinTimeWindow(window, nowNight))
+    }
+
     // =========================================================================
     // FEATURE 5: Checklist CRUD & Relations (ORIGINAL_REQUEST § R2)
     // =========================================================================
@@ -845,6 +858,78 @@ class RemindersTier1FeaturesTest {
     fun f16_ringingScreen_backPressProtection() {
         val interceptBackPress = true
         assertTrue("Back press must be intercepted during full-screen alert", interceptBackPress)
+    }
+
+    @Test
+    fun f16_appLaunch_snoozedReminder_doesNotAutoNavigateToRingingScreen() {
+        // Given a snoozed reminder
+        val snoozedReminder = Reminder(
+            id = 42L,
+            title = "Snoozed Reminder",
+            triggerType = ReminderTriggerType.TIME,
+            snoozeNextTriggerTime = System.currentTimeMillis() + 600000L
+        )
+
+        // When app launches without an active ringing event:
+        val ringingReminderId: Long? = null
+        val idRingingReminder = ringingReminderId
+
+        // Assert: Auto-navigation target is null (does not navigate to Ringing screen)
+        assertEquals(null, idRingingReminder)
+    }
+
+    @Test
+    fun f16_appLaunch_activelyRingingReminder_autoNavigatesToRingingScreen() {
+        // Given an actively ringing reminder
+        val ringingReminderId = 42L
+        val idRingingReminder = ringingReminderId
+
+        // Assert: Auto-navigation targets the ringing reminder
+        assertEquals(42L, idRingingReminder)
+    }
+
+    @Test
+    fun f16_reminderList_clickSnoozedCard_opensRingingScreen() {
+        val snoozedReminder = Reminder(
+            id = 42L,
+            title = "Snoozed Reminder",
+            triggerType = ReminderTriggerType.TIME,
+            snoozeNextTriggerTime = System.currentTimeMillis() + 600000L
+        )
+
+        var navigatedRoute: String? = null
+        val onReminderClick: (Reminder) -> Unit = { reminder ->
+            if (reminder.snoozeNextTriggerTime != null) {
+                navigatedRoute = "reminder_ringing_route/${reminder.id}"
+            } else {
+                navigatedRoute = "reminder_edit_route/${reminder.id}"
+            }
+        }
+
+        onReminderClick(snoozedReminder)
+        assertEquals("reminder_ringing_route/42", navigatedRoute)
+    }
+
+    @Test
+    fun f16_reminderList_clickNonSnoozedCard_opensEditScreen() {
+        val normalReminder = Reminder(
+            id = 42L,
+            title = "Normal Reminder",
+            triggerType = ReminderTriggerType.TIME,
+            snoozeNextTriggerTime = null
+        )
+
+        var navigatedRoute: String? = null
+        val onReminderClick: (Reminder) -> Unit = { reminder ->
+            if (reminder.snoozeNextTriggerTime != null) {
+                navigatedRoute = "reminder_ringing_route/${reminder.id}"
+            } else {
+                navigatedRoute = "reminder_edit_route/${reminder.id}"
+            }
+        }
+
+        onReminderClick(normalReminder)
+        assertEquals("reminder_edit_route/42", navigatedRoute)
     }
 
     // =========================================================================

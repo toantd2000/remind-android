@@ -12,7 +12,10 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import vn.io.litever.remind.core.alarm.alert.ReminderAlertManager
+import vn.io.litever.remind.core.alarm.notification.ReminderNotificationManager
 import vn.io.litever.remind.core.alarm.ReminderSyncManager
 import vn.io.litever.remind.core.common.util.PermissionChecker
 import vn.io.litever.remind.core.common.util.ReminderPermissionType
@@ -42,11 +45,14 @@ class ReminderListViewModel @Inject constructor(
     private val reminderScheduler: ReminderScheduler,
     private val permissionChecker: PermissionChecker,
     private val preferencesDataSource: AlarmPreferencesDataSource,
-    private val reminderSyncManager: ReminderSyncManager? = null
+    private val reminderSyncManager: ReminderSyncManager? = null,
+    private val reminderAlertManager: ReminderAlertManager? = null,
+    private val reminderNotificationManager: ReminderNotificationManager? = null
 ) : ViewModel() {
 
     private val _selectedFilter = MutableStateFlow(ReminderFilterType.ALL)
     private val _hasPermissionWarning = MutableStateFlow(false)
+    private val _permissionCheckTrigger = MutableStateFlow(0)
     private val _uiMessage = MutableSharedFlow<Int>()
     val uiMessage: SharedFlow<Int> = _uiMessage.asSharedFlow()
 
@@ -56,8 +62,9 @@ class ReminderListViewModel @Inject constructor(
         reminderRepository.getAllReminders(),
         preferencesDataSource.is24HourFormat,
         _selectedFilter,
-        _hasPermissionWarning
-    ) { allReminders, is24Hour, filter, permissionWarning ->
+        _hasPermissionWarning,
+        _permissionCheckTrigger
+    ) { allReminders, is24Hour, filter, permissionWarning, _ ->
         val counts = mapOf(
             ReminderFilterType.ALL to allReminders.size,
             ReminderFilterType.ACTIVE to allReminders.count { it.isEnabled && !it.isCompleted },
@@ -115,7 +122,11 @@ class ReminderListViewModel @Inject constructor(
                 }
             }
 
-            val updated = reminder.copy(isEnabled = isEnabling)
+            val updated = reminder.copy(
+                isEnabled = isEnabling,
+                snoozeNextTriggerTime = null,
+                currentSnoozeCount = if (!isEnabling) 0 else reminder.currentSnoozeCount
+            )
             reminderScheduler.cancelSnooze(reminder)
             reminderRepository.updateReminder(updated)
 
@@ -123,6 +134,8 @@ class ReminderListViewModel @Inject constructor(
                 reminderScheduler.schedule(updated)
             } else {
                 reminderScheduler.cancel(updated)
+                reminderAlertManager?.stopAlert(reminder.id)
+                reminderNotificationManager?.cancelNotification(reminder.id)
             }
             reminderSyncManager?.sync()
         }
@@ -133,6 +146,8 @@ class ReminderListViewModel @Inject constructor(
             recentlyDeletedReminder = reminder
             reminderScheduler.cancel(reminder)
             reminderScheduler.cancelSnooze(reminder)
+            reminderAlertManager?.stopAlert(reminder.id)
+            reminderNotificationManager?.cancelNotification(reminder.id)
             reminderRepository.deleteReminder(reminder)
             reminderSyncManager?.sync()
             _uiMessage.emit(R.string.reminder_deleted)
@@ -160,6 +175,8 @@ class ReminderListViewModel @Inject constructor(
             completed.forEach { reminder ->
                 reminderScheduler.cancel(reminder)
                 reminderScheduler.cancelSnooze(reminder)
+                reminderAlertManager?.stopAlert(reminder.id)
+                reminderNotificationManager?.cancelNotification(reminder.id)
                 reminderRepository.deleteReminder(reminder)
             }
             reminderSyncManager?.sync()
@@ -173,6 +190,8 @@ class ReminderListViewModel @Inject constructor(
             disabled.forEach { reminder ->
                 reminderScheduler.cancel(reminder)
                 reminderScheduler.cancelSnooze(reminder)
+                reminderAlertManager?.stopAlert(reminder.id)
+                reminderNotificationManager?.cancelNotification(reminder.id)
                 reminderRepository.deleteReminder(reminder)
             }
             reminderSyncManager?.sync()
@@ -238,5 +257,6 @@ class ReminderListViewModel @Inject constructor(
         val activeReminders = uiState.value.reminders?.filter { it.isEnabled && !it.isCompleted } ?: emptyList()
         val hasMissingForActive = activeReminders.any { !permissionChecker.hasPermissionsForReminder(it) }
         _hasPermissionWarning.value = !permissionChecker.hasNotificationPermission() || hasMissingForActive
+        _permissionCheckTrigger.update { it + 1 }
     }
 }

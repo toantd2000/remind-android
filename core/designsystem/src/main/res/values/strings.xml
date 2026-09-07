@@ -79,6 +79,20 @@
     <string name="good_afternoon">Good afternoon</string>
     <string name="good_evening">Good evening</string>
     <string name="good_night">Good night</string>
+
+    <!-- Ringtone & Snooze Shared Resources -->
+    <string name="ringtone_selection_title">Ringtone</string>
+    <string name="ringtone_custom_pick">Pick from device…</string>
+    <string name="default_ringtone">Default</string>
+    <string name="no_ringtone">No Sound</string>
+    <string name="snooze_settings">Snooze Settings</string>
+    <string name="enable_snooze">Enable Snooze</string>
+    <string name="snooze_interval">Interval</string>
+    <string name="snooze_repeat">Repeat</string>
+    <string name="minutes_unit">%d min</string>
+    <string name="forever">Forever</string>
+    <string name="one_time">1 time</string>
+    <string name="off">Off</string>
 </resources>
 
 

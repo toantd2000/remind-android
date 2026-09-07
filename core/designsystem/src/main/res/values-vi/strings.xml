@@ -80,6 +80,20 @@
     <string name="good_afternoon">Chào buổi chiều</string>
     <string name="good_evening">Chào buổi tối</string>
     <string name="good_night">Chúc ngủ ngon</string>
+
+    <!-- Ringtone & Snooze Shared Resources -->
+    <string name="ringtone_selection_title">Nhạc chuông</string>
+    <string name="ringtone_custom_pick">Chọn từ thiết bị…</string>
+    <string name="default_ringtone">Mặc định</string>
+    <string name="no_ringtone">Không có âm thanh</string>
+    <string name="snooze_settings">Cài đặt báo lại</string>
+    <string name="enable_snooze">Bật báo lại</string>
+    <string name="snooze_interval">Khoảng thời gian</string>
+    <string name="snooze_repeat">Lặp lại</string>
+    <string name="minutes_unit">%d phút</string>
+    <string name="forever">Mãi mãi</string>
+    <string name="one_time">1 lần</string>
+    <string name="off">Tắt</string>
 </resources>
 
 

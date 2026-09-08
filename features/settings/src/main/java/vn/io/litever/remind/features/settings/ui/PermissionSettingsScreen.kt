@@ -52,7 +52,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import vn.io.litever.designsystem.components.LiteverButton
 import vn.io.litever.designsystem.components.LiteverOutlinedButton
 import vn.io.litever.designsystem.components.LiteverScaffold
-import vn.io.litever.designsystem.components.LiteverTopAppBar
+import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.features.settings.R
 
 @Composable
@@ -105,7 +105,7 @@ fun PermissionSettingsScreen(
     LiteverScaffold(
         modifier = modifier,
         topBar = {
-            LiteverTopAppBar(
+            ReMindTopAppBar(
                 title = stringResource(R.string.setting_permissions_title),
                 onBackClick = onNavigateBack
             )

@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import vn.io.litever.designsystem.components.LiteverScaffold
 import vn.io.litever.remind.features.settings.R
-import vn.io.litever.designsystem.components.LiteverTopAppBar
+import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.designsystem.components.LiteverIconButton
 
 @Composable
@@ -49,13 +49,9 @@ fun AlarmSettingsScreen(
 
     LiteverScaffold(
         topBar = {
-            LiteverTopAppBar(
+            ReMindTopAppBar(
                 title = stringResource(R.string.setting_alarm_title),
-                navigationIcon = {
-                    LiteverIconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
-                    }
-                }
+                onBackClick = onNavigateBack
             )
         }
     ) { paddingValues ->

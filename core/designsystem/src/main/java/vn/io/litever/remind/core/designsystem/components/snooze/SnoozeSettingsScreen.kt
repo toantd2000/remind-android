@@ -33,6 +33,7 @@ import vn.io.litever.designsystem.components.LiteverTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
+import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 
 @Composable
@@ -79,7 +80,7 @@ fun SnoozeSettingsScreen(
 
     LiteverScaffold(
         topBar = {
-            LiteverTopAppBar(
+            ReMindTopAppBar(
                 title = stringResource(R.string.snooze_settings),
                 onBackClick = onBackClick
             )

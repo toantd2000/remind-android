@@ -30,10 +30,10 @@ import vn.io.litever.designsystem.components.LiteverScaffold
 import vn.io.litever.designsystem.components.LiteverSegmentedButton
 import vn.io.litever.designsystem.components.LiteverSettingsGroup
 import vn.io.litever.designsystem.components.LiteverSingleChoiceSegmentedButtonRow
-import vn.io.litever.designsystem.components.LiteverTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.BrandLogo
 import vn.io.litever.remind.core.designsystem.components.ReMindLogo
+import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.features.settings.R
 
@@ -65,7 +65,7 @@ fun GeneralSettingsScreen(
 ) {
     LiteverScaffold(
         topBar = {
-            LiteverTopAppBar(
+            ReMindTopAppBar(
                 title = stringResource(R.string.setting_general_title),
                 onBackClick = onNavigateBack
             )

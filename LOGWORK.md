@@ -783,3 +783,13 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
   - Tách thành en.json và i.json đặt tại thư mục docs/changelog.
   - Mở changelog thông qua web URL (sử dụng Custom Tabs) tương tự Term & Privacy, kèm theo tham số ?lang= để tự động chuyển ngôn ngữ.
 - **Hệ quả:** Giảm nhẹ dung lượng ứng dụng, đồng nhất cơ chế hiển thị tài liệu điều khoản và tăng tính linh hoạt khi cập nhật phiên bản.
+
+### [TDR-057] - Nâng cấp thư viện Litever Design System lên 1.1.6 & Chuẩn hóa ReMindTopAppBar
+- **Ngày thực hiện:** 2026-09-08
+- **Trạng thái:** Accepted
+- **Bối cảnh:** Thư viện `litever-designsystem` cập nhật lên version `1.1.6` mang lại nhiều cải tiến về Material 3 (hỗ trợ các biến thể TopAppBar, điều chỉnh TextField signature với `showClearButton`, thêm `LiteverBottomBar`, và tối ưu Lint). Việc cập nhật chữ ký của `LiteverTopAppBar` (tách thành các overload chuẩn hóa M3 và `onNavigationClick`) đòi hỏi giải pháp nhất quán trong toàn bộ app.
+- **Quyết định:**
+  - Nâng cấp dependency `liteverDesignsystem` trong `libs.versions.toml` lên `1.1.6`.
+  - Tạo component wrapper `ReMindTopAppBar` trong `:core:designsystem` kế thừa `LiteverTopAppBar` để đóng gói tiện ích điều hướng quay lại (`onBackClick`) chuẩn hóa theo thiết kế Litever.
+  - Thay thế trực tiếp các tham số TextField lỗi thời (`onClearClick` chuyển thành `showClearButton = true`) trong `AlarmEditScreen`.
+- **Hệ quả:** Đồng bộ toàn diện với bản phát hành mới nhất của `litever-designsystem`, code tuân thủ nghiêm ngặt nguyên tắc Single Source of Truth cho UI qua `:core:designsystem`.

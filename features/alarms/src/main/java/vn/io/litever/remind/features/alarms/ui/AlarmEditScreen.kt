@@ -90,11 +90,11 @@ import vn.io.litever.designsystem.components.LiteverRadioButton
 import vn.io.litever.designsystem.components.LiteverScaffold
 import vn.io.litever.designsystem.components.LiteverTextField
 import vn.io.litever.designsystem.components.LiteverTimePickerDialog
-import vn.io.litever.designsystem.components.LiteverTopAppBar
 import vn.io.litever.remind.core.designsystem.components.MissionSelectionBottomSheet
 import vn.io.litever.remind.core.designsystem.components.ReMindAlertDialog
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingIcon
+import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.DayOfWeek
 import vn.io.litever.remind.core.model.MissionType
@@ -503,7 +503,7 @@ fun AlarmEditScreen(
 
     LiteverScaffold(
         topBar = {
-            LiteverTopAppBar(
+            ReMindTopAppBar(
                 title = stringResource(if (uiState.id == 0L) R.string.add_alarm_title else R.string.edit_alarm_title),
                 onBackClick = onBackClick
             )
@@ -668,7 +668,7 @@ fun AlarmEditScreen(
                             placeholder = stringResource(R.string.alarm_label_placeholder),
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true,
-                            onClearClick = { onLabelChange("") }
+                            showClearButton = true
                         )
 
                         Spacer(modifier = Modifier.height(12.dp))
@@ -681,7 +681,7 @@ fun AlarmEditScreen(
                             modifier = Modifier.fillMaxWidth(),
                             minLines = 2,
                             maxLines = 4,
-                            onClearClick = { onMessageChange("") }
+                            showClearButton = true
                         )
                     }
                 }

@@ -33,7 +33,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import vn.io.litever.designsystem.components.LiteverCircularProgressIndicator
 import vn.io.litever.designsystem.components.LiteverScaffold
-import vn.io.litever.designsystem.components.LiteverTopAppBar
+import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.ads.api.AdManager
 import vn.io.litever.remind.core.ads.api.AdPlacement
@@ -107,7 +107,7 @@ fun TodayScreen(
 
     LiteverScaffold(
         topBar = {
-            LiteverTopAppBar(
+            ReMindTopAppBar(
                 title = greeting,
                 actions = {
                     ReMindLoadingIconButton(

@@ -66,8 +66,8 @@ import vn.io.litever.designsystem.components.LiteverFloatingActionButton
 import vn.io.litever.designsystem.components.LiteverIconButton
 import vn.io.litever.designsystem.components.LiteverModalBottomSheet
 import vn.io.litever.designsystem.components.LiteverScaffold
-import vn.io.litever.designsystem.components.LiteverTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindLogo
+import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.core.model.Alarm
 import vn.io.litever.remind.features.alarms.R
 import vn.io.litever.remind.features.alarms.ui.components.AlarmCard
@@ -217,8 +217,8 @@ fun AlarmListScreen(
 
     LiteverScaffold(
         topBar = {
-            LiteverTopAppBar(
-                titleContent = { ReMindLogo() },
+            ReMindTopAppBar(
+                title = { ReMindLogo() },
                 actions = {
                     LiteverIconButton(onClick = { showTopMenu = !showTopMenu }) {
                         Icon(Icons.Rounded.MoreVert, contentDescription = actionMoreDescription)

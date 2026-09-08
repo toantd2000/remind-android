@@ -37,7 +37,7 @@ import vn.io.litever.designsystem.components.LiteverButton
 import vn.io.litever.designsystem.components.LiteverCard
 import vn.io.litever.designsystem.components.LiteverIconButton
 import vn.io.litever.designsystem.components.LiteverScaffold
-import vn.io.litever.designsystem.components.LiteverTopAppBar
+import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.model.MemoryTilesMissionConfig
@@ -101,7 +101,7 @@ fun MemoryGameConfigScreen(
         modifier = Modifier.imePadding(),
         topBar = {
             Box(Modifier.fillMaxWidth()) {
-                LiteverTopAppBar(
+                ReMindTopAppBar(
                     title = stringResource(R.string.memory_game_config_title),
                     onBackClick = onBackClick
                 )

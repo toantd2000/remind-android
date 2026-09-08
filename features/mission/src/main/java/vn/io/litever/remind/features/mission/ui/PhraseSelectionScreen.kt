@@ -66,7 +66,7 @@ import vn.io.litever.designsystem.components.LiteverOutlinedButton
 import vn.io.litever.designsystem.components.LiteverOutlinedCard
 import vn.io.litever.designsystem.components.LiteverScaffold
 import vn.io.litever.designsystem.components.LiteverTextButton
-import vn.io.litever.designsystem.components.LiteverTopAppBar
+import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
@@ -193,7 +193,7 @@ fun PhraseSelectionScreen(
 
     LiteverScaffold(
         topBar = {
-            LiteverTopAppBar(
+            ReMindTopAppBar(
                 title = stringResource(R.string.mission_select_phrases),
                 onBackClick = onBackClick
             )

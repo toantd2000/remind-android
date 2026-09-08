@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import vn.io.litever.designsystem.components.LiteverScaffold
 import vn.io.litever.designsystem.components.LiteverSettingsGroup
 import vn.io.litever.designsystem.components.LiteverSettingsItem
-import vn.io.litever.designsystem.components.LiteverTopAppBar
+import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.features.settings.R
 import androidx.core.net.toUri
 
@@ -32,7 +32,7 @@ fun AttributionsScreen(
 
     LiteverScaffold(
         topBar = {
-            LiteverTopAppBar(
+            ReMindTopAppBar(
                 title = stringResource(R.string.setting_attributions_title),
                 onBackClick = onNavigateBack
             )

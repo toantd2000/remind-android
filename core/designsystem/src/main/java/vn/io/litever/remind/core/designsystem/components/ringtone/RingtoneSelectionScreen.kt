@@ -20,9 +20,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.VolumeUp
 import androidx.compose.material.icons.rounded.LibraryMusic
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,12 +42,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import vn.io.litever.designsystem.components.LiteverButton
-import vn.io.litever.designsystem.components.LiteverCircularProgressIndicator
-import vn.io.litever.designsystem.components.LiteverOutlinedButton
-import vn.io.litever.designsystem.components.LiteverRadioButton
-import vn.io.litever.designsystem.components.LiteverScaffold
-import vn.io.litever.designsystem.components.LiteverTopAppBar
+import vn.io.litever.designsystem.components.LiteVerButtonDefaults
+import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
@@ -98,7 +99,7 @@ fun RingtoneSelectionScreen(
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LiteverScaffold(
+    Scaffold(
         modifier = modifier,
         topBar = {
             ReMindTopAppBar(
@@ -108,11 +109,13 @@ fun RingtoneSelectionScreen(
         },
         bottomBar = {
             ReMindBottomBar {
-                LiteverButton(
+                Button(
                     onClick = onSaveClick,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(48.dp)
+                        .height(LiteverTheme.spacing.doubleLarge),
+                    shape = LiteVerButtonDefaults.shape,
+                    colors = LiteVerButtonDefaults.primaryColors()
                 ) {
                     Text(
                         stringResource(R.string.save),
@@ -123,31 +126,36 @@ fun RingtoneSelectionScreen(
     ) { padding ->
         if (uiState.isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                LiteverCircularProgressIndicator()
+                CircularProgressIndicator()
             }
         } else {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding),
-                contentPadding = PaddingValues(bottom = 16.dp)
+                contentPadding = PaddingValues(bottom = LiteverTheme.spacing.medium)
             ) {
                 item {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .padding(
+                                horizontal = LiteverTheme.spacing.medium,
+                                vertical = LiteverTheme.spacing.small
+                            )
                     ) {
-                        LiteverOutlinedButton(
+                        OutlinedButton(
                             onClick = onPickCustomClick,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = LiteVerButtonDefaults.shape,
+                            colors = LiteVerButtonDefaults.outlinedColors()
                         ) {
                             Icon(
                                 imageVector = Icons.Rounded.LibraryMusic,
                                 contentDescription = null,
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(LiteverTheme.spacing.mediumLarge)
                             )
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
                             Text(stringResource(R.string.ringtone_custom_pick))
                         }
                     }
@@ -172,7 +180,10 @@ fun RingtoneListItem(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .padding(
+                horizontal = LiteverTheme.spacing.medium,
+                vertical = LiteverTheme.spacing.extraSmall
+            )
             .clip(MaterialTheme.shapes.medium)
             .clickable { onClick() },
         color = if (item.isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
@@ -184,16 +195,16 @@ fun RingtoneListItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(LiteverTheme.spacing.smallMedium),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            LiteverRadioButton(
+            RadioButton(
                 selected = item.isSelected,
                 onClick = null,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(LiteverTheme.spacing.large)
             )
 
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(LiteverTheme.spacing.smallMedium))
 
             Text(
                 text = item.title,
@@ -209,7 +220,7 @@ fun RingtoneListItem(
                     imageVector = Icons.AutoMirrored.Rounded.VolumeUp,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(LiteverTheme.spacing.mediumLarge)
                 )
             }
         }

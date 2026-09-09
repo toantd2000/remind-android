@@ -94,6 +94,7 @@
     <string name="forever">Mãi mãi</string>
     <string name="one_time">1 lần</string>
     <string name="off">Tắt</string>
+    <string name="select_time">Chọn giờ</string>
 </resources>
 
 

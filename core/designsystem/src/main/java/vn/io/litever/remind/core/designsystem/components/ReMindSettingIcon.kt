@@ -3,6 +3,7 @@ package vn.io.litever.remind.core.designsystem.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -12,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.components.LiteverFilledTonalIconButton
+import vn.io.litever.designsystem.theme.LiteverTheme
 
 @Composable
 fun ReMindSettingIcon(
@@ -37,10 +38,10 @@ fun ReMindSettingIcon(
     val finalModifier = modifier.size(44.dp)
 
     if (onClick != null && enabled) {
-        LiteverFilledTonalIconButton(
+        FilledTonalIconButton(
             onClick = onClick,
             modifier = finalModifier,
-            shape = MaterialTheme.shapes.medium,
+            shape = LiteverTheme.shapes.medium,
             colors = IconButtonDefaults.filledTonalIconButtonColors(
                 containerColor = containerColor,
                 contentColor = contentColor
@@ -49,20 +50,20 @@ fun ReMindSettingIcon(
             Icon(
                 imageVector = imageVector,
                 contentDescription = null,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(LiteverTheme.spacing.mediumLarge)
             )
         }
     } else {
         Box(
             modifier = finalModifier
-                .clip(MaterialTheme.shapes.medium)
+                .clip(LiteverTheme.shapes.medium)
                 .background(if (enabled) containerColor else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = imageVector,
                 contentDescription = null,
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier.size(LiteverTheme.spacing.mediumLarge),
                 tint = if (enabled) contentColor else contentColor.copy(alpha = 0.38f)
             )
         }

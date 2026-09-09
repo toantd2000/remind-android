@@ -1,5 +1,6 @@
 package vn.io.litever.remind.core.designsystem.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,15 +15,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,8 +39,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import vn.io.litever.designsystem.components.LiteverCard
-import vn.io.litever.designsystem.components.LiteverTextButton
+import vn.io.litever.designsystem.components.LiteVerButtonDefaults
+import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.AiAnalysis
@@ -95,10 +97,11 @@ private fun FullWeatherView(
     val weatherColors = getWeatherColors(weather.current.tempC, weather.current.isDay)
     val isNight = weather.current.isDay == 0
 
-    LiteverCard(
+    Card(
         modifier = modifier.fillMaxWidth(),
+        shape = LiteverTheme.shapes.medium,
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        border = androidx.compose.foundation.BorderStroke(
+        border = BorderStroke(
             1.dp,
             MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
         )
@@ -114,20 +117,24 @@ private fun FullWeatherView(
                     )
                 )
         ) {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)) {
 
                 // Location & Main Temperature Row
                 Row(
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(horizontal = 8.dp)
-                        .padding(top = 8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = LiteverTheme.spacing.small)
+                        .padding(top = LiteverTheme.spacing.small),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     // Left: Location, Temperature, Min/Max
                     Column(modifier = Modifier.weight(1f)) {
-                        LiteverTextButton(
+                        TextButton(
                             onClick = onLocationClick,
+                            shape = LiteVerButtonDefaults.shape,
+                            colors = LiteVerButtonDefaults.textColors(),
+                            contentPadding = LiteVerButtonDefaults.TextButtonContentPadding
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
@@ -140,8 +147,8 @@ private fun FullWeatherView(
                                     imageVector = Icons.Rounded.ChevronRight,
                                     contentDescription = stringResource(R.string.weather_change_location),
                                     modifier = Modifier
-                                        .size(20.dp)
-                                        .padding(start = 4.dp),
+                                        .size(LiteverTheme.spacing.mediumLarge)
+                                        .padding(start = LiteverTheme.spacing.extraSmall),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
@@ -154,7 +161,7 @@ private fun FullWeatherView(
                                 letterSpacing = (-2).sp
                             ),
                             color = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.padding(start = 8.dp)
+                            modifier = Modifier.padding(start = LiteverTheme.spacing.small)
                         )
 
                         Text(
@@ -166,14 +173,16 @@ private fun FullWeatherView(
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(start = 8.dp)
+                            modifier = Modifier.padding(start = LiteverTheme.spacing.small)
                         )
                         Text(
                             text = stringResource(R.string.weather_feels_like, weather.current.feelsLikeC.toInt()),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
-                            modifier = Modifier.padding(start = 8.dp, top = 2.dp),
-
+                            modifier = Modifier.padding(
+                                start = LiteverTheme.spacing.small,
+                                top = LiteverTheme.spacing.tiny
+                            )
                         )
                     }
 
@@ -184,7 +193,7 @@ private fun FullWeatherView(
                         contentDescription = null,
                         modifier = Modifier
                             .weight(1.0f)
-                            .padding(start = 8.dp),
+                            .padding(start = LiteverTheme.spacing.small),
                         contentScale = ContentScale.Fit
                     )
                 }
@@ -192,7 +201,7 @@ private fun FullWeatherView(
                 // Condition Row: Icon & Text (below temperature)
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                    modifier = Modifier.padding(horizontal = LiteverTheme.spacing.medium)
                 ) {
                     AsyncImage(
                         model = weather.current.conditionIcon,
@@ -200,7 +209,7 @@ private fun FullWeatherView(
                         modifier = Modifier.size(28.dp),
                         contentScale = ContentScale.Fit
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
                     Text(
                         text = weather.current.conditionText,
                         style = MaterialTheme.typography.titleMedium,
@@ -208,22 +217,22 @@ private fun FullWeatherView(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                
 
                 // AI Hint Section
                 if (weather.aiAnalysis.hint.isNotBlank()) {
                     Text(
-                        text = "✨ "  + weather.aiAnalysis.hint,
+                        text = "✨ " + weather.aiAnalysis.hint,
                         style = MaterialTheme.typography.bodyMedium.copy(
                             lineHeight = 20.sp
                         ),
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f),
                         fontWeight = FontWeight.Medium,
-                        modifier = Modifier.fillMaxWidth()
-                            .padding(horizontal = 16.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = LiteverTheme.spacing.medium)
                     )
                 }
-                
+
                 // Attribution
                 Text(
                     text = stringResource(R.string.weather_powered_by),
@@ -234,7 +243,10 @@ private fun FullWeatherView(
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(end = 16.dp, bottom = 8.dp),
+                        .padding(
+                            end = LiteverTheme.spacing.medium,
+                            bottom = LiteverTheme.spacing.small
+                        ),
                     textAlign = TextAlign.End
                 )
             }
@@ -253,9 +265,9 @@ private fun CompactWeatherView(
 
     Surface(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
+        shape = LiteverTheme.shapes.large,
         color = Color.Transparent,
-        border = androidx.compose.foundation.BorderStroke(
+        border = BorderStroke(
             1.dp,
             MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
         )
@@ -282,16 +294,20 @@ private fun CompactWeatherView(
                     contentDescription = null,
                     modifier = Modifier
                         .size(56.dp)
-                        .padding(start = 8.dp),
+                        .padding(start = LiteverTheme.spacing.small),
                     contentScale = ContentScale.Fit
                 )
 
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(LiteverTheme.spacing.smallMedium))
 
                 Column(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(top = 8.dp, bottom = 8.dp, end = 12.dp)
+                        .padding(
+                            top = LiteverTheme.spacing.small,
+                            bottom = LiteverTheme.spacing.small,
+                            end = LiteverTheme.spacing.smallMedium
+                        )
                 ) {
                     // Row 1: Temperature & Condition Summary
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -306,9 +322,9 @@ private fun CompactWeatherView(
                         AsyncImage(
                             model = weather.current.conditionIcon,
                             contentDescription = null,
-                            modifier = Modifier.size(16.dp)
+                            modifier = Modifier.size(LiteverTheme.spacing.medium)
                         )
-                        Spacer(modifier = Modifier.width(4.dp))
+                        Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
                         Text(
                             text = weather.current.conditionText,
                             style = MaterialTheme.typography.labelMedium,
@@ -319,7 +335,7 @@ private fun CompactWeatherView(
 
                     // Row 2: AI Hint
                     if (weather.aiAnalysis.hint.isNotBlank()) {
-                        Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.height(LiteverTheme.spacing.extraSmall))
                         Text(
                             text = "✨ " + weather.aiAnalysis.hint,
                             style = MaterialTheme.typography.labelSmall,
@@ -368,9 +384,9 @@ fun WeatherInfoViewPreview() {
     ReMindTheme {
         Column(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(LiteverTheme.spacing.medium)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
         ) {
             Text("Full View", style = MaterialTheme.typography.titleMedium)
             WeatherInfoView(weather = mockWeather)
@@ -382,7 +398,7 @@ fun WeatherInfoViewPreview() {
             WeatherInfoView(
                 weather = mockWeather.copy(
                     aiAnalysis = AiAnalysis(
-                        hint = "Hôm nay trời có thể có mưa rào rải rác vào buổi chiều, quý khách nên mang theo ô và áo mưa khi đi ra ngoài để tránh bị ướt. Ngoài ra nhiệt độ có thể giảm mạnh vào buổi tối, hãy chú ý giữ ấm cơ thể khi ra ngoài."
+                        hint = "Hôm nay trời có thể có mưa rào rải rác vào buổi chiều, quý khách nên mang theo ô và áo mưa khi đi ra ngoài để tránh bị ướt."
                     )
                 ),
                 isCompact = true

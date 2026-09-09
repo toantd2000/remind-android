@@ -68,7 +68,7 @@ fun BrandingSplashScreen(
                 // App Logo
                 ReMindLogo(fontSize = 42.sp)
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
 
                 // Slogan
                 Text(
@@ -91,14 +91,14 @@ fun BrandingSplashScreen(
         ) {
             Column(
                 modifier = Modifier
-                    .padding(bottom = 64.dp),
+                    .padding(bottom = LiteverTheme.spacing.tripleLarge),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
                     text = "from",
                     style = LiteverTheme.typography.labelMedium,
                     color = LiteverTheme.colors.outline.copy(alpha = 0.5f),
-                    modifier = Modifier.padding(bottom = 4.dp),
+                    modifier = Modifier.padding(bottom = LiteverTheme.spacing.extraSmall),
                     letterSpacing = 1.sp
                 )
                 BrandLogo(fontSize = 20.sp)

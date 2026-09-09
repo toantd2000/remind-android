@@ -1,18 +1,43 @@
-﻿package vn.io.litever.remind.core.designsystem.components
+package vn.io.litever.remind.core.designsystem.components
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import vn.io.litever.designsystem.components.LiteverNavigationIconType
-import vn.io.litever.designsystem.components.LiteverTopAppBar
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
+import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.R
 
 /**
- * Project-level TopAppBar wrapper extending [LiteverTopAppBar].
+ * Navigation icon types for [ReMindTopAppBar].
+ */
+enum class ReMindNavigationIconType {
+    Back, Close, Menu
+}
+
+/**
+ * Backward compatibility alias for [ReMindNavigationIconType].
+ */
+typealias LiteverNavigationIconType = ReMindNavigationIconType
+
+/**
+ * Project-level TopAppBar wrapper extending Material 3 [TopAppBar].
  * Provides convenient [onBackClick] support while respecting Litever M3 standards.
- * Defaults [navigationIconType] to null when [onBackClick] is null.
+ * Defaults navigation icon to null when [onBackClick] is null.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -21,31 +46,63 @@ fun ReMindTopAppBar(
     modifier: Modifier = Modifier,
     subtitle: String? = null,
     onBackClick: (() -> Unit)? = null,
-    navigationIconType: LiteverNavigationIconType = LiteverNavigationIconType.Back,
+    navigationIconType: ReMindNavigationIconType = ReMindNavigationIconType.Back,
     actions: @Composable RowScope.() -> Unit = {},
-    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets
+    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
+    colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(),
+    scrollBehavior: TopAppBarScrollBehavior? = null
 ) {
-    if (onBackClick != null) {
-        LiteverTopAppBar(
-            title = title,
-            modifier = modifier,
-            subtitle = subtitle,
-            navigationIconType = navigationIconType,
-            onNavigationClick = onBackClick,
-            actions = actions,
-            windowInsets = windowInsets
-        )
-    } else {
-        LiteverTopAppBar(
-            title = title,
-            modifier = modifier,
-            subtitle = subtitle,
-            actions = actions,
-            windowInsets = windowInsets
-        )
-    }
+    TopAppBar(
+        title = {
+            Column {
+                Text(
+                    text = title,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = LiteverTheme.typography.titleLarge
+                )
+                if (subtitle != null) {
+                    Text(
+                        text = subtitle,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = LiteverTheme.typography.bodyMedium,
+                        color = LiteverTheme.colors.onSurfaceVariant
+                    )
+                }
+            }
+        },
+        modifier = modifier,
+        navigationIcon = {
+            if (onBackClick != null) {
+                val icon = when (navigationIconType) {
+                    ReMindNavigationIconType.Back -> Icons.AutoMirrored.Rounded.ArrowBack
+                    ReMindNavigationIconType.Close -> Icons.Rounded.Close
+                    ReMindNavigationIconType.Menu -> Icons.Rounded.Menu
+                }
+                val contentDesc = when (navigationIconType) {
+                    ReMindNavigationIconType.Back -> stringResource(R.string.action_back)
+                    ReMindNavigationIconType.Close -> "Close"
+                    ReMindNavigationIconType.Menu -> "Menu"
+                }
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = contentDesc
+                    )
+                }
+            }
+        },
+        actions = actions,
+        windowInsets = windowInsets,
+        colors = colors,
+        scrollBehavior = scrollBehavior
+    )
 }
 
+/**
+ * Overload of [ReMindTopAppBar] accepting a custom [title] composable slot.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReMindTopAppBar(
@@ -53,13 +110,17 @@ fun ReMindTopAppBar(
     modifier: Modifier = Modifier,
     navigationIcon: @Composable () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
-    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets
+    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
+    colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(),
+    scrollBehavior: TopAppBarScrollBehavior? = null
 ) {
-    LiteverTopAppBar(
+    TopAppBar(
         title = title,
         modifier = modifier,
         navigationIcon = navigationIcon,
         actions = actions,
-        windowInsets = windowInsets
+        windowInsets = windowInsets,
+        colors = colors,
+        scrollBehavior = scrollBehavior
     )
 }

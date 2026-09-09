@@ -1,6 +1,11 @@
 package vn.io.litever.remind.core.designsystem.theme
 
+import androidx.compose.material3.ColorScheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
+import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.designsystem.theme.asMaterial3
 import vn.io.litever.designsystem.theme.darkLiteverColors
 import vn.io.litever.designsystem.theme.lightLiteverColors
 
@@ -39,6 +44,18 @@ val surfaceContainerLowLight = Color(0xFFFFF1EB)
 val surfaceContainerLight = Color(0xFFFCEAE3)
 val surfaceContainerHighLight = Color(0xFFF6E5DD)
 val surfaceContainerHighestLight = Color(0xFFF0DFD7)
+
+// ==========================================
+// SUCCESS & WARNING SEMANTIC COLORS (LIGHT)
+// ==========================================
+val successLight = Color(0xFF4E6629)
+val onSuccessLight = Color(0xFFFFFFFF)
+val successContainerLight = Color(0xFFCFEDA1)
+val onSuccessContainerLight = Color(0xFF374D14)
+val warningLight = Color(0xFF8A5022)
+val onWarningLight = Color(0xFFFFFFFF)
+val warningContainerLight = Color(0xFFFFDCC5)
+val onWarningContainerLight = Color(0xFF6D390B)
 
 val primaryLightMediumContrast = Color(0xFF5A2804)
 val onPrimaryLightMediumContrast = Color(0xFFFFFFFF)
@@ -148,6 +165,18 @@ val surfaceContainerDark = Color(0xFF271E19)
 val surfaceContainerHighDark = Color(0xFF312823)
 val surfaceContainerHighestDark = Color(0xFF3D332E)
 
+// ==========================================
+// SUCCESS & WARNING SEMANTIC COLORS (DARK)
+// ==========================================
+val successDark = Color(0xFFB4D088)
+val onSuccessDark = Color(0xFF213600)
+val successContainerDark = Color(0xFF374D14)
+val onSuccessContainerDark = Color(0xFFCFEDA1)
+val warningDark = Color(0xFFFFB783)
+val onWarningDark = Color(0xFF4F2500)
+val warningContainerDark = Color(0xFF6D390B)
+val onWarningContainerDark = Color(0xFFFFDCC5)
+
 val primaryDarkMediumContrast = Color(0xFFFFD3BD)
 val onPrimaryDarkMediumContrast = Color(0xFF421A00)
 val primaryContainerDarkMediumContrast = Color(0xFFC87F55)
@@ -220,7 +249,9 @@ val surfaceContainerDarkHighContrast = Color(0xFF382E29)
 val surfaceContainerHighDarkHighContrast = Color(0xFF443934)
 val surfaceContainerHighestDarkHighContrast = Color(0xFF50443F)
 
-// ReMind Specific Colors mapped to the new colors
+// ==========================================
+// REMIND SPECIFIC LITEVER COLORS
+// ==========================================
 val remindLightColors = lightLiteverColors(
     primary = primaryLight,
     onPrimary = onPrimaryLight,
@@ -234,6 +265,10 @@ val remindLightColors = lightLiteverColors(
     onTertiary = onTertiaryLight,
     tertiaryContainer = tertiaryContainerLight,
     onTertiaryContainer = onTertiaryContainerLight,
+    error = errorLight,
+    onError = onErrorLight,
+    errorContainer = errorContainerLight,
+    onErrorContainer = onErrorContainerLight,
     background = backgroundLight,
     onBackground = onBackgroundLight,
     surface = surfaceLight,
@@ -253,6 +288,14 @@ val remindLightColors = lightLiteverColors(
     surfaceContainer = surfaceContainerLight,
     surfaceContainerHigh = surfaceContainerHighLight,
     surfaceContainerHighest = surfaceContainerHighestLight,
+    warning = warningLight,
+    onWarning = onWarningLight,
+    warningContainer = warningContainerLight,
+    onWarningContainer = onWarningContainerLight,
+    success = successLight,
+    onSuccess = onSuccessLight,
+    successContainer = successContainerLight,
+    onSuccessContainer = onSuccessContainerLight,
 )
 
 val remindDarkColors = darkLiteverColors(
@@ -268,6 +311,10 @@ val remindDarkColors = darkLiteverColors(
     onTertiary = onTertiaryDark,
     tertiaryContainer = tertiaryContainerDark,
     onTertiaryContainer = onTertiaryContainerDark,
+    error = errorDark,
+    onError = onErrorDark,
+    errorContainer = errorContainerDark,
+    onErrorContainer = onErrorContainerDark,
     background = backgroundDark,
     onBackground = onBackgroundDark,
     surface = surfaceDark,
@@ -287,4 +334,61 @@ val remindDarkColors = darkLiteverColors(
     surfaceContainer = surfaceContainerDark,
     surfaceContainerHigh = surfaceContainerHighDark,
     surfaceContainerHighest = surfaceContainerHighestDark,
+    warning = warningDark,
+    onWarning = onWarningDark,
+    warningContainer = warningContainerDark,
+    onWarningContainer = onWarningContainerDark,
+    success = successDark,
+    onSuccess = onSuccessDark,
+    successContainer = successContainerDark,
+    onSuccessContainer = onSuccessContainerDark,
 )
+
+// ==========================================
+// MATERIAL 3 COLOR SCHEMES
+// ==========================================
+val remindLightColorScheme: ColorScheme = remindLightColors.asMaterial3()
+val remindDarkColorScheme: ColorScheme = remindDarkColors.asMaterial3()
+
+// ==========================================
+// COLOR SCHEME EXTENSION PROPERTIES (SEMANTIC)
+// ==========================================
+val ColorScheme.warning: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LiteverTheme.colors.warning
+
+val ColorScheme.onWarning: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LiteverTheme.colors.onWarning
+
+val ColorScheme.warningContainer: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LiteverTheme.colors.warningContainer
+
+val ColorScheme.onWarningContainer: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LiteverTheme.colors.onWarningContainer
+
+val ColorScheme.success: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LiteverTheme.colors.success
+
+val ColorScheme.onSuccess: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LiteverTheme.colors.onSuccess
+
+val ColorScheme.successContainer: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LiteverTheme.colors.successContainer
+
+val ColorScheme.onSuccessContainer: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LiteverTheme.colors.onSuccessContainer

@@ -1,30 +1,49 @@
 package vn.io.litever.remind.core.designsystem.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.*
-import androidx.compose.material3.*
+import androidx.compose.material.icons.rounded.Calculate
+import androidx.compose.material.icons.rounded.GridView
+import androidx.compose.material.icons.rounded.Keyboard
+import androidx.compose.material.icons.rounded.QrCodeScanner
+import androidx.compose.material.icons.rounded.Smartphone
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetState
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
-import vn.io.litever.designsystem.theme.LiteverShapes
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.model.MissionType
-import vn.io.litever.designsystem.components.LiteverModalBottomSheet
-import vn.io.litever.designsystem.components.LiteverListItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,26 +53,27 @@ fun MissionSelectionBottomSheet(
     sheetState: SheetState = rememberModalBottomSheetState()
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val context = androidx.compose.ui.platform.LocalContext.current
-    
-    LiteverModalBottomSheet(
+    val context = LocalContext.current
+
+    ModalBottomSheet(
         onDismissRequest = onDismissRequest,
-        sheetState = sheetState
+        sheetState = sheetState,
+        containerColor = LiteverTheme.colors.surfaceContainerLow
     ) {
-        androidx.compose.runtime.CompositionLocalProvider(
-            androidx.compose.ui.platform.LocalContext provides context
+        CompositionLocalProvider(
+            LocalContext provides context
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 32.dp)
+                    .padding(bottom = LiteverTheme.spacing.extraLarge)
             ) {
                 Text(
                     text = stringResource(R.string.mission_selection_title),
                     style = LiteverTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                    modifier = Modifier.padding(20.dp)
+                    modifier = Modifier.padding(LiteverTheme.spacing.mediumLarge)
                 )
-                
+
                 val missionTypes = listOf(
                     MissionItem(
                         type = MissionType.TYPING,
@@ -94,12 +114,12 @@ fun MissionSelectionBottomSheet(
 
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(horizontal = 4.dp)
+                    contentPadding = PaddingValues(horizontal = LiteverTheme.spacing.extraSmall)
                 ) {
                     items(missionTypes) { item ->
                         val isAvailable = item.isAvailable
-                        
-                        LiteverListItem(
+
+                        ListItem(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .alpha(if (isAvailable) 1f else 0.5f)
@@ -109,49 +129,49 @@ fun MissionSelectionBottomSheet(
                                         onMissionTypeSelected(item.type)
                                     }
                                 },
-                            headlineContent = { 
+                            headlineContent = {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Text(
                                         text = item.title,
                                         style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
                                     )
                                     if (!isAvailable) {
-                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
                                         Surface(
                                             color = LiteverTheme.colors.surfaceVariant,
-                                            shape = LiteverShapes.extraSmall
+                                            shape = LiteverTheme.shapes.extraSmall
                                         ) {
                                             Text(
                                                 text = stringResource(R.string.coming_soon),
                                                 style = LiteverTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                                modifier = Modifier.padding(horizontal = 6.dp, vertical = LiteverTheme.spacing.tiny),
                                                 color = LiteverTheme.colors.onSurfaceVariant
                                             )
                                         }
                                     }
                                 }
                             },
-                            supportingContent = { 
+                            supportingContent = {
                                 Text(
                                     text = item.description,
                                     style = LiteverTheme.typography.bodySmall
-                                ) 
+                                )
                             },
                             leadingContent = {
                                 Surface(
-                                    shape = LiteverShapes.medium,
-                                    color = if (isAvailable) 
+                                    shape = LiteverTheme.shapes.medium,
+                                    color = if (isAvailable)
                                         LiteverTheme.colors.primaryContainer.copy(alpha = 0.5f)
-                                    else 
+                                    else
                                         LiteverTheme.colors.surfaceVariant,
                                     border = if (isAvailable)
-                                        androidx.compose.foundation.BorderStroke(1.dp, LiteverTheme.colors.primary.copy(alpha = 0.1f))
+                                        BorderStroke(1.dp, LiteverTheme.colors.primary.copy(alpha = 0.1f))
                                     else null
                                 ) {
                                     Icon(
                                         imageVector = item.icon,
                                         contentDescription = null,
-                                        modifier = Modifier.padding(10.dp).size(24.dp),
+                                        modifier = Modifier.padding(10.dp).size(LiteverTheme.spacing.large),
                                         tint = if (isAvailable) LiteverTheme.colors.primary else LiteverTheme.colors.onSurfaceVariant
                                     )
                                 }

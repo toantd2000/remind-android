@@ -43,5 +43,8 @@ include(":features:today")
 include(":core:analytics")
 include(":core:testing")
 
-
-
+includeBuild("../litever-designsystem") {
+    dependencySubstitution {
+        substitute(module("com.github.toantd2000:litever-designsystem")).using(project(":designsystem"))
+    }
+}

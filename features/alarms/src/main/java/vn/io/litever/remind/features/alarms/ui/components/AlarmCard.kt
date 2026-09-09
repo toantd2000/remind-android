@@ -24,9 +24,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import vn.io.litever.designsystem.components.LiteverCard
-import vn.io.litever.designsystem.components.LiteverIconButton
-import vn.io.litever.designsystem.components.LiteverSwitch
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import vn.io.litever.remind.core.model.Alarm
@@ -57,10 +54,10 @@ fun AlarmCard(
     val isEnabledAndNotSkipped = alarm.isEnabled && !isSkipped
     val primaryColor = LiteverTheme.colors.primary
 
-    LiteverCard(
+    Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
+            .padding(vertical = LiteverTheme.spacing.extraSmall)
             .clip(LiteverTheme.shapes.large)
             .clickable { onClick() },
         colors = CardDefaults.cardColors(
@@ -81,10 +78,10 @@ fun AlarmCard(
                     }
                 }
                 .padding(
-                    start = 16.dp,
-                    end = 0.dp,
-                    top = 12.dp,
-                    bottom = 12.dp
+                    start = LiteverTheme.spacing.medium,
+                    end = LiteverTheme.spacing.none,
+                    top = LiteverTheme.spacing.smallMedium,
+                    bottom = LiteverTheme.spacing.smallMedium
                 ),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -110,13 +107,13 @@ fun AlarmCard(
                         )
                         
                         if (isSkipped && skippedAt != null) {
-                            Spacer(modifier = Modifier.width(6.dp))
+                            Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
                             Box(
                                 modifier = Modifier
-                                    .size(4.dp)
+                                    .size(LiteverTheme.spacing.extraSmall)
                                     .background(LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.6f), CircleShape)
                             )
-                            Spacer(modifier = Modifier.width(6.dp))
+                            Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
                             
                             val dateFormatter = remember { DateTimeFormatter.ofPattern("dd/MM") }
                             Text(
@@ -128,7 +125,7 @@ fun AlarmCard(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(2.dp))
+                    Spacer(modifier = Modifier.height(LiteverTheme.spacing.tiny))
 
                     // Middle Row: Time - Lighter font weight
                     val (timeStr, amPm) = TimeFormatUtils.formatTimeParts(alarm.time, is24HourFormat)
@@ -146,14 +143,14 @@ fun AlarmCard(
                                 text = amPm.uppercase(),
                                 style = LiteverTheme.typography.titleSmall.copy(fontWeight = FontWeight.Medium),
                                 color = LiteverTheme.colors.onSurfaceVariant,
-                                modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
+                                modifier = Modifier.padding(start = LiteverTheme.spacing.extraSmall, bottom = 6.dp)
                             )
                         }
                         
                         // Mission Icons
                         MissionIcons(
                             missions = alarm.missions,
-                            modifier = Modifier.padding(start = 8.dp, bottom = 8.dp)
+                            modifier = Modifier.padding(start = LiteverTheme.spacing.small, bottom = LiteverTheme.spacing.small)
                         )
                     }
 
@@ -175,19 +172,19 @@ fun AlarmCard(
 
                 }
 
-                LiteverSwitch(
+                Switch(
                     checked = alarm.isEnabled && !isSkipped,
                     onCheckedChange = onToggle
                 )
 
-                LiteverIconButton(
+                IconButton(
                     onClick = onMoreClick,
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(LiteverTheme.spacing.extraLarge)
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.MoreVert,
                         contentDescription = stringResource(R.string.action_more),
-                        modifier = Modifier.size(20.dp),
+                        modifier = Modifier.size(LiteverTheme.spacing.mediumLarge),
                         tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.6f)
                     )
                 }
@@ -209,8 +206,8 @@ private fun MissionIcons(missions: List<Mission>, modifier: Modifier = Modifier)
                     imageVector = getMissionIcon(mission.type),
                     contentDescription = null,
                     modifier = Modifier
-                        .size(16.dp)
-                        .padding(horizontal = 2.dp),
+                        .size(LiteverTheme.spacing.medium)
+                        .padding(horizontal = LiteverTheme.spacing.tiny),
                     tint = LiteverTheme.colors.primary.copy(alpha = 0.6f)
                 )
             }
@@ -218,10 +215,10 @@ private fun MissionIcons(missions: List<Mission>, modifier: Modifier = Modifier)
             Icon(
                 imageVector = getMissionIcon(missions[0].type),
                 contentDescription = null,
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier.size(LiteverTheme.spacing.medium),
                 tint = LiteverTheme.colors.primary.copy(alpha = 0.6f)
             )
-            Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
             Surface(
                 color = LiteverTheme.colors.primaryContainer.copy(alpha = 0.6f),
                 shape = CircleShape
@@ -230,7 +227,7 @@ private fun MissionIcons(missions: List<Mission>, modifier: Modifier = Modifier)
                     text = "+${missions.size - 1}",
                     style = LiteverTheme.typography.labelSmall.copy(fontSize = 10.sp),
                     color = LiteverTheme.colors.onPrimaryContainer,
-                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
+                    modifier = Modifier.padding(horizontal = LiteverTheme.spacing.extraSmall, vertical = 1.dp),
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -269,7 +266,7 @@ fun AlarmCardPreview() {
         repeatDays = listOf(vn.io.litever.remind.core.model.DayOfWeek.MONDAY, vn.io.litever.remind.core.model.DayOfWeek.WEDNESDAY, vn.io.litever.remind.core.model.DayOfWeek.FRIDAY)
     )
     vn.io.litever.remind.core.designsystem.theme.ReMindTheme {
-        Box(modifier = Modifier.padding(16.dp)) {
+        Box(modifier = Modifier.padding(LiteverTheme.spacing.medium)) {
             AlarmCard(
                 alarm = alarm,
                 is24HourFormat = false,
@@ -292,7 +289,7 @@ fun AlarmCardDisabledPreview() {
         repeatDays = listOf(vn.io.litever.remind.core.model.DayOfWeek.SATURDAY, vn.io.litever.remind.core.model.DayOfWeek.SUNDAY)
     )
     vn.io.litever.remind.core.designsystem.theme.ReMindTheme {
-        Box(modifier = Modifier.padding(16.dp)) {
+        Box(modifier = Modifier.padding(LiteverTheme.spacing.medium)) {
             AlarmCard(
                 alarm = alarm,
                 is24HourFormat = true,
@@ -316,7 +313,7 @@ fun AlarmCardSkippedPreview() {
         skippedAt = java.time.LocalDateTime.now()
     )
     vn.io.litever.remind.core.designsystem.theme.ReMindTheme {
-        Box(modifier = Modifier.padding(16.dp)) {
+        Box(modifier = Modifier.padding(LiteverTheme.spacing.medium)) {
             AlarmCard(
                 alarm = alarm,
                 is24HourFormat = false,
@@ -339,7 +336,7 @@ fun AlarmCardNoLabelPreview() {
         repeatDays = listOf(vn.io.litever.remind.core.model.DayOfWeek.MONDAY, vn.io.litever.remind.core.model.DayOfWeek.TUESDAY)
     )
     vn.io.litever.remind.core.designsystem.theme.ReMindTheme {
-        Box(modifier = Modifier.padding(16.dp)) {
+        Box(modifier = Modifier.padding(LiteverTheme.spacing.medium)) {
             AlarmCard(
                 alarm = alarm,
                 is24HourFormat = false,

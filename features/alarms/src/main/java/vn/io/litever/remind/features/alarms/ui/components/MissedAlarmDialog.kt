@@ -18,8 +18,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.components.LiteverButton
-import vn.io.litever.designsystem.components.LiteverDialog
+import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.components.ReMindAlertDialog
 import vn.io.litever.remind.core.model.MissedAlarm
 import vn.io.litever.remind.core.model.MissedReason
 import java.time.Instant
@@ -34,38 +34,29 @@ fun MissedAlarmDialog(
     missedAlarms: List<MissedAlarm>,
     onDismiss: () -> Unit
 ) {
-    LiteverDialog(
+    ReMindAlertDialog(
         onDismissRequest = onDismiss,
-        title = {
-            Text(
-                text = stringResource(R.string.missed_alarms_dialog_title),
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold
-            )
-        },
-        text = {
+        title = stringResource(R.string.missed_alarms_dialog_title),
+        confirmButtonText = stringResource(android.R.string.ok),
+        onConfirmClick = onDismiss,
+        content = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = stringResource(R.string.missed_alarms_dialog_desc),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    style = LiteverTheme.typography.bodyMedium,
+                    color = LiteverTheme.colors.onSurfaceVariant
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(max = 300.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
                 ) {
                     items(missedAlarms) { missed ->
                         MissedAlarmItem(missed)
                     }
                 }
-            }
-        },
-        confirmButton = {
-            LiteverButton(onClick = onDismiss) {
-                Text("OK")
             }
         }
     )
@@ -112,36 +103,36 @@ private fun MissedAlarmItem(missed: MissedAlarm) {
     }
 
     Surface(
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-        shape = MaterialTheme.shapes.small
+        color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.5f),
+        shape = LiteverTheme.shapes.small
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(LiteverTheme.spacing.smallMedium),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                modifier = Modifier.size(24.dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                modifier = Modifier.size(LiteverTheme.spacing.large),
+                tint = LiteverTheme.colors.onSurfaceVariant
             )
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(LiteverTheme.spacing.smallMedium))
             Column {
                 val labelText = missed.alarmLabel.ifEmpty {
                     stringResource(R.string.no_label)
                 }
                 Text(
                     text = labelText,
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = LiteverTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,
                     fontStyle = if (missed.alarmLabel.isEmpty()) FontStyle.Italic else FontStyle.Normal
                 )
                 Text(
                     text = "${dateTime.format(timeFormatter)} • $reasonText",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    style = LiteverTheme.typography.bodySmall,
+                    color = LiteverTheme.colors.onSurfaceVariant
                 )
             }
         }

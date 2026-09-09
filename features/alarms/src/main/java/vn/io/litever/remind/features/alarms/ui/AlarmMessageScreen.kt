@@ -30,13 +30,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import android.app.Activity
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.material3.Button
+import androidx.compose.material3.Scaffold
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import vn.io.litever.designsystem.components.LiteverButton
-import vn.io.litever.designsystem.components.LiteverScaffold
+import vn.io.litever.designsystem.components.LiteVerButtonDefaults
 import vn.io.litever.remind.core.designsystem.components.TodayQuoteView
 import java.time.LocalTime
 import java.util.Locale
-import vn.io.litever.designsystem.components.LiteverCard
 import vn.io.litever.designsystem.theme.LiteverTheme
 
 @Composable
@@ -71,14 +71,14 @@ fun AlarmMessageScreen(
     onFinish: () -> Unit
 ) {
     BackHandler { }
-    LiteverScaffold { padding ->
+    Scaffold { padding ->
         val statusColor = LiteverTheme.colors.primary
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp),
+                .padding(LiteverTheme.spacing.medium),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Column(
@@ -95,7 +95,7 @@ fun AlarmMessageScreen(
                     textAlign = TextAlign.Center
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
 
                 Column(
                     modifier = Modifier.fillMaxWidth(),
@@ -120,25 +120,25 @@ fun AlarmMessageScreen(
                             color = LiteverTheme.colors.onSurface
                         )
                         if (amPm != null) {
-                            Spacer(modifier = Modifier.width(4.dp))
+                            Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
                             Text(
                                 text = amPm.uppercase(Locale.getDefault()),
                                 style = LiteverTheme.typography.titleLarge.copy(
                                     fontWeight = FontWeight.Bold
                                 ),
                                 color = LiteverTheme.colors.onSurface.copy(alpha = 0.6f),
-                                modifier = Modifier.padding(bottom = 8.dp)
+                                modifier = Modifier.padding(bottom = LiteverTheme.spacing.small)
                             )
                         }
                     }
 
                     if (!alarm?.label.isNullOrBlank()) {
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
                         Text(text = alarm.label, style = LiteverTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center, color = LiteverTheme.colors.onSurface)
                     }
 
                     if (!alarm?.message.isNullOrBlank()) {
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
                         Text(
                             text = alarm.message,
                             style = LiteverTheme.typography.bodyLarge,
@@ -149,14 +149,14 @@ fun AlarmMessageScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
 
                 WeatherInfoView(
                     weather = weather,
                     isCompact = true
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
 
                 TodayQuoteView(
                     todayBriefing = todayBriefing
@@ -167,11 +167,13 @@ fun AlarmMessageScreen(
                 placement = AdPlacement.MESSAGE_NATIVE,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp, bottom = 16.dp)
+                    .padding(vertical = LiteverTheme.spacing.medium)
             )
 
-            LiteverButton(
+            Button(
                 onClick = onFinish,
+                shape = LiteVerButtonDefaults.shape,
+                colors = LiteVerButtonDefaults.primaryColors(),
                 modifier = Modifier.fillMaxWidth().height(52.dp)
             ) {
                 Text(

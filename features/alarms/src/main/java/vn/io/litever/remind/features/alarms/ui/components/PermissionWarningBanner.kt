@@ -9,9 +9,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
-import vn.io.litever.designsystem.components.LiteverButton
+import vn.io.litever.designsystem.components.LiteVerButtonDefaults
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.features.alarms.R
@@ -24,12 +23,12 @@ fun PermissionWarningBanner(
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(LiteverTheme.spacing.medium),
         color = LiteverTheme.colors.errorContainer,
-        shape = MaterialTheme.shapes.medium
+        shape = LiteverTheme.shapes.medium
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(LiteverTheme.spacing.medium)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -39,7 +38,7 @@ fun PermissionWarningBanner(
                     contentDescription = null,
                     tint = LiteverTheme.colors.error
                 )
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(LiteverTheme.spacing.smallMedium))
                 Text(
                     text = stringResource(R.string.permission_warning_banner_title),
                     style = LiteverTheme.typography.titleSmall,
@@ -48,7 +47,7 @@ fun PermissionWarningBanner(
                 )
             }
             
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
             
             Text(
                 text = stringResource(R.string.permission_warning_banner_desc),
@@ -56,15 +55,13 @@ fun PermissionWarningBanner(
                 color = LiteverTheme.colors.onErrorContainer
             )
             
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
 
-            LiteverButton(
+            Button(
                 onClick = onClick,
                 modifier = Modifier.align(Alignment.End),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = LiteverTheme.colors.error,
-                    contentColor = LiteverTheme.colors.onError
-                )
+                shape = LiteVerButtonDefaults.shape,
+                colors = LiteVerButtonDefaults.destructiveColors()
             ) {
                 Text(stringResource(R.string.permission_warning_banner_action))
             }

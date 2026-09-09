@@ -32,9 +32,13 @@ import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -62,10 +66,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.flow.collectLatest
-import vn.io.litever.designsystem.components.LiteverFloatingActionButton
-import vn.io.litever.designsystem.components.LiteverIconButton
-import vn.io.litever.designsystem.components.LiteverModalBottomSheet
-import vn.io.litever.designsystem.components.LiteverScaffold
+import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindLogo
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.core.model.Alarm
@@ -76,8 +77,6 @@ import vn.io.litever.remind.features.alarms.ui.components.NextAlarmHeader
 import vn.io.litever.remind.features.alarms.ui.components.PermissionWarningBanner
 import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState
 import vn.io.litever.remind.features.alarms.viewmodel.AlarmListViewModel
-import vn.io.litever.designsystem.components.LiteverListItem
-import vn.io.litever.designsystem.components.LiteverSnackbarHost
 
 @Suppress("LocalContextGetResourceValueCall")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -215,12 +214,12 @@ fun AlarmListScreen(
     val deleteDisabledAlarmsText = stringResource(R.string.delete_disabled_alarms)
     val actionAddDescription = stringResource(R.string.action_add)
 
-    LiteverScaffold(
+    Scaffold(
         topBar = {
             ReMindTopAppBar(
                 title = { ReMindLogo() },
                 actions = {
-                    LiteverIconButton(onClick = { showTopMenu = !showTopMenu }) {
+                    IconButton(onClick = { showTopMenu = !showTopMenu }) {
                         Icon(Icons.Rounded.MoreVert, contentDescription = actionMoreDescription)
                     }
                     DropdownMenu(
@@ -239,11 +238,11 @@ fun AlarmListScreen(
             )
         },
         floatingActionButton = {
-            LiteverFloatingActionButton(onClick = onAddAlarmClick) {
+            FloatingActionButton(onClick = onAddAlarmClick) {
                 Icon(Icons.Rounded.Add, contentDescription = actionAddDescription)
             }
         },
-        snackbarHost = { LiteverSnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
         Column(
             modifier = modifier
@@ -268,7 +267,7 @@ fun AlarmListScreen(
                 } else {
                     LazyColumn(
                         modifier = Modifier.weight(1f),
-                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp).let {
+                        contentPadding = PaddingValues(horizontal = LiteverTheme.spacing.mediumLarge, vertical = LiteverTheme.spacing.small).let {
                             PaddingValues(
                                 start = it.calculateStartPadding(androidx.compose.ui.unit.LayoutDirection.Ltr),
                                 top = it.calculateTopPadding(),
@@ -333,7 +332,7 @@ private fun AlarmActionBottomSheet(
     onCancelSkip: () -> Unit,
     onPreview: () -> Unit
 ) {
-    LiteverModalBottomSheet(
+    ModalBottomSheet(
         onDismissRequest = onDismiss,
         dragHandle = { BottomSheetDefaults.DragHandle() },
         containerColor = MaterialTheme.colorScheme.surface,
@@ -341,11 +340,11 @@ private fun AlarmActionBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 32.dp)
+                .padding(bottom = LiteverTheme.spacing.extraLarge)
         ) {
             if (alarm.isEnabled && alarm.repeatDays.isNotEmpty()) {
                 val isSkipped = alarm.skippedAt != null
-                LiteverListItem(
+                ListItem(
                     headlineContent = {
                         Text(stringResource(if (isSkipped) R.string.action_cancel_skip else R.string.action_skip_once))
                     },
@@ -359,19 +358,19 @@ private fun AlarmActionBottomSheet(
                 )
             }
 
-            LiteverListItem(
+            ListItem(
                 headlineContent = { Text(stringResource(R.string.action_preview)) },
                 leadingContent = { Icon(Icons.Rounded.PlayArrow, contentDescription = null) },
                 modifier = Modifier.clickable { onPreview() }
             )
 
-            LiteverListItem(
+            ListItem(
                 headlineContent = { Text(stringResource(R.string.action_duplicate)) },
                 leadingContent = { Icon(Icons.Rounded.ContentCopy, contentDescription = null) },
                 modifier = Modifier.clickable { onDuplicate() }
             )
 
-            LiteverListItem(
+            ListItem(
                 headlineContent = {
                     Text(
                         stringResource(R.string.action_delete),
@@ -397,7 +396,7 @@ fun EmptyState(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(32.dp),
+            .padding(LiteverTheme.spacing.extraLarge),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -416,7 +415,7 @@ fun EmptyState(modifier: Modifier = Modifier) {
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(LiteverTheme.spacing.large))
 
         Text(
             text = stringResource(R.string.no_alarms),
@@ -426,14 +425,14 @@ fun EmptyState(modifier: Modifier = Modifier) {
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
 
         Text(
             text = stringResource(R.string.empty_description),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 24.dp)
+            modifier = Modifier.padding(horizontal = LiteverTheme.spacing.large)
         )
     }
 }

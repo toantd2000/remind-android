@@ -9,7 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
+import vn.io.litever.designsystem.components.LiteVerButtonDefaults
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.features.alarms.R
 import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState
@@ -23,20 +23,20 @@ fun NextAlarmHeader(
         color = LiteverTheme.colors.tertiaryContainer,
         shape = LiteverTheme.shapes.medium,
         modifier = modifier
-            .padding(horizontal = 20.dp, vertical = 6.dp)
+            .padding(horizontal = LiteverTheme.spacing.mediumLarge, vertical = LiteverTheme.spacing.extraSmall)
             .fillMaxWidth()
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+            modifier = Modifier.padding(horizontal = LiteverTheme.spacing.medium, vertical = LiteverTheme.spacing.small),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 imageVector = Icons.Rounded.Alarm,
                 contentDescription = null,
                 tint = LiteverTheme.colors.onTertiaryContainer,
-                modifier = Modifier.size(18.dp)
+                modifier = Modifier.size(LiteVerButtonDefaults.IconSize)
             )
-            Spacer(modifier = Modifier.width(10.dp))
+            Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
             Text(
                 text = formatNextAlarmText(state),
                 style = LiteverTheme.typography.labelMedium,

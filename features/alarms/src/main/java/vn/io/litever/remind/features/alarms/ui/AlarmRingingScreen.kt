@@ -47,13 +47,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import vn.io.litever.designsystem.components.LiteverButton
-import vn.io.litever.designsystem.components.LiteverOutlinedButton
+import vn.io.litever.designsystem.components.LiteVerButtonDefaults
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -267,11 +268,14 @@ fun AlarmRingingContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .statusBarsPadding()
-                    .padding(16.dp),
+                    .padding(LiteverTheme.spacing.medium),
                 contentAlignment = Alignment.TopEnd
             ) {
-                LiteverOutlinedButton(
+                OutlinedButton(
                     onClick = onExitPreview,
+                    shape = LiteVerButtonDefaults.shape,
+                    colors = LiteVerButtonDefaults.outlinedColors(),
+                    border = LiteVerButtonDefaults.outlinedBorder(),
                     modifier = Modifier.wrapContentSize()
                 ) {
                     Text(
@@ -284,7 +288,7 @@ fun AlarmRingingContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(LiteverTheme.spacing.medium),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Main Content: Centered in remaining space
@@ -333,14 +337,17 @@ fun AlarmRingingContent(
                     textAlign = TextAlign.Center
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
                 Surface(
                     color = LiteverTheme.colors.tertiaryContainer,
                     shape = CircleShape
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                        modifier = Modifier.padding(
+                            horizontal = LiteverTheme.spacing.smallMedium,
+                            vertical = LiteverTheme.spacing.extraSmall
+                        )
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.Notifications,
@@ -361,23 +368,23 @@ fun AlarmRingingContent(
                 }
 
                 if (alarm.label.isNotBlank()) {
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
                     Text(
                         text = alarm.label,
                         style = LiteverTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                         color = LiteverTheme.colors.primary,
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = LiteverTheme.spacing.medium),
                         textAlign = TextAlign.Center
                     )
                 }
 
                 if (alarm.message.isNotBlank()) {
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
                     Text(
                         text = alarm.message,
                         style = LiteverTheme.typography.bodyMedium,
                         color = LiteverTheme.colors.onBackground.copy(alpha = 0.6f),
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = LiteverTheme.spacing.extraLarge),
                         textAlign = TextAlign.Center
                     )
                 }
@@ -391,7 +398,7 @@ fun AlarmRingingContent(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
                         val minutes = remainingSnoozeSeconds / 60
                         val seconds = remainingSnoozeSeconds % 60
                         val formattedTime = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
@@ -409,7 +416,7 @@ fun AlarmRingingContent(
                                     color = LiteverTheme.colors.primary.copy(alpha = 0.1f),
                                     shape = LiteverTheme.shapes.medium
                                 )
-                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                .padding(horizontal = LiteverTheme.spacing.medium, vertical = LiteverTheme.spacing.small)
                         )
                     }
                 }
@@ -423,7 +430,7 @@ fun AlarmRingingContent(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
                         val safeCountdown = autoSilenceCountdown ?: 0
                         val minutes = safeCountdown / 60
                         val seconds = safeCountdown % 60
@@ -442,7 +449,7 @@ fun AlarmRingingContent(
                                 color = LiteverTheme.colors.error.copy(alpha = 0.1f),
                                 shape = LiteverTheme.shapes.medium
                             )
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .padding(horizontal = LiteverTheme.spacing.medium, vertical = LiteverTheme.spacing.small)
                         )
                     }
                 }
@@ -453,13 +460,13 @@ fun AlarmRingingContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .navigationBarsPadding()
-                    .padding(bottom = 16.dp)
+                    .padding(bottom = LiteverTheme.spacing.medium)
                     .graphicsLayer {
                         translationY = bottomOffset.toPx()
                         alpha = bottomAlpha
                     },
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
             ) {
                 val isNotSnoozing = alarm.snoozeNextTriggerTime == null
                 
@@ -475,8 +482,11 @@ fun AlarmRingingContent(
                         stringResource(vn.io.litever.remind.core.designsystem.R.string.snooze)
                     }
 
-                    LiteverOutlinedButton(
+                    OutlinedButton(
                         onClick = onSnooze,
+                        shape = LiteVerButtonDefaults.shape,
+                        colors = LiteVerButtonDefaults.outlinedColors(),
+                        border = LiteVerButtonDefaults.outlinedBorder(),
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp)
@@ -489,7 +499,7 @@ fun AlarmRingingContent(
                     }
                 }
 
-                LiteverButton(
+                Button(
                     onClick = {
                         val hasMission = (alarm.missions.isNotEmpty())
                         if (hasMission) {
@@ -498,6 +508,8 @@ fun AlarmRingingContent(
                             onDismiss()
                         }
                     },
+                    shape = LiteVerButtonDefaults.shape,
+                    colors = LiteVerButtonDefaults.primaryColors(),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(52.dp)

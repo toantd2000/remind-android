@@ -40,18 +40,27 @@ import androidx.compose.material.icons.rounded.Smartphone
 import androidx.compose.material.icons.rounded.Snooze
 import androidx.compose.material.icons.rounded.GridView
 import androidx.compose.material.icons.rounded.Vibration
+import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberDatePickerState
@@ -80,20 +89,15 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import vn.io.litever.designsystem.components.LiteverAlertDialog
-import vn.io.litever.designsystem.components.LiteverButton
-import vn.io.litever.designsystem.components.LiteverIconButton
-import vn.io.litever.designsystem.components.LiteverModalBottomSheet
-import vn.io.litever.designsystem.components.LiteverOutlinedButton
-import vn.io.litever.designsystem.components.LiteverOutlinedCard
-import vn.io.litever.designsystem.components.LiteverRadioButton
-import vn.io.litever.designsystem.components.LiteverScaffold
-import vn.io.litever.designsystem.components.LiteverTextField
-import vn.io.litever.designsystem.components.LiteverTimePickerDialog
+import androidx.compose.material.icons.rounded.Close
+import vn.io.litever.designsystem.components.LiteVerButtonDefaults
+import vn.io.litever.designsystem.components.LiteVerTextFieldDefaults
+import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.MissionSelectionBottomSheet
 import vn.io.litever.remind.core.designsystem.components.ReMindAlertDialog
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingIcon
+import vn.io.litever.remind.core.designsystem.components.ReMindTimePickerDialog
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.DayOfWeek
@@ -110,9 +114,6 @@ import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
-import vn.io.litever.designsystem.components.LiteverListItem
-import vn.io.litever.designsystem.components.LiteverDatePickerDialog
-import vn.io.litever.designsystem.components.LiteverLinearProgressIndicator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -230,7 +231,7 @@ fun AlarmEditRoute(
     }
 
     if (showDiscardDialog) {
-        LiteverAlertDialog(
+        ReMindAlertDialog(
             onDismissRequest = { if (showDiscardDialog) showDiscardDialog = false },
             title = stringResource(R.string.discard_changes_title),
             text = stringResource(R.string.discard_changes_message),
@@ -383,15 +384,23 @@ fun AlarmEditScreen(
 
     val context = LocalContext.current
     if (showTimePicker) {
-        LiteverTimePickerDialog(
+        ReMindTimePickerDialog(
             onDismissRequest = { if (showTimePicker) showTimePicker = false },
             confirmButton = {
-                LiteverButton(onClick = { if (showTimePicker) showTimePicker = false }) {
+                Button(
+                    onClick = { if (showTimePicker) showTimePicker = false },
+                    shape = LiteVerButtonDefaults.shape,
+                    colors = LiteVerButtonDefaults.primaryColors()
+                ) {
                     Text(stringResource(R.string.save))
                 }
             },
             dismissButton = {
-                LiteverOutlinedButton(onClick = { if (showTimePicker) showTimePicker = false }) {
+                OutlinedButton(
+                    onClick = { if (showTimePicker) showTimePicker = false },
+                    shape = LiteVerButtonDefaults.shape,
+                    colors = LiteVerButtonDefaults.outlinedColors()
+                ) {
                     Text(stringResource(R.string.action_cancel))
                 }
             }
@@ -415,28 +424,36 @@ fun AlarmEditScreen(
     )
 
     if (showDatePicker) {
-        LiteverDatePickerDialog(
+        DatePickerDialog(
             onDismissRequest = { if (showDatePicker) showDatePicker = false },
             confirmButton = {
                 CompositionLocalProvider(LocalContext provides context) {
-                    LiteverButton(onClick = {
-                        datePickerState.selectedDateMillis?.let { millis ->
-                            val date = Instant.ofEpochMilli(millis)
-                                .atZone(ZoneId.of("UTC"))
-                                .toLocalDate()
-                            onDateChange(date)
-                        }
-                        if (showDatePicker) showDatePicker = false
-                    }) {
+                    Button(
+                        onClick = {
+                            datePickerState.selectedDateMillis?.let { millis ->
+                                val date = Instant.ofEpochMilli(millis)
+                                    .atZone(ZoneId.of("UTC"))
+                                    .toLocalDate()
+                                onDateChange(date)
+                            }
+                            if (showDatePicker) showDatePicker = false
+                        },
+                        shape = LiteVerButtonDefaults.shape,
+                        colors = LiteVerButtonDefaults.primaryColors()
+                    ) {
                         Text(stringResource(R.string.save))
                     }
                 }
             },
             dismissButton = {
                 CompositionLocalProvider(LocalContext provides context) {
-                    LiteverOutlinedButton(onClick = {
-                        if (showDatePicker) showDatePicker = false
-                    }) {
+                    OutlinedButton(
+                        onClick = {
+                            if (showDatePicker) showDatePicker = false
+                        },
+                        shape = LiteVerButtonDefaults.shape,
+                        colors = LiteVerButtonDefaults.outlinedColors()
+                    ) {
                         Text(stringResource(R.string.action_cancel))
                     }
                 }
@@ -469,10 +486,10 @@ fun AlarmEditScreen(
     var showAutoSilenceSheet by remember { mutableStateOf(false) }
 
     if (showAutoSilenceSheet) {
-        LiteverModalBottomSheet(
+        ModalBottomSheet(
             onDismissRequest = { if (showAutoSilenceSheet) showAutoSilenceSheet = false },
             containerColor = MaterialTheme.colorScheme.surface,
-            tonalElevation = 0.dp
+            tonalElevation = LiteverTheme.spacing.none
         ) {
             AutoSilenceBottomSheetContent(
                 currentMinutes = uiState.autoSilenceMinutes,
@@ -485,11 +502,11 @@ fun AlarmEditScreen(
     }
 
     if (showGradualVolumeSheet) {
-        LiteverModalBottomSheet(
+        ModalBottomSheet(
             onDismissRequest = { if (showGradualVolumeSheet) showGradualVolumeSheet = false },
             sheetState = sheetState,
             containerColor = MaterialTheme.colorScheme.surface,
-            tonalElevation = 0.dp
+            tonalElevation = LiteverTheme.spacing.none
         ) {
             GentleAlarmBottomSheetContent(
                 currentDuration = uiState.gradualVolumeDurationSeconds,
@@ -501,7 +518,7 @@ fun AlarmEditScreen(
         }
     }
 
-    LiteverScaffold(
+    Scaffold(
         topBar = {
             ReMindTopAppBar(
                 title = stringResource(if (uiState.id == 0L) R.string.add_alarm_title else R.string.edit_alarm_title),
@@ -510,16 +527,21 @@ fun AlarmEditScreen(
         },
         bottomBar = {
             ReMindBottomBar {
-                LiteverOutlinedButton(
+                OutlinedButton(
                     onClick = onPreviewClick,
+                    shape = LiteVerButtonDefaults.shape,
+                    colors = LiteVerButtonDefaults.outlinedColors(),
+                    border = LiteVerButtonDefaults.outlinedBorder(),
                     modifier = Modifier.height(48.dp)
                 ) {
                     Text(
                         stringResource(R.string.action_preview),
                     )
                 }
-                LiteverButton(
+                Button(
                     onClick = onSaveClick,
+                    shape = LiteVerButtonDefaults.shape,
+                    colors = LiteVerButtonDefaults.primaryColors(),
                     modifier = Modifier
                         .weight(1f)
                         .height(48.dp)
@@ -535,7 +557,7 @@ fun AlarmEditScreen(
             modifier = modifier
                 .fillMaxSize()
                 .padding(padding),
-            contentPadding = PaddingValues(bottom = 16.dp)
+            contentPadding = PaddingValues(bottom = LiteverTheme.spacing.medium)
         ) {
             item {
                 NextAlarmHeader(state = nextAlarmState)
@@ -543,10 +565,10 @@ fun AlarmEditScreen(
 
             item {
                 // Group 1: Time Selector
-                LiteverOutlinedCard(
+                OutlinedCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                        .padding(horizontal = LiteverTheme.spacing.medium, vertical = LiteverTheme.spacing.small),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(
                             alpha = 0.3f
@@ -556,7 +578,7 @@ fun AlarmEditScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 24.dp)
+                            .padding(vertical = LiteverTheme.spacing.large)
                             .clickable { showTimePicker = true },
                         contentAlignment = Alignment.Center
                     ) {
@@ -586,12 +608,12 @@ fun AlarmEditScreen(
                                             color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
                                             fontWeight = FontWeight.Bold
                                         ),
-                                        modifier = Modifier.padding(bottom = 12.dp)
+                                        modifier = Modifier.padding(bottom = LiteverTheme.spacing.smallMedium)
                                     )
                                 }
                             }
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
 
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -603,7 +625,7 @@ fun AlarmEditScreen(
                                     modifier = Modifier.size(16.dp),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                                 )
-                                Spacer(modifier = Modifier.width(4.dp))
+                                Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
                                 Text(
                                     text = stringResource(R.string.tap_to_edit_time),
                                     style = MaterialTheme.typography.labelSmall.copy(
@@ -620,10 +642,10 @@ fun AlarmEditScreen(
 
             item {
                 // Group 2: Repeat Selector (Separated)
-                LiteverOutlinedCard(
+                OutlinedCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                        .padding(horizontal = LiteverTheme.spacing.medium, vertical = LiteverTheme.spacing.small),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(
                             alpha = 0.3f
@@ -636,52 +658,68 @@ fun AlarmEditScreen(
                         date = uiState.date,
                         onDayToggle = onRepeatDayToggle,
                         onShowDatePicker = { showDatePicker = true },
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier.padding(LiteverTheme.spacing.medium)
                     )
                 }
             }
 
             item {
                 // Group 3: Content (Label & Message)
-                LiteverOutlinedCard(
+                OutlinedCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                        .padding(horizontal = LiteverTheme.spacing.medium, vertical = LiteverTheme.spacing.small),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(
                             alpha = 0.3f
                         )
                     ),
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
+                    Column(modifier = Modifier.padding(LiteverTheme.spacing.medium)) {
                         Text(
                             text = stringResource(R.string.alarm_content_group_title),
                             style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(bottom = 12.dp)
+                            modifier = Modifier.padding(bottom = LiteverTheme.spacing.smallMedium)
                         )
 
-                        LiteverTextField(
+                        OutlinedTextField(
                             value = uiState.label,
                             onValueChange = onLabelChange,
-                            label = stringResource(R.string.alarm_label_title),
-                            placeholder = stringResource(R.string.alarm_label_placeholder),
+                            label = { Text(stringResource(R.string.alarm_label_title)) },
+                            placeholder = { Text(stringResource(R.string.alarm_label_placeholder)) },
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true,
-                            showClearButton = true
+                            shape = LiteVerTextFieldDefaults.shape,
+                            colors = LiteVerTextFieldDefaults.outlinedColors(),
+                            trailingIcon = if (uiState.label.isNotEmpty()) {
+                                {
+                                    IconButton(onClick = { onLabelChange("") }) {
+                                        Icon(Icons.Rounded.Close, contentDescription = null)
+                                    }
+                                }
+                            } else null
                         )
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
 
-                        LiteverTextField(
+                        OutlinedTextField(
                             value = uiState.message,
                             onValueChange = onMessageChange,
-                            label = stringResource(R.string.alarm_message_title),
-                            placeholder = stringResource(R.string.alarm_message_placeholder),
+                            label = { Text(stringResource(R.string.alarm_message_title)) },
+                            placeholder = { Text(stringResource(R.string.alarm_message_placeholder)) },
                             modifier = Modifier.fillMaxWidth(),
                             minLines = 2,
                             maxLines = 4,
-                            showClearButton = true
+                            shape = LiteVerTextFieldDefaults.shape,
+                            colors = LiteVerTextFieldDefaults.outlinedColors(),
+                            trailingIcon = if (uiState.message.isNotEmpty()) {
+                                {
+                                    IconButton(onClick = { onMessageChange("") }) {
+                                        Icon(Icons.Rounded.Close, contentDescription = null)
+                                    }
+                                }
+                            } else null
                         )
                     }
                 }
@@ -689,22 +727,22 @@ fun AlarmEditScreen(
 
             item {
                 // Group 4: Alert Settings
-                LiteverOutlinedCard(
+                OutlinedCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                        .padding(horizontal = LiteverTheme.spacing.medium, vertical = LiteverTheme.spacing.small),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(
                             alpha = 0.3f
                         )
                     ),
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
+                    Column(modifier = Modifier.padding(LiteverTheme.spacing.medium)) {
                         Text(
                             text = stringResource(R.string.sound),
                             style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(bottom = 12.dp)
+                            modifier = Modifier.padding(bottom = LiteverTheme.spacing.smallMedium)
                         )
 
                         // Row 1: Ringtone Row
@@ -724,7 +762,7 @@ fun AlarmEditScreen(
                             Column(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .padding(horizontal = 12.dp)
+                                    .padding(horizontal = LiteverTheme.spacing.smallMedium)
                             ) {
                                 Text(
                                     text = uiState.ringtoneTitle,
@@ -744,11 +782,11 @@ fun AlarmEditScreen(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(8.dp)
-                                .padding(start = 56.dp, end = 32.dp)
+                                .height(LiteverTheme.spacing.small)
+                                .padding(start = 56.dp, end = LiteverTheme.spacing.extraLarge)
                         ) {
                             if (uiState.isRingtonePlaying || uiState.ringtoneProgress > 0f) {
-                                LiteverLinearProgressIndicator(
+                                LinearProgressIndicator(
                                     progress = { uiState.ringtoneProgress },
                                     modifier = Modifier
                                         .fillMaxWidth(),
@@ -756,7 +794,7 @@ fun AlarmEditScreen(
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
 
                         // Row 3: Volume & Vibration
                         Row(
@@ -775,7 +813,7 @@ fun AlarmEditScreen(
                                 steps = uiState.maxVolume - 1,
                                 modifier = Modifier
                                     .weight(1f)
-                                    .padding(horizontal = 12.dp),
+                                    .padding(horizontal = LiteverTheme.spacing.smallMedium),
                                 colors = SliderDefaults.colors(
                                     thumbColor = MaterialTheme.colorScheme.primary,
                                     activeTrackColor = MaterialTheme.colorScheme.primary,
@@ -790,7 +828,7 @@ fun AlarmEditScreen(
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
 
                         // Row 4: Gentle Alarm (Increasing Volume)
                         Row(
@@ -798,7 +836,7 @@ fun AlarmEditScreen(
                                 .fillMaxWidth()
                                 .clip(MaterialTheme.shapes.medium)
                                 .clickable { showGradualVolumeSheet = true }
-                                .padding(vertical = 8.dp),
+                                .padding(vertical = LiteverTheme.spacing.small),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             ReMindSettingIcon(
@@ -809,7 +847,7 @@ fun AlarmEditScreen(
                             Column(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .padding(horizontal = 12.dp)
+                                    .padding(horizontal = LiteverTheme.spacing.smallMedium)
                             ) {
                                 Text(
                                     text = stringResource(R.string.gentle_alarm_title),
@@ -848,7 +886,7 @@ fun AlarmEditScreen(
                                 .fillMaxWidth()
                                 .clip(MaterialTheme.shapes.medium)
                                 .clickable { onUseAlarmStreamChange(!uiState.useAlarmStream) }
-                                .padding(vertical = 8.dp),
+                                .padding(vertical = LiteverTheme.spacing.small),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             ReMindSettingIcon(
@@ -859,7 +897,7 @@ fun AlarmEditScreen(
                             Column(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .padding(horizontal = 12.dp)
+                                    .padding(horizontal = LiteverTheme.spacing.smallMedium)
                             ) {
                                 Text(
                                     text = stringResource(R.string.use_alarm_stream_title),
@@ -886,22 +924,22 @@ fun AlarmEditScreen(
 
             item {
                 // Group 5: Alarm specific settings
-                LiteverOutlinedCard(
+                OutlinedCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                        .padding(horizontal = LiteverTheme.spacing.medium, vertical = LiteverTheme.spacing.small),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(
                             alpha = 0.3f
                         )
                     ),
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
+                    Column(modifier = Modifier.padding(LiteverTheme.spacing.medium)) {
                         Text(
                             text = stringResource(R.string.alarm_settings),
                             style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(bottom = 12.dp)
+                            modifier = Modifier.padding(bottom = LiteverTheme.spacing.smallMedium)
                         )
 
                         // Snooze Row
@@ -947,17 +985,17 @@ fun AlarmEditScreen(
 
             item {
                 // Group 6: Missions
-                LiteverOutlinedCard(
+                OutlinedCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                        .padding(horizontal = LiteverTheme.spacing.medium, vertical = LiteverTheme.spacing.small),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(
                             alpha = 0.3f
                         )
                     ),
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
+                    Column(modifier = Modifier.padding(LiteverTheme.spacing.medium)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -975,7 +1013,7 @@ fun AlarmEditScreen(
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
 
                         uiState.missions.forEach { mission ->
                             MissionRow(
@@ -983,20 +1021,23 @@ fun AlarmEditScreen(
                                 onClick = { onMissionClick(mission) },
                                 onDelete = { onMissionRemove(mission) }
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
                         }
 
                         if (uiState.missions.size < 5) {
-                            LiteverOutlinedButton(
+                            OutlinedButton(
                                 onClick = onAddMissionClick,
+                                shape = LiteVerButtonDefaults.shape,
+                                colors = LiteVerButtonDefaults.outlinedColors(),
+                                border = LiteVerButtonDefaults.outlinedBorder(),
                                 modifier = Modifier.fillMaxWidth(),
                             ) {
                                 Icon(
                                     imageVector = Icons.Rounded.Add,
                                     contentDescription = null,
-                                    modifier = Modifier.size(18.dp)
+                                    modifier = Modifier.size(LiteVerButtonDefaults.IconSize)
                                 )
-                                Spacer(modifier = Modifier.width(8.dp))
+                                Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
                                 Text(stringResource(vn.io.litever.remind.core.designsystem.R.string.add_mission))
                             }
                         }
@@ -1005,7 +1046,7 @@ fun AlarmEditScreen(
             }
 
             item {
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
             }
         }
     }
@@ -1036,7 +1077,7 @@ fun RepeatDaySelector(
                 modifier = Modifier.weight(1f)
             )
 
-            LiteverIconButton(onClick = onShowDatePicker) {
+            IconButton(onClick = onShowDatePicker) {
                 Icon(
                     imageVector = Icons.Rounded.CalendarMonth,
                     contentDescription = stringResource(R.string.select_date),
@@ -1045,11 +1086,11 @@ fun RepeatDaySelector(
             }
         }
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(LiteverTheme.spacing.extraSmall))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
         ) {
             allDays.forEach { day ->
                 val dayLabel = when (day) {
@@ -1106,7 +1147,7 @@ private fun AlarmSettingRow(
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.medium)
             .clickable(onClick = onClick)
-            .padding(vertical = 8.dp),
+            .padding(vertical = LiteverTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically
     ) {
         ReMindSettingIcon(
@@ -1117,7 +1158,7 @@ private fun AlarmSettingRow(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(horizontal = 12.dp)
+                .padding(horizontal = LiteverTheme.spacing.smallMedium)
         ) {
             Text(
                 text = title,
@@ -1235,7 +1276,7 @@ private fun MissionRow(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.1f))
     ) {
         Row(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(LiteverTheme.spacing.smallMedium),
             verticalAlignment = Alignment.CenterVertically
         ) {
             val icon = when (mission.type) {
@@ -1264,7 +1305,7 @@ private fun MissionRow(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(horizontal = 12.dp)
+                    .padding(horizontal = LiteverTheme.spacing.smallMedium)
             ) {
                 Text(
                     text = title,
@@ -1280,7 +1321,7 @@ private fun MissionRow(
                 )
             }
 
-            LiteverIconButton(onClick = onDelete) {
+            IconButton(onClick = onDelete) {
                 Icon(
                     imageVector = Icons.Rounded.Delete,
                     contentDescription = null,
@@ -1302,21 +1343,21 @@ fun GentleAlarmBottomSheetContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 32.dp)
+            .padding(bottom = LiteverTheme.spacing.extraLarge)
     ) {
         Text(
             text = stringResource(R.string.gentle_alarm_title),
             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(LiteverTheme.spacing.medium)
         )
         Text(
             text = stringResource(R.string.gentle_alarm_description),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            modifier = Modifier.padding(horizontal = LiteverTheme.spacing.medium, vertical = LiteverTheme.spacing.small)
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
 
         options.forEach { option ->
             val label = if (option == 0) {
@@ -1327,7 +1368,7 @@ fun GentleAlarmBottomSheetContent(
                 stringResource(R.string.minutes_unit, option / 60)
             }
 
-            LiteverListItem(
+            ListItem(
                 headlineContent = {
                     Text(
                         label,
@@ -1335,7 +1376,7 @@ fun GentleAlarmBottomSheetContent(
                     )
                 },
                 leadingContent = {
-                    LiteverRadioButton(
+                    RadioButton(
                         selected = currentDuration == option,
                         onClick = { onDurationSelect(option) }
                     )
@@ -1356,18 +1397,18 @@ fun AutoSilenceBottomSheetContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 32.dp)
+            .padding(bottom = LiteverTheme.spacing.extraLarge)
     ) {
         Text(
             text = stringResource(R.string.auto_silence_title),
             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(LiteverTheme.spacing.medium)
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
 
         options.forEach { option ->
-            LiteverListItem(
+            ListItem(
                 headlineContent = {
                     Text(
                         stringResource(R.string.minutes_unit, option),
@@ -1375,7 +1416,7 @@ fun AutoSilenceBottomSheetContent(
                     )
                 },
                 leadingContent = {
-                    LiteverRadioButton(
+                    RadioButton(
                         selected = currentMinutes == option,
                         onClick = { onMinutesSelect(option) }
                     )

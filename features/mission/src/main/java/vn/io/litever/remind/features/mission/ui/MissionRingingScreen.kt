@@ -13,9 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import vn.io.litever.designsystem.components.LiteverButton
-import vn.io.litever.designsystem.components.LiteverLinearProgressIndicator
-import vn.io.litever.designsystem.components.LiteverScaffold
+import vn.io.litever.designsystem.components.LiteVerButtonDefaults
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
@@ -81,7 +79,7 @@ fun MissionRingingScreen(
         return
     }
 
-    LiteverScaffold(
+    Scaffold(
         topBar = {
             if (!uiState.isMissionJustCompleted && !uiState.isDismissed) {
                 ReMindTopAppBar(
@@ -102,10 +100,10 @@ fun MissionRingingScreen(
                                     LiteverTheme.colors.error 
                                 else
                                     LiteverTheme.colors.primary,
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                                modifier = Modifier.padding(horizontal = LiteverTheme.spacing.smallMedium, vertical = LiteverTheme.spacing.extraSmall)
                             )
                         }
-                        Spacer(modifier = Modifier.width(16.dp))
+                        Spacer(modifier = Modifier.width(LiteverTheme.spacing.medium))
                     }
                 )
             }
@@ -113,14 +111,16 @@ fun MissionRingingScreen(
         bottomBar = {
             if (!uiState.isMissionJustCompleted && !uiState.isDismissed) {
                 ReMindBottomBar {
-                    LiteverButton(
+                    Button(
                         onClick = onFinish,
                         modifier = Modifier.fillMaxWidth(),
                         enabled = when (uiState.currentMission?.type) {
                             MissionType.TYPING -> userInput == (uiState.currentTargetData as? Phrase)?.content
                             MissionType.MEMORY_FIND_COLOR_TILES -> userInput == "SUCCESS"
                             else -> userInput.isNotBlank()
-                        }
+                        },
+                        shape = LiteVerButtonDefaults.shape,
+                        colors = LiteVerButtonDefaults.primaryColors()
                     ) {
                         Text(
                             text = stringResource(R.string.mission_complete),
@@ -144,23 +144,23 @@ fun MissionRingingScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .padding(horizontal = 24.dp),
+                    .padding(horizontal = LiteverTheme.spacing.large),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(LiteverTheme.spacing.mediumLarge))
 
                 // Global Mission Progress
                 if (uiState.missions.size > 1) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(bottom = 32.dp)
+                        modifier = Modifier.padding(bottom = LiteverTheme.spacing.extraLarge)
                     ) {
-                        LiteverLinearProgressIndicator(
+                        LinearProgressIndicator(
                             progress = { (uiState.currentMissionIndex + 1).toFloat() / uiState.missions.size },
                             modifier = Modifier
                                 .fillMaxWidth()
                         )
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
                         Text(
                             text = stringResource(
                                 R.string.mission_global_progress,

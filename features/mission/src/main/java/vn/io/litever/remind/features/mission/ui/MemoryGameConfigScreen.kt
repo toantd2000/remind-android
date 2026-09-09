@@ -33,10 +33,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import vn.io.litever.designsystem.components.LiteverButton
-import vn.io.litever.designsystem.components.LiteverCard
-import vn.io.litever.designsystem.components.LiteverIconButton
-import vn.io.litever.designsystem.components.LiteverScaffold
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import vn.io.litever.designsystem.components.LiteVerButtonDefaults
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
@@ -97,7 +99,7 @@ fun MemoryGameConfigScreen(
     onGridSizeChange: (Int) -> Unit,
     onSave: () -> Unit
 ) {
-    LiteverScaffold(
+    Scaffold(
         modifier = Modifier.imePadding(),
         topBar = {
             Box(Modifier.fillMaxWidth()) {
@@ -110,9 +112,11 @@ fun MemoryGameConfigScreen(
         bottomBar = {
             Box(Modifier.fillMaxWidth()) {
                 ReMindBottomBar {
-                    LiteverButton(
+                    Button(
                         onClick = onSave,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = LiteVerButtonDefaults.shape,
+                        colors = LiteVerButtonDefaults.primaryColors()
                     ) {
                         Text(stringResource(R.string.mission_complete))
                     }
@@ -125,9 +129,9 @@ fun MemoryGameConfigScreen(
                 .fillMaxSize()
                 .background(LiteverTheme.colors.background)
                 .padding(padding)
-                .padding(horizontal = 24.dp)
+                .padding(horizontal = LiteverTheme.spacing.large)
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
 
             // Section: Difficulty Settings
             Text(
@@ -139,15 +143,16 @@ fun MemoryGameConfigScreen(
                 )
             )
             
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
 
-            LiteverCard(
+            Card(
                 modifier = Modifier.fillMaxWidth(),
+                shape = LiteverTheme.shapes.medium,
                 colors = CardDefaults.cardColors(containerColor = LiteverTheme.colors.surface),
-                border = androidx.compose.foundation.BorderStroke(1.dp, LiteverTheme.colors.outlineVariant.copy(alpha = 0.5f)),
-                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                border = BorderStroke(1.dp, LiteverTheme.colors.outlineVariant.copy(alpha = 0.5f)),
+                elevation = CardDefaults.cardElevation(defaultElevation = LiteverTheme.spacing.none)
             ) {
-                Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(modifier = Modifier.padding(LiteverTheme.spacing.medium), horizontalAlignment = Alignment.CenterHorizontally) {
                     val difficultyText = when (gridSize) {
                         3 -> stringResource(R.string.memory_game_difficulty_very_easy)
                         4 -> stringResource(R.string.memory_game_difficulty_easy)
@@ -157,11 +162,11 @@ fun MemoryGameConfigScreen(
                         else -> ""
                     }
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = LiteverTheme.spacing.small),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        LiteverIconButton(
+                        IconButton(
                             onClick = { if (gridSize > 3) onGridSizeChange(gridSize - 1) },
                             modifier = Modifier.size(40.dp)
                         ) {
@@ -179,7 +184,7 @@ fun MemoryGameConfigScreen(
                             color = LiteverTheme.colors.primary
                         )
 
-                        LiteverIconButton(
+                        IconButton(
                             onClick = { if (gridSize < 7) onGridSizeChange(gridSize + 1) },
                             modifier = Modifier.size(40.dp)
                         ) {
@@ -191,12 +196,12 @@ fun MemoryGameConfigScreen(
                             )
                         }
                     }
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
                     MemoryGameStaticPreview(gridSize = gridSize, targetTiles = targetTiles)
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(LiteverTheme.spacing.extraLarge))
 
             // Section: Repetitions
             Row(
@@ -212,7 +217,7 @@ fun MemoryGameConfigScreen(
                         letterSpacing = 1.sp
                     )
                 )
-                LiteverIconButton(
+                IconButton(
                     onClick = { onRepetitionsChange(1) },
                     modifier = Modifier.size(32.dp)
                 ) {
@@ -225,20 +230,21 @@ fun MemoryGameConfigScreen(
                 }
             }
             
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
 
-            LiteverCard(
+            Card(
                 modifier = Modifier.fillMaxWidth(),
+                shape = LiteverTheme.shapes.medium,
                 colors = CardDefaults.cardColors(containerColor = LiteverTheme.colors.surface),
-                border = androidx.compose.foundation.BorderStroke(1.dp, LiteverTheme.colors.outlineVariant.copy(alpha = 0.5f)),
-                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                border = BorderStroke(1.dp, LiteverTheme.colors.outlineVariant.copy(alpha = 0.5f)),
+                elevation = CardDefaults.cardElevation(defaultElevation = LiteverTheme.spacing.none)
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 16.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = LiteverTheme.spacing.small, vertical = LiteverTheme.spacing.medium),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    LiteverIconButton(
+                    IconButton(
                         onClick = { if (repetitions > 1) onRepetitionsChange(repetitions - 1) },
                         modifier = Modifier.size(40.dp)
                     ) {
@@ -256,7 +262,7 @@ fun MemoryGameConfigScreen(
                         color = LiteverTheme.colors.primary
                     )
 
-                    LiteverIconButton(
+                    IconButton(
                         onClick = { if (repetitions < 99) onRepetitionsChange(repetitions + 1) },
                         modifier = Modifier.size(40.dp)
                     ) {
@@ -270,13 +276,13 @@ fun MemoryGameConfigScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
             
             Text(
                 text = stringResource(R.string.memory_game_repetition_helper, repetitions),
                 style = LiteverTheme.typography.bodySmall,
                 color = LiteverTheme.colors.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 4.dp)
+                modifier = Modifier.padding(horizontal = LiteverTheme.spacing.extraSmall)
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -294,7 +300,7 @@ fun MemoryGameStaticPreview(gridSize: Int, targetTiles: Int) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = LiteverTheme.spacing.small),
         contentAlignment = Alignment.Center
     ) {
         Box(modifier = Modifier.size(200.dp)) {
@@ -308,7 +314,7 @@ fun MemoryGameStaticPreview(gridSize: Int, targetTiles: Int) {
                                 modifier = Modifier
                                     .weight(1f)
                                     .fillMaxHeight()
-                                    .padding(2.dp)
+                                    .padding(LiteverTheme.spacing.tiny)
                                     .background(
                                         color = if (isTarget) LiteverTheme.colors.primary else LiteverTheme.colors.surfaceVariant,
                                         shape = LiteverTheme.shapes.extraSmall

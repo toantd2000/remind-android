@@ -12,6 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.features.mission.R
 
@@ -24,35 +25,35 @@ fun MissionCompleteContent(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(28.dp),
+            .padding(LiteverTheme.spacing.large),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Icon(
             imageVector = Icons.Rounded.CheckCircle,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
+            tint = LiteverTheme.colors.primary,
             modifier = Modifier.size(80.dp)
         )
         
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
         
         Text(
             text = title,
-            style = MaterialTheme.typography.displayMedium.copy(
+            style = LiteverTheme.typography.displayMedium.copy(
                 fontWeight = FontWeight.Black,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = LiteverTheme.colors.onSurface,
                 letterSpacing = 4.sp
             ),
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
         
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
         
         Text(
             text = subtitle,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+            style = LiteverTheme.typography.titleMedium,
+            color = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.7f),
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
     }

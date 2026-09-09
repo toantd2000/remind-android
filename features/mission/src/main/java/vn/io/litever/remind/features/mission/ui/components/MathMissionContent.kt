@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.mission.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -12,6 +13,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import vn.io.litever.designsystem.components.LiteVerTextFieldDefaults
+import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.MathProblem
@@ -30,54 +33,54 @@ fun MathMissionContent(
     ) {
         Text(
             text = stringResource(R.string.mission_math_instruction),
-            style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.primary,
+            style = LiteverTheme.typography.titleSmall,
+            color = LiteverTheme.colors.primary,
             modifier = Modifier.fillMaxWidth()
         )
         
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
         
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                containerColor = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.3f)
             ),
-            shape = MaterialTheme.shapes.medium,
-            border = androidx.compose.foundation.BorderStroke(
+            shape = LiteverTheme.shapes.medium,
+            border = BorderStroke(
                 1.dp,
-                MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                LiteverTheme.colors.outlineVariant.copy(alpha = 0.5f)
             )
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(24.dp),
+                    .padding(LiteverTheme.spacing.large),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = problem?.expression ?: "",
-                    style = MaterialTheme.typography.displayMedium.copy(
+                    style = LiteverTheme.typography.displayMedium.copy(
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 2.sp
                     ),
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = LiteverTheme.colors.onSurface
                 )
             }
         }
         
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
         
         Surface(
-            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
-            shape = MaterialTheme.shapes.extraSmall,
-            modifier = Modifier.padding(bottom = 24.dp)
+            color = LiteverTheme.colors.primaryContainer.copy(alpha = 0.5f),
+            shape = LiteverTheme.shapes.extraSmall,
+            modifier = Modifier.padding(bottom = LiteverTheme.spacing.large)
         ) {
             Text(
                 text = stringResource(R.string.mission_progress, currentRepetition, totalRepetitions),
-                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                color = LiteverTheme.colors.onPrimaryContainer,
+                modifier = Modifier.padding(horizontal = LiteverTheme.spacing.smallMedium, vertical = LiteverTheme.spacing.extraSmall)
             )
         }
         
@@ -88,19 +91,14 @@ fun MathMissionContent(
             placeholder = { 
                 Text(
                     stringResource(R.string.mission_math_placeholder),
-                    style = MaterialTheme.typography.bodyLarge
+                    style = LiteverTheme.typography.bodyLarge
                 ) 
             },
             singleLine = true,
-            shape = MaterialTheme.shapes.medium,
+            shape = LiteVerTextFieldDefaults.shape,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface
-            ),
-            textStyle = MaterialTheme.typography.bodyLarge
+            colors = LiteVerTextFieldDefaults.outlinedColors(),
+            textStyle = LiteverTheme.typography.bodyLarge
         )
     }
 }
@@ -109,7 +107,7 @@ fun MathMissionContent(
 @Composable
 fun MathMissionContentPreview() {
     ReMindTheme {
-        Box(modifier = Modifier.padding(16.dp)) {
+        Box(modifier = Modifier.padding(LiteverTheme.spacing.medium)) {
             MathMissionContent(
                 problem = MathProblem("12 + 45", 57),
                 currentRepetition = 1,

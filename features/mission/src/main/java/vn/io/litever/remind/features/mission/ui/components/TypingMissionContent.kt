@@ -32,7 +32,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import vn.io.litever.designsystem.components.LiteverCard
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.material3.Card
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -114,9 +115,9 @@ fun TypingMissionContent(
             modifier = Modifier.fillMaxWidth()
         )
         
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
         
-        LiteverCard(
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable(
@@ -128,7 +129,7 @@ fun TypingMissionContent(
                 containerColor = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.2f)
             ),
             shape = LiteverTheme.shapes.medium,
-            border = androidx.compose.foundation.BorderStroke(
+            border = BorderStroke(
                 1.dp,
                 LiteverTheme.colors.outlineVariant.copy(alpha = 0.3f)
             )
@@ -136,7 +137,7 @@ fun TypingMissionContent(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(24.dp),
+                    .padding(LiteverTheme.spacing.large),
                 contentAlignment = Alignment.Center
             ) {
                 BasicTextField(
@@ -156,18 +157,18 @@ fun TypingMissionContent(
             }
         }
         
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
         
         Surface(
             color = LiteverTheme.colors.primaryContainer.copy(alpha = 0.5f),
             shape = LiteverTheme.shapes.extraSmall,
-            modifier = Modifier.padding(bottom = 24.dp)
+            modifier = Modifier.padding(bottom = LiteverTheme.spacing.large)
         ) {
             Text(
                 text = stringResource(R.string.mission_progress, currentRepetition, totalRepetitions),
                 style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                 color = LiteverTheme.colors.onPrimaryContainer,
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                modifier = Modifier.padding(horizontal = LiteverTheme.spacing.smallMedium, vertical = LiteverTheme.spacing.extraSmall)
             )
         }
     }
@@ -177,7 +178,7 @@ fun TypingMissionContent(
 @Composable
 fun TypingMissionContentPreview() {
     ReMindTheme {
-        Box(modifier = Modifier.padding(16.dp)) {
+        Box(modifier = Modifier.padding(LiteverTheme.spacing.medium)) {
             TypingMissionContent(
                 targetPhrase = Phrase(id = 1, content = "Success is not final, failure is not fatal.", categoryId = "motivation"),
                 currentRepetition = 1,

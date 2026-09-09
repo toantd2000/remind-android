@@ -56,16 +56,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import vn.io.litever.designsystem.components.LiteverButton
-import vn.io.litever.designsystem.components.LiteverCard
-import vn.io.litever.designsystem.components.LiteverCheckbox
-import vn.io.litever.designsystem.components.LiteverDialog
-import vn.io.litever.designsystem.components.LiteverIconButton
-import vn.io.litever.designsystem.components.LiteverModalBottomSheet
-import vn.io.litever.designsystem.components.LiteverOutlinedButton
-import vn.io.litever.designsystem.components.LiteverOutlinedCard
-import vn.io.litever.designsystem.components.LiteverScaffold
-import vn.io.litever.designsystem.components.LiteverTextButton
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TextButton
+import vn.io.litever.designsystem.components.LiteVerButtonDefaults
+import vn.io.litever.remind.core.designsystem.components.ReMindAlertDialog
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
@@ -118,38 +119,30 @@ fun PhraseSelectionRoute(
     )
 
     if (phraseToDelete != null) {
-        LiteverDialog(
+        ReMindAlertDialog(
             onDismissRequest = { phraseToDelete = null },
-            title = { Text(stringResource(R.string.action_delete)) },
-            text = { Text(stringResource(R.string.mission_phrase_delete_confirm)) },
-            confirmButton = {
-                LiteverOutlinedButton(onClick = {
-                    viewModel.deletePhrase(phraseToDelete!!)
-                    phraseToDelete = null
-                }) {
-                    Text(
-                        stringResource(R.string.action_delete),
-                        color = LiteverTheme.colors.error
-                    )
-                }
+            title = stringResource(R.string.action_delete),
+            text = stringResource(R.string.mission_phrase_delete_confirm),
+            confirmButtonText = stringResource(R.string.action_delete),
+            onConfirmClick = {
+                viewModel.deletePhrase(phraseToDelete!!)
+                phraseToDelete = null
             },
-            dismissButton = {
-                LiteverButton(onClick = { phraseToDelete = null }) {
-                    Text(stringResource(R.string.cancel))
-                }
-            }
+            dismissButtonText = stringResource(R.string.cancel),
+            onDismissClick = { phraseToDelete = null },
+            isDestructive = true
         )
     }
 
     if (showAddSheet) {
-        LiteverModalBottomSheet(
+        ModalBottomSheet(
             onDismissRequest = {
                 showAddSheet = false
                 phraseToEdit = null
             },
             sheetState = sheetState,
             containerColor = LiteverTheme.colors.surface,
-            tonalElevation = 0.dp,
+            tonalElevation = LiteverTheme.spacing.none,
             dragHandle = { BottomSheetDefaults.DragHandle(color = LiteverTheme.colors.outlineVariant) }
         ) {
             AddCustomPhraseContent(
@@ -169,6 +162,7 @@ fun PhraseSelectionRoute(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PhraseSelectionScreen(
     predefinedPhrases: Map<String, List<Phrase>>,
@@ -191,7 +185,7 @@ fun PhraseSelectionScreen(
         stringResource(R.string.mission_phrases_my)
     )
 
-    LiteverScaffold(
+    Scaffold(
         topBar = {
             ReMindTopAppBar(
                 title = stringResource(R.string.mission_select_phrases),
@@ -200,10 +194,12 @@ fun PhraseSelectionScreen(
         },
         bottomBar = {
             ReMindBottomBar {
-                LiteverButton(
+                Button(
                     onClick = onComplete,
                     modifier = Modifier.fillMaxWidth(),
-                    enabled = selectedIds.isNotEmpty()
+                    enabled = selectedIds.isNotEmpty(),
+                    shape = LiteVerButtonDefaults.shape,
+                    colors = LiteVerButtonDefaults.primaryColors()
                 ) {
                     Text(
                         text = stringResource(R.string.save),
@@ -275,7 +271,7 @@ fun PhraseSelectionScreen(
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(bottom = 16.dp)
+                        contentPadding = PaddingValues(bottom = LiteverTheme.spacing.medium)
                     ) {
                         if (currentCategory == "custom") {
                             val sharedPhrases =
@@ -319,13 +315,17 @@ fun PhraseSelectionScreen(
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                                        .padding(horizontal = LiteverTheme.spacing.medium, vertical = LiteverTheme.spacing.small),
                                     horizontalArrangement = Arrangement.End
                                 ) {
-                                    LiteverTextButton(onClick = {
-                                        if (allSelected) onDeselectAll(phrases.map { it.id })
-                                        else onSelectAll(phrases.map { it.id })
-                                    }) {
+                                    TextButton(
+                                        onClick = {
+                                            if (allSelected) onDeselectAll(phrases.map { it.id })
+                                            else onSelectAll(phrases.map { it.id })
+                                        },
+                                        shape = LiteVerButtonDefaults.shape,
+                                        colors = LiteVerButtonDefaults.textColors()
+                                    ) {
                                         Text(
                                             text = stringResource(if (allSelected) R.string.action_deselect_all else R.string.action_select_all),
                                             style = LiteverTheme.typography.labelLarge
@@ -356,7 +356,7 @@ fun SectionHeader(title: String) {
         text = title,
         style = LiteverTheme.typography.titleSmall,
         color = LiteverTheme.colors.primary,
-        modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp)
+        modifier = Modifier.padding(start = LiteverTheme.spacing.medium, top = LiteverTheme.spacing.medium, bottom = LiteverTheme.spacing.small)
     )
 }
 
@@ -373,13 +373,13 @@ fun PhraseItem(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .padding(horizontal = LiteverTheme.spacing.medium, vertical = LiteverTheme.spacing.extraSmall)
             .clip(LiteverTheme.shapes.medium)
             .clickable { onToggle() },
         shape = LiteverTheme.shapes.medium,
         color = if (isSelected) LiteverTheme.colors.primaryContainer.copy(alpha = 0.3f)
         else LiteverTheme.colors.surface,
-        border = androidx.compose.foundation.BorderStroke(
+        border = BorderStroke(
             1.dp,
             if (isSelected) LiteverTheme.colors.primary.copy(alpha = 0.5f)
             else LiteverTheme.colors.outlineVariant.copy(alpha = 0.3f)
@@ -387,11 +387,11 @@ fun PhraseItem(
     ) {
         Row(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(LiteverTheme.spacing.medium)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            LiteverCheckbox(
+            Checkbox(
                 checked = isSelected,
                 onCheckedChange = { onToggle() },
                 colors = CheckboxDefaults.colors(
@@ -403,7 +403,7 @@ fun PhraseItem(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(start = 12.dp)
+                    .padding(start = LiteverTheme.spacing.smallMedium)
             ) {
                 Text(
                     text = phrase.content,
@@ -421,7 +421,7 @@ fun PhraseItem(
 
             if (phrase.isCustom) {
                 Box {
-                    LiteverIconButton(onClick = { showMenu = true }) {
+                    IconButton(onClick = { showMenu = true }) {
                         Icon(
                             imageVector = Icons.Rounded.MoreVert,
                             contentDescription = "More options",
@@ -499,12 +499,12 @@ fun AddCustomPhraseContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(LiteverTheme.spacing.medium)
     ) {
         Text(
             text = stringResource(if (editingPhrase != null) R.string.mission_phrase_edit_title else R.string.mission_add_custom_phrase),
             style = LiteverTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(bottom = 20.dp)
+            modifier = Modifier.padding(bottom = LiteverTheme.spacing.mediumLarge)
         )
 
         OutlinedTextField(
@@ -523,16 +523,17 @@ fun AddCustomPhraseContent(
             }
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
 
-        LiteverCard(
+        Card(
             modifier = Modifier.fillMaxWidth(),
+            shape = LiteverTheme.shapes.medium,
             colors = CardDefaults.cardColors(
                 containerColor = LiteverTheme.colors.tertiaryContainer
             )
         ) {
             Row(
-                modifier = Modifier.padding(12.dp),
+                modifier = Modifier.padding(LiteverTheme.spacing.smallMedium),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
@@ -541,7 +542,7 @@ fun AddCustomPhraseContent(
                     tint = LiteverTheme.colors.onTertiaryContainer,
                     modifier = Modifier.size(20.dp)
                 )
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(LiteverTheme.spacing.smallMedium))
                 Text(
                     text = stringResource(R.string.mission_typing_tip),
                     style = LiteverTheme.typography.labelMedium,
@@ -552,9 +553,9 @@ fun AddCustomPhraseContent(
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(vertical = 16.dp)
+            modifier = Modifier.padding(vertical = LiteverTheme.spacing.medium)
         ) {
-            LiteverCheckbox(
+            Checkbox(
                 checked = isShared,
                 onCheckedChange = { isShared = it },
                 enabled = editingPhrase == null && canBePrivate
@@ -574,21 +575,23 @@ fun AddCustomPhraseContent(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.smallMedium)
         ) {
-            LiteverOutlinedButton(
+            OutlinedButton(
                 onClick = onDismiss,
-                modifier = Modifier
-                    .weight(1f),
+                modifier = Modifier.weight(1f),
+                shape = LiteVerButtonDefaults.shape,
+                colors = LiteVerButtonDefaults.outlinedColors()
             ) {
                 Text(stringResource(R.string.cancel))
             }
 
-            LiteverButton(
+            Button(
                 onClick = { onConfirm(text, isShared) },
                 enabled = text.isNotBlank(),
-                modifier = Modifier
-                    .weight(1f)
+                modifier = Modifier.weight(1f),
+                shape = LiteVerButtonDefaults.shape,
+                colors = LiteVerButtonDefaults.primaryColors()
             ) {
                 Text(stringResource(R.string.save))
             }

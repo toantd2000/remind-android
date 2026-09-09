@@ -89,7 +89,7 @@ fun MemoryTilesMissionContent(
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
 
         val outlineColor = when (gameState) {
             MemoryGameState.SUCCESS -> LiteverTheme.colors.success
@@ -102,12 +102,12 @@ fun MemoryTilesMissionContent(
             columns = GridCells.Fixed(currentBoard.gridSize),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = LiteverTheme.spacing.medium)
                 .aspectRatio(1f)
-                .border(2.dp, outlineColor, LiteverTheme.shapes.medium),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(16.dp)
+                .border(LiteverTheme.spacing.tiny, outlineColor, LiteverTheme.shapes.medium),
+            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small),
+            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small),
+            contentPadding = PaddingValues(LiteverTheme.spacing.medium)
         ) {
             items(currentBoard.gridSize * currentBoard.gridSize) { index ->
                 val isTarget = currentBoard.targetIndices.contains(index)
@@ -145,18 +145,18 @@ fun MemoryTilesMissionContent(
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(LiteverTheme.spacing.large))
 
         Surface(
             color = LiteverTheme.colors.primaryContainer.copy(alpha = 0.5f),
             shape = LiteverTheme.shapes.extraSmall,
-            modifier = Modifier.padding(bottom = 24.dp)
+            modifier = Modifier.padding(bottom = LiteverTheme.spacing.large)
         ) {
             Text(
                 text = stringResource(R.string.mission_progress, currentRepetition, totalRepetitions),
                 style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                 color = LiteverTheme.colors.onPrimaryContainer,
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                modifier = Modifier.padding(horizontal = LiteverTheme.spacing.smallMedium, vertical = LiteverTheme.spacing.extraSmall)
             )
         }
     }

@@ -793,3 +793,47 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
   - Tạo component wrapper `ReMindTopAppBar` trong `:core:designsystem` kế thừa `LiteverTopAppBar` để đóng gói tiện ích điều hướng quay lại (`onBackClick`) chuẩn hóa theo thiết kế Litever.
   - Thay thế trực tiếp các tham số TextField lỗi thời (`onClearClick` chuyển thành `showClearButton = true`) trong `AlarmEditScreen`.
 - **Hệ quả:** Đồng bộ toàn diện với bản phát hành mới nhất của `litever-designsystem`, code tuân thủ nghiêm ngặt nguyên tắc Single Source of Truth cho UI qua `:core:designsystem`.
+
+### [TDR-058] - Đồng bộ và Khởi tạo Design System ReMind Android lên Stitch
+- **Ngày thực hiện:** 2026-09-08
+- **Trạng thái:** Accepted
+- **Bối cảnh:** Cần đồng bộ toàn bộ ngôn ngữ thiết kế, Design Tokens (bảng màu Terracotta/Warm amber, typography Nunito Sans, hình khối Bo tròn 8dp, spacing scale và các custom component wrapper) của ReMind Android lên nền tảng thiết kế Stitch để phục vụ việc thiết kế và sinh màn hình UI đồng nhất.
+- **Quyết định:**
+  - Khởi tạo Stitch Project độc lập `ReMind Android` (ID: `15621181851926747824`).
+  - Trích xuất toàn bộ Color tokens từ `:core:designsystem` (`remindLightColors`, `remindDarkColors`) với tông chính `#8C4E28`, Typography `NUNITO_SANS`, Roundness `ROUND_EIGHT`, Spacing scale và biên soạn tài liệu `designMd` chứa đặc tả token, core components.
+  - Khởi tạo và gắn kết Design System `ReMind Design System` (Asset ID: `16615139910500015624`) vào Project thông qua Stitch MCP tools (`create_design_system`, `update_design_system`).
+- **Hệ quả:** Stitch Project hiện tại phản ánh chính xác 100% token thực tế của ứng dụng ReMind Android, sẵn sàng cho việc sinh và cập nhật giao diện mới một cách tự động và nhất quán.
+
+### [TDR-059] - Đồng bộ toàn bộ các Màn hình Ứng dụng ReMind Android lên Stitch
+- **Ngày thực hiện:** 2026-09-08
+- **Trạng thái:** Accepted
+- **Bối cảnh:** Sau khi khởi tạo Design System trên Stitch, cần đồng bộ toàn diện tất cả các màn hình hiện tại của ReMind Android lên Stitch canvas nhằm tạo cơ sở thiết kế visual, review UX và đồng nhất quy chuẩn thiết kế.
+- **Quyết định:**
+  - Sử dụng công cụ `generate_screen_from_text` (kết hợp `ReMind Design System` asset) đồng bộ tuần tự 10 màn hình cốt lõi:
+    1. `AlarmListScreen` (Tab Báo thức): Logo ReMind, thẻ đếm ngược, danh sách báo thức, FAB.
+    2. `TodayScreen` (Tab Hôm nay): Thẻ thời tiết AI WeatherInfoView, trích dẫn động lực TodayQuoteView.
+    3. `SettingsScreen` (Tab Cài đặt): Cấu trúc nhóm LiteverSettingsGroup, các liên kết cài đặt.
+    4. `AlarmEditScreen` (Thêm / Sửa báo thức): Trình chọn giờ số lớn, chip lặp lại T2..CN, âm lượng, mission và ReMindBottomBar.
+    5. `AlarmRingingScreen` (Màn hình chuông reo): Edge-to-edge, đồng hồ số cực lớn, auto-silence timer, nút Dismiss & Snooze.
+    6. `PermissionSettingsScreen` (Cài đặt quyền): Trạng thái Exact Alarm, Notification, Overlay, Battery optimization.
+    7. `GeneralSettingsScreen` (Cài đặt chung): Định dạng giờ 12h/24h, Sáng/Tối, bảng màu ReMind Warm Terracotta vs Dynamic.
+    8. `AttributionsScreen` (Lời cảm ơn & Tài nguyên): Ghi nhận OSS Libraries, Storyset illustrations, WeatherAPI.
+    9. `SnoozeSettingsScreen` (Cài đặt hoãn): Switch bật/tắt, interval và số lần lặp lại.
+    10. `MissionRingingScreen` (Thử thách thức giấc): Giao diện gõ chữ với tiến trình 3 bước, trích dẫn động lực và đếm ngược.
+- **Hệ quả:** Toàn bộ 10 màn hình đã hiện diện đầy đủ trên Stitch Canvas của project `ReMind Android`, tuân thủ đồng nhất 100% token thiết kế Material 3 ấm áp (Terracotta).
+
+### [TDR-060] - Tinh chỉnh Màn hình theo Component Gốc Litever Design System & Bổ sung Module Mission lên Stitch
+- **Ngày thực hiện:** 2026-09-08
+- **Trạng thái:** Accepted
+- **Bối cảnh:** Các màn hình đã sinh ban đầu cần được đối chiếu trực tiếp với mã nguồn chi tiết của thư viện `:litever-designsystem` và các custom component wrapper (`ReMindTopAppBar`, `ReMindBottomBar`, `LiteverSettingsGroup`, `LiteverSettingsItem`, `LiteverSingleChoiceSegmentedButtonRow`) để đảm bảo tính chuẩn xác tuyệt đối về mặt cấu trúc và kiểu dáng. Đồng thời cần bổ sung đầy đủ các giao diện cấu hình thử thách trong module `:features:mission`.
+- **Quyết định:**
+  - Rà soát trực tiếp mã nguồn thư viện `:litever-designsystem` từ workspace local.
+  - Sử dụng `edit_screens` để tinh chỉnh các màn hình hiện có (`AlarmListScreen`, `AlarmEditScreen`, `SettingsScreen`, `GeneralSettingsScreen`, `PermissionSettingsScreen`, `AttributionsScreen`, `SnoozeSettingsScreen`, `MissionRingingScreen`) khớp từng thuộc tính component (ReMindLogo, nút Hủy/Lưu ở bottom bar, RadioButton, SegmentedButton).
+  - Bổ sung 3 màn hình còn lại của module Mission:
+    1. `TypingMissionConfigScreen` (Cấu hình nhiệm vụ gõ phím: Stepper số lần lặp, RadioButton chế độ, thẻ xem trước cụm từ).
+    2. `PhraseSelectionScreen` (Màn hình chọn cụm từ: Tabs Động lực/Cơ bản/Của tôi, Checkboxes, Thêm cụm từ mới).
+    3. `MemoryGameConfigScreen` (Cấu hình trò chơi ô nhớ: Stepper số vòng, chọn độ khó lưới 3x3 đến 7x7 và bảng xem trước).
+- **Hệ quả:** Stitch Project `ReMind Android` hiện phản ánh đầy đủ và chuẩn xác 100% tất cả các màn hình và thành phần component từ codebase thực tế.
+
+
+

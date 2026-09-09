@@ -16,12 +16,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import vn.io.litever.designsystem.components.LiteverScaffold
-import vn.io.litever.remind.features.settings.R
+import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
-import vn.io.litever.designsystem.components.LiteverIconButton
+import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.features.settings.R
 
 @Composable
 fun AlarmSettingsRoute(
@@ -47,7 +48,7 @@ fun AlarmSettingsScreen(
     onPreNotificationChange: (Boolean) -> Unit
 ) {
 
-    LiteverScaffold(
+    Scaffold(
         topBar = {
             ReMindTopAppBar(
                 title = stringResource(R.string.setting_alarm_title),
@@ -61,23 +62,23 @@ fun AlarmSettingsScreen(
                 .padding(paddingValues)
         ) {
             item {
-                SettingsSwitchTile(
-                    title = stringResource(R.string.built_in_speaker_title),
-                    subtitle = stringResource(R.string.built_in_speaker_desc),
-                    checked = uiState.useBuiltInSpeaker,
-                    onCheckedChange = onBuiltInSpeakerChange,
-                    icon = Icons.Rounded.Speaker
-                )
-            }
+                ReMindSettingsGroup {
+                    SettingsSwitchTile(
+                        title = stringResource(R.string.built_in_speaker_title),
+                        subtitle = stringResource(R.string.built_in_speaker_desc),
+                        checked = uiState.useBuiltInSpeaker,
+                        onCheckedChange = onBuiltInSpeakerChange,
+                        icon = Icons.Rounded.Speaker
+                    )
 
-            item {
-                SettingsSwitchTile(
-                    title = stringResource(R.string.pre_notification_title),
-                    subtitle = stringResource(R.string.pre_notification_desc),
-                    checked = uiState.isPreNotificationEnabled,
-                    onCheckedChange = onPreNotificationChange,
-                    icon = Icons.Rounded.NotificationImportant
-                )
+                    SettingsSwitchTile(
+                        title = stringResource(R.string.pre_notification_title),
+                        subtitle = stringResource(R.string.pre_notification_desc),
+                        checked = uiState.isPreNotificationEnabled,
+                        onCheckedChange = onPreNotificationChange,
+                        icon = Icons.Rounded.NotificationImportant
+                    )
+                }
             }
         }
     }
@@ -135,14 +136,14 @@ fun DurationSelectionDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable { onSelect(option) }
-                            .padding(vertical = 12.dp),
+                            .padding(vertical = LiteverTheme.spacing.smallMedium),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         RadioButton(
                             selected = option == currentValue,
                             onClick = { onSelect(option) }
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
                         Text(stringResource(R.string.minute_format, option))
                     }
                 }
@@ -154,6 +155,22 @@ fun DurationSelectionDialog(
             }
         }
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AlarmSettingsScreenPreview() {
+    ReMindTheme {
+        AlarmSettingsScreen(
+            uiState = SettingsUiState(
+                useBuiltInSpeaker = true,
+                isPreNotificationEnabled = false
+            ),
+            onNavigateBack = {},
+            onBuiltInSpeakerChange = {},
+            onPreNotificationChange = {}
+        )
+    }
 }
 
 

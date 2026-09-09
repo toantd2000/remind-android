@@ -24,7 +24,9 @@ import androidx.compose.material.icons.rounded.PrivacyTip
 import androidx.compose.material.icons.rounded.Security
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,14 +43,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import vn.io.litever.designsystem.components.LiteverAlertDialog
-import vn.io.litever.designsystem.components.LiteverCircularProgressIndicator
-import vn.io.litever.designsystem.components.LiteverDialog
-import vn.io.litever.designsystem.components.LiteverScaffold
-import vn.io.litever.designsystem.components.LiteverSettingsGroup
-import vn.io.litever.designsystem.components.LiteverSettingsItem
-import vn.io.litever.designsystem.components.LiteverTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.components.ReMindAlertDialog
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsItem
+import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.core.ads.api.AdPlacement
 import vn.io.litever.remind.core.ads.api.AdState
 import vn.io.litever.remind.core.ads.api.LocalAdManager
@@ -136,9 +135,9 @@ fun SettingsScreen(
         }
     }
 
-    LiteverScaffold(
+    Scaffold(
         topBar = {
-            LiteverTopAppBar(title = stringResource(R.string.settings_title))
+            ReMindTopAppBar(title = stringResource(R.string.settings_title))
         }
     ) { paddingValues ->
         LazyColumn(
@@ -148,15 +147,15 @@ fun SettingsScreen(
         ) {
             // Group 1: App Settings
             item {
-                LiteverSettingsGroup(title = stringResource(R.string.category_app_settings)) {
-                    LiteverSettingsItem(
+                ReMindSettingsGroup(title = stringResource(R.string.category_app_settings)) {
+                    ReMindSettingsItem(
                         title = stringResource(R.string.setting_general_title),
                         subtitle = stringResource(R.string.setting_general_subtitle),
                         icon = Icons.Rounded.Language,
                         onClick = onNavigateToGeneralSettings
                     )
 
-                    LiteverSettingsItem(
+                    ReMindSettingsItem(
                         title = stringResource(R.string.setting_permissions_title),
                         subtitle = stringResource(R.string.setting_permissions_subtitle),
                         icon = Icons.Rounded.Security,
@@ -169,26 +168,26 @@ fun SettingsScreen(
 
             // Group 2: Support & Community
             item {
-                LiteverSettingsGroup(title = stringResource(R.string.category_support)) {
+                ReMindSettingsGroup(title = stringResource(R.string.category_support)) {
                     // SettingsItem(
                     //     title = stringResource(R.string.setting_qa),
                     //     icon = Icons.Rounded.QuestionAnswer,
                     //     onClick = { showFaqDialog = true }
                     // )
 
-                    LiteverSettingsItem(
+                    ReMindSettingsItem(
                         title = stringResource(R.string.setting_rate),
                         icon = Icons.Rounded.Star,
                         onClick = { rateApp(context) }
                     )
 
-                    LiteverSettingsItem(
+                    ReMindSettingsItem(
                         title = stringResource(R.string.setting_share),
                         icon = Icons.Rounded.Share,
                         onClick = { shareApp(context) }
                     )
 
-                    LiteverSettingsItem(
+                    ReMindSettingsItem(
                         title = stringResource(R.string.setting_support_dev_title),
                         subtitle = stringResource(R.string.setting_support_dev_desc),
                         icon = Icons.Rounded.Favorite,
@@ -199,32 +198,32 @@ fun SettingsScreen(
 
             // Group 3: About & Legal
             item {
-                LiteverSettingsGroup(title = stringResource(R.string.category_about)) {
-                    LiteverSettingsItem(
+                ReMindSettingsGroup(title = stringResource(R.string.category_about)) {
+                    ReMindSettingsItem(
                         title = stringResource(R.string.setting_story),
                         icon = Icons.Rounded.History,
                         onClick = { launchCustomTab(context, BuildConfig.URL_AUTHOR) }
                     )
 
-                    LiteverSettingsItem(
+                    ReMindSettingsItem(
                         title = stringResource(R.string.setting_history),
                         icon = Icons.Rounded.Code,
                         onClick = { launchCustomTab(context, BuildConfig.URL_CHANGELOG) }
                     )
 
-                    LiteverSettingsItem(
+                    ReMindSettingsItem(
                         title = stringResource(R.string.setting_terms),
                         icon = Icons.Rounded.Description,
                         onClick = { launchCustomTab(context, BuildConfig.URL_TERMS) }
                     )
 
-                    LiteverSettingsItem(
+                    ReMindSettingsItem(
                         title = stringResource(R.string.setting_privacy),
                         icon = Icons.Rounded.PrivacyTip,
                         onClick = { launchCustomTab(context, BuildConfig.URL_PRIVACY) }
                     )
 
-                    LiteverSettingsItem(
+                    ReMindSettingsItem(
                         title = stringResource(R.string.setting_attributions_title),
                         subtitle = stringResource(R.string.setting_attributions_subtitle),
                         icon = Icons.Rounded.Description,
@@ -245,8 +244,8 @@ fun SettingsScreen(
                         packageInfo.versionCode.toLong()
                     }
 
-                LiteverSettingsGroup {
-                    LiteverSettingsItem(
+                ReMindSettingsGroup {
+                    ReMindSettingsItem(
                         title = stringResource(R.string.setting_version_title),
                         subtitle = stringResource(
                             R.string.app_version_format,
@@ -258,13 +257,13 @@ fun SettingsScreen(
                 }
             }
 
-            item { Spacer(modifier = Modifier.height(16.dp)) }
+            item { Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium)) }
         }
     }
 
     // Support Developer Dialog
     if (showSupportDeveloperDialog) {
-        LiteverAlertDialog(
+        ReMindAlertDialog(
             onDismissRequest = {
                 if (showSupportDeveloperDialog) showSupportDeveloperDialog = false
             },
@@ -297,7 +296,7 @@ fun SettingsScreen(
 
     // Direct Donation Dialog
     if (showDonateDialog) {
-        LiteverAlertDialog(
+        ReMindAlertDialog(
             onDismissRequest = { showDonateDialog = false },
             confirmButtonText = stringResource(R.string.close_text),
             onConfirmClick = { showDonateDialog = false },
@@ -308,7 +307,7 @@ fun SettingsScreen(
 
     // FAQ / Q&A Upcoming Dialog
     if (showFaqDialog) {
-        LiteverAlertDialog(
+        ReMindAlertDialog(
             onDismissRequest = { showFaqDialog = false },
             confirmButtonText = stringResource(R.string.close_text),
             onConfirmClick = { showFaqDialog = false },
@@ -332,20 +331,20 @@ fun SettingsScreen(
     // Ad Loading Dialog Overlay
     if (showAdLoading) {
         val loadingAdMessage = stringResource(R.string.loading_ad_message)
-        LiteverDialog(
+        ReMindAlertDialog(
             onDismissRequest = { showAdLoading = false },
             confirmButton = {},
             text = {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(24.dp),
+                        .padding(LiteverTheme.spacing.large),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
                 ) {
-                    LiteverCircularProgressIndicator(
+                    CircularProgressIndicator(
                         color = LiteverTheme.colors.primary,
-                        modifier = Modifier.size(48.dp)
+                        modifier = Modifier.size(LiteverTheme.spacing.doubleLarge)
                     )
                     Text(
                         text = loadingAdMessage,
@@ -359,7 +358,7 @@ fun SettingsScreen(
 
     // Ad-Free Granted Thank You Dialog
     if (showThankYouDialog) {
-        LiteverAlertDialog(
+        ReMindAlertDialog(
             onDismissRequest = { showThankYouDialog = false },
             confirmButtonText = stringResource(R.string.close_text),
             onConfirmClick = { showThankYouDialog = false },
@@ -394,24 +393,24 @@ fun RewardedAdSimulatorDialog(
             tonalElevation = 6.dp,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(LiteverTheme.spacing.medium)
         ) {
             Column(
-                modifier = Modifier.padding(24.dp),
+                modifier = Modifier.padding(LiteverTheme.spacing.large),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                LiteverCircularProgressIndicator(
+                CircularProgressIndicator(
                     color = LiteverTheme.colors.primary,
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(LiteverTheme.spacing.medium)
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
                 Text(
                     text = rewardAdLoadingText,
                     style = LiteverTheme.typography.titleMedium,
                     fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
                     color = LiteverTheme.colors.onSurface
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
                 Text(
                     text = watchAdDialogMessage,
                     style = LiteverTheme.typography.bodySmall,

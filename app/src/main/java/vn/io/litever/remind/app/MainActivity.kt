@@ -26,6 +26,7 @@ import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.CompositionLocalProvider
@@ -38,7 +39,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -51,7 +51,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import vn.io.litever.designsystem.components.LiteverScaffold
+import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.ads.api.AdManager
 import vn.io.litever.remind.core.ads.api.LocalAdManager
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
@@ -286,7 +286,7 @@ class MainActivity : ComponentActivity() {
                                     currentRoute == settingsRoute ||
                                     currentRoute == todayRoute
 
-                            LiteverScaffold(
+                            Scaffold(
                                 bottomBar = {
                                     if (isBottomBarVisible) {
                                         NavigationBar {
@@ -356,7 +356,7 @@ class MainActivity : ComponentActivity() {
                                     start = paddingValues.calculateStartPadding(layoutDirection),
                                     top = paddingValues.calculateTopPadding(),
                                     end = paddingValues.calculateEndPadding(layoutDirection),
-                                    bottom = if (isBottomBarVisible) paddingValues.calculateBottomPadding() else 0.dp
+                                    bottom = if (isBottomBarVisible) paddingValues.calculateBottomPadding() else LiteverTheme.spacing.none
                                 )
 
                                 Box(

@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,7 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
-import vn.io.litever.designsystem.components.LiteVerButtonDefaults
+import vn.io.litever.designsystem.components.button.LvButton
+import vn.io.litever.designsystem.components.button.LvButtonType
+import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 
@@ -61,10 +61,8 @@ private fun ReMindBottomBarPreview() {
         Column(verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)) {
             // Single button
             ReMindBottomBar {
-                Button(
+                LvButton(
                     onClick = {},
-                    shape = LiteVerButtonDefaults.shape,
-                    colors = LiteVerButtonDefaults.primaryColors(),
                     modifier = Modifier.fillMaxWidth().height(LiteverTheme.spacing.doubleLarge)
                 ) {
                     Text("Save Changes")
@@ -73,18 +71,16 @@ private fun ReMindBottomBarPreview() {
 
             // Dual buttons - Automatically match heights
             ReMindBottomBar {
-                OutlinedButton(
+                LvButton(
                     onClick = {},
-                    shape = LiteVerButtonDefaults.shape,
-                    colors = LiteVerButtonDefaults.outlinedColors(),
+                    type = LvButtonType.Outlined,
+                    semantic = LvSemantic.Secondary,
                     modifier = Modifier.weight(1f)
                 ) {
                     Text("Cancel")
                 }
-                Button(
+                LvButton(
                     onClick = {},
-                    shape = LiteVerButtonDefaults.shape,
-                    colors = LiteVerButtonDefaults.primaryColors(),
                     modifier = Modifier.weight(1f)
                 ) {
                     Text("Confirm")

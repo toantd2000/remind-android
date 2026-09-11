@@ -20,12 +20,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.VolumeUp
 import androidx.compose.material.icons.rounded.LibraryMusic
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -42,7 +40,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import vn.io.litever.designsystem.components.LiteVerButtonDefaults
+import vn.io.litever.designsystem.components.button.LvButton
+import vn.io.litever.designsystem.components.button.LvButtonType
+import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
@@ -109,13 +109,11 @@ fun RingtoneSelectionScreen(
         },
         bottomBar = {
             ReMindBottomBar {
-                Button(
+                LvButton(
                     onClick = onSaveClick,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(LiteverTheme.spacing.doubleLarge),
-                    shape = LiteVerButtonDefaults.shape,
-                    colors = LiteVerButtonDefaults.primaryColors()
+                        .height(LiteverTheme.spacing.doubleLarge)
                 ) {
                     Text(
                         stringResource(R.string.save),
@@ -144,11 +142,11 @@ fun RingtoneSelectionScreen(
                                 vertical = LiteverTheme.spacing.small
                             )
                     ) {
-                        OutlinedButton(
+                        LvButton(
                             onClick = onPickCustomClick,
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = LiteVerButtonDefaults.shape,
-                            colors = LiteVerButtonDefaults.outlinedColors()
+                            type = LvButtonType.Outlined,
+                            semantic = LvSemantic.Secondary,
+                            modifier = Modifier.fillMaxWidth()
                         ) {
                             Icon(
                                 imageVector = Icons.Rounded.LibraryMusic,

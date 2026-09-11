@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.RadioButton
@@ -29,8 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.components.LiteVerButtonDefaults
+import vn.io.litever.designsystem.components.button.LvButton
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
@@ -89,13 +87,11 @@ fun SnoozeSettingsScreen(
         },
         bottomBar = {
             ReMindBottomBar {
-                Button(
+                LvButton(
                     onClick = onBackClick,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(LiteverTheme.spacing.doubleLarge),
-                    shape = LiteVerButtonDefaults.shape,
-                    colors = LiteVerButtonDefaults.primaryColors()
+                        .height(LiteverTheme.spacing.doubleLarge)
                 ) {
                     Text(
                         stringResource(R.string.save),

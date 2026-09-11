@@ -1,9 +1,7 @@
 package vn.io.litever.remind.core.designsystem.components
 
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
-import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -12,12 +10,15 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.window.DialogProperties
-import vn.io.litever.designsystem.components.LiteVerButtonDefaults
+import vn.io.litever.designsystem.components.button.LvButton
+import vn.io.litever.designsystem.components.button.LvButtonType
+import vn.io.litever.designsystem.components.core.LvSemantic
+import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
 
 /**
- * ReMind Time Picker Dialog wrapping Material 3 [AlertDialog] with support for [androidx.compose.material3.TimePicker] or [androidx.compose.material3.TimeInput].
+ * ReMind Time Picker Dialog wrapping LiteVer [LvAlertDialog] with support for [androidx.compose.material3.TimePicker] or [androidx.compose.material3.TimeInput].
  *
  * @param onDismissRequest Called when user dismisses the dialog.
  * @param confirmButton Composable slot for the confirm button.
@@ -38,12 +39,12 @@ fun ReMindTimePickerDialog(
     title: String? = stringResource(R.string.select_time),
     dismissButton: @Composable (() -> Unit)? = null,
     shape: Shape = LiteverTheme.shapes.extraLarge,
-    containerColor: Color = LiteverTheme.colors.surface,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainerHigh,
     tonalElevation: Dp = AlertDialogDefaults.TonalElevation,
     properties: DialogProperties = DialogProperties(usePlatformDefaultWidth = false),
     content: @Composable () -> Unit
 ) {
-    AlertDialog(
+    LvAlertDialog(
         onDismissRequest = onDismissRequest,
         confirmButton = confirmButton,
         modifier = modifier,
@@ -60,7 +61,6 @@ fun ReMindTimePickerDialog(
         text = content,
         shape = shape,
         containerColor = containerColor,
-        tonalElevation = tonalElevation,
         properties = properties
     )
 }
@@ -78,7 +78,7 @@ fun ReMindTimePickerDialog(
     dismissButtonText: String? = null,
     onDismissClick: (() -> Unit)? = null,
     shape: Shape = LiteverTheme.shapes.extraLarge,
-    containerColor: Color = LiteverTheme.colors.surface,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainerHigh,
     tonalElevation: Dp = AlertDialogDefaults.TonalElevation,
     properties: DialogProperties = DialogProperties(usePlatformDefaultWidth = false),
     content: @Composable () -> Unit
@@ -86,10 +86,9 @@ fun ReMindTimePickerDialog(
     ReMindTimePickerDialog(
         onDismissRequest = onDismissRequest,
         confirmButton = {
-            Button(
+            LvButton(
                 onClick = onConfirmClick,
-                shape = LiteVerButtonDefaults.shape,
-                colors = LiteVerButtonDefaults.primaryColors()
+                semantic = LvSemantic.Primary
             ) {
                 Text(text = confirmButtonText)
             }
@@ -98,10 +97,10 @@ fun ReMindTimePickerDialog(
         title = title,
         dismissButton = dismissButtonText?.let {
             {
-                OutlinedButton(
+                LvButton(
                     onClick = onDismissClick ?: onDismissRequest,
-                    shape = LiteVerButtonDefaults.shape,
-                    colors = LiteVerButtonDefaults.outlinedColors()
+                    type = LvButtonType.Outlined,
+                    semantic = LvSemantic.Secondary
                 ) {
                     Text(text = it)
                 }
@@ -124,7 +123,7 @@ fun LiteverTimePickerDialog(
     title: String? = stringResource(R.string.select_time),
     dismissButton: @Composable (() -> Unit)? = null,
     shape: Shape = LiteverTheme.shapes.extraLarge,
-    containerColor: Color = LiteverTheme.colors.surface,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainerHigh,
     tonalElevation: Dp = AlertDialogDefaults.TonalElevation,
     properties: DialogProperties = DialogProperties(usePlatformDefaultWidth = false),
     content: @Composable () -> Unit

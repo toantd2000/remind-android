@@ -392,3 +392,24 @@ val ColorScheme.onSuccessContainer: Color
     @Composable
     @ReadOnlyComposable
     get() = LiteverTheme.colors.onSuccessContainer
+
+val ColorScheme.neutral: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LiteverTheme.colors.neutral
+
+val ColorScheme.onNeutral: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LiteverTheme.colors.onNeutral
+
+val ColorScheme.neutralContainer: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LiteverTheme.colors.neutralContainer
+
+val ColorScheme.onNeutralContainer: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LiteverTheme.colors.onNeutralContainer
+

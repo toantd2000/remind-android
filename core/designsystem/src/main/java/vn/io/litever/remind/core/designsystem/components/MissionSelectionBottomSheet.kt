@@ -144,7 +144,7 @@ fun MissionSelectionBottomSheet(
                                             Text(
                                                 text = stringResource(R.string.coming_soon),
                                                 style = LiteverTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                                                modifier = Modifier.padding(horizontal = 6.dp, vertical = LiteverTheme.spacing.tiny),
+                                                modifier = Modifier.padding(horizontal = LiteverTheme.spacing.extraSmall, vertical = LiteverTheme.spacing.tiny),
                                                 color = LiteverTheme.colors.onSurfaceVariant
                                             )
                                         }
@@ -171,7 +171,7 @@ fun MissionSelectionBottomSheet(
                                     Icon(
                                         imageVector = item.icon,
                                         contentDescription = null,
-                                        modifier = Modifier.padding(10.dp).size(LiteverTheme.spacing.large),
+                                        modifier = Modifier.padding(LiteverTheme.spacing.smallMedium).size(LiteverTheme.spacing.large),
                                         tint = if (isAvailable) LiteverTheme.colors.primary else LiteverTheme.colors.onSurfaceVariant
                                     )
                                 }

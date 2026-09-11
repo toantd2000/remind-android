@@ -9,7 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import vn.io.litever.designsystem.components.LiteVerButtonDefaults
+import vn.io.litever.designsystem.components.button.LiteVerButtonDefaults
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.features.alarms.R
 import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState

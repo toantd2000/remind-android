@@ -54,7 +54,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import vn.io.litever.designsystem.components.LiteVerButtonDefaults
+import vn.io.litever.designsystem.components.button.LvButton
+import vn.io.litever.designsystem.components.button.LvButtonType
+import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -271,11 +273,10 @@ fun AlarmRingingContent(
                     .padding(LiteverTheme.spacing.medium),
                 contentAlignment = Alignment.TopEnd
             ) {
-                OutlinedButton(
+                LvButton(
                     onClick = onExitPreview,
-                    shape = LiteVerButtonDefaults.shape,
-                    colors = LiteVerButtonDefaults.outlinedColors(),
-                    border = LiteVerButtonDefaults.outlinedBorder(),
+                    type = LvButtonType.Outlined,
+                    semantic = LvSemantic.Secondary,
                     modifier = Modifier.wrapContentSize()
                 ) {
                     Text(
@@ -355,7 +356,7 @@ fun AlarmRingingContent(
                             modifier = Modifier.size(14.dp),
                             tint = LiteverTheme.colors.onTertiaryContainer
                         )
-                        Spacer(modifier = Modifier.width(6.dp))
+                        Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
                         Text(
                             text = stringResource(
                                 R.string.scheduled_time_format,
@@ -482,11 +483,10 @@ fun AlarmRingingContent(
                         stringResource(vn.io.litever.remind.core.designsystem.R.string.snooze)
                     }
 
-                    OutlinedButton(
+                    LvButton(
                         onClick = onSnooze,
-                        shape = LiteVerButtonDefaults.shape,
-                        colors = LiteVerButtonDefaults.outlinedColors(),
-                        border = LiteVerButtonDefaults.outlinedBorder(),
+                        type = LvButtonType.Outlined,
+                        semantic = LvSemantic.Secondary,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp)
@@ -499,7 +499,7 @@ fun AlarmRingingContent(
                     }
                 }
 
-                Button(
+                LvButton(
                     onClick = {
                         val hasMission = (alarm.missions.isNotEmpty())
                         if (hasMission) {
@@ -508,8 +508,8 @@ fun AlarmRingingContent(
                             onDismiss()
                         }
                     },
-                    shape = LiteVerButtonDefaults.shape,
-                    colors = LiteVerButtonDefaults.primaryColors(),
+                    type = LvButtonType.Filled,
+                    semantic = LvSemantic.Primary,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(52.dp)

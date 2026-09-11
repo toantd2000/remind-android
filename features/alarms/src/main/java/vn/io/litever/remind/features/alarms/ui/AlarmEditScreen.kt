@@ -90,8 +90,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.material.icons.rounded.Close
-import vn.io.litever.designsystem.components.LiteVerButtonDefaults
-import vn.io.litever.designsystem.components.LiteVerTextFieldDefaults
+import vn.io.litever.designsystem.components.button.LiteVerButtonDefaults
+import vn.io.litever.designsystem.components.button.LvButton
+import vn.io.litever.designsystem.components.button.LvButtonType
+import vn.io.litever.designsystem.components.button.LvIconButton
+import vn.io.litever.designsystem.components.core.LvSemantic
+import vn.io.litever.designsystem.components.textfield.LiteVerTextFieldDefaults
+import vn.io.litever.designsystem.components.textfield.LvTextField
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.MissionSelectionBottomSheet
 import vn.io.litever.remind.core.designsystem.components.ReMindAlertDialog
@@ -387,19 +392,18 @@ fun AlarmEditScreen(
         ReMindTimePickerDialog(
             onDismissRequest = { if (showTimePicker) showTimePicker = false },
             confirmButton = {
-                Button(
+                LvButton(
                     onClick = { if (showTimePicker) showTimePicker = false },
-                    shape = LiteVerButtonDefaults.shape,
-                    colors = LiteVerButtonDefaults.primaryColors()
+                    semantic = LvSemantic.Primary
                 ) {
                     Text(stringResource(R.string.save))
                 }
             },
             dismissButton = {
-                OutlinedButton(
+                LvButton(
                     onClick = { if (showTimePicker) showTimePicker = false },
-                    shape = LiteVerButtonDefaults.shape,
-                    colors = LiteVerButtonDefaults.outlinedColors()
+                    type = LvButtonType.Outlined,
+                    semantic = LvSemantic.Secondary
                 ) {
                     Text(stringResource(R.string.action_cancel))
                 }
@@ -428,7 +432,7 @@ fun AlarmEditScreen(
             onDismissRequest = { if (showDatePicker) showDatePicker = false },
             confirmButton = {
                 CompositionLocalProvider(LocalContext provides context) {
-                    Button(
+                    LvButton(
                         onClick = {
                             datePickerState.selectedDateMillis?.let { millis ->
                                 val date = Instant.ofEpochMilli(millis)
@@ -438,8 +442,7 @@ fun AlarmEditScreen(
                             }
                             if (showDatePicker) showDatePicker = false
                         },
-                        shape = LiteVerButtonDefaults.shape,
-                        colors = LiteVerButtonDefaults.primaryColors()
+                        semantic = LvSemantic.Primary
                     ) {
                         Text(stringResource(R.string.save))
                     }
@@ -447,12 +450,12 @@ fun AlarmEditScreen(
             },
             dismissButton = {
                 CompositionLocalProvider(LocalContext provides context) {
-                    OutlinedButton(
+                    LvButton(
                         onClick = {
                             if (showDatePicker) showDatePicker = false
                         },
-                        shape = LiteVerButtonDefaults.shape,
-                        colors = LiteVerButtonDefaults.outlinedColors()
+                        type = LvButtonType.Outlined,
+                        semantic = LvSemantic.Secondary
                     ) {
                         Text(stringResource(R.string.action_cancel))
                     }
@@ -527,24 +530,23 @@ fun AlarmEditScreen(
         },
         bottomBar = {
             ReMindBottomBar {
-                OutlinedButton(
+                LvButton(
                     onClick = onPreviewClick,
-                    shape = LiteVerButtonDefaults.shape,
-                    colors = LiteVerButtonDefaults.outlinedColors(),
-                    border = LiteVerButtonDefaults.outlinedBorder(),
-                    modifier = Modifier.height(48.dp)
+                    type = LvButtonType.Outlined,
+                    semantic = LvSemantic.Secondary,
+                    modifier = Modifier.height(LiteverTheme.spacing.doubleLarge)
                 ) {
                     Text(
                         stringResource(R.string.action_preview),
                     )
                 }
-                Button(
+                LvButton(
                     onClick = onSaveClick,
-                    shape = LiteVerButtonDefaults.shape,
-                    colors = LiteVerButtonDefaults.primaryColors(),
+                    type = LvButtonType.Filled,
+                    semantic = LvSemantic.Primary,
                     modifier = Modifier
                         .weight(1f)
-                        .height(48.dp)
+                        .height(LiteverTheme.spacing.doubleLarge)
                 ) {
                     Text(
                         stringResource(R.string.save),
@@ -600,7 +602,7 @@ fun AlarmEditScreen(
                                     )
                                 )
                                 if (!is24HourFormat) {
-                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
                                     Text(
                                         text = uiState.time.format(DateTimeFormatter.ofPattern("a"))
                                             .uppercase(),
@@ -622,7 +624,7 @@ fun AlarmEditScreen(
                                 Icon(
                                     imageVector = Icons.Rounded.Edit,
                                     contentDescription = null,
-                                    modifier = Modifier.size(16.dp),
+                                    modifier = Modifier.size(LiteverTheme.spacing.medium),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                                 )
                                 Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
@@ -683,18 +685,16 @@ fun AlarmEditScreen(
                             modifier = Modifier.padding(bottom = LiteverTheme.spacing.smallMedium)
                         )
 
-                        OutlinedTextField(
+                        LvTextField(
                             value = uiState.label,
                             onValueChange = onLabelChange,
-                            label = { Text(stringResource(R.string.alarm_label_title)) },
-                            placeholder = { Text(stringResource(R.string.alarm_label_placeholder)) },
+                            label = stringResource(R.string.alarm_label_title),
+                            placeholder = stringResource(R.string.alarm_label_placeholder),
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true,
-                            shape = LiteVerTextFieldDefaults.shape,
-                            colors = LiteVerTextFieldDefaults.outlinedColors(),
                             trailingIcon = if (uiState.label.isNotEmpty()) {
                                 {
-                                    IconButton(onClick = { onLabelChange("") }) {
+                                    LvIconButton(onClick = { onLabelChange("") }) {
                                         Icon(Icons.Rounded.Close, contentDescription = null)
                                     }
                                 }
@@ -703,19 +703,17 @@ fun AlarmEditScreen(
 
                         Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
 
-                        OutlinedTextField(
+                        LvTextField(
                             value = uiState.message,
                             onValueChange = onMessageChange,
-                            label = { Text(stringResource(R.string.alarm_message_title)) },
-                            placeholder = { Text(stringResource(R.string.alarm_message_placeholder)) },
+                            label = stringResource(R.string.alarm_message_title),
+                            placeholder = stringResource(R.string.alarm_message_placeholder),
                             modifier = Modifier.fillMaxWidth(),
-                            minLines = 2,
+                            singleLine = false,
                             maxLines = 4,
-                            shape = LiteVerTextFieldDefaults.shape,
-                            colors = LiteVerTextFieldDefaults.outlinedColors(),
                             trailingIcon = if (uiState.message.isNotEmpty()) {
                                 {
-                                    IconButton(onClick = { onMessageChange("") }) {
+                                    LvIconButton(onClick = { onMessageChange("") }) {
                                         Icon(Icons.Rounded.Close, contentDescription = null)
                                     }
                                 }
@@ -1025,11 +1023,9 @@ fun AlarmEditScreen(
                         }
 
                         if (uiState.missions.size < 5) {
-                            OutlinedButton(
+                            LvButton(
                                 onClick = onAddMissionClick,
-                                shape = LiteVerButtonDefaults.shape,
-                                colors = LiteVerButtonDefaults.outlinedColors(),
-                                border = LiteVerButtonDefaults.outlinedBorder(),
+                                type = LvButtonType.Outlined,
                                 modifier = Modifier.fillMaxWidth(),
                             ) {
                                 Icon(
@@ -1077,7 +1073,7 @@ fun RepeatDaySelector(
                 modifier = Modifier.weight(1f)
             )
 
-            IconButton(onClick = onShowDatePicker) {
+            LvIconButton(onClick = onShowDatePicker) {
                 Icon(
                     imageVector = Icons.Rounded.CalendarMonth,
                     contentDescription = stringResource(R.string.select_date),
@@ -1321,11 +1317,14 @@ private fun MissionRow(
                 )
             }
 
-            IconButton(onClick = onDelete) {
+            LvIconButton(
+                onClick = onDelete,
+                semantic = LvSemantic.Destructive
+            ) {
                 Icon(
                     imageVector = Icons.Rounded.Delete,
                     contentDescription = null,
-                    modifier = Modifier.size(20.dp),
+                    modifier = Modifier.size(LiteverTheme.spacing.mediumLarge),
                     tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
                 )
             }

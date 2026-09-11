@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import vn.io.litever.designsystem.components.button.LvIconButton
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import vn.io.litever.remind.core.model.Alarm
@@ -143,7 +144,7 @@ fun AlarmCard(
                                 text = amPm.uppercase(),
                                 style = LiteverTheme.typography.titleSmall.copy(fontWeight = FontWeight.Medium),
                                 color = LiteverTheme.colors.onSurfaceVariant,
-                                modifier = Modifier.padding(start = LiteverTheme.spacing.extraSmall, bottom = 6.dp)
+                                modifier = Modifier.padding(start = LiteverTheme.spacing.extraSmall, bottom = LiteverTheme.spacing.extraSmall)
                             )
                         }
                         
@@ -177,7 +178,7 @@ fun AlarmCard(
                     onCheckedChange = onToggle
                 )
 
-                IconButton(
+                LvIconButton(
                     onClick = onMoreClick,
                     modifier = Modifier.size(LiteverTheme.spacing.extraLarge)
                 ) {

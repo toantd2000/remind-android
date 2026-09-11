@@ -33,7 +33,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import vn.io.litever.designsystem.components.LiteVerButtonDefaults
+import vn.io.litever.designsystem.components.button.LvButton
 import vn.io.litever.remind.core.designsystem.components.TodayQuoteView
 import java.time.LocalTime
 import java.util.Locale
@@ -170,10 +170,8 @@ fun AlarmMessageScreen(
                     .padding(vertical = LiteverTheme.spacing.medium)
             )
 
-            Button(
+            LvButton(
                 onClick = onFinish,
-                shape = LiteVerButtonDefaults.shape,
-                colors = LiteVerButtonDefaults.primaryColors(),
                 modifier = Modifier.fillMaxWidth().height(52.dp)
             ) {
                 Text(

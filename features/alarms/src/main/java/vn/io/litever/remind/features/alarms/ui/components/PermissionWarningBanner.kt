@@ -10,7 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import vn.io.litever.designsystem.components.LiteVerButtonDefaults
+import vn.io.litever.designsystem.components.button.LvButton
+import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.features.alarms.R
@@ -57,11 +58,10 @@ fun PermissionWarningBanner(
             
             Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
 
-            Button(
+            LvButton(
                 onClick = onClick,
                 modifier = Modifier.align(Alignment.End),
-                shape = LiteVerButtonDefaults.shape,
-                colors = LiteVerButtonDefaults.destructiveColors()
+                semantic = LvSemantic.Destructive
             ) {
                 Text(stringResource(R.string.permission_warning_banner_action))
             }

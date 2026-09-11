@@ -42,6 +42,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import vn.io.litever.designsystem.components.button.LvIconButton
+import vn.io.litever.designsystem.components.snackbar.LvSnackbarHost
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -219,7 +221,7 @@ fun AlarmListScreen(
             ReMindTopAppBar(
                 title = { ReMindLogo() },
                 actions = {
-                    IconButton(onClick = { showTopMenu = !showTopMenu }) {
+                    LvIconButton(onClick = { showTopMenu = !showTopMenu }) {
                         Icon(Icons.Rounded.MoreVert, contentDescription = actionMoreDescription)
                     }
                     DropdownMenu(
@@ -242,7 +244,7 @@ fun AlarmListScreen(
                 Icon(Icons.Rounded.Add, contentDescription = actionAddDescription)
             }
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { LvSnackbarHost(snackbarHostState) }
     ) { padding ->
         Column(
             modifier = modifier
@@ -409,7 +411,7 @@ fun EmptyState(modifier: Modifier = Modifier) {
                 Icon(
                     imageVector = Icons.Rounded.Notifications,
                     contentDescription = null,
-                    modifier = Modifier.size(48.dp),
+                    modifier = Modifier.size(LiteverTheme.spacing.doubleLarge),
                     tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
                 )
             }

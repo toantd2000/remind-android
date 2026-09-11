@@ -5,9 +5,9 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
 ---
 
 ## 🚀 Trạng Thái Dự Án
-- **Phase Hiện Tại:** Phase 6 (Maintenance & Optimization)
+- **Phase Hiện Tại:** Phase 7 (LiteVer 2.0.0 & Material 3 Refactoring)
 - **Tiến Độ:** 100%
-- **Ngày cập nhật cuối:** 2026-05-30
+- **Ngày cập nhật cuối:** 2026-09-11
 - **Phiên bản hiện tại:** 1.1.6 (Build 9)
 
 
@@ -18,6 +18,8 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
 - [x] **Phase 3:** Giao diện Người dùng (CRUD Alarm List & Create)
 - [x] **Phase 4:** Trải Nghiệm Màn Hình Chuông & Tối ưu UX
 - [x] **Phase 5:** Tách Module Design System & Chuẩn hóa Đa dự án (Modularization)
+- [x] **Phase 6:** Tối ưu hóa & Bảo trì (Maintenance & Optimization)
+- [x] **Phase 7:** Nâng cấp thư viện LiteVer Design System 2.0.0 & Refactor toàn diện Material 3 (includeBuild & M3 Defaults)
 
 ---
 
@@ -835,5 +837,33 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
     3. `MemoryGameConfigScreen` (Cấu hình trò chơi ô nhớ: Stepper số vòng, chọn độ khó lưới 3x3 đến 7x7 và bảng xem trước).
 - **Hệ quả:** Stitch Project `ReMind Android` hiện phản ánh đầy đủ và chuẩn xác 100% tất cả các màn hình và thành phần component từ codebase thực tế.
 
-
-
+### [TDR-061] - Nâng cấp Thư viện LiteVer Design System 2.0.0 và Refactor toàn diện sang Native Material 3 & LiteVer Defaults
+- **Ngày thực hiện:** 2026-09-11
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Thư viện `litever-designsystem` phát hành phiên bản 2.0.0 với triết lý kiến trúc tinh gọn (Lean Architecture): loại bỏ hoàn toàn 24 pass-through wrapper components (như `LiteverButton`, `LiteverScaffold`, `LiteverTopAppBar`, `LiteverTextField`, `LiteverCard`, `LiteverCircularProgressIndicator`, `LiteverIconButton`, `LiteverSwitch`, v.v.). Các wrapper này trước đây tạo ra tầng trung gian không cần thiết, làm giới hạn khả năng tiếp cận các API và tham số phong phú của Jetpack Compose Material 3 (M3), đồng thời gây khó khăn khi nâng cấp Jetpack Compose BOM.
+  - Thay vì duy trì pass-through wrappers, Litever 2.0.0 cung cấp mô hình Component Defaults (`LiteVerButtonDefaults`, `LiteVerTextFieldDefaults`) kết hợp cùng hệ thống Design Tokens phong phú (`LiteverTheme.spacing`, `LiteverTheme.shapes`, semantic colors `warning`/`onWarning`, `success`/`onSuccess`).
+  - Dự án `remind-android` cần liên kết trực tiếp với mã nguồn cục bộ của thư viện thông qua cơ chế `includeBuild("../litever-designsystem")` để vừa thử nghiệm vừa phát triển song song. Đồng thời cần refactor toàn bộ các màn hình và thành phần UI trong tất cả các module (`:core:designsystem`, `:features:alarms`, `:features:settings`, `:features:mission`, `:features:today`, `:app`) sang Material 3 gốc kết hợp LiteVer Defaults và Spacing Tokens.
+- **Quyết định:**
+  1. **Cấu hình Composite Build & Dependency Substitution:**
+     - Khai báo `includeBuild("../litever-designsystem")` trong `settings.gradle.kts` kèm theo khối `dependencySubstitution` thay thế artifact `com.github.toantd2000:litever-designsystem` bằng dự án cục bộ `:designsystem`.
+     - Cập nhật phiên bản thư viện `liteverDesignsystem` lên `2.0.0` trong `gradle/libs.versions.toml`.
+  2. **Tái cấu trúc `:core:designsystem` thành Adapter chuẩn mực:**
+     - Đồng bộ `ReMindTheme` với `LiteverTheme`, bổ sung đầy đủ các token màu semantic (`warning`, `onWarning`, `success`, `onSuccess`).
+     - Tái cấu trúc các custom wrappers chuyên biệt của ReMind (`ReMindTopAppBar`, `ReMindAlertDialog`, `ReMindBottomBar`, `ReMindLoadingIconButton`, `ReMindSettingIcon`) trực tiếp trên nền tảng Material 3 composables (`TopAppBar`, `AlertDialog`, `Surface`, `IconButton`, v.v.) kết hợp `LiteVerButtonDefaults`.
+     - Tái tạo các component đặc thù bị thiếu ở v2.0.0 (`ReMindSettingsGroup`, `ReMindSettingsItem`, `ReMindTimePickerDialog`) trong `:core:designsystem` để bảo đảm nguyên tắc Single Source of Truth cho UI.
+     - Refactor các màn hình dùng chung trong core (`RingtoneSelectionScreen`, `SnoozeSettingsScreen`, `WeatherInfoView`, `TodayQuoteView`, `MissionSelectionBottomSheet`) sang Material 3 và `LiteverTheme.spacing`.
+  3. **Refactor toàn diện các Feature Modules sang M3 & LiteVer Defaults:**
+     - `:features:alarms`: Refactor `AlarmListScreen`, `AlarmEditScreen`, `AlarmRingingScreen`, `AlarmMessageScreen`, `AlarmCard`, `ExitAppDialog`, `MissedAlarmDialog`, `PermissionWarningBanner`.
+     - `:features:settings`: Refactor `SettingsScreen`, `AlarmSettingsScreen`, `GeneralSettingsScreen`, `PermissionSettingsScreen`, `AttributionsScreen`, `LicensesScreen`.
+     - `:features:mission`: Refactor `TypingMissionConfigScreen`, `PhraseSelectionScreen`, `MemoryGameConfigScreen`, `MissionRingingScreen` cùng các content components (`MathMissionContent`, `MemoryTilesMissionContent`, `MissionCompleteContent`, `TypingMissionContent`).
+     - `:features:today`: Refactor `TodayScreen` và `LocationSearchScreen`.
+     - `:app`: Refactor `MainActivity` scaffold, navigation host và window insets.
+  4. **Quy chuẩn Hóa Spacing Tokens & Window Insets:**
+     - Xóa bỏ 100% các giá trị khoảng cách hardcode `.dp` trong layout, thay thế bằng `LiteverTheme.spacing` (`tiny`, `extraSmall`, `small`, `smallMedium`, `medium`, `large`, `extraLarge`, v.v.). Các giá trị `1.dp` duy nhất được giữ lại là độ dày đường viền kỹ thuật (`BorderStroke`).
+     - Root `Scaffold` tại `:app` đảm nhiệm xử lý system bars insets; các `Scaffold` con tại các màn hình con cấu hình `contentWindowInsets = WindowInsets(0, 0, 0, 0)` để triệt tiêu lỗi double-padding (cộng dồn insets).
+- **Hệ quả:**
+  - **Kiến trúc tinh gọn (Lean Architecture):** Loại bỏ hoàn toàn sự phụ thuộc vào các pass-through wrapper mong manh, mã nguồn Compose trực diện, dễ đọc, dễ tiếp cận các API và modifier mới nhất của Google Material 3.
+  - **Tính nhất quán Visual:** Toàn bộ khoảng cách, màu sắc và kiểu dáng nút/input đều được kiểm soát chặt chẽ bởi Design System tokens thông qua `LiteverTheme` và `LiteVerButtonDefaults`.
+  - **Quy trình phát triển liền mạch:** Composite build giúp phản ánh ngay lập tức các thay đổi từ thư viện `litever-designsystem` mà không cần chu kỳ release/publish phức tạp.
+  - **Chất lượng và Độ ổn định:** Tất cả các module biên dịch sạch sẽ 100%, bổ sung bộ unit test logic UI toàn diện cho mission và today features bảo đảm không xảy ra hồi quy.

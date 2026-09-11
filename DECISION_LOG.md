@@ -65,3 +65,24 @@ This document records the solidified technical decisions and behavioral scenario
     - **Emulator-Restricted Simulator**: In `SettingsScreen`, clicking "Watch Ad" pre-loads AdMob rewarded ads (`SUPPORT_REWARDED`). If the ad is loaded, the real ad is displayed. If not loaded:
         - On an emulator (`DeviceUtils.isEmulator() == true`), we trigger `RewardedAdSimulatorDialog` running a beautiful 5s countdown fallback.
         - On a physical device (`DeviceUtils.isEmulator() == false`), we show a lightweight toast (`rewarded_ad_not_ready`) indicating that the ad is not ready yet, and do not show any simulator interface.
+
+## 7. LiteVer Design System 2.0.0 & Material 3 Refactoring
+
+### Scenario: Lean M3 Architecture & Component Defaults Pattern
+- **Expected Behavior**: Eliminate redundant pass-through wrapper components (`LiteverButton`, `LiteverScaffold`, `LiteverTopAppBar`, `LiteverTextField`, `LiteverCard`, etc.) while ensuring consistent theme styling, colors, and accessibility defaults across all feature screens.
+- **Technical Decision**:
+    - **Native Composable Direct Usage**: Adopt standard Jetpack Compose Material 3 composables (`Button`, `OutlinedTextField`, `Scaffold`, `AlertDialog`, `IconButton`, `Surface`) directly in all feature modules (`:features:alarms`, `:features:settings`, `:features:mission`, `:features:today`, `:app`).
+    - **Styling via LiteVer Defaults**: Apply `LiteVerButtonDefaults` (e.g. `primaryColors()`, `secondaryColors()`, `tonalColors()`, `destructiveColors()`, `outlinedColors()`, `ContentPadding`) and `LiteVerTextFieldDefaults` (e.g. `outlinedColors()`, `shape`) directly to native M3 composable arguments.
+    - **App-Specific Wrappers Preservation**: Maintain true app-level custom composables inside `:core:designsystem` (`ReMindTopAppBar`, `ReMindAlertDialog`, `ReMindBottomBar`, `ReMindLoadingIconButton`, `ReMindSettingIcon`, `ReMindSettingsGroup`, `ReMindSettingsItem`, `ReMindTimePickerDialog`) acting as the single source of truth for ReMind-specific UX patterns.
+
+### Scenario: Spacing Tokens vs Border Stroke Discipline
+- **Expected Behavior**: All layout distances, paddings, and item spacings must follow the unified design token system, while graphic outline strokes remain technically precise.
+- **Technical Decision**:
+    - **Semantic Spacing Scale**: Enforce `LiteverTheme.spacing` tokens (`tiny` 2dp, `extraSmall` 4dp, `small` 8dp, `smallMedium` 12dp, `medium` 16dp, `mediumLarge` 20dp, `large` 24dp, `extraLarge` 32dp, `doubleLarge` 48dp, `tripleLarge` 64dp) for all layout modifiers (`padding`, `contentPadding`, `spacedBy`). Eliminate all hardcoded `.dp` values.
+    - **Border Stroke Exemption**: Technical border strokes (such as `BorderStroke(1.dp, color)` or `HorizontalDivider(thickness = 1.dp)`) represent graphic line weights rather than layout spacing and are strictly preserved as explicit DP values without being falsely coerced into spacing tokens.
+
+### Scenario: Root Scaffold Inset Consumption & Nested Scaffolds
+- **Expected Behavior**: Application supports full edge-to-edge rendering without double-padding artifacts or layout clipping when screens with their own TopAppBar/Scaffold are nested inside the root navigation host.
+- **Technical Decision**:
+    - **Root Scaffold Inset Management**: The root `Scaffold` in `:app` (`MainActivity.kt`) manages top-level system bars insets and bottom navigation bar placement.
+    - **Nested Scaffold Zero-Inset Override**: Child screens declaring their own `Scaffold` (for localized top app bars, floating action buttons, or snackbars) explicitly specify `contentWindowInsets = WindowInsets(0, 0, 0, 0)` or selectively consume insets via `WindowInsets.safeDrawing.only(...)`. This completely prevents nested scaffolds from re-consuming system insets and creating unwanted gaps.

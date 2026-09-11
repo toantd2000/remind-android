@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Design System Integration:** Integrated `litever-designsystem` v2.0.0 via Gradle Composite Build (`includeBuild("../litever-designsystem")`) with dependency substitution for `com.github.toantd2000:litever-designsystem`.
+- **Core Components & Wrappers:** Added custom UI components in `:core:designsystem` built on native Material 3: `ReMindTopAppBar`, `ReMindAlertDialog`, `ReMindBottomBar`, `ReMindLoadingIconButton`, `ReMindSettingIcon`, `ReMindSettingsGroup`, `ReMindSettingsItem`, and `ReMindTimePickerDialog`.
+- **Semantic Tokens:** Added support for semantic color tokens (`warning`, `onWarning`, `success`, `onSuccess`) in `ReMindTheme` aligned with `LiteverTheme.colors`.
+- **Testing:** Added comprehensive unit test suites covering UI logic and state models in `:features:mission` (`MathMissionLogicTest`, `MemoryGameBoardTest`, `MissionRingingUiStateTest`, `TypingMissionLogicTest`) and `:features:today` (`TodayUiLogicTest`).
+
+### Changed
+- **Dependencies:** Updated `liteverDesignsystem` version to `2.0.0` in `gradle/libs.versions.toml`.
+- **UI Architecture:** Migrated all screens across `:features:alarms`, `:features:settings`, `:features:mission`, `:features:today`, and `:app` from obsolete pass-through wrappers to native Jetpack Compose Material 3 composables (`Scaffold`, `Button`, `OutlinedTextField`, `AlertDialog`, `IconButton`, etc.) styled with `LiteVerButtonDefaults` and `LiteVerTextFieldDefaults`.
+- **Design Tokens:** Replaced 100% of hardcoded `.dp` spacing values throughout all feature modules with standardized `LiteverTheme.spacing` tokens (`tiny`, `extraSmall`, `small`, `smallMedium`, `medium`, `large`, etc.).
+- **Window Insets:** Standardized insets consumption across root and nested `Scaffold` composables to avoid double-padding issues on devices with system bars.
+
+### Removed
+- **Obsolete Wrappers:** Removed all dependencies on 24 pass-through wrapper components previously provided by `litever-designsystem` v1.x (such as `LiteverButton`, `LiteverScaffold`, `LiteverTopAppBar`, `LiteverTextField`, `LiteverCard`, `LiteverCircularProgressIndicator`, `LiteverIconButton`, `LiteverSwitch`, etc.).
+
 ## [1.1.7] - 2026-07-15
 
 ### Changed

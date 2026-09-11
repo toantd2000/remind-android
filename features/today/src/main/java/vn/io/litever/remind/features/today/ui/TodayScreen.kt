@@ -31,8 +31,9 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import vn.io.litever.designsystem.components.LiteverCircularProgressIndicator
-import vn.io.litever.designsystem.components.LiteverScaffold
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.ads.api.AdManager
@@ -52,6 +53,7 @@ import vn.io.litever.remind.core.model.TodayMetadata
 import vn.io.litever.remind.core.model.WeatherResponse
 import vn.io.litever.remind.features.today.R
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodayRoute(
     modifier: Modifier = Modifier,
@@ -87,6 +89,7 @@ fun TodayRoute(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodayScreen(
     weather: WeatherResponse?,
@@ -98,14 +101,9 @@ fun TodayScreen(
     modifier: Modifier = Modifier
 ) {
     val hour = remember { java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY) }
-    val greeting = when (hour) {
-        in 5..11 -> stringResource(R.string.greeting_morning)
-        in 12..17 -> stringResource(R.string.greeting_afternoon)
-        in 18..21 -> stringResource(R.string.greeting_evening)
-        else -> stringResource(R.string.greeting_night)
-    }
+    val greeting = stringResource(getGreetingStringRes(hour))
 
-    LiteverScaffold(
+    Scaffold(
         topBar = {
             ReMindTopAppBar(
                 title = greeting,
@@ -125,7 +123,7 @@ fun TodayScreen(
                 .fillMaxSize()
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp),
+                .padding(LiteverTheme.spacing.medium),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (weather != null) {
@@ -134,21 +132,28 @@ fun TodayScreen(
                     onLocationClick = onLocationClick
                 )
             } else if (isRefreshing) {
-                LiteverCircularProgressIndicator()
+                CircularProgressIndicator()
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
 
             TodayQuoteView(todayBriefing = todayBriefing)
 
             LocalAdManager.current.NativeAdView(
                 placement = AdPlacement.REMIND_NATIVE,
-                modifier = Modifier.padding(top = 16.dp)
+                modifier = Modifier.padding(top = LiteverTheme.spacing.medium)
             )
 
             Spacer(modifier = Modifier.weight(1f))
         }
     }
+}
+
+fun getGreetingStringRes(hour: Int): Int = when (hour) {
+    in 5..11 -> R.string.greeting_morning
+    in 12..17 -> R.string.greeting_afternoon
+    in 18..21 -> R.string.greeting_evening
+    else -> R.string.greeting_night
 }
 
 @Preview(showBackground = true)

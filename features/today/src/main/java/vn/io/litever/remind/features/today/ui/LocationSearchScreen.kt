@@ -24,8 +24,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.core.model.LocationSearchResponse
 import vn.io.litever.remind.features.today.R
-import vn.io.litever.designsystem.components.LiteverIconButton
-import vn.io.litever.designsystem.components.LiteverScaffold
+import vn.io.litever.designsystem.components.LiteVerTextFieldDefaults
+import vn.io.litever.designsystem.theme.LiteverTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,7 +68,7 @@ fun LocationSearchScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LiteverScaffold(
+    Scaffold(
         topBar = {
             ReMindTopAppBar(
                 title = stringResource(R.string.search_location_title),
@@ -80,7 +80,7 @@ fun LocationSearchScreen(
             modifier = modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp)
+                .padding(LiteverTheme.spacing.medium)
         ) {
             OutlinedTextField(
                 value = searchQuery,
@@ -90,16 +90,17 @@ fun LocationSearchScreen(
                 leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null) },
                 trailingIcon = {
                     if (searchQuery.isNotEmpty()) {
-                        LiteverIconButton(onClick = { onSearchQueryChange("") }) {
+                        IconButton(onClick = { onSearchQueryChange("") }) {
                             Icon(Icons.Rounded.Close, contentDescription = "Clear")
                         }
                     }
                 },
                 singleLine = true,
-                shape = MaterialTheme.shapes.medium
+                shape = LiteVerTextFieldDefaults.shape,
+                colors = LiteVerTextFieldDefaults.outlinedColors()
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
 
             if (isSearching) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -107,7 +108,7 @@ fun LocationSearchScreen(
                 }
             } else {
                 LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
                 ) {
                     item {
                         AutomaticLocationItem(
@@ -121,8 +122,8 @@ fun LocationSearchScreen(
                             Text(
                                 text = "Địa điểm hiện tại",
                                 style = MaterialTheme.typography.labelMedium,
-                                color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.padding(bottom = 8.dp)
+                                color = LiteverTheme.colors.primary,
+                                modifier = Modifier.padding(bottom = LiteverTheme.spacing.small)
                             )
                             LocationItem(
                                 location = LocationSearchResponse(
@@ -164,47 +165,47 @@ fun AutomaticLocationItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() },
-        shape = MaterialTheme.shapes.medium,
+        shape = LiteverTheme.shapes.medium,
         color = if (isSelected) {
-            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+            LiteverTheme.colors.primaryContainer.copy(alpha = 0.3f)
         } else {
-            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+            LiteverTheme.colors.surfaceVariant.copy(alpha = 0.3f)
         },
         border = androidx.compose.foundation.BorderStroke(
             1.dp,
-            if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
-            else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)
+            if (isSelected) LiteverTheme.colors.primary.copy(alpha = 0.5f)
+            else LiteverTheme.colors.outlineVariant.copy(alpha = 0.2f)
         )
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(LiteverTheme.spacing.medium),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 Icons.Rounded.MyLocation,
                 contentDescription = null,
-                tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                tint = if (isSelected) LiteverTheme.colors.primary else LiteverTheme.colors.onSurfaceVariant
             )
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(LiteverTheme.spacing.medium))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = stringResource(R.string.weather_location_automatic),
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,
-                    color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                    color = if (isSelected) LiteverTheme.colors.primary else LiteverTheme.colors.onSurface
                 )
                 Text(
                     text = stringResource(R.string.weather_location_automatic_desc),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = LiteverTheme.colors.onSurfaceVariant
                 )
             }
             if (isSelected) {
                 Icon(
                     imageVector = Icons.Rounded.Check,
                     contentDescription = "Selected",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(20.dp)
+                    tint = LiteverTheme.colors.primary,
+                    modifier = Modifier.size(LiteverTheme.spacing.mediumLarge)
                 )
             }
         }
@@ -221,47 +222,47 @@ fun LocationItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() },
-        shape = MaterialTheme.shapes.medium,
+        shape = LiteverTheme.shapes.medium,
         color = if (isSelected) {
-            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+            LiteverTheme.colors.primaryContainer.copy(alpha = 0.3f)
         } else {
-            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+            LiteverTheme.colors.surfaceVariant.copy(alpha = 0.3f)
         },
         border = androidx.compose.foundation.BorderStroke(
             1.dp,
-            if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
-            else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)
+            if (isSelected) LiteverTheme.colors.primary.copy(alpha = 0.5f)
+            else LiteverTheme.colors.outlineVariant.copy(alpha = 0.2f)
         )
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(LiteverTheme.spacing.medium),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 Icons.Rounded.LocationOn,
                 contentDescription = null,
-                tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                tint = if (isSelected) LiteverTheme.colors.primary else LiteverTheme.colors.onSurfaceVariant
             )
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(LiteverTheme.spacing.medium))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = location.name,
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,
-                    color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                    color = if (isSelected) LiteverTheme.colors.primary else LiteverTheme.colors.onSurface
                 )
                 Text(
                     text = location.country,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = LiteverTheme.colors.onSurfaceVariant
                 )
             }
             if (isSelected) {
                 Icon(
                     imageVector = Icons.Rounded.Check,
                     contentDescription = "Selected",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(20.dp)
+                    tint = LiteverTheme.colors.primary,
+                    modifier = Modifier.size(LiteverTheme.spacing.mediumLarge)
                 )
             }
         }

@@ -132,7 +132,9 @@ fun TodayScreen(
                     onLocationClick = onLocationClick
                 )
             } else if (isRefreshing) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(
+                    color = LiteverTheme.colors.primary
+                )
             }
 
             Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))

@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Check
@@ -21,11 +20,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import vn.io.litever.designsystem.components.button.LvButtonType
+import vn.io.litever.designsystem.components.button.LvIconButton
+import vn.io.litever.designsystem.components.core.LvSemantic
+import vn.io.litever.designsystem.components.textfield.LvTextField
+import vn.io.litever.designsystem.components.textfield.LvTextFieldType
+import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.core.model.LocationSearchResponse
 import vn.io.litever.remind.features.today.R
-import vn.io.litever.designsystem.components.LiteVerTextFieldDefaults
-import vn.io.litever.designsystem.theme.LiteverTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -82,29 +85,33 @@ fun LocationSearchScreen(
                 .padding(padding)
                 .padding(LiteverTheme.spacing.medium)
         ) {
-            OutlinedTextField(
+            LvTextField(
                 value = searchQuery,
                 onValueChange = onSearchQueryChange,
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text(stringResource(R.string.search_location_placeholder)) },
+                type = LvTextFieldType.Outlined,
+                semantic = LvSemantic.Primary,
+                placeholder = stringResource(R.string.search_location_placeholder),
                 leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null) },
-                trailingIcon = {
-                    if (searchQuery.isNotEmpty()) {
-                        IconButton(onClick = { onSearchQueryChange("") }) {
+                trailingIcon = if (searchQuery.isNotEmpty()) {
+                    {
+                        LvIconButton(
+                            onClick = { onSearchQueryChange("") },
+                            type = LvButtonType.Text,
+                            semantic = LvSemantic.Primary
+                        ) {
                             Icon(Icons.Rounded.Close, contentDescription = "Clear")
                         }
                     }
-                },
-                singleLine = true,
-                shape = LiteVerTextFieldDefaults.shape,
-                colors = LiteVerTextFieldDefaults.outlinedColors()
+                } else null,
+                singleLine = true
             )
 
             Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
 
             if (isSearching) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(color = LiteverTheme.colors.primary)
                 }
             } else {
                 LazyColumn(

@@ -13,7 +13,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import vn.io.litever.designsystem.components.LiteVerButtonDefaults
+import vn.io.litever.designsystem.components.button.LvButton
+import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
@@ -111,7 +112,7 @@ fun MissionRingingScreen(
         bottomBar = {
             if (!uiState.isMissionJustCompleted && !uiState.isDismissed) {
                 ReMindBottomBar {
-                    Button(
+                    LvButton(
                         onClick = onFinish,
                         modifier = Modifier.fillMaxWidth(),
                         enabled = when (uiState.currentMission?.type) {
@@ -119,8 +120,7 @@ fun MissionRingingScreen(
                             MissionType.MEMORY_FIND_COLOR_TILES -> userInput == "SUCCESS"
                             else -> userInput.isNotBlank()
                         },
-                        shape = LiteVerButtonDefaults.shape,
-                        colors = LiteVerButtonDefaults.primaryColors()
+                        semantic = LvSemantic.Primary
                     ) {
                         Text(
                             text = stringResource(R.string.mission_complete),

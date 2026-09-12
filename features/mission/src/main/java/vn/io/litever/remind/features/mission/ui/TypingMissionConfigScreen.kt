@@ -44,12 +44,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
-import vn.io.litever.designsystem.components.LiteVerButtonDefaults
+import vn.io.litever.designsystem.components.button.LvButton
+import vn.io.litever.designsystem.components.button.LvButtonType
+import vn.io.litever.designsystem.components.button.LvIconButton
+import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
@@ -127,12 +128,11 @@ fun TypingMissionConfigScreen(
         },
         bottomBar = {
             ReMindBottomBar {
-                Button(
+                LvButton(
                     onClick = onSave,
                     modifier = Modifier.fillMaxWidth(),
                     enabled = selectedPhrases.isNotEmpty(),
-                    shape = LiteVerButtonDefaults.shape,
-                    colors = LiteVerButtonDefaults.primaryColors()
+                    semantic = LvSemantic.Primary
                 ) {
                     Text(
                         text = stringResource(vn.io.litever.remind.core.designsystem.R.string.save),
@@ -224,7 +224,7 @@ fun TypingMissionConfigScreen(
                                     text = stringResource(vn.io.litever.remind.features.mission.R.string.more_phrases_count, selectedPhrases.size - visibleCount),
                                     style = LiteverTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
                                     color = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.6f),
-                                    modifier = Modifier.padding(start = 18.dp)
+                                    modifier = Modifier.padding(start = LiteverTheme.spacing.mediumLarge)
                                 )
                             }
                         }
@@ -248,14 +248,15 @@ fun TypingMissionConfigScreen(
                         letterSpacing = 1.sp
                     )
                 )
-                IconButton(
+                LvIconButton(
                     onClick = { onRepetitionsChange(1) },
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(32.dp),
+                    type = LvButtonType.Text,
+                    semantic = LvSemantic.Primary
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.Refresh,
                         contentDescription = "Reset",
-                        tint = LiteverTheme.colors.primary,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -275,14 +276,16 @@ fun TypingMissionConfigScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(
-                        onClick = { if (repetitions > 1) onRepetitionsChange(repetitions - 1) },
-                        modifier = Modifier.size(40.dp)
+                    LvIconButton(
+                        onClick = { onRepetitionsChange(repetitions - 1) },
+                        modifier = Modifier.size(40.dp),
+                        enabled = repetitions > 1,
+                        type = LvButtonType.Text,
+                        semantic = LvSemantic.Primary
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
                             contentDescription = null,
-                            tint = if (repetitions > 1) LiteverTheme.colors.primary else LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.3f),
                             modifier = Modifier.size(28.dp)
                         )
                     }
@@ -293,14 +296,16 @@ fun TypingMissionConfigScreen(
                         color = LiteverTheme.colors.primary
                     )
 
-                    IconButton(
-                        onClick = { if (repetitions < 99) onRepetitionsChange(repetitions + 1) },
-                        modifier = Modifier.size(40.dp)
+                    LvIconButton(
+                        onClick = { onRepetitionsChange(repetitions + 1) },
+                        modifier = Modifier.size(40.dp),
+                        enabled = repetitions < 99,
+                        type = LvButtonType.Text,
+                        semantic = LvSemantic.Primary
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
                             contentDescription = null,
-                            tint = if (repetitions < 99) LiteverTheme.colors.primary else LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.3f),
                             modifier = Modifier.size(28.dp)
                         )
                     }

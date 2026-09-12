@@ -13,7 +13,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import vn.io.litever.designsystem.components.LiteVerTextFieldDefaults
+import vn.io.litever.designsystem.components.textfield.LvTextField
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -84,21 +84,13 @@ fun MathMissionContent(
             )
         }
         
-        OutlinedTextField(
+        LvTextField(
             value = userInput,
             onValueChange = onUserInputChange,
             modifier = Modifier.fillMaxWidth(),
-            placeholder = { 
-                Text(
-                    stringResource(R.string.mission_math_placeholder),
-                    style = LiteverTheme.typography.bodyLarge
-                ) 
-            },
+            placeholder = stringResource(R.string.mission_math_placeholder),
             singleLine = true,
-            shape = LiteVerTextFieldDefaults.shape,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            colors = LiteVerTextFieldDefaults.outlinedColors(),
-            textStyle = LiteverTheme.typography.bodyLarge
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
     }
 }

@@ -29,7 +29,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
@@ -57,15 +56,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TextButton
-import vn.io.litever.designsystem.components.LiteVerButtonDefaults
+import vn.io.litever.designsystem.components.button.LvButton
+import vn.io.litever.designsystem.components.button.LvButtonType
+import vn.io.litever.designsystem.components.button.LvIconButton
+import vn.io.litever.designsystem.components.core.LvSemantic
+import vn.io.litever.designsystem.components.textfield.LvTextField
 import vn.io.litever.remind.core.designsystem.components.ReMindAlertDialog
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
@@ -194,12 +193,11 @@ fun PhraseSelectionScreen(
         },
         bottomBar = {
             ReMindBottomBar {
-                Button(
+                LvButton(
                     onClick = onComplete,
                     modifier = Modifier.fillMaxWidth(),
                     enabled = selectedIds.isNotEmpty(),
-                    shape = LiteVerButtonDefaults.shape,
-                    colors = LiteVerButtonDefaults.primaryColors()
+                    semantic = LvSemantic.Primary
                 ) {
                     Text(
                         text = stringResource(R.string.save),
@@ -318,13 +316,13 @@ fun PhraseSelectionScreen(
                                         .padding(horizontal = LiteverTheme.spacing.medium, vertical = LiteverTheme.spacing.small),
                                     horizontalArrangement = Arrangement.End
                                 ) {
-                                    TextButton(
+                                    LvButton(
                                         onClick = {
                                             if (allSelected) onDeselectAll(phrases.map { it.id })
                                             else onSelectAll(phrases.map { it.id })
                                         },
-                                        shape = LiteVerButtonDefaults.shape,
-                                        colors = LiteVerButtonDefaults.textColors()
+                                        type = LvButtonType.Text,
+                                        semantic = LvSemantic.Primary
                                     ) {
                                         Text(
                                             text = stringResource(if (allSelected) R.string.action_deselect_all else R.string.action_select_all),
@@ -421,7 +419,11 @@ fun PhraseItem(
 
             if (phrase.isCustom) {
                 Box {
-                    IconButton(onClick = { showMenu = true }) {
+                    LvIconButton(
+                        onClick = { showMenu = true },
+                        type = LvButtonType.Text,
+                        semantic = LvSemantic.Neutral
+                    ) {
                         Icon(
                             imageVector = Icons.Rounded.MoreVert,
                             contentDescription = "More options",
@@ -507,20 +509,22 @@ fun AddCustomPhraseContent(
             modifier = Modifier.padding(bottom = LiteverTheme.spacing.mediumLarge)
         )
 
-        OutlinedTextField(
+        LvTextField(
             value = text,
             onValueChange = { if (it.length <= 128) text = it },
-            label = { Text(stringResource(R.string.mission_phrase_placeholder)) },
+            label = stringResource(R.string.mission_phrase_placeholder),
             modifier = Modifier.fillMaxWidth(),
-            maxLines = 5,
-            shape = LiteverTheme.shapes.medium,
-            supportingText = {
-                Text(
-                    text = "${text.length}/128",
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.End
-                )
-            }
+            singleLine = false,
+            maxLines = 5
+        )
+        Text(
+            text = "${text.length}/128",
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = LiteverTheme.spacing.extraSmall, end = LiteverTheme.spacing.small),
+            style = LiteverTheme.typography.bodySmall,
+            color = LiteverTheme.colors.onSurfaceVariant,
+            textAlign = TextAlign.End
         )
 
         Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
@@ -577,21 +581,20 @@ fun AddCustomPhraseContent(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.smallMedium)
         ) {
-            OutlinedButton(
+            LvButton(
                 onClick = onDismiss,
                 modifier = Modifier.weight(1f),
-                shape = LiteVerButtonDefaults.shape,
-                colors = LiteVerButtonDefaults.outlinedColors()
+                type = LvButtonType.Outlined,
+                semantic = LvSemantic.Secondary
             ) {
                 Text(stringResource(R.string.cancel))
             }
 
-            Button(
+            LvButton(
                 onClick = { onConfirm(text, isShared) },
                 enabled = text.isNotBlank(),
                 modifier = Modifier.weight(1f),
-                shape = LiteVerButtonDefaults.shape,
-                colors = LiteVerButtonDefaults.primaryColors()
+                semantic = LvSemantic.Primary
             ) {
                 Text(stringResource(R.string.save))
             }

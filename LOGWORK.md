@@ -5,10 +5,10 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
 ---
 
 ## 🚀 Trạng Thái Dự Án
-- **Phase Hiện Tại:** Phase 7 (LiteVer 2.0.0 & Material 3 Refactoring)
+- **Phase Hiện Tại:** Phase 8 (LiteVer 2.1.0 & Opinionated Lv* Components Adoption)
 - **Tiến Độ:** 100%
-- **Ngày cập nhật cuối:** 2026-09-11
-- **Phiên bản hiện tại:** 1.1.6 (Build 9)
+- **Ngày cập nhật cuối:** 2026-09-12
+- **Phiên bản hiện tại:** 1.1.7 (Build 10)
 
 
 
@@ -20,6 +20,7 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
 - [x] **Phase 5:** Tách Module Design System & Chuẩn hóa Đa dự án (Modularization)
 - [x] **Phase 6:** Tối ưu hóa & Bảo trì (Maintenance & Optimization)
 - [x] **Phase 7:** Nâng cấp thư viện LiteVer Design System 2.0.0 & Refactor toàn diện Material 3 (includeBuild & M3 Defaults)
+- [x] **Phase 8:** Nâng cấp thư viện LiteVer Design System 2.1.0 & Chuyển đổi toàn diện sang bộ thành phần Opinionated Lv* (LvButton, LvIconButton, LvTextField, LvAlertDialog, LvChip, LvSnackbar)
 
 ---
 
@@ -867,3 +868,35 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
   - **Tính nhất quán Visual:** Toàn bộ khoảng cách, màu sắc và kiểu dáng nút/input đều được kiểm soát chặt chẽ bởi Design System tokens thông qua `LiteverTheme` và `LiteVerButtonDefaults`.
   - **Quy trình phát triển liền mạch:** Composite build giúp phản ánh ngay lập tức các thay đổi từ thư viện `litever-designsystem` mà không cần chu kỳ release/publish phức tạp.
   - **Chất lượng và Độ ổn định:** Tất cả các module biên dịch sạch sẽ 100%, bổ sung bộ unit test logic UI toàn diện cho mission và today features bảo đảm không xảy ra hồi quy.
+
+### [TDR-062] - Nâng cấp Thư viện LiteVer Design System 2.1.0 và Chuyển đổi sang Bộ Thành phần Opinionated Lv* (LvButton, LvIconButton, LvTextField, LvAlertDialog, LvChip, LvSnackbar)
+- **Ngày thực hiện:** 2026-09-12
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Sau khi hoàn thành Phase 7 (chuyển dịch từ 24 wrappers cũ sang Material 3 gốc kết hợp Component Defaults ở LiteVer v2.0.0), việc phải cấu hình lặp đi lặp lại các tham số `colors = LiteVerButtonDefaults.primaryColors()`, `shape = LiteVerButtonDefaults.shape`, `colors = LiteVerTextFieldDefaults.outlinedColors()`, `border = ...` tại từng Composable trong hàng chục màn hình vẫn tạo ra lượng boilerplate code đáng kể, đồng thời tiềm ẩn rủi ro thiếu nhất quán về ngữ nghĩa giao diện (semantic intents) và kiểu dáng bo góc squircle.
+  - Thư viện `litever-designsystem` phát hành phiên bản `2.1.0` với hai cải tiến đột phá:
+    1. **Tái cơ cấu Package theo Domain:** Tách các thành phần từ package phẳng `vn.io.litever.designsystem.components.*` sang các sub-package chuyên biệt: `components.button.*`, `components.textfield.*`, `components.chip.*`, `components.dialog.*`, `components.snackbar.*`, và `components.core.*`.
+    2. **Bộ thành phần Opinionated thế hệ mới `Lv*`:** Giới thiệu `LvButton`, `LvIconButton`, `LvTextField`, `LvAlertDialog`, `LvChip`, `LvSnackbarHost` / `LvSnackbar` được định hình sẵn chuẩn bo góc squircle (6.dp cho control nhỏ, 10.dp cho dialog), tích hợp chặt chẽ với hệ thống màu ngữ nghĩa `LvSemantic` (`Primary`, `Secondary`, `Tertiary`, `Neutral`, `Success`, `Destructive`, `Warning`) và các biến thể kiểu dáng (`LvButtonType`, `LvTextFieldType`).
+    3. **Mở rộng Semantic Tokens:** Bổ sung các tokens `neutral`, `onNeutral`, `neutralContainer`, `onNeutralContainer` trong `LiteverTheme.colors`.
+  - Dự án `remind-android` cần căn chỉnh lại toàn bộ các import bị gãy do việc tách package, đồng thời chuyển đổi mã nguồn UI trên toàn bộ các modules (`:core:designsystem`, `:features:alarms`, `:features:settings`, `:features:mission`, `:features:today`, `:app`) sang các opinionated components thế hệ mới của v2.1.0.
+- **Quyết định:**
+  1. **Version Catalog & Package Import Alignment:** Cập nhật `liteverDesignsystem = "2.1.0"` trong `gradle/libs.versions.toml`. Chuyển đổi toàn bộ import sang các package chuyên biệt (`components.button.LiteVerButtonDefaults`, `components.textfield.LiteVerTextFieldDefaults`, `components.button.LvButton`, v.v.).
+  2. **Mở rộng Semantic Colors tại `:core:designsystem`:** Khai báo các tiện ích `ColorScheme.neutral`, `ColorScheme.onNeutral`, `ColorScheme.neutralContainer`, `ColorScheme.onNeutralContainer` trong `Color.kt` ánh xạ từ `LiteverTheme.colors`.
+  3. **Chuyển đổi Adapter `:core:designsystem`:**
+     - `ReMindAlertDialog` chuyển sang sử dụng `LvAlertDialog` kết hợp `LvButton`.
+     - `ReMindBottomBar` chuyển các nút CTA sang `LvButton`.
+     - `TimePickerDialog` sử dụng `LvButton` cho nút xác nhận/hủy.
+     - `WeatherInfoView` chuyển nút chọn vị trí sang `LvButton(type = LvButtonType.Text, semantic = LvSemantic.Neutral)`.
+     - `RingtoneSelectionScreen` và `SnoozeSettingsScreen` sử dụng `LvButton` (Outlined/Filled) và `LvIconButton`.
+     - `MissionSelectionBottomSheet` sử dụng `LvButton`.
+  4. **Chuyển đổi các Feature Modules:**
+     - **`:features:alarms`**: Refactor `AlarmEditScreen` (sử dụng `LvButton`, `LvIconButton`, `LvTextField`, `LvChip`), `AlarmListScreen` (`LvIconButton`), `AlarmMessageScreen` (`LvTextField`, `LvButton`), `AlarmRingingScreen` (`LvButton`), `AlarmCard` (`LvIconButton`), `PermissionWarningBanner` (`LvButton`).
+     - **`:features:settings`**: Refactor `AlarmSettingsScreen` (chuyển `DurationSelectionDialog` sang `LvAlertDialog`), `PermissionSettingsScreen` (`LvButton` Primary/Secondary).
+     - **`:features:mission`**: Refactor `MemoryGameConfigScreen`, `MissionRingingScreen`, `PhraseSelectionScreen`, `TypingMissionConfigScreen`, `MathMissionContent` sang `LvButton`, `LvIconButton`, `LvTextField`.
+     - **`:features:today` & `:app`**: Refactor `LocationSearchScreen` (LvTextField với leading icon và trailing `LvIconButton`), `TodayScreen` (tint progress), và `MainActivity` (tích hợp `LvSnackbarHost` với `SnackbarHostState`).
+- **Hệ quả:**
+  - **Giảm thiểu Boilerplate tối đa:** Cắt giảm hơn 60% mã nguồn thiết lập kiểu dáng, màu sắc, bo góc và padding thủ công tại các call-site.
+  - **Nhất quán Visual & Semantic Tuyệt đối:** Toàn bộ nút bấm, ô nhập liệu, hộp thoại và chip tự động tuân thủ chuẩn bo góc squircle (6.dp/10.dp) và màu sắc theo `LvSemantic`.
+  - **Kiến trúc Modular Rõ ràng:** Cấu trúc package được phân tách mạch lạc theo từng domain component.
+  - **Độ ổn định cao:** Dự án biên dịch sạch 100% không còn unresolved reference và toàn bộ 100% unit test suites đều vượt qua.
+

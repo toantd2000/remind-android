@@ -86,3 +86,36 @@ This document records the solidified technical decisions and behavioral scenario
 - **Technical Decision**:
     - **Root Scaffold Inset Management**: The root `Scaffold` in `:app` (`MainActivity.kt`) manages top-level system bars insets and bottom navigation bar placement.
     - **Nested Scaffold Zero-Inset Override**: Child screens declaring their own `Scaffold` (for localized top app bars, floating action buttons, or snackbars) explicitly specify `contentWindowInsets = WindowInsets(0, 0, 0, 0)` or selectively consume insets via `WindowInsets.safeDrawing.only(...)`. This completely prevents nested scaffolds from re-consuming system insets and creating unwanted gaps.
+
+## 8. LiteVer Design System 2.1.0 & Opinionated Lv* Components Adoption
+
+### Scenario: Package Segregation & Modular Domain Namespaces
+- **Expected Behavior**: Component classes and defaults must be segregated into dedicated functional packages (`components.button.*`, `components.textfield.*`, `components.chip.*`, `components.dialog.*`, `components.snackbar.*`) to optimize compilation, eliminate package cluttering, and support tree-shaking.
+- **Technical Decision**:
+  - Update all import references across all 6 modules from flat `components.*` to explicit sub-packages.
+  - Declare deprecated aliases where applicable during transition, fully adopting new namespaces across all feature composables.
+
+### Scenario: Adoption of Opinionated LvButton & LvIconButton
+- **Expected Behavior**: Action buttons and icon buttons must automatically follow LiteVer's signature squircle shape (6.dp) and standard semantic palettes without verbose manual configuration.
+- **Technical Decision**:
+  - Replace raw M3 `Button`, `OutlinedButton`, `TextButton`, and `IconButton` with `LvButton` and `LvIconButton`.
+  - Style buttons using high-level `type` (`LvButtonType.Filled`, `Outlined`, `Text`, `Tonal`) and `semantic` (`LvSemantic.Primary`, `Secondary`, `Tertiary`, `Neutral`, `Success`, `Destructive`, `Warning`).
+  - Retain standard Material 3 accessibility, interaction sources, and ripple animations under the hood.
+
+### Scenario: Adoption of Opinionated LvTextField
+- **Expected Behavior**: Input fields must enforce standard 6.dp squircle corners, active semantic borders, and ergonomic String-based labels and placeholders, while supporting error state messages out of the box.
+- **Technical Decision**:
+  - Replace `OutlinedTextField` + `LiteVerTextFieldDefaults` with `LvTextField(type = LvTextFieldType.Outlined, label = "...", placeholder = "...", semantic = ...)`.
+  - Simplify input state rendering in forms (`AlarmEditScreen`, `AlarmMessageScreen`, `PhraseSelectionScreen`, `LocationSearchScreen`, `MathMissionContent`).
+  - Manage dynamic clear buttons using trailing icon lambdas without triggering unnecessary recompositions.
+
+### Scenario: Adoption of LvAlertDialog for System Dialogs
+- **Expected Behavior**: Dialogs must use moderate squircle corners (10.dp) rather than Material 3's excessively rounded 28.dp corners, with standardized confirm and dismiss button styling.
+- **Technical Decision**:
+  - Adopt `LvAlertDialog` in `ReMindAlertDialog` (`:core:designsystem`) and `DurationSelectionDialog` (`:features:settings`).
+  - Standardize button placement using `LvButton(type = LvButtonType.Text, semantic = LvSemantic.Secondary)` for dismiss and `semantic = LvSemantic.Primary` for confirm.
+
+### Scenario: Standardized LvSnackbarHost Integration
+- **Expected Behavior**: In-app notifications and snackbars must support semantic colors (Success, Destructive, Warning, Neutral) and squircle corners.
+- **Technical Decision**:
+  - Integrate `LvSnackbarHost` directly in `MainActivity.kt` root `Scaffold`, utilizing `LvSnackbarVisuals` to carry semantic metadata.

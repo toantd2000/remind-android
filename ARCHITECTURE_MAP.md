@@ -25,7 +25,7 @@ Dự án ReMind được xây dựng theo kiến trúc **Multi-module** kết h�
 | `:core:database` | Data Source | Cấu hình Room Database, Entities và DAO. |
 | `:core:datastore` | Data Source | Quản lý Preference-based settings (24h format, volume). |
 | `:core:designsystem` | Design System | **(Adapter)** Lớp bọc cung cấp UI Components cho App ReMind. |
-| :litever-designsystem | Library (Composite) | **(Core)** Thư viện Design System nền tảng dùng chung cho nhiều App, tích hợp cục bộ qua `includeBuild("../litever-designsystem")` với dependency substitution sang `:designsystem`. |
+| :litever-designsystem | Library (Composite) | **(Core)** Thư viện Design System nền tảng v2.1.0, tích hợp cục bộ qua `includeBuild("../litever-designsystem")` với dependency substitution sang `:designsystem`. Phân chia modular packages (`components.button.*`, `components.textfield.*`, `components.chip.*`, `components.dialog.*`, `components.snackbar.*`, `components.core.*`) và cung cấp bộ thành phần Opinionated Lv* (`LvButton`, `LvIconButton`, `LvTextField`, `LvAlertDialog`, `LvChip`, `LvSnackbarHost`). |
 | `:core:common` | Common Utils | Các lớp tiện ích, AudioPlayer, Dispatchers, Extensions dùng chung. |
 | `:core:ads:api` | Infrastructure | Chứa Interface và Model cấu hình quảng cáo, không phụ thuộc third-party. |
 | `:core:ads:impl` | Infrastructure | Chứa logic AdMob và kết nối Firebase Remote Config. |
@@ -69,3 +69,4 @@ Luồng xử lý khi báo thức nổ:
 ## 5. Nhật ký rà soát (Review Log)
 - **[2026-05-05] Resolved Coupling `:alarms` -> `:mission`**: Đã di chuyển `MissionSelectionBottomSheet` sang `:core:designsystem` và gỡ bỏ phụ thuộc trực tiếp giữa hai feature. Hệ thống hiện đảm bảo tính cô lập hoàn toàn.
 - **[2026-09-11] Migrate LiteVer Design System 2.0.0 & M3 Alignment**: Tích hợp composite build với local library `:litever-designsystem` v2.0.0 (`includeBuild("../litever-designsystem")`). Loại bỏ 24 pass-through wrapper components để chuyển dịch toàn diện sang Material 3 gốc kèm `LiteVerButtonDefaults`, `LiteVerTextFieldDefaults` và `LiteverTheme.spacing`. Xử lý triệt để insets consumption trên nested scaffolds.
+- **[2026-09-12] Upgrade LiteVer Design System 2.1.0 & Opinionated Lv* Adoption**: Nâng cấp `liteverDesignsystem` lên 2.1.0 trong `libs.versions.toml`. Tái cơ cấu toàn bộ package imports theo domain mới. Thay thế việc cấu hình thủ công Component Defaults bằng bộ thành phần Opinionated `Lv*` (`LvButton`, `LvIconButton`, `LvTextField`, `LvAlertDialog`, `LvChip`, `LvSnackbarHost`) trên toàn bộ 6 modules (`:core:designsystem`, `:features:alarms`, `:features:settings`, `:features:mission`, `:features:today`, `:app`). Mở rộng semantic tokens Neutral container vào `:core:designsystem`. Toàn bộ project đạt 100% build và unit test suites pass.

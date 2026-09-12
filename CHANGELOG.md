@@ -8,6 +8,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Opinionated Lv* Suite:** Adopted high-level opinionated components from `litever-designsystem` v2.1.0: `LvButton`, `LvIconButton`, `LvTextField`, `LvAlertDialog`, `LvChip`, and `LvSnackbarHost` / `LvSnackbar`.
+- **Semantic Tokens:** Added neutral semantic color tokens (`neutral`, `onNeutral`, `neutralContainer`, `onNeutralContainer`) to `ColorScheme` in `:core:designsystem` mapped to `LiteverTheme.colors`.
+- **Root Snackbar Presentation:** Integrated `LvSnackbarHost` with `SnackbarHostState` inside the root `MainActivity` scaffold for standardized semantic snackbar support.
+
+### Changed
+- **Dependencies:** Updated `liteverDesignsystem` version to `2.1.0` in `gradle/libs.versions.toml`.
+- **Package Modularization:** Aligned all component imports across all modules to use domain-segregated packages (`vn.io.litever.designsystem.components.button.*`, `vn.io.litever.designsystem.components.textfield.*`, `vn.io.litever.designsystem.components.dialog.*`, etc.).
+- **Component Adoption Across Modules:**
+  - `:core:designsystem`: Refactored `ReMindAlertDialog`, `ReMindBottomBar`, `TimePickerDialog`, `WeatherInfoView`, `RingtoneSelectionScreen`, and `SnoozeSettingsScreen` to use `LvButton` and `LvAlertDialog`.
+  - `:features:alarms`: Refactored `AlarmEditScreen`, `AlarmListScreen`, `AlarmMessageScreen`, `AlarmRingingScreen`, `AlarmCard`, and `PermissionWarningBanner` to use `LvButton`, `LvIconButton`, `LvTextField`, and `LvChip`.
+  - `:features:settings`: Refactored `AlarmSettingsScreen` (`DurationSelectionDialog` to `LvAlertDialog`) and `PermissionSettingsScreen` to use `LvButton`.
+  - `:features:mission`: Refactored `MemoryGameConfigScreen`, `MissionRingingScreen`, `PhraseSelectionScreen`, `TypingMissionConfigScreen`, and `MathMissionContent` to use `LvButton`, `LvIconButton`, and `LvTextField`.
+  - `:features:today`: Refactored `LocationSearchScreen` to use `LvTextField` and `LvIconButton` with primary color indicators.
+
+### Fixed
+- **Boilerplate Reduction & Visual Uniformity:** Replaced hundreds of repetitive lines of manual shape, color, and padding configuration across all feature screens with unified 6.dp/10.dp squircle geometry and `LvSemantic` palette intents.
+
+## [1.2.0] - 2026-09-11
+
+### Added
 - **Design System Integration:** Integrated `litever-designsystem` v2.0.0 via Gradle Composite Build (`includeBuild("../litever-designsystem")`) with dependency substitution for `com.github.toantd2000:litever-designsystem`.
 - **Core Components & Wrappers:** Added custom UI components in `:core:designsystem` built on native Material 3: `ReMindTopAppBar`, `ReMindAlertDialog`, `ReMindBottomBar`, `ReMindLoadingIconButton`, `ReMindSettingIcon`, `ReMindSettingsGroup`, `ReMindSettingsItem`, and `ReMindTimePickerDialog`.
 - **Semantic Tokens:** Added support for semantic color tokens (`warning`, `onWarning`, `success`, `onSuccess`) in `ReMindTheme` aligned with `LiteverTheme.colors`.

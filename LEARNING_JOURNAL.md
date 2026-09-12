@@ -1,3 +1,30 @@
+## [2026-09-12] Package Segregation Migration & Boilerplate Reduction via Opinionated Lv* Components
+
+### Context
+Nâng cấp thư viện `litever-designsystem` từ phiên bản `2.0.0` lên `2.1.0` trong ứng dụng `remind-android`. Phiên bản 2.1.0 giải quyết bài toán cấu trúc package bằng cách tách thành các sub-packages theo từng domain (`components.button.*`, `components.textfield.*`, `components.chip.*`, `components.dialog.*`, `components.snackbar.*`, `components.core.*`), đồng thời giới thiệu bộ thành phần Opinionated thế hệ mới `Lv*` (`LvButton`, `LvIconButton`, `LvTextField`, `LvAlertDialog`, `LvChip`, `LvSnackbarHost` / `LvSnackbar`). Mục tiêu là chuyển đổi từ mô hình Component Defaults thủ công (v2.0.0) sang các Opinionated components để cắt giảm tối đa boilerplate code mà vẫn đảm bảo tính chuẩn xác của hệ thống Design Tokens.
+
+### What happened
+- Sau khi nâng cấp version catalog lên `2.1.0`, các import cũ dạng `vn.io.litever.designsystem.components.LiteVerButtonDefaults` và `LiteVerTextFieldDefaults` bị gãy do các lớp này đã được chuyển vào các sub-package `components.button` và `components.textfield`.
+- Tiến hành rà soát và cập nhật đồng bộ các import trên toàn bộ 6 modules (`:core:designsystem`, `:features:alarms`, `:features:settings`, `:features:mission`, `:features:today`, `:app`).
+- Chuyển đổi toàn diện các composables M3 nguyên thủy kèm cấu hình defaults rườm rà sang bộ thành phần `Lv*`:
+  - Thay thế `Button`/`OutlinedButton` + `LiteVerButtonDefaults` bằng `LvButton(type, semantic)`.
+  - Thay thế `IconButton` bằng `LvIconButton(semantic)`.
+  - Thay thế `OutlinedTextField` + `LiteVerTextFieldDefaults` bằng `LvTextField` (tự động hỗ trợ `label`, `placeholder`, `errorMessage`, `type`, `semantic`).
+  - Thay thế `AlertDialog` bằng `LvAlertDialog` với bo góc squircle 10.dp.
+  - Tích hợp `LvSnackbarHost` vào `MainActivity` scaffold.
+  - Bổ sung các tokens `neutral` container vào `Color.kt` của `:core:designsystem`.
+- Toàn bộ dự án biên dịch sạch sẽ 100% và vượt qua toàn bộ unit test suites.
+
+### Lessons Learned
+- **Package Segregation Migration Strategy:**
+  Khi một thư viện design system phát triển, việc tách package phẳng thành các namespace theo domain chức năng (`components.button.*`, `components.textfield.*`, `components.dialog.*`) là xu hướng tất yếu để hỗ trợ tree-shaking (R8) và tăng tính tổ chức của codebase. Để quá trình migration diễn ra êm đẹp, cần tuân thủ quy trình: cập nhật version catalog -> cập nhật module adapter `:core:designsystem` -> cascade xuống các feature modules độc lập. Việc này giúp khoanh vùng lỗi import và ngăn chặn lỗi lan truyền trên toàn bộ build graph.
+- **Boilerplate Reduction via Opinionated Lv* Components:**
+  Ở v2.0.0, việc dùng trực tiếp M3 Composable kết hợp `LiteVerButtonDefaults` đã giải phóng ứng dụng khỏi các pass-through wrapper, nhưng lại tạo ra lượng boilerplate code rất lớn ở từng call-site (phải liên tục truyền `shape`, `colors`, `border`, `contentPadding`). Bộ thành phần Opinionated `Lv*` trong v2.1.0 đạt được điểm cân bằng hoàn hảo: vẫn tái sử dụng Material 3 Composable bên dưới (bảo toàn 100% ripple effect, state layers, accessibility, và gestures), nhưng cung cấp API cấp cao với tham số `type` và `semantic`. Nhà phát triển không còn phải thủ công ghép nối màu sắc hay bo góc, giúp giảm 60% code UI và triệt tiêu nguy cơ bất đồng bộ visual.
+- **Ergonomic Text Field Design & Safe State Binding:**
+  `LvTextField` đem lại trải nghiệm lập trình (DX) vượt trội nhờ hỗ trợ trực tiếp `label: String?` và `placeholder: String?` thay vì bắt buộc truyền Composable lambdas cồng kềnh. Tuy nhiên, khi áp dụng vào các giao diện tương tác phức tạp (như ô nhập kết quả tính toán `MathMissionContent` cần bàn phím số và phím Done, hoặc `LocationSearchScreen` cần nút xóa nhanh nội dung), cần chú ý truyền trailing icon dưới dạng lambda rõ ràng (`trailingIcon = if (...) { { ... } } else null`) để đảm bảo an toàn kiểu dữ liệu và tránh tái kích hoạt recomposition không cần thiết.
+- **Standardized Dialogs vs. Excessive M3 Rounding:**
+  `AlertDialog` mặc định của Material 3 có bo góc lên tới 28.dp, tạo cảm giác quá tròn và không ăn nhập với triết lý thiết kế squircle của LiteVer. `LvAlertDialog` giải quyết triệt để vấn đề này bằng cách sử dụng `BasicAlertDialog` kết hợp bo góc 10.dp (`LiteverTheme.shapes.extraLarge`) và tự động bố trí các nút hành động `confirmButton`, `dismissButton` với kiểu dáng chuẩn hóa, giúp loại bỏ hoàn toàn mã nguồn tùy biến layout phức tạp tại các feature screens.
+
 ## [2026-09-11] Composite Build (includeBuild) & Lean Material 3 Design System Migration
 
 ### Context

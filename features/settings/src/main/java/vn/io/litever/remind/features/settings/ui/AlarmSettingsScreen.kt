@@ -18,6 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import vn.io.litever.designsystem.components.button.LvButton
+import vn.io.litever.designsystem.components.button.LvButtonType
+import vn.io.litever.designsystem.components.core.LvSemantic
+import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
@@ -126,8 +130,17 @@ fun DurationSelectionDialog(
     onDismiss: () -> Unit,
     onSelect: (Int) -> Unit
 ) {
-    AlertDialog(
+    LvAlertDialog(
         onDismissRequest = onDismiss,
+        confirmButton = {
+            LvButton(
+                onClick = onDismiss,
+                type = LvButtonType.Text,
+                semantic = LvSemantic.Secondary
+            ) {
+                Text(stringResource(vn.io.litever.remind.core.designsystem.R.string.cancel))
+            }
+        },
         title = { Text(title) },
         text = {
             Column {
@@ -147,11 +160,6 @@ fun DurationSelectionDialog(
                         Text(stringResource(R.string.minute_format, option))
                     }
                 }
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(vn.io.litever.remind.core.designsystem.R.string.cancel))
             }
         }
     )

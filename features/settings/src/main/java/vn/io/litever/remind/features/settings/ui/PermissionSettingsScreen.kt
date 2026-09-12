@@ -25,13 +25,11 @@ import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.Layers
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.SettingsSuggest
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -53,7 +51,9 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import vn.io.litever.designsystem.components.LiteVerButtonDefaults
+import vn.io.litever.designsystem.components.button.LvButton
+import vn.io.litever.designsystem.components.button.LvButtonType
+import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.features.settings.R
@@ -282,11 +282,10 @@ fun PermissionTile(
 
             if (!isGranted) {
                 Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
-                Button(
+                LvButton(
                     onClick = onRequest,
                     modifier = Modifier.fillMaxWidth(),
-                    shape = LiteVerButtonDefaults.shape,
-                    colors = LiteVerButtonDefaults.primaryColors()
+                    semantic = LvSemantic.Primary
                 ) {
                     Text(
                         stringResource(R.string.permission_request_action),
@@ -336,11 +335,11 @@ fun ManufacturerSettingsTile(onOpen: () -> Unit) {
 
             Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
 
-            OutlinedButton(
+            LvButton(
                 onClick = onOpen,
                 modifier = Modifier.fillMaxWidth(),
-                shape = LiteVerButtonDefaults.shape,
-                colors = LiteVerButtonDefaults.outlinedColors()
+                type = LvButtonType.Outlined,
+                semantic = LvSemantic.Secondary
             ) {
                 Text(
                     stringResource(R.string.permission_request_action),

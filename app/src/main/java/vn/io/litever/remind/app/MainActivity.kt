@@ -27,6 +27,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.CompositionLocalProvider
@@ -51,6 +52,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import vn.io.litever.designsystem.components.snackbar.LvSnackbarHost
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.ads.api.AdManager
 import vn.io.litever.remind.core.ads.api.LocalAdManager
@@ -200,6 +202,7 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier.fillMaxSize()
                         ) {
                             val navController = rememberNavController()
+                            val snackbarHostState = remember { SnackbarHostState() }
 
                             // Observe Global Ringing State
                             val alarmRingManagerEntryPoint = dagger.hilt.EntryPoints.get(
@@ -287,6 +290,7 @@ class MainActivity : ComponentActivity() {
                                     currentRoute == todayRoute
 
                             Scaffold(
+                                snackbarHost = { LvSnackbarHost(hostState = snackbarHostState) },
                                 bottomBar = {
                                     if (isBottomBarVisible) {
                                         NavigationBar {

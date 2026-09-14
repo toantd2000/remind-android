@@ -488,35 +488,43 @@ fun AlarmEditScreen(
     var showAutoSilenceSheet by remember { mutableStateOf(false) }
 
     if (showAutoSilenceSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { if (showAutoSilenceSheet) showAutoSilenceSheet = false },
-            containerColor = MaterialTheme.colorScheme.surface,
-            tonalElevation = LiteverTheme.spacing.none
-        ) {
-            AutoSilenceBottomSheetContent(
-                currentMinutes = uiState.autoSilenceMinutes,
-                onMinutesSelect = {
-                    onAutoSilenceChange(it)
-                    if (showAutoSilenceSheet) showAutoSilenceSheet = false
+        CompositionLocalProvider(LocalContext provides context) {
+            ModalBottomSheet(
+                onDismissRequest = { if (showAutoSilenceSheet) showAutoSilenceSheet = false },
+                containerColor = MaterialTheme.colorScheme.surface,
+                tonalElevation = LiteverTheme.spacing.none
+            ) {
+                CompositionLocalProvider(LocalContext provides context) {
+                    AutoSilenceBottomSheetContent(
+                        currentMinutes = uiState.autoSilenceMinutes,
+                        onMinutesSelect = {
+                            onAutoSilenceChange(it)
+                            if (showAutoSilenceSheet) showAutoSilenceSheet = false
+                        }
+                    )
                 }
-            )
+            }
         }
     }
 
     if (showGradualVolumeSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { if (showGradualVolumeSheet) showGradualVolumeSheet = false },
-            sheetState = sheetState,
-            containerColor = MaterialTheme.colorScheme.surface,
-            tonalElevation = LiteverTheme.spacing.none
-        ) {
-            GentleAlarmBottomSheetContent(
-                currentDuration = uiState.gradualVolumeDurationSeconds,
-                onDurationSelect = {
-                    onGradualVolumeChange(it)
-                    if (showGradualVolumeSheet) showGradualVolumeSheet = false
+        CompositionLocalProvider(LocalContext provides context) {
+            ModalBottomSheet(
+                onDismissRequest = { if (showGradualVolumeSheet) showGradualVolumeSheet = false },
+                sheetState = sheetState,
+                containerColor = MaterialTheme.colorScheme.surface,
+                tonalElevation = LiteverTheme.spacing.none
+            ) {
+                CompositionLocalProvider(LocalContext provides context) {
+                    GentleAlarmBottomSheetContent(
+                        currentDuration = uiState.gradualVolumeDurationSeconds,
+                        onDurationSelect = {
+                            onGradualVolumeChange(it)
+                            if (showGradualVolumeSheet) showGradualVolumeSheet = false
+                        }
+                    )
                 }
-            )
+            }
         }
     }
 

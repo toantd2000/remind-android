@@ -937,4 +937,25 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
   - Toàn bộ ứng dụng ReMind đồng bộ nhận diện thương hiệu với màu Đỏ (RED) tươi sáng, hiện đại.
   - Giao diện chọn màu sắc trực quan, thẩm mỹ cao, tiết kiệm không gian và tương thích trọn vẹn với cả chế độ Sáng/Tối lẫn Android 12+ Dynamic Coloring.
 
+### [TDR-064] - Thay thế Box ô nhớ bằng LvButton với LvSemantic và Semantics trợ năng tương ứng trong MemoryTilesMissionContent
+- **Ngày thực hiện:** 2026-09-15
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Component `MemoryTilesMissionContent` trong `:features:mission` trước đây sử dụng `Box` kết hợp `Modifier.background()` và `Modifier.clickable()` thủ công để vẽ các ô lưới bài tập trí nhớ.
+  - Cần chuyển đổi sang thành phần `LvButton` tiêu chuẩn từ Design System `:litever-designsystem` nhằm bảo đảm tính nhất quán về visual design (bo góc squircle, hiệu ứng phản hồi ripple, màu sắc theo intent `LvSemantic`) cũng như hỗ trợ đầy đủ semantics trợ năng (Accessibility/Screen Readers).
+- **Quyết định:**
+  - Thay thế khối `Box` bằng `LvButton` trong `LazyVerticalGrid`.
+  - Kiểm soát trạng thái click qua `enabled = isClickable` (chỉ cho phép nhấn khi `gameState == MemoryGameState.PLAYING && !isSelected`).
+  - Bảo đảm ô giữ nguyên màu hiển thị visual kể cả khi bị vô hiệu hóa click (`enabled = false`) bằng cách cấu hình `colors = ButtonDefaults.buttonColors(containerColor = tileColor, disabledContainerColor = tileColor)`.
+  - Ánh xạ trạng thái game tile sang `LvSemantic`:
+    - `LvSemantic.Primary` cho ô mục tiêu trong pha ghi nhớ (MEMORIZE) và các ô mục tiêu chọn đúng.
+    - `LvSemantic.Destructive` cho ô chọn sai trong pha chơi (PLAYING).
+    - `LvSemantic.Neutral` cho các ô mặc định chưa chọn.
+  - Cấu hình trợ năng qua `Modifier.semantics`: gán `selected = isSelected` và `stateDescription` phù hợp ("Target", "Correct", "Wrong", "Unselected").
+  - Đặt `contentPadding = PaddingValues(0.dp)` để vừa vặn hoàn hảo trong ô lưới `aspectRatio(1f)`.
+- **Hệ quả:**
+  - Code gọn gàng, chuẩn hóa 100% theo bộ linh kiện `LvButton` của Design System.
+  - Triệt tiêu hoàn toàn hiệu ứng click (ripple/gesture) không mong muốn ở các ô không được phép nhấn (trong pha MEMORIZE, SUCCESS, FAILURE hoặc ô đã được chọn).
+  - Trình đọc màn hình (TalkBack) nhận diện chính xác trạng thái vô hiệu hóa của nút (`enabled = false`).
+
 

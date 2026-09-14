@@ -55,14 +55,15 @@ fun MissionSelectionBottomSheet(
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    ModalBottomSheet(
-        onDismissRequest = onDismissRequest,
-        sheetState = sheetState,
-        containerColor = LiteverTheme.colors.surfaceContainerLow
-    ) {
-        CompositionLocalProvider(
-            LocalContext provides context
+    CompositionLocalProvider(LocalContext provides context) {
+        ModalBottomSheet(
+            onDismissRequest = onDismissRequest,
+            sheetState = sheetState,
+            containerColor = LiteverTheme.colors.surfaceContainerLow
         ) {
+            CompositionLocalProvider(
+                LocalContext provides context
+            ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -185,6 +186,7 @@ fun MissionSelectionBottomSheet(
             }
         }
     }
+}
 }
 
 private data class MissionItem(

@@ -487,6 +487,7 @@ fun AlarmRingingContent(
                         onClick = onSnooze,
                         type = LvButtonType.Outlined,
                         semantic = LvSemantic.Secondary,
+                        shape = LiteverTheme.shapes.large,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp)
@@ -508,6 +509,7 @@ fun AlarmRingingContent(
                             onDismiss()
                         }
                     },
+                    shape = LiteverTheme.shapes.large,
                     type = LvButtonType.Filled,
                     semantic = LvSemantic.Primary,
                     modifier = Modifier
@@ -523,7 +525,7 @@ fun AlarmRingingContent(
                     }
                     Text(
                         text = dismissText,
-                        style = LiteverTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                        style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                     )
                 }
             }

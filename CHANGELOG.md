@@ -8,11 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **8-Cell Palette Grid:** Added an 8-cell 2-row color palette selector (`IconButton`s with `primaryContainer` backgrounds, centered `primary` text, selection borders, and checkmark indicators) in `GeneralSettingsScreen`.
+- **Litever Palette Integration:** Integrated all 7 predefined Litever color palettes (Red, Orange, Yellow, Green, Blue, Indigo, Violet) and Dynamic wallpaper coloring.
 - **Opinionated Lv* Suite:** Adopted high-level opinionated components from `litever-designsystem` v2.1.0: `LvButton`, `LvIconButton`, `LvTextField`, `LvAlertDialog`, `LvChip`, and `LvSnackbarHost` / `LvSnackbar`.
 - **Semantic Tokens:** Added neutral semantic color tokens (`neutral`, `onNeutral`, `neutralContainer`, `onNeutralContainer`) to `ColorScheme` in `:core:designsystem` mapped to `LiteverTheme.colors`.
 - **Root Snackbar Presentation:** Integrated `LvSnackbarHost` with `SnackbarHostState` inside the root `MainActivity` scaffold for standardized semantic snackbar support.
 
+### Removed
+- **App-Specific Color Tokens:** Removed over 340 lines of local color definitions in `:core:designsystem/theme/Color.kt` (`primaryLight`, `remindLightColors`, `remindDarkColors`, contrast variants, etc.) in favor of direct consumption of `:litever-designsystem` palettes.
+
 ### Changed
+- **Default Theme Color:** Changed application default primary color palette from legacy brown to Litever **RED** (`LiteverThemeColor.RED` / `redLightColorScheme` / `redDarkColorScheme`).
 - **Dependencies:** Updated `liteverDesignsystem` version to `2.1.0` in `gradle/libs.versions.toml`.
 - **Package Modularization:** Aligned all component imports across all modules to use domain-segregated packages (`vn.io.litever.designsystem.components.button.*`, `vn.io.litever.designsystem.components.textfield.*`, `vn.io.litever.designsystem.components.dialog.*`, etc.).
 - **Component Adoption Across Modules:**

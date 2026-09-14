@@ -95,6 +95,7 @@
     <string name="one_time">1 lần</string>
     <string name="off">Tắt</string>
     <string name="select_time">Chọn giờ</string>
+    <string name="set_alarm_time">Đặt giờ báo thức</string>
 </resources>
 
 

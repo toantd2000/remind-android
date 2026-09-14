@@ -14,6 +14,14 @@
     <string name="color_source_remind">ReMind</string>
     <string name="color_source_wallpaper">Hình nền</string>
     <string name="color_source_litever">LiteVer</string>
+    <string name="color_red">Đỏ</string>
+    <string name="color_orange">Cam</string>
+    <string name="color_yellow">Vàng</string>
+    <string name="color_green">Lục</string>
+    <string name="color_blue">Lam</string>
+    <string name="color_indigo">Chàm</string>
+    <string name="color_violet">Tím</string>
+    <string name="color_screen">Màn hình</string>
     <string name="category_app_settings">Cài đặt ứng dụng</string>
     <string name="category_general">Chung</string>
     <string name="category_permissions">Quyền</string>

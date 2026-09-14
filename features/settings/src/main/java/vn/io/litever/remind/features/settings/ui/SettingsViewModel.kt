@@ -16,7 +16,7 @@ data class SettingsUiState(
     val is24HourFormat: Boolean = true,
     val timeFormat: String = "SYSTEM",
     val themeMode: String = "SYSTEM",
-    val colorPalette: String = "REMIND",
+    val colorPalette: String = "RED",
     val language: String = if (java.util.Locale.getDefault().language == "vi") "vi" else "en",
     val useBuiltInSpeaker: Boolean = true,
     val isPreNotificationEnabled: Boolean = true,

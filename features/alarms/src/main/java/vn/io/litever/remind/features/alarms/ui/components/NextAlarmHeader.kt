@@ -19,31 +19,23 @@ fun NextAlarmHeader(
     state: NextAlarmUiState,
     modifier: Modifier = Modifier
 ) {
-    Surface(
-        color = LiteverTheme.colors.tertiaryContainer,
-        shape = LiteverTheme.shapes.medium,
-        modifier = modifier
-            .padding(horizontal = LiteverTheme.spacing.mediumLarge, vertical = LiteverTheme.spacing.extraSmall)
-            .fillMaxWidth()
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = LiteverTheme.spacing.medium, vertical = LiteverTheme.spacing.small),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.Alarm,
-                contentDescription = null,
-                tint = LiteverTheme.colors.onTertiaryContainer,
-                modifier = Modifier.size(LiteVerButtonDefaults.IconSize)
-            )
-            Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
-            Text(
-                text = formatNextAlarmText(state),
-                style = LiteverTheme.typography.labelMedium,
-                color = LiteverTheme.colors.onTertiaryContainer,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
+        Icon(
+            imageVector = Icons.Rounded.Alarm,
+            contentDescription = null,
+            tint = LiteverTheme.colors.tertiary,
+            modifier = Modifier.size(LiteVerButtonDefaults.IconSize)
+        )
+        Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
+        Text(
+            text = formatNextAlarmText(state),
+            style = LiteverTheme.typography.labelMedium,
+            color = LiteverTheme.colors.tertiary,
+            fontWeight = FontWeight.SemiBold
+        )
     }
 }
 

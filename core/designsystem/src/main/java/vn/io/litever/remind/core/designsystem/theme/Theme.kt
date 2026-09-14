@@ -11,16 +11,18 @@ import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.designsystem.theme.LiteverTypography
 import vn.io.litever.designsystem.theme.defaultLiteverTypography
 
+import vn.io.litever.designsystem.theme.LiteverThemeColor
+
 /**
  * ReMind application theme composable that configures and delegates to [LiteverTheme].
  *
- * It bridges ReMind's brand color schemes ([remindLightColors], [remindDarkColors]) to Litever v2.0.0's
- * lean architecture, providing native Jetpack Compose Material 3 MaterialTheme alongside Litever design tokens
- * ([LiteverTheme.colors], [LiteverTheme.typography], [LiteverTheme.spacing], and [LiteverTheme.shapes]).
+ * Defaults to the RED palette from Litever Design System, supporting dynamic theming across
+ * all 7 predefined Litever color palettes (RED, ORANGE, YELLOW, GREEN, BLUE, INDIGO, VIOLET)
+ * and Android 12+ wallpaper dynamic coloring.
  *
  * @param darkTheme Whether dark theme should be applied. Defaults to system dark theme state.
  * @param dynamicColor Whether dynamic system coloring (Android 12+) should be used.
- * @param colorPalette Color palette selection: "REMIND" (default), "LITEVER", or "DYNAMIC".
+ * @param colorPalette Color palette selection: "RED" (default), "ORANGE", "YELLOW", "GREEN", "BLUE", "INDIGO", "VIOLET", or "DYNAMIC".
  * @param colorScheme Optional custom Material 3 [ColorScheme]. If supplied, it takes precedence for MaterialTheme.
  * @param colors Optional custom [LiteverColors] container. If supplied, it takes precedence for Litever token locals.
  * @param typography Typography specifications, defaulting to [defaultLiteverTypography].
@@ -32,7 +34,7 @@ import vn.io.litever.designsystem.theme.defaultLiteverTypography
 fun ReMindTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false,
-    colorPalette: String = "REMIND",
+    colorPalette: String = "RED",
     colorScheme: ColorScheme? = null,
     colors: LiteverColors? = null,
     typography: LiteverTypography = defaultLiteverTypography,
@@ -42,18 +44,21 @@ fun ReMindTheme(
 ) {
     val isDynamic = colorPalette == "DYNAMIC" || dynamicColor
 
-    val resolvedColors: LiteverColors? = when {
-        colors != null -> colors
-        colorScheme != null -> null
-        isDynamic -> null
-        colorPalette == "LITEVER" -> null
-        darkTheme -> remindDarkColors
-        else -> remindLightColors
+    val resolvedThemeColor = when (colorPalette) {
+        "RED" -> LiteverThemeColor.RED
+        "ORANGE" -> LiteverThemeColor.ORANGE
+        "YELLOW" -> LiteverThemeColor.YELLOW
+        "GREEN" -> LiteverThemeColor.GREEN
+        "BLUE" -> LiteverThemeColor.BLUE
+        "INDIGO" -> LiteverThemeColor.INDIGO
+        "VIOLET" -> LiteverThemeColor.VIOLET
+        else -> LiteverThemeColor.RED
     }
 
     LiteverTheme(
+        themeColor = resolvedThemeColor,
         colorScheme = colorScheme,
-        colors = resolvedColors,
+        colors = colors,
         typography = typography,
         spacing = spacing,
         shapes = shapes,

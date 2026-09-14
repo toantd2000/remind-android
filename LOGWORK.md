@@ -198,6 +198,14 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
   - Thiết lập cơ chế loại trừ tương hỗ: Chọn ngày cụ thể sẽ xóa lặp lại theo thứ, và ngược lại.
   - Reset Database version về 1 theo yêu cầu phát triển (Development phase cleanup).
 - **Hệ quả:** Tăng tính linh hoạt cho ứng dụng, cho phép dùng như một công cụ nhắc nhở sự kiện một lần chính xác.
+
+### [TDR-021] - Chuyển đổi nút chọn Thứ sang LvIconButton
+- **Ngày thực hiện:** 2026-04-17
+- **Trạng thái:** Accepted
+- **Bối cảnh:** Các nút chọn thứ trong tuần tại `RepeatDaySelector` (`AlarmEditScreen.kt`) trước đây dùng `Surface` và `clickable` thủ công, chưa tận dụng hiệu ứng nhấn (ripple effect) và kiểu dáng chuẩn của Design System.
+- **Quyết định:** 
+  - Thay thế cụm `Surface` bằng `LvIconButton` với `type = if (isSelected) LvButtonType.Tonal else LvButtonType.Outlined` và `semantic = if (isSelected) LvSemantic.Primary else LvSemantic.Neutral`.
+- **Hệ quả:** Đảm bảo hiệu ứng phản hồi (ripple/press state) mượt mà có sẵn từ `LvIconButton`, chuẩn hóa các thành phần UI theo LiteVer Design System.
 194: 
 195: ### [TDR-021] - Tự động hóa Giấy phép và Đánh số phiên bản theo ngày (Build Release)
 196: - **Ngày thực hiện:** 2026-04-20
@@ -899,4 +907,34 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
   - **Nhất quán Visual & Semantic Tuyệt đối:** Toàn bộ nút bấm, ô nhập liệu, hộp thoại và chip tự động tuân thủ chuẩn bo góc squircle (6.dp/10.dp) và màu sắc theo `LvSemantic`.
   - **Kiến trúc Modular Rõ ràng:** Cấu trúc package được phân tách mạch lạc theo từng domain component.
   - **Độ ổn định cao:** Dự án biên dịch sạch 100% không còn unresolved reference và toàn bộ 100% unit test suites đều vượt qua.
+
+### [TDR-063] - Chuẩn hóa Bảng màu Đỏ (RED) Mặc định và Bộ Chọn 8 Ô Palette theo LiteVer Design System
+- **Ngày thực hiện:** 2026-09-14
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Bảng màu mặc định của ứng dụng ReMind trước đây là màu nâu đất ("REMIND"), tách biệt khỏi hệ sinh thái bảng màu chuẩn hóa của `litever-designsystem`.
+  - Thư viện `litever-designsystem` cung cấp 7 bảng màu chuẩn hóa gồm: RED, ORANGE, YELLOW, GREEN, BLUE, INDIGO, VIOLET cùng khả năng phối màu tự động theo hình nền thiết bị (Dynamic Theme trên Android 12+).
+  - Cần chuyển đổi bảng màu mặc định của toàn bộ ứng dụng sang màu **Đỏ (RED)** của Litever Palette, đồng thời nâng cấp màn hình Cài đặt chung (`GeneralSettingsScreen`) để người dùng dễ dàng chọn lựa 1 trong 7 màu có sẵn hoặc tùy chọn theo màn hình.
+- **Quyết định:**
+  1. **Đổi màu mặc định sang RED:**
+     - `:core:datastore`: Cập nhật `COLOR_PALETTE_KEY` mặc định trả về `"RED"`.
+     - `:features:settings`: Cập nhật `SettingsUiState.colorPalette` mặc định là `"RED"`.
+     - `:core:designsystem`: Cập nhật `ReMindTheme(colorPalette = "RED")`, ánh xạ chuỗi `colorPalette` sang enum `LiteverThemeColor.RED` (và các màu tương ứng), truyền vào `LiteverTheme(themeColor = ...)`. Đồng thời đồng bộ các token `primaryLight`, `primaryContainerLight`, `primaryDark`, `primaryContainerDark`, `remindLightColors`, `remindDarkColors` sang giá trị của bảng màu RED Litever.
+     - `:app`: Cập nhật `MainActivity` collect giá trị khởi tạo `colorPalette` là `"RED"`.
+     - `litever-designsystem`: Cập nhật `LiteverThemeColor.DEFAULT` ánh xạ sang `redDarkColorScheme` / `redLightColorScheme` để bảo đảm tính đồng nhất ở mọi tầng.
+  2. **Bộ chọn 8 ô chia 2 hàng trên GeneralSettingsScreen:**
+     - Thay thế danh sách dọc `ListItem + RadioButton` trước đây bằng lưới gồm 8 ô chia đều thành 2 hàng (mỗi hàng 4 ô).
+     - Hàng 1: Đỏ (RED), Cam (ORANGE), Vàng (YELLOW), Lục (GREEN).
+     - Hàng 2: Lam (BLUE), Chàm (INDIGO), Tím (VIOLET), Màn hình (DYNAMIC).
+     - Mỗi ô là một `IconButton` với nền là `primaryContainer` của bảng màu tương ứng trong theme hiện tại (Light/Dark).
+     - Ở giữa mỗi ô là text hiển thị tên màu sử dụng màu chữ `primary` của bảng màu đó.
+     - Trạng thái nhận biết màu đang chọn: Viền bo góc `border(2.dp, primary, shape)` nổi bật cùng biểu tượng dấu tích `Icons.Rounded.Check` bên cạnh tên màu in đậm (Bold).
+  3. **Dọn dẹp File Color.kt tại :core:designsystem:**
+     - Loại bỏ toàn bộ hơn 340 dòng mã định nghĩa token màu sắc cục bộ của riêng app (`primaryLight`, `secondaryLight`, các biến thể contrast, `remindLightColors`, `remindDarkColors`, `remindLightColorScheme`, v.v.).
+     - Ứng dụng chuyển sang tái sử dụng 100% hệ thống palette và theme từ `:litever-designsystem`, chỉ giữ lại các tiện ích mở rộng ngữ nghĩa `ColorScheme.warning`, `ColorScheme.success`, `ColorScheme.neutral` ủy quyền sang `LiteverTheme.colors`.
+- **Hệ quả:**
+  - Giảm thiểu hơn 340 dòng code dư thừa, loại bỏ hoàn toàn sự trùng lặp màu sắc giữa app và Design System.
+  - Toàn bộ ứng dụng ReMind đồng bộ nhận diện thương hiệu với màu Đỏ (RED) tươi sáng, hiện đại.
+  - Giao diện chọn màu sắc trực quan, thẩm mỹ cao, tiết kiệm không gian và tương thích trọn vẹn với cả chế độ Sáng/Tối lẫn Android 12+ Dynamic Coloring.
+
 

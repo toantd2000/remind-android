@@ -1,3 +1,21 @@
+## [2026-09-14] Litever Palette Theming & 8-Cell Palette Grid Implementation
+
+### Context
+Cập nhật hệ thống màu sắc theo chuẩn Litever Design System: đổi màu mặc định của toàn bộ ứng dụng sang màu Đỏ (RED) và thiết kế lại bộ chọn màu sắc tại `GeneralSettingsScreen` thành lưới 8 ô chia 2 hàng (gồm 7 màu định sẵn của Litever Palette và 1 tùy chọn màu theo màn hình).
+
+### What happened
+- Đổi màu mặc định của ứng dụng sang `RED` trên toàn bộ các tầng: DataStore preferences, SettingsUiState, ReMindTheme và MainActivity collection.
+- Ánh xạ trực tiếp 7 bảng màu `LiteverThemeColor` (`RED`, `ORANGE`, `YELLOW`, `GREEN`, `BLUE`, `INDIGO`, `VIOLET`) và Android 12+ wallpaper dynamic color vào `LiteverTheme`.
+- Cập nhật thư viện `litever-designsystem` để hàm `LiteverThemeColor.DEFAULT` trỏ về bảng màu Đỏ (`redDarkColorScheme` / `redLightColorScheme`), đồng thời cung cấp hàm tiện ích `lightLiteverColors` và `darkLiteverColors`.
+- Tái thiết kế mục chọn màu tại `GeneralSettingsScreen` bằng 2 hàng x 4 ô sử dụng `IconButton` với nền `primaryContainer`, text `primary` căn giữa, bo góc squircle chuẩn Litever và trạng thái nhận biết màu đang chọn bằng viền `primary` 2.dp và biểu tượng `Icons.Rounded.Check`.
+- Toàn bộ unit tests chạy thành công 100%.
+
+### Lessons Learned
+- **Compose Multi-Palette State Synchronization:**
+  Khi hỗ trợ nhiều bảng màu trong Compose, việc delegate trực tiếp sang Design System theme composable (`LiteverTheme(themeColor = ...)`) là giải pháp tối ưu nhất. Tránh việc tính toán hoặc giữ state màu sắc thủ công cục bộ tại từng màn hình; hãy để Compose runtime tự động kích hoạt recomposition toàn app khi `colorPalette` State thay đổi từ DataStore.
+- **IconButton Layout Constraints in Dynamic Grids:**
+  Mặc định `IconButton` của Material 3 có kích thước cố định `40.dp`. Khi đặt trong các lưới co giãn (dynamic weighted grid cells `Modifier.weight(1f)`), cần bọc `IconButton` trong một `Box` có chiều cao chuẩn (ví dụ `52.dp` để thỏa mãn touch target accessibility >= 48dp) và áp dụng `fillMaxSize()` kèm bo góc và màu nền tương ứng. Việc này giúp các nút co giãn linh hoạt trên mọi kích cỡ màn hình từ điện thoại nhỏ đến tablet/foldable mà không bị vỡ layout.
+
 ## [2026-09-12] Package Segregation Migration & Boilerplate Reduction via Opinionated Lv* Components
 
 ### Context

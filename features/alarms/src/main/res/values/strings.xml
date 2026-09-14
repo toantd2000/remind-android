@@ -26,6 +26,7 @@
     <string name="add_alarm_title">Add Alarm</string>
     <string name="edit_alarm_title">Edit Alarm</string>
     <string name="select_time">Select Time</string>
+    <string name="set_alarm_time">Set Alarm Time</string>
     <string name="select_date">Select Date</string>
     <string name="one_time_on">Once on %s</string>
     <string name="schedule_and_name">Schedule &amp; Name</string>

@@ -26,6 +26,7 @@
     <string name="add_alarm_title">Thêm báo thức</string>
     <string name="edit_alarm_title">Sửa báo thức</string>
     <string name="select_time">Chọn giờ</string>
+    <string name="set_alarm_time">Đặt giờ báo thức</string>
     <string name="select_date">Chọn ngày</string>
     <string name="one_time_on">Một lần vào %s</string>
     <string name="schedule_and_name">Lịch trình &amp; Tên</string>

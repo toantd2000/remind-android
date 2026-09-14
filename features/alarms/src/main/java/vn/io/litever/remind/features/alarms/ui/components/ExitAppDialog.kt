@@ -10,10 +10,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import vn.io.litever.designsystem.components.button.LvButton
+import vn.io.litever.designsystem.components.button.LvButtonType
+import vn.io.litever.designsystem.components.core.LvSemantic
+import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.ads.api.AdPlacement
 import vn.io.litever.remind.core.ads.api.LocalAdManager
-import vn.io.litever.remind.core.designsystem.components.ReMindAlertDialog
 import vn.io.litever.remind.features.alarms.R
 
 @Composable
@@ -34,36 +37,47 @@ fun ExitAppDialog(
     val confirmText = stringResource(R.string.exit_dialog_confirm)
     val cancelText = stringResource(R.string.exit_dialog_cancel)
 
-    ReMindAlertDialog(
+    LvAlertDialog(
         onDismissRequest = onDismissRequest,
-        confirmButtonText = confirmText,
-        onConfirmClick = onConfirmExit,
-        dismissButtonText = cancelText,
-        onDismissClick = onDismissRequest,
-        title = title,
-        modifier = modifier
-    ) {
-        Column {
-            Text(
-                text = message,
-                style = LiteverTheme.typography.bodyMedium,
-                color = LiteverTheme.colors.onSurfaceVariant
-            )
-            
-            if (!isAdFreeActive) {
-                Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+        confirmButton = {
+            LvButton(onClick = onConfirmExit) {
+                Text(confirmText)
+            }
+        },
+        dismissButton = {
+            LvButton(
+                onClick = onDismissRequest,
+                type = LvButtonType.Outlined,
+                semantic = LvSemantic.Secondary
+            ) {
+                Text(cancelText)
+            }
+        },
+        title = { Text(title) },
+        text = {
+            Column {
+                Text(
+                    text = message,
+                    style = LiteverTheme.typography.bodyMedium,
+                    color = LiteverTheme.colors.onSurfaceVariant
+                )
                 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = LiteverTheme.spacing.extraSmall)
-                ) {
-                    adManager.NativeAdView(
-                        placement = AdPlacement.EXIT_NATIVE,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                if (!isAdFreeActive) {
+                    Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+                    
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = LiteverTheme.spacing.extraSmall)
+                    ) {
+                        adManager.NativeAdView(
+                            placement = AdPlacement.EXIT_NATIVE,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
             }
-        }
-    }
+        },
+        modifier = modifier
+    )
 }

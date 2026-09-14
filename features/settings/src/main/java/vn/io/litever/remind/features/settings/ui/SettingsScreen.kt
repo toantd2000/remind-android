@@ -3,6 +3,7 @@ package vn.io.litever.remind.features.settings.ui
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -43,8 +44,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import vn.io.litever.designsystem.components.button.LvButton
+import vn.io.litever.designsystem.components.button.LvButtonType
+import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
-import vn.io.litever.remind.core.designsystem.components.ReMindAlertDialog
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsItem
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
@@ -98,7 +101,6 @@ fun SettingsScreen(
     val adState by adManager.adState.collectAsState()
     var showDonateDialog by remember { mutableStateOf(false) }
     var showFaqDialog by remember { mutableStateOf(false) }
-    var showRewardedAdSimulator by remember { mutableStateOf(false) }
     var showThankYouDialog by remember { mutableStateOf(false) }
     var showSupportDeveloperDialog by remember { mutableStateOf(false) }
     var showAdLoading by remember { mutableStateOf(false) }
@@ -119,15 +121,11 @@ fun SettingsScreen(
 
                 is AdState.Failed -> {
                     showAdLoading = false
-                    if (DeviceUtils.isEmulator()) {
-                        showRewardedAdSimulator = true
-                    } else {
-                        android.widget.Toast.makeText(
-                            context,
-                            notReadyMessage,
-                            android.widget.Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                    Toast.makeText(
+                        context,
+                        notReadyMessage,
+                        android.widget.Toast.LENGTH_SHORT
+                    ).show()
                 }
 
                 else -> {}
@@ -263,67 +261,72 @@ fun SettingsScreen(
 
     // Support Developer Dialog
     if (showSupportDeveloperDialog) {
-        ReMindAlertDialog(
+        LvAlertDialog(
+            title = {
+                Text(text = stringResource(R.string.setting_support_dev_title),)
+            },
+            text = {
+                Text(text = stringResource(R.string.support_dev_dialog_desc))
+            },
             onDismissRequest = {
                 if (showSupportDeveloperDialog) showSupportDeveloperDialog = false
             },
-            title = stringResource(R.string.setting_support_dev_title),
-            text = stringResource(R.string.support_dev_dialog_desc),
-            confirmButtonText = stringResource(R.string.watch_ad_action),
-            onConfirmClick = {
-                if (showSupportDeveloperDialog) showSupportDeveloperDialog = false
-                val activity = context.findActivity()
-                if (activity != null && adManager.isAdLoaded(AdPlacement.SUPPORT_REWARDED)) {
-                    adManager.showAd(activity, AdPlacement.SUPPORT_REWARDED) {
-                        showThankYouDialog = true
+            confirmButton = {
+                LvButton(
+                    onClick = {
+                        if (showSupportDeveloperDialog) showSupportDeveloperDialog = false
+                        val activity = context.findActivity()
+                        if (activity != null && adManager.isAdLoaded(AdPlacement.SUPPORT_REWARDED)) {
+                            adManager.showAd(activity, AdPlacement.SUPPORT_REWARDED) {
+                                showThankYouDialog = true
+                            }
+                        } else {
+                            adManager.loadAd(AdPlacement.SUPPORT_REWARDED)
+                            showAdLoading = true
+                        }
                     }
-                } else {
-                    if (DeviceUtils.isEmulator()) {
-                        showRewardedAdSimulator = true
-                    } else {
-                        adManager.loadAd(AdPlacement.SUPPORT_REWARDED)
-                        showAdLoading = true
-                    }
+                ) {
+                    Text(stringResource(R.string.watch_ad_action))
                 }
             },
-            dismissButtonText = stringResource(R.string.direct_support_action),
-            onDismissClick = {
-                if (showSupportDeveloperDialog) showSupportDeveloperDialog = false
-                showDonateDialog = true
-            }
+            dismissButton = {
+                LvButton(
+                    onClick = {
+                        if (showSupportDeveloperDialog) showSupportDeveloperDialog = false
+                        showDonateDialog = true
+                    },
+                    type = LvButtonType.Outlined,
+                ) {
+                    Text(stringResource(R.string.direct_support_action))
+                }
+            },
         )
     }
 
     // Direct Donation Dialog
     if (showDonateDialog) {
-        ReMindAlertDialog(
+        LvAlertDialog(
             onDismissRequest = { showDonateDialog = false },
-            confirmButtonText = stringResource(R.string.close_text),
-            onConfirmClick = { showDonateDialog = false },
-            title = stringResource(R.string.support_dev_dialog_title),
-            text = stringResource(R.string.support_dev_dialog_message),
+            title = { Text(stringResource(R.string.support_dev_dialog_title)) },
+            text = { Text(stringResource(R.string.support_dev_dialog_message)) },
+            confirmButton = {
+                LvButton(onClick = { showDonateDialog = false }) {
+                    Text(stringResource(R.string.close_text))
+                }
+            }
         )
     }
 
     // FAQ / Q&A Upcoming Dialog
     if (showFaqDialog) {
-        ReMindAlertDialog(
+        LvAlertDialog(
             onDismissRequest = { showFaqDialog = false },
-            confirmButtonText = stringResource(R.string.close_text),
-            onConfirmClick = { showFaqDialog = false },
-            title = stringResource(R.string.faq_upcoming_title),
-            text = stringResource(R.string.faq_upcoming_message)
-        )
-    }
-
-    // Rewarded Ad Simulator
-    if (showRewardedAdSimulator) {
-        RewardedAdSimulatorDialog(
-            onDismiss = { showRewardedAdSimulator = false },
-            onRewardEarned = {
-                showRewardedAdSimulator = false
-                onRewardGranted()
-                showThankYouDialog = true
+            title = { Text(stringResource(R.string.faq_upcoming_title)) },
+            text = { Text(stringResource(R.string.faq_upcoming_message)) },
+            confirmButton = {
+                LvButton(onClick = { showFaqDialog = false }) {
+                    Text(stringResource(R.string.close_text))
+                }
             }
         )
     }
@@ -331,7 +334,7 @@ fun SettingsScreen(
     // Ad Loading Dialog Overlay
     if (showAdLoading) {
         val loadingAdMessage = stringResource(R.string.loading_ad_message)
-        ReMindAlertDialog(
+        LvAlertDialog(
             onDismissRequest = { showAdLoading = false },
             confirmButton = {},
             text = {
@@ -358,12 +361,15 @@ fun SettingsScreen(
 
     // Ad-Free Granted Thank You Dialog
     if (showThankYouDialog) {
-        ReMindAlertDialog(
+        LvAlertDialog(
             onDismissRequest = { showThankYouDialog = false },
-            confirmButtonText = stringResource(R.string.close_text),
-            onConfirmClick = { showThankYouDialog = false },
-            title = stringResource(R.string.watch_ad_dialog_title),
-            text = stringResource(R.string.ads_disabled_reward_message),
+            title = { Text(stringResource(R.string.watch_ad_dialog_title)) },
+            text = { Text(stringResource(R.string.ads_disabled_reward_message)) },
+            confirmButton = {
+                LvButton(onClick = { showThankYouDialog = false }) {
+                    Text(stringResource(R.string.close_text))
+                }
+            }
         )
     }
 }

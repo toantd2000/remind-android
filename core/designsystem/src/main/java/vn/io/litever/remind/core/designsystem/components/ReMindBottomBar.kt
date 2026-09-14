@@ -4,10 +4,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,12 +30,14 @@ import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
  * A premium bottom bar for main actions.
  * @param modifier Modifier for the bar.
  * @param shape Shape of the bar container. Default is Rectangle for a seamless look.
+ * @param windowInsets Window insets to apply as padding. Defaults to safe drawing horizontal and bottom insets (navigation bars + IME).
  * @param content Slot for buttons or other actions.
  */
 @Composable
 fun ReMindBottomBar(
     modifier: Modifier = Modifier,
     shape: Shape = RectangleShape,
+    windowInsets: WindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
     content: @Composable RowScope.() -> Unit
 ) {
     Surface(
@@ -41,13 +47,13 @@ fun ReMindBottomBar(
     ) {
         Row(
             modifier = Modifier
-                .navigationBarsPadding()
+                .windowInsetsPadding(windowInsets)
                 .padding(
-                    horizontal = LiteverTheme.spacing.large,
-                    vertical = LiteverTheme.spacing.medium
+                    vertical = LiteverTheme.spacing.smallMedium,
+                    horizontal = LiteverTheme.spacing.medium
                 )
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium),
+            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.smallMedium),
             verticalAlignment = Alignment.CenterVertically,
             content = content
         )

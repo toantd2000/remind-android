@@ -14,11 +14,15 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Alarm
 import androidx.compose.material.icons.rounded.Lightbulb
@@ -161,7 +165,7 @@ class MainActivity : ComponentActivity() {
         }
         setContent {
             val themeMode by viewModel.themeMode.collectAsState(initial = "SYSTEM")
-            val colorPalette by viewModel.colorPalette.collectAsState(initial = "DYNAMIC")
+            val colorPalette by viewModel.colorPalette.collectAsState(initial = "RED")
             val language by viewModel.language.collectAsState(
                 initial = if (Locale.getDefault().language == "vi") "vi" else "en"
             )
@@ -293,7 +297,9 @@ class MainActivity : ComponentActivity() {
                                 snackbarHost = { LvSnackbarHost(hostState = snackbarHostState) },
                                 bottomBar = {
                                     if (isBottomBarVisible) {
-                                        NavigationBar {
+                                        NavigationBar(
+                                            windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+                                        ) {
                                             NavigationBarItem(
                                                 icon = {
                                                     Icon(

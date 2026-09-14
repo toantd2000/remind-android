@@ -119,3 +119,21 @@ This document records the solidified technical decisions and behavioral scenario
 - **Expected Behavior**: In-app notifications and snackbars must support semantic colors (Success, Destructive, Warning, Neutral) and squircle corners.
 - **Technical Decision**:
   - Integrate `LvSnackbarHost` directly in `MainActivity.kt` root `Scaffold`, utilizing `LvSnackbarVisuals` to carry semantic metadata.
+
+## 9. Palette Color System & Selection Grid
+
+### Scenario: Litever RED as Default Palette
+- **Expected Behavior**: New app installations and fallback defaults must use Litever's signature RED color scheme rather than the legacy brown scheme.
+- **Technical Decision**:
+  - Set default preference key value in `AlarmPreferencesDataSource` to `"RED"`.
+  - Set default state in `SettingsUiState` and `ReMindTheme` to `"RED"`.
+  - Align all token definitions in `Color.kt` to the Red palette values.
+
+### Scenario: 8-Cell 2-Row Color Palette Grid
+- **Expected Behavior**: Users can choose from 7 pre-packaged Litever color schemes (Red, Orange, Yellow, Green, Blue, Indigo, Violet) or device wallpaper dynamic coloring. The picker must be rendered as an 8-cell 2-row grid of `IconButton`s, with `primaryContainer` backgrounds, centered `primary` text, and prominent selection indication.
+- **Technical Decision**:
+  - Implement a 2-row grid of `IconButton`s in `GeneralSettingsScreen`.
+  - Background is bound to each palette's `primaryContainer` in the active theme mode (Light/Dark).
+  - Text in the center is bound to each palette's `primary` color.
+  - Active selection is identified by a 2.dp `primary` border and an `Icons.Rounded.Check` indicator.
+

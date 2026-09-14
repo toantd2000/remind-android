@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -25,6 +26,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import vn.io.litever.designsystem.components.button.LvIconButton
+import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import vn.io.litever.remind.core.model.Alarm
@@ -44,7 +46,6 @@ fun AlarmCard(
     modifier: Modifier = Modifier
 ) {
     val isSkipped = alarm.skippedAt != null
-    val alpha = if (alarm.isEnabled && !isSkipped) 1f else 0.6f
 
     val containerColor = if (alarm.isEnabled && !isSkipped) {
         LiteverTheme.colors.surface
@@ -58,7 +59,6 @@ fun AlarmCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = LiteverTheme.spacing.extraSmall)
             .clip(LiteverTheme.shapes.large)
             .clickable { onClick() },
         colors = CardDefaults.cardColors(
@@ -67,14 +67,14 @@ fun AlarmCard(
         shape = LiteverTheme.shapes.large,
         border = BorderStroke(1.dp, LiteverTheme.colors.outlineVariant.copy(alpha = 0.3f))
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .drawBehind {
                     if (isEnabledAndNotSkipped) {
                         drawRect(
-                            color = primaryColor.copy(alpha = 0.7f),
-                            size = androidx.compose.ui.geometry.Size(3.dp.toPx(), size.height)
+                            color = primaryColor,
+                            size = Size(4.dp.toPx(), size.height)
                         )
                     }
                 }
@@ -84,94 +84,74 @@ fun AlarmCard(
                     top = LiteverTheme.spacing.smallMedium,
                     bottom = LiteverTheme.spacing.smallMedium
                 ),
-            verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .graphicsLayer { this.alpha = alpha }
-            ) {
-                // Top Row: Repeat Info
-                    val skippedAt = alarm.skippedAt
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = getRepeatText(alarm),
-                            style = LiteverTheme.typography.labelSmall,
-                            color = if (alarm.isEnabled && !isSkipped) 
-                                LiteverTheme.colors.primary 
-                            else 
-                                LiteverTheme.colors.onSurfaceVariant,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.weight(1f, fill = false),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        
-                        if (isSkipped && skippedAt != null) {
-                            Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
-                            Box(
-                                modifier = Modifier
-                                    .size(LiteverTheme.spacing.extraSmall)
-                                    .background(LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.6f), CircleShape)
-                            )
-                            Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
-                            
-                            val dateFormatter = remember { DateTimeFormatter.ofPattern("dd/MM") }
-                            Text(
-                                text = stringResource(R.string.skipped_next_format, skippedAt.format(dateFormatter)),
-                                style = LiteverTheme.typography.labelSmall,
-                                color = LiteverTheme.colors.tertiary,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
+            // Top Row: Repeat Info
+            val skippedAt = alarm.skippedAt
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = getRepeatText(alarm),
+                    style = LiteverTheme.typography.labelSmall,
+                    color = if (alarm.isEnabled && !isSkipped)
+                        LiteverTheme.colors.primary
+                    else
+                        LiteverTheme.colors.onSurfaceVariant,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.weight(1f, fill = false),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
 
-                    Spacer(modifier = Modifier.height(LiteverTheme.spacing.tiny))
-
-                    // Middle Row: Time - Lighter font weight
-                    val (timeStr, amPm) = TimeFormatUtils.formatTimeParts(alarm.time, is24HourFormat)
-                    Row(verticalAlignment = Alignment.Bottom) {
-                        Text(
-                            text = timeStr,
-                            style = LiteverTheme.typography.displaySmall.copy(
-                                fontWeight = FontWeight.SemiBold,
-                                letterSpacing = (-0.5).sp
-                            ),
-                            color = LiteverTheme.colors.onSurface
-                        )
-                        if (amPm != null) {
-                            Text(
-                                text = amPm.uppercase(),
-                                style = LiteverTheme.typography.titleSmall.copy(fontWeight = FontWeight.Medium),
-                                color = LiteverTheme.colors.onSurfaceVariant,
-                                modifier = Modifier.padding(start = LiteverTheme.spacing.extraSmall, bottom = LiteverTheme.spacing.extraSmall)
+                if (isSkipped && skippedAt != null) {
+                    Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
+                    Box(
+                        modifier = Modifier
+                            .size(LiteverTheme.spacing.extraSmall)
+                            .background(
+                                LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.6f),
+                                CircleShape
                             )
-                        }
-                        
-                        // Mission Icons
-                        MissionIcons(
-                            missions = alarm.missions,
-                            modifier = Modifier.padding(start = LiteverTheme.spacing.small, bottom = LiteverTheme.spacing.small)
-                        )
-                    }
-
-                    // Bottom Row: Label - Italics if empty
-                    val labelText = alarm.label.ifEmpty { stringResource(R.string.no_label) }
-                    Text(
-                        text = labelText,
-                        style = LiteverTheme.typography.bodyMedium.copy(
-                            fontStyle = if (alarm.label.isEmpty()) FontStyle.Italic else FontStyle.Normal,
-                            color = if (alarm.label.isEmpty()) 
-                                LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.5f) 
-                            else 
-                                LiteverTheme.colors.onSurfaceVariant
-                        ),
-                        maxLines = 1,
-                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                     )
+                    Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
 
-
+                    val dateFormatter = remember { DateTimeFormatter.ofPattern("dd/MM") }
+                    Text(
+                        text = stringResource(R.string.skipped_next_format, skippedAt.format(dateFormatter)),
+                        style = LiteverTheme.typography.labelSmall,
+                        color = LiteverTheme.colors.tertiary,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
+            }
+
+            // Middle Row: Time - Lighter font weight
+            val (timeStr, amPm) = TimeFormatUtils.formatTimeParts(alarm.time, is24HourFormat)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = timeStr,
+                    style = LiteverTheme.typography.displaySmall.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        letterSpacing = (-0.5).sp
+                    ),
+                    color = LiteverTheme.colors.onSurface
+                )
+                if (amPm != null) {
+                    Text(
+                        text = amPm.uppercase(),
+                        style = LiteverTheme.typography.titleSmall.copy(fontWeight = FontWeight.Medium),
+                        color = LiteverTheme.colors.onSurfaceVariant,
+                        modifier = Modifier
+                            .padding(start = LiteverTheme.spacing.extraSmall, bottom = LiteverTheme.spacing.small)
+                            .align(Alignment.Bottom)
+                    )
+                }
+
+                // Mission Icons
+                MissionIcons(
+                    missions = alarm.missions,
+                    modifier = Modifier.padding(start = LiteverTheme.spacing.small, bottom = LiteverTheme.spacing.small)
+                )
+
+                Spacer(Modifier.weight(1F))
 
                 Switch(
                     checked = alarm.isEnabled && !isSkipped,
@@ -180,15 +160,29 @@ fun AlarmCard(
 
                 LvIconButton(
                     onClick = onMoreClick,
-                    modifier = Modifier.size(LiteverTheme.spacing.extraLarge)
+                    modifier = Modifier.size(LiteverTheme.spacing.extraLarge),
+                    semantic = LvSemantic.Secondary
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.MoreVert,
                         contentDescription = stringResource(R.string.action_more),
                         modifier = Modifier.size(LiteverTheme.spacing.mediumLarge),
-                        tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.6f)
                     )
                 }
+            }
+
+            Spacer(modifier = Modifier.height(LiteverTheme.spacing.tiny))
+
+            // Bottom Row: Label - Italics if empty
+            val labelText = alarm.label.ifEmpty { stringResource(R.string.no_label) }
+            Text(
+                text = labelText,
+                style = LiteverTheme.typography.bodyMedium.copy(
+                    fontStyle = if (alarm.label.isEmpty()) FontStyle.Italic else FontStyle.Normal,
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
             }
         }
     }

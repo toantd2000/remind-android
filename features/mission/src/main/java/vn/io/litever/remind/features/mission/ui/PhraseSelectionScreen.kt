@@ -64,8 +64,8 @@ import vn.io.litever.designsystem.components.button.LvButton
 import vn.io.litever.designsystem.components.button.LvButtonType
 import vn.io.litever.designsystem.components.button.LvIconButton
 import vn.io.litever.designsystem.components.core.LvSemantic
+import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.components.textfield.LvTextField
-import vn.io.litever.remind.core.designsystem.components.ReMindAlertDialog
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
@@ -118,18 +118,30 @@ fun PhraseSelectionRoute(
     )
 
     if (phraseToDelete != null) {
-        ReMindAlertDialog(
+        LvAlertDialog(
             onDismissRequest = { phraseToDelete = null },
-            title = stringResource(R.string.action_delete),
-            text = stringResource(R.string.mission_phrase_delete_confirm),
-            confirmButtonText = stringResource(R.string.action_delete),
-            onConfirmClick = {
-                viewModel.deletePhrase(phraseToDelete!!)
-                phraseToDelete = null
+            title = { Text(stringResource(R.string.action_delete)) },
+            text = { Text(stringResource(R.string.mission_phrase_delete_confirm)) },
+            confirmButton = {
+                LvButton(
+                    onClick = {
+                        viewModel.deletePhrase(phraseToDelete!!)
+                        phraseToDelete = null
+                    },
+                    semantic = LvSemantic.Destructive
+                ) {
+                    Text(stringResource(R.string.action_delete))
+                }
             },
-            dismissButtonText = stringResource(R.string.cancel),
-            onDismissClick = { phraseToDelete = null },
-            isDestructive = true
+            dismissButton = {
+                LvButton(
+                    onClick = { phraseToDelete = null },
+                    type = LvButtonType.Outlined,
+                    semantic = LvSemantic.Secondary
+                ) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
         )
     }
 

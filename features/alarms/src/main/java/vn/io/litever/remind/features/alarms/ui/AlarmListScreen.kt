@@ -34,19 +34,16 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import vn.io.litever.designsystem.components.button.LvIconButton
-import vn.io.litever.designsystem.components.snackbar.LvSnackbarHost
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -62,16 +59,21 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.flow.collectLatest
+import vn.io.litever.designsystem.components.button.LvIconButton
+import vn.io.litever.designsystem.components.snackbar.LvSnackbarHost
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindLogo
-import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
+import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.Alarm
+import vn.io.litever.remind.core.model.DayOfWeek
 import vn.io.litever.remind.features.alarms.R
 import vn.io.litever.remind.features.alarms.ui.components.AlarmCard
 import vn.io.litever.remind.features.alarms.ui.components.ExitAppDialog
@@ -79,6 +81,7 @@ import vn.io.litever.remind.features.alarms.ui.components.NextAlarmHeader
 import vn.io.litever.remind.features.alarms.ui.components.PermissionWarningBanner
 import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState
 import vn.io.litever.remind.features.alarms.viewmodel.AlarmListViewModel
+import java.time.LocalTime
 
 @Suppress("LocalContextGetResourceValueCall")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -218,26 +221,40 @@ fun AlarmListScreen(
 
     Scaffold(
         topBar = {
-            ReMindTopAppBar(
-                title = { ReMindLogo() },
-                actions = {
-                    LvIconButton(onClick = { showTopMenu = !showTopMenu }) {
-                        Icon(Icons.Rounded.MoreVert, contentDescription = actionMoreDescription)
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                TopAppBar(
+                    title = {
+                        ReMindLogo()
+                    },
+                    actions = {
+                        LvIconButton(onClick = { showTopMenu = !showTopMenu }) {
+                            Icon(Icons.Rounded.MoreVert, contentDescription = actionMoreDescription)
+                        }
+                        DropdownMenu(
+                            expanded = showTopMenu,
+                            onDismissRequest = { if (showTopMenu) showTopMenu = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text(deleteDisabledAlarmsText) },
+                                onClick = {
+                                    onDeleteDisabledAlarms()
+                                    if (showTopMenu) showTopMenu = false
+                                }
+                            )
+                        }
                     }
-                    DropdownMenu(
-                        expanded = showTopMenu,
-                        onDismissRequest = { if (showTopMenu) showTopMenu = false }
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text(deleteDisabledAlarmsText) },
-                            onClick = {
-                                onDeleteDisabledAlarms()
-                                if (showTopMenu) showTopMenu = false
-                            }
-                        )
-                    }
-                }
-            )
+                )
+                NextAlarmHeader(
+                    modifier = Modifier.padding(
+                        start = LiteverTheme.spacing.medium,
+                        end = LiteverTheme.spacing.medium,
+                        bottom = LiteverTheme.spacing.small
+                    ),
+                    state = nextAlarmState
+                )
+            }
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddAlarmClick) {
@@ -259,16 +276,12 @@ fun AlarmListScreen(
                 // Show nothing while loading to avoid empty state flash
                 Box(modifier = Modifier.weight(1f))
             } else {
-                if (alarms.isNotEmpty()) {
-                    // Shared Next Alarm Header
-                    NextAlarmHeader(state = nextAlarmState)
-                }
-
                 if (alarms.isEmpty()) {
                     EmptyState(modifier = Modifier.weight(1f))
                 } else {
                     LazyColumn(
                         modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small),
                         contentPadding = PaddingValues(horizontal = LiteverTheme.spacing.mediumLarge, vertical = LiteverTheme.spacing.small).let {
                             PaddingValues(
                                 start = it.calculateStartPadding(androidx.compose.ui.unit.LayoutDirection.Ltr),
@@ -450,6 +463,62 @@ fun EmptyStatePreview() {
         EmptyState()
     }
 }
+
+@Preview(
+    showBackground = true,
+    device = Devices.PIXEL_7
+)
+@Composable
+fun AlarmListScreenPreview() {
+    val sampleAlarms = listOf(
+        Alarm(
+            id = 1L,
+            time = LocalTime.of(7, 0),
+            label = "Morning Alarm",
+            isEnabled = true,
+            repeatDays = listOf(
+                DayOfWeek.MONDAY,
+                DayOfWeek.TUESDAY,
+                DayOfWeek.WEDNESDAY,
+                DayOfWeek.THURSDAY,
+                DayOfWeek.FRIDAY
+            )
+        ),
+        Alarm(
+            id = 2L,
+            time = LocalTime.of(8, 30),
+            label = "Weekend Workout",
+            isEnabled = false,
+            repeatDays = listOf(
+                DayOfWeek.SATURDAY,
+                DayOfWeek.SUNDAY
+            )
+        )
+    )
+
+    ReMindTheme {
+        AlarmListScreen(
+            alarms = sampleAlarms,
+            is24HourFormat = false,
+            nextAlarmState = NextAlarmUiState.Remaining(days = 0, hours = 7, minutes = 15),
+            hasCriticalPermissions = true,
+            snackbarHostState = remember { SnackbarHostState() },
+            onToggleAlarm = {},
+            onDeleteAlarm = {},
+            onDuplicateAlarm = {},
+            onSkipOnce = {},
+            onCancelSkip = {},
+            onDeleteDisabledAlarms = {},
+            onAddAlarmClick = {},
+            onAlarmClick = {},
+            onPreviewClick = {},
+            onNavigateToPermissions = {},
+            onRewardGranted = {},
+            isAdFreeActive = false
+        )
+    }
+}
+
 
 
 

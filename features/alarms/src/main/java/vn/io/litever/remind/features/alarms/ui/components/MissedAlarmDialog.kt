@@ -18,8 +18,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import vn.io.litever.designsystem.components.button.LvButton
+import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
-import vn.io.litever.remind.core.designsystem.components.ReMindAlertDialog
 import vn.io.litever.remind.core.model.MissedAlarm
 import vn.io.litever.remind.core.model.MissedReason
 import java.time.Instant
@@ -34,12 +35,15 @@ fun MissedAlarmDialog(
     missedAlarms: List<MissedAlarm>,
     onDismiss: () -> Unit
 ) {
-    ReMindAlertDialog(
+    LvAlertDialog(
         onDismissRequest = onDismiss,
-        title = stringResource(R.string.missed_alarms_dialog_title),
-        confirmButtonText = stringResource(android.R.string.ok),
-        onConfirmClick = onDismiss,
-        content = {
+        title = { Text(stringResource(R.string.missed_alarms_dialog_title)) },
+        confirmButton = {
+            LvButton(onClick = onDismiss) {
+                Text(stringResource(android.R.string.ok))
+            }
+        },
+        text = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = stringResource(R.string.missed_alarms_dialog_desc),

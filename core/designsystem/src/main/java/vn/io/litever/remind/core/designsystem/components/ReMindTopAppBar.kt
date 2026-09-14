@@ -7,9 +7,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
@@ -19,8 +19,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import vn.io.litever.designsystem.components.button.LvIconButton
+import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
+import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 
 /**
  * Navigation icon types for [ReMindTopAppBar].
@@ -85,7 +89,10 @@ fun ReMindTopAppBar(
                     ReMindNavigationIconType.Close -> "Close"
                     ReMindNavigationIconType.Menu -> "Menu"
                 }
-                IconButton(onClick = onBackClick) {
+                LvIconButton(
+                    onClick = onBackClick,
+                    semantic = LvSemantic.Neutral
+                ) {
                     Icon(
                         imageVector = icon,
                         contentDescription = contentDesc
@@ -123,4 +130,34 @@ fun ReMindTopAppBar(
         colors = colors,
         scrollBehavior = scrollBehavior
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+private fun ReMindTopAppBarPreview() {
+    ReMindTheme {
+        Column {
+            ReMindTopAppBar(
+                title = "Title",
+                subtitle = "Subtitle",
+                onBackClick = {},
+                actions = {
+                    LvIconButton(
+                        onClick = {},
+                        semantic = LvSemantic.Neutral
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.MoreVert,
+                            contentDescription = "More options"
+                        )
+                    }
+                }
+            )
+            ReMindTopAppBar(
+                title = "Settings",
+                onBackClick = {}
+            )
+        }
+    }
 }

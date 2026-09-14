@@ -1,5 +1,4 @@
 package vn.io.litever.remind.features.alarms.ui
-
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.VolumeOff
 import androidx.compose.material.icons.automirrored.rounded.VolumeUp
@@ -27,10 +25,12 @@ import androidx.compose.material.icons.rounded.AlarmOn
 import androidx.compose.material.icons.rounded.Calculate
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Extension
 import androidx.compose.material.icons.rounded.GraphicEq
+import androidx.compose.material.icons.rounded.GridView
 import androidx.compose.material.icons.rounded.Keyboard
 import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.Pause
@@ -38,31 +38,26 @@ import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.QrCodeScanner
 import androidx.compose.material.icons.rounded.Smartphone
 import androidx.compose.material.icons.rounded.Snooze
-import androidx.compose.material.icons.rounded.GridView
 import androidx.compose.material.icons.rounded.Vibration
-import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerDialog
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTimePickerState
@@ -89,20 +84,17 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.compose.material.icons.rounded.Close
 import vn.io.litever.designsystem.components.button.LiteVerButtonDefaults
 import vn.io.litever.designsystem.components.button.LvButton
 import vn.io.litever.designsystem.components.button.LvButtonType
 import vn.io.litever.designsystem.components.button.LvIconButton
 import vn.io.litever.designsystem.components.core.LvSemantic
-import vn.io.litever.designsystem.components.textfield.LiteVerTextFieldDefaults
+import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.components.textfield.LvTextField
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.MissionSelectionBottomSheet
-import vn.io.litever.remind.core.designsystem.components.ReMindAlertDialog
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingIcon
-import vn.io.litever.remind.core.designsystem.components.ReMindTimePickerDialog
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.DayOfWeek
@@ -236,21 +228,33 @@ fun AlarmEditRoute(
     }
 
     if (showDiscardDialog) {
-        ReMindAlertDialog(
+        LvAlertDialog(
             onDismissRequest = { if (showDiscardDialog) showDiscardDialog = false },
-            title = stringResource(R.string.discard_changes_title),
-            text = stringResource(R.string.discard_changes_message),
-            confirmButtonText = stringResource(R.string.save),
-            onConfirmClick = {
-                if (showDiscardDialog) showDiscardDialog = false
-                viewModel.stopRingtonePlayback()
-                viewModel.saveAlarm(onBackClick)
+            title = { Text(stringResource(R.string.discard_changes_title)) },
+            text = { Text(stringResource(R.string.discard_changes_message)) },
+            confirmButton = {
+                LvButton(
+                    onClick = {
+                        if (showDiscardDialog) showDiscardDialog = false
+                        viewModel.stopRingtonePlayback()
+                        viewModel.saveAlarm(onBackClick)
+                    }
+                ) {
+                    Text(stringResource(R.string.save))
+                }
             },
-            dismissButtonText = stringResource(R.string.action_discard),
-            onDismissClick = {
-                if (showDiscardDialog) showDiscardDialog = false
-                viewModel.stopRingtonePlayback()
-                viewModel.discardChanges(onBackClick)
+            dismissButton = {
+                LvButton(
+                    onClick = {
+                        if (showDiscardDialog) showDiscardDialog = false
+                        viewModel.stopRingtonePlayback()
+                        viewModel.discardChanges(onBackClick)
+                    },
+                    type = LvButtonType.Outlined,
+                    semantic = LvSemantic.Secondary
+                ) {
+                    Text(stringResource(R.string.action_discard))
+                }
             }
         )
     }
@@ -389,27 +393,47 @@ fun AlarmEditScreen(
 
     val context = LocalContext.current
     if (showTimePicker) {
-        ReMindTimePickerDialog(
-            onDismissRequest = { if (showTimePicker) showTimePicker = false },
-            confirmButton = {
-                LvButton(
-                    onClick = { if (showTimePicker) showTimePicker = false },
-                    semantic = LvSemantic.Primary
-                ) {
-                    Text(stringResource(R.string.save))
-                }
-            },
-            dismissButton = {
-                LvButton(
-                    onClick = { if (showTimePicker) showTimePicker = false },
-                    type = LvButtonType.Outlined,
-                    semantic = LvSemantic.Secondary
-                ) {
-                    Text(stringResource(R.string.action_cancel))
+        CompositionLocalProvider(LocalContext provides context) {
+            TimePickerDialog(
+                title = {
+                    CompositionLocalProvider(LocalContext provides context) {
+                        Text(
+                            stringResource(R.string.set_alarm_time),
+                            style = MaterialTheme.typography.titleLarge.copy(
+                                fontWeight = FontWeight.SemiBold
+                            ),
+                            modifier = Modifier.padding(bottom = LiteverTheme.spacing.medium)
+                        )
+                    }
+                },
+                onDismissRequest = { if (showTimePicker) showTimePicker = false },
+                confirmButton = {
+                    CompositionLocalProvider(LocalContext provides context) {
+                        LvButton(
+                            onClick = { if (showTimePicker) showTimePicker = false },
+                            semantic = LvSemantic.Primary,
+                            modifier = Modifier.padding(start = LiteverTheme.spacing.small)
+                        ) {
+                            Text(stringResource(R.string.save))
+                        }
+                    }
+                },
+                dismissButton = {
+                    CompositionLocalProvider(LocalContext provides context) {
+                        LvButton(
+                            onClick = { if (showTimePicker) showTimePicker = false },
+                            type = LvButtonType.Outlined,
+                            semantic = LvSemantic.Secondary
+                        ) {
+                            Text(stringResource(R.string.action_cancel))
+                        }
+                    }
+                },
+            ) {
+                CompositionLocalProvider(LocalContext provides context) {
+                    TimePicker(state = timePickerState)
                 }
             }
-        ) {
-            TimePicker(state = timePickerState)
         }
     }
 
@@ -428,42 +452,44 @@ fun AlarmEditScreen(
     )
 
     if (showDatePicker) {
-        DatePickerDialog(
-            onDismissRequest = { if (showDatePicker) showDatePicker = false },
-            confirmButton = {
-                CompositionLocalProvider(LocalContext provides context) {
-                    LvButton(
-                        onClick = {
-                            datePickerState.selectedDateMillis?.let { millis ->
-                                val date = Instant.ofEpochMilli(millis)
-                                    .atZone(ZoneId.of("UTC"))
-                                    .toLocalDate()
-                                onDateChange(date)
-                            }
-                            if (showDatePicker) showDatePicker = false
-                        },
-                        semantic = LvSemantic.Primary
-                    ) {
-                        Text(stringResource(R.string.save))
+        CompositionLocalProvider(LocalContext provides context) {
+            DatePickerDialog(
+                onDismissRequest = { if (showDatePicker) showDatePicker = false },
+                confirmButton = {
+                    CompositionLocalProvider(LocalContext provides context) {
+                        LvButton(
+                            onClick = {
+                                datePickerState.selectedDateMillis?.let { millis ->
+                                    val date = Instant.ofEpochMilli(millis)
+                                        .atZone(ZoneId.of("UTC"))
+                                        .toLocalDate()
+                                    onDateChange(date)
+                                }
+                                if (showDatePicker) showDatePicker = false
+                            },
+                            semantic = LvSemantic.Primary
+                        ) {
+                            Text(stringResource(R.string.save))
+                        }
+                    }
+                },
+                dismissButton = {
+                    CompositionLocalProvider(LocalContext provides context) {
+                        LvButton(
+                            onClick = {
+                                if (showDatePicker) showDatePicker = false
+                            },
+                            type = LvButtonType.Outlined,
+                            semantic = LvSemantic.Secondary
+                        ) {
+                            Text(stringResource(R.string.action_cancel))
+                        }
                     }
                 }
-            },
-            dismissButton = {
+            ) {
                 CompositionLocalProvider(LocalContext provides context) {
-                    LvButton(
-                        onClick = {
-                            if (showDatePicker) showDatePicker = false
-                        },
-                        type = LvButtonType.Outlined,
-                        semantic = LvSemantic.Secondary
-                    ) {
-                        Text(stringResource(R.string.action_cancel))
-                    }
+                    DatePicker(state = datePickerState)
                 }
-            }
-        ) {
-            CompositionLocalProvider(LocalContext provides context) {
-                DatePicker(state = datePickerState)
             }
         }
 
@@ -475,14 +501,24 @@ fun AlarmEditScreen(
     }
 
     if (uiState.showPermissionDialog) {
-        ReMindAlertDialog(
+        LvAlertDialog(
             onDismissRequest = onDismissPermissionDialog,
-            title = stringResource(R.string.permission_dialog_title),
-            text = stringResource(R.string.permission_dialog_message),
-            confirmButtonText = stringResource(R.string.action_go_to_settings),
-            onConfirmClick = onNavigateToPermissions,
-            dismissButtonText = stringResource(R.string.action_save_anyway),
-            onDismissClick = onSaveAnyway
+            title = { Text(stringResource(R.string.permission_dialog_title)) },
+            text = { Text(stringResource(R.string.permission_dialog_message)) },
+            confirmButton = {
+                LvButton(onClick = onNavigateToPermissions) {
+                    Text(stringResource(R.string.action_go_to_settings))
+                }
+            },
+            dismissButton = {
+                LvButton(
+                    onClick = onSaveAnyway,
+                    type = LvButtonType.Outlined,
+                    semantic = LvSemantic.Secondary
+                ) {
+                    Text(stringResource(R.string.action_save_anyway))
+                }
+            }
         )
     }
 
@@ -523,10 +559,22 @@ fun AlarmEditScreen(
 
     Scaffold(
         topBar = {
-            ReMindTopAppBar(
-                title = stringResource(if (uiState.id == 0L) R.string.add_alarm_title else R.string.edit_alarm_title),
-                onBackClick = onBackClick
-            )
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                ReMindTopAppBar(
+                    title = stringResource(if (uiState.id == 0L) R.string.add_alarm_title else R.string.edit_alarm_title),
+                    onBackClick = onBackClick
+                )
+                NextAlarmHeader(
+                    modifier = Modifier.padding(
+                        start = LiteverTheme.spacing.medium,
+                        end = LiteverTheme.spacing.medium,
+                        bottom = LiteverTheme.spacing.small
+                    ),
+                    state = nextAlarmState
+                )
+            }
         },
         bottomBar = {
             ReMindBottomBar {
@@ -534,7 +582,6 @@ fun AlarmEditScreen(
                     onClick = onPreviewClick,
                     type = LvButtonType.Outlined,
                     semantic = LvSemantic.Secondary,
-                    modifier = Modifier.height(LiteverTheme.spacing.doubleLarge)
                 ) {
                     Text(
                         stringResource(R.string.action_preview),
@@ -546,7 +593,6 @@ fun AlarmEditScreen(
                     semantic = LvSemantic.Primary,
                     modifier = Modifier
                         .weight(1f)
-                        .height(LiteverTheme.spacing.doubleLarge)
                 ) {
                     Text(
                         stringResource(R.string.save),
@@ -561,9 +607,6 @@ fun AlarmEditScreen(
                 .padding(padding),
             contentPadding = PaddingValues(bottom = LiteverTheme.spacing.medium)
         ) {
-            item {
-                NextAlarmHeader(state = nextAlarmState)
-            }
 
             item {
                 // Group 1: Time Selector
@@ -1073,11 +1116,13 @@ fun RepeatDaySelector(
                 modifier = Modifier.weight(1f)
             )
 
-            LvIconButton(onClick = onShowDatePicker) {
+            LvIconButton(
+                onClick = onShowDatePicker,
+                semantic = if (date != null) LvSemantic.Primary else LvSemantic.Neutral
+            ) {
                 Icon(
                     imageVector = Icons.Rounded.CalendarMonth,
                     contentDescription = stringResource(R.string.select_date),
-                    tint = if (date != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -1100,30 +1145,18 @@ fun RepeatDaySelector(
                 }
 
                 val isSelected = selectedDays.contains(day)
-                Surface(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(44.dp)
-                        .clip(MaterialTheme.shapes.medium)
-                        .clickable { onDayToggle(day) },
-                    color = if (isSelected) MaterialTheme.colorScheme.primaryContainer
-                    else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
-                    shape = MaterialTheme.shapes.medium,
-                    border = if (isSelected) null else BorderStroke(
-                        1.dp,
-                        MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)
-                    )
+                LvIconButton(
+                    onClick = { onDayToggle(day) },
+                    modifier = Modifier.weight(1f),
+                    type = if (isSelected) LvButtonType.Tonal else LvButtonType.Outlined,
+                    semantic = if (isSelected) LvSemantic.Primary else LvSemantic.Neutral,
                 ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Text(
-                            text = dayLabel,
-                            style = MaterialTheme.typography.labelMedium.copy(
-                                fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Medium
-                            ),
-                            color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer
-                            else MaterialTheme.colorScheme.onSurfaceVariant
+                    Text(
+                        text = dayLabel,
+                        style = MaterialTheme.typography.labelMedium.copy(
+                            fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Medium
                         )
-                    }
+                    )
                 }
             }
         }

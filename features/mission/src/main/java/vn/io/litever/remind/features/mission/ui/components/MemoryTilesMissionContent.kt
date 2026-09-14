@@ -27,11 +27,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.delay
 import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.MemoryGameBoard
 import vn.io.litever.remind.features.mission.R
+import kotlin.time.Duration.Companion.milliseconds
 
 enum class MemoryGameState {
     MEMORIZE, PLAYING, SUCCESS, FAILURE
@@ -56,15 +58,15 @@ fun MemoryTilesMissionContent(
             countdown = 3
             selectedIndices = emptySet()
             while (countdown > 0) {
-                delay(1000L)
+                delay(1000L.milliseconds)
                 countdown--
             }
             gameState = MemoryGameState.PLAYING
         } else if (gameState == MemoryGameState.SUCCESS) {
-            delay(1000L)
+            delay(1000L.milliseconds)
             onSuccess()
         } else if (gameState == MemoryGameState.FAILURE) {
-            delay(1000L)
+            delay(1000L.milliseconds)
             gameState = MemoryGameState.MEMORIZE
             currentBoard = currentBoard.copy(
                 targetIndices = (0 until (currentBoard.gridSize * currentBoard.gridSize))
@@ -157,6 +159,25 @@ fun MemoryTilesMissionContent(
                 style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                 color = LiteverTheme.colors.onPrimaryContainer,
                 modifier = Modifier.padding(horizontal = LiteverTheme.spacing.smallMedium, vertical = LiteverTheme.spacing.extraSmall)
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MemoryTilesMissionContentPreview() {
+    ReMindTheme {
+        Box(modifier = Modifier.padding(LiteverTheme.spacing.medium)) {
+            MemoryTilesMissionContent(
+                board = MemoryGameBoard(
+                    gridSize = 3,
+                    targetTiles = 3,
+                    targetIndices = listOf(0, 4, 8)
+                ),
+                currentRepetition = 1,
+                totalRepetitions = 3,
+                onSuccess = {}
             )
         }
     }

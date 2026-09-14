@@ -41,20 +41,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import vn.io.litever.designsystem.components.button.LvButton
 import vn.io.litever.designsystem.components.button.LvButtonType
 import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
-import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
-import vn.io.litever.remind.core.designsystem.components.ReMindSettingsItem
-import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.core.ads.api.AdPlacement
 import vn.io.litever.remind.core.ads.api.AdState
 import vn.io.litever.remind.core.ads.api.LocalAdManager
-import vn.io.litever.remind.core.common.util.DeviceUtils
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsItem
+import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.features.settings.BuildConfig
 import vn.io.litever.remind.features.settings.R
 
@@ -371,60 +369,6 @@ fun SettingsScreen(
                 }
             }
         )
-    }
-}
-
-
-@Composable
-fun RewardedAdSimulatorDialog(
-    onDismiss: () -> Unit,
-    onRewardEarned: () -> Unit
-) {
-    var countdown by remember { mutableStateOf(5) }
-    val rewardAdLoadingText = stringResource(R.string.reward_ad_loading, countdown)
-    val watchAdDialogMessage = stringResource(R.string.watch_ad_dialog_message)
-
-    LaunchedEffect(Unit) {
-        while (countdown > 0) {
-            kotlinx.coroutines.delay(1000L)
-            countdown--
-        }
-        onRewardEarned()
-    }
-
-    androidx.compose.ui.window.Dialog(onDismissRequest = {}) {
-        androidx.compose.material3.Surface(
-            shape = LiteverTheme.shapes.medium,
-            color = LiteverTheme.colors.surface,
-            tonalElevation = 6.dp,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(LiteverTheme.spacing.medium)
-        ) {
-            Column(
-                modifier = Modifier.padding(LiteverTheme.spacing.large),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                CircularProgressIndicator(
-                    color = LiteverTheme.colors.primary,
-                    modifier = Modifier.padding(LiteverTheme.spacing.medium)
-                )
-                Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
-                Text(
-                    text = rewardAdLoadingText,
-                    style = LiteverTheme.typography.titleMedium,
-                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                    color = LiteverTheme.colors.onSurface
-                )
-                Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
-                Text(
-                    text = watchAdDialogMessage,
-                    style = LiteverTheme.typography.bodySmall,
-                    color = LiteverTheme.colors.onSurfaceVariant,
-                    textAlign = TextAlign.Center
-                )
-            }
-        }
     }
 }
 

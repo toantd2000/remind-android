@@ -56,8 +56,6 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TimePicker
-import androidx.compose.material3.TimePickerDialog
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTimePickerState
@@ -95,6 +93,7 @@ import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.MissionSelectionBottomSheet
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingIcon
+import vn.io.litever.remind.core.designsystem.components.ReMindTimePickerDialog
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.DayOfWeek
@@ -393,48 +392,12 @@ fun AlarmEditScreen(
 
     val context = LocalContext.current
     if (showTimePicker) {
-        CompositionLocalProvider(LocalContext provides context) {
-            TimePickerDialog(
-                title = {
-                    CompositionLocalProvider(LocalContext provides context) {
-                        Text(
-                            stringResource(R.string.set_alarm_time),
-                            style = MaterialTheme.typography.titleLarge.copy(
-                                fontWeight = FontWeight.SemiBold
-                            ),
-                            modifier = Modifier.padding(bottom = LiteverTheme.spacing.medium)
-                        )
-                    }
-                },
-                onDismissRequest = { if (showTimePicker) showTimePicker = false },
-                confirmButton = {
-                    CompositionLocalProvider(LocalContext provides context) {
-                        LvButton(
-                            onClick = { if (showTimePicker) showTimePicker = false },
-                            semantic = LvSemantic.Primary,
-                            modifier = Modifier.padding(start = LiteverTheme.spacing.small)
-                        ) {
-                            Text(stringResource(R.string.save))
-                        }
-                    }
-                },
-                dismissButton = {
-                    CompositionLocalProvider(LocalContext provides context) {
-                        LvButton(
-                            onClick = { if (showTimePicker) showTimePicker = false },
-                            type = LvButtonType.Outlined,
-                            semantic = LvSemantic.Secondary
-                        ) {
-                            Text(stringResource(R.string.action_cancel))
-                        }
-                    }
-                },
-            ) {
-                CompositionLocalProvider(LocalContext provides context) {
-                    TimePicker(state = timePickerState)
-                }
-            }
-        }
+        ReMindTimePickerDialog(
+            onDismissRequest = { if (showTimePicker) showTimePicker = false },
+            onConfirmClick = { if (showTimePicker) showTimePicker = false },
+            timePickerState = timePickerState,
+            dismissButtonText = stringResource(R.string.action_cancel)
+        )
     }
 
     var showDatePicker by remember { mutableStateOf(false) }

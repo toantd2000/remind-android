@@ -11,13 +11,12 @@ const val AlarmEditRoute = "alarm_edit_route/{alarmId}"
 const val AlarmRingingRoute = "alarm_ringing_route/{alarmId}"
 const val AlarmPreviewRoute = "alarm_preview_route/{alarmId}"
 const val ringtoneSelectionRoute = "ringtone_selection_route"
-const val snoozeSettingsRoute = "snooze_settings_route"
+
 const val AlarmMessageRoute = "alarm_message_route/{alarmId}"
 
 fun NavGraphBuilder.alarmGraph(
     onNavigateToEdit: (Long) -> Unit,
     onNavigateToRingtoneSelection: (String?) -> Unit,
-    onNavigateToSnoozeSettings: (Boolean, Int, Int) -> Unit,
     onNavigateToPermissions: () -> Unit,
     onNavigateToMissionRinging: (Long) -> Unit,
     onNavigateToMessage: (Long) -> Unit,
@@ -45,29 +44,10 @@ fun NavGraphBuilder.alarmGraph(
             alarmId = alarmId ?: 0L,
             onBackClick = onNavigateBack,
             onRingtoneSelectionClick = onNavigateToRingtoneSelection,
-            onSnoozeSettingsClick = onNavigateToSnoozeSettings,
             onNavigateToPermissions = onNavigateToPermissions,
             onMissionClick = onMissionClick,
             onPreviewClick = onNavigateToPreview,
             navController = navController
-        )
-    }
-    composable(route = snoozeSettingsRoute) {
-        val prevSnoozeEnabled = navController.previousBackStackEntry?.savedStateHandle?.get<Boolean>("snoozeEnabled") ?: true
-        val prevSnoozeInterval = navController.previousBackStackEntry?.savedStateHandle?.get<Int>("snoozeInterval") ?: 5
-        val prevSnoozeRepeatCount = navController.previousBackStackEntry?.savedStateHandle?.get<Int>("snoozeRepeatCount") ?: 3
-        
-        SnoozeSettingsRoute(
-            initialEnabled = prevSnoozeEnabled,
-            initialInterval = prevSnoozeInterval,
-            initialRepeatCount = prevSnoozeRepeatCount,
-            onBackClick = onNavigateBack,
-            onSave = { enabled, interval, repeatCount ->
-                navController.previousBackStackEntry?.savedStateHandle?.set("snoozeEnabled", enabled)
-                navController.previousBackStackEntry?.savedStateHandle?.set("snoozeInterval", interval)
-                navController.previousBackStackEntry?.savedStateHandle?.set("snoozeRepeatCount", repeatCount)
-                onNavigateBack()
-            }
         )
     }
     composable(route = ringtoneSelectionRoute) { backStackEntry ->

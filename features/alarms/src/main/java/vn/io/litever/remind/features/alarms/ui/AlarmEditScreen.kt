@@ -1,4 +1,5 @@
 package vn.io.litever.remind.features.alarms.ui
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -16,6 +17,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.VolumeOff
 import androidx.compose.material.icons.automirrored.rounded.VolumeUp
@@ -24,37 +27,35 @@ import androidx.compose.material.icons.rounded.AlarmOff
 import androidx.compose.material.icons.rounded.AlarmOn
 import androidx.compose.material.icons.rounded.Calculate
 import androidx.compose.material.icons.rounded.CalendarMonth
-import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.EditNote
 import androidx.compose.material.icons.rounded.Extension
 import androidx.compose.material.icons.rounded.GraphicEq
 import androidx.compose.material.icons.rounded.GridView
 import androidx.compose.material.icons.rounded.Keyboard
 import androidx.compose.material.icons.rounded.MusicNote
+import androidx.compose.material.icons.rounded.NewLabel
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.QrCodeScanner
 import androidx.compose.material.icons.rounded.Smartphone
 import androidx.compose.material.icons.rounded.Snooze
 import androidx.compose.material.icons.rounded.Vibration
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -71,10 +72,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -88,20 +91,23 @@ import vn.io.litever.designsystem.components.button.LvButtonType
 import vn.io.litever.designsystem.components.button.LvIconButton
 import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.components.dialog.LvAlertDialog
-import vn.io.litever.designsystem.components.textfield.LvTextField
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.MissionSelectionBottomSheet
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
+import vn.io.litever.remind.core.designsystem.components.ReMindGroupCard
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingIcon
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.components.ReMindTimePickerDialog
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.DayOfWeek
 import vn.io.litever.remind.core.model.MissionType
 import vn.io.litever.remind.features.alarms.R
+import vn.io.litever.remind.features.alarms.ui.components.AlarmSettingRow
 import vn.io.litever.remind.features.alarms.ui.components.AutoSilenceBottomSheet
 import vn.io.litever.remind.features.alarms.ui.components.GentleAlarmBottomSheet
 import vn.io.litever.remind.features.alarms.ui.components.NextAlarmHeader
+import vn.io.litever.remind.features.alarms.ui.components.SnoozeBottomSheet
 import vn.io.litever.remind.features.alarms.ui.components.getRepeatSummaryText
 import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState
 import vn.io.litever.remind.features.alarms.viewmodel.AlarmEditUiState
@@ -119,7 +125,6 @@ fun AlarmEditRoute(
     alarmId: Long,
     onBackClick: () -> Unit,
     onRingtoneSelectionClick: (String?) -> Unit,
-    onSnoozeSettingsClick: (Boolean, Int, Int) -> Unit,
     onNavigateToPermissions: () -> Unit,
     onMissionClick: (vn.io.litever.remind.core.model.Mission) -> Unit,
     onPreviewClick: (Long) -> Unit,
@@ -309,14 +314,7 @@ fun AlarmEditRoute(
             viewModel.stopRingtonePlayback()
             onRingtoneSelectionClick(uiState.ringtoneUri)
         },
-        onSnoozeSettingsClick = {
-            viewModel.stopRingtonePlayback()
-            onSnoozeSettingsClick(
-                uiState.snoozeEnabled,
-                uiState.snoozeInterval,
-                uiState.snoozeRepeatCount
-            )
-        },
+        onSnoozeSettingsChange = viewModel::updateSnoozeSettings,
         onAutoSilenceChange = viewModel::updateAutoSilence,
         onNavigateToPermissions = onNavigateToPermissions,
         onVolumeChange = viewModel::updateVolume,
@@ -357,7 +355,7 @@ fun AlarmEditScreen(
     onRepeatDayToggle: (DayOfWeek) -> Unit,
     onVibrationToggle: (Boolean) -> Unit,
     onRingtoneClick: () -> Unit,
-    onSnoozeSettingsClick: () -> Unit,
+    onSnoozeSettingsChange: (Boolean, Int, Int) -> Unit,
     onAutoSilenceChange: (Int) -> Unit,
     onNavigateToPermissions: () -> Unit,
     onVolumeChange: (Int) -> Unit,
@@ -487,6 +485,38 @@ fun AlarmEditScreen(
         )
     }
 
+    var showSnoozeSheet by remember { mutableStateOf(false) }
+
+    if (showSnoozeSheet) {
+        SnoozeBottomSheet(
+            enabled = uiState.snoozeEnabled,
+            interval = uiState.snoozeInterval,
+            repeatCount = uiState.snoozeRepeatCount,
+            onEnabledChange = {
+                onSnoozeSettingsChange(
+                    it,
+                    uiState.snoozeInterval,
+                    uiState.snoozeRepeatCount
+                )
+            },
+            onIntervalChange = {
+                onSnoozeSettingsChange(
+                    uiState.snoozeEnabled,
+                    it,
+                    uiState.snoozeRepeatCount
+                )
+            },
+            onRepeatCountChange = {
+                onSnoozeSettingsChange(
+                    uiState.snoozeEnabled,
+                    uiState.snoozeInterval,
+                    it
+                )
+            },
+            onDismissRequest = { if (showSnoozeSheet) showSnoozeSheet = false }
+        )
+    }
+
     var showAutoSilenceSheet by remember { mutableStateOf(false) }
 
     if (showAutoSilenceSheet) {
@@ -513,6 +543,7 @@ fun AlarmEditScreen(
     }
 
     Scaffold(
+        modifier = modifier.fillMaxSize(),
         topBar = {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -560,98 +591,79 @@ fun AlarmEditScreen(
             modifier = modifier
                 .fillMaxSize()
                 .padding(padding),
-            contentPadding = PaddingValues(bottom = LiteverTheme.spacing.medium)
+            contentPadding = PaddingValues(vertical = LiteverTheme.spacing.medium),
+            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
         ) {
 
             item {
                 // Group 1: Time Selector
-                OutlinedCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = LiteverTheme.spacing.medium, vertical = LiteverTheme.spacing.small),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(
-                            alpha = 0.3f
-                        ),
-                    ),
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = LiteverTheme.spacing.large)
+                ReMindGroupCard {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxWidth()
+                            .clip(MaterialTheme.shapes.large)
                             .clickable { showTimePicker = true },
-                        contentAlignment = Alignment.Center
+
                     ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
+                        Spacer(modifier = Modifier.height(LiteverTheme.spacing.large))
+                        Row(
+                            verticalAlignment = Alignment.Bottom
                         ) {
-                            Row(
-                                verticalAlignment = Alignment.Bottom
-                            ) {
-                                val timeFormatter = remember(is24HourFormat) {
-                                    DateTimeFormatter.ofPattern(if (is24HourFormat) "HH:mm" else "hh:mm")
-                                }
-                                Text(
-                                    text = uiState.time.format(timeFormatter),
-                                    style = MaterialTheme.typography.displayLarge.copy(
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = MaterialTheme.colorScheme.primary,
-                                        letterSpacing = (-2).sp
-                                    )
-                                )
-                                if (!is24HourFormat) {
-                                    Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
-                                    Text(
-                                        text = uiState.time.format(DateTimeFormatter.ofPattern("a"))
-                                            .uppercase(),
-                                        style = MaterialTheme.typography.headlineSmall.copy(
-                                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
-                                            fontWeight = FontWeight.Bold
-                                        ),
-                                        modifier = Modifier.padding(bottom = LiteverTheme.spacing.smallMedium)
-                                    )
-                                }
+                            val timeFormatter = remember(is24HourFormat) {
+                                DateTimeFormatter.ofPattern(if (is24HourFormat) "HH:mm" else "hh:mm")
                             }
-
-                            Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
-
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Rounded.Edit,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(LiteverTheme.spacing.medium),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                            Text(
+                                text = uiState.time.format(timeFormatter),
+                                style = MaterialTheme.typography.displayLarge.copy(
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    letterSpacing = (-2).sp
                                 )
-                                Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
+                            )
+                            if (!is24HourFormat) {
                                 Text(
-                                    text = stringResource(R.string.tap_to_edit_time),
-                                    style = MaterialTheme.typography.labelSmall.copy(
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                                            alpha = 0.6f
-                                        )
-                                    )
+                                    text = uiState.time.format(DateTimeFormatter.ofPattern("a"))
+                                        .uppercase(),
+                                    style = MaterialTheme.typography.headlineSmall.copy(
+                                        color = MaterialTheme.colorScheme.secondary,
+                                        fontWeight = FontWeight.Bold
+                                    ),
+                                    modifier = Modifier.padding(bottom = LiteverTheme.spacing.smallMedium)
                                 )
                             }
                         }
+
+                        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Edit,
+                                contentDescription = null,
+                                modifier = Modifier.size(LiteverTheme.spacing.medium),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                            )
+                            Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
+                            Text(
+                                text = stringResource(R.string.tap_to_edit_time),
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                                        alpha = 0.6f
+                                    )
+                                )
+                            )
+
+                        }
+                        Spacer(modifier = Modifier.height(LiteverTheme.spacing.large))
                     }
                 }
             }
 
             item {
                 // Group 2: Repeat Selector (Separated)
-                OutlinedCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = LiteverTheme.spacing.medium, vertical = LiteverTheme.spacing.small),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(
-                            alpha = 0.3f
-                        )
-                    )
-                ) {
+                ReMindGroupCard {
                     RepeatDaySelector(
                         selectedDays = uiState.repeatDays,
                         time = uiState.time,
@@ -665,332 +677,306 @@ fun AlarmEditScreen(
 
             item {
                 // Group 3: Content (Label & Message)
-                OutlinedCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = LiteverTheme.spacing.medium, vertical = LiteverTheme.spacing.small),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(
-                            alpha = 0.3f
-                        )
-                    ),
-                ) {
-                    Column(modifier = Modifier.padding(LiteverTheme.spacing.medium)) {
-                        Text(
-                            text = stringResource(R.string.alarm_content_group_title),
-                            style = MaterialTheme.typography.titleSmall,
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(bottom = LiteverTheme.spacing.smallMedium)
-                        )
-
-                        LvTextField(
-                            value = uiState.label,
-                            onValueChange = onLabelChange,
-                            label = stringResource(R.string.alarm_label_title),
-                            placeholder = stringResource(R.string.alarm_label_placeholder),
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true,
-                            trailingIcon = if (uiState.label.isNotEmpty()) {
-                                {
-                                    LvIconButton(onClick = { onLabelChange("") }) {
-                                        Icon(Icons.Rounded.Close, contentDescription = null)
+                ReMindGroupCard {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        // Label Field
+                        Column {
+                            Text(
+                                text = stringResource(R.string.alarm_label_title),
+                                style = LiteverTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                color = LiteverTheme.colors.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                BasicTextField(
+                                    value = uiState.label,
+                                    onValueChange = onLabelChange,
+                                    modifier = Modifier.weight(1f),
+                                    textStyle = LiteverTheme.typography.bodyLarge.copy(
+                                        color = LiteverTheme.colors.onSurface
+                                    ),
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Text,
+                                        imeAction = ImeAction.Next
+                                    ),
+                                    singleLine = true,
+                                    cursorBrush = SolidColor(LiteverTheme.colors.primary),
+                                    decorationBox = { innerTextField ->
+                                        Box(contentAlignment = Alignment.CenterStart) {
+                                            if (uiState.label.isEmpty()) {
+                                                Text(
+                                                    text = stringResource(R.string.alarm_label_placeholder),
+                                                    style = LiteverTheme.typography.bodyLarge.copy(
+                                                        color = LiteverTheme.colors.outlineVariant
+                                                    )
+                                                )
+                                            }
+                                            innerTextField()
+                                        }
                                     }
-                                }
-                            } else null
-                        )
+                                )
 
-                        Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
+                                if (uiState.label.isNotEmpty()) {
+                                    LvIconButton(
+                                        onClick = { onLabelChange("") },
+                                        modifier = Modifier.size(28.dp),
 
-                        LvTextField(
-                            value = uiState.message,
-                            onValueChange = onMessageChange,
-                            label = stringResource(R.string.alarm_message_title),
-                            placeholder = stringResource(R.string.alarm_message_placeholder),
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = false,
-                            maxLines = 4,
-                            trailingIcon = if (uiState.message.isNotEmpty()) {
-                                {
-                                    LvIconButton(onClick = { onMessageChange("") }) {
-                                        Icon(Icons.Rounded.Close, contentDescription = null)
+                                        ) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Close,
+                                            contentDescription = "Clear label",
+                                            modifier = Modifier.size(20.dp)
+                                        )
                                     }
+                                } else {
+                                    Icon(
+                                        imageVector = Icons.Rounded.NewLabel,
+                                        contentDescription = "Ghi chú",
+                                        tint = LiteverTheme.colors.outlineVariant
+                                    )
                                 }
-                            } else null
+                            }
+                        }
+
+                        HorizontalDivider(
+                            color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.5f)
                         )
+
+                        // Message Field
+                        Column {
+                            Text(
+                                text = stringResource(R.string.alarm_message_title),
+                                style = LiteverTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                color = LiteverTheme.colors.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.Top
+                            ) {
+                                BasicTextField(
+                                    value = uiState.message,
+                                    onValueChange = onMessageChange,
+                                    modifier = Modifier.weight(1f),
+                                    textStyle = LiteverTheme.typography.bodyLarge.copy(
+                                        color = LiteverTheme.colors.onSurface
+                                    ),
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Text,
+                                        imeAction = ImeAction.Done
+                                    ),
+                                    singleLine = false,
+                                    maxLines = 4,
+                                    cursorBrush = SolidColor(LiteverTheme.colors.primary),
+                                    decorationBox = { innerTextField ->
+                                        Box(contentAlignment = Alignment.TopStart) {
+                                            if (uiState.message.isEmpty()) {
+                                                Text(
+                                                    text = stringResource(R.string.alarm_message_placeholder),
+                                                    style = LiteverTheme.typography.bodyLarge.copy(
+                                                        color = LiteverTheme.colors.outlineVariant
+                                                    )
+                                                )
+                                            }
+                                            innerTextField()
+                                        }
+                                    }
+                                )
+
+                                if (uiState.message.isNotEmpty()) {
+                                    LvIconButton(
+                                        onClick = { onMessageChange("") },
+                                        modifier = Modifier.size(28.dp),
+
+                                        ) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Close,
+                                            contentDescription = "Clear message",
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    }
+                                } else {
+                                    Icon(
+                                        imageVector = Icons.Rounded.EditNote,
+                                        contentDescription = "Ghi chú",
+                                        tint = LiteverTheme.colors.outlineVariant,
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                            .padding(top = 2.dp)
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
 
             item {
                 // Group 4: Alert Settings
-                OutlinedCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = LiteverTheme.spacing.medium, vertical = LiteverTheme.spacing.small),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(
-                            alpha = 0.3f
-                        )
-                    ),
+                ReMindSettingsGroup(
+                    title = stringResource(R.string.sound),
                 ) {
-                    Column(modifier = Modifier.padding(LiteverTheme.spacing.medium)) {
-                        Text(
-                            text = stringResource(R.string.sound),
-                            style = MaterialTheme.typography.titleSmall,
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(bottom = LiteverTheme.spacing.smallMedium)
+                    // Row 1: Ringtone Row
+                    AlarmSettingRow(
+                        title = uiState.ringtoneTitle,
+                        icon = if (uiState.isRingtonePlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
+                        iconSelected = uiState.isRingtonePlaying,
+                        onIconClick = onTogglePreview,
+                        onClick = onRingtoneClick
+                    )
+
+                    // Row 2: Progress
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(LiteverTheme.spacing.small)
+                            .padding(start = 56.dp, end = LiteverTheme.spacing.extraLarge)
+                    ) {
+                        if (uiState.isRingtonePlaying || uiState.ringtoneProgress > 0f) {
+                            LinearProgressIndicator(
+                                progress = { uiState.ringtoneProgress },
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+
+                    // Row 3: Volume & Vibration
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        ReMindSettingIcon(
+                            imageVector = if (uiState.volume == 0) Icons.AutoMirrored.Rounded.VolumeOff else Icons.AutoMirrored.Rounded.VolumeUp,
+                            selected = false,
+                            modifier = modifier.padding(start = LiteverTheme.spacing.medium)
                         )
 
-                        // Row 1: Ringtone Row
-                        Row(
+                        Slider(
+                            value = uiState.volume.toFloat(),
+                            onValueChange = { onVolumeChange(it.roundToInt()) },
+                            valueRange = 0f..uiState.maxVolume.toFloat(),
+                            steps = uiState.maxVolume - 1,
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(MaterialTheme.shapes.medium)
-                                .clickable { onRingtoneClick() },
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            ReMindSettingIcon(
-                                imageVector = if (uiState.isRingtonePlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
-                                selected = uiState.isRingtonePlaying,
-                                onClick = onTogglePreview
+                                .weight(1f)
+                                .padding(horizontal = LiteverTheme.spacing.smallMedium),
+                            colors = SliderDefaults.colors(
+                                thumbColor = MaterialTheme.colorScheme.primary,
+                                activeTrackColor = MaterialTheme.colorScheme.primary,
+                                inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant
                             )
+                        )
 
-                            Column(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(horizontal = LiteverTheme.spacing.smallMedium)
-                            ) {
-                                Text(
-                                    text = uiState.ringtoneTitle,
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    maxLines = 1
-                                )
-                            }
+                        ReMindSettingIcon(
+                            imageVector = Icons.Rounded.Vibration,
+                            selected = uiState.vibrationEnabled,
+                            onClick = { onVibrationToggle(!uiState.vibrationEnabled) },
+                            modifier = Modifier.padding(end = LiteverTheme.spacing.medium)
+                        )
+                    }
 
-                            Icon(
-                                imageVector = Icons.Rounded.ChevronRight,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-                            )
-                        }
+                    Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
 
-                        // Row 2: Progress
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(LiteverTheme.spacing.small)
-                                .padding(start = 56.dp, end = LiteverTheme.spacing.extraLarge)
-                        ) {
-                            if (uiState.isRingtonePlaying || uiState.ringtoneProgress > 0f) {
-                                LinearProgressIndicator(
-                                    progress = { uiState.ringtoneProgress },
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
-                                )
-                            }
-                        }
+                    // Row 4: Gentle Alarm (Increasing Volume)
+                    val gentleAlarmSummary = if (uiState.gradualVolumeDurationSeconds == 0) {
+                        stringResource(R.string.off)
+                    } else if (uiState.gradualVolumeDurationSeconds < 60) {
+                        stringResource(
+                            R.string.seconds_unit_short,
+                            uiState.gradualVolumeDurationSeconds
+                        )
+                    } else {
+                        stringResource(
+                            R.string.minutes_unit_short,
+                            uiState.gradualVolumeDurationSeconds / 60
+                        )
+                    }
 
-                        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+                    AlarmSettingRow(
+                        title = stringResource(R.string.gentle_alarm_title),
+                        subtitle = gentleAlarmSummary,
+                        icon = Icons.Rounded.GraphicEq,
+                        iconSelected = uiState.gradualVolumeDurationSeconds > 0,
+                        onClick = { showGradualVolumeSheet = true }
+                    )
 
-                        // Row 3: Volume & Vibration
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            ReMindSettingIcon(
-                                imageVector = if (uiState.volume == 0) Icons.AutoMirrored.Rounded.VolumeOff else Icons.AutoMirrored.Rounded.VolumeUp,
-                                selected = false
-                            )
-
-                            Slider(
-                                value = uiState.volume.toFloat(),
-                                onValueChange = { onVolumeChange(it.roundToInt()) },
-                                valueRange = 0f..uiState.maxVolume.toFloat(),
-                                steps = uiState.maxVolume - 1,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(horizontal = LiteverTheme.spacing.smallMedium),
-                                colors = SliderDefaults.colors(
-                                    thumbColor = MaterialTheme.colorScheme.primary,
-                                    activeTrackColor = MaterialTheme.colorScheme.primary,
-                                    inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant
-                                )
-                            )
-
-                            ReMindSettingIcon(
-                                imageVector = Icons.Rounded.Vibration,
-                                selected = uiState.vibrationEnabled,
-                                onClick = { onVibrationToggle(!uiState.vibrationEnabled) }
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
-
-                        // Row 4: Gentle Alarm (Increasing Volume)
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(MaterialTheme.shapes.medium)
-                                .clickable { showGradualVolumeSheet = true }
-                                .padding(vertical = LiteverTheme.spacing.small),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            ReMindSettingIcon(
-                                imageVector = Icons.Rounded.GraphicEq,
-                                selected = uiState.gradualVolumeDurationSeconds > 0
-                            )
-
-                            Column(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(horizontal = LiteverTheme.spacing.smallMedium)
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.gentle_alarm_title),
-                                    style = MaterialTheme.typography.bodyLarge
-                                )
-                                val summary = if (uiState.gradualVolumeDurationSeconds == 0) {
-                                    stringResource(R.string.off)
-                                } else if (uiState.gradualVolumeDurationSeconds < 60) {
-                                    stringResource(
-                                        R.string.seconds_unit_short,
-                                        uiState.gradualVolumeDurationSeconds
-                                    )
-                                } else {
-                                    stringResource(
-                                        R.string.minutes_unit_short,
-                                        uiState.gradualVolumeDurationSeconds / 60
-                                    )
-                                }
-                                Text(
-                                    text = summary,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-
-                            Icon(
-                                imageVector = Icons.Rounded.ChevronRight,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-                            )
-                        }
-
-                        // Row 5: Alarm Stream Toggle
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(MaterialTheme.shapes.medium)
-                                .clickable { onUseAlarmStreamChange(!uiState.useAlarmStream) }
-                                .padding(vertical = LiteverTheme.spacing.small),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            ReMindSettingIcon(
-                                imageVector = if (uiState.useAlarmStream) Icons.Rounded.AlarmOn else Icons.Rounded.MusicNote,
-                                selected = uiState.useAlarmStream
-                            )
-
-                            Column(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(horizontal = LiteverTheme.spacing.smallMedium)
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.use_alarm_stream_title),
-                                    style = MaterialTheme.typography.bodyLarge
-                                )
-                                Text(
-                                    text = if (uiState.useAlarmStream)
-                                        stringResource(R.string.use_alarm_stream_desc)
-                                    else
-                                        stringResource(R.string.use_media_stream_desc),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-
-                            androidx.compose.material3.Switch(
+                    // Row 5: Alarm Stream Toggle
+                    AlarmSettingRow(
+                        title = stringResource(R.string.use_alarm_stream_title),
+                        subtitle = if (uiState.useAlarmStream)
+                            stringResource(R.string.use_alarm_stream_desc)
+                        else
+                            stringResource(R.string.use_media_stream_desc),
+                        icon = if (uiState.useAlarmStream) Icons.Rounded.AlarmOn else Icons.Rounded.MusicNote,
+                        iconSelected = uiState.useAlarmStream,
+                        onClick = { onUseAlarmStreamChange(!uiState.useAlarmStream) },
+                        trailingContent = {
+                            Switch(
                                 checked = uiState.useAlarmStream,
                                 onCheckedChange = onUseAlarmStreamChange
                             )
                         }
-                    }
+                    )
                 }
+
             }
 
             item {
                 // Group 5: Alarm specific settings
-                OutlinedCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = LiteverTheme.spacing.medium, vertical = LiteverTheme.spacing.small),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(
-                            alpha = 0.3f
-                        )
-                    ),
+                ReMindSettingsGroup(
+                    title = stringResource(R.string.alarm_settings)
                 ) {
-                    Column(modifier = Modifier.padding(LiteverTheme.spacing.medium)) {
-                        Text(
-                            text = stringResource(R.string.alarm_settings),
-                            style = MaterialTheme.typography.titleSmall,
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(bottom = LiteverTheme.spacing.smallMedium)
-                        )
-
-                        // Snooze Row
-                        val snoozeSummary = if (uiState.snoozeEnabled) {
-                            val repeatLabel = when (uiState.snoozeRepeatCount) {
-                                -1 -> stringResource(R.string.forever)
-                                1 -> stringResource(R.string.one_time)
-                                else -> stringResource(
-                                    R.string.times_unit,
-                                    uiState.snoozeRepeatCount
-                                )
-                            }
-                            stringResource(
-                                R.string.snooze_summary,
-                                stringResource(R.string.minutes_unit, uiState.snoozeInterval),
-                                repeatLabel
+                    // Snooze Row
+                    val snoozeSummary = if (uiState.snoozeEnabled) {
+                        val repeatLabel = when (uiState.snoozeRepeatCount) {
+                            -1 -> stringResource(R.string.forever)
+                            1 -> stringResource(R.string.one_time)
+                            else -> stringResource(
+                                R.string.times_unit,
+                                uiState.snoozeRepeatCount
                             )
-                        } else {
-                            stringResource(R.string.off)
                         }
-
-                        AlarmSettingRow(
-                            title = stringResource(R.string.snooze),
-                            subtitle = snoozeSummary,
-                            icon = Icons.Rounded.Snooze,
-                            onClick = onSnoozeSettingsClick
+                        stringResource(
+                            R.string.snooze_summary,
+                            stringResource(R.string.minutes_unit, uiState.snoozeInterval),
+                            repeatLabel
                         )
-
-
-                        // Auto Silence Row
-                        AlarmSettingRow(
-                            title = stringResource(R.string.auto_silence_title),
-                            subtitle = stringResource(
-                                R.string.minutes_unit,
-                                uiState.autoSilenceMinutes
-                            ),
-                            icon = Icons.Rounded.AlarmOff,
-                            onClick = { showAutoSilenceSheet = true }
-                        )
+                    } else {
+                        stringResource(R.string.off)
                     }
+
+                    AlarmSettingRow(
+                        title = stringResource(R.string.snooze),
+                        subtitle = snoozeSummary,
+                        icon = Icons.Rounded.Snooze,
+                        onClick = { showSnoozeSheet = true }
+                    )
+
+
+                    // Auto Silence Row
+                    AlarmSettingRow(
+                        title = stringResource(R.string.auto_silence_title),
+                        subtitle = stringResource(
+                            R.string.minutes_unit,
+                            uiState.autoSilenceMinutes
+                        ),
+                        icon = Icons.Rounded.AlarmOff,
+                        onClick = { showAutoSilenceSheet = true }
+                    )
                 }
             }
 
             item {
                 // Group 6: Missions
-                OutlinedCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = LiteverTheme.spacing.medium, vertical = LiteverTheme.spacing.small),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(
-                            alpha = 0.3f
-                        )
-                    ),
-                ) {
+                ReMindGroupCard {
                     Column(modifier = Modifier.padding(LiteverTheme.spacing.medium)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -999,13 +985,15 @@ fun AlarmEditScreen(
                         ) {
                             Text(
                                 text = stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_title),
-                                style = MaterialTheme.typography.titleSmall,
-                                color = MaterialTheme.colorScheme.primary
+                                style = LiteverTheme.typography.labelLarge,
+                                color = LiteverTheme.colors.primary,
+                                fontWeight = FontWeight.Bold,
                             )
                             Text(
                                 text = "${uiState.missions.size}/5",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontWeight = FontWeight.Bold,
                             )
                         }
 
@@ -1066,8 +1054,9 @@ fun RepeatDaySelector(
         ) {
             Text(
                 text = label,
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.primary,
+                style = LiteverTheme.typography.labelLarge,
+                color = LiteverTheme.colors.primary,
+                fontWeight = FontWeight.Bold,
                 modifier = Modifier.weight(1f)
             )
 
@@ -1118,50 +1107,6 @@ fun RepeatDaySelector(
     }
 }
 
-@Composable
-private fun AlarmSettingRow(
-    title: String,
-    subtitle: String,
-    icon: ImageVector,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(MaterialTheme.shapes.medium)
-            .clickable(onClick = onClick)
-            .padding(vertical = LiteverTheme.spacing.small),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        ReMindSettingIcon(
-            imageVector = icon,
-            selected = false
-        )
-
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = LiteverTheme.spacing.smallMedium)
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge
-            )
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-
-        Icon(
-            imageVector = Icons.Rounded.ChevronRight,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-        )
-    }
-}
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
@@ -1187,7 +1132,7 @@ fun AlarmEditScreenPreview() {
             onRepeatDayToggle = {},
             onVibrationToggle = {},
             onRingtoneClick = {},
-            onSnoozeSettingsClick = {},
+            onSnoozeSettingsChange = { _, _, _ -> },
             onAutoSilenceChange = {},
             onNavigateToPermissions = {},
             onVolumeChange = {},
@@ -1227,7 +1172,7 @@ fun AlarmEditScreenDarkPreview() {
             onRepeatDayToggle = {},
             onVibrationToggle = {},
             onRingtoneClick = {},
-            onSnoozeSettingsClick = {},
+            onSnoozeSettingsChange = { _, _, _ -> },
             onAutoSilenceChange = {},
             onNavigateToPermissions = {},
             onVolumeChange = {},

@@ -29,7 +29,7 @@ android {
 
     defaultConfig {
         applicationId = "vn.io.litever.remind"
-        minSdk = 26
+        minSdk = 33
         targetSdk = 37
         versionCode = libs.versions.app.versionCode.get().toInt()
         versionName = libs.versions.app.versionName.get()

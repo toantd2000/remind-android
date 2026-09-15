@@ -15,7 +15,7 @@ android {
     }
 
     defaultConfig {
-        minSdk = 26
+        minSdk = 33
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "URL_AUTHOR", "\"https://litever.io.vn/\"")
         buildConfigField("String", "URL_TERMS", "\"https://litever.io.vn/legal/remind/terms\"")

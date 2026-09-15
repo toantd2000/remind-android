@@ -99,6 +99,8 @@ import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.DayOfWeek
 import vn.io.litever.remind.core.model.MissionType
 import vn.io.litever.remind.features.alarms.R
+import vn.io.litever.remind.features.alarms.ui.components.AutoSilenceBottomSheet
+import vn.io.litever.remind.features.alarms.ui.components.GentleAlarmBottomSheet
 import vn.io.litever.remind.features.alarms.ui.components.NextAlarmHeader
 import vn.io.litever.remind.features.alarms.ui.components.getRepeatSummaryText
 import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState
@@ -488,44 +490,26 @@ fun AlarmEditScreen(
     var showAutoSilenceSheet by remember { mutableStateOf(false) }
 
     if (showAutoSilenceSheet) {
-        CompositionLocalProvider(LocalContext provides context) {
-            ModalBottomSheet(
-                onDismissRequest = { if (showAutoSilenceSheet) showAutoSilenceSheet = false },
-                containerColor = MaterialTheme.colorScheme.surface,
-                tonalElevation = LiteverTheme.spacing.none
-            ) {
-                CompositionLocalProvider(LocalContext provides context) {
-                    AutoSilenceBottomSheetContent(
-                        currentMinutes = uiState.autoSilenceMinutes,
-                        onMinutesSelect = {
-                            onAutoSilenceChange(it)
-                            if (showAutoSilenceSheet) showAutoSilenceSheet = false
-                        }
-                    )
-                }
-            }
-        }
+        AutoSilenceBottomSheet(
+            currentMinutes = uiState.autoSilenceMinutes,
+            onMinutesSelect = {
+                onAutoSilenceChange(it)
+                if (showAutoSilenceSheet) showAutoSilenceSheet = false
+            },
+            onDismissRequest = { if (showAutoSilenceSheet) showAutoSilenceSheet = false }
+        )
     }
 
     if (showGradualVolumeSheet) {
-        CompositionLocalProvider(LocalContext provides context) {
-            ModalBottomSheet(
-                onDismissRequest = { if (showGradualVolumeSheet) showGradualVolumeSheet = false },
-                sheetState = sheetState,
-                containerColor = MaterialTheme.colorScheme.surface,
-                tonalElevation = LiteverTheme.spacing.none
-            ) {
-                CompositionLocalProvider(LocalContext provides context) {
-                    GentleAlarmBottomSheetContent(
-                        currentDuration = uiState.gradualVolumeDurationSeconds,
-                        onDurationSelect = {
-                            onGradualVolumeChange(it)
-                            if (showGradualVolumeSheet) showGradualVolumeSheet = false
-                        }
-                    )
-                }
-            }
-        }
+        GentleAlarmBottomSheet(
+            currentDuration = uiState.gradualVolumeDurationSeconds,
+            onDurationSelect = {
+                onGradualVolumeChange(it)
+                if (showGradualVolumeSheet) showGradualVolumeSheet = false
+            },
+            onDismissRequest = { if (showGradualVolumeSheet) showGradualVolumeSheet = false },
+            sheetState = sheetState
+        )
     }
 
     Scaffold(
@@ -1335,107 +1319,3 @@ private fun MissionRow(
         }
     }
 }
-
-@Composable
-fun GentleAlarmBottomSheetContent(
-    currentDuration: Int,
-    onDurationSelect: (Int) -> Unit
-) {
-    val options = listOf(0, 5, 10, 20)
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = LiteverTheme.spacing.extraLarge)
-    ) {
-        Text(
-            text = stringResource(R.string.gentle_alarm_title),
-            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(LiteverTheme.spacing.medium)
-        )
-        Text(
-            text = stringResource(R.string.gentle_alarm_description),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(horizontal = LiteverTheme.spacing.medium, vertical = LiteverTheme.spacing.small)
-        )
-
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
-
-        options.forEach { option ->
-            val label = if (option == 0) {
-                stringResource(R.string.off)
-            } else if (option < 60) {
-                stringResource(R.string.seconds_unit, option)
-            } else {
-                stringResource(R.string.minutes_unit, option / 60)
-            }
-
-            ListItem(
-                headlineContent = {
-                    Text(
-                        label,
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
-                    )
-                },
-                leadingContent = {
-                    RadioButton(
-                        selected = currentDuration == option,
-                        onClick = { onDurationSelect(option) }
-                    )
-                },
-                modifier = Modifier.clickable { onDurationSelect(option) }
-            )
-        }
-    }
-}
-
-@Composable
-fun AutoSilenceBottomSheetContent(
-    currentMinutes: Int,
-    onMinutesSelect: (Int) -> Unit
-) {
-    val options = listOf(1, 3, 5, 10, 30)
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = LiteverTheme.spacing.extraLarge)
-    ) {
-        Text(
-            text = stringResource(R.string.auto_silence_title),
-            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(LiteverTheme.spacing.medium)
-        )
-
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
-
-        options.forEach { option ->
-            ListItem(
-                headlineContent = {
-                    Text(
-                        stringResource(R.string.minutes_unit, option),
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
-                    )
-                },
-                leadingContent = {
-                    RadioButton(
-                        selected = currentMinutes == option,
-                        onClick = { onMinutesSelect(option) }
-                    )
-                },
-                modifier = Modifier.clickable { onMinutesSelect(option) }
-            )
-        }
-    }
-}
-
-
-
-
-
-
-
-
-
-

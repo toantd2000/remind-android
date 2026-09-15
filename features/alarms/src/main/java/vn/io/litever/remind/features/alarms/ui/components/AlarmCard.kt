@@ -53,8 +53,8 @@ fun AlarmCard(
         LiteverTheme.colors.surface.copy(alpha = 0.5f)
     }
 
-    val isEnabledAndNotSkipped = alarm.isEnabled && !isSkipped
     val primaryColor = LiteverTheme.colors.primary
+    val secondaryColor = LiteverTheme.colors.secondary
 
     Card(
         modifier = modifier
@@ -71,9 +71,13 @@ fun AlarmCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .drawBehind {
-                    if (isEnabledAndNotSkipped) {
+                    if (alarm.isEnabled) {
                         drawRect(
-                            color = primaryColor,
+                            color = if (!isSkipped) {
+                                primaryColor
+                            } else {
+                                secondaryColor
+                            },
                             size = Size(4.dp.toPx(), size.height)
                         )
                     }
@@ -94,7 +98,7 @@ fun AlarmCard(
                     color = if (alarm.isEnabled && !isSkipped)
                         LiteverTheme.colors.primary
                     else
-                        LiteverTheme.colors.onSurfaceVariant,
+                        LiteverTheme.colors.secondary,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.weight(1f, fill = false),
                     maxLines = 1,
@@ -161,7 +165,7 @@ fun AlarmCard(
                 LvIconButton(
                     onClick = onMoreClick,
                     modifier = Modifier.size(LiteverTheme.spacing.extraLarge),
-                    semantic = LvSemantic.Secondary
+                    semantic = LvSemantic.Neutral
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.MoreVert,

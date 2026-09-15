@@ -348,65 +348,60 @@ private fun AlarmActionBottomSheet(
     onCancelSkip: () -> Unit,
     onPreview: () -> Unit
 ) {
-    val context = LocalContext.current
-    CompositionLocalProvider(LocalContext provides context) {
-        ModalBottomSheet(
-            onDismissRequest = onDismiss,
-            dragHandle = { BottomSheetDefaults.DragHandle() },
-            containerColor = MaterialTheme.colorScheme.surface,
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        dragHandle = { BottomSheetDefaults.DragHandle() },
+        containerColor = MaterialTheme.colorScheme.surface,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = LiteverTheme.spacing.extraLarge)
         ) {
-            CompositionLocalProvider(LocalContext provides context) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = LiteverTheme.spacing.extraLarge)
-                ) {
-                    if (alarm.isEnabled && alarm.repeatDays.isNotEmpty()) {
-                        val isSkipped = alarm.skippedAt != null
-                        ListItem(
-                            headlineContent = {
-                                Text(stringResource(if (isSkipped) R.string.action_cancel_skip else R.string.action_skip_once))
-                            },
-                            leadingContent = {
-                                Icon(
-                                    if (isSkipped) Icons.Rounded.NotificationsPaused else Icons.Rounded.SkipNext,
-                                    contentDescription = null
-                                )
-                            },
-                            modifier = Modifier.clickable { if (isSkipped) onCancelSkip() else onSkipOnce() }
+            if (alarm.isEnabled && alarm.repeatDays.isNotEmpty()) {
+                val isSkipped = alarm.skippedAt != null
+                ListItem(
+                    headlineContent = {
+                        Text(stringResource(if (isSkipped) R.string.action_cancel_skip else R.string.action_skip_once))
+                    },
+                    leadingContent = {
+                        Icon(
+                            if (isSkipped) Icons.Rounded.NotificationsPaused else Icons.Rounded.SkipNext,
+                            contentDescription = null
                         )
-                    }
-
-                    ListItem(
-                        headlineContent = { Text(stringResource(R.string.action_preview)) },
-                        leadingContent = { Icon(Icons.Rounded.PlayArrow, contentDescription = null) },
-                        modifier = Modifier.clickable { onPreview() }
-                    )
-
-                    ListItem(
-                        headlineContent = { Text(stringResource(R.string.action_duplicate)) },
-                        leadingContent = { Icon(Icons.Rounded.ContentCopy, contentDescription = null) },
-                        modifier = Modifier.clickable { onDuplicate() }
-                    )
-
-                    ListItem(
-                        headlineContent = {
-                            Text(
-                                stringResource(R.string.action_delete),
-                                color = MaterialTheme.colorScheme.error
-                            )
-                        },
-                        leadingContent = {
-                            Icon(
-                                Icons.Rounded.Delete,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.error
-                            )
-                        },
-                        modifier = Modifier.clickable { onDelete() }
-                    )
-                }
+                    },
+                    modifier = Modifier.clickable { if (isSkipped) onCancelSkip() else onSkipOnce() }
+                )
             }
+
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.action_preview)) },
+                leadingContent = { Icon(Icons.Rounded.PlayArrow, contentDescription = null) },
+                modifier = Modifier.clickable { onPreview() }
+            )
+
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.action_duplicate)) },
+                leadingContent = { Icon(Icons.Rounded.ContentCopy, contentDescription = null) },
+                modifier = Modifier.clickable { onDuplicate() }
+            )
+
+            ListItem(
+                headlineContent = {
+                    Text(
+                        stringResource(R.string.action_delete),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                },
+                leadingContent = {
+                    Icon(
+                        Icons.Rounded.Delete,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                },
+                modifier = Modifier.clickable { onDelete() }
+            )
         }
     }
 }

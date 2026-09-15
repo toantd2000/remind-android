@@ -146,34 +146,29 @@ fun PhraseSelectionRoute(
     }
 
     if (showAddSheet) {
-        val context = LocalContext.current
-        CompositionLocalProvider(LocalContext provides context) {
-            ModalBottomSheet(
-                onDismissRequest = {
+        ModalBottomSheet(
+            onDismissRequest = {
+                showAddSheet = false
+                phraseToEdit = null
+            },
+            sheetState = sheetState,
+            containerColor = LiteverTheme.colors.surface,
+            tonalElevation = LiteverTheme.spacing.none,
+            dragHandle = { BottomSheetDefaults.DragHandle(color = LiteverTheme.colors.outlineVariant) }
+        ) {
+            AddCustomPhraseContent(
+                editingPhrase = phraseToEdit,
+                canBePrivate = viewModel.alarmId != 0L,
+                onDismiss = {
                     showAddSheet = false
                     phraseToEdit = null
                 },
-                sheetState = sheetState,
-                containerColor = LiteverTheme.colors.surface,
-                tonalElevation = LiteverTheme.spacing.none,
-                dragHandle = { BottomSheetDefaults.DragHandle(color = LiteverTheme.colors.outlineVariant) }
-            ) {
-                CompositionLocalProvider(LocalContext provides context) {
-                    AddCustomPhraseContent(
-                        editingPhrase = phraseToEdit,
-                        canBePrivate = viewModel.alarmId != 0L,
-                        onDismiss = {
-                            showAddSheet = false
-                            phraseToEdit = null
-                        },
-                        onConfirm = { content, isShared ->
-                            viewModel.saveCustomPhrase(phraseToEdit?.id ?: 0, content, isShared)
-                            showAddSheet = false
-                            phraseToEdit = null
-                        }
-                    )
+                onConfirm = { content, isShared ->
+                    viewModel.saveCustomPhrase(phraseToEdit?.id ?: 0, content, isShared)
+                    showAddSheet = false
+                    phraseToEdit = null
                 }
-            }
+            )
         }
     }
 }

@@ -1,12 +1,13 @@
 package vn.io.litever.remind.app
 
-
 import android.content.Intent
-import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
+import android.app.LocaleManager
+import android.content.Context
+import android.os.LocaleList
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
@@ -42,7 +43,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModel
@@ -85,6 +85,7 @@ import vn.io.litever.remind.features.today.ui.todayGraph
 import vn.io.litever.remind.features.today.ui.todayRoute
 import java.util.Locale
 import javax.inject.Inject
+import androidx.compose.ui.platform.LocalLocale
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -154,36 +155,21 @@ class MainActivity : ComponentActivity() {
             statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
             navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT)
         )
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            window.isNavigationBarContrastEnforced = false
-            @Suppress("DEPRECATION")
-            window.isStatusBarContrastEnforced = false
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            window.attributes.layoutInDisplayCutoutMode =
-                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
-        }
+        window.isNavigationBarContrastEnforced = false
+        @Suppress("DEPRECATION")
+        window.isStatusBarContrastEnforced = false
+        window.attributes.layoutInDisplayCutoutMode =
+            WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
         setContent {
             val themeMode by viewModel.themeMode.collectAsState(initial = "SYSTEM")
             val colorPalette by viewModel.colorPalette.collectAsState(initial = "RED")
             val language by viewModel.language.collectAsState(
-                initial = if (Locale.getDefault().language == "vi") "vi" else "en"
+                initial = if (LocalLocale.current.platformLocale.language == "vi") "vi" else "en"
             )
 
-            val context = LocalContext.current
-            val currentConfiguration = androidx.compose.ui.platform.LocalConfiguration.current
-            val localizedContext = remember(language, currentConfiguration) {
-                val locale = Locale.Builder().setLanguage(language).build()
-                Locale.setDefault(locale)
-                val config = Configuration(currentConfiguration)
-                config.setLocale(locale)
-                config.setLayoutDirection(locale)
-                val configurationContext = context.createConfigurationContext(config)
-
-                object : android.content.ContextWrapper(context) {
-                    override fun getResources() = configurationContext.resources
-                    override fun getAssets() = configurationContext.assets
-                }
+            LaunchedEffect(language) {
+                val localeManager = getSystemService(Context.LOCALE_SERVICE) as LocaleManager
+                localeManager.applicationLocales = LocaleList.forLanguageTags(language)
             }
 
             val darkTheme = when (themeMode) {
@@ -193,7 +179,6 @@ class MainActivity : ComponentActivity() {
             }
 
             CompositionLocalProvider(
-                LocalContext provides localizedContext,
                 LocalAdManager provides adManager
             ) {
                 ReMindTheme(darkTheme = darkTheme, colorPalette = colorPalette) {
@@ -514,18 +499,8 @@ class MainActivity : ComponentActivity() {
     private fun handleLockScreenBypass() {
         val isRingingIntent = intent?.data?.toString()?.contains("remind/ring") == true
         if (isRingingIntent) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-                setShowWhenLocked(true)
-                setTurnScreenOn(true)
-            } else {
-                @Suppress("DEPRECATION")
-                window.addFlags(
-                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
-                            WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON or
-                            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-                            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
-                )
-            }
+            setShowWhenLocked(true)
+            setTurnScreenOn(true)
         }
     }
 }

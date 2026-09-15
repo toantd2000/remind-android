@@ -1,14 +1,15 @@
 package vn.io.litever.remind.core.designsystem.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.material.icons.rounded.Notifications
+import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -21,8 +22,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 
 /**
  * Category header for settings groups.
@@ -39,7 +41,6 @@ fun ReMindSettingsCategory(
         fontWeight = FontWeight.Bold,
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = LiteverTheme.spacing.small)
     )
 }
 
@@ -53,22 +54,21 @@ fun ReMindSettingsGroup(
     content: @Composable ColumnScope.() -> Unit
 ) {
     val spacing = LiteverTheme.spacing
-    Column(modifier = modifier.padding(horizontal = spacing.medium, vertical = spacing.small)) {
-        if (title != null) {
-            ReMindSettingsCategory(
-                title = title,
-                modifier = Modifier.padding(horizontal = spacing.extraSmall)
-            )
+    ReMindGroupCard {
+        Column(modifier = modifier.padding()) {
+            if (title != null) {
+                ReMindSettingsCategory(
+                    title = title,
+                    modifier = Modifier.padding(
+                        top = spacing.medium,
+                        bottom = spacing.extraSmall,
+                        start = spacing.medium,
+                        end = spacing.medium
+                    )
+                )
+            }
+            content()
         }
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = LiteverTheme.shapes.medium,
-            colors = CardDefaults.cardColors(
-                containerColor = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.3f)
-            ),
-            border = BorderStroke(1.dp, LiteverTheme.colors.outlineVariant.copy(alpha = 0.2f)),
-            content = content
-        )
     }
 }
 
@@ -136,45 +136,44 @@ fun ReMindSettingsItem(
         ),
         modifier = modifier
             .fillMaxWidth()
-            .then(if (onClick != null) Modifier.clickable(enabled = enabled, onClick = onClick) else Modifier)
+            .then(
+                if (onClick != null) Modifier.clickable(
+                    enabled = enabled,
+                    onClick = onClick
+                ) else Modifier
+            )
     )
 }
 
-// Backward-compatibility aliases
+@Preview(showBackground = true)
 @Composable
-fun LiteverSettingsGroup(
-    modifier: Modifier = Modifier,
-    title: String? = null,
-    content: @Composable ColumnScope.() -> Unit
-) = ReMindSettingsGroup(modifier = modifier, title = title, content = content)
+private fun ReMindSettingsGroupPreview() {
+    ReMindTheme {
+        ReMindSettingsGroup(title = "Account & Security") {
+            ReMindSettingsItem(
+                title = "Notifications",
+                subtitle = "Sound, vibration and alerts",
+                icon = Icons.Rounded.Notifications,
+                trailingContent = {
+                    Icon(
+                        imageVector = Icons.Rounded.ChevronRight,
+                        contentDescription = null
+                    )
+                }
+            )
+            ReMindSettingsItem(
+                title = "Theme",
+                subtitle = "Dark, light or system default",
+                icon = Icons.Rounded.Palette,
+                statusText = "System",
+                trailingContent = {
+                    Icon(
+                        imageVector = Icons.Rounded.ChevronRight,
+                        contentDescription = null
+                    )
+                }
+            )
+        }
+    }
+}
 
-@Composable
-fun LiteverSettingsItem(
-    title: String,
-    modifier: Modifier = Modifier,
-    icon: ImageVector? = null,
-    subtitle: String? = null,
-    statusText: String? = null,
-    statusColor: Color? = null,
-    enabled: Boolean = true,
-    alpha: Float = if (enabled) 1f else 0.38f,
-    onClick: (() -> Unit)? = null,
-    trailingContent: @Composable (() -> Unit)? = null,
-) = ReMindSettingsItem(
-    title = title,
-    modifier = modifier,
-    icon = icon,
-    subtitle = subtitle,
-    statusText = statusText,
-    statusColor = statusColor,
-    enabled = enabled,
-    alpha = alpha,
-    onClick = onClick,
-    trailingContent = trailingContent
-)
-
-@Composable
-fun LiteverSettingsCategory(
-    title: String,
-    modifier: Modifier = Modifier
-) = ReMindSettingsCategory(title = title, modifier = modifier)

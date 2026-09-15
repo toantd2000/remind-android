@@ -2,7 +2,6 @@ package vn.io.litever.remind.app
 
 import android.content.Intent
 import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
 import android.app.LocaleManager
@@ -375,21 +374,6 @@ class MainActivity : ComponentActivity() {
                                                     currentUri
                                                 )
                                                 navController.navigate(ringtoneSelectionRoute)
-                                            },
-                                            onNavigateToSnoozeSettings = { enabled, interval, repeatCount ->
-                                                navController.currentBackStackEntry?.savedStateHandle?.set(
-                                                    "snoozeEnabled",
-                                                    enabled
-                                                )
-                                                navController.currentBackStackEntry?.savedStateHandle?.set(
-                                                    "snoozeInterval",
-                                                    interval
-                                                )
-                                                navController.currentBackStackEntry?.savedStateHandle?.set(
-                                                    "snoozeRepeatCount",
-                                                    repeatCount
-                                                )
-                                                navController.navigate(vn.io.litever.remind.features.alarms.ui.snoozeSettingsRoute)
                                             },
                                             onNavigateToPermissions = {
                                                 navController.navigateToPermissions()

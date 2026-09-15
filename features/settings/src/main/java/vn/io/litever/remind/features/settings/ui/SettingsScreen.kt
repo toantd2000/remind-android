@@ -5,7 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,6 +32,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -41,18 +44,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import vn.io.litever.designsystem.components.button.LvButton
 import vn.io.litever.designsystem.components.button.LvButtonType
 import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.ads.api.AdManager
 import vn.io.litever.remind.core.ads.api.AdPlacement
 import vn.io.litever.remind.core.ads.api.AdState
 import vn.io.litever.remind.core.ads.api.LocalAdManager
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsItem
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
+import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.features.settings.BuildConfig
 import vn.io.litever.remind.features.settings.R
 
@@ -139,7 +148,8 @@ fun SettingsScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(paddingValues),
+            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
         ) {
             // Group 1: App Settings
             item {
@@ -424,5 +434,68 @@ private fun launchCustomTab(context: Context, url: String) {
         // Fallback to regular browser if Custom Tabs fails
         val intent = Intent(Intent.ACTION_VIEW, finalUrl.toUri())
         context.startActivity(intent)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SettingsScreenPreview() {
+    ReMindTheme {
+        CompositionLocalProvider(LocalAdManager provides PreviewAdManager) {
+            SettingsScreen(
+                uiState = SettingsUiState(),
+                onNavigateToGeneralSettings = {},
+                onNavigateToQA = {},
+                onNavigateToPermissions = {},
+                onNavigateToAlarmSettings = {},
+                onNavigateToLicenses = {},
+                onNavigateToAttributions = {},
+                onRewardGranted = {}
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SettingsScreenDarkPreview() {
+    ReMindTheme(darkTheme = true) {
+        CompositionLocalProvider(LocalAdManager provides PreviewAdManager) {
+            SettingsScreen(
+                uiState = SettingsUiState(),
+                onNavigateToGeneralSettings = {},
+                onNavigateToQA = {},
+                onNavigateToPermissions = {},
+                onNavigateToAlarmSettings = {},
+                onNavigateToLicenses = {},
+                onNavigateToAttributions = {},
+                onRewardGranted = {}
+            )
+        }
+    }
+}
+
+private object PreviewAdManager : AdManager {
+    override val adState: StateFlow<AdState> = MutableStateFlow(AdState.Idle)
+    override fun initialize() {}
+    override fun loadAd(placement: AdPlacement) {}
+    override fun showAd(activity: Activity, placement: AdPlacement, onAdDismissed: () -> Unit) {}
+    override fun isAdLoaded(placement: AdPlacement): Boolean = false
+
+    @Composable
+    override fun NativeAdView(placement: AdPlacement, modifier: Modifier) {
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(250.dp)
+                .background(LiteverTheme.colors.surfaceVariant, LiteverTheme.shapes.medium),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "Native Ad Preview ($placement)",
+                style = LiteverTheme.typography.labelLarge,
+                color = LiteverTheme.colors.onSurfaceVariant
+            )
+        }
     }
 }

@@ -8,14 +8,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -26,15 +23,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.draw.alpha
-import vn.io.litever.designsystem.theme.LiteverTheme
-import vn.io.litever.remind.features.alarms.R
-import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
-import vn.io.litever.designsystem.components.button.LvIconButton
+import vn.io.litever.designsystem.components.button.LvButton
 import vn.io.litever.designsystem.components.button.LvButtonType
 import vn.io.litever.designsystem.components.core.LvSemantic
+import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindGroupCard
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
+import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,7 +47,7 @@ fun SnoozeBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = LiteverTheme.colors.surface,
         tonalElevation = LiteverTheme.spacing.none,
         modifier = modifier
     ) {
@@ -90,7 +85,8 @@ fun SnoozeBottomSheetContent(
         Text(
             text = stringResource(vn.io.litever.remind.core.designsystem.R.string.snooze_settings),
             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(bottom = LiteverTheme.spacing.small)
+            modifier = Modifier
+                .padding(bottom = LiteverTheme.spacing.small)
                 .padding(horizontal = LiteverTheme.spacing.medium)
         )
 
@@ -130,7 +126,7 @@ fun SnoozeBottomSheetContent(
                 ) {
                     rowOptions.forEach { option ->
                         val isSelected = interval == option
-                        LvIconButton(
+                        LvButton(
                             onClick = { if (enabled) onIntervalChange(option) },
                             modifier = Modifier.weight(1f),
                             type = if (isSelected) LvButtonType.Tonal else LvButtonType.Outlined,
@@ -141,9 +137,6 @@ fun SnoozeBottomSheetContent(
                                     vn.io.litever.remind.core.designsystem.R.string.minutes_unit,
                                     option
                                 ),
-                                style = MaterialTheme.typography.labelLarge.copy(
-                                    fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Medium
-                                )
                             )
                         }
                     }
@@ -176,18 +169,13 @@ fun SnoozeBottomSheetContent(
                                 option
                             )
                         }
-                        LvIconButton(
+                        LvButton(
                             onClick = { if (enabled) onRepeatCountChange(option) },
                             modifier = Modifier.weight(1f),
                             type = if (isSelected) LvButtonType.Tonal else LvButtonType.Outlined,
                             semantic = if (isSelected) LvSemantic.Primary else LvSemantic.Neutral,
                         ) {
-                            Text(
-                                label,
-                                style = MaterialTheme.typography.labelLarge.copy(
-                                    fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Medium
-                                )
-                            )
+                            Text(label)
                         }
                     }
                     repeat(3 - rowOptions.size) {
@@ -197,8 +185,6 @@ fun SnoozeBottomSheetContent(
             }
             Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
         }
-
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.large))
     }
 }
 

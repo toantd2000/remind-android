@@ -1,12 +1,7 @@
 package vn.io.litever.remind.features.settings.ui
 
-import android.os.Build
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,7 +18,6 @@ import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material.icons.rounded.SettingsBrightness
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
@@ -38,7 +32,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -105,7 +98,8 @@ fun GeneralSettingsScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(paddingValues),
+            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
         ) {
             // Hour Format Group
             item {
@@ -144,7 +138,7 @@ fun GeneralSettingsScreen(
                         modifier = Modifier.padding(
                             start = LiteverTheme.spacing.medium,
                             end = LiteverTheme.spacing.medium,
-                            top = LiteverTheme.spacing.medium,
+                            top = LiteverTheme.spacing.small,
                             bottom = LiteverTheme.spacing.small
                         )
                     )
@@ -180,7 +174,7 @@ fun GeneralSettingsScreen(
                         }
                     }
 
-                    Spacer(Modifier.height(LiteverTheme.spacing.large))
+                    Spacer(Modifier.height(LiteverTheme.spacing.smallMedium))
 
                     Text(
                         text = stringResource(R.string.color_source_headline),
@@ -200,10 +194,10 @@ fun GeneralSettingsScreen(
 
                     val context = LocalContext.current
                     val dynamicLight = remember(context) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) dynamicLightColorScheme(context) else null
+                        dynamicLightColorScheme(context)
                     }
                     val dynamicDark = remember(context) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) dynamicDarkColorScheme(context) else null
+                        dynamicDarkColorScheme(context)
                     }
 
                     val colorPaletteOptions = remember(dynamicLight, dynamicDark) {
@@ -267,10 +261,10 @@ fun GeneralSettingsScreen(
                             PaletteColorOption(
                                 key = "DYNAMIC",
                                 titleRes = R.string.color_screen,
-                                primaryLight = dynamicLight?.primary ?: redLightColorScheme.primary,
-                                primaryContainerLight = dynamicLight?.primaryContainer ?: redLightColorScheme.primaryContainer,
-                                primaryDark = dynamicDark?.primary ?: redDarkColorScheme.primary,
-                                primaryContainerDark = dynamicDark?.primaryContainer ?: redDarkColorScheme.primaryContainer
+                                primaryLight = dynamicLight.primary,
+                                primaryContainerLight = dynamicLight.primaryContainer,
+                                primaryDark = dynamicDark.primary,
+                                primaryContainerDark = dynamicDark.primaryContainer
                             )
                         )
                     }
@@ -371,7 +365,7 @@ private fun ColorPaletteCell(
     LvIconButton(
         onClick = onClick,
         modifier = modifier.height(48.dp),
-        type = if (isSelected) LvButtonType.Outlined else LvButtonType.Filled,
+        type = if (isSelected) LvButtonType.Outlined else LvButtonType.Tonal,
         colors = IconButtonDefaults.outlinedIconButtonColors(
             containerColor = containerColor,
             contentColor = primaryColor,
@@ -399,7 +393,7 @@ private fun ColorPaletteCell(
                 text = stringResource(item.titleRes),
                 color = primaryColor,
                 style = LiteverTheme.typography.labelMedium.copy(
-                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
+                    fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Medium
                 ),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis

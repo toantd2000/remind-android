@@ -52,7 +52,7 @@ fun TodayQuoteView(
                         .fillMaxHeight()
                         .width(LiteverTheme.spacing.extraSmall)
                         .background(
-                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+                            color = LiteverTheme.colors.onTertiaryContainer
                         )
                 )
             }
@@ -74,7 +74,7 @@ fun TodayQuoteView(
                             .padding(vertical = LiteverTheme.spacing.small),
                         style = MaterialTheme.typography.bodyLarge.copy(
                             fontStyle = FontStyle.Italic,
-                            color = MaterialTheme.colorScheme.primary
+                            color = LiteverTheme.colors.onTertiaryContainer
                         )
                     )
 
@@ -82,7 +82,7 @@ fun TodayQuoteView(
                         HorizontalDivider(
                             modifier = Modifier.padding(horizontal = LiteverTheme.spacing.medium),
                             thickness = 0.5.dp,
-                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                            color = LiteverTheme.colors.tertiaryContainer.copy(alpha = 0.5f)
                         )
                     }
                 }

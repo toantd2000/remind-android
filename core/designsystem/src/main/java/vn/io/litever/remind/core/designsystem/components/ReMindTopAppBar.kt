@@ -18,6 +18,7 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import vn.io.litever.designsystem.components.button.LvIconButton
@@ -63,7 +64,7 @@ fun ReMindTopAppBar(
                     text = title,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    style = LiteverTheme.typography.titleLarge
+                    style = LiteverTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                 )
                 if (subtitle != null) {
                     Text(

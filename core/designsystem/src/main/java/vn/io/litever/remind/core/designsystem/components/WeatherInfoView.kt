@@ -1,9 +1,9 @@
 package vn.io.litever.remind.core.designsystem.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,6 +42,18 @@ import vn.io.litever.designsystem.components.button.LvButton
 import vn.io.litever.designsystem.components.button.LvButtonType
 import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.designsystem.theme.palettes.blueDarkColorScheme
+import vn.io.litever.designsystem.theme.palettes.blueLightColorScheme
+import vn.io.litever.designsystem.theme.palettes.greenDarkColorScheme
+import vn.io.litever.designsystem.theme.palettes.greenLightColorScheme
+import vn.io.litever.designsystem.theme.palettes.indigoDarkColorScheme
+import vn.io.litever.designsystem.theme.palettes.indigoLightColorScheme
+import vn.io.litever.designsystem.theme.palettes.orangeDarkColorScheme
+import vn.io.litever.designsystem.theme.palettes.orangeLightColorScheme
+import vn.io.litever.designsystem.theme.palettes.redDarkColorScheme
+import vn.io.litever.designsystem.theme.palettes.redLightColorScheme
+import vn.io.litever.designsystem.theme.palettes.yellowDarkColorScheme
+import vn.io.litever.designsystem.theme.palettes.yellowLightColorScheme
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.AiAnalysis
@@ -67,12 +79,29 @@ fun WeatherInfoView(
 }
 
 @Composable
-private fun getWeatherColors(temp: Double, isDay: Int): List<Color> {
+private fun getWeatherColors(temp: Double): List<Color> {
+    val isDark = isSystemInDarkTheme()
     return when {
-        temp < 15 -> listOf(Color(0xFF7DD3FC), Color(0xFFA5F3FC))    // Cold (Sky 300, Cyan 200)
-        temp < 25 -> listOf(Color(0xFF6EE7B7), Color(0xFFDCFCE7))    // Mild
-        temp < 32 -> listOf(Color(0xFFFDE68A), Color(0xFFFFFBEB))    // Warm (Amber 200, 50)
-        else -> listOf(Color(0xFFFDBA74), Color(0xFFFFE4E6))         // Hot (Orange 300, Rose 100)
+        temp < 15 -> if (isDark) {
+            listOf(indigoDarkColorScheme.primaryContainer, blueDarkColorScheme.primaryContainer)
+        } else {
+            listOf(indigoLightColorScheme.primaryContainer, blueLightColorScheme.primaryContainer)
+        }
+        temp < 25 -> if (isDark) {
+            listOf(greenDarkColorScheme.primaryContainer, greenDarkColorScheme.secondaryContainer)
+        } else {
+            listOf(greenLightColorScheme.primaryContainer, greenLightColorScheme.secondaryContainer)
+        }
+        temp < 32 -> if (isDark) {
+            listOf(yellowDarkColorScheme.primaryContainer, orangeDarkColorScheme.primaryContainer)
+        } else {
+            listOf(yellowLightColorScheme.primaryContainer, orangeLightColorScheme.primaryContainer)
+        }
+        else -> if (isDark) {
+            listOf(orangeDarkColorScheme.primaryContainer, redDarkColorScheme.primaryContainer)
+        } else {
+            listOf(orangeLightColorScheme.primaryContainer, redLightColorScheme.primaryContainer)
+        }
     }
 }
 
@@ -95,26 +124,18 @@ private fun FullWeatherView(
     modifier: Modifier = Modifier,
     onLocationClick: () -> Unit = {}
 ) {
-    val weatherColors = getWeatherColors(weather.current.tempC, weather.current.isDay)
-    val isNight = weather.current.isDay == 0
+    val weatherColors = getWeatherColors(weather.current.tempC)
 
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = LiteverTheme.shapes.medium,
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        border = BorderStroke(
-            1.dp,
-            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
-        )
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent)
     ) {
         Box(
             modifier = Modifier
                 .background(
                     brush = Brush.linearGradient(
-                        colors = listOf(
-                            weatherColors[0].copy(alpha = if (isNight) 0.2f else 0.3f),
-                            weatherColors[1].copy(alpha = if (isNight) 0.3f else 0.3f)
-                        )
+                        colors = weatherColors
                     )
                 )
         ) {
@@ -260,26 +281,18 @@ private fun CompactWeatherView(
     modifier: Modifier = Modifier,
     onLocationClick: () -> Unit = {}
 ) {
-    val weatherColors = getWeatherColors(weather.current.tempC, weather.current.isDay)
-    val isNight = weather.current.isDay == 0
+    val weatherColors = getWeatherColors(weather.current.tempC)
 
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = LiteverTheme.shapes.large,
-        color = Color.Transparent,
-        border = BorderStroke(
-            1.dp,
-            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
-        )
+        color = Color.Transparent
     ) {
         Box(
             modifier = Modifier
                 .background(
                     brush = Brush.linearGradient(
-                        colors = listOf(
-                            weatherColors[0].copy(alpha = if (isNight) 0.15f else 0.2f),
-                            weatherColors[1].copy(alpha = if (isNight) 0.2f else 0.2f)
-                        )
+                        colors = weatherColors
                     )
                 )
                 .clickable { onLocationClick() }

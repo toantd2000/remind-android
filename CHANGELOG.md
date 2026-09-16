@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **AlarmSettingRow Component:** Created `AlarmSettingRow` in `:features:alarms` leveraging Material 3 `ListItem` and `ReMindSettingIcon` for consistent setting rows in `AlarmEditScreen`.
 - **8-Cell Palette Grid:** Added an 8-cell 2-row color palette selector (`IconButton`s with `primaryContainer` backgrounds, centered `primary` text, selection borders, and checkmark indicators) in `GeneralSettingsScreen`.
 - **Litever Palette Integration:** Integrated all 7 predefined Litever color palettes (Red, Orange, Yellow, Green, Blue, Indigo, Violet) and Dynamic wallpaper coloring.
 - **Opinionated Lv* Suite:** Adopted high-level opinionated components from `litever-designsystem` v2.1.0: `LvButton`, `LvIconButton`, `LvTextField`, `LvAlertDialog`, `LvChip`, and `LvSnackbarHost` / `LvSnackbar`.

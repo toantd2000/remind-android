@@ -958,4 +958,26 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
   - Triệt tiêu hoàn toàn hiệu ứng click (ripple/gesture) không mong muốn ở các ô không được phép nhấn (trong pha MEMORIZE, SUCCESS, FAILURE hoặc ô đã được chọn).
   - Trình đọc màn hình (TalkBack) nhận diện chính xác trạng thái vô hiệu hóa của nút (`enabled = false`).
 
+### [TDR-065] - Chuẩn hóa ReMindGroupCard, AlarmSettingRow và Tối ưu dải màu Thời tiết (WeatherInfoView)
+- **Ngày thực hiện:** 2026-09-16
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Cần nâng cấp trải nghiệm giao diện các thẻ nhóm (`ReMindGroupCard`), nhóm cài đặt báo thức (`AlarmEditScreen`) và thẻ thông tin thời tiết (`WeatherInfoView`).
+  - Các item cài đặt trong `AlarmEditScreen` trước đây bị lặp lại cấu hình Layout và chưa tận dụng Material 3 `ListItem` chuẩn.
+  - Thẻ thông tin thời tiết `WeatherInfoView` bị trùng lặp viền Outlined và sử dụng dải màu gradient cũ chưa đồng bộ với các theme màu trong `GeneralSettingsScreen`.
+- **Quyết định:**
+  1. **Chuẩn hóa ReMindGroupCard & ReMindSettingsGroup:**
+     - Sử dụng `ReMindGroupCard` làm container bọc cho `ReMindSettingsGroup` với `surfaceContainerLow` và bo góc `shapes.large`.
+  2. **Tạo AlarmSettingRow dùng chung cho feature:alarms:**
+     - Tạo `AlarmSettingRow` tái sử dụng Material 3 `ListItem` kết hợp `ReMindSettingIcon`.
+     - Đồng bộ áp dụng cho tất cả các item trong `AlarmEditScreen` (Ringtone, Gentle Alarm, Use Alarm Stream, Snooze, Auto Silence).
+  3. **Cập nhật WeatherInfoView theo Theme Palettes:**
+     - `getWeatherColors` lấy dải màu trực tiếp từ palette màu hệ thống (`indigo`/`blue` -> `green` -> `yellow`/`orange` -> `orange`/`red`).
+     - Loại bỏ biến thiên alpha giữa sáng/tối để giữ màu sắc trung thực, tươi sáng.
+     - Loại bỏ đường viền `BorderStroke` (Outlined) trên các thẻ thời tiết.
+- **Hệ quả:**
+  - Giao diện nhất quán, hiện đại, tuân thủ 100% Material 3 và Litever Design System.
+  - Tối ưu lượng code lặp lại tại `AlarmEditScreen`.
+
+
 

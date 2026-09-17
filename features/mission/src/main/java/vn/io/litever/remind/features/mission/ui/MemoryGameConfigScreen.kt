@@ -17,7 +17,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Refresh
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -31,18 +30,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.material3.Card
 import androidx.compose.material3.Scaffold
 import vn.io.litever.designsystem.components.button.LvButton
 import vn.io.litever.designsystem.components.button.LvButtonType
 import vn.io.litever.designsystem.components.button.LvIconButton
 import vn.io.litever.designsystem.components.core.LvSemantic
-import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsCategory
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
+import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
+import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.MemoryTilesMissionConfig
 import vn.io.litever.remind.core.model.Mission
 import vn.io.litever.remind.core.model.MissionType
@@ -129,123 +129,111 @@ fun MemoryGameConfigScreen(
                 .fillMaxSize()
                 .background(LiteverTheme.colors.background)
                 .padding(padding)
-                .padding(horizontal = LiteverTheme.spacing.large)
         ) {
             Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
 
-            // Section: Difficulty Settings
-            Text(
-                text = stringResource(R.string.memory_game_difficulty_settings),
-                style = LiteverTheme.typography.labelLarge.copy(
-                    fontWeight = FontWeight.SemiBold,
-                    color = LiteverTheme.colors.primary,
-                    letterSpacing = 1.sp
-                )
-            )
-            
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = LiteverTheme.shapes.medium,
-                colors = CardDefaults.cardColors(containerColor = LiteverTheme.colors.surface),
-                border = BorderStroke(1.dp, LiteverTheme.colors.outlineVariant.copy(alpha = 0.5f)),
-                elevation = CardDefaults.cardElevation(defaultElevation = LiteverTheme.spacing.none)
+            // Section 1: Difficulty Settings
+            ReMindSettingsGroup(
+                title = stringResource(R.string.memory_game_difficulty_settings)
             ) {
-                Column(modifier = Modifier.padding(LiteverTheme.spacing.medium), horizontalAlignment = Alignment.CenterHorizontally) {
-                    val difficultyText = when (gridSize) {
-                        3 -> stringResource(R.string.memory_game_difficulty_very_easy)
-                        4 -> stringResource(R.string.memory_game_difficulty_easy)
-                        5 -> stringResource(R.string.memory_game_difficulty_medium)
-                        6 -> stringResource(R.string.memory_game_difficulty_hard)
-                        7 -> stringResource(R.string.memory_game_difficulty_very_hard)
-                        else -> ""
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = LiteverTheme.spacing.small),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        LvIconButton(
-                            onClick = { if (gridSize > 3) onGridSizeChange(gridSize - 1) },
-                            modifier = Modifier.size(40.dp),
-                            enabled = gridSize > 3,
-                            type = LvButtonType.Text,
-                            semantic = LvSemantic.Primary
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
-                                contentDescription = null,
-                                modifier = Modifier.size(28.dp)
-                            )
-                        }
-
-                        Text(
-                            text = difficultyText,
-                            style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                            color = LiteverTheme.colors.primary
-                        )
-
-                        LvIconButton(
-                            onClick = { if (gridSize < 7) onGridSizeChange(gridSize + 1) },
-                            modifier = Modifier.size(40.dp),
-                            enabled = gridSize < 7,
-                            type = LvButtonType.Text,
-                            semantic = LvSemantic.Primary
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
-                                contentDescription = null,
-                                modifier = Modifier.size(28.dp)
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
-                    MemoryGameStaticPreview(gridSize = gridSize, targetTiles = targetTiles)
+                val difficultyText = when (gridSize) {
+                    3 -> stringResource(R.string.memory_game_difficulty_very_easy)
+                    4 -> stringResource(R.string.memory_game_difficulty_easy)
+                    5 -> stringResource(R.string.memory_game_difficulty_medium)
+                    6 -> stringResource(R.string.memory_game_difficulty_hard)
+                    7 -> stringResource(R.string.memory_game_difficulty_very_hard)
+                    else -> ""
                 }
-            }
-
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.extraLarge))
-
-            // Section: Repetitions
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(R.string.memory_game_repetitions),
-                    style = LiteverTheme.typography.labelLarge.copy(
-                        fontWeight = FontWeight.SemiBold,
-                        color = LiteverTheme.colors.primary,
-                        letterSpacing = 1.sp
-                    )
-                )
-                LvIconButton(
-                    onClick = { onRepetitionsChange(1) },
-                    modifier = Modifier.size(32.dp),
-                    type = LvButtonType.Text,
-                    semantic = LvSemantic.Primary
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Refresh,
-                        contentDescription = "Reset",
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = LiteverTheme.shapes.medium,
-                colors = CardDefaults.cardColors(containerColor = LiteverTheme.colors.surface),
-                border = BorderStroke(1.dp, LiteverTheme.colors.outlineVariant.copy(alpha = 0.5f)),
-                elevation = CardDefaults.cardElevation(defaultElevation = LiteverTheme.spacing.none)
-            ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = LiteverTheme.spacing.small, vertical = LiteverTheme.spacing.medium),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = LiteverTheme.spacing.medium,
+                            vertical = LiteverTheme.spacing.small
+                        ),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    LvIconButton(
+                        onClick = { if (gridSize > 3) onGridSizeChange(gridSize - 1) },
+                        modifier = Modifier.size(40.dp),
+                        enabled = gridSize > 3,
+                        type = LvButtonType.Text,
+                        semantic = LvSemantic.Neutral
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
+                            contentDescription = null,
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
+
+                    Text(
+                        text = difficultyText,
+                        style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                        color = LiteverTheme.colors.neutral
+                    )
+
+                    LvIconButton(
+                        onClick = { if (gridSize < 7) onGridSizeChange(gridSize + 1) },
+                        modifier = Modifier.size(40.dp),
+                        enabled = gridSize < 7,
+                        type = LvButtonType.Text,
+                        semantic = LvSemantic.Neutral
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                            contentDescription = null,
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+                MemoryGameStaticPreview(gridSize = gridSize, targetTiles = targetTiles)
+                Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+            }
+
+            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+
+            // Section 2: Repetitions
+            ReMindSettingsGroup {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            top = LiteverTheme.spacing.medium,
+                            bottom = LiteverTheme.spacing.extraSmall,
+                            start = LiteverTheme.spacing.medium,
+                            end = LiteverTheme.spacing.small
+                        ),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    ReMindSettingsCategory(
+                        title = stringResource(R.string.memory_game_repetitions),
+                        modifier = Modifier.weight(1f)
+                    )
+                    LvIconButton(
+                        onClick = { onRepetitionsChange(1) },
+                        modifier = Modifier.size(32.dp),
+                        type = LvButtonType.Text,
+                        semantic = LvSemantic.Secondary
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Refresh,
+                            contentDescription = "Reset",
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = LiteverTheme.spacing.medium,
+                            vertical = LiteverTheme.spacing.small
+                        ),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -254,7 +242,7 @@ fun MemoryGameConfigScreen(
                         modifier = Modifier.size(40.dp),
                         enabled = repetitions > 1,
                         type = LvButtonType.Text,
-                        semantic = LvSemantic.Primary
+                        semantic = LvSemantic.Neutral
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
@@ -266,7 +254,7 @@ fun MemoryGameConfigScreen(
                     Text(
                         text = "$repetitions",
                         style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = LiteverTheme.colors.primary
+                        color = LiteverTheme.colors.neutral
                     )
 
                     LvIconButton(
@@ -274,7 +262,7 @@ fun MemoryGameConfigScreen(
                         modifier = Modifier.size(40.dp),
                         enabled = repetitions < 99,
                         type = LvButtonType.Text,
-                        semantic = LvSemantic.Primary
+                        semantic = LvSemantic.Neutral
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
@@ -283,16 +271,18 @@ fun MemoryGameConfigScreen(
                         )
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
-            
-            Text(
-                text = stringResource(R.string.memory_game_repetition_helper, repetitions),
-                style = LiteverTheme.typography.bodySmall,
-                color = LiteverTheme.colors.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = LiteverTheme.spacing.extraSmall)
-            )
+                Text(
+                    text = stringResource(R.string.memory_game_repetition_helper, repetitions),
+                    style = LiteverTheme.typography.bodySmall,
+                    color = LiteverTheme.colors.onSurfaceVariant,
+                    modifier = Modifier.padding(
+                        start = LiteverTheme.spacing.medium,
+                        end = LiteverTheme.spacing.medium,
+                        bottom = LiteverTheme.spacing.medium
+                    )
+                )
+            }
 
             Spacer(modifier = Modifier.weight(1f))
         }
@@ -334,5 +324,37 @@ fun MemoryGameStaticPreview(gridSize: Int, targetTiles: Int) {
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MemoryGameConfigScreenPreview() {
+    ReMindTheme {
+        MemoryGameConfigScreen(
+            repetitions = 3,
+            gridSize = 4,
+            targetTiles = 5,
+            onBackClick = {},
+            onRepetitionsChange = {},
+            onGridSizeChange = {},
+            onSave = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MemoryGameConfigScreenHardPreview() {
+    ReMindTheme {
+        MemoryGameConfigScreen(
+            repetitions = 5,
+            gridSize = 6,
+            targetTiles = 7,
+            onBackClick = {},
+            onRepetitionsChange = {},
+            onGridSizeChange = {},
+            onSave = {}
+        )
     }
 }

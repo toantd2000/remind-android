@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.mission.ui
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,21 +17,27 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.EditNote
 import androidx.compose.material.icons.rounded.Lightbulb
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SecondaryTabRow
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
@@ -47,29 +55,26 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.material3.Card
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Scaffold
 import vn.io.litever.designsystem.components.button.LvButton
 import vn.io.litever.designsystem.components.button.LvButtonType
 import vn.io.litever.designsystem.components.button.LvIconButton
 import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.components.dialog.LvAlertDialog
-import vn.io.litever.designsystem.components.textfield.LvTextField
-import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
+import vn.io.litever.remind.core.designsystem.components.ReMindGroupCard
+import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.Phrase
 import vn.io.litever.remind.features.mission.viewmodel.PhraseSelectionViewModel
@@ -232,12 +237,12 @@ fun PhraseSelectionScreen(
         },
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
-            SecondaryTabRow(
+            PrimaryTabRow(
                 selectedTabIndex = selectedTabIndex,
                 containerColor = LiteverTheme.colors.background,
                 contentColor = LiteverTheme.colors.primary,
                 indicator = {
-                    TabRowDefaults.SecondaryIndicator(
+                    TabRowDefaults.PrimaryIndicator(
                         Modifier.tabIndicatorOffset(selectedTabIndex, matchContentSize = true),
                         color = LiteverTheme.colors.primary
                     )
@@ -513,70 +518,133 @@ fun AddCustomPhraseContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(LiteverTheme.spacing.medium)
+            .padding(vertical = LiteverTheme.spacing.medium),
+        verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
     ) {
         Text(
             text = stringResource(if (editingPhrase != null) R.string.mission_phrase_edit_title else R.string.mission_add_custom_phrase),
             style = LiteverTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(bottom = LiteverTheme.spacing.mediumLarge)
+            modifier = Modifier.padding(horizontal = LiteverTheme.spacing.medium)
         )
 
-        LvTextField(
-            value = text,
-            onValueChange = { if (it.length <= 128) text = it },
-            label = stringResource(R.string.mission_phrase_placeholder),
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = false,
-            maxLines = 5
-        )
-        Text(
-            text = "${text.length}/128",
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = LiteverTheme.spacing.extraSmall, end = LiteverTheme.spacing.small),
-            style = LiteverTheme.typography.bodySmall,
-            color = LiteverTheme.colors.onSurfaceVariant,
-            textAlign = TextAlign.End
-        )
-
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
-
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = LiteverTheme.shapes.medium,
-            colors = CardDefaults.cardColors(
-                containerColor = LiteverTheme.colors.tertiaryContainer
-            )
-        ) {
-            Row(
-                modifier = Modifier.padding(LiteverTheme.spacing.smallMedium),
-                verticalAlignment = Alignment.CenterVertically
+        ReMindGroupCard {
+            Column(
+                modifier = Modifier.padding(LiteverTheme.spacing.medium)
             ) {
-                Icon(
-                    imageVector = Icons.Rounded.Lightbulb,
-                    contentDescription = null,
-                    tint = LiteverTheme.colors.onTertiaryContainer,
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(LiteverTheme.spacing.smallMedium))
                 Text(
-                    text = stringResource(R.string.mission_typing_tip),
-                    style = LiteverTheme.typography.labelMedium,
-                    color = LiteverTheme.colors.onTertiaryContainer
+                    text = stringResource(R.string.mission_phrase_placeholder),
+                    style = LiteverTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                    color = LiteverTheme.colors.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.Top
+                ) {
+                    BasicTextField(
+                        value = text,
+                        onValueChange = { if (it.length <= 128) text = it },
+                        modifier = Modifier.weight(1f),
+                        textStyle = LiteverTheme.typography.bodyLarge.copy(
+                            color = LiteverTheme.colors.onSurface
+                        ),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Done
+                        ),
+                        singleLine = false,
+                        maxLines = 5,
+                        cursorBrush = SolidColor(LiteverTheme.colors.primary),
+                        decorationBox = { innerTextField ->
+                            Box(contentAlignment = Alignment.TopStart) {
+                                if (text.isEmpty()) {
+                                    Text(
+                                        text = stringResource(R.string.mission_phrase_placeholder),
+                                        style = LiteverTheme.typography.bodyLarge.copy(
+                                            color = LiteverTheme.colors.outlineVariant
+                                        )
+                                    )
+                                }
+                                innerTextField()
+                            }
+                        }
+                    )
+
+                    if (text.isNotEmpty()) {
+                        LvIconButton(
+                            onClick = { text = "" },
+                            modifier = Modifier.size(28.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Close,
+                                contentDescription = "Clear text",
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    } else {
+                        Icon(
+                            imageVector = Icons.Rounded.EditNote,
+                            contentDescription = null,
+                            tint = LiteverTheme.colors.outlineVariant,
+                            modifier = Modifier
+                                .size(24.dp)
+                                .padding(top = 2.dp)
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "${text.length}/128",
+                    modifier = Modifier.fillMaxWidth(),
+                    style = LiteverTheme.typography.bodySmall,
+                    color = LiteverTheme.colors.onSurfaceVariant,
+                    textAlign = TextAlign.End
                 )
             }
         }
 
         Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = LiteverTheme.spacing.medium)
+                .clip(LiteverTheme.shapes.large)
+                .background(color = LiteverTheme.colors.tertiaryContainer)
+                .padding(LiteverTheme.spacing.smallMedium),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Lightbulb,
+                contentDescription = null,
+                tint = LiteverTheme.colors.onTertiaryContainer,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.width(LiteverTheme.spacing.smallMedium))
+            Text(
+                text = stringResource(R.string.mission_typing_tip),
+                style = LiteverTheme.typography.labelMedium,
+                color = LiteverTheme.colors.onTertiaryContainer
+            )
+        }
+
+        Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(vertical = LiteverTheme.spacing.medium)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = LiteverTheme.spacing.medium)
+                .clip(LiteverTheme.shapes.large)
+                .background(color = LiteverTheme.colors.neutralContainer)
+                .padding(vertical = LiteverTheme.spacing.small)
         ) {
             Checkbox(
                 checked = isShared,
                 onCheckedChange = { isShared = it },
-                enabled = editingPhrase == null && canBePrivate
+                enabled = editingPhrase == null && canBePrivate,
+                colors = CheckboxDefaults.colors(
+                    checkedColor = LiteverTheme.colors.neutral,
+                    uncheckedColor = LiteverTheme.colors.outline
+                )
             )
-            Column() {
+            Column {
                 Text(
                     text = stringResource(R.string.mission_shared),
                     style = LiteverTheme.typography.titleSmall
@@ -584,13 +652,15 @@ fun AddCustomPhraseContent(
                 Text(
                     text = stringResource(if (canBePrivate) R.string.mission_shared_desc else R.string.mission_private_disabled_desc),
                     style = LiteverTheme.typography.bodySmall,
-                    color = if (canBePrivate) LiteverTheme.colors.onSurfaceVariant else LiteverTheme.colors.error
+                    color = if (canBePrivate) LiteverTheme.colors.onSurfaceVariant else LiteverTheme.colors.warning
                 )
             }
         }
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = LiteverTheme.spacing.medium),
             horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.smallMedium)
         ) {
             LvButton(

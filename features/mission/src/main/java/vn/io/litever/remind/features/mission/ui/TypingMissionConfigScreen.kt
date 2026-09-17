@@ -15,13 +15,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Refresh
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -38,13 +36,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.material3.Card
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import vn.io.litever.designsystem.components.button.LvButton
@@ -54,12 +48,16 @@ import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsCategory
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsItem
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.Mission
 import vn.io.litever.remind.core.model.MissionType
 import vn.io.litever.remind.core.model.Phrase
 import vn.io.litever.remind.core.model.TypingMissionConfig
 import vn.io.litever.remind.core.model.TypingMode
+import vn.io.litever.remind.features.mission.R
 import vn.io.litever.remind.features.mission.viewmodel.TypingMissionConfigViewModel
 
 
@@ -146,133 +144,101 @@ fun TypingMissionConfigScreen(
                 .fillMaxSize()
                 .background(LiteverTheme.colors.background)
                 .padding(padding)
-                .padding(horizontal = LiteverTheme.spacing.large)
         ) {
             Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
 
             // Section 1: Phrases
-            Text(
-                text = stringResource(vn.io.litever.remind.features.mission.R.string.phrases_to_type),
-                style = LiteverTheme.typography.labelLarge.copy(
-                    fontWeight = FontWeight.SemiBold,
-                    color = LiteverTheme.colors.primary,
-                    letterSpacing = 1.sp
-                )
-            )
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = LiteverTheme.shapes.medium,
-                colors = CardDefaults.cardColors(containerColor = LiteverTheme.colors.surface),
-                border = BorderStroke(1.dp, LiteverTheme.colors.outlineVariant.copy(alpha = 0.5f)),
-                elevation = CardDefaults.cardElevation(defaultElevation = LiteverTheme.spacing.none)
+            ReMindSettingsGroup(
+                title = stringResource(vn.io.litever.remind.features.mission.R.string.phrases_to_type)
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onNavigateToPhraseSelection() }
-                        .padding(LiteverTheme.spacing.medium)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column {
-                            Text(
-                                text = stringResource(vn.io.litever.remind.features.mission.R.string.phrase_list),
-                                style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Medium)
-                            )
-                            Text(
-                                text = stringResource(vn.io.litever.remind.features.mission.R.string.phrases_count, selectedPhrases.size),
-                                style = LiteverTheme.typography.bodySmall,
-                                color = LiteverTheme.colors.onSurfaceVariant
-                            )
-                        }
+                ReMindSettingsItem(
+                    title = stringResource(vn.io.litever.remind.features.mission.R.string.phrase_list),
+                    subtitle = stringResource(vn.io.litever.remind.features.mission.R.string.phrases_count, selectedPhrases.size),
+                    trailingContent = {
                         Icon(
                             imageVector = Icons.Rounded.ChevronRight,
                             contentDescription = null,
-                            tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.5f)
+                        )
+                    },
+                    onClick = onNavigateToPhraseSelection
+                )
+
+                val visibleCount = if (selectedPhrases.size <= 3) selectedPhrases.size else 2
+                selectedPhrases.take(visibleCount).forEach { phrase ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(
+                            horizontal = LiteverTheme.spacing.medium,
+                            vertical = LiteverTheme.spacing.tiny
+                        )
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .background(LiteverTheme.colors.primary.copy(alpha = 0.5f), RoundedCornerShape(50))
+                        )
+                        Spacer(modifier = Modifier.width(LiteverTheme.spacing.smallMedium))
+                        Text(
+                            text = "\"${phrase.content}\"",
+                            style = LiteverTheme.typography.bodyMedium.copy(
+                                fontStyle = FontStyle.Italic,
+                                color = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.8f)
+                            )
                         )
                     }
-
-                    if (selectedPhrases.isNotEmpty()) {
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.smallMedium)
-                        ) {
-                            val visibleCount = if (selectedPhrases.size <= 3) selectedPhrases.size else 2
-                            selectedPhrases.take(visibleCount).forEach { phrase ->
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(6.dp)
-                                            .background(LiteverTheme.colors.primary.copy(alpha = 0.5f), RoundedCornerShape(50))
-                                    )
-                                    Spacer(modifier = Modifier.width(LiteverTheme.spacing.smallMedium))
-                                    Text(
-                                        text = "\"${phrase.content}\"",
-                                        style = LiteverTheme.typography.bodyMedium.copy(
-                                            fontStyle = FontStyle.Italic,
-                                            color = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.8f)
-                                        )
-                                    )
-                                }
-                            }
-                            if (selectedPhrases.size > visibleCount) {
-                                Text(
-                                    text = stringResource(vn.io.litever.remind.features.mission.R.string.more_phrases_count, selectedPhrases.size - visibleCount),
-                                    style = LiteverTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
-                                    color = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.6f),
-                                    modifier = Modifier.padding(start = LiteverTheme.spacing.mediumLarge)
-                                )
-                            }
-                        }
-                    }
                 }
+                if (selectedPhrases.size > visibleCount) {
+                    Text(
+                        text = stringResource(vn.io.litever.remind.features.mission.R.string.more_phrases_count, selectedPhrases.size - visibleCount),
+                        style = LiteverTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
+                        color = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.6f),
+                        modifier = Modifier.padding(start = LiteverTheme.spacing.mediumLarge)
+                    )
+                }
+                Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
             }
 
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.extraLarge))
+            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
 
             // Section 2: Repetitions
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(vn.io.litever.remind.features.mission.R.string.settings_title),
-                    style = LiteverTheme.typography.labelLarge.copy(
-                        fontWeight = FontWeight.SemiBold,
-                        color = LiteverTheme.colors.primary,
-                        letterSpacing = 1.sp
-                    )
-                )
-                LvIconButton(
-                    onClick = { onRepetitionsChange(1) },
-                    modifier = Modifier.size(32.dp),
-                    type = LvButtonType.Text,
-                    semantic = LvSemantic.Primary
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Refresh,
-                        contentDescription = "Reset",
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = LiteverTheme.shapes.medium,
-                colors = CardDefaults.cardColors(containerColor = LiteverTheme.colors.surface),
-                border = BorderStroke(1.dp, LiteverTheme.colors.outlineVariant.copy(alpha = 0.5f)),
-                elevation = CardDefaults.cardElevation(defaultElevation = LiteverTheme.spacing.none)
-            ) {
+            ReMindSettingsGroup {
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = LiteverTheme.spacing.small, vertical = LiteverTheme.spacing.medium),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            top = LiteverTheme.spacing.medium,
+                            bottom = LiteverTheme.spacing.extraSmall,
+                            start = LiteverTheme.spacing.medium,
+                            end = LiteverTheme.spacing.small
+                        ),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    ReMindSettingsCategory(
+                        title = stringResource(R.string.settings_title),
+                        modifier = Modifier.weight(1f)
+                    )
+                    LvIconButton(
+                        onClick = { onRepetitionsChange(1) },
+                        modifier = Modifier.size(32.dp),
+                        type = LvButtonType.Text,
+                        semantic = LvSemantic.Secondary
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Refresh,
+                            contentDescription = "Reset",
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = LiteverTheme.spacing.medium,
+                            vertical = LiteverTheme.spacing.small
+                        ),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -281,7 +247,7 @@ fun TypingMissionConfigScreen(
                         modifier = Modifier.size(40.dp),
                         enabled = repetitions > 1,
                         type = LvButtonType.Text,
-                        semantic = LvSemantic.Primary
+                        semantic = LvSemantic.Neutral
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
@@ -293,7 +259,7 @@ fun TypingMissionConfigScreen(
                     Text(
                         text = "$repetitions",
                         style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = LiteverTheme.colors.primary
+                        color = LiteverTheme.colors.neutral
                     )
 
                     LvIconButton(
@@ -301,7 +267,7 @@ fun TypingMissionConfigScreen(
                         modifier = Modifier.size(40.dp),
                         enabled = repetitions < 99,
                         type = LvButtonType.Text,
-                        semantic = LvSemantic.Primary
+                        semantic = LvSemantic.Neutral
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
@@ -310,69 +276,55 @@ fun TypingMissionConfigScreen(
                         )
                     }
                 }
-            }
-            
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
-            
-            Text(
-                text = stringResource(vn.io.litever.remind.features.mission.R.string.repetition_helper, repetitions),
-                style = LiteverTheme.typography.bodySmall,
-                color = LiteverTheme.colors.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = LiteverTheme.spacing.extraSmall)
-            )
 
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.extraLarge))
+                Text(
+                    text = stringResource(R.string.repetition_helper, repetitions),
+                    style = LiteverTheme.typography.bodySmall,
+                    color = LiteverTheme.colors.onSurfaceVariant,
+                    modifier = Modifier.padding(
+                        start = LiteverTheme.spacing.medium,
+                        end = LiteverTheme.spacing.medium,
+                        bottom = LiteverTheme.spacing.medium
+                    )
+                )
+            }
+
+            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
 
             // Section 3: Modes
-            Text(
-                text = stringResource(vn.io.litever.remind.core.designsystem.R.string.typing_mode),
-                style = LiteverTheme.typography.labelLarge.copy(
-                    fontWeight = FontWeight.SemiBold,
-                    color = LiteverTheme.colors.primary,
-                    letterSpacing = 1.sp
-                )
-            )
-            
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = LiteverTheme.shapes.medium,
-                colors = CardDefaults.cardColors(containerColor = LiteverTheme.colors.surface),
-                border = BorderStroke(1.dp, LiteverTheme.colors.outlineVariant.copy(alpha = 0.5f)),
-                elevation = CardDefaults.cardElevation(defaultElevation = LiteverTheme.spacing.none)
+            ReMindSettingsGroup(
+                title = stringResource(vn.io.litever.remind.core.designsystem.R.string.typing_mode)
             ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(vertical = LiteverTheme.spacing.smallMedium)
-                ) {
-                    val modes = listOf(
-                        TypingMode.NORMAL to stringResource(vn.io.litever.remind.core.designsystem.R.string.typing_mode_normal),
-                        TypingMode.SHUFFLE_WORDS to stringResource(vn.io.litever.remind.core.designsystem.R.string.typing_mode_shuffle_words),
-                        TypingMode.SHUFFLE_CHARS to stringResource(vn.io.litever.remind.core.designsystem.R.string.typing_mode_shuffle_chars)
-                    )
+                val modes = listOf(
+                    TypingMode.NORMAL to stringResource(vn.io.litever.remind.core.designsystem.R.string.typing_mode_normal),
+                    TypingMode.SHUFFLE_WORDS to stringResource(vn.io.litever.remind.core.designsystem.R.string.typing_mode_shuffle_words),
+                    TypingMode.SHUFFLE_CHARS to stringResource(vn.io.litever.remind.core.designsystem.R.string.typing_mode_shuffle_chars)
+                )
 
-                    modes.forEachIndexed { _, (m, label) ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { onModeChange(m) }
-                                .padding(horizontal = LiteverTheme.spacing.smallMedium),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            RadioButton(
-                                selected = mode == m,
-                                onClick = { onModeChange(m) },
-                            )
-                            Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
-                            Text(
-                                text = label,
-                                style = LiteverTheme.typography.bodyLarge,
-                                color = LiteverTheme.colors.onSurface
-                            )
-                        }
+                modes.forEach { (m, label) ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onModeChange(m) }
+                            .padding(
+                                horizontal = LiteverTheme.spacing.medium,
+                                vertical = LiteverTheme.spacing.tiny
+                            ),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = mode == m,
+                            onClick = { onModeChange(m) },
+                        )
+                        Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
+                        Text(
+                            text = label,
+                            style = LiteverTheme.typography.bodyLarge,
+                            color = LiteverTheme.colors.onSurface
+                        )
                     }
                 }
+                Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
             }
             Spacer(modifier = Modifier.weight(1f))
 

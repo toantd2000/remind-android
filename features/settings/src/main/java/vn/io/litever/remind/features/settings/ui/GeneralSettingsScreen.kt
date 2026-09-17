@@ -27,6 +27,7 @@ import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
@@ -251,6 +252,11 @@ fun GeneralSettingsScreen(
                         onClick = { showThemeModeDialog = true }
                     )
 
+                    HorizontalDivider(
+                        color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.3F),
+                        modifier = Modifier.padding(horizontal = LiteverTheme.spacing.extraLarge)
+                    )
+
                     ReMindSettingsItem(
                         title = stringResource(R.string.color_source_headline),
                         subtitle = currentColorPaletteLabel,
@@ -263,7 +269,7 @@ fun GeneralSettingsScreen(
                                 Box(
                                     modifier = Modifier
                                         .size(20.dp)
-                                        .clip(CircleShape)
+                                        .clip(LiteverTheme.shapes.small)
                                         .background(currentColorSwatch)
                                 )
                                 Icon(
@@ -293,6 +299,11 @@ fun GeneralSettingsScreen(
                             )
                         },
                         onClick = { showLanguageDialog = true }
+                    )
+
+                    HorizontalDivider(
+                        color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.3F),
+                        modifier = Modifier.padding(horizontal = LiteverTheme.spacing.extraLarge)
                     )
 
                     ReMindSettingsItem(

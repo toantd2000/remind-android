@@ -45,7 +45,7 @@ import vn.io.litever.designsystem.components.button.LvButton
 import vn.io.litever.designsystem.components.button.LvButtonType
 import vn.io.litever.designsystem.components.button.LvIconButton
 import vn.io.litever.designsystem.components.core.LvSemantic
-import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
+import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsCategory
@@ -118,7 +118,7 @@ fun TypingMissionConfigScreen(
         modifier = Modifier.imePadding(),
         topBar = {
             Box(Modifier.fillMaxWidth()) {
-                ReMindTopAppBar(
+                LvTopAppBar(
                     title = stringResource(vn.io.litever.remind.features.mission.R.string.typing_mission_title),
                     onBackClick = onBackClick
                 )

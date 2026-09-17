@@ -18,9 +18,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.net.toUri
 import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsItem
-import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.features.settings.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,7 +33,7 @@ fun AttributionsScreen(
 
     Scaffold(
         topBar = {
-            ReMindTopAppBar(
+            LvTopAppBar(
                 title = stringResource(R.string.setting_attributions_title),
                 onBackClick = onNavigateBack
             )

@@ -69,8 +69,10 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.flow.collectLatest
 import vn.io.litever.designsystem.components.button.LvIconButton
+import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.components.snackbar.LvSnackbarHost
 import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindLogo
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.Alarm
@@ -225,7 +227,7 @@ fun AlarmListScreen(
             Column(
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                TopAppBar(
+                LvTopAppBar(
                     title = {
                         ReMindLogo()
                     },

@@ -58,9 +58,9 @@ import vn.io.litever.remind.core.ads.api.AdManager
 import vn.io.litever.remind.core.ads.api.AdPlacement
 import vn.io.litever.remind.core.ads.api.AdState
 import vn.io.litever.remind.core.ads.api.LocalAdManager
+import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsItem
-import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.features.settings.BuildConfig
 import vn.io.litever.remind.features.settings.R
@@ -142,7 +142,9 @@ fun SettingsScreen(
 
     Scaffold(
         topBar = {
-            ReMindTopAppBar(title = stringResource(R.string.settings_title))
+            LvTopAppBar(
+                title = stringResource(R.string.settings_title)
+            )
         }
     ) { paddingValues ->
         LazyColumn(

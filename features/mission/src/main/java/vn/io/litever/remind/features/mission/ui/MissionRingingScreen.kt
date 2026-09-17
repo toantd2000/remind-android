@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import vn.io.litever.designsystem.components.button.LvButton
 import vn.io.litever.designsystem.components.core.LvSemantic
-import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
+import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.model.MathProblem
@@ -83,7 +83,7 @@ fun MissionRingingScreen(
     Scaffold(
         topBar = {
             if (!uiState.isMissionJustCompleted && !uiState.isDismissed) {
-                ReMindTopAppBar(
+                LvTopAppBar(
                     title = stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_title),
                     onBackClick = onAbandon,
                     actions = {

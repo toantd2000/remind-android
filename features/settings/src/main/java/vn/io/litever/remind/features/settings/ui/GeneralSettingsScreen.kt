@@ -70,9 +70,9 @@ import vn.io.litever.designsystem.theme.palettes.violetDarkColorScheme
 import vn.io.litever.designsystem.theme.palettes.violetLightColorScheme
 import vn.io.litever.designsystem.theme.palettes.yellowDarkColorScheme
 import vn.io.litever.designsystem.theme.palettes.yellowLightColorScheme
+import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsItem
-import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.features.settings.R
 
@@ -223,7 +223,7 @@ fun GeneralSettingsScreen(
 
     Scaffold(
         topBar = {
-            ReMindTopAppBar(
+            LvTopAppBar(
                 title = stringResource(R.string.setting_general_title),
                 onBackClick = onNavigateBack
             )
@@ -507,6 +507,7 @@ private fun ColorCircleSwatch(
     Column(
         modifier = modifier
             .width(64.dp)
+            .clip(LiteverTheme.shapes.large)
             .clickable(onClick = onClick)
             .padding(vertical = LiteverTheme.spacing.extraSmall),
         horizontalAlignment = Alignment.CenterHorizontally,

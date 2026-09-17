@@ -38,10 +38,10 @@ import vn.io.litever.designsystem.components.button.LvButtonType
 import vn.io.litever.designsystem.components.button.LvIconButton
 import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsCategory
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
-import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.MemoryTilesMissionConfig
 import vn.io.litever.remind.core.model.Mission
@@ -104,7 +104,7 @@ fun MemoryGameConfigScreen(
         modifier = Modifier.imePadding(),
         topBar = {
             Box(Modifier.fillMaxWidth()) {
-                ReMindTopAppBar(
+                LvTopAppBar(
                     title = stringResource(R.string.memory_game_config_title),
                     onBackClick = onBackClick
                 )

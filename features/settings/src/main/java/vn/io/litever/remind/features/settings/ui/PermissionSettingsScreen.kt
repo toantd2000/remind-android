@@ -55,7 +55,7 @@ import vn.io.litever.designsystem.components.button.LvButton
 import vn.io.litever.designsystem.components.button.LvButtonType
 import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
-import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
+import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.features.settings.R
 
 @Composable
@@ -109,7 +109,7 @@ fun PermissionSettingsScreen(
     Scaffold(
         modifier = modifier,
         topBar = {
-            ReMindTopAppBar(
+            LvTopAppBar(
                 title = stringResource(R.string.setting_permissions_title),
                 onBackClick = onNavigateBack
             )

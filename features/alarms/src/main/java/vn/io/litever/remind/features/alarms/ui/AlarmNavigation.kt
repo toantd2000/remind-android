@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.alarms.ui
 
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
@@ -24,7 +25,7 @@ fun NavGraphBuilder.alarmGraph(
     onMissionClick: (vn.io.litever.remind.core.model.Mission) -> Unit,
     onNavigateToPreview: (Long) -> Unit,
     onNavigateToMissionPreview: (Long) -> Unit,
-    navController: androidx.navigation.NavController
+    navController: NavController
 ) {
     composable(route = AlarmListRoute) {
         AlarmListRoute(

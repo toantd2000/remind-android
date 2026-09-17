@@ -13,7 +13,7 @@ import com.mikepenz.aboutlibraries.ui.compose.LibraryDefaults
 import com.mikepenz.aboutlibraries.ui.compose.android.produceLibraries
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
 import com.mikepenz.aboutlibraries.ui.compose.m3.libraryColors
-import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
+import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.features.settings.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -23,7 +23,7 @@ fun LicensesScreen(
 ) {
     Scaffold(
         topBar = {
-            ReMindTopAppBar(
+            LvTopAppBar(
                 title = stringResource(R.string.setting_licenses),
                 onBackClick = onNavigateBack
             )

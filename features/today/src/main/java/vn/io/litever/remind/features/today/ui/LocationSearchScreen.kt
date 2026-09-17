@@ -26,7 +26,7 @@ import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.components.textfield.LvTextField
 import vn.io.litever.designsystem.components.textfield.LvTextFieldType
 import vn.io.litever.designsystem.theme.LiteverTheme
-import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
+import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.model.LocationSearchResponse
 import vn.io.litever.remind.features.today.R
 
@@ -73,7 +73,7 @@ fun LocationSearchScreen(
 ) {
     Scaffold(
         topBar = {
-            ReMindTopAppBar(
+            LvTopAppBar(
                 title = stringResource(R.string.search_location_title),
                 onBackClick = onBackClick
             )

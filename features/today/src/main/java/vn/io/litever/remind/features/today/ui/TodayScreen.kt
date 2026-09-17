@@ -34,7 +34,7 @@ import kotlinx.coroutines.flow.StateFlow
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
+import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.ads.api.AdManager
 import vn.io.litever.remind.core.ads.api.AdPlacement
@@ -105,7 +105,7 @@ fun TodayScreen(
 
     Scaffold(
         topBar = {
-            ReMindTopAppBar(
+            LvTopAppBar(
                 title = greeting,
                 actions = {
                     ReMindLoadingIconButton(

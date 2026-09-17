@@ -72,9 +72,9 @@ import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
+import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.components.ReMindGroupCard
-import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.Phrase
 import vn.io.litever.remind.features.mission.viewmodel.PhraseSelectionViewModel
@@ -203,7 +203,7 @@ fun PhraseSelectionScreen(
 
     Scaffold(
         topBar = {
-            ReMindTopAppBar(
+            LvTopAppBar(
                 title = stringResource(R.string.mission_select_phrases),
                 onBackClick = onBackClick
             )

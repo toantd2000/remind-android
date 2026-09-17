@@ -23,8 +23,8 @@ import vn.io.litever.designsystem.components.button.LvButtonType
 import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
-import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.features.settings.R
 
@@ -54,7 +54,7 @@ fun AlarmSettingsScreen(
 
     Scaffold(
         topBar = {
-            ReMindTopAppBar(
+            LvTopAppBar(
                 title = stringResource(R.string.setting_alarm_title),
                 onBackClick = onNavigateBack
             )

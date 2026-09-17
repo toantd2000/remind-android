@@ -98,7 +98,7 @@ import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.components.ReMindGroupCard
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingIcon
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
-import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
+import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.DayOfWeek
 import vn.io.litever.remind.core.model.MissionType
@@ -585,7 +585,7 @@ fun AlarmEditScreen(
             Column(
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                ReMindTopAppBar(
+                LvTopAppBar(
                     title = stringResource(if (uiState.id == 0L) R.string.add_alarm_title else R.string.edit_alarm_title),
                     onBackClick = onBackClick
                 )

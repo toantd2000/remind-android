@@ -14,6 +14,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.calculateEndPadding
@@ -42,6 +43,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModel
@@ -85,6 +87,9 @@ import vn.io.litever.remind.features.today.ui.todayRoute
 import java.util.Locale
 import javax.inject.Inject
 import androidx.compose.ui.platform.LocalLocale
+import vn.io.litever.remind.core.model.MissionType
+import vn.io.litever.remind.core.model.TypingMissionConfig
+import vn.io.litever.remind.core.model.TypingMode
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -280,196 +285,196 @@ class MainActivity : ComponentActivity() {
                             Scaffold(
                                 snackbarHost = { LvSnackbarHost(hostState = snackbarHostState) },
                                 bottomBar = {
-                                    if (isBottomBarVisible) {
-                                        NavigationBar(
-                                            windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
-                                        ) {
-                                            NavigationBarItem(
-                                                icon = {
-                                                    Icon(
-                                                        Icons.Rounded.Alarm,
-                                                        contentDescription = "Alarm"
-                                                    )
-                                                },
-                                                label = { Text(stringResource(R.string.navigation_alarms)) },
-                                                selected = currentRoute == AlarmListRoute,
-                                                onClick = {
-                                                    navController.navigate(AlarmListRoute) {
-                                                        popUpTo(navController.graph.startDestinationId) {
-                                                            saveState = true
+                                        if (isBottomBarVisible) {
+                                            NavigationBar(
+                                                windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+                                            ) {
+                                                NavigationBarItem(
+                                                    icon = {
+                                                        Icon(
+                                                            Icons.Rounded.Alarm,
+                                                            contentDescription = "Alarm"
+                                                        )
+                                                    },
+                                                    label = { Text(stringResource(R.string.navigation_alarms)) },
+                                                    selected = currentRoute == AlarmListRoute,
+                                                    onClick = {
+                                                        navController.navigate(AlarmListRoute) {
+                                                            popUpTo(navController.graph.startDestinationId) {
+                                                                saveState = true
+                                                            }
+                                                            launchSingleTop = true
+                                                            restoreState = true
                                                         }
-                                                        launchSingleTop = true
-                                                        restoreState = true
                                                     }
-                                                }
-                                            )
-                                            NavigationBarItem(
-                                                icon = {
-                                                    Icon(
-                                                        Icons.Rounded.Lightbulb,
-                                                        contentDescription = "Today"
-                                                    )
-                                                },
-                                                label = { Text(stringResource(R.string.navigation_today)) },
-                                                selected = currentRoute == todayRoute,
-                                                onClick = {
-                                                    navController.navigate(todayRoute) {
-                                                        popUpTo(navController.graph.startDestinationId) {
-                                                            saveState = true
+                                                )
+                                                NavigationBarItem(
+                                                    icon = {
+                                                        Icon(
+                                                            Icons.Rounded.Lightbulb,
+                                                            contentDescription = "Today"
+                                                        )
+                                                    },
+                                                    label = { Text(stringResource(R.string.navigation_today)) },
+                                                    selected = currentRoute == todayRoute,
+                                                    onClick = {
+                                                        navController.navigate(todayRoute) {
+                                                            popUpTo(navController.graph.startDestinationId) {
+                                                                saveState = true
+                                                            }
+                                                            launchSingleTop = true
+                                                            restoreState = true
                                                         }
-                                                        launchSingleTop = true
-                                                        restoreState = true
                                                     }
-                                                }
-                                            )
-                                            NavigationBarItem(
-                                                icon = {
-                                                    Icon(
-                                                        Icons.Rounded.Settings,
-                                                        contentDescription = "Settings"
-                                                    )
-                                                },
-                                                label = { Text(stringResource(R.string.navigation_settings)) },
-                                                selected = currentRoute == settingsRoute,
-                                                onClick = {
-                                                    navController.navigate(settingsRoute) {
-                                                        popUpTo(navController.graph.startDestinationId) {
-                                                            saveState = true
+                                                )
+                                                NavigationBarItem(
+                                                    icon = {
+                                                        Icon(
+                                                            Icons.Rounded.Settings,
+                                                            contentDescription = "Settings"
+                                                        )
+                                                    },
+                                                    label = { Text(stringResource(R.string.navigation_settings)) },
+                                                    selected = currentRoute == settingsRoute,
+                                                    onClick = {
+                                                        navController.navigate(settingsRoute) {
+                                                            popUpTo(navController.graph.startDestinationId) {
+                                                                saveState = true
+                                                            }
+                                                            launchSingleTop = true
+                                                            restoreState = true
                                                         }
-                                                        launchSingleTop = true
-                                                        restoreState = true
                                                     }
-                                                }
-                                            )
+                                                )
+                                            }
                                         }
                                     }
-                                }
-                            ) { paddingValues ->
-                                val layoutDirection = androidx.compose.ui.platform.LocalLayoutDirection.current
-                                val actualPadding = androidx.compose.foundation.layout.PaddingValues(
-                                    start = paddingValues.calculateStartPadding(layoutDirection),
-                                    top = paddingValues.calculateTopPadding(),
-                                    end = paddingValues.calculateEndPadding(layoutDirection),
-                                    bottom = if (isBottomBarVisible) paddingValues.calculateBottomPadding() else LiteverTheme.spacing.none
-                                )
+                                ) { paddingValues ->
+                                    val layoutDirection = LocalLayoutDirection.current
+                                    val actualPadding = PaddingValues(
+                                        start = paddingValues.calculateStartPadding(layoutDirection),
+                                        top = paddingValues.calculateTopPadding(),
+                                        end = paddingValues.calculateEndPadding(layoutDirection),
+                                        bottom = if (isBottomBarVisible) paddingValues.calculateBottomPadding() else LiteverTheme.spacing.none
+                                    )
 
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(actualPadding)
-                                        .consumeWindowInsets(actualPadding)
-                                ) {
-                                    NavHost(
-                                        navController = navController,
-                                        startDestination = AlarmListRoute
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(actualPadding)
+                                            .consumeWindowInsets(actualPadding)
                                     ) {
-                                        alarmGraph(
-                                            onNavigateToEdit = { id ->
-                                                navController.navigate("alarm_edit_route/$id")
-                                            },
-                                            onNavigateToRingtoneSelection = { currentUri ->
-                                                // Set initial URI in the CURRENT entry so the next screen can read it from PREVIOUS entry
-                                                navController.currentBackStackEntry?.savedStateHandle?.set(
-                                                    "initialUri",
-                                                    currentUri
-                                                )
-                                                navController.navigate(ringtoneSelectionRoute)
-                                            },
-                                            onNavigateToPermissions = {
-                                                navController.navigateToPermissions()
-                                            },
-                                            onNavigateToMissionRinging = { alarmId ->
-                                                navController.navigateToMissionRinging(alarmId)
-                                            },
-                                            onNavigateToMessage = { alarmId ->
-                                                // Navigation handled globally
-                                            },
-                                            onNavigateBack = {
-                                                navController.popBackStack()
-                                            },
-                                            onMissionClick = { mission ->
-                                                if (mission.type == vn.io.litever.remind.core.model.MissionType.TYPING) {
-                                                    val config =
-                                                        mission.config as? vn.io.litever.remind.core.model.TypingMissionConfig
+                                        NavHost(
+                                            navController = navController,
+                                            startDestination = AlarmListRoute
+                                        ) {
+                                            alarmGraph(
+                                                onNavigateToEdit = { id ->
+                                                    navController.navigate("alarm_edit_route/$id")
+                                                },
+                                                onNavigateToRingtoneSelection = { currentUri ->
+                                                    // Set initial URI in the CURRENT entry so the next screen can read it from PREVIOUS entry
                                                     navController.currentBackStackEntry?.savedStateHandle?.set(
-                                                        "repetitions",
-                                                        mission.repeatCount
+                                                        "initialUri",
+                                                        currentUri
                                                     )
+                                                    navController.navigate(ringtoneSelectionRoute)
+                                                },
+                                                onNavigateToPermissions = {
+                                                    navController.navigateToPermissions()
+                                                },
+                                                onNavigateToMissionRinging = { alarmId ->
+                                                    navController.navigateToMissionRinging(alarmId)
+                                                },
+                                                onNavigateToMessage = { alarmId ->
+                                                    // Navigation handled globally
+                                                },
+                                                onNavigateBack = {
+                                                    navController.popBackStack()
+                                                },
+                                                onMissionClick = { mission ->
+                                                    if (mission.type == MissionType.TYPING) {
+                                                        val config =
+                                                            mission.config as? TypingMissionConfig
+                                                        navController.currentBackStackEntry?.savedStateHandle?.set(
+                                                            "repetitions",
+                                                            mission.repeatCount
+                                                        )
+                                                        navController.currentBackStackEntry?.savedStateHandle?.set(
+                                                            "selectedPhraseIds",
+                                                            config?.selectedPhraseIds ?: emptyList()
+                                                        )
+                                                        navController.currentBackStackEntry?.savedStateHandle?.set(
+                                                            "typingMode",
+                                                            config?.mode?.name ?: TypingMode.NORMAL.name
+                                                        )
+                                                        navController.navigateToTypingMissionConfig(
+                                                            mission.alarmId
+                                                        )
+                                                    } else if (mission.type == MissionType.MEMORY_FIND_COLOR_TILES) {
+                                                        navController.currentBackStackEntry?.savedStateHandle?.set(
+                                                            "repetitions",
+                                                            mission.repeatCount
+                                                        )
+                                                        navController.navigateToMemoryGameConfig(
+                                                            mission.alarmId
+                                                        )
+                                                    }
+                                                },
+                                                onNavigateToPreview = { id ->
+                                                    navController.navigate("alarm_preview_route/$id")
+                                                },
+                                                onNavigateToMissionPreview = { id ->
+                                                    navController.navigate("mission_ringing_route/$id?isPreview=true")
+                                                },
+                                                navController = navController
+                                            )
+                                            missionGraph(
+                                                onNavigateToPhraseSelection = { alarmId, selectedIds ->
                                                     navController.currentBackStackEntry?.savedStateHandle?.set(
                                                         "selectedPhraseIds",
-                                                        config?.selectedPhraseIds ?: emptyList()
+                                                        selectedIds
                                                     )
-                                                    navController.currentBackStackEntry?.savedStateHandle?.set(
-                                                        "typingMode",
-                                                        config?.mode?.name ?: vn.io.litever.remind.core.model.TypingMode.NORMAL.name
+                                                    navController.navigateToPhraseSelection(alarmId)
+                                                },
+                                                onPhrasesSelected = { phraseIds ->
+                                                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                                                        "selectedPhraseIds",
+                                                        phraseIds
                                                     )
-                                                    navController.navigateToTypingMissionConfig(
-                                                        mission.alarmId
+                                                    navController.popBackStack()
+                                                },
+                                                onSaveMission = { mission ->
+                                                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                                                        "updatedMission",
+                                                        mission
                                                     )
-                                                } else if (mission.type == vn.io.litever.remind.core.model.MissionType.MEMORY_FIND_COLOR_TILES) {
-                                                    navController.currentBackStackEntry?.savedStateHandle?.set(
-                                                        "repetitions",
-                                                        mission.repeatCount
-                                                    )
-                                                    navController.navigateToMemoryGameConfig(
-                                                        mission.alarmId
-                                                    )
+                                                    navController.popBackStack()
+                                                },
+                                                onMissionFinish = { id ->
+                                                    navController.popBackStack()
+                                                },
+                                                onBackClick = { navController.popBackStack() },
+                                                navController = navController
+                                            )
+                                            todayGraph(
+                                                onNavigateToLocationSearch = {
+                                                    navController.navigate(locationSearchRoute)
+                                                },
+                                                onBackClick = {
+                                                    navController.popBackStack()
                                                 }
-                                            },
-                                            onNavigateToPreview = { id ->
-                                                navController.navigate("alarm_preview_route/$id")
-                                            },
-                                            onNavigateToMissionPreview = { id ->
-                                                navController.navigate("mission_ringing_route/$id?isPreview=true")
-                                            },
-                                            navController = navController
-                                        )
-                                        missionGraph(
-                                            onNavigateToPhraseSelection = { alarmId, selectedIds ->
-                                                navController.currentBackStackEntry?.savedStateHandle?.set(
-                                                    "selectedPhraseIds",
-                                                    selectedIds
-                                                )
-                                                navController.navigateToPhraseSelection(alarmId)
-                                            },
-                                            onPhrasesSelected = { phraseIds ->
-                                                navController.previousBackStackEntry?.savedStateHandle?.set(
-                                                    "selectedPhraseIds",
-                                                    phraseIds
-                                                )
-                                                navController.popBackStack()
-                                            },
-                                            onSaveMission = { mission ->
-                                                navController.previousBackStackEntry?.savedStateHandle?.set(
-                                                    "updatedMission",
-                                                    mission
-                                                )
-                                                navController.popBackStack()
-                                            },
-                                            onMissionFinish = { id ->
-                                                navController.popBackStack()
-                                            },
-                                            onBackClick = { navController.popBackStack() },
-                                            navController = navController
-                                        )
-                                        todayGraph(
-                                            onNavigateToLocationSearch = {
-                                                navController.navigate(locationSearchRoute)
-                                            },
-                                            onBackClick = {
-                                                navController.popBackStack()
-                                            }
-                                        )
-                                        settingsGraph(
-                                            onNavigateToGeneralSettings = { navController.navigateToGeneralSettings() },
-                                            onNavigateToQA = { navController.navigateToQA() },
-                                            onNavigateToPermissions = { navController.navigateToPermissions() },
-                                            onNavigateToAlarmSettings = { navController.navigateToAlarmSettings() },
-                                            onNavigateToLicenses = { navController.navigateToLicenses() },
-                                            onNavigateToAttributions = { navController.navigateToAttributions() },
-                                            onNavigateBack = { navController.popBackStack() }
-
-                                        )
+                                            )
+                                            settingsGraph(
+                                                onNavigateToGeneralSettings = { navController.navigateToGeneralSettings() },
+                                                onNavigateToQA = { navController.navigateToQA() },
+                                                onNavigateToPermissions = { navController.navigateToPermissions() },
+                                                onNavigateToAlarmSettings = { navController.navigateToAlarmSettings() },
+                                                onNavigateToLicenses = { navController.navigateToLicenses() },
+                                                onNavigateToAttributions = { navController.navigateToAttributions() },
+                                                onNavigateBack = { navController.popBackStack() }
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -478,7 +483,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
 
     private fun handleLockScreenBypass() {
         val isRingingIntent = intent?.data?.toString()?.contains("remind/ring") == true

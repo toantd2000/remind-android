@@ -46,7 +46,7 @@ import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
-import vn.io.litever.remind.core.designsystem.components.ReMindTopAppBar
+import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 
 @Composable
 fun RingtoneSelectionRoute(
@@ -102,7 +102,7 @@ fun RingtoneSelectionScreen(
     Scaffold(
         modifier = modifier,
         topBar = {
-            ReMindTopAppBar(
+            LvTopAppBar(
                 title = stringResource(R.string.ringtone_selection_title),
                 onBackClick = onBackClick
             )

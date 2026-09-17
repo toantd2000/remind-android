@@ -2,33 +2,33 @@ package vn.io.litever.remind.features.alarms.ui
 
 import android.app.Activity
 import android.content.ContextWrapper
+import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.MoreVert
-import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.NotificationsPaused
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.SkipNext
 import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,11 +41,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -53,13 +50,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -68,6 +67,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.flow.collectLatest
+import vn.io.litever.designsystem.components.FeedbackStateType
+import vn.io.litever.designsystem.components.FeedbackStateView
+import vn.io.litever.designsystem.components.button.LvButton
 import vn.io.litever.designsystem.components.button.LvIconButton
 import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.components.snackbar.LvSnackbarHost
@@ -120,7 +122,8 @@ fun AlarmListRoute(
         }
     }
 
-    val resources = LocalResources.current
+    val context = LocalContext.current
+    val resources = context.resources
     // Handle UI messages (Snackbars)
     LaunchedEffect(viewModel.uiMessage) {
         viewModel.uiMessage.collectLatest { messageRes ->
@@ -221,47 +224,52 @@ fun AlarmListScreen(
     val actionMoreDescription = stringResource(R.string.action_more)
     val deleteDisabledAlarmsText = stringResource(R.string.delete_disabled_alarms)
     val actionAddDescription = stringResource(R.string.action_add)
+    val hasAlarms = !alarms.isNullOrEmpty()
 
     Scaffold(
         topBar = {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                LvTopAppBar(
-                    title = {
-                        ReMindLogo()
-                    },
-                    actions = {
-                        LvIconButton(onClick = { showTopMenu = !showTopMenu }) {
-                            Icon(Icons.Rounded.MoreVert, contentDescription = actionMoreDescription)
+            if (hasAlarms) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    LvTopAppBar(
+                        title = {
+                            ReMindLogo()
+                        },
+                        actions = {
+                            LvIconButton(onClick = { showTopMenu = !showTopMenu }) {
+                                Icon(Icons.Rounded.MoreVert, contentDescription = actionMoreDescription)
+                            }
+                            DropdownMenu(
+                                expanded = showTopMenu,
+                                onDismissRequest = { if (showTopMenu) showTopMenu = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text(deleteDisabledAlarmsText) },
+                                    onClick = {
+                                        onDeleteDisabledAlarms()
+                                        if (showTopMenu) showTopMenu = false
+                                    }
+                                )
+                            }
                         }
-                        DropdownMenu(
-                            expanded = showTopMenu,
-                            onDismissRequest = { if (showTopMenu) showTopMenu = false }
-                        ) {
-                            DropdownMenuItem(
-                                text = { Text(deleteDisabledAlarmsText) },
-                                onClick = {
-                                    onDeleteDisabledAlarms()
-                                    if (showTopMenu) showTopMenu = false
-                                }
-                            )
-                        }
-                    }
-                )
-                NextAlarmHeader(
-                    modifier = Modifier.padding(
-                        start = LiteverTheme.spacing.medium,
-                        end = LiteverTheme.spacing.medium,
-                        bottom = LiteverTheme.spacing.small
-                    ),
-                    state = nextAlarmState
-                )
+                    )
+                    NextAlarmHeader(
+                        modifier = Modifier.padding(
+                            start = LiteverTheme.spacing.medium,
+                            end = LiteverTheme.spacing.medium,
+                            bottom = LiteverTheme.spacing.small
+                        ),
+                        state = nextAlarmState
+                    )
+                }
             }
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onAddAlarmClick) {
-                Icon(Icons.Rounded.Add, contentDescription = actionAddDescription)
+            if (hasAlarms) {
+                FloatingActionButton(onClick = onAddAlarmClick) {
+                    Icon(Icons.Rounded.Add, contentDescription = actionAddDescription)
+                }
             }
         },
         snackbarHost = { LvSnackbarHost(snackbarHostState) }
@@ -280,7 +288,10 @@ fun AlarmListScreen(
                 Box(modifier = Modifier.weight(1f))
             } else {
                 if (alarms.isEmpty()) {
-                    EmptyState(modifier = Modifier.weight(1f))
+                    EmptyState(
+                        onAddAlarmClick = onAddAlarmClick,
+                        modifier = Modifier.weight(1f)
+                    )
                 } else {
                     LazyColumn(
                         modifier = Modifier.weight(1f),
@@ -410,60 +421,107 @@ private fun AlarmActionBottomSheet(
 
 
 @Composable
-fun EmptyState(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(LiteverTheme.spacing.extraLarge),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Surface(
-            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.15f),
-            shape = CircleShape,
-            modifier = Modifier.size(100.dp)
-        ) {
-            Box(contentAlignment = Alignment.Center) {
-                Icon(
-                    imageVector = Icons.Rounded.Notifications,
+fun EmptyState(
+    onAddAlarmClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val descriptionPrefix = stringResource(R.string.empty_description)
+    val reColor = LiteverTheme.colors.onSurfaceVariant
+    val mindColor = LiteverTheme.colors.primary
+    val displayFontFamily = LiteverTheme.typography.displayLarge.fontFamily
+
+    val annotatedDescription = remember(descriptionPrefix, reColor, mindColor, displayFontFamily) {
+        buildAnnotatedString {
+            append("$descriptionPrefix ")
+            withStyle(
+                style = SpanStyle(
+                    color = reColor,
+                    fontWeight = FontWeight.Light,
+                    fontFamily = displayFontFamily
+                )
+            ) {
+                append("Re")
+            }
+            withStyle(
+                style = SpanStyle(
+                    color = mindColor,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = displayFontFamily
+                )
+            ) {
+                append("Mind")
+            }
+            append(".")
+        }
+    }
+
+    FeedbackStateView(
+        title = stringResource(R.string.no_alarms),
+        type = FeedbackStateType.EMPTY,
+        modifier = modifier,
+        illustration = {
+            val isDark = !LiteverTheme.colors.isLight
+            val illustrationRes = if (isDark) {
+                R.drawable.no_alarm_illustration_dark
+            } else {
+                R.drawable.no_alarm_illustration
+            }
+            Card(
+                modifier = Modifier.size(200.dp),
+                shape = LiteverTheme.shapes.extraLarge
+            ) {
+                Image(
+                    painter = painterResource(illustrationRes),
                     contentDescription = null,
-                    modifier = Modifier.size(LiteverTheme.spacing.doubleLarge),
-                    tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+                )
+            }
+        },
+        descriptionSlot = {
+            Text(
+                text = annotatedDescription,
+                style = LiteverTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.widthIn(max = 280.dp)
+            )
+        },
+        action = {
+            LvButton(
+                onClick = onAddAlarmClick,
+                semantic = LvSemantic.Primary
+            ) {
+                Text(
+                    text = stringResource(R.string.action_add_new_alarm)
                 )
             }
         }
-
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.large))
-
-        Text(
-            text = stringResource(R.string.no_alarms),
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-            fontWeight = FontWeight.SemiBold,
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
-
-        Text(
-            text = stringResource(R.string.empty_description),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = LiteverTheme.spacing.large)
-        )
-    }
+    )
 }
 
 
-@androidx.compose.ui.tooling.preview.Preview(
+@Preview(
+    name = "Empty State - Light",
     showBackground = true,
-    device = androidx.compose.ui.tooling.preview.Devices.PIXEL_7
+    device = Devices.PIXEL_7
 )
 @Composable
 fun EmptyStatePreview() {
-    vn.io.litever.remind.core.designsystem.theme.ReMindTheme {
-        EmptyState()
+    ReMindTheme {
+        EmptyState(onAddAlarmClick = {})
+    }
+}
+
+@Preview(
+    name = "Empty State - Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    device = Devices.PIXEL_7,
+    backgroundColor = 0xFF121212L,
+)
+@Composable
+fun EmptyStateDarkPreview() {
+    ReMindTheme(darkTheme = true) {
+        EmptyState(onAddAlarmClick = {})
     }
 }
 

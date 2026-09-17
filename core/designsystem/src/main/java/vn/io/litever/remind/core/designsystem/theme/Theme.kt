@@ -1,9 +1,13 @@
 package vn.io.litever.remind.core.designsystem.theme
 
+import android.content.res.Configuration
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.Shapes
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalConfiguration
 import vn.io.litever.designsystem.theme.LiteverColors
 import vn.io.litever.designsystem.theme.LiteverShapes
 import vn.io.litever.designsystem.theme.LiteverSpacing
@@ -55,15 +59,28 @@ fun ReMindTheme(
         else -> LiteverThemeColor.RED
     }
 
-    LiteverTheme(
-        themeColor = resolvedThemeColor,
-        colorScheme = colorScheme,
-        colors = colors,
-        typography = typography,
-        spacing = spacing,
-        shapes = shapes,
-        darkTheme = darkTheme,
-        dynamicColor = isDynamic,
-        content = content
-    )
+    val currentConfiguration = LocalConfiguration.current
+    val themedConfiguration = remember(currentConfiguration, darkTheme) {
+        Configuration(currentConfiguration).apply {
+            uiMode = (uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()) or
+                if (darkTheme) Configuration.UI_MODE_NIGHT_YES else Configuration.UI_MODE_NIGHT_NO
+        }
+    }
+
+    CompositionLocalProvider(
+        LocalConfiguration provides themedConfiguration
+    ) {
+        LiteverTheme(
+            themeColor = resolvedThemeColor,
+            colorScheme = colorScheme,
+            colors = colors,
+            typography = typography,
+            spacing = spacing,
+            shapes = shapes,
+            darkTheme = darkTheme,
+            dynamicColor = isDynamic,
+            content = content
+        )
+    }
 }
+

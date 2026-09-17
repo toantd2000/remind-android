@@ -32,6 +32,7 @@ import android.app.Activity
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
+import androidx.compose.ui.draw.clip
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import vn.io.litever.designsystem.components.button.LvButton
 import vn.io.litever.remind.core.designsystem.components.TodayQuoteView
@@ -86,21 +87,23 @@ fun AlarmMessageScreen(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                val displayTime = alarm?.time ?: LocalTime.now()
-                
-                Text(
-                    text = getGreetingByTime(displayTime),
-                    style = LiteverTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-                    color = statusColor,
-                    textAlign = TextAlign.Center
-                )
-
-                Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
-
                 Column(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth()
+                        .clip(shape = LiteverTheme.shapes.large)
+                        .background(color = LiteverTheme.colors.surfaceContainerLow)
+                        .padding(all = LiteverTheme.spacing.large),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
+                    val displayTime = alarm?.time ?: LocalTime.now()
+
+                    Text(
+                        text = getGreetingByTime(displayTime),
+                        style = LiteverTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                        color = statusColor,
+                        textAlign = TextAlign.Center
+                    )
+
+                    Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
                     // Time with small AM/PM
                     val (timeStr, amPm) = TimeFormatUtils.formatTimeParts(
                         displayTime,
@@ -286,7 +289,7 @@ private object PreviewAdManager : AdManager {
             modifier = modifier
                 .fillMaxWidth()
                 .height(250.dp)
-                .background(LiteverTheme.colors.surfaceVariant, LiteverTheme.shapes.medium),
+                .background(LiteverTheme.colors.surfaceVariant, LiteverTheme.shapes.large),
             contentAlignment = Alignment.Center
         ) {
             Text(

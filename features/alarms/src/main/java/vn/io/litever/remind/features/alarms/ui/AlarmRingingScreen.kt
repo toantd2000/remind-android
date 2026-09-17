@@ -373,7 +373,6 @@ fun AlarmRingingContent(
                     Text(
                         text = alarm.label,
                         style = LiteverTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-                        color = LiteverTheme.colors.primary,
                         modifier = Modifier.fillMaxWidth().padding(horizontal = LiteverTheme.spacing.medium),
                         textAlign = TextAlign.Center
                     )

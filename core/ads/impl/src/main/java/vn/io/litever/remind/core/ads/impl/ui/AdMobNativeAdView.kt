@@ -1,7 +1,10 @@
 package vn.io.litever.remind.core.ads.impl.ui
 
+import android.graphics.Typeface
+import android.text.TextUtils
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,8 +18,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalFontFamilyResolver
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
@@ -24,8 +29,11 @@ import com.google.android.gms.ads.nativead.NativeAd
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import vn.io.litever.designsystem.theme.LiteverShapes
+import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.ads.api.AdPlacement
 import vn.io.litever.remind.core.ads.impl.AdMobManagerImpl
+import vn.io.litever.remind.core.designsystem.theme.neutralContainer
+import vn.io.litever.remind.core.designsystem.theme.onNeutral
 import com.google.android.gms.ads.nativead.NativeAdView as GmsNativeAdView
 
 @Composable
@@ -74,24 +82,39 @@ private fun AdNativeContainer(
     content: @Composable () -> Unit
 ) {
     Surface(
-        modifier = if (isFillSpace) modifier.fillMaxSize().clip(LiteverShapes.small)
-                   else modifier.fillMaxWidth().clip(LiteverShapes.small),
-        shape = LiteverShapes.small,
-        color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.2f),
-        border = androidx.compose.foundation.BorderStroke(
-            1.dp,
-            MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
-        ),
+        modifier = if (isFillSpace) modifier.fillMaxSize().clip(LiteverTheme.shapes.large)
+                   else modifier.fillMaxWidth().clip(LiteverTheme.shapes.large),
+        shape = LiteverTheme.shapes.large,
+        color = LiteverTheme.colors.neutralContainer,
         content = content
     )
 }
 
 @Composable
 private fun NativeAdContent(nativeAd: NativeAd, isLarge: Boolean = false, isFillSpace: Boolean = false) {
-    val colorOnSurface = MaterialTheme.colorScheme.onSurface
-    val colorOnSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
-    val colorPrimary = MaterialTheme.colorScheme.primary
-    val colorOnPrimary = MaterialTheme.colorScheme.onPrimary
+    val colorOnSurface = LiteverTheme.colors.onSurface
+    val colorOnSurfaceVariant = LiteverTheme.colors.onSurfaceVariant
+    val colorPrimary = LiteverTheme.colors.neutral
+    val colorOnPrimary = MaterialTheme.colorScheme.onNeutral
+
+    val fontFamilyResolver = LocalFontFamilyResolver.current
+    val typography = LiteverTheme.typography
+    val titleFontFamily = typography.titleMedium.fontFamily
+    val bodyFontFamily = typography.bodyMedium.fontFamily
+
+    val headlineTypeface = remember(fontFamilyResolver, titleFontFamily) {
+        fontFamilyResolver.resolve(
+            fontFamily = titleFontFamily,
+            fontWeight = FontWeight.Bold
+        ).value as? Typeface
+    }
+
+    val bodyTypeface = remember(fontFamilyResolver, bodyFontFamily) {
+        fontFamilyResolver.resolve(
+            fontFamily = bodyFontFamily,
+            fontWeight = FontWeight.Normal
+        ).value as? Typeface
+    }
 
     AndroidView(
         modifier = if (isFillSpace) Modifier.fillMaxSize() else Modifier.fillMaxWidth(),
@@ -99,9 +122,9 @@ private fun NativeAdContent(nativeAd: NativeAd, isLarge: Boolean = false, isFill
             val adView = GmsNativeAdView(ctx)
             
             val container = if (isLarge) {
-                createLargeAdLayout(ctx, adView, isFillSpace, colorOnSurface, colorOnSurfaceVariant, colorPrimary)
+                createLargeAdLayout(ctx, adView, isFillSpace, colorOnSurface, colorOnSurfaceVariant, colorPrimary, headlineTypeface, bodyTypeface)
             } else {
-                createSmallAdLayout(ctx, adView, colorOnSurface, colorOnSurfaceVariant, colorPrimary)
+                createSmallAdLayout(ctx, adView, colorOnSurface, colorOnSurfaceVariant, colorPrimary, headlineTypeface, bodyTypeface)
             }
 
             adView.addView(container)
@@ -111,11 +134,13 @@ private fun NativeAdContent(nativeAd: NativeAd, isLarge: Boolean = false, isFill
             (adView.headlineView as TextView).apply {
                 text = nativeAd.headline
                 setTextColor(colorOnSurface.toArgb())
+                headlineTypeface?.let { typeface = it }
             }
 
             (adView.bodyView as TextView).apply {
                 text = nativeAd.body
                 setTextColor(colorOnSurfaceVariant.toArgb())
+                bodyTypeface?.let { typeface = it }
             }
 
             (adView.iconView as ImageView).apply {
@@ -130,6 +155,7 @@ private fun NativeAdContent(nativeAd: NativeAd, isLarge: Boolean = false, isFill
 
             (adView.callToActionView as Button).apply {
                 text = nativeAd.callToAction
+                headlineTypeface?.let { typeface = it }
                 (background as? android.graphics.drawable.GradientDrawable)?.let { bg ->
                     if (isLarge) {
                         bg.setStroke((1f * context.resources.displayMetrics.density).toInt(), colorPrimary.toArgb())
@@ -169,7 +195,9 @@ private fun createLargeAdLayout(
     isFillSpace: Boolean,
     colorOnSurface: androidx.compose.ui.graphics.Color,
     colorOnSurfaceVariant: androidx.compose.ui.graphics.Color,
-    colorPrimary: androidx.compose.ui.graphics.Color
+    colorPrimary: Color,
+    headlineTypeface: Typeface?,
+    bodyTypeface: Typeface?
 ): android.widget.LinearLayout {
     val container = android.widget.LinearLayout(ctx).apply {
         orientation = android.widget.LinearLayout.VERTICAL
@@ -204,7 +232,7 @@ private fun createLargeAdLayout(
     val headlineView = TextView(ctx).apply {
         textSize = 16f
         setTextColor(colorOnSurface.toArgb())
-        typeface = android.graphics.Typeface.DEFAULT_BOLD
+        typeface = headlineTypeface ?: Typeface.DEFAULT_BOLD
         maxLines = 1
         ellipsize = android.text.TextUtils.TruncateAt.END
     }
@@ -240,6 +268,7 @@ private fun createLargeAdLayout(
     val bodyView = TextView(ctx).apply {
         textSize = 13f
         setTextColor(colorOnSurfaceVariant.toArgb())
+        bodyTypeface?.let { typeface = it }
         maxLines = 2
         ellipsize = android.text.TextUtils.TruncateAt.END
     }
@@ -255,6 +284,7 @@ private fun createLargeAdLayout(
         }
         textSize = 14f
         isAllCaps = false
+        headlineTypeface?.let { typeface = it }
         val radius = 8f * ctx.resources.displayMetrics.density
         val strokeWidth = (1f * ctx.resources.displayMetrics.density).toInt()
         background = android.graphics.drawable.GradientDrawable().apply {
@@ -275,8 +305,10 @@ private fun createSmallAdLayout(
     adView: GmsNativeAdView,
     colorOnSurface: androidx.compose.ui.graphics.Color,
     colorOnSurfaceVariant: androidx.compose.ui.graphics.Color,
-    colorPrimary: androidx.compose.ui.graphics.Color
-): android.widget.LinearLayout {
+    colorPrimary: Color,
+    headlineTypeface: Typeface?,
+    bodyTypeface: Typeface?
+): LinearLayout {
     val container = android.widget.LinearLayout(ctx).apply {
         orientation = android.widget.LinearLayout.HORIZONTAL
         setPadding(16 * 3, 16 * 3, 16 * 3, 16 * 3)
@@ -306,9 +338,9 @@ private fun createSmallAdLayout(
     val headlineView = TextView(ctx).apply {
         textSize = 15f
         setTextColor(colorOnSurface.toArgb())
-        typeface = android.graphics.Typeface.DEFAULT_BOLD
+        typeface = headlineTypeface ?: android.graphics.Typeface.DEFAULT_BOLD
         maxLines = 1
-        ellipsize = android.text.TextUtils.TruncateAt.END
+        ellipsize = TextUtils.TruncateAt.END
     }
     contentColumn.addView(headlineView)
     adView.headlineView = headlineView
@@ -316,8 +348,9 @@ private fun createSmallAdLayout(
     val bodyView = TextView(ctx).apply {
         textSize = 13f
         setTextColor(colorOnSurfaceVariant.toArgb())
+        bodyTypeface?.let { typeface = it }
         maxLines = 2
-        ellipsize = android.text.TextUtils.TruncateAt.END
+        ellipsize = TextUtils.TruncateAt.END
         setPadding(0, 4 * 3, 0, 0)
     }
     contentColumn.addView(bodyView)
@@ -334,6 +367,7 @@ private fun createSmallAdLayout(
         }
         textSize = 12f
         isAllCaps = false
+        headlineTypeface?.let { typeface = it }
         val radius = 8f * ctx.resources.displayMetrics.density
         background = android.graphics.drawable.GradientDrawable().apply {
             setColor(colorPrimary.toArgb())

@@ -979,5 +979,44 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
   - Giao diện nhất quán, hiện đại, tuân thủ 100% Material 3 và Litever Design System.
   - Tối ưu lượng code lặp lại tại `AlarmEditScreen`.
 
+### [TDR-066] - Tối giản hóa cấu trúc container trong WeatherInfoView
+- **Ngày thực hiện:** 2026-09-17
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - `FullWeatherView` và `CompactWeatherView` trong `WeatherInfoView.kt` trước đây sử dụng các container lồng nhau không cần thiết (`Card` -> `Box` -> `Column` ở Full view, và `Surface` -> `Box` -> `Row` ở Compact view).
+  - Điều này làm phức tạp cây Layout Node (Layout Tree) và tạo ra boilerplate thừa (`CardDefaults`, `Box`, `Surface`).
+- **Quyết định:**
+  1. **Đơn giản hóa FullWeatherView:** Dùng duy nhất 1 `Column` với `Modifier.clip(LiteverTheme.shapes.medium).background(Brush.linearGradient(weatherColors))`.
+  2. **Đơn giản hóa CompactWeatherView:** Dùng duy nhất 1 `Row` với `Modifier.clip(LiteverTheme.shapes.large).background(Brush.linearGradient(weatherColors)).clickable { ... }`.
+  3. **Dọn dẹp Import:** Loại bỏ hoàn toàn các import không sử dụng (`Card`, `CardDefaults`, `Box`, `Surface`), bổ sung `Modifier.clip`.
+  4. **Tối ưu Alpha & Tương phản Chữ theo Theme:**
+     - Cập nhật `getWeatherColors`: Tự động áp dụng `alpha = 0.3f` ở Dark Theme và `alpha = 0.7f` ở Light Theme.
+     - Chuẩn hóa các màu chữ (`location`, `temperature`, `condition`, `AI hint`) sang `onSurface` và `onSurfaceVariant` không giảm alpha quá mức để đảm bảo độ tương phản cao và hiển thị sắc nét trên cả 2 chế độ sáng/tối.
+- **Hệ quả:**
+  - Cấu trúc Composable tối giản tuyệt đối: Không còn bất kỳ container bọc ngoài dư thừa nào.
+  - Giảm tối đa độ sâu của UI Node Hierarchy, tối ưu hiệu năng recomposition và render.
+### [TDR-067] - Tái cấu trúc GeneralSettingsScreen: Thay thế SegmentedButton bằng ReMindSettingsItem & Selection Dialog
+- **Ngày thực hiện:** 2026-09-17
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Trong `GeneralSettingsScreen`, việc lặp lại 3 hàng `SingleChoiceSegmentedButtonRow` liên tiếp (Định dạng giờ, Chế độ hiển thị, Ngôn ngữ) làm giao diện bị dày đặc, chiếm diện tích ngang và kém tính phân cấp thị giác.
+  - Cần chuyển đổi sang phong cách danh sách cài đặt chuẩn Android / Material 3 (dùng row hiển thị tóm tắt lựa chọn hiện tại và mở Dialog lựa chọn khi tương tác).
+- **Quyết định:**
+  1. **Chuyển đổi sang `ReMindSettingsItem` & Tối ưu gom nhóm:**
+     - Gộp mục Ngôn ngữ và Định dạng giờ vào chung một thẻ nhóm **"Ngôn ngữ & Vùng" / "Language & Region"** (`language_and_region_headline`).
+     - Mục Time format: Hiển thị title "Time format", subtitle là định dạng đang chọn ("System", "12h", "24h"), icon `Schedule` và chevron trailing icon.
+     - Mục Display mode: Nằm trong nhóm "Display", hiển thị title "Display mode", subtitle là theme đang chọn ("System", "Light", "Dark"), icon tự động đổi theo theme hiện tại (`LightMode`, `DarkMode`, `BrightnessMedium`).
+     - Mục Language: Nằm trong nhóm "Language & Region", hiển thị title "Language", subtitle là ngôn ngữ đang chọn ("English", "Tiếng Việt"), icon `Language`.
+     - Mục Color Palette (Màu chủ đạo): Chuyển đổi từ cụm 8 ô nút chữ nhật cồng kềnh sang dòng `ReMindSettingsItem` chuẩn, hiển thị tên màu đang chọn và Preview chấm tròn màu sắc (Color dot) ở đuôi dòng, nhấp vào để mở `ColorPaletteSelectionDialog`.
+  2. **Tạo `SingleChoiceDialog` & `ColorPaletteSelectionDialog` dùng `LvAlertDialog`:**
+     - Hiển thị danh sách tùy chọn với `RadioButton` và text có thể bấm trực tiếp vào toàn hàng.
+     - `ColorPaletteSelectionDialog`: Thiết kế dạng lưới tròn **4 cột x 2 hàng** (Pixel/Material 3 style) cực kỳ nhỏ gọn, gồm chấm màu tròn 48dp, viền nổi bật (2.5dp) & dấu tích `Check` khi được chọn, cùng tên màu ngắn gọn phía dưới. Giảm 60% chiều cao so với danh sách dọc, không còn chiếm diện tích màn hình.
+     - Hỗ trợ nút Cancel (Huỷ) chuẩn thiết kế qua `LvButton`.
+- **Hệ quả:**
+  - Giao diện cài đặt chung đồng bộ 100%, thanh thoát và tinh tế với 2 nhóm rõ ràng: **Display** (Giao diện & Màu sắc) và **Language & Region** (Ngôn ngữ & Định dạng vùng miền).
+  - Dialog chọn màu nhỏ gọn, trực quan, thẩm mỹ cao và thao tác chạm nhanh chóng.
+  - Đồng bộ 100% với phong cách toàn bộ ứng dụng (`SettingsScreen`, `AlarmSettingsScreen`).
+
+
 
 

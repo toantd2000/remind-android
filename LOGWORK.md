@@ -1012,11 +1012,217 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
      - Hiển thị danh sách tùy chọn với `RadioButton` và text có thể bấm trực tiếp vào toàn hàng.
      - `ColorPaletteSelectionDialog`: Thiết kế dạng lưới tròn **4 cột x 2 hàng** (Pixel/Material 3 style) cực kỳ nhỏ gọn, gồm chấm màu tròn 48dp, viền nổi bật (2.5dp) & dấu tích `Check` khi được chọn, cùng tên màu ngắn gọn phía dưới. Giảm 60% chiều cao so với danh sách dọc, không còn chiếm diện tích màn hình.
      - Hỗ trợ nút Cancel (Huỷ) chuẩn thiết kế qua `LvButton`.
+- **Trạng thái:** Accepted
+- **Bối cảnh:** Sau khi khởi tạo Design System trên Stitch, cần đồng bộ toàn diện tất cả các màn hình hiện tại của ReMind Android lên Stitch canvas nhằm tạo cơ sở thiết kế visual, review UX và đồng nhất quy chuẩn thiết kế.
+- **Quyết định:**
+  - Sử dụng công cụ `generate_screen_from_text` (kết hợp `ReMind Design System` asset) đồng bộ tuần tự 10 màn hình cốt lõi:
+    1. `AlarmListScreen` (Tab Báo thức): Logo ReMind, thẻ đếm ngược, danh sách báo thức, FAB.
+    2. `TodayScreen` (Tab Hôm nay): Thẻ thời tiết AI WeatherInfoView, trích dẫn động lực TodayQuoteView.
+    3. `SettingsScreen` (Tab Cài đặt): Cấu trúc nhóm LiteverSettingsGroup, các liên kết cài đặt.
+    4. `AlarmEditScreen` (Thêm / Sửa báo thức): Trình chọn giờ số lớn, chip lặp lại T2..CN, âm lượng, mission và ReMindBottomBar.
+    5. `AlarmRingingScreen` (Màn hình chuông reo): Edge-to-edge, đồng hồ số cực lớn, auto-silence timer, nút Dismiss & Snooze.
+    6. `PermissionSettingsScreen` (Cài đặt quyền): Trạng thái Exact Alarm, Notification, Overlay, Battery optimization.
+    7. `GeneralSettingsScreen` (Cài đặt chung): Định dạng giờ 12h/24h, Sáng/Tối, bảng màu ReMind Warm Terracotta vs Dynamic.
+    8. `AttributionsScreen` (Lời cảm ơn & Tài nguyên): Ghi nhận OSS Libraries, Storyset illustrations, WeatherAPI.
+    9. `SnoozeSettingsScreen` (Cài đặt hoãn): Switch bật/tắt, interval và số lần lặp lại.
+    10. `MissionRingingScreen` (Thử thách thức giấc): Giao diện gõ chữ với tiến trình 3 bước, trích dẫn động lực và đếm ngược.
+- **Hệ quả:** Toàn bộ 10 màn hình đã hiện diện đầy đủ trên Stitch Canvas của project `ReMind Android`, tuân thủ đồng nhất 100% token thiết kế Material 3 ấm áp (Terracotta).
+
+### [TDR-060] - Tinh chỉnh Màn hình theo Component Gốc Litever Design System & Bổ sung Module Mission lên Stitch
+- **Ngày thực hiện:** 2026-09-08
+- **Trạng thái:** Accepted
+- **Bối cảnh:** Các màn hình đã sinh ban đầu cần được đối chiếu trực tiếp với mã nguồn chi tiết của thư viện `:litever-designsystem` và các custom component wrapper (`ReMindTopAppBar`, `ReMindBottomBar`, `LiteverSettingsGroup`, `LiteverSettingsItem`, `LiteverSingleChoiceSegmentedButtonRow`) để đảm bảo tính chuẩn xác tuyệt đối về mặt cấu trúc và kiểu dáng. Đồng thời cần bổ sung đầy đủ các giao diện cấu hình thử thách trong module `:features:mission`.
+- **Quyết định:**
+  - Rà soát trực tiếp mã nguồn thư viện `:litever-designsystem` từ workspace local.
+  - Sử dụng `edit_screens` để tinh chỉnh các màn hình hiện có (`AlarmListScreen`, `AlarmEditScreen`, `SettingsScreen`, `GeneralSettingsScreen`, `PermissionSettingsScreen`, `AttributionsScreen`, `SnoozeSettingsScreen`, `MissionRingingScreen`) khớp từng thuộc tính component (ReMindLogo, nút Hủy/Lưu ở bottom bar, RadioButton, SegmentedButton).
+  - Bổ sung 3 màn hình còn lại của module Mission:
+    1. `TypingMissionConfigScreen` (Cấu hình nhiệm vụ gõ phím: Stepper số lần lặp, RadioButton chế độ, thẻ xem trước cụm từ).
+    2. `PhraseSelectionScreen` (Màn hình chọn cụm từ: Tabs Động lực/Cơ bản/Của tôi, Checkboxes, Thêm cụm từ mới).
+    3. `MemoryGameConfigScreen` (Cấu hình trò chơi ô nhớ: Stepper số vòng, chọn độ khó lưới 3x3 đến 7x7 và bảng xem trước).
+- **Hệ quả:** Stitch Project `ReMind Android` hiện phản ánh đầy đủ và chuẩn xác 100% tất cả các màn hình và thành phần component từ codebase thực tế.
+
+### [TDR-061] - Nâng cấp Thư viện LiteVer Design System 2.0.0 và Refactor toàn diện sang Native Material 3 & LiteVer Defaults
+- **Ngày thực hiện:** 2026-09-11
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Thư viện `litever-designsystem` phát hành phiên bản 2.0.0 với triết lý kiến trúc tinh gọn (Lean Architecture): loại bỏ hoàn toàn 24 pass-through wrapper components (như `LiteverButton`, `LiteverScaffold`, `LiteverTopAppBar`, `LiteverTextField`, `LiteverCard`, `LiteverCircularProgressIndicator`, `LiteverIconButton`, `LiteverSwitch`, v.v.). Các wrapper này trước đây tạo ra tầng trung gian không cần thiết, làm giới hạn khả năng tiếp cận các API và tham số phong phú của Jetpack Compose Material 3 (M3), đồng thời gây khó khăn khi nâng cấp Jetpack Compose BOM.
+  - Thay vì duy trì pass-through wrappers, Litever 2.0.0 cung cấp mô hình Component Defaults (`LiteVerButtonDefaults`, `LiteVerTextFieldDefaults`) kết hợp cùng hệ thống Design Tokens phong phú (`LiteverTheme.spacing`, `LiteverTheme.shapes`, semantic colors `warning`/`onWarning`, `success`/`onSuccess`).
+  - Dự án `remind-android` cần liên kết trực tiếp với mã nguồn cục bộ của thư viện thông qua cơ chế `includeBuild("../litever-designsystem")` để vừa thử nghiệm vừa phát triển song song. Đồng thời cần refactor toàn bộ các màn hình và thành phần UI trong tất cả các module (`:core:designsystem`, `:features:alarms`, `:features:settings`, `:features:mission`, `:features:today`, `:app`) sang Material 3 gốc kết hợp LiteVer Defaults và Spacing Tokens.
+- **Quyết định:**
+  1. **Cấu hình Composite Build & Dependency Substitution:**
+     - Khai báo `includeBuild("../litever-designsystem")` trong `settings.gradle.kts` kèm theo khối `dependencySubstitution` thay thế artifact `com.github.toantd2000:litever-designsystem` bằng dự án cục bộ `:designsystem`.
+     - Cập nhật phiên bản thư viện `liteverDesignsystem` lên `2.0.0` trong `gradle/libs.versions.toml`.
+  2. **Tái cấu trúc `:core:designsystem` thành Adapter chuẩn mực:**
+     - Đồng bộ `ReMindTheme` với `LiteverTheme`, bổ sung đầy đủ các token màu semantic (`warning`, `onWarning`, `success`, `onSuccess`).
+     - Tái cấu trúc các custom wrappers chuyên biệt của ReMind (`ReMindTopAppBar`, `ReMindAlertDialog`, `ReMindBottomBar`, `ReMindLoadingIconButton`, `ReMindSettingIcon`) trực tiếp trên nền tảng Material 3 composables (`TopAppBar`, `AlertDialog`, `Surface`, `IconButton`, v.v.) kết hợp `LiteVerButtonDefaults`.
+     - Tái tạo các component đặc thù bị thiếu ở v2.0.0 (`ReMindSettingsGroup`, `ReMindSettingsItem`, `ReMindTimePickerDialog`) trong `:core:designsystem` để bảo đảm nguyên tắc Single Source of Truth cho UI.
+     - Refactor các màn hình dùng chung trong core (`RingtoneSelectionScreen`, `SnoozeSettingsScreen`, `WeatherInfoView`, `TodayQuoteView`, `MissionSelectionBottomSheet`) sang Material 3 và `LiteverTheme.spacing`.
+  3. **Refactor toàn diện các Feature Modules sang M3 & LiteVer Defaults:**
+     - `:features:alarms`: Refactor `AlarmListScreen`, `AlarmEditScreen`, `AlarmRingingScreen`, `AlarmMessageScreen`, `AlarmCard`, `ExitAppDialog`, `MissedAlarmDialog`, `PermissionWarningBanner`.
+     - `:features:settings`: Refactor `SettingsScreen`, `AlarmSettingsScreen`, `GeneralSettingsScreen`, `PermissionSettingsScreen`, `AttributionsScreen`, `LicensesScreen`.
+     - `:features:mission`: Refactor `TypingMissionConfigScreen`, `PhraseSelectionScreen`, `MemoryGameConfigScreen`, `MissionRingingScreen` cùng các content components (`MathMissionContent`, `MemoryTilesMissionContent`, `MissionCompleteContent`, `TypingMissionContent`).
+     - `:features:today`: Refactor `TodayScreen` và `LocationSearchScreen`.
+     - `:app`: Refactor `MainActivity` scaffold, navigation host và window insets.
+  4. **Quy chuẩn Hóa Spacing Tokens & Window Insets:**
+     - Xóa bỏ 100% các giá trị khoảng cách hardcode `.dp` trong layout, thay thế bằng `LiteverTheme.spacing` (`tiny`, `extraSmall`, `small`, `smallMedium`, `medium`, `large`, `extraLarge`, v.v.). Các giá trị `1.dp` duy nhất được giữ lại là độ dày đường viền kỹ thuật (`BorderStroke`).
+     - Root `Scaffold` tại `:app` đảm nhiệm xử lý system bars insets; các `Scaffold` con tại các màn hình con cấu hình `contentWindowInsets = WindowInsets(0, 0, 0, 0)` để triệt tiêu lỗi double-padding (cộng dồn insets).
+- **Hệ quả:**
+  - **Kiến trúc tinh gọn (Lean Architecture):** Loại bỏ hoàn toàn sự phụ thuộc vào các pass-through wrapper mong manh, mã nguồn Compose trực diện, dễ đọc, dễ tiếp cận các API và modifier mới nhất của Google Material 3.
+  - **Tính nhất quán Visual:** Toàn bộ khoảng cách, màu sắc và kiểu dáng nút/input đều được kiểm soát chặt chẽ bởi Design System tokens thông qua `LiteverTheme` và `LiteVerButtonDefaults`.
+  - **Quy trình phát triển liền mạch:** Composite build giúp phản ánh ngay lập tức các thay đổi từ thư viện `litever-designsystem` mà không cần chu kỳ release/publish phức tạp.
+  - **Chất lượng và Độ ổn định:** Tất cả các module biên dịch sạch sẽ 100%, bổ sung bộ unit test logic UI toàn diện cho mission và today features bảo đảm không xảy ra hồi quy.
+
+### [TDR-062] - Nâng cấp Thư viện LiteVer Design System 2.1.0 và Chuyển đổi sang Bộ Thành phần Opinionated Lv* (LvButton, LvIconButton, LvTextField, LvAlertDialog, LvChip, LvSnackbar)
+- **Ngày thực hiện:** 2026-09-12
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Sau khi hoàn thành Phase 7 (chuyển dịch từ 24 wrappers cũ sang Material 3 gốc kết hợp Component Defaults ở LiteVer v2.0.0), việc phải cấu hình lặp đi lặp lại các tham số `colors = LiteVerButtonDefaults.primaryColors()`, `shape = LiteVerButtonDefaults.shape`, `colors = LiteVerTextFieldDefaults.outlinedColors()`, `border = ...` tại từng Composable trong hàng chục màn hình vẫn tạo ra lượng boilerplate code đáng kể, đồng thời tiềm ẩn rủi ro thiếu nhất quán về ngữ nghĩa giao diện (semantic intents) và kiểu dáng bo góc squircle.
+  - Thư viện `litever-designsystem` phát hành phiên bản `2.1.0` với hai cải tiến đột phá:
+    1. **Tái cơ cấu Package theo Domain:** Tách các thành phần từ package phẳng `vn.io.litever.designsystem.components.*` sang các sub-package chuyên biệt: `components.button.*`, `components.textfield.*`, `components.chip.*`, `components.dialog.*`, `components.snackbar.*`, và `components.core.*`.
+    2. **Bộ thành phần Opinionated thế hệ mới `Lv*`:** Giới thiệu `LvButton`, `LvIconButton`, `LvTextField`, `LvAlertDialog`, `LvChip`, `LvSnackbarHost` / `LvSnackbar` được định hình sẵn chuẩn bo góc squircle (6.dp cho control nhỏ, 10.dp cho dialog), tích hợp chặt chẽ với hệ thống màu ngữ nghĩa `LvSemantic` (`Primary`, `Secondary`, `Tertiary`, `Neutral`, `Success`, `Destructive`, `Warning`) và các biến thể kiểu dáng (`LvButtonType`, `LvTextFieldType`).
+    3. **Mở rộng Semantic Tokens:** Bổ sung các tokens `neutral`, `onNeutral`, `neutralContainer`, `onNeutralContainer` trong `LiteverTheme.colors`.
+  - Dự án `remind-android` cần căn chỉnh lại toàn bộ các import bị gãy do việc tách package, đồng thời chuyển đổi mã nguồn UI trên toàn bộ các modules (`:core:designsystem`, `:features:alarms`, `:features:settings`, `:features:mission`, `:features:today`, `:app`) sang các opinionated components thế hệ mới của v2.1.0.
+- **Quyết định:**
+  1. **Version Catalog & Package Import Alignment:** Cập nhật `liteverDesignsystem = "2.1.0"` trong `gradle/libs.versions.toml`. Chuyển đổi toàn bộ import sang các package chuyên biệt (`components.button.LiteVerButtonDefaults`, `components.textfield.LiteVerTextFieldDefaults`, `components.button.LvButton`, v.v.).
+  2. **Mở rộng Semantic Colors tại `:core:designsystem`:** Khai báo các tiện ích `ColorScheme.neutral`, `ColorScheme.onNeutral`, `ColorScheme.neutralContainer`, `ColorScheme.onNeutralContainer` trong `Color.kt` ánh xạ từ `LiteverTheme.colors`.
+  3. **Chuyển đổi Adapter `:core:designsystem`:**
+     - `ReMindAlertDialog` chuyển sang sử dụng `LvAlertDialog` kết hợp `LvButton`.
+     - `ReMindBottomBar` chuyển các nút CTA sang `LvButton`.
+     - `TimePickerDialog` sử dụng `LvButton` cho nút xác nhận/hủy.
+     - `WeatherInfoView` chuyển nút chọn vị trí sang `LvButton(type = LvButtonType.Text, semantic = LvSemantic.Neutral)`.
+     - `RingtoneSelectionScreen` và `SnoozeSettingsScreen` sử dụng `LvButton` (Outlined/Filled) và `LvIconButton`.
+     - `MissionSelectionBottomSheet` sử dụng `LvButton`.
+  4. **Chuyển đổi các Feature Modules:**
+     - **`:features:alarms`**: Refactor `AlarmEditScreen` (sử dụng `LvButton`, `LvIconButton`, `LvTextField`, `LvChip`), `AlarmListScreen` (`LvIconButton`), `AlarmMessageScreen` (`LvTextField`, `LvButton`), `AlarmRingingScreen` (`LvButton`), `AlarmCard` (`LvIconButton`), `PermissionWarningBanner` (`LvButton`).
+     - **`:features:settings`**: Refactor `AlarmSettingsScreen` (chuyển `DurationSelectionDialog` sang `LvAlertDialog`), `PermissionSettingsScreen` (`LvButton` Primary/Secondary).
+     - **`:features:mission`**: Refactor `MemoryGameConfigScreen`, `MissionRingingScreen`, `PhraseSelectionScreen`, `TypingMissionConfigScreen`, `MathMissionContent` sang `LvButton`, `LvIconButton`, `LvTextField`.
+     - **`:features:today` & `:app`**: Refactor `LocationSearchScreen` (LvTextField với leading icon và trailing `LvIconButton`), `TodayScreen` (tint progress), và `MainActivity` (tích hợp `LvSnackbarHost` với `SnackbarHostState`).
+- **Hệ quả:**
+  - **Giảm thiểu Boilerplate tối đa:** Cắt giảm hơn 60% mã nguồn thiết lập kiểu dáng, màu sắc, bo góc và padding thủ công tại các call-site.
+  - **Nhất quán Visual & Semantic Tuyệt đối:** Toàn bộ nút bấm, ô nhập liệu, hộp thoại và chip tự động tuân thủ chuẩn bo góc squircle (6.dp/10.dp) và màu sắc theo `LvSemantic`.
+  - **Kiến trúc Modular Rõ ràng:** Cấu trúc package được phân tách mạch lạc theo từng domain component.
+  - **Độ ổn định cao:** Dự án biên dịch sạch 100% không còn unresolved reference và toàn bộ 100% unit test suites đều vượt qua.
+
+### [TDR-063] - Chuẩn hóa Bảng màu Đỏ (RED) Mặc định và Bộ Chọn 8 Ô Palette theo LiteVer Design System
+- **Ngày thực hiện:** 2026-09-14
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Bảng màu mặc định của ứng dụng ReMind trước đây là màu nâu đất ("REMIND"), tách biệt khỏi hệ sinh thái bảng màu chuẩn hóa của `litever-designsystem`.
+  - Thư viện `litever-designsystem` cung cấp 7 bảng màu chuẩn hóa gồm: RED, ORANGE, YELLOW, GREEN, BLUE, INDIGO, VIOLET cùng khả năng phối màu tự động theo hình nền thiết bị (Dynamic Theme trên Android 12+).
+  - Cần chuyển đổi bảng màu mặc định của toàn bộ ứng dụng sang màu **Đỏ (RED)** của Litever Palette, đồng thời nâng cấp màn hình Cài đặt chung (`GeneralSettingsScreen`) để người dùng dễ dàng chọn lựa 1 trong 7 màu có sẵn hoặc tùy chọn theo màn hình.
+- **Quyết định:**
+  1. **Đổi màu mặc định sang RED:**
+     - `:core:datastore`: Cập nhật `COLOR_PALETTE_KEY` mặc định trả về `"RED"`.
+     - `:features:settings`: Cập nhật `SettingsUiState.colorPalette` mặc định là `"RED"`.
+     - `:core:designsystem`: Cập nhật `ReMindTheme(colorPalette = "RED")`, ánh xạ chuỗi `colorPalette` sang enum `LiteverThemeColor.RED` (và các màu tương ứng), truyền vào `LiteverTheme(themeColor = ...)`. Đồng thời đồng bộ các token `primaryLight`, `primaryContainerLight`, `primaryDark`, `primaryContainerDark`, `remindLightColors`, `remindDarkColors` sang giá trị của bảng màu RED Litever.
+     - `:app`: Cập nhật `MainActivity` collect giá trị khởi tạo `colorPalette` là `"RED"`.
+     - `litever-designsystem`: Cập nhật `LiteverThemeColor.DEFAULT` ánh xạ sang `redDarkColorScheme` / `redLightColorScheme` để bảo đảm tính đồng nhất ở mọi tầng.
+  2. **Bộ chọn 8 ô chia 2 hàng trên GeneralSettingsScreen:**
+     - Thay thế danh sách dọc `ListItem + RadioButton` trước đây bằng lưới gồm 8 ô chia đều thành 2 hàng (mỗi hàng 4 ô).
+     - Hàng 1: Đỏ (RED), Cam (ORANGE), Vàng (YELLOW), Lục (GREEN).
+     - Hàng 2: Lam (BLUE), Chàm (INDIGO), Tím (VIOLET), Màn hình (DYNAMIC).
+     - Mỗi ô là một `IconButton` với nền là `primaryContainer` của bảng màu tương ứng trong theme hiện tại (Light/Dark).
+     - Ở giữa mỗi ô là text hiển thị tên màu sử dụng màu chữ `primary` của bảng màu đó.
+     - Trạng thái nhận biết màu đang chọn: Viền bo góc `border(2.dp, primary, shape)` nổi bật cùng biểu tượng dấu tích `Icons.Rounded.Check` bên cạnh tên màu in đậm (Bold).
+  3. **Dọn dẹp File Color.kt tại :core:designsystem:**
+     - Loại bỏ toàn bộ hơn 340 dòng mã định nghĩa token màu sắc cục bộ của riêng app (`primaryLight`, `secondaryLight`, các biến thể contrast, `remindLightColors`, `remindDarkColors`, `remindLightColorScheme`, v.v.).
+     - Ứng dụng chuyển sang tái sử dụng 100% hệ thống palette và theme từ `:litever-designsystem`, chỉ giữ lại các tiện ích mở rộng ngữ nghĩa `ColorScheme.warning`, `ColorScheme.success`, `ColorScheme.neutral` ủy quyền sang `LiteverTheme.colors`.
+- **Hệ quả:**
+  - Giảm thiểu hơn 340 dòng code dư thừa, loại bỏ hoàn toàn sự trùng lặp màu sắc giữa app và Design System.
+  - Toàn bộ ứng dụng ReMind đồng bộ nhận diện thương hiệu với màu Đỏ (RED) tươi sáng, hiện đại.
+  - Giao diện chọn màu sắc trực quan, thẩm mỹ cao, tiết kiệm không gian và tương thích trọn vẹn với cả chế độ Sáng/Tối lẫn Android 12+ Dynamic Coloring.
+
+### [TDR-064] - Thay thế Box ô nhớ bằng LvButton với LvSemantic và Semantics trợ năng tương ứng trong MemoryTilesMissionContent
+- **Ngày thực hiện:** 2026-09-15
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Component `MemoryTilesMissionContent` trong `:features:mission` trước đây sử dụng `Box` kết hợp `Modifier.background()` và `Modifier.clickable()` thủ công để vẽ các ô lưới bài tập trí nhớ.
+  - Cần chuyển đổi sang thành phần `LvButton` tiêu chuẩn từ Design System `:litever-designsystem` nhằm bảo đảm tính nhất quán về visual design (bo góc squircle, hiệu ứng phản hồi ripple, màu sắc theo intent `LvSemantic`) cũng như hỗ trợ đầy đủ semantics trợ năng (Accessibility/Screen Readers).
+- **Quyết định:**
+  - Thay thế khối `Box` bằng `LvButton` trong `LazyVerticalGrid`.
+  - Kiểm soát trạng thái click qua `enabled = isClickable` (chỉ cho phép nhấn khi `gameState == MemoryGameState.PLAYING && !isSelected`).
+  - Bảo đảm ô giữ nguyên màu hiển thị visual kể cả khi bị vô hiệu hóa click (`enabled = false`) bằng cách cấu hình `colors = ButtonDefaults.buttonColors(containerColor = tileColor, disabledContainerColor = tileColor)`.
+  - Ánh xạ trạng thái game tile sang `LvSemantic`:
+    - `LvSemantic.Primary` cho ô mục tiêu trong pha ghi nhớ (MEMORIZE) và các ô mục tiêu chọn đúng.
+    - `LvSemantic.Destructive` cho ô chọn sai trong pha chơi (PLAYING).
+    - `LvSemantic.Neutral` cho các ô mặc định chưa chọn.
+  - Cấu hình trợ năng qua `Modifier.semantics`: gán `selected = isSelected` và `stateDescription` phù hợp ("Target", "Correct", "Wrong", "Unselected").
+  - Đặt `contentPadding = PaddingValues(0.dp)` để vừa vặn hoàn hảo trong ô lưới `aspectRatio(1f)`.
+- **Hệ quả:**
+  - Code gọn gàng, chuẩn hóa 100% theo bộ linh kiện `LvButton` của Design System.
+  - Triệt tiêu hoàn toàn hiệu ứng click (ripple/gesture) không mong muốn ở các ô không được phép nhấn (trong pha MEMORIZE, SUCCESS, FAILURE hoặc ô đã được chọn).
+  - Trình đọc màn hình (TalkBack) nhận diện chính xác trạng thái vô hiệu hóa của nút (`enabled = false`).
+
+### [TDR-065] - Chuẩn hóa ReMindGroupCard, AlarmSettingRow và Tối ưu dải màu Thời tiết (WeatherInfoView)
+- **Ngày thực hiện:** 2026-09-16
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Cần nâng cấp trải nghiệm giao diện các thẻ nhóm (`ReMindGroupCard`), nhóm cài đặt báo thức (`AlarmEditScreen`) và thẻ thông tin thời tiết (`WeatherInfoView`).
+  - Các item cài đặt trong `AlarmEditScreen` trước đây bị lặp lại cấu hình Layout và chưa tận dụng Material 3 `ListItem` chuẩn.
+  - Thẻ thông tin thời tiết `WeatherInfoView` bị trùng lặp viền Outlined và sử dụng dải màu gradient cũ chưa đồng bộ với các theme màu trong `GeneralSettingsScreen`.
+- **Quyết định:**
+  1. **Chuẩn hóa ReMindGroupCard & ReMindSettingsGroup:**
+     - Sử dụng `ReMindGroupCard` làm container bọc cho `ReMindSettingsGroup` với `surfaceContainerLow` và bo góc `shapes.large`.
+  2. **Tạo AlarmSettingRow dùng chung cho feature:alarms:**
+     - Tạo `AlarmSettingRow` tái sử dụng Material 3 `ListItem` kết hợp `ReMindSettingIcon`.
+     - Đồng bộ áp dụng cho tất cả các item trong `AlarmEditScreen` (Ringtone, Gentle Alarm, Use Alarm Stream, Snooze, Auto Silence).
+  3. **Cập nhật WeatherInfoView theo Theme Palettes:**
+     - `getWeatherColors` lấy dải màu trực tiếp từ palette màu hệ thống (`indigo`/`blue` -> `green` -> `yellow`/`orange` -> `orange`/`red`).
+     - Loại bỏ biến thiên alpha giữa sáng/tối để giữ màu sắc trung thực, tươi sáng.
+     - Loại bỏ đường viền `BorderStroke` (Outlined) trên các thẻ thời tiết.
+- **Hệ quả:**
+  - Giao diện nhất quán, hiện đại, tuân thủ 100% Material 3 và Litever Design System.
+  - Tối ưu lượng code lặp lại tại `AlarmEditScreen`.
+
+### [TDR-066] - Tối giản hóa cấu trúc container trong WeatherInfoView
+- **Ngày thực hiện:** 2026-09-17
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - `FullWeatherView` và `CompactWeatherView` trong `WeatherInfoView.kt` trước đây sử dụng các container lồng nhau không cần thiết (`Card` -> `Box` -> `Column` ở Full view, và `Surface` -> `Box` -> `Row` ở Compact view).
+  - Điều này làm phức tạp cây Layout Node (Layout Tree) và tạo ra boilerplate thừa (`CardDefaults`, `Box`, `Surface`).
+- **Quyết định:**
+  1. **Đơn giản hóa FullWeatherView:** Dùng duy nhất 1 `Column` với `Modifier.clip(LiteverTheme.shapes.medium).background(Brush.linearGradient(weatherColors))`.
+  2. **Đơn giản hóa CompactWeatherView:** Dùng duy nhất 1 `Row` với `Modifier.clip(LiteverTheme.shapes.large).background(Brush.linearGradient(weatherColors)).clickable { ... }`.
+  3. **Dọn dẹp Import:** Loại bỏ hoàn toàn các import không sử dụng (`Card`, `CardDefaults`, `Box`, `Surface`), bổ sung `Modifier.clip`.
+  4. **Tối ưu Alpha & Tương phản Chữ theo Theme:**
+     - Cập nhật `getWeatherColors`: Tự động áp dụng `alpha = 0.3f` ở Dark Theme và `alpha = 0.7f` ở Light Theme.
+     - Chuẩn hóa các màu chữ (`location`, `temperature`, `condition`, `AI hint`) sang `onSurface` và `onSurfaceVariant` không giảm alpha quá mức để đảm bảo độ tương phản cao và hiển thị sắc nét trên cả 2 chế độ sáng/tối.
+- **Hệ quả:**
+  - Cấu trúc Composable tối giản tuyệt đối: Không còn bất kỳ container bọc ngoài dư thừa nào.
+  - Giảm tối đa độ sâu của UI Node Hierarchy, tối ưu hiệu năng recomposition và render.
+### [TDR-067] - Tái cấu trúc GeneralSettingsScreen: Thay thế SegmentedButton bằng ReMindSettingsItem & Selection Dialog
+- **Ngày thực hiện:** 2026-09-17
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Trong `GeneralSettingsScreen`, việc lặp lại 3 hàng `SingleChoiceSegmentedButtonRow` liên tiếp (Định dạng giờ, Chế độ hiển thị, Ngôn ngữ) làm giao diện bị dày đặc, chiếm diện tích ngang và kém tính phân cấp thị giác.
+  - Cần chuyển đổi sang phong cách danh sách cài đặt chuẩn Android / Material 3 (dùng row hiển thị tóm tắt lựa chọn hiện tại và mở Dialog lựa chọn khi tương tác).
+- **Quyết định:**
+  1. **Chuyển đổi sang `ReMindSettingsItem` & Tối ưu gom nhóm:**
+     - Gộp mục Ngôn ngữ và Định dạng giờ vào chung một thẻ nhóm **"Ngôn ngữ & Vùng" / "Language & Region"** (`language_and_region_headline`).
+     - Mục Time format: Hiển thị title "Time format", subtitle là định dạng đang chọn ("System", "12h", "24h"), icon `Schedule` và chevron trailing icon.
+     - Mục Display mode: Nằm trong nhóm "Display", hiển thị title "Display mode", subtitle là theme đang chọn ("System", "Light", "Dark"), icon tự động đổi theo theme hiện tại (`LightMode`, `DarkMode`, `BrightnessMedium`).
+     - Mục Language: Nằm trong nhóm "Language & Region", hiển thị title "Language", subtitle là ngôn ngữ đang chọn ("English", "Tiếng Việt"), icon `Language`.
+     - Mục Color Palette (Màu chủ đạo): Chuyển đổi từ cụm 8 ô nút chữ nhật cồng kềnh sang dòng `ReMindSettingsItem` chuẩn, hiển thị tên màu đang chọn và Preview chấm tròn màu sắc (Color dot) ở đuôi dòng, nhấp vào để mở `ColorPaletteSelectionDialog`.
+  2. **Tạo `SingleChoiceDialog` & `ColorPaletteSelectionDialog` dùng `LvAlertDialog`:**
+     - Hiển thị danh sách tùy chọn với `RadioButton` và text có thể bấm trực tiếp vào toàn hàng.
+     - `ColorPaletteSelectionDialog`: Thiết kế dạng lưới tròn **4 cột x 2 hàng** (Pixel/Material 3 style) cực kỳ nhỏ gọn, gồm chấm màu tròn 48dp, viền nổi bật (2.5dp) & dấu tích `Check` khi được chọn, cùng tên màu ngắn gọn phía dưới. Giảm 60% chiều cao so với danh sách dọc, không còn chiếm diện tích màn hình.
+     - Hỗ trợ nút Cancel (Huỷ) chuẩn thiết kế qua `LvButton`.
 - **Hệ quả:**
   - Giao diện cài đặt chung đồng bộ 100%, thanh thoát và tinh tế với 2 nhóm rõ ràng: **Display** (Giao diện & Màu sắc) và **Language & Region** (Ngôn ngữ & Định dạng vùng miền).
   - Dialog chọn màu nhỏ gọn, trực quan, thẩm mỹ cao và thao tác chạm nhanh chóng.
   - Đồng bộ 100% với phong cách toàn bộ ứng dụng (`SettingsScreen`, `AlarmSettingsScreen`).
 
-
-
-
+### [TDR-068] - Đồng bộ LocalConfiguration uiMode & Phân giải ảnh minh hoạ EmptyState theo Theme
+- **Ngày thực hiện:** 2026-09-17
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - `EmptyState` (`AlarmListScreen`) sử dụng tài nguyên ảnh minh hoạ (`no_alarm_illustration.png`).
+  - Khi người dùng thay đổi chế độ hiển thị (Sáng / Tối) trong cài đặt ứng dụng hoặc xem trong Preview Dark Mode, `painterResource` không tự động đổi sang bản Dark nếu OS vẫn đang ở chế độ Light, vì Android `ResourcesImpl` cache và gắn chặt với Context/Configuration của Activity hệ thống.
+  - Việc can thiệp override `LocalContext provides themedContext` bằng non-Activity `createConfigurationContext(...)` gây crash runtime layout (`ScaffoldLayout`) do Jetpack Compose yêu cầu Context của Activity.
+- **Quyết định:**
+  1. **Tuyệt đối không override `LocalContext`:** Chỉ đồng bộ `LocalConfiguration provides themedConfiguration` với cờ `uiMode` (`UI_MODE_NIGHT_YES` / `UI_MODE_NIGHT_NO`) bên trong `ReMindTheme`. Giữ nguyên Activity Context để tránh crash layout.
+  2. **Tách biệt tài nguyên & Chọn ảnh theo Theme state:** Khai báo tài nguyên `no_alarm_illustration_dark.png` và điều hướng trực tiếp trong `EmptyState`: nếu `!LiteverTheme.colors.isLight` thì hiển thị `no_alarm_illustration_dark`, ngược lại hiển thị `no_alarm_illustration`.
+  3. **Bổ sung Preview Dark Mode:** Đảm bảo `EmptyStateDarkPreview` hiển thị chuẩn xác cả 2 chế độ Sáng/Tối.
+- **Hệ quả:**
+  - Ứng dụng hoạt động ổn định 100%, không bị crash runtime tại `MainActivity`.
+  - Ảnh minh hoạ `EmptyState` chuyển đổi mượt mà, lập tức tương ứng với Dark Mode hay Light Mode khi người dùng đổi cài đặt trong ứng dụng.

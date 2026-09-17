@@ -1,3 +1,21 @@
+## [2026-09-17] Compose Configuration.uiMode Synchronization for Dynamic Theming & Previews
+
+### Context
+Ảnh minh họa trạng thái rỗng (`no_alarm_illustration.png`) trong `EmptyState` (`AlarmListScreen`) có 2 biến thể: `drawable/` (Light) và `drawable-night/` (Dark). Khi đổi Theme nội bộ trong ứng dụng hoặc xem trong Preview Dark Mode, ảnh không tự động thay đổi theo theme.
+
+### What happened
+- Trong Jetpack Compose, hàm `painterResource(id)` tra cứu drawable dựa trên Android `LocalConfiguration.current` (cụ thể là `configuration.uiMode`).
+- Khi người dùng thay đổi `themeMode` ("LIGHT" hoặc "DARK") trong cài đặt ứng dụng, giá trị boolean `darkTheme` được truyền vào `ReMindTheme`, nhưng `LocalConfiguration.uiMode` của `Context` vẫn giữ nguyên cấu hình hệ thống nếu không được đồng bộ.
+- Dẫn đến việc `painterResource` tiếp tục tải ảnh theo chế độ sáng/tối của hệ điều hành thay vì theme mà người dùng đã chọn trong app.
+- Tương tự, `@Preview` mặc định không đặt `uiMode = Configuration.UI_MODE_NIGHT_YES` nên luôn hiển thị ảnh từ thư mục `drawable/` mặc định.
+
+### Solution & Lessons Learned
+- **Compose `LocalConfiguration` Synchronization:**
+  Trong `ReMindTheme` (`:core:designsystem`), clone `LocalConfiguration.current` và ghi đè cờ `uiMode` (`UI_MODE_NIGHT_YES` / `UI_MODE_NIGHT_NO`) dựa trên cờ `darkTheme`, sau đó cung cấp lại qua `CompositionLocalProvider(LocalConfiguration provides themedConfiguration)`.
+  Giải pháp này giúp toàn bộ cây Composable bên dưới, bao gồm mọi hàm gọi `painterResource(...)`, tự động phản hồi tức thì với theme mà không cần can thiệp thủ công ở từng màn hình hay phụ thuộc vào Activity recreation.
+- **Dual-Mode Previews for Theme-Dependent Drawables:**
+  Luôn khai báo cả hai biến thể Preview (Light và Dark với `uiMode = Configuration.UI_MODE_NIGHT_YES` và `darkTheme = true`) cho các Composable sử dụng tài nguyên drawable phân nhánh theo night mode.
+
 ## [2026-09-14] Litever Palette Theming & 8-Cell Palette Grid Implementation
 
 ### Context
@@ -302,3 +320,19 @@ Cơ chế này đảm bảo "sự tiến hóa" liên tục qua các task, tránh
 **Giải pháp / Rule mới:** 
 * **Quy tắc về State Initialization:** Khi một Composable State (`rememberXState`) phụ thuộc vào dữ liệu được tải bất đồng bộ (Async Data), BẮT BUỘC phải bọc nó trong `androidx.compose.runtime.key` với các tham số định danh (như `id` của đối tượng).
 * Cụ thể: `key(uiState.id) { rememberTimePickerState(...) }`. Khi `id` thay đổi từ 0 (initial) sang ID thực tế, state sẽ được buộc phải reset và nhận giá trị mới từ ViewModel.
+
+---
+
+## Ngày tháng: 2026-09-17
+**Vấn đề / Task:** Ảnh minh hoạ `EmptyState` (`no_alarm_illustration.png`) không đổi theo theme sáng/tối trong ứng dụng, và sau khi thử bọc `LocalContext provides themedContext` bằng `createConfigurationContext(...)` thì ứng dụng bị crash runtime tại `MainActivity` (`ScaffoldLayout`).
+**Phân tích nguyên nhân:**
+1. **Compose Context Hierarchy:** Các thành phần Compose gốc (đặc biệt là Material 3 `Scaffold`, Navigation, Dialog) mong đợi `LocalContext.current` là instance của `ComponentActivity` / `Activity`. Việc tạo `ConfigurationContext` độc lập và gán vào `LocalContext` đã tước bỏ các đặc tính Activity (như WindowInsets controller, WindowManager, LifecycleOwner), dẫn đến crash tại runtime khi layout/measure pass.
+2. **Resource Resolution trong Compose:** Khi app đổi theme ở runtime qua In-App Settings nhưng không thay đổi chế độ của toàn hệ điều hành (OS Night Mode), `painterResource(id)` gọi đến Android `Resources` vẫn bị phụ thuộc vào Activity Configuration ban đầu, dẫn đến việc thư mục `drawable-night/` không được kích hoạt tự động nếu Activity chưa cấu hình lại `uiMode`.
+**Giải pháp / Rule mới:**
+* **TUYỆT ĐỐI KHÔNG** override `LocalContext provides ...` bằng `createConfigurationContext(...)` ở root level Composable.
+* **Xử lý ảnh/drawable theo theme trong Jetpack Compose:**
+  1. Giữ nguyên `LocalConfiguration provides themedConfiguration` để các API query `LocalConfiguration.current` nhận đúng `uiMode`.
+  2. Với các ảnh asset cần hiển thị khác biệt theo Dark/Light mode của app, hãy khai báo riêng biệt (ví dụ: `no_alarm_illustration` và `no_alarm_illustration_dark`) và chủ động rẽ nhánh dựa theo theme state trong Compose:
+     `val illustrationRes = if (!LiteverTheme.colors.isLight) R.drawable.no_alarm_illustration_dark else R.drawable.no_alarm_illustration`
+  3. Cách tiếp cận này hoàn toàn an toàn về mặt luồng thực thi, không đụng chạm đến Context gốc, hỗ trợ 100% Android Studio Preview và đổi theme mượt mà tức thì.
+

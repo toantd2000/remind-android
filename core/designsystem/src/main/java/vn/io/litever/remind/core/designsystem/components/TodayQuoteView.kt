@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -30,61 +31,52 @@ fun TodayQuoteView(
 ) {
     if (todayBriefing == null) return
 
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = LiteverTheme.shapes.medium,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-        ),
-        border = BorderStroke(
-            1.dp,
-            MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)
-        )
+    Box(
+        modifier = Modifier.fillMaxWidth().clip(LiteverTheme.shapes.large)
+            .background(LiteverTheme.colors.tertiaryContainer.copy(alpha = 0.2f)),
     ) {
-        Box(modifier = Modifier.fillMaxWidth()) {
-            // Left Accent Bar (Bookmark effect for the entire block)
+        // Left Accent Bar (Bookmark effect for the entire block)
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+        ) {
             Box(
                 modifier = Modifier
-                    .matchParentSize()
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(LiteverTheme.spacing.extraSmall)
-                        .background(
-                            color = LiteverTheme.colors.onTertiaryContainer
-                        )
-                )
-            }
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = LiteverTheme.spacing.extraSmall)
-                    .padding(vertical = LiteverTheme.spacing.small)
-            ) {
-                todayBriefing.messages.forEachIndexed { index, msg ->
-                    Text(
-                        text = msg,
-                        modifier = Modifier
-                            .padding(
-                                start = LiteverTheme.spacing.smallMedium,
-                                end = LiteverTheme.spacing.medium
-                            )
-                            .padding(vertical = LiteverTheme.spacing.small),
-                        style = MaterialTheme.typography.bodyLarge.copy(
-                            fontStyle = FontStyle.Italic,
-                            color = LiteverTheme.colors.onTertiaryContainer
-                        )
+                    .fillMaxHeight()
+                    .width(LiteverTheme.spacing.extraSmall)
+                    .background(
+                        color = LiteverTheme.colors.onTertiaryContainer
                     )
+            )
+        }
 
-                    if (index < todayBriefing.messages.size - 1) {
-                        HorizontalDivider(
-                            modifier = Modifier.padding(horizontal = LiteverTheme.spacing.medium),
-                            thickness = 0.5.dp,
-                            color = LiteverTheme.colors.tertiaryContainer.copy(alpha = 0.5f)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = LiteverTheme.spacing.extraSmall)
+                .padding(vertical = LiteverTheme.spacing.small)
+        ) {
+            todayBriefing.messages.forEachIndexed { index, msg ->
+                Text(
+                    text = msg,
+                    modifier = Modifier
+                        .padding(
+                            start = LiteverTheme.spacing.smallMedium,
+                            end = LiteverTheme.spacing.medium
                         )
-                    }
+                        .padding(vertical = LiteverTheme.spacing.small),
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontStyle = FontStyle.Italic,
+                        color = LiteverTheme.colors.onTertiaryContainer
+                    )
+                )
+
+                if (index < todayBriefing.messages.size - 1) {
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = LiteverTheme.spacing.medium),
+                        thickness = 0.5.dp,
+                        color = LiteverTheme.colors.onTertiaryContainer.copy(alpha = 0.3f)
+                    )
                 }
             }
         }

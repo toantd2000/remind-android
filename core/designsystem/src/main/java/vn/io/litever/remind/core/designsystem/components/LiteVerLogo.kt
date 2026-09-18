@@ -15,14 +15,11 @@ import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 
 @Composable
-fun ReMindLogo(
+fun LiteVerLogo(
     modifier: Modifier = Modifier,
     style: TextStyle? = null,
     fontSize: TextUnit = TextUnit.Unspecified
 ) {
-    val reColor = LiteverTheme.colors.onSurfaceVariant
-    val mindColor = LiteverTheme.colors.primary
-
     val baseStyle = style ?: LiteverTheme.typography.titleLarge
     val finalStyle = if (fontSize != TextUnit.Unspecified) {
         baseStyle.copy(fontSize = fontSize)
@@ -34,19 +31,19 @@ fun ReMindLogo(
         text = buildAnnotatedString {
             withStyle(
                 style = SpanStyle(
-                    color = reColor,
-                    fontWeight = FontWeight.Light,
+                    color = LiteverTheme.colors.brandLite,
+                    fontWeight = FontWeight.ExtraLight,
                 )
             ) {
-                append("Re")
+                append("Lite")
             }
             withStyle(
                 style = SpanStyle(
-                    color = mindColor,
-                    fontWeight = FontWeight.Bold,
+                    color = LiteverTheme.colors.brandVer,
+                    fontWeight = FontWeight.ExtraBold,
                 )
             ) {
-                append("Mind")
+                append("Ver.")
             }
         },
         style = finalStyle,
@@ -57,19 +54,16 @@ fun ReMindLogo(
 
 @Preview(showBackground = true)
 @Composable
-private fun ReMindLogoPreview() {
+private fun LiteVerLogoPreview() {
     ReMindTheme {
-        ReMindLogo()
+        LiteVerLogo()
     }
 }
 
-
-
-
-
-
-
-
-
-
-
+@Preview(showBackground = true)
+@Composable
+private fun LiteVerLogoDarkPreview() {
+    ReMindTheme(darkTheme = true) {
+        LiteVerLogo()
+    }
+}

@@ -48,24 +48,19 @@ fun AlarmCard(
     val isSkipped = alarm.skippedAt != null
 
     val containerColor = if (alarm.isEnabled && !isSkipped) {
-        LiteverTheme.colors.surface
+        LiteverTheme.colors.surfaceContainer
     } else {
-        LiteverTheme.colors.surface.copy(alpha = 0.5f)
+        LiteverTheme.colors.surfaceContainerLow
     }
 
     val primaryColor = LiteverTheme.colors.primary
     val secondaryColor = LiteverTheme.colors.secondary
 
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(LiteverTheme.shapes.large)
-            .clickable { onClick() },
-        colors = CardDefaults.cardColors(
-            containerColor = containerColor,
-        ),
+    Surface(
+        onClick = onClick,
+        modifier = modifier.fillMaxWidth(),
         shape = LiteverTheme.shapes.large,
-        border = BorderStroke(1.dp, LiteverTheme.colors.outlineVariant.copy(alpha = 0.3f))
+        color = containerColor,
     ) {
         Column(
             modifier = Modifier
@@ -133,7 +128,7 @@ fun AlarmCard(
                 Text(
                     text = timeStr,
                     style = LiteverTheme.typography.displaySmall.copy(
-                        fontWeight = FontWeight.SemiBold,
+                        fontWeight = FontWeight.Bold,
                         letterSpacing = (-0.5).sp
                     ),
                     color = LiteverTheme.colors.onSurface
@@ -141,8 +136,8 @@ fun AlarmCard(
                 if (amPm != null) {
                     Text(
                         text = amPm.uppercase(),
-                        style = LiteverTheme.typography.titleSmall.copy(fontWeight = FontWeight.Medium),
-                        color = LiteverTheme.colors.onSurfaceVariant,
+                        style = LiteverTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                        color = LiteverTheme.colors.onSurface,
                         modifier = Modifier
                             .padding(start = LiteverTheme.spacing.extraSmall, bottom = LiteverTheme.spacing.small)
                             .align(Alignment.Bottom)
@@ -181,6 +176,7 @@ fun AlarmCard(
             val labelText = alarm.label.ifEmpty { stringResource(R.string.no_label) }
             Text(
                 text = labelText,
+                color = LiteverTheme.colors.onSurfaceVariant,
                 style = LiteverTheme.typography.bodyMedium.copy(
                     fontStyle = if (alarm.label.isEmpty()) FontStyle.Italic else FontStyle.Normal,
                 ),
@@ -192,7 +188,7 @@ fun AlarmCard(
     }
 
 @Composable
-private fun MissionIcons(missions: List<Mission>, modifier: Modifier = Modifier) {
+internal fun MissionIcons(missions: List<Mission>, modifier: Modifier = Modifier) {
     if (missions.isEmpty()) return
     
     Row(
@@ -235,7 +231,7 @@ private fun MissionIcons(missions: List<Mission>, modifier: Modifier = Modifier)
 }
 
 @Composable
-private fun getMissionIcon(type: MissionType): ImageVector {
+internal fun getMissionIcon(type: MissionType): ImageVector {
     return when (type) {
         MissionType.TYPING -> Icons.Rounded.Keyboard
         MissionType.MATH -> Icons.Rounded.Calculate

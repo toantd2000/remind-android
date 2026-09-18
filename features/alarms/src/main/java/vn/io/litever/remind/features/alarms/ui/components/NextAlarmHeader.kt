@@ -19,23 +19,28 @@ fun NextAlarmHeader(
     state: NextAlarmUiState,
     modifier: Modifier = Modifier
 ) {
-    Row(
+    Surface(
         modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+        color = LiteverTheme.colors.tertiaryContainer,
+        contentColor = LiteverTheme.colors.onTertiaryContainer,
+        shape = LiteverTheme.shapes.large,
     ) {
-        Icon(
-            imageVector = Icons.Rounded.Alarm,
-            contentDescription = null,
-            tint = LiteverTheme.colors.tertiary,
-            modifier = Modifier.size(LiteVerButtonDefaults.IconSize)
-        )
-        Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
-        Text(
-            text = formatNextAlarmText(state),
-            style = LiteverTheme.typography.labelMedium,
-            color = LiteverTheme.colors.tertiary,
-            fontWeight = FontWeight.SemiBold
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(all = LiteverTheme.spacing.medium),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Alarm,
+                contentDescription = null,
+                modifier = Modifier.size(LiteVerButtonDefaults.IconSize)
+            )
+            Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
+            Text(
+                text = formatNextAlarmText(state),
+                style = LiteverTheme.typography.labelMedium,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
     }
 }
 

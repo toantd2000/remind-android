@@ -1268,4 +1268,23 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
   - Trải nghiệm người dùng đồng nhất, trực quan và rõ ràng hơn khi thực hiện thao tác nhanh trên từng báo thức.
   - Tận dụng tối đa các thành phần và quy chuẩn có sẵn trong `:core:designsystem`.
 
+### [TDR-071] - Tinh chỉnh giao diện AlarmCard & Thẻ NextAlarmHeader
+- **Ngày thực hiện:** 2026-09-18
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - `AlarmCard`: Card báo thức cần tăng tính thẩm mỹ và độ tương phản với nền theo đúng các token phân cấp màu (`surfaceContainer` / `surfaceContainerLow`), dùng `Surface` đồng bộ và căn chỉnh font chữ giờ, AM/PM sắc nét hơn.
+  - `NextAlarmHeader`: Phần hiển thị báo thức sắp tới đang là một Row đơn giản, chưa nổi bật so với danh sách bên dưới.
+- **Quyết định:**
+  1. **Nâng cấp `AlarmCard`:**
+     - Sử dụng `Surface` với `shape = LiteverTheme.shapes.large` thay cho `Card`.
+     - Màu nền phân cấp: Báo thức bật dùng `LiteverTheme.colors.surfaceContainer`, báo thức tắt dùng `LiteverTheme.colors.surfaceContainerLow`.
+     - Chữ giờ định dạng `FontWeight.Bold`, AM/PM in hoa với `FontWeight.Bold` và màu `onSurface`.
+     - Nhãn báo thức bổ sung màu `onSurfaceVariant`.
+  2. **Nâng cấp `NextAlarmHeader` & `ReMindBottomBar`:**
+     - `NextAlarmHeader`: Bọc toàn bộ nội dung trong một `Surface` bo góc `LiteverTheme.shapes.large`, màu nền `tertiaryContainer`, `contentColor = onTertiaryContainer` và padding `LiteverTheme.spacing.medium`. Giúp khối thông báo thời gian chuông sắp reo trở nên nổi bật, thanh lịch và tạo điểm nhấn trực quan ở đầu màn hình.
+     - `ReMindBottomBar`: Nâng cấp màu nền sang `LiteverTheme.colors.surfaceContainerHigh` nhằm tăng độ tách biệt và tương phản rõ nét so với nội dung cuộn bên dưới.
+- **Hệ quả:**
+  - Giao diện danh sách báo thức và bottom bar hiện đại, rõ ràng, độ tương phản và trật tự thị giác (visual hierarchy) tốt hơn.
+
+
 

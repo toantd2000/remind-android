@@ -42,7 +42,7 @@ fun ReMindBottomBar(
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
-        color = LiteverTheme.colors.surfaceContainer,
+        color = LiteverTheme.colors.surfaceContainerHigh,
         shape = shape
     ) {
         Row(

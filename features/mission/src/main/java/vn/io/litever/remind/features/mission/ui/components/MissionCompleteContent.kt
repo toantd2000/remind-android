@@ -1,17 +1,13 @@
 package vn.io.litever.remind.features.mission.ui.components
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.CheckCircle
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import vn.io.litever.designsystem.components.FeedbackStateType
+import vn.io.litever.designsystem.components.FeedbackStateView
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.features.mission.R
@@ -22,41 +18,16 @@ fun MissionCompleteContent(
     title: String = stringResource(R.string.mission_complete_title),
     subtitle: String = stringResource(R.string.mission_complete_subtitle)
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(LiteverTheme.spacing.large),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Icon(
-            imageVector = Icons.Rounded.CheckCircle,
-            contentDescription = null,
-            tint = LiteverTheme.colors.primary,
-            modifier = Modifier.size(80.dp)
-        )
-        
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
-        
-        Text(
-            text = title,
-            style = LiteverTheme.typography.displayMedium.copy(
-                fontWeight = FontWeight.Black,
-                color = LiteverTheme.colors.onSurface,
-                letterSpacing = 4.sp
-            ),
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center
-        )
-        
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
-        
-        Text(
-            text = subtitle,
-            style = LiteverTheme.typography.titleMedium,
-            color = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.7f),
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center
-        )
-    }
+    FeedbackStateView(
+        title = title,
+        description = subtitle,
+        type = FeedbackStateType.SUCCESS,
+        modifier = modifier.fillMaxSize(),
+        titleStyle = LiteverTheme.typography.titleLarge.copy(
+            fontWeight = FontWeight.Bold,
+        ),
+        descriptionStyle = LiteverTheme.typography.bodyLarge.copy()
+    )
 }
 
 @Preview(showBackground = true)
@@ -66,13 +37,3 @@ fun MissionCompleteContentPreview() {
         MissionCompleteContent()
     }
 }
-
-
-
-
-
-
-
-
-
-

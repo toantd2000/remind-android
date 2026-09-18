@@ -1286,5 +1286,31 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
 - **Hệ quả:**
   - Giao diện danh sách báo thức và bottom bar hiện đại, rõ ràng, độ tương phản và trật tự thị giác (visual hierarchy) tốt hơn.
 
+### [TDR-072] - Tự động xuống dòng (FlowRow) cho Button trong LvAlertDialog khi Text dài
+- **Ngày thực hiện:** 2026-09-18
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Trong `LvAlertDialog`, các nút tác vụ (dismissButton và confirmButton) trước đây được đặt trong một `Row` với `Alignment.End`. Khi tiêu đề của các button quá dài hoặc không đủ diện tích hiển thị trên cùng một hàng ngang, text có thể bị ép nhỏ hoặc gây tràn khung, vỡ bố cục dialog.
+- **Quyết định:**
+  - Chuyển đổi vùng chứa action buttons từ `Row` sang `FlowRow` với khoảng cách `horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small, Alignment.End)` và `verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)`.
+  - Giữ thứ tự hiển thị: dismissButton đi trước, confirmButton đi sau. Khi không đủ không gian ngang, confirmButton hoặc các nút sẽ tự động ngắt và nhảy xuống dòng kế tiếp một cách mượt mà và tự nhiên.
+  - Bổ sung Preview `LvAlertDialogLongButtonsPreview` để kiểm thử trường hợp text button dài.
+- **Hệ quả:**
+  - Đảm bảo Dialog luôn hiển thị trọn vẹn nhãn nút bấm mà không bị tràn khung hay cắt bớt chữ trên mọi kích cỡ màn hình.
+  - Tương thích hoàn toàn với các dialog hiện có trong toàn bộ ứng dụng mà không cần thay đổi code ở caller side.
+
+### [TDR-073] - Đồng bộ MissionCompleteContent sử dụng thành phần dùng chung FeedbackStateView
+- **Ngày thực hiện:** 2026-09-18
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Màn hình thông báo hoàn thành nhiệm vụ (`MissionCompleteContent`) trước đây tự triển khai một bố cục Column riêng lẻ với Icon CheckCircle và Text tùy biến, chưa tận dụng component `FeedbackStateView` của LiteVer Design System.
+- **Quyết định:**
+  - Tái cấu trúc `MissionCompleteContent` sang sử dụng trực tiếp `FeedbackStateView` với `type = FeedbackStateType.SUCCESS`.
+  - Tận dụng huy hiệu (badge tròn), kiểu màu ngữ nghĩa Success (`successContainer`, `onSuccessContainer`) và spacing chuẩn hóa của Design System.
+  - Tùy chỉnh kiểu chữ `displayMedium` in đậm và khoảng cách ký tự `letterSpacing = 4.sp` cùng subtitle `titleMedium` để duy trì sự nổi bật và tạo cảm giác thành tựu khi tắt chuông thành công.
+- **Hệ quả:**
+  - Tuân thủ nghiêm ngặt nguyên tắc Single Source of Truth cho UI components giữa các module.
+  - Giảm thiểu code trùng lặp, đồng bộ hoá nhận diện thương hiệu và trạng thái phản hồi xuyên suốt ứng dụng.
+
 
 

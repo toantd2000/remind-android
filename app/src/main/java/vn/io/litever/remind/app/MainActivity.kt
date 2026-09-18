@@ -24,17 +24,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Alarm
-import androidx.compose.material.icons.rounded.Lightbulb
-import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -44,7 +36,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.res.stringResource
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -286,67 +277,18 @@ class MainActivity : ComponentActivity() {
                                 snackbarHost = { LvSnackbarHost(hostState = snackbarHostState) },
                                 bottomBar = {
                                         if (isBottomBarVisible) {
-                                            NavigationBar(
-                                                windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
-                                            ) {
-                                                NavigationBarItem(
-                                                    icon = {
-                                                        Icon(
-                                                            Icons.Rounded.Alarm,
-                                                            contentDescription = "Alarm"
-                                                        )
-                                                    },
-                                                    label = { Text(stringResource(R.string.navigation_alarms)) },
-                                                    selected = currentRoute == AlarmListRoute,
-                                                    onClick = {
-                                                        navController.navigate(AlarmListRoute) {
-                                                            popUpTo(navController.graph.startDestinationId) {
-                                                                saveState = true
-                                                            }
-                                                            launchSingleTop = true
-                                                            restoreState = true
+                                            ReMindNavigationBar(
+                                                currentRoute = currentRoute,
+                                                onNavigateToDestination = { route ->
+                                                    navController.navigate(route) {
+                                                        popUpTo(navController.graph.startDestinationId) {
+                                                            saveState = true
                                                         }
+                                                        launchSingleTop = true
+                                                        restoreState = true
                                                     }
-                                                )
-                                                NavigationBarItem(
-                                                    icon = {
-                                                        Icon(
-                                                            Icons.Rounded.Lightbulb,
-                                                            contentDescription = "Today"
-                                                        )
-                                                    },
-                                                    label = { Text(stringResource(R.string.navigation_today)) },
-                                                    selected = currentRoute == todayRoute,
-                                                    onClick = {
-                                                        navController.navigate(todayRoute) {
-                                                            popUpTo(navController.graph.startDestinationId) {
-                                                                saveState = true
-                                                            }
-                                                            launchSingleTop = true
-                                                            restoreState = true
-                                                        }
-                                                    }
-                                                )
-                                                NavigationBarItem(
-                                                    icon = {
-                                                        Icon(
-                                                            Icons.Rounded.Settings,
-                                                            contentDescription = "Settings"
-                                                        )
-                                                    },
-                                                    label = { Text(stringResource(R.string.navigation_settings)) },
-                                                    selected = currentRoute == settingsRoute,
-                                                    onClick = {
-                                                        navController.navigate(settingsRoute) {
-                                                            popUpTo(navController.graph.startDestinationId) {
-                                                                saveState = true
-                                                            }
-                                                            launchSingleTop = true
-                                                            restoreState = true
-                                                        }
-                                                    }
-                                                )
-                                            }
+                                                }
+                                            )
                                         }
                                     }
                                 ) { paddingValues ->

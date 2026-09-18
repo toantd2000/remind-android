@@ -66,7 +66,7 @@ fun BrandingSplashScreen(
                     .graphicsLayer(scaleX = scale, scaleY = scale)
             ) {
                 // App Logo
-                ReMindLogo(fontSize = 42.sp)
+                ReMindLogo(style = LiteverTheme.typography.displaySmall)
 
                 Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
 
@@ -74,7 +74,7 @@ fun BrandingSplashScreen(
                 Text(
                     text = stringResource(R.string.app_slogan),
                     style = LiteverTheme.typography.titleMedium,
-                    color = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.6f),
+                    color = LiteverTheme.colors.onSurfaceVariant,
                     fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Center,
                     letterSpacing = 1.5.sp

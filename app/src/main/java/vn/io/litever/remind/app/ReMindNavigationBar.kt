@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.navigation.NavController
 import vn.io.litever.remind.features.alarms.ui.AlarmListRoute
 import vn.io.litever.remind.features.settings.ui.settingsRoute
 import vn.io.litever.remind.features.today.ui.todayRoute

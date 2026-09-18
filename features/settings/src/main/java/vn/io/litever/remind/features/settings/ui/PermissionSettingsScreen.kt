@@ -209,13 +209,10 @@ fun PermissionTile(
     isCritical: Boolean = false,
     onRequest: () -> Unit
 ) {
-    Card(
+    Surface(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.3f)
-        ),
-        shape = LiteverTheme.shapes.medium,
-        border = androidx.compose.foundation.BorderStroke(1.dp, LiteverTheme.colors.outlineVariant.copy(alpha = 0.2f))
+        color = LiteverTheme.colors.surfaceContainerLow,
+        shape = LiteverTheme.shapes.large,
     ) {
         Column(
             modifier = Modifier.padding(LiteverTheme.spacing.medium)
@@ -298,12 +295,10 @@ fun PermissionTile(
 
 @Composable
 fun ManufacturerSettingsTile(onOpen: () -> Unit) {
-    Card(
+    Surface(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = LiteverTheme.colors.secondaryContainer.copy(alpha = 0.1f)
-        ),
-        shape = LiteverTheme.shapes.medium,
+        color = LiteverTheme.colors.secondaryContainer.copy(alpha = 0.1f),
+        shape = LiteverTheme.shapes.large,
         border = androidx.compose.foundation.BorderStroke(1.dp, LiteverTheme.colors.secondary.copy(alpha = 0.1f))
     ) {
         Column(

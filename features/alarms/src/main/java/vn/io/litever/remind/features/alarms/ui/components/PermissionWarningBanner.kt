@@ -23,9 +23,9 @@ fun PermissionWarningBanner(
 ) {
     Surface(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(LiteverTheme.spacing.medium),
+            .fillMaxWidth(),
         color = LiteverTheme.colors.errorContainer,
+        contentColor = LiteverTheme.colors.onErrorContainer,
         shape = LiteverTheme.shapes.large
     ) {
         Column(
@@ -37,13 +37,11 @@ fun PermissionWarningBanner(
                 Icon(
                     imageVector = Icons.Rounded.ErrorOutline,
                     contentDescription = null,
-                    tint = LiteverTheme.colors.onErrorContainer
                 )
                 Spacer(modifier = Modifier.width(LiteverTheme.spacing.smallMedium))
                 Text(
                     text = stringResource(R.string.permission_warning_banner_title),
                     style = LiteverTheme.typography.titleMedium,
-                    color = LiteverTheme.colors.onErrorContainer,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -53,7 +51,6 @@ fun PermissionWarningBanner(
             Text(
                 text = stringResource(R.string.permission_warning_banner_desc),
                 style = LiteverTheme.typography.bodySmall,
-                color = LiteverTheme.colors.onErrorContainer
             )
             
             Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))

@@ -7,7 +7,7 @@
     <string name="days_hours">%1$d days %2$d hours</string>
     <string name="hours_minutes">%1$d hours %2$d mins</string>
     <string name="just_minutes">%1$d mins</string>
-    <string name="empty_description">Create your first alarm to start a new day full of energy with</string>
+    <string name="empty_description">Create your first alarm to start\na new day full of energy with</string>
     <string name="action_add_new_alarm">+ Add new alarm</string>
     
     <string name="today">Today</string>

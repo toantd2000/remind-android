@@ -15,9 +15,12 @@ import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -77,6 +80,7 @@ import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.components.snackbar.LvSnackbarHost
 import vn.io.litever.designsystem.theme.LiteverTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.ui.Alignment
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindLogo
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -231,7 +235,7 @@ fun AlarmListScreen(
 
     Scaffold(
         topBar = {
-            if (hasAlarms) {
+            if (hasAlarms || !hasCriticalPermissions) {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                 ) {
@@ -240,34 +244,47 @@ fun AlarmListScreen(
                             ReMindLogo()
                         },
                         actions = {
-                            LvIconButton(onClick = { showTopMenu = !showTopMenu }) {
-                                Icon(
-                                    Icons.Rounded.MoreVert,
-                                    contentDescription = actionMoreDescription
-                                )
-                            }
-                            DropdownMenu(
-                                expanded = showTopMenu,
-                                onDismissRequest = { if (showTopMenu) showTopMenu = false }
-                            ) {
-                                DropdownMenuItem(
-                                    text = { Text(deleteDisabledAlarmsText) },
-                                    onClick = {
-                                        onDeleteDisabledAlarms()
-                                        if (showTopMenu) showTopMenu = false
-                                    }
-                                )
+                            if (hasAlarms) {
+                                LvIconButton(onClick = { showTopMenu = !showTopMenu }) {
+                                    Icon(
+                                        Icons.Rounded.MoreVert,
+                                        contentDescription = actionMoreDescription
+                                    )
+                                }
+                                DropdownMenu(
+                                    expanded = showTopMenu,
+                                    onDismissRequest = { if (showTopMenu) showTopMenu = false }
+                                ) {
+                                    DropdownMenuItem(
+                                        text = { Text(deleteDisabledAlarmsText) },
+                                        onClick = {
+                                            onDeleteDisabledAlarms()
+                                            if (showTopMenu) showTopMenu = false
+                                        }
+                                    )
+                                }
                             }
                         }
                     )
-                    NextAlarmHeader(
-                        modifier = Modifier.padding(
-                            start = LiteverTheme.spacing.medium,
-                            end = LiteverTheme.spacing.medium,
-                            bottom = LiteverTheme.spacing.small
-                        ),
-                        state = nextAlarmState
-                    )
+                    if (!hasCriticalPermissions) {
+                        PermissionWarningBanner(
+                            onClick = onNavigateToPermissions,
+                            modifier = Modifier.padding(
+                                start = LiteverTheme.spacing.medium,
+                                end = LiteverTheme.spacing.medium,
+                                bottom = LiteverTheme.spacing.small
+                            )
+                        )
+                    } else if (hasAlarms) {
+                        NextAlarmHeader(
+                            modifier = Modifier.padding(
+                                start = LiteverTheme.spacing.medium,
+                                end = LiteverTheme.spacing.medium,
+                                bottom = LiteverTheme.spacing.small
+                            ),
+                            state = nextAlarmState
+                        )
+                    }
                 }
             }
         },
@@ -283,12 +300,9 @@ fun AlarmListScreen(
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .padding(padding)
+                .padding(padding),
+            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small),
         ) {
-            if (!hasCriticalPermissions) {
-                PermissionWarningBanner(onClick = onNavigateToPermissions)
-            }
-
             if (alarms == null) {
                 // Show nothing while loading to avoid empty state flash
                 Box(modifier = Modifier.weight(1f))
@@ -561,34 +575,6 @@ fun EmptyState(
     modifier: Modifier = Modifier
 ) {
     val descriptionPrefix = stringResource(R.string.empty_description)
-    val reColor = LiteverTheme.colors.onSurfaceVariant
-    val mindColor = LiteverTheme.colors.primary
-    val displayFontFamily = LiteverTheme.typography.displayLarge.fontFamily
-
-    val annotatedDescription = remember(descriptionPrefix, reColor, mindColor, displayFontFamily) {
-        buildAnnotatedString {
-            append("$descriptionPrefix ")
-            withStyle(
-                style = SpanStyle(
-                    color = reColor,
-                    fontWeight = FontWeight.Light,
-                    fontFamily = displayFontFamily
-                )
-            ) {
-                append("Re")
-            }
-            withStyle(
-                style = SpanStyle(
-                    color = mindColor,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = displayFontFamily
-                )
-            ) {
-                append("Mind")
-            }
-            append(".")
-        }
-    }
 
     FeedbackStateView(
         title = stringResource(R.string.no_alarms),
@@ -612,13 +598,17 @@ fun EmptyState(
             }
         },
         descriptionSlot = {
-            Text(
-                text = annotatedDescription,
-                style = LiteverTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.widthIn(max = 280.dp)
-            )
+            Column(
+                modifier = Modifier.wrapContentHeight(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = descriptionPrefix,
+                    style = LiteverTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center
+                )
+                ReMindLogo()
+            }
         },
         action = {
             LvButton(
@@ -660,41 +650,42 @@ fun EmptyStateDarkPreview() {
     }
 }
 
+private val sampleAlarmsForPreview = listOf(
+    Alarm(
+        id = 1L,
+        time = LocalTime.of(7, 0),
+        label = "Morning Alarm",
+        isEnabled = true,
+        repeatDays = listOf(
+            DayOfWeek.MONDAY,
+            DayOfWeek.TUESDAY,
+            DayOfWeek.WEDNESDAY,
+            DayOfWeek.THURSDAY,
+            DayOfWeek.FRIDAY
+        )
+    ),
+    Alarm(
+        id = 2L,
+        time = LocalTime.of(8, 30),
+        label = "Weekend Workout",
+        isEnabled = false,
+        repeatDays = listOf(
+            DayOfWeek.SATURDAY,
+            DayOfWeek.SUNDAY
+        )
+    )
+)
+
 @Preview(
+    name = "Alarm List - Normal With Next Alarm",
     showBackground = true,
     device = Devices.PIXEL_7
 )
 @Composable
 fun AlarmListScreenPreview() {
-    val sampleAlarms = listOf(
-        Alarm(
-            id = 1L,
-            time = LocalTime.of(7, 0),
-            label = "Morning Alarm",
-            isEnabled = true,
-            repeatDays = listOf(
-                DayOfWeek.MONDAY,
-                DayOfWeek.TUESDAY,
-                DayOfWeek.WEDNESDAY,
-                DayOfWeek.THURSDAY,
-                DayOfWeek.FRIDAY
-            )
-        ),
-        Alarm(
-            id = 2L,
-            time = LocalTime.of(8, 30),
-            label = "Weekend Workout",
-            isEnabled = false,
-            repeatDays = listOf(
-                DayOfWeek.SATURDAY,
-                DayOfWeek.SUNDAY
-            )
-        )
-    )
-
     ReMindTheme {
         AlarmListScreen(
-            alarms = sampleAlarms,
+            alarms = sampleAlarmsForPreview,
             is24HourFormat = false,
             nextAlarmState = NextAlarmUiState.Remaining(days = 0, hours = 7, minutes = 15),
             hasCriticalPermissions = true,
@@ -715,14 +706,184 @@ fun AlarmListScreenPreview() {
     }
 }
 
+@Preview(
+    name = "Alarm List - No Critical Permissions",
+    showBackground = true,
+    device = Devices.PIXEL_7
+)
+@Composable
+fun AlarmListScreenNoPermissionsPreview() {
+    ReMindTheme {
+        AlarmListScreen(
+            alarms = sampleAlarmsForPreview,
+            is24HourFormat = false,
+            nextAlarmState = NextAlarmUiState.Remaining(days = 0, hours = 7, minutes = 15),
+            hasCriticalPermissions = false,
+            snackbarHostState = remember { SnackbarHostState() },
+            onToggleAlarm = {},
+            onDeleteAlarm = {},
+            onDuplicateAlarm = {},
+            onSkipOnce = {},
+            onCancelSkip = {},
+            onDeleteDisabledAlarms = {},
+            onAddAlarmClick = {},
+            onAlarmClick = {},
+            onPreviewClick = {},
+            onNavigateToPermissions = {},
+            onRewardGranted = {},
+            isAdFreeActive = false
+        )
+    }
+}
 
+@Preview(
+    name = "Alarm List - All Alarms Off",
+    showBackground = true,
+    device = Devices.PIXEL_7
+)
+@Composable
+fun AlarmListScreenAllOffPreview() {
+    ReMindTheme {
+        AlarmListScreen(
+            alarms = sampleAlarmsForPreview.map { it.copy(isEnabled = false) },
+            is24HourFormat = false,
+            nextAlarmState = NextAlarmUiState.AllOff,
+            hasCriticalPermissions = true,
+            snackbarHostState = remember { SnackbarHostState() },
+            onToggleAlarm = {},
+            onDeleteAlarm = {},
+            onDuplicateAlarm = {},
+            onSkipOnce = {},
+            onCancelSkip = {},
+            onDeleteDisabledAlarms = {},
+            onAddAlarmClick = {},
+            onAlarmClick = {},
+            onPreviewClick = {},
+            onNavigateToPermissions = {},
+            onRewardGranted = {},
+            isAdFreeActive = false
+        )
+    }
+}
 
+@Preview(
+    name = "Alarm List - 24-Hour Format",
+    showBackground = true,
+    device = Devices.PIXEL_7
+)
+@Composable
+fun AlarmListScreen24HourPreview() {
+    ReMindTheme {
+        AlarmListScreen(
+            alarms = sampleAlarmsForPreview,
+            is24HourFormat = true,
+            nextAlarmState = NextAlarmUiState.Remaining(days = 0, hours = 7, minutes = 15),
+            hasCriticalPermissions = true,
+            snackbarHostState = remember { SnackbarHostState() },
+            onToggleAlarm = {},
+            onDeleteAlarm = {},
+            onDuplicateAlarm = {},
+            onSkipOnce = {},
+            onCancelSkip = {},
+            onDeleteDisabledAlarms = {},
+            onAddAlarmClick = {},
+            onAlarmClick = {},
+            onPreviewClick = {},
+            onNavigateToPermissions = {},
+            onRewardGranted = {},
+            isAdFreeActive = false
+        )
+    }
+}
 
+@Preview(
+    name = "Alarm List - Dark Mode",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    device = Devices.PIXEL_7,
+    backgroundColor = 0xFF121212L
+)
+@Composable
+fun AlarmListScreenDarkPreview() {
+    ReMindTheme(darkTheme = true) {
+        AlarmListScreen(
+            alarms = sampleAlarmsForPreview,
+            is24HourFormat = false,
+            nextAlarmState = NextAlarmUiState.Remaining(days = 0, hours = 7, minutes = 15),
+            hasCriticalPermissions = true,
+            snackbarHostState = remember { SnackbarHostState() },
+            onToggleAlarm = {},
+            onDeleteAlarm = {},
+            onDuplicateAlarm = {},
+            onSkipOnce = {},
+            onCancelSkip = {},
+            onDeleteDisabledAlarms = {},
+            onAddAlarmClick = {},
+            onAlarmClick = {},
+            onPreviewClick = {},
+            onNavigateToPermissions = {},
+            onRewardGranted = {},
+            isAdFreeActive = false
+        )
+    }
+}
 
+@Preview(
+    name = "Alarm List - Loading State",
+    showBackground = true,
+    device = Devices.PIXEL_7
+)
+@Composable
+fun AlarmListScreenLoadingPreview() {
+    ReMindTheme {
+        AlarmListScreen(
+            alarms = null,
+            is24HourFormat = false,
+            nextAlarmState = NextAlarmUiState.AllOff,
+            hasCriticalPermissions = true,
+            snackbarHostState = remember { SnackbarHostState() },
+            onToggleAlarm = {},
+            onDeleteAlarm = {},
+            onDuplicateAlarm = {},
+            onSkipOnce = {},
+            onCancelSkip = {},
+            onDeleteDisabledAlarms = {},
+            onAddAlarmClick = {},
+            onAlarmClick = {},
+            onPreviewClick = {},
+            onNavigateToPermissions = {},
+            onRewardGranted = {},
+            isAdFreeActive = false
+        )
+    }
+}
 
-
-
-
-
-
-
+@Preview(
+    name = "Alarm List - Empty With No Critical Permissions",
+    showBackground = true,
+    device = Devices.PIXEL_7
+)
+@Composable
+fun AlarmListScreenEmptyNoPermissionsPreview() {
+    ReMindTheme {
+        AlarmListScreen(
+            alarms = emptyList(),
+            is24HourFormat = false,
+            nextAlarmState = NextAlarmUiState.AllOff,
+            hasCriticalPermissions = false,
+            snackbarHostState = remember { SnackbarHostState() },
+            onToggleAlarm = {},
+            onDeleteAlarm = {},
+            onDuplicateAlarm = {},
+            onSkipOnce = {},
+            onCancelSkip = {},
+            onDeleteDisabledAlarms = {},
+            onAddAlarmClick = {},
+            onAlarmClick = {},
+            onPreviewClick = {},
+            onNavigateToPermissions = {},
+            onRewardGranted = {},
+            isAdFreeActive = false
+        )
+    }
+}

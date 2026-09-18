@@ -7,7 +7,7 @@
     <string name="days_hours">%1$d ngày %2$d giờ</string>
     <string name="hours_minutes">%1$d giờ %2$d phút</string>
     <string name="just_minutes">%1$d phút</string>
-    <string name="empty_description">Hãy tạo báo thức đầu tiên để bắt đầu ngày mới tràn đầy năng lượng cùng</string>
+    <string name="empty_description">Hãy tạo báo thức đầu tiên để bắt đầu\nngày mới tràn đầy năng lượng cùng</string>
     <string name="action_add_new_alarm">+ Thêm báo thức mới</string>
     
     <string name="today">Hôm nay</string>

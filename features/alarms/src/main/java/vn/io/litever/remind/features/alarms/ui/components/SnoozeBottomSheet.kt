@@ -10,8 +10,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Switch
@@ -27,6 +27,7 @@ import vn.io.litever.designsystem.components.button.LvButton
 import vn.io.litever.designsystem.components.button.LvButtonType
 import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.components.ReMindBottomSheetContent
 import vn.io.litever.remind.core.designsystem.components.ReMindGroupCard
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -48,17 +49,20 @@ fun SnoozeBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
         containerColor = LiteverTheme.colors.surface,
-        tonalElevation = LiteverTheme.spacing.none,
         modifier = modifier
     ) {
-        SnoozeBottomSheetContent(
-            enabled = enabled,
-            interval = interval,
-            repeatCount = repeatCount,
-            onEnabledChange = onEnabledChange,
-            onIntervalChange = onIntervalChange,
-            onRepeatCountChange = onRepeatCountChange
-        )
+        ReMindBottomSheetContent(
+            title = stringResource(vn.io.litever.remind.core.designsystem.R.string.snooze_settings)
+        ) {
+            SnoozeBottomSheetContent(
+                enabled = enabled,
+                interval = interval,
+                repeatCount = repeatCount,
+                onEnabledChange = onEnabledChange,
+                onIntervalChange = onIntervalChange,
+                onRepeatCountChange = onRepeatCountChange
+            )
+        }
     }
 }
 
@@ -78,18 +82,10 @@ fun SnoozeBottomSheetContent(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = LiteverTheme.spacing.medium)
+            .padding(vertical = LiteverTheme.spacing.small)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
     ) {
-        Text(
-            text = stringResource(vn.io.litever.remind.core.designsystem.R.string.snooze_settings),
-            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier
-                .padding(bottom = LiteverTheme.spacing.small)
-                .padding(horizontal = LiteverTheme.spacing.medium)
-        )
-
         ReMindGroupCard(
             modifier = Modifier.fillMaxWidth(),
         ) {
@@ -172,10 +168,14 @@ fun SnoozeBottomSheetContent(
                         LvButton(
                             onClick = { if (enabled) onRepeatCountChange(option) },
                             modifier = Modifier.weight(1f),
+                            contentPadding = ButtonDefaults.TextButtonContentPadding,
                             type = if (isSelected) LvButtonType.Tonal else LvButtonType.Outlined,
                             semantic = if (isSelected) LvSemantic.Primary else LvSemantic.Neutral,
                         ) {
-                            Text(label)
+                            Text(
+                                text = label,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold
+                            )
                         }
                     }
                     repeat(3 - rowOptions.size) {

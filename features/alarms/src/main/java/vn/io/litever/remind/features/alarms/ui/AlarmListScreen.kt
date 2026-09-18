@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,16 +28,15 @@ import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.NotificationsPaused
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.SkipNext
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
@@ -58,10 +58,12 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -74,6 +76,7 @@ import vn.io.litever.designsystem.components.button.LvIconButton
 import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.components.snackbar.LvSnackbarHost
 import vn.io.litever.designsystem.theme.LiteverTheme
+import androidx.compose.material3.ModalBottomSheet
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindLogo
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -238,7 +241,10 @@ fun AlarmListScreen(
                         },
                         actions = {
                             LvIconButton(onClick = { showTopMenu = !showTopMenu }) {
-                                Icon(Icons.Rounded.MoreVert, contentDescription = actionMoreDescription)
+                                Icon(
+                                    Icons.Rounded.MoreVert,
+                                    contentDescription = actionMoreDescription
+                                )
                             }
                             DropdownMenu(
                                 expanded = showTopMenu,
@@ -296,7 +302,10 @@ fun AlarmListScreen(
                     LazyColumn(
                         modifier = Modifier.weight(1f),
                         verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small),
-                        contentPadding = PaddingValues(horizontal = LiteverTheme.spacing.mediumLarge, vertical = LiteverTheme.spacing.small).let {
+                        contentPadding = PaddingValues(
+                            horizontal = LiteverTheme.spacing.mediumLarge,
+                            vertical = LiteverTheme.spacing.small
+                        ).let {
                             PaddingValues(
                                 start = it.calculateStartPadding(androidx.compose.ui.unit.LayoutDirection.Ltr),
                                 top = it.calculateTopPadding(),
@@ -325,6 +334,7 @@ fun AlarmListScreen(
     if (selectedAlarmForMenu != null) {
         AlarmActionBottomSheet(
             alarm = selectedAlarmForMenu!!,
+            is24HourFormat = is24HourFormat,
             onDismiss = { if (selectedAlarmForMenu != null) selectedAlarmForMenu = null },
             onDelete = {
                 onDeleteAlarm(selectedAlarmForMenu!!)
@@ -354,6 +364,7 @@ fun AlarmListScreen(
 @Composable
 private fun AlarmActionBottomSheet(
     alarm: Alarm,
+    is24HourFormat: Boolean,
     onDismiss: () -> Unit,
     onDelete: () -> Unit,
     onDuplicate: () -> Unit,
@@ -363,59 +374,183 @@ private fun AlarmActionBottomSheet(
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        dragHandle = { BottomSheetDefaults.DragHandle() },
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = LiteverTheme.colors.surface
     ) {
+        AlarmActionBottomSheetContent(
+            alarm = alarm,
+            is24HourFormat = is24HourFormat,
+            onDelete = onDelete,
+            onDuplicate = onDuplicate,
+            onSkipOnce = onSkipOnce,
+            onCancelSkip = onCancelSkip,
+            onPreview = onPreview
+        )
+    }
+}
+
+@Composable
+private fun AlarmActionBottomSheetContent(
+    alarm: Alarm,
+    is24HourFormat: Boolean,
+    onDelete: () -> Unit,
+    onDuplicate: () -> Unit,
+    onSkipOnce: () -> Unit,
+    onCancelSkip: () -> Unit,
+    onPreview: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(bottom = LiteverTheme.spacing.small)
+    ) {
+        // Selected Alarm Info Summary
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = LiteverTheme.spacing.extraLarge)
+                .padding(LiteverTheme.spacing.medium)
         ) {
-            if (alarm.isEnabled && alarm.repeatDays.isNotEmpty()) {
-                val isSkipped = alarm.skippedAt != null
-                ListItem(
-                    headlineContent = {
-                        Text(stringResource(if (isSkipped) R.string.action_cancel_skip else R.string.action_skip_once))
-                    },
-                    leadingContent = {
-                        Icon(
-                            if (isSkipped) Icons.Rounded.NotificationsPaused else Icons.Rounded.SkipNext,
-                            contentDescription = null
-                        )
-                    },
-                    modifier = Modifier.clickable { if (isSkipped) onCancelSkip() else onSkipOnce() }
+            // Repeat summary
+            val repeatText =
+                vn.io.litever.remind.features.alarms.ui.components.getRepeatSummaryText(
+                    alarm.repeatDays,
+                    alarm.time,
+                    alarm.date
                 )
+            Text(
+                text = repeatText,
+                style = LiteverTheme.typography.labelSmall,
+                color = LiteverTheme.colors.primary,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Spacer(modifier = Modifier.size(LiteverTheme.spacing.extraSmall))
+
+            // Time + AM/PM + Mission Icons
+            val (timeStr, amPm) = vn.io.litever.remind.core.common.util.TimeFormatUtils.formatTimeParts(
+                alarm.time,
+                is24HourFormat
+            )
+            androidx.compose.foundation.layout.Row(
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+            ) {
+                Text(
+                    text = timeStr,
+                    style = LiteverTheme.typography.displaySmall.copy(
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = (-0.5).sp
+                    ),
+                    color = LiteverTheme.colors.onSurface
+                )
+                if (amPm != null) {
+                    Text(
+                        text = amPm.uppercase(),
+                        style = LiteverTheme.typography.titleSmall.copy(fontWeight = FontWeight.Medium),
+                        color = LiteverTheme.colors.onSurfaceVariant,
+                        modifier = Modifier
+                            .padding(
+                                start = LiteverTheme.spacing.extraSmall,
+                                bottom = LiteverTheme.spacing.small
+                            )
+                            .align(androidx.compose.ui.Alignment.Bottom)
+                    )
+                }
+
+                vn.io.litever.remind.features.alarms.ui.components.MissionIcons(
+                    missions = alarm.missions,
+                    modifier = Modifier.padding(
+                        start = LiteverTheme.spacing.small,
+                        bottom = LiteverTheme.spacing.small
+                    )
+                )
+
+                // Label if present
+                if (alarm.label.isNotBlank()) {
+                    Spacer(modifier = Modifier.size(LiteverTheme.spacing.small))
+                    Text(
+                        text = alarm.label,
+                        style = LiteverTheme.typography.bodyMedium,
+                        color = LiteverTheme.colors.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
+        }
 
-            ListItem(
-                headlineContent = { Text(stringResource(R.string.action_preview)) },
-                leadingContent = { Icon(Icons.Rounded.PlayArrow, contentDescription = null) },
-                modifier = Modifier.clickable { onPreview() }
-            )
+        HorizontalDivider(
+            color = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.12f),
+            modifier = Modifier.padding(horizontal = LiteverTheme.spacing.medium)
+        )
 
-            ListItem(
-                headlineContent = { Text(stringResource(R.string.action_duplicate)) },
-                leadingContent = { Icon(Icons.Rounded.ContentCopy, contentDescription = null) },
-                modifier = Modifier.clickable { onDuplicate() }
-            )
-
+        if (alarm.isEnabled && alarm.repeatDays.isNotEmpty()) {
+            val isSkipped = alarm.skippedAt != null
             ListItem(
                 headlineContent = {
-                    Text(
-                        stringResource(R.string.action_delete),
-                        color = MaterialTheme.colorScheme.error
-                    )
+                    Text(stringResource(if (isSkipped) R.string.action_cancel_skip else R.string.action_skip_once))
                 },
                 leadingContent = {
                     Icon(
-                        Icons.Rounded.Delete,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.error
+                        if (isSkipped) Icons.Rounded.NotificationsPaused else Icons.Rounded.SkipNext,
+                        contentDescription = null
                     )
                 },
-                modifier = Modifier.clickable { onDelete() }
+                modifier = Modifier.clickable { if (isSkipped) onCancelSkip() else onSkipOnce() }
             )
         }
+
+        ListItem(
+            headlineContent = { Text(stringResource(R.string.action_preview)) },
+            leadingContent = { Icon(Icons.Rounded.PlayArrow, contentDescription = null) },
+            modifier = Modifier.clickable { onPreview() }
+        )
+
+        ListItem(
+            headlineContent = { Text(stringResource(R.string.action_duplicate)) },
+            leadingContent = { Icon(Icons.Rounded.ContentCopy, contentDescription = null) },
+            modifier = Modifier.clickable { onDuplicate() }
+        )
+
+        ListItem(
+            headlineContent = {
+                Text(
+                    stringResource(R.string.action_delete),
+                    color = MaterialTheme.colorScheme.error
+                )
+            },
+            leadingContent = {
+                Icon(
+                    Icons.Rounded.Delete,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.error
+                )
+            },
+            modifier = Modifier.clickable { onDelete() }
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun AlarmActionBottomSheetPreview() {
+    ReMindTheme {
+        AlarmActionBottomSheetContent(
+            alarm = Alarm(
+                id = 1,
+                time = LocalTime.of(7, 30),
+                label = "Wake up",
+                isEnabled = true,
+                repeatDays = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
+            ),
+            is24HourFormat = false,
+            onDelete = {},
+            onDuplicate = {},
+            onSkipOnce = {},
+            onCancelSkip = {},
+            onPreview = {}
+        )
     }
 }
 

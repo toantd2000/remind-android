@@ -80,6 +80,7 @@
     <string name="missed_alarm_title">Nhắc nhở bị bỏ lỡ</string>
     <string name="missed_alarm_text">Bạn đã bỏ lỡ một báo thức</string>
     <string name="auto_silence_title">Tự động tắt tiếng</string>
+    <string name="auto_silence_description">Báo thức sẽ tự động tắt tiếng hoặc báo lại nếu bạn không tương tác</string>
     <string name="auto_silence_countdown">Tự động tắt sau %s</string>
     <string name="alarm_settings">Cài đặt báo thức</string>
     <string name="use_alarm_stream_title">Phát qua kênh Báo thức</string>

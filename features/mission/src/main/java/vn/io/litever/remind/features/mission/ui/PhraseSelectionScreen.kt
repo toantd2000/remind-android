@@ -27,7 +27,6 @@ import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.EditNote
 import androidx.compose.material.icons.rounded.Lightbulb
 import androidx.compose.material.icons.rounded.MoreVert
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DropdownMenu
@@ -35,7 +34,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -69,11 +67,13 @@ import vn.io.litever.designsystem.components.button.LvButton
 import vn.io.litever.designsystem.components.button.LvButtonType
 import vn.io.litever.designsystem.components.button.LvIconButton
 import vn.io.litever.designsystem.components.core.LvSemantic
+import androidx.compose.material3.ModalBottomSheet
 import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
+import vn.io.litever.remind.core.designsystem.components.ReMindBottomSheetContent
 import vn.io.litever.remind.core.designsystem.components.ReMindGroupCard
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.Phrase
@@ -157,23 +157,25 @@ fun PhraseSelectionRoute(
                 phraseToEdit = null
             },
             sheetState = sheetState,
-            containerColor = LiteverTheme.colors.surface,
-            tonalElevation = LiteverTheme.spacing.none,
-            dragHandle = { BottomSheetDefaults.DragHandle(color = LiteverTheme.colors.outlineVariant) }
+            containerColor = LiteverTheme.colors.surface
         ) {
-            AddCustomPhraseContent(
-                editingPhrase = phraseToEdit,
-                canBePrivate = viewModel.alarmId != 0L,
-                onDismiss = {
-                    showAddSheet = false
-                    phraseToEdit = null
-                },
-                onConfirm = { content, isShared ->
-                    viewModel.saveCustomPhrase(phraseToEdit?.id ?: 0, content, isShared)
-                    showAddSheet = false
-                    phraseToEdit = null
-                }
-            )
+            ReMindBottomSheetContent(
+                title = stringResource(if (phraseToEdit != null) R.string.mission_phrase_edit_title else R.string.mission_add_custom_phrase)
+            ) {
+                AddCustomPhraseContent(
+                    editingPhrase = phraseToEdit,
+                    canBePrivate = viewModel.alarmId != 0L,
+                    onDismiss = {
+                        showAddSheet = false
+                        phraseToEdit = null
+                    },
+                    onConfirm = { content, isShared ->
+                        viewModel.saveCustomPhrase(phraseToEdit?.id ?: 0, content, isShared)
+                        showAddSheet = false
+                        phraseToEdit = null
+                    }
+                )
+            }
         }
     }
 }
@@ -255,12 +257,9 @@ fun PhraseSelectionScreen(
                         text = {
                             Text(
                                 text = title,
-                                style = LiteverTheme.typography.titleSmall,
-                                fontWeight = if (selectedTabIndex == index) FontWeight.Bold else FontWeight.Normal
+                                fontWeight = if (selectedTabIndex == index) FontWeight.ExtraBold else FontWeight.SemiBold
                             )
                         },
-                        selectedContentColor = LiteverTheme.colors.primary,
-                        unselectedContentColor = LiteverTheme.colors.onSurfaceVariant
                     )
                 }
             }
@@ -330,7 +329,10 @@ fun PhraseSelectionScreen(
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(horizontal = LiteverTheme.spacing.medium, vertical = LiteverTheme.spacing.small),
+                                        .padding(
+                                            horizontal = LiteverTheme.spacing.medium,
+                                            vertical = LiteverTheme.spacing.small
+                                        ),
                                     horizontalArrangement = Arrangement.End
                                 ) {
                                     LvButton(
@@ -388,7 +390,10 @@ fun PhraseItem(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = LiteverTheme.spacing.medium, vertical = LiteverTheme.spacing.extraSmall)
+            .padding(
+                horizontal = LiteverTheme.spacing.medium,
+                vertical = LiteverTheme.spacing.extraSmall
+            )
             .clip(LiteverTheme.shapes.medium)
             .clickable { onToggle() },
         shape = LiteverTheme.shapes.medium,
@@ -521,12 +526,6 @@ fun AddCustomPhraseContent(
             .padding(vertical = LiteverTheme.spacing.medium),
         verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
     ) {
-        Text(
-            text = stringResource(if (editingPhrase != null) R.string.mission_phrase_edit_title else R.string.mission_add_custom_phrase),
-            style = LiteverTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(horizontal = LiteverTheme.spacing.medium)
-        )
-
         ReMindGroupCard {
             Column(
                 modifier = Modifier.padding(LiteverTheme.spacing.medium)

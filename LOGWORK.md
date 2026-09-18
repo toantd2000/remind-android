@@ -1226,3 +1226,46 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
 - **Hệ quả:**
   - Ứng dụng hoạt động ổn định 100%, không bị crash runtime tại `MainActivity`.
   - Ảnh minh hoạ `EmptyState` chuyển đổi mượt mà, lập tức tương ứng với Dark Mode hay Light Mode khi người dùng đổi cài đặt trong ứng dụng.
+
+### [TDR-069] - Chuẩn hóa Nội dung Bottom Sheet: ReMindBottomSheetContent & M3 ModalBottomSheet
+- **Ngày thực hiện:** 2026-09-18
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Các màn hình và thành phần (`SnoozeBottomSheet`, `GentleAlarmBottomSheet`, `AutoSilenceBottomSheet`, `MissionSelectionBottomSheet`, `AlarmActionBottomSheet`, `AddCustomPhraseContent`) đang tự cấu hình header và title thủ công, dẫn đến lặp lại logic padding, kiểu chữ title và khoảng cách thừa khi không có title.
+  - Việc bọc toàn bộ `ModalBottomSheet` thành wrapper trung gian gây cồng kềnh, che giấu các tính năng gốc của M3 và trái với triết lý V2 Lean Architecture của Litever Design System.
+- **Quyết định:**
+  1. **Không tạo wrapper cho `ModalBottomSheet`:** Sử dụng trực tiếp `ModalBottomSheet` gốc của Material 3 kèm `containerColor = LiteverTheme.colors.surface` nhằm giữ trọn vẹn khả năng tùy biến của Material 3.
+  2. **Tạo `ReMindBottomSheetContent` tại `:core:designsystem`:**
+     - Đóng gói logic hiển thị `title` (với typography chuẩn `titleLarge`, in đậm và padding hợp lý) và lồng `content` bên dưới.
+     - Khi `title == null`, `content` bắt đầu ngay sát phần trên, không sinh padding/spacing thừa.
+     - Hỗ trợ cả slot composable `title: (@Composable () -> Unit)?` và overload chuỗi `title: String?`.
+  3. **Chuyển đổi toàn bộ Bottom Sheet hiện có trong ứng dụng:**
+     - `SnoozeBottomSheet.kt`
+     - `GentleAlarmBottomSheet.kt`
+     - `AutoSilenceBottomSheet.kt`
+     - `MissionSelectionBottomSheet.kt`
+     - `AlarmActionBottomSheet` trong `AlarmListScreen.kt`
+     - Bottom sheet thêm cụm từ trong `PhraseSelectionScreen.kt`
+- **Hệ quả:**
+  - Đồng bộ 100% trải nghiệm và kiểu dáng Header Bottom Sheet trên toàn bộ ứng dụng.
+  - Tối giản mã nguồn, không sinh lớp wrapper thừa, tuân thủ nguyên tắc Lean Architecture.
+
+### [TDR-070] - Bổ sung mô tả AutoSilence & Thẻ tóm tắt báo thức tại AlarmActionBottomSheet
+- **Ngày thực hiện:** 2026-09-18
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Bottom sheet `AutoSilenceBottomSheet` cần có một dòng mô tả ngắn giải thích hành vi tắt tiếng/báo lại tự động tương tự `GentleAlarmBottomSheet` để người dùng hiểu rõ tác dụng.
+  - `AlarmActionBottomSheet` mở lên từ danh sách báo thức hiện chỉ hiển thị các hành động (Bỏ qua lần này, Xem trước, Nhân bản, Xoá) mà không hiển thị thông tin báo thức đang được tác vụ, gây thiếu ngữ cảnh nhận biết cho người dùng.
+- **Quyết định:**
+  1. **Bổ sung mô tả cho AutoSilence:**
+     - Thêm chuỗi `auto_silence_description` đa ngôn ngữ (Tiếng Anh & Tiếng Việt).
+     - Đặt dòng mô tả ngắn phía dưới tiêu đề của `AutoSilenceBottomSheetContent`.
+  2. **Hiển thị thẻ tóm tắt báo thức trong `AlarmActionBottomSheet`:**
+     - Truyền `is24HourFormat` từ `AlarmListScreen` vào `AlarmActionBottomSheet` và `AlarmActionBottomSheetContent`.
+     - Đặt một `ReMindGroupCard` ở đầu danh sách thao tác: hiển thị chu kỳ lặp (`getRepeatSummaryText`), giờ báo thức + AM/PM (`TimeFormatUtils.formatTimeParts`), biểu tượng nhiệm vụ (`MissionIcons`) và nhãn báo thức (`alarm.label`).
+     - Tái sử dụng hàm nội bộ `MissionIcons` và `getMissionIcon` từ `AlarmCard.kt`.
+- **Hệ quả:**
+  - Trải nghiệm người dùng đồng nhất, trực quan và rõ ràng hơn khi thực hiện thao tác nhanh trên từng báo thức.
+  - Tận dụng tối đa các thành phần và quy chuẩn có sẵn trong `:core:designsystem`.
+
+

@@ -55,126 +55,135 @@ fun MissionSelectionBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
-        containerColor = LiteverTheme.colors.surfaceContainerLow
+        containerColor = LiteverTheme.colors.surface,
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = LiteverTheme.spacing.extraLarge)
+        ReMindBottomSheetContent(
+            title = stringResource(R.string.mission_selection_title),
         ) {
-            Text(
-                text = stringResource(R.string.mission_selection_title),
-                style = LiteverTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                modifier = Modifier.padding(LiteverTheme.spacing.mediumLarge)
-            )
-
-            val missionTypes = listOf(
-                MissionItem(
-                    type = MissionType.TYPING,
-                    title = stringResource(R.string.mission_typing),
-                    description = stringResource(R.string.mission_typing_desc),
-                    icon = Icons.Rounded.Keyboard,
-                    isAvailable = true
-                ),
-                MissionItem(
-                    type = MissionType.MEMORY_FIND_COLOR_TILES,
-                    title = stringResource(R.string.mission_memory_tiles),
-                    description = stringResource(R.string.mission_memory_tiles_desc),
-                    icon = Icons.Rounded.GridView,
-                    isAvailable = true
-                ),
-                MissionItem(
-                    type = MissionType.MATH,
-                    title = stringResource(R.string.mission_math),
-                    description = stringResource(R.string.mission_math_desc),
-                    icon = Icons.Rounded.Calculate,
-                    isAvailable = false
-                ),
-                MissionItem(
-                    type = MissionType.SHAKE,
-                    title = stringResource(R.string.mission_shake),
-                    description = stringResource(R.string.mission_shake_desc),
-                    icon = Icons.Rounded.Smartphone,
-                    isAvailable = false
-                ),
-                MissionItem(
-                    type = MissionType.QR_CODE,
-                    title = stringResource(R.string.mission_qr_code),
-                    description = stringResource(R.string.mission_qr_code_desc),
-                    icon = Icons.Rounded.QrCodeScanner,
-                    isAvailable = false
-                )
-            )
-
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(horizontal = LiteverTheme.spacing.extraSmall)
-            ) {
-                items(missionTypes) { item ->
-                    val isAvailable = item.isAvailable
-
-                    ListItem(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .alpha(if (isAvailable) 1f else 0.5f)
-                            .clickable(enabled = isAvailable) {
-                                coroutineScope.launch {
-                                    sheetState.hide()
-                                    onMissionTypeSelected(item.type)
-                                }
-                            },
-                        headlineContent = {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(
-                                    text = item.title,
-                                    style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
-                                )
-                                if (!isAvailable) {
-                                    Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
-                                    Surface(
-                                        color = LiteverTheme.colors.surfaceVariant,
-                                        shape = LiteverTheme.shapes.extraSmall
-                                    ) {
-                                        Text(
-                                            text = stringResource(R.string.coming_soon),
-                                            style = LiteverTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                                            modifier = Modifier.padding(horizontal = LiteverTheme.spacing.extraSmall, vertical = LiteverTheme.spacing.tiny),
-                                            color = LiteverTheme.colors.onSurfaceVariant
-                                        )
-                                    }
-                                }
-                            }
-                        },
-                        supportingContent = {
-                            Text(
-                                text = item.description,
-                                style = LiteverTheme.typography.bodySmall
-                            )
-                        },
-                        leadingContent = {
-                            Surface(
-                                shape = LiteverTheme.shapes.medium,
-                                color = if (isAvailable)
-                                    LiteverTheme.colors.primaryContainer.copy(alpha = 0.5f)
-                                else
-                                    LiteverTheme.colors.surfaceVariant,
-                                border = if (isAvailable)
-                                    BorderStroke(1.dp, LiteverTheme.colors.primary.copy(alpha = 0.1f))
-                                else null
-                            ) {
-                                Icon(
-                                    imageVector = item.icon,
-                                    contentDescription = null,
-                                    modifier = Modifier.padding(LiteverTheme.spacing.smallMedium).size(LiteverTheme.spacing.large),
-                                    tint = if (isAvailable) LiteverTheme.colors.primary else LiteverTheme.colors.onSurfaceVariant
-                                )
-                            }
-                        },
-                        colors = ListItemDefaults.colors(
-                            containerColor = Color.Transparent
-                        )
-                    )
+            MissionSelectionBottomSheetContent(
+                onMissionTypeSelected = { type ->
+                    coroutineScope.launch {
+                        sheetState.hide()
+                        onMissionTypeSelected(type)
+                    }
                 }
+            )
+        }
+    }
+}
+
+@Composable
+fun MissionSelectionBottomSheetContent(
+    onMissionTypeSelected: (MissionType) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(bottom = LiteverTheme.spacing.medium)
+    ) {
+        val missionTypes = listOf(
+            MissionItem(
+                type = MissionType.TYPING,
+                title = stringResource(R.string.mission_typing),
+                description = stringResource(R.string.mission_typing_desc),
+                icon = Icons.Rounded.Keyboard,
+                isAvailable = true
+            ),
+            MissionItem(
+                type = MissionType.MEMORY_FIND_COLOR_TILES,
+                title = stringResource(R.string.mission_memory_tiles),
+                description = stringResource(R.string.mission_memory_tiles_desc),
+                icon = Icons.Rounded.GridView,
+                isAvailable = true
+            ),
+            MissionItem(
+                type = MissionType.MATH,
+                title = stringResource(R.string.mission_math),
+                description = stringResource(R.string.mission_math_desc),
+                icon = Icons.Rounded.Calculate,
+                isAvailable = false
+            ),
+            MissionItem(
+                type = MissionType.SHAKE,
+                title = stringResource(R.string.mission_shake),
+                description = stringResource(R.string.mission_shake_desc),
+                icon = Icons.Rounded.Smartphone,
+                isAvailable = false
+            ),
+            MissionItem(
+                type = MissionType.QR_CODE,
+                title = stringResource(R.string.mission_qr_code),
+                description = stringResource(R.string.mission_qr_code_desc),
+                icon = Icons.Rounded.QrCodeScanner,
+                isAvailable = false
+            )
+        )
+
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            items(missionTypes) { item ->
+                val isAvailable = item.isAvailable
+
+                ListItem(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .alpha(if (isAvailable) 1f else 0.5f)
+                        .clickable(enabled = isAvailable) {
+                            onMissionTypeSelected(item.type)
+                        },
+                    headlineContent = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = item.title,
+                                style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
+                            )
+                            if (!isAvailable) {
+                                Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
+                                Surface(
+                                    color = LiteverTheme.colors.surfaceVariant,
+                                    shape = LiteverTheme.shapes.extraSmall
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.coming_soon),
+                                        style = LiteverTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                                        modifier = Modifier.padding(horizontal = LiteverTheme.spacing.extraSmall, vertical = LiteverTheme.spacing.tiny),
+                                        color = LiteverTheme.colors.onSurfaceVariant
+                                    )
+                                }
+                            }
+                        }
+                    },
+                    supportingContent = {
+                        Text(
+                            text = item.description,
+                            style = LiteverTheme.typography.bodySmall
+                        )
+                    },
+                    leadingContent = {
+                        Surface(
+                            shape = LiteverTheme.shapes.medium,
+                            color = if (isAvailable)
+                                LiteverTheme.colors.primaryContainer.copy(alpha = 0.5f)
+                            else
+                                LiteverTheme.colors.surfaceVariant,
+                            border = if (isAvailable)
+                                BorderStroke(1.dp, LiteverTheme.colors.primary.copy(alpha = 0.1f))
+                            else null
+                        ) {
+                            Icon(
+                                imageVector = item.icon,
+                                contentDescription = null,
+                                modifier = Modifier.padding(LiteverTheme.spacing.smallMedium).size(LiteverTheme.spacing.large),
+                                tint = if (isAvailable) LiteverTheme.colors.primary else LiteverTheme.colors.onSurfaceVariant
+                            )
+                        }
+                    },
+                    colors = ListItemDefaults.colors(
+                        containerColor = Color.Transparent
+                    )
+                )
             }
         }
     }
@@ -187,3 +196,14 @@ private data class MissionItem(
     val icon: ImageVector,
     val isAvailable: Boolean = true
 )
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@Composable
+private fun MissionSelectionBottomSheetContentPreview() {
+    vn.io.litever.remind.core.designsystem.theme.ReMindTheme {
+        MissionSelectionBottomSheetContent(
+            onMissionTypeSelected = {}
+        )
+    }
+}
+

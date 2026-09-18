@@ -2,9 +2,7 @@ package vn.io.litever.remind.features.alarms.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
@@ -20,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.components.ReMindBottomSheetContent
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.features.alarms.R
 
@@ -35,14 +34,17 @@ fun GentleAlarmBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
-        containerColor = MaterialTheme.colorScheme.surface,
-        tonalElevation = LiteverTheme.spacing.none,
+        containerColor = LiteverTheme.colors.surface,
         modifier = modifier
     ) {
-        GentleAlarmBottomSheetContent(
-            currentDuration = currentDuration,
-            onDurationSelect = onDurationSelect
-        )
+        ReMindBottomSheetContent(
+            title = stringResource(R.string.gentle_alarm_title)
+        ) {
+            GentleAlarmBottomSheetContent(
+                currentDuration = currentDuration,
+                onDurationSelect = onDurationSelect
+            )
+        }
     }
 }
 
@@ -57,21 +59,14 @@ fun GentleAlarmBottomSheetContent(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(bottom = LiteverTheme.spacing.extraLarge)
+            .padding(bottom = LiteverTheme.spacing.medium)
     ) {
-        Text(
-            text = stringResource(R.string.gentle_alarm_title),
-            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(LiteverTheme.spacing.medium)
-        )
         Text(
             text = stringResource(R.string.gentle_alarm_description),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(horizontal = LiteverTheme.spacing.medium, vertical = LiteverTheme.spacing.small)
         )
-
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
 
         options.forEach { option ->
             val label = if (option == 0) {

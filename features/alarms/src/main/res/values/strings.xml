@@ -80,6 +80,7 @@
     <string name="missed_alarm_title">Missed Reminder</string>
     <string name="missed_alarm_text">You missed an alarm</string>
     <string name="auto_silence_title">Auto-silence duration</string>
+    <string name="auto_silence_description">Alarm will automatically silence or snooze if you don\'t interact with it</string>
     <string name="auto_silence_countdown">Auto-silence in %s</string>
     <string name="alarm_settings">Alarm Settings</string>
     <string name="use_alarm_stream_title">Play on Alarm channel</string>

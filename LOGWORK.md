@@ -581,6 +581,19 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
     - Bổ sung các token `background`, `surface`, `outline`, `inverseSurface`, `surfaceContainer` để tối ưu giao diện Edge-to-Edge.
 - **Hệ quả:** Giao diện ứng dụng đạt độ hoàn thiện cao về mặt thẩm mỹ và khả năng tiếp cận (Accessibility), hỗ trợ tốt các thành phần UI phức tạp của Material 3.
 
+### [TDR-062] - Phân tách ApplicationId, App Name và Monochrome Icon cho môi trường Debug
+- **Ngày thực hiện:** 2026-09-21
+- **Trạng thái:** Accepted
+- **Bối cảnh:** Cần cài đặt song song hai phiên bản Debug và Release trên cùng thiết bị để phục vụ việc kiểm thử, đối soát và tránh ghi đè dữ liệu ứng dụng. Đồng thời cần nhận diện trực quan nhanh chóng giữa bản Debug và Release trên màn hình launcher, cũng như xác minh tính an toàn và tương thích của hệ thống Ads (AdMob).
+- **Quyết định:**
+  - Cấu hình `applicationIdSuffix = ".debug"` và `versionNameSuffix = "-debug"` trong block `buildTypes.debug` của `app/build.gradle.kts`.
+  - Thiết lập source set `app/src/debug/res`:
+    - `values/strings.xml` và `values-vi/strings.xml`: Ghi đè `app_name` thành `ReMind (Debug)`.
+    - `mipmap-anydpi-v26/ic_launcher.xml` và `ic_launcher_round.xml`: Sử dụng `@drawable/ic_launcher_monochrome` cho trường `foreground`, biến icon bản debug thành phong cách Monochrome tối giản.
+  - Bổ sung cấu hình client `vn.io.litever.remind.debug` vào `app/google-services.json` để Google Services Gradle plugin nhận diện chính xác và tránh lỗi mismatch package khi sync/build debug.
+  - Rà soát hệ thống Ads: `AdMobManagerImpl` đã có cơ chế tự động chuyển đổi sang Google Official Test Ad Unit ID khi ở môi trường Debug (`FLAG_DEBUGGABLE`), do đó hoàn toàn an toàn và sử dụng chung hạ tầng AdMob mà không gây vi phạm chính sách của Google.
+- **Hệ quả:** Cho phép cài đặt song song cả 2 bản trên máy test mà không bị ghi đè, nhận diện tức thì qua icon Monochrome và tên "ReMind (Debug)", hệ thống build tự động nhận diện đúng client Firebase và Ads test chạy trơn tru.
+
 ---
 
 ## 🛠 Changelog (Tính năng mới)

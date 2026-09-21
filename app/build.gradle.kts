@@ -47,6 +47,8 @@ android {
 
     buildTypes {
         debug {
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
             manifestPlaceholders["crashlyticsCollectionEnabled"] = "false"
             manifestPlaceholders["analyticsCollectionEnabled"] = "false"
             signingConfig = signingConfigs.getByName("release")

@@ -1,20 +1,21 @@
 package vn.io.litever.remind.features.mission.ui.components
 
-import androidx.compose.foundation.border
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.GridView
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,6 +30,7 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
@@ -44,12 +46,18 @@ enum class MemoryGameState {
     MEMORIZE, PLAYING, SUCCESS, FAILURE
 }
 
+/**
+ * Giao diện nhiệm vụ Trò chơi ô nhớ (Memory Tiles Mission) theo chuẩn thiết kế Stitch:
+ * - Phía trên: Banner hướng dẫn ngắn gọn (MissionInstructionBanner).
+ * - Phía dưới: Card trạng thái trò chơi (Đếm ngược ghi nhớ hoặc Tìm ô) + Lưới ô cờ phản hồi màu sắc trực quan.
+ *   Loại bỏ badge tiến độ dư thừa vì đã có trên thanh tiến độ chung.
+ */
 @Composable
 fun MemoryTilesMissionContent(
     board: MemoryGameBoard?,
-    currentRepetition: Int,
-    totalRepetitions: Int,
-    onSuccess: () -> Unit
+    onProgressChange: (correct: Int, total: Int) -> Unit = { _, _ -> },
+    onSuccess: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     if (board == null) return
 
@@ -57,6 +65,15 @@ fun MemoryTilesMissionContent(
     var gameState by remember(board) { mutableStateOf(MemoryGameState.MEMORIZE) }
     var countdown by remember(board) { mutableStateOf(3) }
     var selectedIndices by remember(board) { mutableStateOf(setOf<Int>()) }
+
+    // Tính số ô người dùng đã chọn đúng
+    val correctCount = remember(currentBoard, selectedIndices) {
+        selectedIndices.count { currentBoard.targetIndices.contains(it) }
+    }
+
+    LaunchedEffect(correctCount, currentBoard.targetTiles) {
+        onProgressChange(correctCount, currentBoard.targetTiles)
+    }
 
     LaunchedEffect(gameState, currentBoard) {
         when (gameState) {
@@ -82,116 +99,121 @@ fun MemoryTilesMissionContent(
                         .take(currentBoard.targetTiles)
                 )
             }
-
             else -> {}
         }
     }
 
     Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
     ) {
-        Text(
-            text = if (gameState == MemoryGameState.MEMORIZE) 
-                stringResource(R.string.memory_game_memorize_instruction, countdown)
-            else 
-                stringResource(R.string.memory_game_playing_instruction),
-            style = LiteverTheme.typography.titleMedium,
-            color = LiteverTheme.colors.primary,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+        // 1. Phía trên: Banner hướng dẫn ngắn gọn
+        MissionInstructionBanner(
+            icon = Icons.Rounded.GridView,
+            requirementText = stringResource(R.string.mission_memory_requirement)
         )
 
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+        // 2. Trạng thái giai đoạn (Ghi nhớ / Tìm ô)
+        val statusText = if (gameState == MemoryGameState.MEMORIZE) {
+            stringResource(R.string.memory_game_memorize_instruction, countdown)
+        } else {
+            stringResource(R.string.memory_game_playing_instruction)
+        }
 
-        val outlineColor = when (gameState) {
+        val statusColor = when (gameState) {
+            MemoryGameState.MEMORIZE -> LiteverTheme.colors.primary
+            MemoryGameState.PLAYING -> LiteverTheme.colors.onSurface
+            MemoryGameState.SUCCESS -> LiteverTheme.colors.success
+            MemoryGameState.FAILURE -> LiteverTheme.colors.error
+        }
+
+        Text(
+            text = statusText,
+            style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            color = statusColor,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center
+        )
+
+        // 3. Khung chứa lưới ô nhớ (Interactive Tiles Grid)
+        val boardBorderColor = when (gameState) {
             MemoryGameState.SUCCESS -> LiteverTheme.colors.success
             MemoryGameState.FAILURE -> LiteverTheme.colors.error
             else -> LiteverTheme.colors.outlineVariant
         }
 
-        // Grid
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(currentBoard.gridSize),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = LiteverTheme.spacing.medium)
-                .aspectRatio(1f)
-                .border(LiteverTheme.spacing.tiny, outlineColor, LiteverTheme.shapes.large),
-            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small),
-            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small),
-            contentPadding = PaddingValues(LiteverTheme.spacing.medium)
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = LiteverTheme.colors.surfaceContainerLowest
+            ),
+            shape = LiteverTheme.shapes.large,
+            border = BorderStroke(1.5.dp, boardBorderColor)
         ) {
-            items(currentBoard.gridSize * currentBoard.gridSize) { index ->
-                val isTarget = currentBoard.targetIndices.contains(index)
-                val isSelected = selectedIndices.contains(index)
-                val isClickable = gameState == MemoryGameState.PLAYING && !isSelected
-                
-                // Determine semantic color intent
-                val tileSemantic = when {
-                    gameState == MemoryGameState.MEMORIZE && isTarget -> LvSemantic.Primary
-                    gameState != MemoryGameState.MEMORIZE && isSelected && isTarget -> LvSemantic.Primary
-                    gameState != MemoryGameState.MEMORIZE && isSelected && !isTarget -> LvSemantic.Destructive
-                    else -> LvSemantic.Neutral
-                }
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(currentBoard.gridSize),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(LiteverTheme.spacing.medium)
+                    .aspectRatio(1f),
+                horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small),
+                verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small),
+                userScrollEnabled = false
+            ) {
+                items(currentBoard.gridSize * currentBoard.gridSize) { index ->
+                    val isTarget = currentBoard.targetIndices.contains(index)
+                    val isSelected = selectedIndices.contains(index)
+                    val isClickable = gameState == MemoryGameState.PLAYING && !isSelected
 
-                val tileColor = when (tileSemantic) {
-                    LvSemantic.Primary -> MaterialTheme.colorScheme.primary
-                    LvSemantic.Destructive -> MaterialTheme.colorScheme.error
-                    else -> LiteverTheme.colors.surfaceVariant
-                }
+                    val tileSemantic = when {
+                        gameState == MemoryGameState.MEMORIZE && isTarget -> LvSemantic.Primary
+                        gameState != MemoryGameState.MEMORIZE && isSelected && isTarget -> LvSemantic.Primary
+                        gameState != MemoryGameState.MEMORIZE && isSelected && !isTarget -> LvSemantic.Destructive
+                        else -> LvSemantic.Neutral
+                    }
 
-                val tileStateDescription = when {
-                    gameState == MemoryGameState.MEMORIZE && isTarget -> "Target"
-                    gameState != MemoryGameState.MEMORIZE && isSelected && isTarget -> "Correct"
-                    gameState != MemoryGameState.MEMORIZE && isSelected && !isTarget -> "Wrong"
-                    else -> "Unselected"
-                }
+                    val tileColor = when (tileSemantic) {
+                        LvSemantic.Primary -> MaterialTheme.colorScheme.primary
+                        LvSemantic.Destructive -> MaterialTheme.colorScheme.error
+                        else -> LiteverTheme.colors.surfaceVariant
+                    }
 
-                LvButton(
-                    onClick = {
-                        selectedIndices = selectedIndices + index
-                        if (!isTarget) {
-                            // Wrong! Change to failure state
-                            gameState = MemoryGameState.FAILURE
-                        } else {
-                            // Correct! Check if all found
-                            val foundAll = currentBoard.targetIndices.all { selectedIndices.contains(it) || it == index }
-                            if (foundAll) {
-                                gameState = MemoryGameState.SUCCESS
+                    val tileStateDescription = when {
+                        gameState == MemoryGameState.MEMORIZE && isTarget -> "Target"
+                        gameState != MemoryGameState.MEMORIZE && isSelected && isTarget -> "Correct"
+                        gameState != MemoryGameState.MEMORIZE && isSelected && !isTarget -> "Wrong"
+                        else -> "Unselected"
+                    }
+
+                    LvButton(
+                        onClick = {
+                            selectedIndices = selectedIndices + index
+                            if (!isTarget) {
+                                gameState = MemoryGameState.FAILURE
+                            } else {
+                                val foundAll = currentBoard.targetIndices.all { selectedIndices.contains(it) || it == index }
+                                if (foundAll) {
+                                    gameState = MemoryGameState.SUCCESS
+                                }
                             }
-                        }
-                    },
-                    enabled = isClickable,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = tileColor,
-                        disabledContainerColor = tileColor
-                    ),
-                    modifier = Modifier
-                        .aspectRatio(1f)
-                        .semantics {
-                            selected = isSelected
-                            stateDescription = tileStateDescription
                         },
-                    semantic = tileSemantic,
-                    contentPadding = PaddingValues(0.dp)
-                ) {}
+                        enabled = isClickable,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = tileColor,
+                            disabledContainerColor = tileColor
+                        ),
+                        modifier = Modifier
+                            .aspectRatio(1f)
+                            .semantics {
+                                selected = isSelected
+                                stateDescription = tileStateDescription
+                            },
+                        semantic = tileSemantic,
+                        contentPadding = PaddingValues(0.dp)
+                    ) {}
+                }
             }
-        }
-
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.large))
-
-        Surface(
-            color = LiteverTheme.colors.primaryContainer.copy(alpha = 0.5f),
-            shape = LiteverTheme.shapes.extraSmall,
-            modifier = Modifier.padding(bottom = LiteverTheme.spacing.large)
-        ) {
-            Text(
-                text = stringResource(R.string.mission_progress, currentRepetition, totalRepetitions),
-                style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                color = LiteverTheme.colors.onPrimaryContainer,
-                modifier = Modifier.padding(horizontal = LiteverTheme.spacing.smallMedium, vertical = LiteverTheme.spacing.extraSmall)
-            )
         }
     }
 }
@@ -200,17 +222,16 @@ fun MemoryTilesMissionContent(
 @Composable
 fun MemoryTilesMissionContentPreview() {
     ReMindTheme {
-        Box(modifier = Modifier.padding(LiteverTheme.spacing.medium)) {
+        Box(modifier = Modifier.padding(16.dp)) {
             MemoryTilesMissionContent(
                 board = MemoryGameBoard(
                     gridSize = 3,
                     targetTiles = 3,
                     targetIndices = listOf(0, 4, 8)
                 ),
-                currentRepetition = 1,
-                totalRepetitions = 3,
                 onSuccess = {}
             )
         }
     }
 }
+

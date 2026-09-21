@@ -1324,6 +1324,22 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
 - **Hệ quả:**
   - Tuân thủ nghiêm ngặt nguyên tắc Single Source of Truth cho UI components giữa các module.
   - Giảm thiểu code trùng lặp, đồng bộ hoá nhận diện thương hiệu và trạng thái phản hồi xuyên suốt ứng dụng.
-
-
-
+### [TDR-074] - Tái Cấu Trúc Khung Màn Hình Làm Nhiệm Vụ (Mission Ringing & Content Screens) Chuẩn Stitch Design
+- **Ngày thực hiện:** 2026-09-21
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Màn hình làm nhiệm vụ giải chuông báo thức cần được nâng cấp visual hierarchy theo thiết kế Stitch Design: hiển thị rõ ràng thông tin chuông, thanh đếm ngược, tiến độ các vòng nhiệm vụ (segmented progress bar), và không gian thao tác sát bàn phím (bottom docked bar).
+  - Các màn hình thành phần làm nhiệm vụ (`TypingMissionContent`, `MathMissionContent`, `MemoryTilesMissionContent`) trước đây có nhiều chi tiết vụn vặt (thẻ mẹo thừa thãi, đếm vòng lặp bị lặp lại ở cả trên và dưới).
+- **Quyết định:**
+  - Khung chính `MissionRingingScreen`:
+    - Top App Bar hiển thị tiêu đề thử thách, giờ báo thức, nút bỏ cuộc và badge đếm ngược `mm:ss` nổi bật (chuyển đỏ khi < 10 giây).
+    - `MissionProgressScaffold`: Hiển thị tên nhiệm vụ, số vòng và thanh tiến độ phân đoạn `Row` (segmented progress).
+    - `MissionBottomDockedBar`: Đặt cố định sát đáy / trên bàn phím ảo (IME padding), chứa thông tin ký tự/số ô và nút "Tiếp tục" chuyển bước.
+  - Các màn hình nhiệm vụ (`TypingMissionContent`, `MathMissionContent`, `MemoryTilesMissionContent`):
+    - Đưa `MissionInstructionBanner` lên trên cùng: gồm icon ngữ cảnh (`EditNote`, `Calculate`, `GridView`) và dòng yêu cầu ngắn gọn rõ ràng.
+    - `TypingMissionContent`: Bảng gõ chữ tương tác hỗ trợ tô màu từng ký tự đúng/sai/gợi ý, ô nhập liệu giới hạn chiều cao tối đa và hỗ trợ cuộn độc lập (`verticalScroll`) khi văn bản dài.
+    - `MathMissionContent`: Thẻ phép toán lớn, sắc nét ở giữa kèm ô nhập số ở dưới, loại bỏ các thành phần rườm rà.
+    - `MemoryTilesMissionContent`: Hiển thị rõ ràng giai đoạn đếm ngược ghi nhớ hoặc tìm ô kèm lưới ô cờ bo tròn trong `Card`, loại bỏ badge tiến độ trùng lặp. Đồng thời cập nhật callback `onProgressChange` để truyền số ô đã chọn đúng / tổng số ô cần tìm xuống `MissionBottomDockedBar` hiển thị trực tiếp ở chân trang (ví dụ: `2 / 4 ô`).
+- **Hệ quả:**
+  - Trải nghiệm làm nhiệm vụ trở nên mạch lạc, hiện đại, nhất quán thị giác 100% giữa 3 loại nhiệm vụ.
+  - Tương thích tốt với màn hình nhỏ và khi bàn phím ảo bật lên nhờ cơ chế cuộn độc lập và bottom bar docked.

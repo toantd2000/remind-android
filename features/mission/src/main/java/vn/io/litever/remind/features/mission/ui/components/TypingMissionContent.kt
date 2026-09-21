@@ -1,19 +1,30 @@
 package vn.io.litever.remind.features.mission.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.EditNote
+import androidx.compose.material.icons.rounded.Spellcheck
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Surface
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,65 +39,90 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.material3.Card
 import vn.io.litever.designsystem.theme.LiteverTheme
-import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.Phrase
+import vn.io.litever.remind.features.mission.R
 
+/**
+ * Giao diện nhiệm vụ Gõ chữ (Typing Mission) được tối ưu hóa theo thiết kế Stitch:
+ * - Phía trên: Banner hướng dẫn ngắn gọn (MissionInstructionBanner).
+ * - Phía dưới: Bảng gõ chữ tương tác (Interactive Board) với tiêu đề "Văn bản cần gõ",
+ *   hiển thị trực quan từng ký tự đúng (xanh) / sai (đỏ) / gợi ý (mờ), không có vùng mẹo thừa.
+ */
 @Composable
 fun TypingMissionContent(
     targetPhrase: Phrase?,
-    currentRepetition: Int,
-    totalRepetitions: Int,
     userInput: String,
-    onUserInputChange: (String) -> Unit
+    onUserInputChange: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val targetContent = targetPhrase?.content ?: ""
     val focusRequester = remember { FocusRequester() }
     val interactionSource = remember { MutableInteractionSource() }
-    
+
     val successColor = LiteverTheme.colors.success
     val errorColor = LiteverTheme.colors.error
-    val dimmedColor = LiteverTheme.colors.onSurface.copy(alpha = 0.2f)
+    val hintColor = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.38f)
 
-    val visualTransformation = remember(targetContent, successColor, errorColor, dimmedColor) {
+    val visualTransformation = remember(targetPhrase, userInput, successColor, errorColor, hintColor) {
         VisualTransformation { text ->
             val input = text.text
+            val target = targetPhrase?.content ?: ""
             val annotatedString = buildAnnotatedString {
-                // Handle typed characters (correct, wrong, or extra)
-                for (i in input.indices) {
-                    if (i < targetContent.length) {
-                        if (input[i] == targetContent[i]) {
-                            withStyle(style = SpanStyle(color = successColor)) {
-                                append(targetContent[i])
-                            }
-                        } else {
-                            withStyle(style = SpanStyle(color = errorColor, fontWeight = FontWeight.Bold)) {
-                                append(input[i])
+                for (i in target.indices) {
+                    when {
+                        i < input.length -> {
+                            if (input[i] == target[i]) {
+                                withStyle(
+                                    style = SpanStyle(
+                                        color = successColor,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                ) {
+                                    append(input[i])
+                                }
+                            } else {
+                                withStyle(
+                                    style = SpanStyle(
+                                        color = errorColor,
+                                        fontWeight = FontWeight.Bold,
+                                        textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline
+                                    )
+                                ) {
+                                    append(input[i])
+                                }
                             }
                         }
-                    } else {
-                        // Extra characters typed beyond target length
-                        withStyle(style = SpanStyle(color = errorColor, fontWeight = FontWeight.Bold)) {
-                            append(input[i])
+                        else -> {
+                            withStyle(
+                                style = SpanStyle(
+                                    color = hintColor,
+                                    fontWeight = FontWeight.Normal
+                                )
+                            ) {
+                                append(target[i])
+                            }
                         }
                     }
                 }
-                
-                // Handle remaining target characters as hint
-                if (input.length < targetContent.length) {
-                    withStyle(style = SpanStyle(color = dimmedColor)) {
-                        append(targetContent.substring(input.length))
+                if (input.length > target.length) {
+                    withStyle(
+                        style = SpanStyle(
+                            color = errorColor,
+                            fontWeight = FontWeight.Bold,
+                            textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline
+                        )
+                    ) {
+                        append(input.substring(target.length))
                     }
                 }
             }
-            
+
             TransformedText(
                 text = annotatedString,
                 offsetMapping = object : OffsetMapping {
@@ -97,79 +133,103 @@ fun TypingMissionContent(
         }
     }
 
-    val textStyle = LiteverTheme.typography.headlineMedium.copy(
-        fontWeight = FontWeight.Bold,
+    val textStyle = LiteverTheme.typography.headlineSmall.copy(
+        fontWeight = FontWeight.Medium,
         letterSpacing = 0.5.sp,
-        lineHeight = 32.sp,
-        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+        lineHeight = 30.sp,
+        textAlign = TextAlign.Start
     )
 
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
+
     Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
     ) {
-        Text(
-            text = stringResource(R.string.mission_typing_instruction),
-            style = LiteverTheme.typography.titleSmall,
-            color = LiteverTheme.colors.primary,
-            modifier = Modifier.fillMaxWidth()
+        // 1. Phía trên: Banner hướng dẫn ngắn gọn
+        MissionInstructionBanner(
+            icon = Icons.Rounded.EditNote,
+            requirementText = stringResource(R.string.mission_typing_requirement)
         )
-        
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
-        
+
+        // 2. Phía dưới: Vùng làm nhiệm vụ (Interactive Typing Board) chiếm trọn phần không gian còn lại
         Card(
             modifier = Modifier
                 .fillMaxWidth()
+                .weight(1f)
                 .clickable(
                     interactionSource = interactionSource,
                     indication = null,
                     onClick = { focusRequester.requestFocus() }
                 ),
+            shape = LiteverTheme.shapes.large,
             colors = CardDefaults.cardColors(
-                containerColor = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.2f)
+                containerColor = LiteverTheme.colors.surfaceContainerLowest
             ),
-            shape = LiteverTheme.shapes.medium,
             border = BorderStroke(
-                1.dp,
-                LiteverTheme.colors.outlineVariant.copy(alpha = 0.3f)
+                1.5.dp,
+                LiteverTheme.colors.primary.copy(alpha = 0.25f)
             )
         ) {
-            Box(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(LiteverTheme.spacing.large),
-                contentAlignment = Alignment.Center
+                    .fillMaxSize()
+                    .padding(LiteverTheme.spacing.medium),
+                verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.smallMedium)
             ) {
-                BasicTextField(
-                    value = userInput,
-                    onValueChange = onUserInputChange,
+                // Header của bảng: [icon] Văn bản cần gõ
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.extraSmall)
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Spellcheck,
+                        contentDescription = null,
+                        tint = LiteverTheme.colors.primary,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Text(
+                        text = stringResource(R.string.mission_typing_board_header),
+                        style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                        color = LiteverTheme.colors.onSurface
+                    )
+                }
+
+                HorizontalDivider(
+                    color = LiteverTheme.colors.surfaceContainerHighest.copy(alpha = 0.5f),
+                    thickness = 1.dp
+                )
+
+                // Vùng nhập văn bản chính lấp đầy Card và cuộn độc lập
+                val scrollState = rememberScrollState()
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .focusRequester(focusRequester),
-                    textStyle = textStyle,
-                    cursorBrush = SolidColor(LiteverTheme.colors.primary),
-                    visualTransformation = visualTransformation,
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Done
-                    ),
-                    singleLine = false
-                )
+                        .weight(1f)
+                        .verticalScroll(scrollState)
+                        .padding(bottom = LiteverTheme.spacing.small),
+                    contentAlignment = Alignment.TopStart
+                ) {
+                    BasicTextField(
+                        value = userInput,
+                        onValueChange = onUserInputChange,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(focusRequester),
+                        textStyle = textStyle,
+                        cursorBrush = SolidColor(LiteverTheme.colors.primary),
+                        visualTransformation = visualTransformation,
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Done
+                        ),
+                        singleLine = false
+                    )
+                }
             }
-        }
-        
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
-        
-        Surface(
-            color = LiteverTheme.colors.primaryContainer.copy(alpha = 0.5f),
-            shape = LiteverTheme.shapes.extraSmall,
-            modifier = Modifier.padding(bottom = LiteverTheme.spacing.large)
-        ) {
-            Text(
-                text = stringResource(R.string.mission_progress, currentRepetition, totalRepetitions),
-                style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                color = LiteverTheme.colors.onPrimaryContainer,
-                modifier = Modifier.padding(horizontal = LiteverTheme.spacing.smallMedium, vertical = LiteverTheme.spacing.extraSmall)
-            )
         }
     }
 }
@@ -178,24 +238,15 @@ fun TypingMissionContent(
 @Composable
 fun TypingMissionContentPreview() {
     ReMindTheme {
-        Box(modifier = Modifier.padding(LiteverTheme.spacing.medium)) {
+        Box(modifier = Modifier.padding(16.dp)) {
             TypingMissionContent(
-                targetPhrase = Phrase(id = 1, content = "Success is not final, failure is not fatal.", categoryId = "motivation"),
-                currentRepetition = 1,
-                totalRepetitions = 3,
-                userInput = "Succesx",
+                targetPhrase = Phrase(
+                    content = "Dậy sớm để dẫn đầu, kích hoạt sự tỉnh táo cho một ngày tràn đầy năng lượng.",
+                    categoryId = "motivation"
+                ),
+                userInput = "Dậy sớm để ",
                 onUserInputChange = {}
             )
         }
     }
 }
-
-
-
-
-
-
-
-
-
-

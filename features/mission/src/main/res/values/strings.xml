@@ -46,6 +46,17 @@
     <string name="memory_game_repetition_helper">You need to complete %d rounds to dismiss the alarm.</string>
     <string name="memory_game_memorize_instruction">Memorize the colored tiles (%1$d)</string>
     <string name="memory_game_playing_instruction">Find the hidden colored tiles</string>
+    <string name="wakeup_challenge_title">Wake-up Challenge</string>
+    <string name="alarm_time_subtitle">Alarm: %s</string>
+    <string name="mission_step_badge">Task %1$d/%2$d</string>
+    <string name="mission_round_badge">Round %1$d/%2$d</string>
+    <string name="action_continue">Continue</string>
+    <string name="mission_requirement_prefix">Requirement:</string>
+    <string name="mission_typing_requirement">Type the exact text below to dismiss the alarm.</string>
+    <string name="mission_math_requirement">Calculate and enter the correct answer below to dismiss the alarm.</string>
+    <string name="mission_memory_requirement">Memorize the highlighted tiles and tap them correctly to dismiss the alarm.</string>
+    <string name="mission_memory_tiles_progress">%1$d / %2$d tiles</string>
+    <string name="mission_typing_board_header">Text to type</string>
 </resources>
 
 

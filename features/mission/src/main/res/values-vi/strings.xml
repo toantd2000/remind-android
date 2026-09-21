@@ -46,4 +46,15 @@
     <string name="memory_game_repetition_helper">Bạn cần hoàn thành đúng %d vòng để tắt báo thức.</string>
     <string name="memory_game_memorize_instruction">Hãy ghi nhớ vị trí các ô màu (%1$d)</string>
     <string name="memory_game_playing_instruction">Tìm các ô màu đã bị ẩn</string>
+    <string name="wakeup_challenge_title">Thử thách thức dậy</string>
+    <string name="alarm_time_subtitle">Báo thức: %s</string>
+    <string name="mission_step_badge">Nhiệm vụ %1$d/%2$d</string>
+    <string name="mission_round_badge">Vòng %1$d/%2$d</string>
+    <string name="action_continue">Tiếp tục</string>
+    <string name="mission_requirement_prefix">Yêu cầu:</string>
+    <string name="mission_typing_requirement">Gõ lại chính xác đoạn văn bản bên dưới để tắt chuông báo thức.</string>
+    <string name="mission_math_requirement">Tính toán và nhập kết quả chính xác để tắt chuông báo thức.</string>
+    <string name="mission_memory_requirement">Ghi nhớ các ô màu và chọn lại chính xác để tắt chuông báo thức.</string>
+    <string name="mission_memory_tiles_progress">%1$d / %2$d ô</string>
+    <string name="mission_typing_board_header">Văn bản cần gõ</string>
 </resources>

@@ -46,8 +46,11 @@ class WeatherRepositoryImpl @Inject constructor(
         val currentLang = getCurrentLanguage()
         val currentTime = System.currentTimeMillis()
         
-        // Cache for 1 hour (3600000 ms), unless forced OR language changed
-        if (!force && (currentTime - lastUpdated < 3600000) && (cachedLang == currentLang)) {
+        val cachedWeatherJson = preferencesDataSource.weatherJson.first()
+        val isProcessing = cachedWeatherJson?.contains("\"ai_status\":\"processing\"") == true
+        
+        // Cache for 1 hour (3600000 ms), unless forced OR language changed OR currently processing
+        if (!force && !isProcessing && (currentTime - lastUpdated < 3600000) && (cachedLang == currentLang)) {
             return
         }
 

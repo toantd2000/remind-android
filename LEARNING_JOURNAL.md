@@ -1,3 +1,25 @@
+## [2026-09-21] Decoupling Network Loading from Async AI Processing & Stale Cache Eviction
+
+### Context
+Khi triển khai chiến lược tải dữ liệu Cache-First trên `TodayScreen` nhằm giảm thiểu lượt gọi API dư thừa, màn hình rơi vào tình trạng loading vô tận (Infinite Loading Deadlock), nút refresh bị khóa và thời tiết không tự động làm mới khi hết hạn.
+
+### What happened
+- Gộp trạng thái tải mạng (`isRefreshing`) và trạng thái AI đang phân tích dữ liệu ở backend (`isProcessing`) thành một biến `isBusy = isRefreshing || isProcessing`.
+- Khi API trả về `aiStatus == "processing"`, `isProcessing` chuyển sang `true`, dẫn đến:
+  1. Nút refresh ở TopAppBar bị disable (`enabled = !isBusy = false`) và xoay mãi (`loading = isBusy = true`). Người dùng không thể can thiệp.
+  2. Dữ liệu tạm thời có `aiStatus == "processing"` được lưu vào DataStore. Do cơ chế Cache-First kiểm tra `currentTime - lastUpdated < 3600000`, mỗi khi mở lại app, Repository coi dữ liệu vừa lưu là hợp lệ và return sớm, không gọi API, khiến dữ liệu bị kẹt vĩnh viễn ở trạng thái `processing`.
+  3. Khi quay lại app từ nền (`ON_RESUME`), hàm lắng nghe sự kiện chỉ kích hoạt nếu `isProcessing == true`, khiến dữ liệu thời tiết đã quá hạn 1 tiếng không bao giờ được tự động làm mới.
+
+### Solution & Lessons Learned
+- **Tách biệt rõ ràng giữa Network IO State và Business Content State:**
+  Không bao giờ gộp trạng thái loading của tầng mạng (`isRefreshing`) với trạng thái xử lý logic bất đồng bộ kéo dài của nghiệp vụ (`isProcessing`). Nút Refresh UI chỉ nên biểu thị `isRefreshing`. Ngay cả khi AI backend đang xử lý, người dùng vẫn phải có quyền chủ động bấm Refresh để thử lại.
+- **Dữ liệu tạm thời (In-Flight / Processing) không được coi là Cache hoàn chỉnh:**
+  Trong tầng Repository, điều kiện hợp lệ của Cache không chỉ dựa vào Timestamp (TTL) mà bắt buộc phải kiểm tra tính toàn vẹn của dữ liệu (`!isProcessing`). Dữ liệu mang trạng thái đang xử lý dở dang phải cho phép tiếp tục gọi API để lấy kết quả hoàn tất.
+- **Tự động làm mới khi hết hạn qua Lifecycle onResume:**
+  Tại sự kiện `ON_RESUME`, gọi `refresh(force = false)`. Nhờ cơ chế Cache-First, thao tác này tuyệt đối không tốn tài nguyên mạng nếu dữ liệu vẫn còn trong hạn, nhưng sẽ tự động cập nhật ngay khi TTL hết hạn hoặc sang ngày mới.
+- **Tự động thăm dò (Auto Polling) có giới hạn:**
+  Đối với các tác vụ AI mất nhiều thời gian ở backend, cần bổ sung cơ chế polling nền (ví dụ: sau mỗi 10 giây, tối đa 6 lần) để tự động cập nhật UI khi backend xử lý xong mà không phụ thuộc hoàn toàn vào hành vi của người dùng.
+
 ## [2026-09-17] Compose Configuration.uiMode Synchronization for Dynamic Theming & Previews
 
 ### Context

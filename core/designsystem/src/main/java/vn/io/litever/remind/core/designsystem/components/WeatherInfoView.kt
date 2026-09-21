@@ -61,14 +61,15 @@ fun WeatherInfoView(
     weather: WeatherResponse?,
     modifier: Modifier = Modifier,
     isCompact: Boolean = false,
+    isLocationClickEnabled: Boolean = true,
     onLocationClick: () -> Unit = {}
 ) {
     if (weather == null) return
 
     if (isCompact) {
-        CompactWeatherView(weather, modifier, onLocationClick)
+        CompactWeatherView(weather, modifier, isLocationClickEnabled, onLocationClick)
     } else {
-        FullWeatherView(weather, modifier, onLocationClick)
+        FullWeatherView(weather, modifier, isLocationClickEnabled, onLocationClick)
     }
 }
 
@@ -103,6 +104,7 @@ private fun getPanaIllustration(hint: String): Int {
 private fun FullWeatherView(
     weather: WeatherResponse,
     modifier: Modifier = Modifier,
+    isLocationClickEnabled: Boolean = true,
     onLocationClick: () -> Unit = {}
 ) {
     val weatherColors = getWeatherColors(weather.current.tempC)
@@ -128,7 +130,8 @@ private fun FullWeatherView(
                 LvButton(
                     onClick = onLocationClick,
                     type = LvButtonType.Text,
-                    semantic = LvSemantic.Neutral
+                    semantic = LvSemantic.Neutral,
+                    enabled = isLocationClickEnabled
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
@@ -250,6 +253,7 @@ private fun FullWeatherView(
 private fun CompactWeatherView(
     weather: WeatherResponse,
     modifier: Modifier = Modifier,
+    isLocationClickEnabled: Boolean = true,
     onLocationClick: () -> Unit = {}
 ) {
     val weatherColors = getWeatherColors(weather.current.tempC)
@@ -259,7 +263,7 @@ private fun CompactWeatherView(
             .fillMaxWidth()
             .clip(LiteverTheme.shapes.large)
             .background(brush = Brush.linearGradient(weatherColors))
-            .clickable { onLocationClick() },
+            .clickable(enabled = isLocationClickEnabled) { onLocationClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Left: Pana Illustration

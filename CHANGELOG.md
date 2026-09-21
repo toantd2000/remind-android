@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Semantic Tokens:** Added neutral semantic color tokens (`neutral`, `onNeutral`, `neutralContainer`, `onNeutralContainer`) to `ColorScheme` in `:core:designsystem` mapped to `LiteverTheme.colors`.
 - **Root Snackbar Presentation:** Integrated `LvSnackbarHost` with `SnackbarHostState` inside the root `MainActivity` scaffold for standardized semantic snackbar support.
 - **Today Next Alarm Status Card:** Added `TodayNextAlarmView` on `TodayScreen` to display upcoming alarm countdown or empty state illustration when all alarms are off/empty (non-interactive, shared via `:core:model` and `:core:designsystem`).
+- **TodayScreen Cache-First & Auto-Refresh on Expiry:** Enforced cache-first strategy on `TodayScreen` initialization (`force = false`) to eliminate redundant network calls while ensuring automatic refresh on `ON_RESUME` when cache TTL (1 hour for weather, calendar day for briefing) expires. Resolved infinite loading deadlock by decoupling network loading (`isRefreshing`) from background AI processing (`isProcessing`), bypassing stale processing cache in repositories, and introducing automatic background polling.
 
 ### Removed
 - **App-Specific Color Tokens:** Removed over 340 lines of local color definitions in `:core:designsystem/theme/Color.kt` (`primaryLight`, `remindLightColors`, `remindDarkColors`, contrast variants, etc.) in favor of direct consumption of `:litever-designsystem` palettes.

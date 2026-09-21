@@ -61,20 +61,41 @@ class TodayViewModel @Inject constructor(
         initialValue = false
     )
 
+    private var processingPollJob: Job? = null
+
     init {
-        refresh()
+        refresh(force = false)
+        observeProcessingState()
     }
 
-    fun refresh() {
+    private fun observeProcessingState() {
+        viewModelScope.launch {
+            isProcessing.collect { processing ->
+                processingPollJob?.cancel()
+                if (processing) {
+                    processingPollJob = launch {
+                        repeat(6) {
+                            delay(10_000L)
+                            if (isProcessing.value) {
+                                refresh(force = true)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun refresh(force: Boolean = false) {
         if (_isRefreshing.value) return
         
         viewModelScope.launch {
-            android.util.Log.d(TAG, "Starting refresh...")
+            android.util.Log.d(TAG, "Starting refresh (force = $force)...")
             _isRefreshing.value = true
             try {
                 coroutineScope {
-                    launch { weatherRepository.refreshWeather(force = true) }
-                    launch { todayRepository.refreshTodayBriefing(force = true) }
+                    launch { weatherRepository.refreshWeather(force = force) }
+                    launch { todayRepository.refreshTodayBriefing(force = force) }
                 }
                 lastProcessingRefreshMillis = System.currentTimeMillis()
                 android.util.Log.d(TAG, "Refresh completed successfully.")
@@ -86,10 +107,15 @@ class TodayViewModel @Inject constructor(
         }
     }
 
-    fun checkAndRefreshIfProcessing() {
-        val currentTime = System.currentTimeMillis()
-        if (isProcessing.value && (currentTime - lastProcessingRefreshMillis > 60000)) {
-            refresh()
+    fun onResume() {
+        if (isProcessing.value) {
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - lastProcessingRefreshMillis > 15_000L) {
+                refresh(force = true)
+            }
+        } else {
+            // Auto refresh if cache expired (> 1 hour or new day)
+            refresh(force = false)
         }
     }
 }

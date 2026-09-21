@@ -1367,5 +1367,25 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
 - **Hệ quả:**
   - Cung cấp đầy đủ thông tin báo thức một cách trực quan, đồng bộ nhận diện và định dạng giờ cài đặt (12h/24h) với danh sách báo thức mà vẫn duy trì tính chất thuần hiển thị.
   - Biến trạng thái rỗng thành thông điệp tích cực, ấm áp, phù hợp triết lý ReMind.
-  - Vị trí QuoteView dưới cùng tạo điểm nhấn kết thúc tự nhiên, thanh thoát cho màn hình Today.
+### [TDR-076] - Tối Ưu Hóa Tải Dữ Liệu Cache-First, Tự Động Làm Mới Khi Hết Hạn & Sửa Lỗi Loading Vô Tận Tại TodayScreen
+- **Ngày thực hiện:** 2026-09-21
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - `TodayViewModel` trong hàm `init` gọi `refresh()`, vốn bị gán cứng cờ `force = true` cho cả `weatherRepository.refreshWeather(force = true)` và `todayRepository.refreshTodayBriefing(force = true)`. Hậu quả là cơ chế cache 1 giờ và cache theo ngày bị vô hiệu hoá mỗi lần mở màn hình hoặc ViewModel tái tạo lại, gây gọi mạng dư thừa.
+  - Ban đầu khi giới thiệu `isBusy = isRefreshing || isProcessing`, xảy ra lỗi kẹt loading vô tận (Infinite Loading Deadlock): nếu server trả về `aiStatus == "processing"`, `isProcessing` thành `true` khiến nút refresh TopAppBar xoay liên tục và bị vô hiệu hóa (`enabled = !isBusy = false`). Đồng thời `WeatherRepositoryImpl` và `TodayRepositoryImpl` do kiểm tra cache < 1 giờ nên return sớm mà không gọi API, khiến dữ liệu kẹt vĩnh viễn ở trạng thái `processing`.
+  - Khi người dùng quay lại app sau hơn 1 giờ, màn hình không có cơ chế tự động gọi làm mới dữ liệu thời tiết đã hết hạn nếu trước đó trạng thái đã là `completed`.
+- **Quyết định:**
+  - **Áp dụng Cache-First & Bỏ qua cache khi đang `processing`**:
+    - Trong `WeatherRepositoryImpl` và `TodayRepositoryImpl`: Kiểm tra nếu dữ liệu trong DataStore đang chứa `aiStatus == "processing"`, hệ thống không được coi là cache hoàn chỉnh và không return sớm, cho phép tiếp tục gọi API để lấy kết quả hoàn tất.
+    - Sửa đổi `TodayViewModel.refresh(force: Boolean = false)`: Trong khối `init`, gọi `refresh(force = false)` để kiểm tra và tái sử dụng dữ liệu hợp lệ trong DataStore cache, chỉ gọi network khi cache hết hạn (> 1 giờ với thời tiết, sang ngày mới với briefing), ngôn ngữ thay đổi hoặc dữ liệu đang ở trạng thái `processing`.
+  - **Tách biệt `isRefreshing` (mạng) và `isProcessing` (nội dung AI)**:
+    - `ReMindLoadingIconButton`: Gán `loading = isRefreshing` và `enabled = !isRefreshing`. Người dùng luôn có thể chủ động bấm làm mới khi không có tiến trình mạng đang chạy, ngay cả khi AI backend đang trong trạng thái processing.
+    - `WeatherInfoView`: Truyền `isLocationClickEnabled = !isRefreshing`.
+  - **Tự động làm mới khi hết hạn và Polling nền khi Processing**:
+    - Trong `TodayViewModel.onResume()` (gắn với `Lifecycle.Event.ON_RESUME` tại `TodayScreen`): Tự động gọi `refresh(force = false)`. Nếu dữ liệu thời tiết đã hết hạn (> 1 giờ) hoặc sang ngày mới, hệ thống tự động làm mới trong suốt mà không tốn công người dùng thao tác. Nếu đang trong trạng thái processing, ép `refresh(force = true)` sau 15 giây.
+    - Thêm cơ chế tự động thăm dò (Auto Polling): Khi `isProcessing` là `true`, ViewModel tự động khởi chạy coroutine định kỳ thăm dò sau mỗi 10 giây (tối đa 6 lần) để cập nhật kết quả AI đã hoàn thành.
+- **Hệ quả:**
+  - Giải quyết dứt điểm lỗi kẹt loading vô tận tại màn hình Today.
+  - Đảm bảo thời tiết luôn được tự động làm mới khi hết hạn (TTL 1 giờ) mỗi khi người dùng mở lại ứng dụng.
+  - Tiết kiệm băng thông tối đa và tăng tính tương tác, không khóa cứng giao diện của người dùng.
 

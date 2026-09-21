@@ -154,3 +154,12 @@ This document records the solidified technical decisions and behavioral scenario
   - Implement `TodayNextAlarmView` as a pure presentation component with squircle corners and 2-column balanced structure, strictly non-interactive.
   - Order components in `TodayScreen` using `Arrangement.spacedBy(LiteverTheme.spacing.medium)` without redundant Spacers: Weather $\rightarrow$ TodayNextAlarmView $\rightarrow$ NativeAdView $\rightarrow$ TodayQuoteView (at the very bottom).
 
+### Scenario: Cache-First Data Fetching, Auto-Refresh on Expiry & Non-Blocking AI Processing
+- **Expected Behavior**:
+  - Navigating to or opening `TodayScreen` adheres strictly to Cache-First policy: cached weather (1 hour TTL) and reminder briefing (same calendar day TTL) are rendered immediately from DataStore, avoiding redundant network roundtrips.
+  - When returning to the app (`ON_RESUME`), `TodayViewModel.onResume()` triggers `refresh(force = false)`, which automatically updates weather data if the 1-hour TTL has elapsed or a new day has arrived.
+  - If cached data is in an AI `processing` state, it is not treated as a valid cache, allowing immediate network re-fetch.
+  - While AI processing is ongoing (`isProcessing == true`), ViewModel automatically polls the backend every 10 seconds (up to 6 times).
+  - The TopAppBar refresh button only displays a spinning loading indicator and disables during an active network request (`isRefreshing`), never locking during background AI processing. Users can trigger a manual refresh at any time when not already refreshing.
+  - The location picker in `WeatherInfoView` is disabled only during active network refresh (`!isRefreshing`).
+

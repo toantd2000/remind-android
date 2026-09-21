@@ -73,7 +73,7 @@ fun TodayRoute(
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-                viewModel.checkAndRefreshIfProcessing()
+                viewModel.onResume()
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -89,7 +89,7 @@ fun TodayRoute(
         is24HourFormat = is24HourFormat,
         isRefreshing = isRefreshing,
         isProcessing = isProcessing,
-        onRefresh = viewModel::refresh,
+        onRefresh = { viewModel.refresh(force = true) },
         onLocationClick = onLocationClick,
         modifier = modifier
     )
@@ -120,6 +120,7 @@ fun TodayScreen(
                         onClick = onRefresh,
                         icon = Icons.Rounded.Refresh,
                         loading = isRefreshing,
+                        enabled = !isRefreshing,
                         contentDescription = stringResource(R.string.refresh)
                     )
                 }
@@ -138,6 +139,7 @@ fun TodayScreen(
             if (weather != null) {
                 WeatherInfoView(
                     weather = weather,
+                    isLocationClickEnabled = !isRefreshing,
                     onLocationClick = onLocationClick
                 )
             } else if (isRefreshing) {

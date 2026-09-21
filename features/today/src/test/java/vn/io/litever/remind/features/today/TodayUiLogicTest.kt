@@ -179,4 +179,95 @@ class TodayUiLogicTest {
             )
         }
     }
+
+    // ------------------------------------------------------------------------
+    // 4. Cache Expiration & Processing Bypass Logic Tests
+    // ------------------------------------------------------------------------
+
+    private fun isWeatherCacheValid(
+        lastUpdatedMillis: Long,
+        currentTimeMillis: Long,
+        isProcessing: Boolean,
+        cachedLang: String,
+        currentLang: String,
+        force: Boolean
+    ): Boolean {
+        val oneHourMillis = 3600000L
+        return !force && !isProcessing && (currentTimeMillis - lastUpdatedMillis < oneHourMillis) && (cachedLang == currentLang)
+    }
+
+    @Test
+    fun isWeatherCacheValid_withinOneHourAndCompleted_returnsTrue() {
+        val now = 10_000_000L
+        val lastUpdated = now - 1800_000L // 30 mins ago
+        val isValid = isWeatherCacheValid(
+            lastUpdatedMillis = lastUpdated,
+            currentTimeMillis = now,
+            isProcessing = false,
+            cachedLang = "vi",
+            currentLang = "vi",
+            force = false
+        )
+        assertTrue("Cache should be valid within 1 hour when completed and same language", isValid)
+    }
+
+    @Test
+    fun isWeatherCacheValid_exceededOneHour_returnsFalse() {
+        val now = 10_000_000L
+        val lastUpdated = now - 3600_001L // 1 hour + 1 ms ago
+        val isValid = isWeatherCacheValid(
+            lastUpdatedMillis = lastUpdated,
+            currentTimeMillis = now,
+            isProcessing = false,
+            cachedLang = "vi",
+            currentLang = "vi",
+            force = false
+        )
+        assertFalse("Cache should be invalid after 1 hour (auto refresh trigger)", isValid)
+    }
+
+    @Test
+    fun isWeatherCacheValid_whenProcessingEvenIfRecent_returnsFalse() {
+        val now = 10_000_000L
+        val lastUpdated = now - 5000L // 5 seconds ago
+        val isValid = isWeatherCacheValid(
+            lastUpdatedMillis = lastUpdated,
+            currentTimeMillis = now,
+            isProcessing = true, // AI processing state
+            cachedLang = "vi",
+            currentLang = "vi",
+            force = false
+        )
+        assertFalse("Cache must not be considered valid while in processing state", isValid)
+    }
+
+    @Test
+    fun isWeatherCacheValid_whenForceTrue_returnsFalse() {
+        val now = 10_000_000L
+        val lastUpdated = now - 5000L
+        val isValid = isWeatherCacheValid(
+            lastUpdatedMillis = lastUpdated,
+            currentTimeMillis = now,
+            isProcessing = false,
+            cachedLang = "vi",
+            currentLang = "vi",
+            force = true
+        )
+        assertFalse("Cache check must return false when force is true", isValid)
+    }
+
+    @Test
+    fun isWeatherCacheValid_whenLanguageChanged_returnsFalse() {
+        val now = 10_000_000L
+        val lastUpdated = now - 5000L
+        val isValid = isWeatherCacheValid(
+            lastUpdatedMillis = lastUpdated,
+            currentTimeMillis = now,
+            isProcessing = false,
+            cachedLang = "vi",
+            currentLang = "en",
+            force = false
+        )
+        assertFalse("Cache check must return false when language changed", isValid)
+    }
 }

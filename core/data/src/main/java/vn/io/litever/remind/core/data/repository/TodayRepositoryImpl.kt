@@ -47,8 +47,11 @@ class TodayRepositoryImpl @Inject constructor(
         val cachedLang = preferencesDataSource.reminderCachedLanguage.first()
         val currentLang = getCurrentLanguage()
 
-        // Only refresh if it's a new day or language changed, unless forced
-        if (!force && today == lastUpdatedDate && cachedLang == currentLang) {
+        val cachedReminderJson = preferencesDataSource.reminderJson.first()
+        val isProcessing = cachedReminderJson?.contains("\"ai_status\":\"processing\"") == true
+
+        // Only refresh if it's a new day or language changed, unless forced OR currently processing
+        if (!force && !isProcessing && today == lastUpdatedDate && cachedLang == currentLang) {
             return
         }
 

@@ -2,9 +2,9 @@ package vn.io.litever.remind.features.today.ui
 
 import android.app.Activity
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,6 +13,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -31,15 +34,12 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.ads.api.AdManager
 import vn.io.litever.remind.core.ads.api.AdPlacement
 import vn.io.litever.remind.core.ads.api.AdState
 import vn.io.litever.remind.core.ads.api.LocalAdManager
+import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindLoadingIconButton
 import vn.io.litever.remind.core.designsystem.components.TodayQuoteView
 import vn.io.litever.remind.core.designsystem.components.WeatherInfoView
@@ -48,10 +48,12 @@ import vn.io.litever.remind.core.model.AdConfig
 import vn.io.litever.remind.core.model.AiAnalysis
 import vn.io.litever.remind.core.model.CurrentWeather
 import vn.io.litever.remind.core.model.DailySummary
+import vn.io.litever.remind.core.model.NextAlarmUiState
 import vn.io.litever.remind.core.model.TodayBriefing
 import vn.io.litever.remind.core.model.TodayMetadata
 import vn.io.litever.remind.core.model.WeatherResponse
 import vn.io.litever.remind.features.today.R
+import vn.io.litever.remind.features.today.ui.components.TodayNextAlarmView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,6 +64,8 @@ fun TodayRoute(
 ) {
     val weather by viewModel.weather.collectAsState()
     val todayBriefing by viewModel.todayBriefing.collectAsState()
+    val nextAlarmState by viewModel.nextAlarmState.collectAsState()
+    val is24HourFormat by viewModel.is24HourFormat.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val isProcessing by viewModel.isProcessing.collectAsState()
 
@@ -81,6 +85,8 @@ fun TodayRoute(
     TodayScreen(
         weather = weather,
         todayBriefing = todayBriefing,
+        nextAlarmState = nextAlarmState,
+        is24HourFormat = is24HourFormat,
         isRefreshing = isRefreshing,
         isProcessing = isProcessing,
         onRefresh = viewModel::refresh,
@@ -94,6 +100,8 @@ fun TodayRoute(
 fun TodayScreen(
     weather: WeatherResponse?,
     todayBriefing: TodayBriefing?,
+    nextAlarmState: NextAlarmUiState,
+    is24HourFormat: Boolean,
     isRefreshing: Boolean,
     isProcessing: Boolean,
     onRefresh: () -> Unit,
@@ -124,6 +132,7 @@ fun TodayScreen(
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
                 .padding(LiteverTheme.spacing.medium),
+            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.smallMedium),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (weather != null) {
@@ -137,16 +146,17 @@ fun TodayScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
-
-            TodayQuoteView(todayBriefing = todayBriefing)
+            TodayNextAlarmView(
+                state = nextAlarmState,
+                is24HourFormat = is24HourFormat
+            )
 
             LocalAdManager.current.NativeAdView(
                 placement = AdPlacement.REMIND_NATIVE,
-                modifier = Modifier.padding(top = LiteverTheme.spacing.medium)
+                modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.weight(1f))
+            TodayQuoteView(todayBriefing = todayBriefing)
         }
     }
 }
@@ -192,9 +202,28 @@ fun TodayScreenPreview() {
 
     ReMindTheme {
         CompositionLocalProvider(LocalAdManager provides PreviewAdManager) {
+            val mockAlarm = vn.io.litever.remind.core.model.Alarm(
+                id = 1L,
+                time = java.time.LocalTime.of(7, 30),
+                isEnabled = true,
+                label = "Thức dậy đón bình minh",
+                repeatDays = listOf(
+                    vn.io.litever.remind.core.model.DayOfWeek.MONDAY,
+                    vn.io.litever.remind.core.model.DayOfWeek.WEDNESDAY,
+                    vn.io.litever.remind.core.model.DayOfWeek.FRIDAY
+                )
+            )
+
             TodayScreen(
                 weather = mockWeather,
                 todayBriefing = mockTodayBriefing,
+                nextAlarmState = vn.io.litever.remind.core.model.NextAlarmUiState.Remaining(
+                    days = 0,
+                    hours = 7,
+                    minutes = 15,
+                    alarm = mockAlarm
+                ),
+                is24HourFormat = false,
                 isRefreshing = false,
                 isProcessing = false,
                 onRefresh = {}

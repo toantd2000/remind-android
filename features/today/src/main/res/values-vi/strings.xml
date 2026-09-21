@@ -10,4 +10,30 @@
     <string name="weather_location_automatic_desc">Lấy thời tiết dựa trên vị trí của bạn</string>
     <string name="search_location_title">Tìm địa điểm</string>
     <string name="search_location_placeholder">Nhập tên thành phố...</string>
+
+    <!-- Next Alarm Status -->
+    <string name="next_alarm_title">Báo thức tiếp theo</string>
+    <string name="next_alarm_prefix">Báo thức sau %s</string>
+    <string name="no_upcoming_alarm_title">Thời gian nghỉ ngơi</string>
+    <string name="no_upcoming_alarm_desc">Không có lịch thức dậy nào sắp diễn ra. Hãy tận hưởng trọn vẹn những phút giây nghỉ ngơi và nạp lại năng lượng nhé!</string>
+    <string name="less_than_one_minute">dưới 1 phút</string>
+    <string name="days_hours">%1$d ngày %2$d giờ</string>
+    <string name="hours_minutes">%1$d giờ %2$d phút</string>
+    <string name="just_minutes">%1$d phút</string>
+    <string name="remaining_short_days_hours">%1$d ngày %2$d giờ</string>
+    <string name="remaining_short_hours_mins">%1$d giờ %2$d phút</string>
+    <string name="remaining_short_mins">%1$d phút</string>
+    <string name="remaining_short_less_minute">&lt; 1 phút</string>
+    <string name="today">Hôm nay</string>
+    <string name="tomorrow">Ngày mai</string>
+    <string name="every_day">Hằng ngày</string>
+    <string name="one_time_on">Một lần vào %s</string>
+    <string name="day_mon">T2</string>
+    <string name="day_tue">T3</string>
+    <string name="day_wed">T4</string>
+    <string name="day_thu">T5</string>
+    <string name="day_fri">T6</string>
+    <string name="day_sat">T7</string>
+    <string name="day_sun">CN</string>
+    <string name="no_label">Không có nhãn</string>
 </resources>

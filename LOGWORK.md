@@ -1343,3 +1343,29 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
 - **Hệ quả:**
   - Trải nghiệm làm nhiệm vụ trở nên mạch lạc, hiện đại, nhất quán thị giác 100% giữa 3 loại nhiệm vụ.
   - Tương thích tốt với màn hình nhỏ và khi bàn phím ảo bật lên nhờ cơ chế cuộn độc lập và bottom bar docked.
+
+### [TDR-075] - Hiển Thị Trạng Thái Báo Thức Tiếp Theo Tại TodayScreen (Non-interactive & Rich Details)
+- **Ngày thực hiện:** 2026-09-21
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - `TodayScreen` cần bổ sung một khối thông tin báo thức tiếp theo tương tự như `TodayQuoteView` hoặc banner quảng cáo để người dùng nắm bắt nhanh trạng thái báo thức trong ngày.
+  - Yêu cầu đặc thù: Vùng này hoàn toàn tĩnh (non-interactive, không có nút bấm, không click handler). Khi có báo thức kế tiếp thì hiển thị đầy đủ thông tin báo thức (giờ, AM/PM, nhãn, lặp lại, icon nhiệm vụ, badge đếm ngược còn lại) gần giống như `AlarmCard` ở danh sách báo thức. Khi không có báo thức kế tiếp hoặc tất cả tắt thì hiển thị thông điệp truyền cảm hứng ý nghĩa ("Thời gian nghỉ ngơi") kèm ảnh minh hoạ rỗng.
+- **Quyết định:**
+  - Tách và chuyển `NextAlarmUiState` cùng hàm `calculateNextAlarm` vào `:core:model` để chia sẻ giữa `:features:alarms` và `:features:today` (tuân thủ Clean Architecture và Single Source of Truth), đồng thời bổ sung trường `val alarm: Alarm` vào `NextAlarmUiState.Remaining`.
+  - Di chuyển các file ảnh minh họa `no_alarm_illustration.png` và `no_alarm_illustration_dark.png` vào `:core:designsystem/src/main/res/drawable/` để tái sử dụng thống nhất giữa các feature.
+  - Nâng cấp `TodayNextAlarmView` trong `:features:today:ui:components`:
+    - Đồng bộ định dạng giờ (12h/24h) theo cài đặt hệ thống người dùng thông qua `AlarmPreferencesDataSource` được inject vào `TodayViewModel` và truyền xuống UI.
+    - Khi có báo thức sắp tới (`NextAlarmUiState.Remaining`): thiết kế bố cục 2 cột cân đối:
+      - **Cột 1**: Icon báo thức dạng ô vuông bo góc (76.dp với nền `primaryContainer` và icon chuông).
+      - **Cột 2**:
+        - Hàng 1: Text "Báo thức tiếp theo" và badge nổi bật đếm ngược thời gian còn lại (rút gọn: ví dụ "6h 45m").
+        - Hàng 2: Giờ báo thức to đậm (`titleLarge` bold + AM/PM tuỳ chế độ 12h/24h) -> cụm icon nhiệm vụ -> ngày lặp lại.
+        - Hàng 3: Nhãn báo thức theo font nghiêng.
+      - Toàn bộ là view tĩnh (không Switch, không More menu).
+    - Khi không có báo thức (`NextAlarmUiState.AllOff`): hiển thị ảnh minh hoạ theo Light/Dark theme kèm tiêu đề ấm áp "Thời gian nghỉ ngơi" và thông điệp truyền cảm hứng "Không có lịch thức dậy nào sắp diễn ra. Hãy tận hưởng trọn vẹn những phút giây nghỉ ngơi và nạp lại năng lượng nhé!".
+  - Tích hợp vào `TodayViewModel` thông qua việc quan sát `AlarmRepository.getAllAlarms()` cùng `AlarmPreferencesDataSource.is24HourFormat` và sắp xếp thứ tự hiển thị tại `TodayScreen`: Thời tiết $\rightarrow$ Báo thức tiếp theo (`TodayNextAlarmView`) $\rightarrow$ Quảng cáo (`NativeAdView`) $\rightarrow$ Trích dẫn truyền cảm hứng (`TodayQuoteView`) ở dưới cùng.
+- **Hệ quả:**
+  - Cung cấp đầy đủ thông tin báo thức một cách trực quan, đồng bộ nhận diện và định dạng giờ cài đặt (12h/24h) với danh sách báo thức mà vẫn duy trì tính chất thuần hiển thị.
+  - Biến trạng thái rỗng thành thông điệp tích cực, ấm áp, phù hợp triết lý ReMind.
+  - Vị trí QuoteView dưới cùng tạo điểm nhấn kết thúc tự nhiên, thanh thoát cho màn hình Today.
+

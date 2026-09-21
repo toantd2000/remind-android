@@ -12,12 +12,32 @@ import javax.inject.Inject
 @HiltViewModel
 class TodayViewModel @Inject constructor(
     private val weatherRepository: vn.io.litever.remind.core.domain.repository.WeatherRepository,
-    private val todayRepository: vn.io.litever.remind.core.domain.repository.TodayRepository
+    private val todayRepository: vn.io.litever.remind.core.domain.repository.TodayRepository,
+    private val alarmRepository: vn.io.litever.remind.core.domain.repository.AlarmRepository,
+    private val preferencesDataSource: vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 ) : ViewModel() {
     private var lastProcessingRefreshMillis = 0L
 
+    val is24HourFormat: StateFlow<Boolean> = preferencesDataSource.is24HourFormat
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = true
+        )
+
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing = _isRefreshing.asStateFlow()
+
+    val nextAlarmState: StateFlow<vn.io.litever.remind.core.model.NextAlarmUiState> = alarmRepository.getAllAlarms()
+        .map { alarms ->
+            val enabledAlarms = alarms.filter { it.isEnabled }
+            vn.io.litever.remind.core.model.calculateNextAlarm(enabledAlarms)
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = vn.io.litever.remind.core.model.NextAlarmUiState.AllOff
+        )
 
     val weather: StateFlow<vn.io.litever.remind.core.model.WeatherResponse?> = weatherRepository.getRemindWeather()
         .stateIn(

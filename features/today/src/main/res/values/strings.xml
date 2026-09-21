@@ -10,4 +10,30 @@
     <string name="weather_location_automatic_desc">Get weather based on your current location</string>
     <string name="search_location_title">Search Location</string>
     <string name="search_location_placeholder">Enter city name...</string>
+
+    <!-- Next Alarm Status -->
+    <string name="next_alarm_title">Next Alarm</string>
+    <string name="next_alarm_prefix">Alarm in %s</string>
+    <string name="no_upcoming_alarm_title">Peaceful Rest</string>
+    <string name="no_upcoming_alarm_desc">No upcoming alarms scheduled. Relax and enjoy your peaceful rest!</string>
+    <string name="less_than_one_minute">less than 1 minute</string>
+    <string name="days_hours">%1$d days %2$d hours</string>
+    <string name="hours_minutes">%1$d hours %2$d mins</string>
+    <string name="just_minutes">%1$d mins</string>
+    <string name="remaining_short_days_hours">%1$dd %2$dh</string>
+    <string name="remaining_short_hours_mins">%1$dh %2$dm</string>
+    <string name="remaining_short_mins">%1$dm</string>
+    <string name="remaining_short_less_minute">&lt; 1m</string>
+    <string name="today">Today</string>
+    <string name="tomorrow">Tomorrow</string>
+    <string name="every_day">Daily</string>
+    <string name="one_time_on">Once on %s</string>
+    <string name="day_mon">Mo</string>
+    <string name="day_tue">Tu</string>
+    <string name="day_wed">We</string>
+    <string name="day_thu">Th</string>
+    <string name="day_fri">Fr</string>
+    <string name="day_sat">Sa</string>
+    <string name="day_sun">Su</string>
+    <string name="no_label">No label</string>
 </resources>

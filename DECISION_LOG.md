@@ -137,3 +137,20 @@ This document records the solidified technical decisions and behavioral scenario
   - Text in the center is bound to each palette's `primary` color.
   - Active selection is identified by a 2.dp `primary` border and an `Icons.Rounded.Check` indicator.
 
+## 10. Today Screen Widgets & Cards
+
+### Scenario: Non-interactive Next Alarm Status Card (2-Column Layout, Rich Details & Positive Rest Message)
+- **Expected Behavior**:
+  - When an upcoming alarm exists: The card adopts a 2-column layout:
+    - **Column 1**: Square alarm icon box (76.dp squircle with `primaryContainer` and centered `Alarm` icon).
+    - **Column 2**:
+      - Row 1: "Next Alarm" title on the left with a subtle countdown badge ("Alarm in X hours Y mins") on the right.
+      - Row 2: Prominent alarm time typography (`titleLarge` bold + AM/PM) -> mission icons row -> repeat schedule on the right.
+      - Row 3: Alarm label in italic style.
+    - Strictly non-interactive (no switch, no action menu, no click callback).
+  - When no upcoming alarms exist: The card presents a soothing and positive rest message ("Peaceful Rest" / "No upcoming alarms scheduled. Relax and enjoy your peaceful rest!") alongside the empty-state illustration matching the current Light/Dark theme.
+- **Technical Decision**:
+  - Compute next alarm status reactively in `TodayViewModel` using `calculateNextAlarm(enabledAlarms)` from `:core:model`, providing the nearest `Alarm` object.
+  - Implement `TodayNextAlarmView` as a pure presentation component with squircle corners and 2-column balanced structure, strictly non-interactive.
+  - Order components in `TodayScreen` using `Arrangement.spacedBy(LiteverTheme.spacing.medium)` without redundant Spacers: Weather $\rightarrow$ TodayNextAlarmView $\rightarrow$ NativeAdView $\rightarrow$ TodayQuoteView (at the very bottom).
+

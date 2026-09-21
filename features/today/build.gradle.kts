@@ -37,6 +37,7 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:ads:api"))
     implementation(project(":core:common"))
+    implementation(project(":core:datastore"))
     implementation(project(":core:designsystem"))
 
     implementation(libs.androidx.core.ktx)

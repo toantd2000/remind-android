@@ -65,7 +65,7 @@ fun TodayQuoteView(
                             end = LiteverTheme.spacing.medium
                         )
                         .padding(vertical = LiteverTheme.spacing.small),
-                    style = MaterialTheme.typography.bodyLarge.copy(
+                    style = MaterialTheme.typography.bodyMedium.copy(
                         fontStyle = FontStyle.Italic,
                         color = LiteverTheme.colors.onTertiaryContainer
                     )

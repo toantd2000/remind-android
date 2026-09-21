@@ -1,43 +1,36 @@
 package vn.io.litever.remind.features.alarms.ui.state
 
 import vn.io.litever.remind.core.model.Alarm
-import java.time.Duration
-import java.time.LocalDateTime
+import vn.io.litever.remind.core.model.NextAlarmUiState as CoreNextAlarmUiState
 
 sealed interface NextAlarmUiState {
     object AllOff : NextAlarmUiState
     data class Remaining(
         val days: Long,
         val hours: Long,
-        val minutes: Long
+        val minutes: Long,
+        val alarm: Alarm? = null
     ) : NextAlarmUiState
+
+    fun toCore(): CoreNextAlarmUiState = when (this) {
+        AllOff -> CoreNextAlarmUiState.AllOff
+        is Remaining -> {
+            if (alarm != null) {
+                CoreNextAlarmUiState.Remaining(days, hours, minutes, alarm)
+            } else {
+                CoreNextAlarmUiState.Remaining(days, hours, minutes, Alarm(time = java.time.LocalTime.MIDNIGHT))
+            }
+        }
+    }
+
+    companion object {
+        fun fromCore(core: CoreNextAlarmUiState): NextAlarmUiState = when (core) {
+            CoreNextAlarmUiState.AllOff -> AllOff
+            is CoreNextAlarmUiState.Remaining -> Remaining(core.days, core.hours, core.minutes, core.alarm)
+        }
+    }
 }
 
 fun calculateNextAlarm(enabledAlarms: List<Alarm>): NextAlarmUiState {
-    if (enabledAlarms.isEmpty()) return NextAlarmUiState.AllOff
-    
-    val now = LocalDateTime.now()
-    val nextOccurrences = enabledAlarms.map { alarm ->
-        alarm.getNextOccurrence(now)
-    }
-    
-    val earliest = nextOccurrences.minOrNull() ?: return NextAlarmUiState.AllOff
-    val duration = Duration.between(now, earliest)
-    
-    val totalMinutes = duration.toMinutes()
-    val days = duration.toDays()
-    val hours = duration.toHours() % 24
-    val minutes = totalMinutes % 60
-    
-    return NextAlarmUiState.Remaining(days, hours, minutes)
+    return NextAlarmUiState.fromCore(vn.io.litever.remind.core.model.calculateNextAlarm(enabledAlarms))
 }
-
-
-
-
-
-
-
-
-
-

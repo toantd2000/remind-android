@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Opinionated Lv* Suite:** Adopted high-level opinionated components from `litever-designsystem` v2.1.0: `LvButton`, `LvIconButton`, `LvTextField`, `LvAlertDialog`, `LvChip`, and `LvSnackbarHost` / `LvSnackbar`.
 - **Semantic Tokens:** Added neutral semantic color tokens (`neutral`, `onNeutral`, `neutralContainer`, `onNeutralContainer`) to `ColorScheme` in `:core:designsystem` mapped to `LiteverTheme.colors`.
 - **Root Snackbar Presentation:** Integrated `LvSnackbarHost` with `SnackbarHostState` inside the root `MainActivity` scaffold for standardized semantic snackbar support.
+- **Today Next Alarm Status Card:** Added `TodayNextAlarmView` on `TodayScreen` to display upcoming alarm countdown or empty state illustration when all alarms are off/empty (non-interactive, shared via `:core:model` and `:core:designsystem`).
 
 ### Removed
 - **App-Specific Color Tokens:** Removed over 340 lines of local color definitions in `:core:designsystem/theme/Color.kt` (`primaryLight`, `remindLightColors`, `remindDarkColors`, contrast variants, etc.) in favor of direct consumption of `:litever-designsystem` palettes.

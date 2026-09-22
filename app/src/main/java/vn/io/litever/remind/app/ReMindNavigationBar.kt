@@ -29,15 +29,15 @@ enum class TopLevelDestination(
     val icon: ImageVector,
     val labelResId: Int
 ) {
-    ALARMS(
-        route = AlarmListRoute,
-        icon = Icons.Rounded.Alarm,
-        labelResId = R.string.navigation_alarms
-    ),
     TODAY(
         route = todayRoute,
         icon = Icons.Rounded.Lightbulb,
         labelResId = R.string.navigation_today
+    ),
+    ALARMS(
+        route = AlarmListRoute,
+        icon = Icons.Rounded.Alarm,
+        labelResId = R.string.navigation_alarms
     ),
     SETTINGS(
         route = settingsRoute,
@@ -71,7 +71,7 @@ fun ReMindNavigationBar(
                 label = {
                     Text(
                         text = stringResource(destination.labelResId),
-                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                        fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.SemiBold
                     )
                 },
                 selected = isSelected,

@@ -230,59 +230,57 @@ fun AlarmListScreen(
 
     Scaffold(
         topBar = {
-            if (hasAlarms || !hasCriticalPermissions) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    LvTopAppBar(
-                        title = {
-                            Text(
-                                stringResource(R.string.alarms_title),
-                                fontWeight = FontWeight.Bold
-                            )
-                        },
-                        actions = {
-                            if (hasAlarms) {
-                                LvIconButton(onClick = { showTopMenu = !showTopMenu }) {
-                                    Icon(
-                                        Icons.Rounded.MoreVert,
-                                        contentDescription = actionMoreDescription
-                                    )
-                                }
-                                DropdownMenu(
-                                    expanded = showTopMenu,
-                                    onDismissRequest = { if (showTopMenu) showTopMenu = false }
-                                ) {
-                                    DropdownMenuItem(
-                                        text = { Text(deleteDisabledAlarmsText) },
-                                        onClick = {
-                                            onDeleteDisabledAlarms()
-                                            if (showTopMenu) showTopMenu = false
-                                        }
-                                    )
-                                }
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                LvTopAppBar(
+                    title = {
+                        Text(
+                            stringResource(R.string.alarms_title),
+                            fontWeight = FontWeight.Bold
+                        )
+                    },
+                    actions = {
+                        if (hasAlarms) {
+                            LvIconButton(onClick = { showTopMenu = !showTopMenu }) {
+                                Icon(
+                                    Icons.Rounded.MoreVert,
+                                    contentDescription = actionMoreDescription
+                                )
+                            }
+                            DropdownMenu(
+                                expanded = showTopMenu,
+                                onDismissRequest = { if (showTopMenu) showTopMenu = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text(deleteDisabledAlarmsText) },
+                                    onClick = {
+                                        onDeleteDisabledAlarms()
+                                        if (showTopMenu) showTopMenu = false
+                                    }
+                                )
                             }
                         }
-                    )
-                    if (!hasCriticalPermissions) {
-                        PermissionWarningBanner(
-                            onClick = onNavigateToPermissions,
-                            modifier = Modifier.padding(
-                                start = LiteverTheme.spacing.medium,
-                                end = LiteverTheme.spacing.medium,
-                                bottom = LiteverTheme.spacing.small
-                            )
-                        )
-                    } else if (hasAlarms) {
-                        NextAlarmHeader(
-                            modifier = Modifier.padding(
-                                start = LiteverTheme.spacing.medium,
-                                end = LiteverTheme.spacing.medium,
-                                bottom = LiteverTheme.spacing.small
-                            ),
-                            state = nextAlarmState
-                        )
                     }
+                )
+                if (!hasCriticalPermissions) {
+                    PermissionWarningBanner(
+                        onClick = onNavigateToPermissions,
+                        modifier = Modifier.padding(
+                            start = LiteverTheme.spacing.medium,
+                            end = LiteverTheme.spacing.medium,
+                            bottom = LiteverTheme.spacing.small
+                        )
+                    )
+                } else if (hasAlarms) {
+                    NextAlarmHeader(
+                        modifier = Modifier.padding(
+                            start = LiteverTheme.spacing.medium,
+                            end = LiteverTheme.spacing.medium,
+                            bottom = LiteverTheme.spacing.small
+                        ),
+                        state = nextAlarmState
+                    )
                 }
             }
         },
@@ -335,7 +333,7 @@ fun AlarmListScreen(
                                 onMoreClick = { selectedAlarmForMenu = alarm },
                                 modifier = Modifier.animateItem()
                             )
-                            
+
                             if (index == 1 && alarms.size >= 3 && !isAdFreeActive) {
                                 vn.io.litever.remind.core.ads.api.LocalAdManager.current.NativeAdView(
                                     placement = vn.io.litever.remind.core.ads.api.AdPlacement.ALARM_LIST_NATIVE,

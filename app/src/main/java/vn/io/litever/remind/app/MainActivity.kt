@@ -233,7 +233,7 @@ class MainActivity : ComponentActivity() {
 
                                     if (!isAlreadyMessageId) {
                                         navController.navigate("alarm_message_route/$idMessage") {
-                                            popUpTo(AlarmListRoute) {
+                                            popUpTo(navController.graph.startDestinationId) {
                                                 inclusive = false
                                             }
                                             launchSingleTop = true
@@ -250,7 +250,7 @@ class MainActivity : ComponentActivity() {
                                             currentDest == "alarm_ringing_route/{alarmId}" && currentId == idToRing
                                         if (!isAlreadyRingingId) {
                                             navController.navigate("alarm_ringing_route/$idToRing") {
-                                                popUpTo(AlarmListRoute) {
+                                                popUpTo(navController.graph.startDestinationId) {
                                                     inclusive = false
                                                 }
                                                 launchSingleTop = true
@@ -308,7 +308,7 @@ class MainActivity : ComponentActivity() {
                                     ) {
                                         NavHost(
                                             navController = navController,
-                                            startDestination = AlarmListRoute
+                                            startDestination = todayRoute
                                         ) {
                                             alarmGraph(
                                                 onNavigateToEdit = { id ->

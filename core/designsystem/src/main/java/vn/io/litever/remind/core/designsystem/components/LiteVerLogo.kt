@@ -32,7 +32,7 @@ fun LiteVerLogo(
             withStyle(
                 style = SpanStyle(
                     color = LiteverTheme.colors.brandLite,
-                    fontWeight = FontWeight.ExtraLight,
+                    fontWeight = FontWeight.SemiBold,
                 )
             ) {
                 append("Lite")
@@ -60,7 +60,7 @@ private fun LiteVerLogoPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
 @Composable
 private fun LiteVerLogoDarkPreview() {
     ReMindTheme(darkTheme = true) {

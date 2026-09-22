@@ -88,6 +88,10 @@ class AudioPlayer @Inject constructor(
             mediaPlayer = player
 
             player.setOnPreparedListener { mp ->
+                if (mediaPlayer != mp) {
+                    mp.release()
+                    return@setOnPreparedListener
+                }
                 mp.start()
                 handleVolume(usage, volume, gradualVolumeDurationSeconds)
                 if (vibrationEnabled) startVibration()

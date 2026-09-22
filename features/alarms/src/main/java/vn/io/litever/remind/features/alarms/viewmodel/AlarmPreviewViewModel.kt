@@ -81,12 +81,11 @@ class AlarmPreviewViewModel @Inject constructor(
                 val isMuted = mutedIds.contains(alarmId)
                 val currentAlarm = alarm.value
                 if (currentAlarm != null) {
-                    val targetVolume = if (isMuted) 0 else currentAlarm.volume
-                    audioPlayer.setVolume(android.media.AudioAttributes.USAGE_ALARM, targetVolume)
-                    
                     if (isMuted) {
+                        audioPlayer.stop()
                         autoSilenceJob?.cancel()
                     } else if (wasMuted) {
+                        startPreviewRinging(currentAlarm)
                         // Restart auto-silence from beginning as per DECISION_LOG.md
                         setupAutoSilence(currentAlarm)
                     }

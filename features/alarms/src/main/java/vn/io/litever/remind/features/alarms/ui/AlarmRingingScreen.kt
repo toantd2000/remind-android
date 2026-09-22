@@ -145,7 +145,6 @@ fun AlarmRingingScreen(
     alarm: Alarm? = null,
     is24HourFormat: Boolean = false,
     autoSilenceCountdown: Int? = null,
-    isPreview: Boolean = false,
 ) {
     AlarmRingingContent(
         onDismiss = onDismiss,
@@ -154,8 +153,7 @@ fun AlarmRingingScreen(
         modifier = modifier,
         alarm = alarm,
         is24HourFormat = is24HourFormat,
-        autoSilenceCountdown = autoSilenceCountdown,
-        isPreview = isPreview
+        autoSilenceCountdown = autoSilenceCountdown
     )
 }
 
@@ -167,9 +165,7 @@ fun AlarmRingingContent(
     modifier: Modifier = Modifier,
     alarm: Alarm? = null,
     is24HourFormat: Boolean = false,
-    autoSilenceCountdown: Int? = null,
-    isPreview: Boolean = false,
-    onExitPreview: () -> Unit = {}
+    autoSilenceCountdown: Int? = null
 ) {
     var currentTime by remember { mutableStateOf(LocalDateTime.now()) }
     var remainingSnoozeSeconds by remember { mutableLongStateOf(0L) }
@@ -188,9 +184,8 @@ fun AlarmRingingContent(
     }
 
     // Intercept back button to prevent escaping the ringing/locking screen
-    // Unless in preview mode
     BackHandler { 
-        if (isPreview) onExitPreview()
+        // Do nothing to prevent escaping
     }
 
     LaunchedEffect(alarm) {
@@ -232,7 +227,7 @@ fun AlarmRingingContent(
         label = "snoozeShakeOffset"
     )
 
-    var isVisible by remember { mutableStateOf(isPreview) }
+    var isVisible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         isVisible = true
     }
@@ -264,28 +259,6 @@ fun AlarmRingingContent(
     Surface(
         modifier = modifier.fillMaxSize(),
     ) {
-        // Exit Preview Button
-        if (isPreview) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .statusBarsPadding()
-                    .padding(LiteverTheme.spacing.medium),
-                contentAlignment = Alignment.TopEnd
-            ) {
-                LvButton(
-                    onClick = onExitPreview,
-                    type = LvButtonType.Outlined,
-                    semantic = LvSemantic.Secondary,
-                    modifier = Modifier.wrapContentSize()
-                ) {
-                    Text(
-                        text = stringResource(R.string.action_exit_preview),
-                    )
-                }
-            }
-        }
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -549,32 +522,7 @@ fun AlarmRingingScreenPreview() {
                 snoozeRepeatCount = 3,
                 currentSnoozeCount = 1
             ),
-            is24HourFormat = false,
-            isPreview = true
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun AlarmPreviewContentPreview() {
-    ReMindTheme {
-        AlarmRingingContent(
-            onDismiss = {},
-            onSnooze = {},
-            onStartMission = {},
-            alarm = Alarm(
-                id = 1,
-                time = LocalTime.of(7, 30),
-                label = "Wake up!",
-                isEnabled = true,
-                snoozeEnabled = true,
-                snoozeRepeatCount = 3,
-                currentSnoozeCount = 1
-            ),
-            is24HourFormat = false,
-            isPreview = true,
-            onExitPreview = {}
+            is24HourFormat = false
         )
     }
 }
@@ -596,8 +544,7 @@ fun AlarmRingingScreenNoSnoozePreview() {
                 snoozeRepeatCount = 3,
                 currentSnoozeCount = 3 // Limit reached
             ),
-            is24HourFormat = true,
-            isPreview = true
+            is24HourFormat = true
         )
     }
 }

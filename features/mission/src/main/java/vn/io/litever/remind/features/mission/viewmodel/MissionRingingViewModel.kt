@@ -203,10 +203,12 @@ class MissionRingingViewModel @Inject constructor(
     private fun onMissionCompleted() {
         val state = _uiState.value
         viewModelScope.launch {
-            analyticsLogger.logEvent("mission_completed", mapOf(
-                "alarm_id" to alarmId,
-                "mission_type" to (state.currentMission?.type?.name ?: "UNKNOWN")
-            ))
+            if (!isPreview) {
+                analyticsLogger.logEvent("mission_completed", mapOf(
+                    "alarm_id" to alarmId,
+                    "mission_type" to (state.currentMission?.type?.name ?: "UNKNOWN")
+                ))
+            }
 
             // Show "Complete" for 1 second
             _uiState.update { it.copy(isMissionJustCompleted = true) }

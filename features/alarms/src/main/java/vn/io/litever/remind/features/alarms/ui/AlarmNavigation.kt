@@ -96,7 +96,8 @@ fun NavGraphBuilder.alarmGraph(
         AlarmPreviewRoute(
             alarmId = alarmId,
             onExit = onNavigateBack,
-            onStartMissionPreview = onNavigateToMissionPreview
+            onStartMissionPreview = onNavigateToMissionPreview,
+            navController = navController
         )
     }
 }

@@ -1,0 +1,5 @@
+Nâng cấp toàn diện giao diện với Design System mới (Material 3).
+Bổ sung tính năng Bỏ qua Không làm phiền (DND) cho báo thức.
+Tối ưu hóa màn hình Nhiệm vụ (Gõ phím, Thử thách) và Màn hình chuông báo.
+Cải thiện hiệu suất tải, giảm quảng cáo làm phiền và nâng cấp đa ngôn ngữ.
+Tối ưu hóa cài đặt và tinh chỉnh trải nghiệm người dùng.

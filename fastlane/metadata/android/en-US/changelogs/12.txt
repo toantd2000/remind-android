@@ -1,0 +1,5 @@
+Completely overhauled UI with the new Material 3 Design System.
+Added Do Not Disturb (DND) override support for alarms.
+Optimized Mission screens (Typing, Challenges) and Ringing screens.
+Improved loading performance, refined ad experiences, and upgraded localization.
+Streamlined settings and general user experience refinements.

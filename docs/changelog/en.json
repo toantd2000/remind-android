@@ -1,8 +1,20 @@
 [
   {
+    "versionName": "2.0.0",
+    "date": "2026-09-23",
+    "isLatest": true,
+    "notes": [
+      "Completely overhauled UI with the new Material 3 Design System.",
+      "Added Do Not Disturb (DND) override support for alarms.",
+      "Optimized Mission screens (Typing, Challenges) and Ringing screens.",
+      "Improved loading performance, refined ad experiences, and upgraded localization.",
+      "Streamlined settings and general user experience refinements."
+    ]
+  },
+  {
     "versionName": "1.2.0",
     "date": "2026-07-30",
-    "isLatest": true,
+    "isLatest": false,
     "notes": [
       "Introduced 2 new wake-up missions: Memory Tiles and Typing.",
       "Integrated Firebase Analytics for better experience optimization.",

@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ContentCopy
@@ -325,7 +326,7 @@ fun AlarmListScreen(
                             )
                         }
                     ) {
-                        items(alarms, key = { it.id }) { alarm ->
+                        itemsIndexed(alarms, key = { _, alarm -> alarm.id }) { index, alarm ->
                             AlarmCard(
                                 alarm = alarm,
                                 is24HourFormat = is24HourFormat,
@@ -334,6 +335,16 @@ fun AlarmListScreen(
                                 onMoreClick = { selectedAlarmForMenu = alarm },
                                 modifier = Modifier.animateItem()
                             )
+                            
+                            if (index == 1 && alarms.size >= 3 && !isAdFreeActive) {
+                                vn.io.litever.remind.core.ads.api.LocalAdManager.current.NativeAdView(
+                                    placement = vn.io.litever.remind.core.ads.api.AdPlacement.ALARM_LIST_NATIVE,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = LiteverTheme.spacing.small)
+                                        .animateItem()
+                                )
+                            }
                         }
                     }
                 }

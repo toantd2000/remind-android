@@ -113,7 +113,6 @@ fun RingtoneSelectionScreen(
                     onClick = onSaveClick,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(LiteverTheme.spacing.doubleLarge)
                 ) {
                     Text(
                         stringResource(R.string.save),

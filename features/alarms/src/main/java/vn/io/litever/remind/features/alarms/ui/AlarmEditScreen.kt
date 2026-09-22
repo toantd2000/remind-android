@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.alarms.ui
 
+
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -202,6 +204,9 @@ fun AlarmEditRoute(
     }
 
     val lifecycleOwner = LocalLifecycleOwner.current
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val activity = context as? android.app.Activity
+    val adManager = vn.io.litever.remind.core.ads.api.LocalAdManager.current
 
     // Reset navigation flag when returning to screen
     DisposableEffect(lifecycleOwner) {
@@ -211,6 +216,8 @@ fun AlarmEditRoute(
                 if (isNavigatingToConfig && savedStateHandle?.contains("updatedMission") == false) {
                     isNavigatingToConfig = false
                 }
+                // Load Interstitial ad for saving alarm
+                adManager.loadAd(vn.io.litever.remind.core.ads.api.AdPlacement.SAVE_ALARM_INTERSTITIAL)
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -243,7 +250,15 @@ fun AlarmEditRoute(
                     onClick = {
                         if (showDiscardDialog) showDiscardDialog = false
                         viewModel.stopRingtonePlayback()
-                        viewModel.saveAlarm(onBackClick)
+                        viewModel.saveAlarm {
+                            if (activity != null) {
+                                adManager.showAd(activity, vn.io.litever.remind.core.ads.api.AdPlacement.SAVE_ALARM_INTERSTITIAL) {
+                                    onBackClick()
+                                }
+                            } else {
+                                onBackClick()
+                            }
+                        }
                     }
                 ) {
                     Text(stringResource(R.string.save))
@@ -299,10 +314,26 @@ fun AlarmEditRoute(
         },
         onSaveClick = {
             viewModel.stopRingtonePlayback()
-            viewModel.saveAlarm(onBackClick)
+            viewModel.saveAlarm {
+                if (activity != null) {
+                    adManager.showAd(activity, vn.io.litever.remind.core.ads.api.AdPlacement.SAVE_ALARM_INTERSTITIAL) {
+                        onBackClick()
+                    }
+                } else {
+                    onBackClick()
+                }
+            }
         },
         onSaveAnyway = {
-            viewModel.saveAnyway(onBackClick)
+            viewModel.saveAnyway {
+                if (activity != null) {
+                    adManager.showAd(activity, vn.io.litever.remind.core.ads.api.AdPlacement.SAVE_ALARM_INTERSTITIAL) {
+                        onBackClick()
+                    }
+                } else {
+                    onBackClick()
+                }
+            }
         },
         onDismissPermissionDialog = viewModel::dismissPermissionDialog,
         onTimeChange = viewModel::updateTime,
@@ -340,6 +371,8 @@ fun AlarmEditRoute(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
+
+
 @Composable
 fun AlarmEditScreen(
     uiState: AlarmEditUiState,

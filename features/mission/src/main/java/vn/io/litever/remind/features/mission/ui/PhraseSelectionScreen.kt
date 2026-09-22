@@ -218,10 +218,7 @@ fun PhraseSelectionScreen(
                     enabled = selectedIds.isNotEmpty(),
                     semantic = LvSemantic.Primary
                 ) {
-                    Text(
-                        text = stringResource(R.string.save),
-                        style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                    )
+                    Text(text = stringResource(R.string.save))
                 }
             }
         },

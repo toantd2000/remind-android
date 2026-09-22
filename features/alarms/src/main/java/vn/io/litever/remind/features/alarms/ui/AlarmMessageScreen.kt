@@ -4,6 +4,8 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -72,27 +74,47 @@ fun AlarmMessageScreen(
     onFinish: () -> Unit
 ) {
     BackHandler { }
-    Scaffold { padding ->
+    Scaffold(
+        bottomBar = {
+            LvButton(
+                onClick = onFinish,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(LiteverTheme.spacing.medium)
+                    .height(52.dp),
+                shape = LiteverTheme.shapes.large,
+            ) {
+                Text(
+                    text = stringResource(vn.io.litever.remind.features.alarms.R.string.alarm_message_dismiss),
+                    style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                )
+            }
+        }
+    ) { padding ->
         val statusColor = LiteverTheme.colors.primary
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(LiteverTheme.spacing.medium),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(top = LiteverTheme.spacing.medium)
+                .padding(horizontal = LiteverTheme.spacing.medium)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
         ) {
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+
+            Surface(
+                shape = LiteverTheme.shapes.large,
+                color = LiteverTheme.colors.surfaceContainerLow,
+                contentColor = LiteverTheme.colors.onSurface,
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Column(
                     modifier = Modifier.fillMaxWidth()
-                        .clip(shape = LiteverTheme.shapes.large)
-                        .background(color = LiteverTheme.colors.surfaceContainerLow)
-                        .padding(all = LiteverTheme.spacing.large),
+                        .padding(all = LiteverTheme.spacing.medium),
                     horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
                     val displayTime = alarm?.time ?: LocalTime.now()
 
@@ -103,7 +125,8 @@ fun AlarmMessageScreen(
                         textAlign = TextAlign.Center
                     )
 
-                    Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+                    Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
+
                     // Time with small AM/PM
                     val (timeStr, amPm) = TimeFormatUtils.formatTimeParts(
                         displayTime,
@@ -129,7 +152,7 @@ fun AlarmMessageScreen(
                                 style = LiteverTheme.typography.titleLarge.copy(
                                     fontWeight = FontWeight.Bold
                                 ),
-                                color = LiteverTheme.colors.onSurface.copy(alpha = 0.6f),
+                                color = LiteverTheme.colors.onSurfaceVariant,
                                 modifier = Modifier.padding(bottom = LiteverTheme.spacing.small)
                             )
                         }
@@ -150,38 +173,26 @@ fun AlarmMessageScreen(
                             color = LiteverTheme.colors.onSurfaceVariant
                         )
                     }
+
                 }
-
-                Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
-
-                WeatherInfoView(
-                    weather = weather,
-                    isCompact = true
-                )
-
-                Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
-
-                TodayQuoteView(
-                    todayBriefing = todayBriefing
-                )
             }
+
+            WeatherInfoView(
+                weather = weather,
+                isCompact = true
+            )
 
             LocalAdManager.current.NativeAdView(
                 placement = AdPlacement.MESSAGE_NATIVE,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = LiteverTheme.spacing.medium)
+                modifier = Modifier.fillMaxWidth()
             )
 
-            LvButton(
-                onClick = onFinish,
-                modifier = Modifier.fillMaxWidth().height(52.dp)
-            ) {
-                Text(
-                    text = stringResource(vn.io.litever.remind.features.alarms.R.string.alarm_message_dismiss),
-                    style = LiteverTheme.typography.labelLarge
-                )
-            }
+            TodayQuoteView(
+                todayBriefing = todayBriefing
+            )
+
+            // Add a small spacer at the bottom for scroll padding
+            Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
         }
     }
 }
@@ -285,19 +296,7 @@ private object PreviewAdManager : AdManager {
 
     @Composable
     override fun NativeAdView(placement: AdPlacement, modifier: Modifier) {
-        Box(
-            modifier = modifier
-                .fillMaxWidth()
-                .height(250.dp)
-                .background(LiteverTheme.colors.surfaceVariant, LiteverTheme.shapes.large),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "Native Ad Preview ($placement)",
-                style = LiteverTheme.typography.labelLarge,
-                color = LiteverTheme.colors.onSurfaceVariant
-            )
-        }
+        Box(modifier = modifier)
     }}
 
 @Composable

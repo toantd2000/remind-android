@@ -133,7 +133,7 @@ fun TodayScreen(
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
                 .padding(LiteverTheme.spacing.medium),
-            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.smallMedium),
+            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (weather != null) {

@@ -494,7 +494,7 @@ fun AlarmRingingContent(
                     ) {
                         Text(
                             text = snoozeText,
-                            style = LiteverTheme.typography.titleMedium
+                            style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                         )
                     }
                 }
@@ -524,7 +524,7 @@ fun AlarmRingingContent(
                     }
                     Text(
                         text = dismissText,
-                        style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                        style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold)
                     )
                 }
             }

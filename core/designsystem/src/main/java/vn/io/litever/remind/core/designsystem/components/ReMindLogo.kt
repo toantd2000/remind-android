@@ -35,7 +35,7 @@ fun ReMindLogo(
             withStyle(
                 style = SpanStyle(
                     color = reColor,
-                    fontWeight = FontWeight.Light,
+                    fontWeight = FontWeight.Normal,
                 )
             ) {
                 append("Re")
@@ -43,7 +43,7 @@ fun ReMindLogo(
             withStyle(
                 style = SpanStyle(
                     color = mindColor,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.ExtraBold,
                 )
             ) {
                 append("Mind")

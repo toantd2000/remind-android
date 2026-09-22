@@ -123,20 +123,18 @@ fun PermissionSettingsScreen(
                 .fillMaxSize()
                 .padding(paddingValues),
             contentPadding = PaddingValues(LiteverTheme.spacing.medium),
-            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
+            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
         ) {
             // 1. Exact Alarm (Top Priority, conditional)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                item {
-                    PermissionTile(
-                        title = stringResource(R.string.permission_exact_alarm_title),
-                        description = stringResource(R.string.permission_exact_alarm_desc),
-                        isGranted = uiState.isExactAlarmGranted,
-                        icon = Icons.Rounded.Alarm,
-                        isCritical = true,
-                        onRequest = onRequestExactAlarm
-                    )
-                }
+            item {
+                PermissionTile(
+                    title = stringResource(R.string.permission_exact_alarm_title),
+                    description = stringResource(R.string.permission_exact_alarm_desc),
+                    isGranted = uiState.isExactAlarmGranted,
+                    icon = Icons.Rounded.Alarm,
+                    isCritical = true,
+                    onRequest = onRequestExactAlarm
+                )
             }
 
             // 2. Notifications (High Priority, critical warning)
@@ -230,7 +228,7 @@ fun PermissionTile(
         shape = LiteverTheme.shapes.large,
     ) {
         Column(
-            modifier = Modifier.padding(LiteverTheme.spacing.small)
+            modifier = Modifier.padding(LiteverTheme.spacing.medium)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),

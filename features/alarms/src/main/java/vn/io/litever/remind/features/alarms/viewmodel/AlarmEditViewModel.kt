@@ -52,7 +52,7 @@ data class AlarmEditUiState(
     val missions: List<vn.io.litever.remind.core.model.Mission> = emptyList(),
     val isNewDraft: Boolean = false,
     val useAlarmStream: Boolean = true,
-    val overrideDndEnabled: Boolean = false,
+    val overrideDndEnabled: Boolean = true,
     val showDndPermissionDialog: Boolean = false
 )
 

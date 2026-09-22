@@ -1,28 +1,22 @@
 # Workflow: Cập nhật Nhật ký Phát triển (Logwork Update)
 
-Mục tiêu của quy trình này là đảm bảo mọi quyết định kiến trúc và thay đổi hệ thống đều được ghi lại một cách chuyên nghiệp dưới dạng Technical Decision Records (TDR).
+Mục tiêu: Ghi lại các quyết định KIẾN TRÚC LỚN nhất một cách siêu ngắn gọn (Micro-TDR) để tránh làm phình to tài liệu.
 
-## Giai đoạn 1: Kích hoạt Kỹ năng
-1. **Kích hoạt:** `@logwork-update`.
-2. **Quét dữ liệu:** Agent tự động đọc `task.md`, `walkthrough.md` và các thay đổi trong session hiện tại để nhận diện các "Quyết định Kỹ thuật" tiềm năng.
+## Giai đoạn 1: Lọc Quyết Định
+1. Đánh giá xem thay đổi vừa rồi có thực sự là thay đổi KIẾN TRÚC LỚN hay thư viện cốt lõi không.
+2. Nếu chỉ là fix bug, UI, logic thông thường -> DỪNG NGAY. KHÔNG GHI VÀO LOGWORK.
 
-## Giai đoạn 2: Trích xuất & Soạn thảo
-1. **Xác định ID:** Kiểm tra `LOGWORK.md` để lấy ID tiếp theo (Dạng `TDR-XXX`).
-2. **Draft nội dung:** Với mỗi quyết định, soạn thảo theo template:
-   - Context (Bối cảnh/Vấn đề).
-   - Decision (Giải pháp/Tại sao chọn).
-   - Consequences (Hệ quả/Tác động).
-3. **Phân loại:** Đảm bảo quyết định đó mang tính hệ thống, không phải chi tiết thực thi nhỏ lẻ.
+## Giai đoạn 2: Draft Micro-TDR
+1. Lấy ID tiếp theo từ `LOGWORK.md`.
+2. Soạn nội dung TDR **tối đa 5 dòng**:
+   - Tiêu đề < 10 chữ.
+   - Context: 1 câu ngắn.
+   - Decision: 1 câu ngắn.
+   - Consequences: 1 câu ngắn.
 
-## Giai đoạn 3: Cập nhật LOGWORK.md
-1. **Append:** Thêm các TDR mới vào cuối phần "Nhật Ký Chi Tiết".
-2. **Roadmap:** Kiểm tra xem task hiện tại có hoàn thành một Phase nào trong "Lộ Trình Tổng Thể" không? Nếu có, hãy đánh dấu `[x]`.
-3. **Commit (Khuyến nghị):** Sau khi cập nhật Logwork, hãy thực hiện một commit riêng cho tài liệu này để đóng gói giai đoạn.
+## Giai đoạn 3: Cập nhật & Tối ưu
+1. Append vào `LOGWORK.md`. Đánh dấu `[x]` Phase nếu cần.
+2. Kiểm tra lại toàn bộ file `LOGWORK.md`, nếu file quá dài (> 500 dòng), tự động đề xuất tạo `LOGWORK_ARCHIVE.md` để lưu các TDR cũ.
 
-## Giai đoạn 4: Đối soát
-1. Kiểm tra tính hiển thị của Markdown (bảng biểu, alert, code block).
-2. Đảm bảo ngôn ngữ nhất quán là Tiếng Việt chuyên ngành.
-
-# Lưu ý quan trọng
-- Logwork là **Single Source of Truth** về lịch sử kiến trúc. Agent không được tự ý xóa bỏ các TDR cũ trừ khi chúng bị thay thế (mark là `Superseded`).
-- Ưu tiên ghi lại **Lý do (Rationale)** hơn là mô tả code.
+# Ràng buộc Tuyệt đối
+- TUYỆT ĐỐI KHÔNG dùng văn phong kể lể dài dòng. Không chèn code block. Đi thẳng vào vấn đề.

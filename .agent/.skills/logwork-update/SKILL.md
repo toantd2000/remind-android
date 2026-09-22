@@ -1,56 +1,44 @@
 ---
 name: logwork-update
-description: Kỹ năng chuyên biệt để tự động xác định, phân loại và ghi lại các quyết định kỹ thuật quan trọng (Technical Decision Records - TDR) vào LOGWORK.md.
+description: Kỹ năng để ghi lại các quyết định kỹ thuật cốt lõi (TDR) vào LOGWORK.md một cách siêu ngắn gọn (ngăn chặn tình trạng rác tài liệu).
 metadata:
   author: Android-Expert
-  version: "2.0"
+  version: "3.0"
 ---
 
 # HƯỚNG DẪN CẬP NHẬT LOGWORK (TDR SYSTEM)
 
-Sử dụng kỹ năng này khi hoàn thành một task quan trọng, một Phase, hoặc khi có thay đổi mang tính hệ thống (Kiến trúc, Logic core, Design System).
+Sử dụng kỹ năng này CHỈ khi có thay đổi kiến trúc LỚN hoặc thay đổi thư viện cốt lõi.
 
-## 1. Cơ chế Tự động Xác định (Auto-Detection)
+## 1. Tiêu chí lựa chọn sự kiện ghi Log (CỰC KỲ NGHIÊM NGẶT)
 
-Trước khi ghi log, Agent phải rà soát:
-*   **Context:** Nội dung trong `walkthrough.md` và `task.md` của session hiện tại.
-*   **Changes:** Các file đã thay đổi (Diff).
-*   **Rationale:** Tại sao lại thực hiện thay đổi đó? Có giải pháp thay thế nào không? (Dựa trên bối cảnh trò chuyện).
+TUYỆT ĐỐI KHÔNG ghi lại:
+- Fix bug, typo, đổi tên biến.
+- Cập nhật UI, logic thông thường.
+- Các bài học/cách fix lỗi (đó là việc của Learning Journal).
 
-## 2. Tiêu chí lựa chọn sự kiện ghi Log
-
-KHÔNG ghi lại các thay đổi nhỏ lẻ (fix typo, đổi tên biến cục bộ, cập nhật UI minor).
 CHỈ ghi lại khi:
-- Thay đổi cấu trúc Module/Package.
-- Thay đổi Pattern (DI, MVI/MVVM, Clean Arch).
-- Quyết định sử dụng/thay đổi thư viện bên thứ 3.
-- Thay đổi logic nghiệp vụ cốt lõi (Core Business Logic) ảnh hưởng đến nhiều màn hình.
-- Thay đổi quy chuẩn Design System (Color Palette, Typography).
+1. Thêm/Bớt/Thay thế hoàn toàn một Module hoặc Package lớn.
+2. Đổi Pattern kiến trúc cốt lõi (ví dụ: chuyển từ MVVM sang MVI).
+3. Đổi/Thêm thư viện 3rd-party cốt lõi có ảnh hưởng toàn hệ thống (Room, Retrofit, Jetpack Compose version lớn).
 
-## 3. Cấu trúc Technical Decision Record (TDR)
+## 2. Cấu trúc TDR SIÊU NGẮN (Micro-TDR)
 
-Mỗi entry mới phải tuân thủ định dạng sau:
+Mỗi TDR không được vượt quá 5 dòng. Bỏ qua các định dạng rườm rà.
 
-### [TDR-XXX] - [Tiêu đề ngắn gọn]
-- **Ngày thực hiện:** YYYY-MM-DD
-- **Trạng thái:** [Accepted | Deprecated | Superseded by TDR-YYY]
-- **Bối cảnh (Context):** Vấn đề gì đang gặp phải? Tại sao cần thay đổi?
-- **Quyết định (Decision):** Giải pháp đã thực hiện là gì? Tại sao chọn nó?
-- **Hệ quả (Consequences):** Ảnh hưởng tích cực/tiêu cực đến kiến trúc, hiệu năng hoặc trải nghiệm DEV.
+### [TDR-XXX] - [Tiêu đề < 10 chữ]
+- **Date:** YYYY-MM-DD | **Status:** [Accepted/Deprecated]
+- **Context:** [1 câu ngắn gọn giải thích tại sao cần đổi]
+- **Decision:** [1 câu ngắn gọn mô tả giải pháp]
+- **Consequences:** [1 câu ngắn gọn mô tả tác động cốt lõi]
 
-## 4. Quy trình thực hiện (Workflow)
+## 3. Quy trình
+1. Đọc `LOGWORK.md` để lấy ID tiếp theo.
+2. Viết TDR siêu ngắn theo template trên.
+3. Nếu hoàn thành Phase, đánh dấu `[x]` vào "Lộ Trình Tổng Thể".
+4. Append vào "Nhật Ký Chi Tiết".
 
-Khi nhận lệnh cập nhật Logwork, Agent thực hiện:
-
-1.  **Thu thập:** Đọc `LOGWORK.md` để lấy ID tiếp theo (ví dụ TDR-014).
-2.  **Phân loại:** Xác định xem có bao nhiêu quyết định thực sự quan trọng trong session này.
-3.  **Draft:** Soạn thảo nội dung TDR theo template. Ngôn ngữ: Tiếng Việt kỹ thuật.
-4.  **Cập nhật Roadmap:** Nếu hoàn thành một Phase, đánh dấu `[x]` vào "Lộ Trình Tổng Thể".
-5.  **Ghi file:** Append vào mục "Nhật Ký Chi Tiết" trong `LOGWORK.md`.
-6.  **Xác nhận:** Liệt kê các ID TDR vừa được thêm mới cho người dùng.
-
-## 5. Ràng buộc (Constraints)
-
-- **ID duy nhất:** Không được trùng lặp ID TDR.
-- **Súc tích:** Context và Decision nên viết dưới dạng bullet points hoặc đoạn văn ngắn.
-- **Tính khách quan:** Ghi lại cả những rủi ro đi kèm nếu có.
+## 4. Chống Rác Tài Liệu (Anti-Clutter)
+- Không dùng từ ngữ hoa mỹ, dài dòng.
+- Không chèn code block vào TDR.
+- Đi thẳng vào vấn đề. Nếu 1 TDR dài quá 5 dòng, hãy tự động tóm tắt lại.

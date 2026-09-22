@@ -3,41 +3,29 @@ description: Quy trình học hỏi, phân tích lỗi sai và cập nhật ki�
 ---
 
 # Mục tiêu
-Giống như một kỹ sư phần mềm thực thụ, Agent cần có khả năng tự đánh giá, ghi nhận những sai lầm trong quá trình giải quyết vấn đề và chủ động cập nhật "bộ não" của mình để không lặp lại lỗi tương tự trong các Task tiếp theo.
+Ghi nhận nhanh chóng các bài học từ sai lầm (Self-Correction) bằng định dạng SIÊU NGẮN, tránh tình trạng văn chương lê thê làm rác tài liệu.
 
 # Ngữ cảnh sử dụng
-- Khi Agent vừa gián tiếp hoặc trực tiếp gây ra một bug hoặc có sai sót ảnh hưởng đến kiến trúc chung.
-- Khi một Task hoàn thành sau nhiều lần thử và sai (trial and error), lúc này có kiến thức mới quan trọng cần ghi nhớ.
-- Khi người dùng phản hồi rằng cách dùng API hoặc framework của Agent đã bị lỗi thời hoặc vi phạm convention của dự án.
+- Khi Agent vừa gây ra bug hoặc áp dụng sai API.
+- Khi người dùng chỉ ra quy ước đặc thù riêng (Project-specific rules).
 
-# Các bước thực hiện
+# Các bước thực hiện SIÊU NGẮN (Micro-Learning)
 
-## Bước 1: Phân tích nguyên nhân cốt lõi (Root Cause Analysis - RCA)
-1. **Dừng lại và suy ngẫm:** Rà soát lại dòng code, tài liệu hoặc quyết định thiết kế đã gây ra vấn đề.
-2. **Trả lời 3 câu hỏi (Post-mortem):**
-   - Mình đã giả định sai điều gì? (Ví dụ: "Tôi tưởng ViewModel được tiêm tự động mà không cần Hilt").
-   - Hậu quả của sai sót này là gì?
-   - Đâu là giải pháp chuẩn xác (Best Practice) hoặc quy ước đặc thù riêng cho dự án này giúp giải quyết vấn đề?
+## Bước 1: Trích xuất bài học cốt lõi
+Trả lời trong 1 câu duy nhất: Lỗi là gì và cách làm đúng là gì?
 
-## Bước 2: Ghi chép vào Nhật ký học tập (Learning Journal)
-1. Tìm hoặc mở tệp `LEARNING_JOURNAL.md` ở thư mục gốc của dự án. (Nếu chưa tồn tại, hãy tạo mới file với một tiêu đề phù hợp).
-2. Viết thêm (append) nội dung bài học mới theo định dạng tiêu chuẩn sau:
-   - **Ngày tháng:** [YYYY-MM-DD]
-   - **Vấn đề / Task:** Đoạn mô tả ngắn gọn lỗi sai hoặc bối cảnh.
-   - **Phân tích nguyên nhân:** ...
-   - **Giải pháp / Rule mới:** [Cách giải quyết đã xác minh đúng]
+## Bước 2: Ghi vào LEARNING_JOURNAL.md
+Sử dụng template cực ngắn (Tối đa 3-4 dòng):
+- **[YYYY-MM-DD] [Tên Lỗi Ngắn Gọn]**
+- **Cause:** [1 câu giải thích sai lầm]
+- **Rule:** [1 câu chỉ ra cách làm đúng]
 
-## Bước 3: Phân loại Scope & Nâng cấp "Bộ não" (Tối Quan Trọng)
-Không phải bài học nào cũng đúng với mọi dự án. Agent **CẦN BẮT BUỘC** xác định phạm vi của bài học:
+## Bước 3: Nâng cấp "Bộ não" (QUAN TRỌNG NHẤT)
+Bài học ghi ở `LEARNING_JOURNAL.md` chỉ là nhật ký. Quan trọng là phải CẬP NHẬT LUẬT:
+- **Loại 1: Universal Knowledge:** Khéo léo chèn **1 dòng** vào file tương ứng trong thư mục `.skills/`.
+- **Loại 2: Project-Specific:** Khéo léo chèn **1 dòng** vào `.agent/project-conventions.md`.
 
-- **Loại 1: Universal Knowledge (Nguyên tắc chuẩn của Android, Kotlin, Thư viện):**
-   1. Quét thư mục `.skills/` tìm file phù hợp (VD: `.skills/compose-ui/SKILL.md`).
-   2. Khéo léo chèn quy tắc mới (VD: *"⚠️ KINH NGHIỆM: Không bao giờ truyền Context vào ViewModel"*).
-   
-- **Loại 2: Project-Specific (Đặc thù riêng, Workarounds, Business Logic, API móp méo của BE dự án này):**
-   1. Tuyệt đối KHÔNG ghi vào `.skills/` để tránh "làm bẩn" kiến thức nền.
-   2. Ghi vào file `.agent/project-conventions.md` (Nếu chưa có thì tự tạo mới).
-   3. File này đóng vai trò là "Nguyên tắc Tối Cao" (Supreme Rules) chỉ dành riêng cho dự án hiện tại và sẽ ghi đè các nguyên tắc chung của Skill nếu có xung đột.
-
-## Bước 4: Báo cáo tiến độ cho User
-- Thông báo ngắn gọn: "Tôi đã phân tích lỗi kỹ thuật vừa roi, lưu bài học vào `LEARNING_JOURNAL.md`, đồng thời cập nhật quy tắc này vào file `[Tên file skill]` để ghi nhớ sâu cho mọi tác vụ trong tương lai."
+## Bước 4: Chống rác tài liệu
+- KHÔNG phân tích nguyên nhân lê thê.
+- KHÔNG copy paste cả đống code rườm rà vào Journal. Chỉ ghi cốt lõi.
+- Nếu Journal > 300 dòng, đề xuất archive.

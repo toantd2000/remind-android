@@ -29,7 +29,8 @@ object DatabaseModule {
             "remind_database"
         ).addMigrations(
             RemindDatabase.MIGRATION_1_2,
-            RemindDatabase.MIGRATION_2_3
+            RemindDatabase.MIGRATION_2_3,
+            RemindDatabase.MIGRATION_3_4
         )
         .fallbackToDestructiveMigration(true)
         .build()

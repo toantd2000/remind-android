@@ -6,8 +6,12 @@
     <string name="missed_alarm_title">Báo thức bị bỏ lỡ</string>
     <string name="missed_alarm_text">Bạn đã bỏ lỡ một báo thức</string>
     <string name="alarm_channel_name_silent">Kênh báo thức (Im lặng)</string>
-    <string name="alarm_channel_description_silent">Thông báo hiển thị khi màn hình báo thức đang mở</string>
+    <string name="alarm_channel_description_silent">Thông báo im lặng khi màn hình báo thức đã mở</string>
+    <string name="missed_dnd_notification_content">Báo thức %s bị lỡ do Không làm phiền.</string>
+    <string name="missed_timeout_notification_content">Báo thức %s đã bị lỡ.</string>
+    <string name="missed_permission_notification_content">Báo thức %s bị lỡ do thiếu quyền hệ thống.</string>
 </resources>
+
 
 
 

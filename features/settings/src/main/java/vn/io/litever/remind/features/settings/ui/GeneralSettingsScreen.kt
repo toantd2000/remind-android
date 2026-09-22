@@ -233,7 +233,7 @@ fun GeneralSettingsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
+            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
         ) {
             // Display Group
             item {

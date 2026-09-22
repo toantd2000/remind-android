@@ -26,7 +26,8 @@ data class AlarmEntity(
     val skippedAt: Long?,
     val gradualVolumeDurationSeconds: Int,
     val lastTriggeredTime: Long?,
-    val useAlarmStream: Boolean = true
+    val useAlarmStream: Boolean = true,
+    val overrideDndEnabled: Boolean = false
 )
 
 

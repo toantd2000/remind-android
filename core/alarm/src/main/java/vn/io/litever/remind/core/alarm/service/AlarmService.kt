@@ -4,6 +4,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
@@ -331,8 +332,18 @@ class AlarmService : Service() {
             enableVibration(false)
         }
 
+        // Missed alarm channel
+        val missedChannel = NotificationChannel(
+            "alarm_missed_channel",
+            "Missed Alarms",
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply {
+            description = "Notifications for missed alarms"
+        }
+
         manager.createNotificationChannel(highChannel)
         manager.createNotificationChannel(silentChannel)
+        manager.createNotificationChannel(missedChannel)
 
         // Cleanup old channel if exists
         manager.deleteNotificationChannel("alarm_channel")

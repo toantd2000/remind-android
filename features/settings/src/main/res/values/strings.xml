@@ -84,6 +84,9 @@
     
     <string name="permission_battery_title">Battery Optimization</string>
     <string name="permission_battery_desc">Allows the app to run in the background more reliably to ensure alarms always fire.</string>
+
+    <string name="permission_dnd_title">Do Not Disturb Access</string>
+    <string name="permission_dnd_desc">Allows the app to bypass Do Not Disturb mode for specific alarms.</string>
     
     <string name="permission_manufacturer_title">Manufacturer Settings</string>
     <string name="permission_manufacturer_desc">Manage Auto-start and background activity for your specific device model.</string>

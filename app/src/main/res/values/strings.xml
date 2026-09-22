@@ -3,4 +3,19 @@
     <string name="navigation_alarms">Alarms</string>
     <string name="navigation_today">Today</string>
     <string name="navigation_settings">Settings</string>
+    <string name="notification_alarm_title">Alarm is ringing</string>
+    <string name="notification_alarm_text">Tap to view and dismiss</string>
+    <string name="alarm_channel_name">Alarm Service</string>
+    <string name="alarm_channel_description">Channel for alarm ringing</string>
+    <string name="missed_alarm_title">Missed Alarm</string>
+    <string name="missed_alarm_text">You missed an alarm</string>
+    <string name="alarm_channel_name_silent">Alarm Service (Silent)</string>
+    <string name="alarm_channel_description_silent">Notification when alarm screen is open</string>
+    <string name="missed_dnd_notification_content">Alarm %s was missed because Do Not Disturb is active.</string>
+    <string name="missed_timeout_notification_content">Alarm %s was missed.</string>
+    <string name="missed_permission_notification_content">Alarm %s was missed due to missing permissions.</string>
 </resources>
+
+
+
+

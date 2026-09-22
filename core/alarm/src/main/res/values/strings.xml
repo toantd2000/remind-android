@@ -7,6 +7,9 @@
     <string name="missed_alarm_text">You missed an alarm</string>
     <string name="alarm_channel_name_silent">Alarm Service (Silent)</string>
     <string name="alarm_channel_description_silent">Notification when alarm screen is open</string>
+    <string name="missed_dnd_notification_content">Alarm %s was missed because Do Not Disturb is active.</string>
+    <string name="missed_timeout_notification_content">Alarm %s was missed.</string>
+    <string name="missed_permission_notification_content">Alarm %s was missed due to missing permissions.</string>
 </resources>
 
 

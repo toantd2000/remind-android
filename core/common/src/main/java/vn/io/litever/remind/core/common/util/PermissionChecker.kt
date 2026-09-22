@@ -37,6 +37,11 @@ class PermissionChecker @Inject constructor(
         return powerManager.isIgnoringBatteryOptimizations(context.packageName)
     }
 
+    fun hasNotificationPolicyAccess(): Boolean {
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        return notificationManager.isNotificationPolicyAccessGranted
+    }
+
     /**
      * Checks if both notifications and exact alarms (mandatory for alarm firing) are granted.
      */

@@ -30,7 +30,8 @@ fun AlarmEntity.toModel(): Alarm {
         skippedAt = skippedAt?.let { LocalDateTime.ofInstant(Instant.ofEpochMilli(it), ZoneId.systemDefault()) },
         gradualVolumeDurationSeconds = gradualVolumeDurationSeconds,
         lastTriggeredTime = lastTriggeredTime,
-        useAlarmStream = useAlarmStream
+        useAlarmStream = useAlarmStream,
+        overrideDndEnabled = overrideDndEnabled
     )
 }
 
@@ -62,6 +63,7 @@ fun Alarm.toEntity(): AlarmEntity {
         skippedAt = skippedAt?.atZone(ZoneId.systemDefault())?.toInstant()?.toEpochMilli(),
         gradualVolumeDurationSeconds = gradualVolumeDurationSeconds,
         lastTriggeredTime = lastTriggeredTime,
-        useAlarmStream = useAlarmStream
+        useAlarmStream = useAlarmStream,
+        overrideDndEnabled = overrideDndEnabled
     )
 }

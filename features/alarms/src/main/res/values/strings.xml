@@ -65,6 +65,8 @@
     <string name="permission_dialog_message">To ensure this alarm fires on time, the app needs Notification and Exact Alarm permissions. If you save now, the alarm will be set as disabled.</string>
     <string name="action_save_anyway">Save Anyway (Disabled)</string>
     <string name="action_go_to_settings">Go to Settings</string>
+    <string name="dnd_permission_dialog_title">Do Not Disturb Access</string>
+    <string name="dnd_permission_dialog_message">To override Do Not Disturb mode, the app needs permission to access DND policy. Your alarm is saved and enabled, but you should grant this permission for the override to work.</string>
 
     <!-- Snooze & Auto Silence -->
     <string name="snooze_settings">Snooze Settings</string>
@@ -86,6 +88,8 @@
     <string name="use_alarm_stream_title">Play on Alarm channel</string>
     <string name="use_alarm_stream_desc">Unaffected by Silent mode. Ideal for waking up.</string>
     <string name="use_media_stream_desc">Uses Media volume. Good for silent reminders.</string>
+    <string name="override_dnd_title">Override Do Not Disturb</string>
+    <string name="override_dnd_desc">Allow this alarm to ring even when DND mode is active.</string>
     <string name="off">Off</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_more">More options</string>
@@ -108,6 +112,8 @@
     <string name="missed_reason_timeout">Timed out (auto-silenced)</string>
     <string name="missed_reason_power_off">Phone was powered off</string>
     <string name="missed_reason_permission">Permission missing</string>
+    <string name="missed_reason_dnd">Do Not Disturb was active</string>
+    <string name="missed_dnd_notification_content">Alarm %s was missed because Do Not Disturb is active.</string>
     <string name="missed_reason_unknown">Unknown reason</string>
     <string name="missed_alarms_dialog_title">Missed Alarms</string>
     <string name="missed_alarms_dialog_desc">Some alarms didn\'t go off at their scheduled time. This might be due to power off or missing permissions.</string>

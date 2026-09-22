@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NotificationsPaused
 import androidx.compose.material.icons.rounded.PowerOff
 import androidx.compose.material.icons.rounded.Security
+import androidx.compose.material.icons.rounded.DoNotDisturbOn
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -99,6 +100,10 @@ private fun MissedAlarmItem(missed: MissedAlarm) {
         MissedReason.PERMISSION_MISSING -> {
             icon = Icons.Rounded.Security
             reasonText = stringResource(R.string.missed_reason_permission)
+        }
+        MissedReason.DND_ACTIVE -> {
+            icon = Icons.Rounded.DoNotDisturbOn
+            reasonText = stringResource(R.string.missed_reason_dnd)
         }
         MissedReason.UNKNOWN -> {
             icon = Icons.Rounded.Warning

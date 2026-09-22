@@ -51,7 +51,9 @@ data class AlarmEditUiState(
     val gradualVolumeDurationSeconds: Int = 0,
     val missions: List<vn.io.litever.remind.core.model.Mission> = emptyList(),
     val isNewDraft: Boolean = false,
-    val useAlarmStream: Boolean = true
+    val useAlarmStream: Boolean = true,
+    val overrideDndEnabled: Boolean = false,
+    val showDndPermissionDialog: Boolean = false
 )
 
 @HiltViewModel
@@ -98,7 +100,8 @@ class AlarmEditViewModel @Inject constructor(
                         isEnabled = true,
                         repeatDays = state.repeatDays,
                         date = state.date,
-                        useAlarmStream = state.useAlarmStream
+                        useAlarmStream = state.useAlarmStream,
+                        overrideDndEnabled = state.overrideDndEnabled
                     )
                 )
             )
@@ -171,7 +174,8 @@ class AlarmEditViewModel @Inject constructor(
                             else -> 20
                         },
                         missions = missions,
-                        useAlarmStream = alarm.useAlarmStream
+                        useAlarmStream = alarm.useAlarmStream,
+                        overrideDndEnabled = alarm.overrideDndEnabled
                     )
                 }
             }
@@ -294,6 +298,10 @@ class AlarmEditViewModel @Inject constructor(
         _uiState.update { it.copy(useAlarmStream = use) }
     }
 
+    fun updateOverrideDndEnabled(enabled: Boolean) {
+        _uiState.update { it.copy(overrideDndEnabled = enabled) }
+    }
+
     fun toggleRingtonePlayback() {
         val isCurrentlyPlaying = _uiState.value.isRingtonePlaying
         if (isCurrentlyPlaying) {
@@ -362,6 +370,12 @@ class AlarmEditViewModel @Inject constructor(
             return
         }
 
+        if (state.overrideDndEnabled && !permissionChecker.hasNotificationPolicyAccess()) {
+            performSave {} // Save but don't navigate back yet
+            _uiState.update { it.copy(showDndPermissionDialog = true) }
+            return
+        }
+
         performSave(onSuccess)
     }
 
@@ -372,6 +386,10 @@ class AlarmEditViewModel @Inject constructor(
 
     fun dismissPermissionDialog() {
         _uiState.update { it.copy(showPermissionDialog = false) }
+    }
+
+    fun dismissDndPermissionDialog() {
+        _uiState.update { it.copy(showDndPermissionDialog = false) }
     }
 
     fun discardChanges(onDiscarded: () -> Unit) {
@@ -448,6 +466,7 @@ class AlarmEditViewModel @Inject constructor(
             gradualVolumeDurationSeconds = state.gradualVolumeDurationSeconds,
             missions = state.missions,
             useAlarmStream = state.useAlarmStream,
+            overrideDndEnabled = state.overrideDndEnabled,
             currentSnoozeCount = originalAlarm?.currentSnoozeCount ?: 0,
             snoozeNextTriggerTime = originalAlarm?.snoozeNextTriggerTime,
             skippedAt = originalAlarm?.skippedAt,

@@ -84,6 +84,9 @@
     
     <string name="permission_battery_title">Tối ưu hóa pin</string>
     <string name="permission_battery_desc">Giúp ứng dụng chạy ngầm ổn định hơn để đảm bảo báo thức luôn hoạt động.</string>
+
+    <string name="permission_dnd_title">Bỏ qua Không làm phiền</string>
+    <string name="permission_dnd_desc">Cho phép ứng dụng phát chuông ngay cả khi thiết bị đang ở chế độ Không làm phiền.</string>
     
     <string name="permission_manufacturer_title">Cài đặt riêng của nhà sản xuất</string>
     <string name="permission_manufacturer_desc">Quản lý Tự khởi chạy và hoạt động nền cho riêng dòng máy của bạn.</string>

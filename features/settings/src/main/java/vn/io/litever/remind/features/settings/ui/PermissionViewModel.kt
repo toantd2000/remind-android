@@ -12,7 +12,8 @@ data class PermissionUiState(
     val isNotificationGranted: Boolean = false,
     val isExactAlarmGranted: Boolean = false,
     val isOverlayGranted: Boolean = false,
-    val isBatteryOptIgnored: Boolean = false
+    val isBatteryOptIgnored: Boolean = false,
+    val isDndPolicyGranted: Boolean = false
 )
 
 @HiltViewModel
@@ -25,7 +26,8 @@ class PermissionViewModel @Inject constructor(
             isNotificationGranted = permissionChecker.hasNotificationPermission(),
             isExactAlarmGranted = permissionChecker.hasExactAlarmPermission(),
             isOverlayGranted = permissionChecker.hasOverlayPermission(),
-            isBatteryOptIgnored = permissionChecker.isIgnoringBatteryOptimizations()
+            isBatteryOptIgnored = permissionChecker.isIgnoringBatteryOptimizations(),
+            isDndPolicyGranted = permissionChecker.hasNotificationPolicyAccess()
         )
     )
     val uiState: StateFlow<PermissionUiState> = _uiState.asStateFlow()
@@ -35,7 +37,8 @@ class PermissionViewModel @Inject constructor(
             isNotificationGranted = permissionChecker.hasNotificationPermission(),
             isExactAlarmGranted = permissionChecker.hasExactAlarmPermission(),
             isOverlayGranted = permissionChecker.hasOverlayPermission(),
-            isBatteryOptIgnored = permissionChecker.isIgnoringBatteryOptimizations()
+            isBatteryOptIgnored = permissionChecker.isIgnoringBatteryOptimizations(),
+            isDndPolicyGranted = permissionChecker.hasNotificationPolicyAccess()
         )
     }
 }

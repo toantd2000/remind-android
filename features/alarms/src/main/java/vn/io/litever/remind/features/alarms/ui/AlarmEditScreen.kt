@@ -30,6 +30,8 @@ import androidx.compose.material.icons.rounded.Calculate
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.DoNotDisturbOff
+import androidx.compose.material.icons.rounded.DoNotDisturbOn
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.EditNote
 import androidx.compose.material.icons.rounded.Extension
@@ -353,6 +355,7 @@ fun AlarmEditRoute(
         onDateChange = viewModel::updateDate,
         onGradualVolumeChange = viewModel::updateGradualVolumeDuration,
         onUseAlarmStreamChange = viewModel::updateUseAlarmStream,
+        onOverrideDndChange = viewModel::updateOverrideDndEnabled,
         onAddMissionClick = {
             viewModel.stopRingtonePlayback()
             showMissionSelection = true
@@ -366,6 +369,15 @@ fun AlarmEditRoute(
             viewModel.stopRingtonePlayback()
             viewModel.preparePreview()
             onPreviewClick(uiState.id)
+        },
+        onDismissDndPermissionDialog = {
+            viewModel.dismissDndPermissionDialog()
+            onBackClick() // navigate back when dialog is dismissed, as alarm is already saved
+        },
+        onNavigateToDndSettings = {
+            viewModel.dismissDndPermissionDialog()
+            val intent = android.content.Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
+            context.startActivity(intent)
         }
     )
 }
@@ -396,10 +408,13 @@ fun AlarmEditScreen(
     onDateChange: (LocalDate?) -> Unit,
     onGradualVolumeChange: (Int) -> Unit,
     onUseAlarmStreamChange: (Boolean) -> Unit,
+    onOverrideDndChange: (Boolean) -> Unit,
     onAddMissionClick: () -> Unit,
     onMissionClick: (vn.io.litever.remind.core.model.Mission) -> Unit,
     onMissionRemove: (vn.io.litever.remind.core.model.Mission) -> Unit,
     onPreviewClick: () -> Unit,
+    onDismissDndPermissionDialog: () -> Unit,
+    onNavigateToDndSettings: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (uiState.isLoading) {
@@ -550,6 +565,28 @@ fun AlarmEditScreen(
                     semantic = LvSemantic.Secondary
                 ) {
                     Text(stringResource(R.string.action_save_anyway))
+                }
+            }
+        )
+    }
+
+    if (uiState.showDndPermissionDialog) {
+        LvAlertDialog(
+            onDismissRequest = onDismissDndPermissionDialog,
+            title = { Text(stringResource(R.string.dnd_permission_dialog_title)) },
+            text = { Text(stringResource(R.string.dnd_permission_dialog_message)) },
+            confirmButton = {
+                LvButton(onClick = onNavigateToDndSettings) {
+                    Text(stringResource(R.string.action_go_to_settings))
+                }
+            },
+            dismissButton = {
+                LvButton(
+                    onClick = onDismissDndPermissionDialog,
+                    type = LvButtonType.Outlined,
+                    semantic = LvSemantic.Secondary
+                ) {
+                    Text(stringResource(R.string.close_text))
                 }
             }
         )
@@ -1007,6 +1044,21 @@ fun AlarmEditScreen(
                             )
                         }
                     )
+
+                    // Row 6: Override DND
+                    AlarmSettingRow(
+                        title = stringResource(R.string.override_dnd_title),
+                        subtitle = stringResource(R.string.override_dnd_desc),
+                        icon = if (uiState.overrideDndEnabled) Icons.Rounded.DoNotDisturbOff else Icons.Rounded.DoNotDisturbOn,
+                        iconSelected = uiState.overrideDndEnabled,
+                        onClick = { onOverrideDndChange(!uiState.overrideDndEnabled) },
+                        trailingContent = {
+                            Switch(
+                                checked = uiState.overrideDndEnabled,
+                                onCheckedChange = onOverrideDndChange
+                            )
+                        }
+                    )
                 }
 
             }
@@ -1210,10 +1262,13 @@ fun AlarmEditScreenPreview() {
             onDateChange = {},
             onGradualVolumeChange = {},
             onUseAlarmStreamChange = {},
+            onOverrideDndChange = {},
             onAddMissionClick = {},
             onMissionClick = {},
             onMissionRemove = {},
-            onPreviewClick = {}
+            onPreviewClick = {},
+            onDismissDndPermissionDialog = {},
+            onNavigateToDndSettings = {}
         )
     }
 }
@@ -1250,10 +1305,13 @@ fun AlarmEditScreenDarkPreview() {
             onDateChange = {},
             onGradualVolumeChange = {},
             onUseAlarmStreamChange = {},
+            onOverrideDndChange = {},
             onAddMissionClick = {},
             onMissionClick = {},
             onMissionRemove = {},
-            onPreviewClick = {}
+            onPreviewClick = {},
+            onDismissDndPermissionDialog = {},
+            onNavigateToDndSettings = {}
         )
     }
 }

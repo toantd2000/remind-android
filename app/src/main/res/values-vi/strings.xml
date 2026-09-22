@@ -1,8 +1,22 @@
 <resources>
+    <string name="app_name" translatable="false">ReMind</string>
     <string name="navigation_alarms">Báo thức</string>
-    <string name="navigation_remind">Nhắc bạn</string>
+    <string name="navigation_today">Hôm nay</string>
     <string name="navigation_settings">Cài đặt</string>
+    <string name="notification_alarm_title">Báo thức đang đổ chuông</string>
+    <string name="notification_alarm_text">Nhấn vào đây để xem và tắt</string>
+    <string name="alarm_channel_name">Kênh Báo thức</string>
+    <string name="alarm_channel_description">Thông báo khi có báo thức</string>
+    <string name="missed_alarm_title">Báo thức bị bỏ lỡ</string>
+    <string name="missed_alarm_text">Bạn đã bỏ lỡ một báo thức</string>
+    <string name="alarm_channel_name_silent">Kênh báo thức (Im lặng)</string>
+    <string name="alarm_channel_description_silent">Thông báo im lặng khi màn hình báo thức đã mở</string>
+    <string name="missed_dnd_notification_content">Báo thức %s bị lỡ do Không làm phiền.</string>
+    <string name="missed_timeout_notification_content">Báo thức %s đã bị lỡ.</string>
+    <string name="missed_permission_notification_content">Báo thức %s bị lỡ do thiếu quyền hệ thống.</string>
 </resources>
+
+
 
 
 

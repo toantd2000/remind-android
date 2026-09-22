@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Alarm
 import androidx.compose.material.icons.rounded.BatteryChargingFull
+import androidx.compose.material.icons.rounded.DoNotDisturbOff
 import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.Layers
 import androidx.compose.material.icons.rounded.Notifications
@@ -74,6 +75,7 @@ fun PermissionSettingsRoute(
         onRequestNotification = { requestNotificationPermission(context) },
         onRequestOverlay = { requestOverlayPermission(context) },
         onRequestBatteryOptimization = { requestIgnoreBatteryOptimization(context) },
+        onRequestDndPolicy = { requestDndPolicyAccess(context) },
         onOpenManufacturerSettings = { openManufacturerSettings(context) }
     )
 }
@@ -88,6 +90,7 @@ fun PermissionSettingsScreen(
     onRequestNotification: () -> Unit,
     onRequestOverlay: () -> Unit,
     onRequestBatteryOptimization: () -> Unit,
+    onRequestDndPolicy: () -> Unit,
     onOpenManufacturerSettings: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -170,7 +173,18 @@ fun PermissionSettingsScreen(
                 )
             }
 
-            // 5. Manufacturer Specific (No status)
+            // 5. Do Not Disturb Access
+            item {
+                PermissionTile(
+                    title = stringResource(R.string.permission_dnd_title),
+                    description = stringResource(R.string.permission_dnd_desc),
+                    isGranted = uiState.isDndPolicyGranted,
+                    icon = Icons.Rounded.DoNotDisturbOff,
+                    onRequest = onRequestDndPolicy
+                )
+            }
+
+            // 6. Manufacturer Specific (No status)
             item {
                 ManufacturerSettingsTile(onOpen = onOpenManufacturerSettings)
             }
@@ -195,6 +209,7 @@ fun PermissionSettingsScreenPreview() {
             onRequestNotification = {},
             onRequestOverlay = {},
             onRequestBatteryOptimization = {},
+            onRequestDndPolicy = {},
             onOpenManufacturerSettings = {}
         )
     }
@@ -215,7 +230,7 @@ fun PermissionTile(
         shape = LiteverTheme.shapes.large,
     ) {
         Column(
-            modifier = Modifier.padding(LiteverTheme.spacing.medium)
+            modifier = Modifier.padding(LiteverTheme.spacing.small)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -395,6 +410,11 @@ private fun requestOverlayPermission(context: Context) {
         Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
         "package:${context.packageName}".toUri()
     )
+    context.startActivity(intent)
+}
+
+private fun requestDndPolicyAccess(context: Context) {
+    val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
     context.startActivity(intent)
 }
 

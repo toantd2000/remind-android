@@ -13,5 +13,6 @@ enum class MissedReason {
     POWER_OFF,
     PERMISSION_MISSING,
     TIMEOUT,
+    DND_ACTIVE,
     UNKNOWN
 }

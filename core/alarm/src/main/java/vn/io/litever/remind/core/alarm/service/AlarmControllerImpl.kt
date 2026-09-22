@@ -126,10 +126,10 @@ class AlarmControllerImpl @Inject constructor(
                     )
 
                     // Show a silent notification
-                    val notification = NotificationCompat.Builder(context, "alarm_channel")
-                        .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
+                    val notification = NotificationCompat.Builder(context, "alarm_missed_channel")
+                        .setSmallIcon(R.drawable.ic_remind_notification)
                         .setContentTitle(context.getString(R.string.missed_alarm_title))
-                        .setContentText(alarm.label.ifEmpty { context.getString(R.string.missed_alarm_text) })
+                        .setContentText(context.getString(R.string.missed_timeout_notification_content, alarm.label.ifEmpty { alarm.time.toString() }))
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                         .setContentIntent(pendingIntent)
                         .setAutoCancel(true)

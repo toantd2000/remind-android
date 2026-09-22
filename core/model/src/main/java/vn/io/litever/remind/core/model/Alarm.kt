@@ -24,7 +24,8 @@ data class Alarm(
     val gradualVolumeDurationSeconds: Int = 0,
     val lastTriggeredTime: Long? = null,
     val missions: List<Mission> = emptyList(),
-    val useAlarmStream: Boolean = true
+    val useAlarmStream: Boolean = true,
+    val overrideDndEnabled: Boolean = false
 ) {
     fun getNextOccurrence(now: LocalDateTime = LocalDateTime.now()): LocalDateTime {
         val rawNext = getActualNextOccurrence(now)

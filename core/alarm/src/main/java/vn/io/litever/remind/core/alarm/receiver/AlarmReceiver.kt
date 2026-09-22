@@ -20,6 +20,11 @@ import vn.io.litever.remind.core.domain.scheduler.AlarmScheduler
 import vn.io.litever.remind.core.alarm.service.AlarmService
 import javax.inject.Inject
 
+import android.app.NotificationManager
+import android.app.PendingIntent
+import androidx.core.app.NotificationCompat
+import vn.io.litever.remind.core.alarm.R
+
 @AndroidEntryPoint
 class AlarmReceiver : BroadcastReceiver() {
     
@@ -37,37 +42,90 @@ class AlarmReceiver : BroadcastReceiver() {
                 // Check notification permission on Android 13+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                        recordMissed(alarmId, MissedReason.PERMISSION_MISSING)
+                        recordMissed(context, alarmId, MissedReason.PERMISSION_MISSING, null)
+                        return
                     }
                 }
                 
-                val serviceIntent = Intent(context, AlarmService::class.java).apply {
-                    putExtra(AlarmScheduler.EXTRA_ALARM_ID, alarmId)
-                    putExtra(AlarmScheduler.EXTRA_IS_SNOOZE, intent.getBooleanExtra(AlarmScheduler.EXTRA_IS_SNOOZE, false))
-                }
-                
-                try {
-                    context.startForegroundService(serviceIntent)
-                } catch (e: Exception) {
-                    recordMissed(alarmId, MissedReason.PERMISSION_MISSING)
+                val pendingResult = goAsync()
+                CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
+                    try {
+                        val alarm = alarmRepository.getAlarmById(alarmId)
+                        if (alarm != null) {
+                            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                            val isDndActive = notificationManager.currentInterruptionFilter != NotificationManager.INTERRUPTION_FILTER_ALL
+                            
+                            if (isDndActive && !alarm.overrideDndEnabled) {
+                                recordMissed(context, alarmId, MissedReason.DND_ACTIVE, alarm)
+                                return@launch
+                            }
+                        }
+                        
+                        val serviceIntent = Intent(context, AlarmService::class.java).apply {
+                            putExtra(AlarmScheduler.EXTRA_ALARM_ID, alarmId)
+                            putExtra(AlarmScheduler.EXTRA_IS_SNOOZE, intent.getBooleanExtra(AlarmScheduler.EXTRA_IS_SNOOZE, false))
+                        }
+                        
+                        try {
+                            context.startForegroundService(serviceIntent)
+                        } catch (e: Exception) {
+                            recordMissed(context, alarmId, MissedReason.PERMISSION_MISSING, alarm)
+                        }
+                    } finally {
+                        pendingResult.finish()
+                    }
                 }
             }
         }
     }
 
-    private fun recordMissed(alarmId: Long, reason: MissedReason) {
+    private fun recordMissed(context: Context, alarmId: Long, reason: MissedReason, alarmArg: vn.io.litever.remind.core.model.Alarm?) {
         val pendingResult = goAsync()
         CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
             try {
-                val alarm = alarmRepository.getAlarmById(alarmId)
+                val alarm = alarmArg ?: alarmRepository.getAlarmById(alarmId)
                 missedAlarmRepository.insertMissedAlarm(
                     MissedAlarm(
                         alarmId = alarmId,
                         alarmLabel = alarm?.label ?: "",
-                        scheduledTime = System.currentTimeMillis(),
+                        scheduledTime = alarm?.time?.toSecondOfDay()?.toLong() ?: System.currentTimeMillis(),
                         reason = reason
                     )
                 )
+
+                if ((reason == MissedReason.DND_ACTIVE || reason == MissedReason.PERMISSION_MISSING) && alarm != null) {
+                    val contentTextRes = if (reason == MissedReason.DND_ACTIVE) {
+                        R.string.missed_dnd_notification_content
+                    } else {
+                        R.string.missed_permission_notification_content
+                    }
+
+                    val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                    val packageManager = context.packageManager
+                    val intent = packageManager.getLaunchIntentForPackage(context.packageName)
+                    val pendingIntent = intent?.let {
+                        PendingIntent.getActivity(
+                            context,
+                            alarm.id.toInt(),
+                            it,
+                            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                        )
+                    }
+
+                    val notification = NotificationCompat.Builder(context, "alarm_missed_channel")
+                        .setSmallIcon(R.drawable.ic_remind_notification) // Use local R
+                        .setContentTitle(context.getString(R.string.missed_alarm_title))
+                        .setContentText(context.getString(contentTextRes, alarm.label.ifEmpty { alarm.time.toString() }))
+                        .apply {
+                            if (pendingIntent != null) {
+                                setContentIntent(pendingIntent)
+                            }
+                        }
+                        .setAutoCancel(true)
+                        .build()
+
+                    manager.notify(alarm.id.toInt() + 1000, notification)
+                }
             } finally {
                 pendingResult.finish()
             }

@@ -65,6 +65,8 @@
     <string name="permission_dialog_message">Để đảm bảo báo thức hoạt động chính xác, ứng dụng cần quyền Thông báo và Báo thức chính xác. Nếu bạn lưu bây giờ, báo thức sẽ được lưu ở trạng thái tắt.</string>
     <string name="action_save_anyway">Vẫn lưu (Tắt báo thức)</string>
     <string name="action_go_to_settings">Đi đến Cài đặt</string>
+    <string name="dnd_permission_dialog_title">Quyền Không làm phiền</string>
+    <string name="dnd_permission_dialog_message">Để báo thức có thể đổ chuông khi đang bật Không làm phiền, ứng dụng cần quyền truy cập chế độ này. Báo thức đã được lưu và bật, nhưng bạn nên cấp quyền để tính năng bỏ qua Không làm phiền hoạt động.</string>
 
     <!-- Snooze & Auto Silence -->
     <string name="snooze_settings">Báo lại</string>
@@ -86,6 +88,8 @@
     <string name="use_alarm_stream_title">Phát qua kênh Báo thức</string>
     <string name="use_alarm_stream_desc">Không bị ảnh hưởng bởi chế độ Im lặng. Thích hợp để báo thức.</string>
     <string name="use_media_stream_desc">Sử dụng âm lượng Đa phương tiện. Tốt cho nhắc nhở im lặng.</string>
+    <string name="override_dnd_title">Bỏ qua Không làm phiền</string>
+    <string name="override_dnd_desc">Cho phép báo thức này đổ chuông ngay cả khi máy bật Không làm phiền.</string>
     <string name="off">Tắt</string>
     <string name="action_cancel">Hủy</string>
     <string name="action_more">Thêm tùy chọn</string>
@@ -108,6 +112,8 @@
     <string name="missed_reason_timeout">Hết thời gian reo</string>
     <string name="missed_reason_power_off">Điện thoại đã bị tắt nguồn</string>
     <string name="missed_reason_permission">Thiếu quyền hệ thống</string>
+    <string name="missed_reason_dnd">Đang bật chế độ Không làm phiền</string>
+    <string name="missed_dnd_notification_content">Báo thức %s bị lỡ do Không làm phiền.</string>
     <string name="missed_reason_unknown">Lý do không xác định</string>
     <string name="missed_alarms_dialog_title">Báo thức bị lỡ</string>
     <string name="missed_alarms_dialog_desc">Một số báo thức đã không thể đổ chuông đúng giờ. Nguyên nhân có thể do điện thoại bị tắt nguồn hoặc ứng dụng bị hạn chế quyền.</string>

@@ -1,40 +1,40 @@
 [versions]
 app-versionCode = "11"
 app-versionName = "1.2.0"
-agp = "9.4.0"
+agp = "9.4.1"
 coreKtx = "1.19.0"
 junit = "4.13.2"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
 lifecycleRuntimeKtx = "2.11.0"
 activityCompose = "1.13.0"
-kotlin = "2.4.10"
+kotlin = "2.4.20"
 ksp = "2.3.7"
-composeBom = "2026.06.01"
+composeBom = "2026.09.00"
 hilt = "2.60.1"
-room = "2.8.4"
-navigationCompose = "2.9.8"
+room = "2.8.5"
+navigationCompose = "2.10.1"
 hiltNavigationCompose = "1.4.0"
 coroutines = "1.11.0"
 material-icons-extended = "1.7.8"
 datastore = "1.2.1"
-googleFonts = "1.11.4"
-aboutLibraries = "15.0.4"
-kotlinSerialization = "2.3.20"
+googleFonts = "1.12.1"
+aboutLibraries = "15.2.0"
+kotlinSerialization = "1.11.0"
 splashscreen = "1.2.0"
 browser = "1.10.0"
 googleServices = "4.5.0"
-crashlyticsPlugin = "3.0.7"
-firebaseBom = "34.16.0"
+crashlyticsPlugin = "3.0.8"
+firebaseBom = "34.19.0"
 retrofit = "3.0.0"
-okhttp = "5.4.0"
+okhttp = "5.5.0"
 coil = "2.7.0"
-liteverDesignsystem = "2.1.0"
-playServicesAds = "25.4.0"
+liteverDesignsystem = "2.2.1"
+playServicesAds = "25.5.0"
 emoji2-emojipicker = "1.6.0"
 mockk = "1.14.11"
 turbine = "1.2.1"
-robolectric = "4.16.1"
+robolectric = "4.17"
 
 
 [libraries]
@@ -83,7 +83,7 @@ kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 # Icon
 material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "material-icons-extended" }
 aboutlibraries-compose-m3 = { group = "com.mikepenz", name = "aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
-kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version = "1.8.0" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinSerialization" }
 
 # Retrofit
 retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }

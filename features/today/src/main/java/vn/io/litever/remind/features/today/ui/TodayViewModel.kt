@@ -25,6 +25,14 @@ class TodayViewModel @Inject constructor(
             initialValue = true
         )
 
+    val isAdFreeActive: StateFlow<Boolean> = preferencesDataSource.adsDisabledUntil
+        .map { it > System.currentTimeMillis() }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = false
+        )
+
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing = _isRefreshing.asStateFlow()
 

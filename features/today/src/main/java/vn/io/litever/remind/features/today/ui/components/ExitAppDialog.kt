@@ -1,4 +1,4 @@
-package vn.io.litever.remind.features.alarms.ui.components
+package vn.io.litever.remind.features.today.ui.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,7 +17,7 @@ import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.ads.api.AdPlacement
 import vn.io.litever.remind.core.ads.api.LocalAdManager
-import vn.io.litever.remind.features.alarms.R
+import vn.io.litever.remind.features.today.R
 
 @Composable
 fun ExitAppDialog(

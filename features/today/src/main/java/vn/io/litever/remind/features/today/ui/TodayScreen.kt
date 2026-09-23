@@ -23,6 +23,8 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -69,6 +71,8 @@ fun TodayRoute(
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val isProcessing by viewModel.isProcessing.collectAsState()
 
+    val isAdFreeActive by viewModel.isAdFreeActive.collectAsState()
+
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -89,6 +93,7 @@ fun TodayRoute(
         is24HourFormat = is24HourFormat,
         isRefreshing = isRefreshing,
         isProcessing = isProcessing,
+        isAdFreeActive = isAdFreeActive,
         onRefresh = { viewModel.refresh(force = true) },
         onLocationClick = onLocationClick,
         modifier = modifier
@@ -104,10 +109,36 @@ fun TodayScreen(
     is24HourFormat: Boolean,
     isRefreshing: Boolean,
     isProcessing: Boolean,
+    isAdFreeActive: Boolean = false,
     onRefresh: () -> Unit,
     onLocationClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    var showExitDialog by remember { mutableStateOf(false) }
+
+    androidx.activity.compose.BackHandler {
+        showExitDialog = true
+    }
+
+    if (showExitDialog) {
+        vn.io.litever.remind.features.today.ui.components.ExitAppDialog(
+            onDismissRequest = { showExitDialog = false },
+            onConfirmExit = {
+                showExitDialog = false
+                var currentContext = context
+                while (currentContext is android.content.ContextWrapper) {
+                    if (currentContext is android.app.Activity) {
+                        currentContext.finish()
+                        return@ExitAppDialog
+                    }
+                    currentContext = currentContext.baseContext
+                }
+            },
+            isAdFreeActive = isAdFreeActive
+        )
+    }
+
     val hour = remember { java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY) }
     val greeting = stringResource(getGreetingStringRes(hour))
 

@@ -1,9 +1,6 @@
 package vn.io.litever.remind.features.alarms.ui
 
-import android.app.Activity
-import android.content.ContextWrapper
 import android.content.res.Configuration
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
@@ -83,7 +79,6 @@ import vn.io.litever.remind.core.model.Alarm
 import vn.io.litever.remind.core.model.DayOfWeek
 import vn.io.litever.remind.features.alarms.R
 import vn.io.litever.remind.features.alarms.ui.components.AlarmCard
-import vn.io.litever.remind.features.alarms.ui.components.ExitAppDialog
 import vn.io.litever.remind.features.alarms.ui.components.NextAlarmHeader
 import vn.io.litever.remind.features.alarms.ui.components.PermissionWarningBanner
 import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState
@@ -197,32 +192,6 @@ fun AlarmListScreen(
 ) {
     var showTopMenu by remember { mutableStateOf(false) }
     var selectedAlarmForMenu by remember { mutableStateOf<Alarm?>(null) }
-    var showExitDialog by remember { mutableStateOf(false) }
-
-    val context = LocalContext.current
-
-    BackHandler {
-        showExitDialog = true
-    }
-
-    if (showExitDialog) {
-        ExitAppDialog(
-            onDismissRequest = { if (showExitDialog) showExitDialog = false },
-            onConfirmExit = {
-                if (showExitDialog) showExitDialog = false
-                var currentContext = context
-                while (currentContext is ContextWrapper) {
-                    if (currentContext is Activity) {
-                        currentContext.finish()
-                        return@ExitAppDialog
-                    }
-                    currentContext = currentContext.baseContext
-                }
-            },
-            isAdFreeActive = isAdFreeActive
-        )
-    }
-
     val actionMoreDescription = stringResource(R.string.action_more)
     val deleteDisabledAlarmsText = stringResource(R.string.delete_disabled_alarms)
     val actionAddDescription = stringResource(R.string.action_add)

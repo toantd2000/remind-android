@@ -91,11 +91,11 @@ private fun getWeatherColors(temp: Double): List<Color> {
 private fun getPanaIllustration(hint: String): Int {
     val lowerHint = hint.lowercase()
     return when {
-        lowerHint.contains("mưa") -> R.drawable.raining_pana
-        lowerHint.contains("ô") -> R.drawable.umbrella_pana
-        lowerHint.contains("nắng") -> R.drawable.sunny_day_pana
-        lowerHint.contains("gió") -> R.drawable.windy_day_pana
-        lowerHint.contains("lạnh") -> R.drawable.fall_is_coming_pana
+        lowerHint.contains("mưa") || lowerHint.contains("rain") -> R.drawable.raining_pana
+        lowerHint.contains("ô") || lowerHint.contains("umbrella") -> R.drawable.umbrella_pana
+        lowerHint.contains("nắng") || lowerHint.contains("sun") || lowerHint.contains("hot") -> R.drawable.sunny_day_pana
+        lowerHint.contains("gió") || lowerHint.contains("wind") -> R.drawable.windy_day_pana
+        lowerHint.contains("lạnh") || lowerHint.contains("cold") || lowerHint.contains("chill") -> R.drawable.fall_is_coming_pana
         else -> R.drawable.windy_day_pana
     }
 }

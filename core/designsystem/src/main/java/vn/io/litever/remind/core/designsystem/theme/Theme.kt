@@ -38,7 +38,7 @@ import vn.io.litever.designsystem.theme.LiteverThemeColor
 fun ReMindTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false,
-    colorPalette: String = "RED",
+    colorPalette: String = "BLACK",
     colorScheme: ColorScheme? = null,
     colors: LiteverColors? = null,
     typography: LiteverTypography = defaultLiteverTypography,
@@ -49,6 +49,7 @@ fun ReMindTheme(
     val isDynamic = colorPalette == "DYNAMIC" || dynamicColor
 
     val resolvedThemeColor = when (colorPalette) {
+        "BLACK" -> LiteverThemeColor.BLACK
         "RED" -> LiteverThemeColor.RED
         "ORANGE" -> LiteverThemeColor.ORANGE
         "YELLOW" -> LiteverThemeColor.YELLOW
@@ -56,7 +57,7 @@ fun ReMindTheme(
         "BLUE" -> LiteverThemeColor.BLUE
         "INDIGO" -> LiteverThemeColor.INDIGO
         "VIOLET" -> LiteverThemeColor.VIOLET
-        else -> LiteverThemeColor.RED
+        else -> LiteverThemeColor.BLACK
     }
 
     val currentConfiguration = LocalConfiguration.current

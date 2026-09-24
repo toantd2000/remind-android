@@ -52,12 +52,14 @@ fun AlarmMessageRoute(
     val is24HourFormat by viewModel.is24HourFormat.collectAsState()
     val weather by viewModel.weather.collectAsState()
     val todayBriefing by viewModel.todayBriefing.collectAsState()
+    val isAdFreeActive by viewModel.isAdFreeActive.collectAsState()
 
     AlarmMessageScreen(
         alarm = alarm,
         is24HourFormat = is24HourFormat,
         weather = weather,
         todayBriefing = todayBriefing,
+        isAdFreeActive = isAdFreeActive,
         onFinish = {
             viewModel.onFinishMessage()
             onFinish()
@@ -71,6 +73,7 @@ fun AlarmMessageScreen(
     is24HourFormat: Boolean,
     weather: WeatherResponse?,
     todayBriefing: TodayBriefing?,
+    isAdFreeActive: Boolean = false,
     onFinish: () -> Unit
 ) {
     BackHandler { }
@@ -182,10 +185,12 @@ fun AlarmMessageScreen(
                 isCompact = true
             )
 
-            LocalAdManager.current.NativeAdView(
-                placement = AdPlacement.MESSAGE_NATIVE,
-                modifier = Modifier.fillMaxWidth()
-            )
+            if (!isAdFreeActive) {
+                LocalAdManager.current.NativeAdView(
+                    placement = AdPlacement.MESSAGE_NATIVE,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
 
             TodayQuoteView(
                 todayBriefing = todayBriefing

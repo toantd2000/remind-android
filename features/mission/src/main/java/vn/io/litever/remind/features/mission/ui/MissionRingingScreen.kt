@@ -167,7 +167,7 @@ fun MissionRingingScreen(
                         navigationIcon = {
                             LvIconButton(
                                 onClick = onAbandon,
-                                semantic = LvSemantic.Neutral
+                                semantic = LvSemantic.Text
                             ) {
                                 Icon(
                                     imageVector = Icons.Rounded.Close,

@@ -247,7 +247,7 @@ fun TypingMissionConfigScreen(
                         modifier = Modifier.size(40.dp),
                         enabled = repetitions > 1,
                         type = LvButtonType.Text,
-                        semantic = LvSemantic.Neutral
+                        semantic = LvSemantic.Text
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
@@ -259,7 +259,7 @@ fun TypingMissionConfigScreen(
                     Text(
                         text = "$repetitions",
                         style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = LiteverTheme.colors.neutral
+                        color = LiteverTheme.colors.onSurface
                     )
 
                     LvIconButton(
@@ -267,7 +267,7 @@ fun TypingMissionConfigScreen(
                         modifier = Modifier.size(40.dp),
                         enabled = repetitions < 99,
                         type = LvButtonType.Text,
-                        semantic = LvSemantic.Neutral
+                        semantic = LvSemantic.Text
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,

@@ -93,14 +93,14 @@ fun TodayNextAlarmView(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(76.dp)
-                                .background(LiteverTheme.colors.primaryContainer),
+                                .background(LiteverTheme.colors.surfaceContainerHigh),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Rounded.Alarm,
                                 contentDescription = null,
                                 modifier = Modifier.size(38.dp),
-                                tint = LiteverTheme.colors.primary
+                                tint = LiteverTheme.colors.onSurface
                             )
                         }
                     }

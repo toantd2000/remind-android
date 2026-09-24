@@ -3,6 +3,9 @@ package vn.io.litever.remind.core.ads.impl
 import android.app.Activity
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
@@ -62,6 +65,10 @@ class AdMobManagerImpl @Inject constructor(
         CoroutineScope(Dispatchers.IO).launch {
             preferencesDataSource.adsDisabledUntil.collect { timestamp ->
                 adsDisabledUntilValue = timestamp
+                if (System.currentTimeMillis() < timestamp) {
+                    cachedAds.clear()
+                    interstitialAd = null
+                }
             }
         }
     }
@@ -84,15 +91,17 @@ class AdMobManagerImpl @Inject constructor(
     override fun initialize() {
         MobileAds.initialize(context) {}
         remoteAdConfigFetcher.fetchConfig()
-        // Preload interstitial ad cho màn hình lưu báo thức
-        loadAd(AdPlacement.SAVE_ALARM_INTERSTITIAL)
+        // Preload interstitial ad cho màn hình lưu báo thức nếu không trong trạng thái ad-free
+        if (!isAdFreeActive()) {
+            loadAd(AdPlacement.SAVE_ALARM_INTERSTITIAL)
+        }
     }
 
     
     @android.annotation.SuppressLint("MissingPermission")
     override fun loadAd(placement: AdPlacement) {
         android.util.Log.d(TAG, "loadAd: requested for placement $placement")
-        if (isAdFreeActive()) {
+        if (placement != AdPlacement.SUPPORT_REWARDED && isAdFreeActive()) {
             android.util.Log.d(TAG, "loadAd: skipped due to ad-free active")
             _adState.value = AdState.Failed("Ads are currently disabled (supporter reward active)")
             return
@@ -222,6 +231,12 @@ if (placement == AdPlacement.SUPPORT_REWARDED) {
             showTimestamps.getOrPut(placement) { mutableListOf() }.add(System.currentTimeMillis())
         }
 
+        if (placement != AdPlacement.SUPPORT_REWARDED && isAdFreeActive()) {
+            android.util.Log.d(TAG, "showAd: skipped because isAdFreeActive() is true")
+            onAdDismissed()
+            return
+        }
+
         if (placement == AdPlacement.SUPPORT_REWARDED) {
             val ad = rewardedAd
             if (ad != null) {
@@ -229,10 +244,12 @@ if (placement == AdPlacement.SUPPORT_REWARDED) {
                 android.util.Log.d(TAG, "showAd(Rewarded): showing")
                 ad.show(activity, OnUserEarnedRewardListener { rewardItem ->
                     CoroutineScope(Dispatchers.IO).launch {
-                        // Grant ad-free supporter status (30s on debug, 24h on release)
+                        // Grant ad-free supporter status (1h on debug, 24h on release)
                         val isDebug = (context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
-                        val duration = if (isDebug) 30 * 1000L else 24 * 60 * 60 * 1000L
+                        val duration = if (isDebug) 1 * 60 * 60 * 1000L else 24 * 60 * 60 * 1000L
                         preferencesDataSource.setAdsDisabledUntil(System.currentTimeMillis() + duration)
+                        cachedAds.clear()
+                        interstitialAd = null
                     }
                 })
                 rewardedAd = null
@@ -273,6 +290,9 @@ if (placement == AdPlacement.SUPPORT_REWARDED) {
     }
 
     override fun isAdLoaded(placement: AdPlacement): Boolean {
+        if (placement != AdPlacement.SUPPORT_REWARDED && isAdFreeActive()) {
+            return false
+        }
         return when (placement) {
             AdPlacement.SUPPORT_REWARDED -> rewardedAd != null
             AdPlacement.SAVE_ALARM_INTERSTITIAL -> interstitialAd != null
@@ -282,7 +302,9 @@ if (placement == AdPlacement.SUPPORT_REWARDED) {
 
     @Composable
     override fun NativeAdView(placement: AdPlacement, modifier: Modifier) {
-        if (isAdFreeActive()) return
+        val adsDisabledUntil by preferencesDataSource.adsDisabledUntil.collectAsState(initial = 0L)
+        val isAdFree = remember(adsDisabledUntil) { System.currentTimeMillis() < adsDisabledUntil }
+        if (isAdFree) return
         AdMobNativeAdView(placement = placement, adManager = this, modifier = modifier)
     }
 
@@ -293,6 +315,7 @@ if (placement == AdPlacement.SUPPORT_REWARDED) {
         android.util.Log.d(TAG, "loadNativeAd: requested for $placement")
 
         if (isAdFreeActive()) {
+            cachedAds.remove(placement)
             onComplete(null)
             return
         }

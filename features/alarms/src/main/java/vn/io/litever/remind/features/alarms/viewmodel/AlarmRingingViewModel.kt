@@ -46,6 +46,14 @@ class AlarmRingingViewModel @Inject constructor(
             initialValue = true
         )
 
+    val isAdFreeActive: StateFlow<Boolean> = preferencesDataSource.adsDisabledUntil
+        .map { it > System.currentTimeMillis() }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = false
+        )
+
     val autoSilenceCountdown: StateFlow<Int?> = alarmRingManager.autoSilenceCountdown
         .stateIn(
             scope = viewModelScope,

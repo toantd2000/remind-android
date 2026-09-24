@@ -126,7 +126,7 @@ fun SnoozeBottomSheetContent(
                             onClick = { if (enabled) onIntervalChange(option) },
                             modifier = Modifier.weight(1f),
                             type = if (isSelected) LvButtonType.Tonal else LvButtonType.Outlined,
-                            semantic = if (isSelected) LvSemantic.Primary else LvSemantic.Neutral,
+                            semantic = if (isSelected) LvSemantic.Primary else LvSemantic.Text,
                         ) {
                             Text(
                                 stringResource(
@@ -170,7 +170,7 @@ fun SnoozeBottomSheetContent(
                             modifier = Modifier.weight(1f),
                             contentPadding = ButtonDefaults.TextButtonContentPadding,
                             type = if (isSelected) LvButtonType.Tonal else LvButtonType.Outlined,
-                            semantic = if (isSelected) LvSemantic.Primary else LvSemantic.Neutral,
+                            semantic = if (isSelected) LvSemantic.Primary else LvSemantic.Text,
                         ) {
                             Text(
                                 text = label,

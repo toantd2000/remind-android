@@ -130,7 +130,7 @@ private fun FullWeatherView(
                 LvButton(
                     onClick = onLocationClick,
                     type = LvButtonType.Text,
-                    semantic = LvSemantic.Neutral,
+                    semantic = LvSemantic.Text,
                     enabled = isLocationClickEnabled
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {

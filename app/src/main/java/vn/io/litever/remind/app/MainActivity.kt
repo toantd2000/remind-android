@@ -157,7 +157,7 @@ class MainActivity : ComponentActivity() {
             WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
         setContent {
             val themeMode by viewModel.themeMode.collectAsState(initial = "SYSTEM")
-            val colorPalette by viewModel.colorPalette.collectAsState(initial = "RED")
+            val colorPalette by viewModel.colorPalette.collectAsState(initial = "BLACK")
             val language by viewModel.language.collectAsState(
                 initial = if (LocalLocale.current.platformLocale.language == "vi") "vi" else "en"
             )

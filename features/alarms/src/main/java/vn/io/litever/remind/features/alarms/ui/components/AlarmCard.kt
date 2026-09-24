@@ -160,7 +160,7 @@ fun AlarmCard(
                 LvIconButton(
                     onClick = onMoreClick,
                     modifier = Modifier.size(LiteverTheme.spacing.extraLarge),
-                    semantic = LvSemantic.Neutral
+                    semantic = LvSemantic.Text
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.MoreVert,

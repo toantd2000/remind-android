@@ -441,7 +441,7 @@ fun PhraseItem(
                     LvIconButton(
                         onClick = { showMenu = true },
                         type = LvButtonType.Text,
-                        semantic = LvSemantic.Neutral
+                        semantic = LvSemantic.Text
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.MoreVert,
@@ -628,7 +628,7 @@ fun AddCustomPhraseContent(
                 .fillMaxWidth()
                 .padding(horizontal = LiteverTheme.spacing.medium)
                 .clip(LiteverTheme.shapes.large)
-                .background(color = LiteverTheme.colors.neutralContainer)
+                .background(color = LiteverTheme.colors.secondaryContainer)
                 .padding(vertical = LiteverTheme.spacing.small)
         ) {
             Checkbox(
@@ -636,14 +636,14 @@ fun AddCustomPhraseContent(
                 onCheckedChange = { isShared = it },
                 enabled = editingPhrase == null && canBePrivate,
                 colors = CheckboxDefaults.colors(
-                    checkedColor = LiteverTheme.colors.neutral,
+                    checkedColor = LiteverTheme.colors.onSecondaryContainer,
                     uncheckedColor = LiteverTheme.colors.outline
                 )
             )
             Column {
                 Text(
                     text = stringResource(R.string.mission_shared),
-                    style = LiteverTheme.typography.titleSmall
+                    style = LiteverTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
                 )
                 Text(
                     text = stringResource(if (canBePrivate) R.string.mission_shared_desc else R.string.mission_private_disabled_desc),

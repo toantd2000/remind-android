@@ -33,7 +33,7 @@ fun TodayQuoteView(
 
     Box(
         modifier = Modifier.fillMaxWidth().clip(LiteverTheme.shapes.large)
-            .background(LiteverTheme.colors.tertiaryContainer.copy(alpha = 0.2f)),
+            .background(LiteverTheme.colors.surfaceContainerLow),
     ) {
         // Left Accent Bar (Bookmark effect for the entire block)
         Box(
@@ -45,7 +45,7 @@ fun TodayQuoteView(
                     .fillMaxHeight()
                     .width(LiteverTheme.spacing.extraSmall)
                     .background(
-                        color = LiteverTheme.colors.onTertiaryContainer
+                        color = LiteverTheme.colors.tertiary
                     )
             )
         }
@@ -67,7 +67,7 @@ fun TodayQuoteView(
                         .padding(vertical = LiteverTheme.spacing.small),
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontStyle = FontStyle.Italic,
-                        color = LiteverTheme.colors.onTertiaryContainer
+                        color = LiteverTheme.colors.tertiary
                     )
                 )
 
@@ -75,7 +75,7 @@ fun TodayQuoteView(
                     HorizontalDivider(
                         modifier = Modifier.padding(horizontal = LiteverTheme.spacing.medium),
                         thickness = 0.5.dp,
-                        color = LiteverTheme.colors.onTertiaryContainer.copy(alpha = 0.3f)
+                        color = LiteverTheme.colors.tertiary.copy(alpha = 0.38f)
                     )
                 }
             }

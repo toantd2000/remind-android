@@ -16,7 +16,7 @@ data class SettingsUiState(
     val is24HourFormat: Boolean = true,
     val timeFormat: String = "SYSTEM",
     val themeMode: String = "SYSTEM",
-    val colorPalette: String = "RED",
+    val colorPalette: String = "BLACK",
     val language: String = if (java.util.Locale.getDefault().language == "vi") "vi" else "en",
     val useBuiltInSpeaker: Boolean = true,
     val isPreNotificationEnabled: Boolean = true,
@@ -103,7 +103,7 @@ class SettingsViewModel @Inject constructor(
     fun disableAdsFor24Hours(context: android.content.Context) {
         viewModelScope.launch {
             val isDebug = (context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
-            val duration = if (isDebug) 30 * 1000L else 24 * 60 * 60 * 1000L
+            val duration = if (isDebug) 1 * 60 * 60 * 1000L else 24 * 60 * 60 * 1000L
             preferencesDataSource.setAdsDisabledUntil(System.currentTimeMillis() + duration)
         }
     }

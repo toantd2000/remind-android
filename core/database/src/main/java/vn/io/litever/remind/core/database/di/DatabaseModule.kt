@@ -8,6 +8,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import vn.io.litever.remind.core.database.RemindDatabase
+import vn.io.litever.remind.core.database.callback.RemindDatabaseCallback
 import vn.io.litever.remind.core.database.dao.AlarmDao
 import vn.io.litever.remind.core.database.dao.MissionDao
 import vn.io.litever.remind.core.database.dao.PhraseDao
@@ -17,7 +18,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
-    
+
     @Provides
     @Singleton
     fun provideDatabase(
@@ -32,6 +33,7 @@ object DatabaseModule {
             RemindDatabase.MIGRATION_2_3,
             RemindDatabase.MIGRATION_3_4
         )
+        .addCallback(RemindDatabaseCallback())
         .fallbackToDestructiveMigration(true)
         .build()
     }
@@ -56,13 +58,3 @@ object DatabaseModule {
         return database.missedAlarmDao()
     }
 }
-
-
-
-
-
-
-
-
-
-

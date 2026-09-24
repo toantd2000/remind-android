@@ -1184,7 +1184,7 @@ fun RepeatDaySelector(
 
             LvIconButton(
                 onClick = onShowDatePicker,
-                semantic = if (date != null) LvSemantic.Primary else LvSemantic.Neutral
+                semantic = if (date != null) LvSemantic.Primary else LvSemantic.Text
             ) {
                 Icon(
                     imageVector = Icons.Rounded.CalendarMonth,
@@ -1215,7 +1215,7 @@ fun RepeatDaySelector(
                     onClick = { onDayToggle(day) },
                     modifier = Modifier.weight(1f),
                     type = if (isSelected) LvButtonType.Tonal else LvButtonType.Outlined,
-                    semantic = if (isSelected) LvSemantic.Primary else LvSemantic.Neutral,
+                    semantic = if (isSelected) LvSemantic.Primary else LvSemantic.Text,
                 ) {
                     Text(
                         text = dayLabel,

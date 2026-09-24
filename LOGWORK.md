@@ -41,7 +41,7 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
      - Mục Color Palette (Màu chủ đạo): Chuyển đổi từ cụm 8 ô nút chữ nhật cồng kềnh sang dòng `ReMindSettingsItem` chuẩn, hiển thị tên màu đang chọn và Preview chấm tròn màu sắc (Color dot) ở đuôi dòng, nhấp vào để mở `ColorPaletteSelectionDialog`.
   2. **Tạo `SingleChoiceDialog` & `ColorPaletteSelectionDialog` dùng `LvAlertDialog`:**
      - Hiển thị danh sách tùy chọn với `RadioButton` và text có thể bấm trực tiếp vào toàn hàng.
-     - `ColorPaletteSelectionDialog`: Thiết kế dạng lưới tròn **4 cột x 2 hàng** (Pixel/Material 3 style) cực kỳ nhỏ gọn, gồm chấm màu tròn 48dp, viền nổi bật (2.5dp) & dấu tích `Check` khi được chọn, cùng tên màu ngắn gọn phía dưới. Giảm 60% chiều cao so với danh sách dọc, không còn chiếm diện tích màn hình.
+     - `ColorPaletteSelectionDialog`: Thiết kế dạng lưới tròn **3 cột x 3 hàng** (Pixel/Material 3 style) cực kỳ nhỏ gọn, gồm chấm màu tròn 48dp, viền nổi bật (2.5dp) & dấu tích `Check` khi được chọn, cùng tên màu ngắn gọn phía dưới. Giảm 60% chiều cao so với danh sách dọc, không còn chiếm diện tích màn hình.
      - Hỗ trợ nút Cancel (Huỷ) chuẩn thiết kế qua `LvButton`.
 - **Hệ quả:**
   - Giao diện cài đặt chung đồng bộ 100%, thanh thoát và tinh tế với 2 nhóm rõ ràng: **Display** (Giao diện & Màu sắc) và **Language & Region** (Ngôn ngữ & Định dạng vùng miền).
@@ -211,4 +211,19 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
   - Giải quyết dứt điểm lỗi kẹt loading vô tận tại màn hình Today.
   - Đảm bảo thời tiết luôn được tự động làm mới khi hết hạn (TTL 1 giờ) mỗi khi người dùng mở lại ứng dụng.
   - Tiết kiệm băng thông tối đa và tăng tính tương tác, không khóa cứng giao diện của người dùng.
+
+### [TDR-077] - Đặt Màu Đen (Black) Làm Màu Chủ Đạo Mặc Định
+- **Ngày thực hiện:** 2026-09-24
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Màu Black (Đen) vừa được thêm vào hệ thống `litever-designsystem`. Người dùng yêu cầu thiết lập màu này thành lựa chọn màu chủ đạo đầu tiên trong cài đặt Theme cũng như làm màu mặc định cho toàn bộ ứng dụng khi khởi tạo thay cho màu Đỏ (RED) trước đây.
+- **Quyết định:**
+  - Cập nhật giá trị khởi tạo `colorPalette` thành `"BLACK"` trong `SettingsUiState` và `AlarmPreferencesDataSource`.
+  - Thiết lập `"BLACK"` làm giá trị mặc định cho `colorPalette` trong composable `ReMindTheme` (tại `Theme.kt`).
+  - Cập nhật `resolvedThemeColor` để map `"BLACK"` sang `LiteverThemeColor.BLACK` và dùng `"BLACK"` làm fallback (`else`).
+  - Kiểm tra thứ tự trong `GeneralSettingsScreen`, tùy chọn màu "BLACK" đã nằm ở vị trí đầu tiên của danh sách `colorPaletteOptions`.
+  - Cập nhật cấu hình Preview `GeneralSettingsScreenPreview` để phản ánh đúng mặc định mới.
+- **Hệ quả:**
+  - Toàn bộ ứng dụng sẽ sử dụng bộ màu Đen làm màu nhận diện thương hiệu mặc định ban đầu.
+  - Tăng độ tùy biến và mang lại cảm giác hiện đại hơn khi cài đặt mặc định là màu trung tính.
 

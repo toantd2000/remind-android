@@ -75,7 +75,7 @@ fun LvTopAppBar(
                 }
                 LvIconButton(
                     onClick = onBackClick,
-                    semantic = LvSemantic.Neutral
+                    semantic = LvSemantic.Text
                 ) {
                     Icon(
                         imageVector = icon,

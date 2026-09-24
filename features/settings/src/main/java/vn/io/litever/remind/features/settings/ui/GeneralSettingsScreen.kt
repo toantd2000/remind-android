@@ -56,6 +56,8 @@ import vn.io.litever.designsystem.components.button.LvButtonType
 import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.designsystem.theme.palettes.blackDarkColorScheme
+import vn.io.litever.designsystem.theme.palettes.blackLightColorScheme
 import vn.io.litever.designsystem.theme.palettes.blueDarkColorScheme
 import vn.io.litever.designsystem.theme.palettes.blueLightColorScheme
 import vn.io.litever.designsystem.theme.palettes.greenDarkColorScheme
@@ -119,6 +121,14 @@ fun GeneralSettingsScreen(
 
     val colorPaletteOptions = remember(dynamicLight, dynamicDark) {
         listOf(
+            PaletteColorOption(
+                key = "BLACK",
+                titleRes = R.string.color_black,
+                primaryLight = blackLightColorScheme.primary,
+                primaryContainerLight = blackLightColorScheme.primaryContainer,
+                primaryDark = blackDarkColorScheme.primary,
+                primaryContainerDark = blackDarkColorScheme.primaryContainer
+            ),
             PaletteColorOption(
                 key = "RED",
                 titleRes = R.string.color_red,
@@ -440,8 +450,7 @@ private fun ColorPaletteSelectionDialog(
     onDismiss: () -> Unit,
     onSelect: (String) -> Unit
 ) {
-    val row1 = options.take(4)
-    val row2 = options.drop(4)
+    val chunkedOptions = options.chunked(3)
 
     LvAlertDialog(
         onDismissRequest = onDismiss,
@@ -462,30 +471,19 @@ private fun ColorPaletteSelectionDialog(
                     .padding(top = LiteverTheme.spacing.small),
                 verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    row1.forEach { item ->
-                        ColorCircleSwatch(
-                            item = item,
-                            isSelected = item.key == selectedKey,
-                            isDark = isDark,
-                            onClick = { onSelect(item.key) }
-                        )
-                    }
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    row2.forEach { item ->
-                        ColorCircleSwatch(
-                            item = item,
-                            isSelected = item.key == selectedKey,
-                            isDark = isDark,
-                            onClick = { onSelect(item.key) }
-                        )
+                chunkedOptions.forEach { rowOptions ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        rowOptions.forEach { item ->
+                            ColorCircleSwatch(
+                                item = item,
+                                isSelected = item.key == selectedKey,
+                                isDark = isDark,
+                                onClick = { onSelect(item.key) }
+                            )
+                        }
                     }
                 }
             }
@@ -557,7 +555,7 @@ private fun ColorCircleSwatch(
 fun GeneralSettingsScreenPreview() {
     ReMindTheme {
         GeneralSettingsScreen(
-            uiState = SettingsUiState(is24HourFormat = true, timeFormat = "SYSTEM", themeMode = "SYSTEM", colorPalette = "RED"),
+            uiState = SettingsUiState(is24HourFormat = true, timeFormat = "SYSTEM", themeMode = "SYSTEM", colorPalette = "BLACK"),
             onTimeFormatChange = {},
             onThemeModeChange = {},
             onColorPaletteChange = {},

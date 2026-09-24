@@ -1,9 +1,7 @@
 package vn.io.litever.remind.core.designsystem.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,7 +34,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import vn.io.litever.designsystem.theme.LiteverTheme
@@ -137,7 +134,7 @@ fun MissionSelectionBottomSheetContent(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 text = item.title,
-                                style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
+                                style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                             )
                             if (!isAvailable) {
                                 Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
@@ -148,7 +145,10 @@ fun MissionSelectionBottomSheetContent(
                                     Text(
                                         text = stringResource(R.string.coming_soon),
                                         style = LiteverTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                                        modifier = Modifier.padding(horizontal = LiteverTheme.spacing.extraSmall, vertical = LiteverTheme.spacing.tiny),
+                                        modifier = Modifier.padding(
+                                            horizontal = LiteverTheme.spacing.extraSmall,
+                                            vertical = LiteverTheme.spacing.tiny
+                                        ),
                                         color = LiteverTheme.colors.onSurfaceVariant
                                     )
                                 }
@@ -164,19 +164,16 @@ fun MissionSelectionBottomSheetContent(
                     leadingContent = {
                         Surface(
                             shape = LiteverTheme.shapes.medium,
-                            color = if (isAvailable)
-                                LiteverTheme.colors.primaryContainer.copy(alpha = 0.5f)
-                            else
-                                LiteverTheme.colors.surfaceVariant,
-                            border = if (isAvailable)
-                                BorderStroke(1.dp, LiteverTheme.colors.primary.copy(alpha = 0.1f))
-                            else null
+                            color = if (isAvailable) LiteverTheme.colors.primaryContainer
+                            else LiteverTheme.colors.surfaceVariant,
                         ) {
                             Icon(
                                 imageVector = item.icon,
                                 contentDescription = null,
-                                modifier = Modifier.padding(LiteverTheme.spacing.smallMedium).size(LiteverTheme.spacing.large),
-                                tint = if (isAvailable) LiteverTheme.colors.primary else LiteverTheme.colors.onSurfaceVariant
+                                modifier = Modifier
+                                    .padding(LiteverTheme.spacing.smallMedium)
+                                    .size(LiteverTheme.spacing.large),
+                                tint = if (isAvailable) LiteverTheme.colors.onPrimaryContainer else LiteverTheme.colors.onSurfaceVariant
                             )
                         }
                     },

@@ -121,6 +121,7 @@ fun SettingsScreen(
                     val activity = context.findActivity()
                     if (activity != null) {
                         adManager.showAd(activity, AdPlacement.SUPPORT_REWARDED) {
+                            onRewardGranted()
                             showThankYouDialog = true
                         }
                     }
@@ -288,6 +289,7 @@ fun SettingsScreen(
                         val activity = context.findActivity()
                         if (activity != null && adManager.isAdLoaded(AdPlacement.SUPPORT_REWARDED)) {
                             adManager.showAd(activity, AdPlacement.SUPPORT_REWARDED) {
+                                onRewardGranted()
                                 showThankYouDialog = true
                             }
                         } else {

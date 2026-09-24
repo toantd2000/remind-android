@@ -8,7 +8,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,12 +27,9 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.ads.nativead.NativeAd
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
-import vn.io.litever.designsystem.theme.LiteverShapes
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.ads.api.AdPlacement
 import vn.io.litever.remind.core.ads.impl.AdMobManagerImpl
-import vn.io.litever.remind.core.designsystem.theme.neutralContainer
-import vn.io.litever.remind.core.designsystem.theme.onNeutral
 import kotlin.time.Duration.Companion.milliseconds
 import com.google.android.gms.ads.nativead.NativeAdView as GmsNativeAdView
 

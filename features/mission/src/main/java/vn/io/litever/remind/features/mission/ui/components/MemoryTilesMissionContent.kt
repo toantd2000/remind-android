@@ -170,7 +170,7 @@ fun MemoryTilesMissionContent(
                         gameState == MemoryGameState.MEMORIZE && isTarget -> LvSemantic.Primary
                         gameState != MemoryGameState.MEMORIZE && isSelected && isTarget -> LvSemantic.Primary
                         gameState != MemoryGameState.MEMORIZE && isSelected && !isTarget -> LvSemantic.Destructive
-                        else -> LvSemantic.Neutral
+                        else -> LvSemantic.Text
                     }
 
                     val tileColor = when (tileSemantic) {

@@ -1,6 +1,5 @@
 package vn.io.litever.remind.features.mission.ui.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,7 +36,7 @@ fun MissionInstructionBanner(
         modifier = modifier.fillMaxWidth(),
         shape = LiteverTheme.shapes.large,
         colors = CardDefaults.cardColors(
-            containerColor = LiteverTheme.colors.tertiaryContainer
+            containerColor = LiteverTheme.colors.surfaceContainer
         ),
     ) {
         Row(
@@ -53,14 +52,14 @@ fun MissionInstructionBanner(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = LiteverTheme.colors.onTertiaryContainer,
+                tint = LiteverTheme.colors.tertiary,
                 modifier = Modifier.size(20.dp)
             )
 
             val annotatedText = buildAnnotatedString {
                 withStyle(
                     style = SpanStyle(
-                        color = LiteverTheme.colors.onTertiaryContainer,
+                        color = LiteverTheme.colors.tertiary,
                         fontWeight = FontWeight.Bold
                     )
                 ) {

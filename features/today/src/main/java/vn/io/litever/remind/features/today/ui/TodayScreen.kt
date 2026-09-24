@@ -184,10 +184,12 @@ fun TodayScreen(
                 is24HourFormat = is24HourFormat
             )
 
-            LocalAdManager.current.NativeAdView(
-                placement = AdPlacement.REMIND_NATIVE,
-                modifier = Modifier.fillMaxWidth()
-            )
+            if (!isAdFreeActive) {
+                LocalAdManager.current.NativeAdView(
+                    placement = AdPlacement.REMIND_NATIVE,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
 
             TodayQuoteView(todayBriefing = todayBriefing)
         }

@@ -227,3 +227,29 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
   - Toàn bộ ứng dụng sẽ sử dụng bộ màu Đen làm màu nhận diện thương hiệu mặc định ban đầu.
   - Tăng độ tùy biến và mang lại cảm giác hiện đại hơn khi cài đặt mặc định là màu trung tính.
 
+### [TDR-078] - Tích Hợp Nhánh Nhắc Nhở (Reminders) & Đánh Giá Xung Đột Hệ Thống Giữa Alarms và Reminders
+- **Ngày thực hiện:** 2026-09-28
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Cần đưa toàn bộ tính năng Nhắc nhở (`features:reminders`) từ nhánh `feature/reminders1` tích hợp vào nhánh mới `feature/reminders` dựa trên nền `main` mới nhất (đã nâng cấp Litever 2.1.0 và màu Black mặc định).
+  - Yêu cầu cốt lõi: bảo toàn 100% logic báo thức (`AlarmService`, `AlarmControllerImpl`, `AlarmReceiver`), không để logic của Nhắc nhở xâm lấn hay làm gián đoạn chuông báo thức.
+- **Quyết định:**
+  1. **Tách biệt hoàn toàn tầng Thực thi Nền & Âm thanh (Service & Audio Isolation):**
+     - Giữ nguyên `AlarmService` và `AlarmRingManager` phục vụ độc quyền cho Báo thức (`features:alarms`).
+     - Toàn bộ cảnh báo nhắc nhở dạng chuông (Persistent Alert / Alarm Stream) sử dụng riêng `ReminderAlertManager`, `ReminderNotificationManager`, và `ReminderMonitorService` (đối với Location & Wi-Fi Geofence).
+     - Định tuyến rung/chuông qua `AudioPlayer` với thiết lập usage phù hợp (`USAGE_ALARM` hoặc `USAGE_NOTIFICATION`).
+  2. **Tương thích UI với Litever Design System 2.1:**
+     - Bổ sung bộ adapter thành phần `LiteverLegacyCompat.kt` (gồm `LiteverTextField`, `LiteverCircularProgressIndicator`, `LiteverLinearProgressIndicator`, `LiteverModalBottomSheet`, `LiteverDatePickerDialog`, `LiteverSegmentedButton`, `LiteverFilterChip`, `LiteverDialog`).
+     - Loại bỏ hoàn toàn các thay đổi xâm lấn ngược vào `features/alarms` (ưu tiên tuyệt đối code từ `main`).
+  3. **Khử trùng lặp điều hướng chuông (Deduplicate Ringing Navigation):**
+     - Trong `MainActivity.kt`, tách bạch thứ tự ưu tiên điều hướng: Priority 1 (Alarm Ringing), Priority 2 (Alarm Snoozing), Priority 3 (Reminder Ringing với cơ chế chống loop `lastNavigatedRingingReminderId`), bảo đảm `startDestinationId` điều hướng mượt mà không crash.
+- **Đánh giá Xung đột Hệ thống (Conflict Risk Assessment):**
+  - **Audio Focus:** Cả 2 module đều có khả năng chiếm `AUDIOFOCUS_GAIN_TRANSIENT`. Khi cả 2 kích hoạt cùng lúc, `AudioPlayer` sẽ tạm dừng âm thanh trước đó. Khuyến nghị: Cần bổ sung cơ chế ưu tiên Alarm cao hơn Reminder (nếu Alarm kích hoạt, Reminder tự động mute hoặc chuyển sang notification im lặng).
+  - **Notification Channels & Full-screen Intent:** Alarm và Reminder dùng channel riêng biệt (`reminders_persistent`, `reminders_standard`, `remind_alarm_channel`). Đảm bảo không xung đột channel priority.
+  - **Exact Alarm Quota:** Android 12+ giới hạn số lượng exact alarm được đặt trước (`SCHEDULE_EXACT_ALARM`). Cả 2 cùng sử dụng `AlarmManager.setExactAndAllowWhileIdle`.
+  - **Database Migration:** Đã nâng cấp an toàn Room DB từ version 5 lên version 6 (`MIGRATION_5_6`), bảo toàn các bảng `alarms`, `missions`, `reminders`, `checklist_items`.
+- **Hệ quả:**
+  - Toàn bộ 12 commits đã được cherry-pick sạch sẽ.
+  - Toàn bộ unit tests của `:features:alarms`, `:features:reminders`, `:core:alarm`, và `:app` đều pass 100%.
+  - Xây dựng nền tảng vững chắc để chuyển sang bước tối ưu trải nghiệm và kiểm thử đồng thời (concurrency testing) giữa 2 module.
+

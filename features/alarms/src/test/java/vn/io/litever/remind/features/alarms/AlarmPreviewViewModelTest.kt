@@ -172,12 +172,12 @@ class AlarmPreviewViewModelTest {
         mutedAlarmIdsFlow.value = setOf(99L)
         testScheduler.runCurrent()
 
-        verify { audioPlayer.setVolume(any(), 0) }
+        verify { audioPlayer.stop() }
 
         // Unmute alarm
         mutedAlarmIdsFlow.value = emptySet()
         testScheduler.runCurrent()
 
-        verify { audioPlayer.setVolume(any(), 12) }
+        verify(atLeast = 2) { audioPlayer.play(uri = any(), volume = 12, useAlarmStream = any(), gradualVolumeDurationSeconds = any(), vibrationEnabled = any()) }
     }
 }

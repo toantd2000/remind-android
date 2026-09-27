@@ -62,6 +62,7 @@ class AlarmEditViewModelTest {
         every { audioManager.getStreamVolume(AudioManager.STREAM_ALARM) } returns 10
         every { preferencesDataSource.is24HourFormat } returns flowOf(true)
         every { permissionChecker.hasCriticalPermissions() } returns true
+        every { permissionChecker.hasNotificationPolicyAccess() } returns true
         every { missionRepository.getMissionsForAlarm(any()) } returns flowOf(emptyList())
 
         viewModel = AlarmEditViewModel(

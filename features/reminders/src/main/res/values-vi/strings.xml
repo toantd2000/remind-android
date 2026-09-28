@@ -49,9 +49,15 @@
 
     <!-- Trigger Type Selector -->
     <string name="section_trigger_type">Điều kiện kích hoạt</string>
+    <string name="edit_trigger_title">Chỉnh sửa điều kiện kích hoạt</string>
+    <string name="tap_to_edit_trigger">Nhấn để chỉnh sửa điều kiện kích hoạt</string>
+    <string name="no_location_selected">Chưa thiết lập vị trí</string>
+    <string name="no_wifi_selected">Chưa nhập tên Wi-Fi</string>
     <string name="trigger_time">Thời gian</string>
     <string name="trigger_location">Vị trí</string>
     <string name="trigger_wifi">Wi-Fi</string>
+    <string name="all_day">Cả ngày</string>
+    <string name="action_done">Xong</string>
 
     <!-- Time Trigger Section -->
     <string name="section_time_trigger">Lịch nhắc</string>

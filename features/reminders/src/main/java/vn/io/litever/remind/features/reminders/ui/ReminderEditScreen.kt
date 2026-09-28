@@ -1,6 +1,8 @@
 package vn.io.litever.remind.features.reminders.ui
 
+import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -24,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -34,9 +37,14 @@ import vn.io.litever.designsystem.components.LiteverButton
 import vn.io.litever.designsystem.components.LiteverCircularProgressIndicator
 import vn.io.litever.designsystem.components.LiteverScaffold
 import vn.io.litever.designsystem.components.LiteverTopAppBar
+import vn.io.litever.designsystem.components.button.LvButton
+import vn.io.litever.designsystem.components.button.LvButtonType
+import vn.io.litever.designsystem.components.core.LvSemantic
+import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
-import vn.io.litever.remind.core.designsystem.components.ReMindAlertDialog
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
+import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.model.ChecklistItem
 import vn.io.litever.remind.core.model.DayOfWeek
 import vn.io.litever.remind.core.model.GeofenceTransitionType
 import vn.io.litever.remind.core.model.NotificationStyle
@@ -66,6 +74,7 @@ fun ReminderEditRoute(
     onNavigateToRingtoneSelection: (String?) -> Unit,
     onNavigateToSnoozeSettings: (Boolean, Int, Int) -> Unit,
     onNavigateToPermissions: () -> Unit,
+    onNavigateToTriggerEdit: (Long) -> Unit = {},
     navController: NavController,
     modifier: Modifier = Modifier,
     viewModel: ReminderEditViewModel = hiltViewModel()
@@ -191,6 +200,7 @@ fun ReminderEditRoute(
                 uiState.snoozeRepeatCount
             )
         },
+        onNavigateToTriggerEdit = { onNavigateToTriggerEdit(uiState.id) },
         modifier = modifier
     )
 }
@@ -208,31 +218,31 @@ fun ReminderEditScreen(
     onConfirmDiscard: () -> Unit,
     onTitleChange: (String) -> Unit,
     onNotesChange: (String) -> Unit,
-    onTriggerTypeSelected: (ReminderTriggerType) -> Unit,
-    onTimeChange: (LocalTime) -> Unit,
-    onDateChange: (LocalDate?) -> Unit,
-    onRepeatDaysChange: (List<DayOfWeek>) -> Unit,
-    onRepeatDayToggle: (DayOfWeek) -> Unit,
-    onRepeatIntervalChange: (ReminderRepeatInterval) -> Unit,
-    onMonthlyDayToggle: (Int) -> Unit,
-    onAddYearlyDate: (Int, Int) -> Unit,
-    onRemoveYearlyDate: (Int) -> Unit,
-    onLocationNameChange: (String) -> Unit,
-    onLatitudeChange: (Double) -> Unit,
-    onLongitudeChange: (Double) -> Unit,
-    onRadiusChange: (Float) -> Unit,
-    onTransitionTypeChange: (GeofenceTransitionType) -> Unit,
-    onLocationTimeWindowsChange: (List<ReminderTimeWindow>) -> Unit,
-    onAddLocationTimeWindow: (ReminderTimeWindow) -> Unit,
-    onRemoveLocationTimeWindow: (Int) -> Unit,
-    onSetAllDayPresetLocation: () -> Unit,
-    onWifiSsidChange: (String) -> Unit,
-    onWifiBssidChange: (String?) -> Unit,
-    onWifiTriggerTypeChange: (WifiTriggerType) -> Unit,
-    onWifiTimeWindowsChange: (List<ReminderTimeWindow>) -> Unit,
-    onAddWifiTimeWindow: (ReminderTimeWindow) -> Unit,
-    onRemoveWifiTimeWindow: (Int) -> Unit,
-    onSetAllDayPresetWifi: () -> Unit,
+    onTriggerTypeSelected: (ReminderTriggerType) -> Unit = {},
+    onTimeChange: (LocalTime) -> Unit = {},
+    onDateChange: (LocalDate?) -> Unit = {},
+    onRepeatDaysChange: (List<DayOfWeek>) -> Unit = {},
+    onRepeatDayToggle: (DayOfWeek) -> Unit = {},
+    onRepeatIntervalChange: (ReminderRepeatInterval) -> Unit = {},
+    onMonthlyDayToggle: (Int) -> Unit = {},
+    onAddYearlyDate: (Int, Int) -> Unit = { _, _ -> },
+    onRemoveYearlyDate: (Int) -> Unit = {},
+    onLocationNameChange: (String) -> Unit = {},
+    onLatitudeChange: (Double) -> Unit = {},
+    onLongitudeChange: (Double) -> Unit = {},
+    onRadiusChange: (Float) -> Unit = {},
+    onTransitionTypeChange: (GeofenceTransitionType) -> Unit = {},
+    onLocationTimeWindowsChange: (List<ReminderTimeWindow>) -> Unit = {},
+    onAddLocationTimeWindow: (ReminderTimeWindow) -> Unit = {},
+    onRemoveLocationTimeWindow: (Int) -> Unit = {},
+    onSetAllDayPresetLocation: () -> Unit = {},
+    onWifiSsidChange: (String) -> Unit = {},
+    onWifiBssidChange: (String?) -> Unit = {},
+    onWifiTriggerTypeChange: (WifiTriggerType) -> Unit = {},
+    onWifiTimeWindowsChange: (List<ReminderTimeWindow>) -> Unit = {},
+    onAddWifiTimeWindow: (ReminderTimeWindow) -> Unit = {},
+    onRemoveWifiTimeWindow: (Int) -> Unit = {},
+    onSetAllDayPresetWifi: () -> Unit = {},
     onAddChecklistItem: (String) -> Unit,
     onUpdateChecklistItemText: (Int, String) -> Unit,
     onToggleChecklistItemInitial: (Int, Boolean) -> Unit,
@@ -245,12 +255,11 @@ fun ReminderEditScreen(
     onVibrationChange: (Boolean) -> Unit,
     onVolumeChange: (Int) -> Unit,
     onSnoozeSettingsClick: () -> Unit,
+    onNavigateToTriggerEdit: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
     val titleFocusRequester = remember { FocusRequester() }
-    val locationFocusRequester = remember { FocusRequester() }
-    val wifiFocusRequester = remember { FocusRequester() }
 
     LaunchedEffect(uiState.validationErrorTrigger) {
         if (uiState.validationErrorTrigger > 0L) {
@@ -261,17 +270,9 @@ fun ReminderEditScreen(
                         titleFocusRequester.requestFocus()
                     } catch (_: Exception) {}
                 }
-                ReminderValidationErrorField.LOCATION -> {
-                    lazyListState.animateScrollToItem(1)
-                    try {
-                        locationFocusRequester.requestFocus()
-                    } catch (_: Exception) {}
-                }
+                ReminderValidationErrorField.LOCATION,
                 ReminderValidationErrorField.WIFI_SSID -> {
                     lazyListState.animateScrollToItem(1)
-                    try {
-                        wifiFocusRequester.requestFocus()
-                    } catch (_: Exception) {}
                 }
                 null -> {}
             }
@@ -290,9 +291,7 @@ fun ReminderEditScreen(
             ReMindBottomBar {
                 LiteverButton(
                     onClick = onSaveClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(stringResource(R.string.action_save))
                 }
@@ -304,7 +303,8 @@ fun ReminderEditScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            contentPadding = PaddingValues(top = 8.dp, bottom = 16.dp)
+            contentPadding = PaddingValues(LiteverTheme.spacing.medium),
+            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
         ) {
             // 1. Basic Info Section
             item {
@@ -318,106 +318,13 @@ fun ReminderEditScreen(
                 )
             }
 
-            // 2. Trigger Selector & Configuration (Visually combined)
+            // 2. Trigger Summary Section (Click to navigate to Trigger Edit Screen)
             item {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    ReminderTriggerSection(
-                        selectedTriggerType = uiState.triggerType,
-                        onTriggerTypeSelected = onTriggerTypeSelected
-                    )
-
-                    when (uiState.triggerType) {
-                        ReminderTriggerType.TIME -> {
-                            ReminderTimeConfigSection(
-                                time = uiState.time,
-                                onTimeChange = onTimeChange,
-                                date = uiState.date,
-                                onDateChange = onDateChange,
-                                repeatDays = uiState.repeatDays,
-                                onRepeatDaysChange = onRepeatDaysChange,
-                                onRepeatDayToggle = onRepeatDayToggle,
-                                repeatInterval = uiState.repeatInterval,
-                                onRepeatIntervalChange = onRepeatIntervalChange,
-                                monthlyDays = uiState.monthlyDays,
-                                onMonthlyDayToggle = onMonthlyDayToggle,
-                                yearlyDates = uiState.yearlyDates,
-                                onAddYearlyDate = onAddYearlyDate,
-                                onRemoveYearlyDate = onRemoveYearlyDate,
-                                is24HourFormat = uiState.is24HourFormat
-                            )
-                        }
-                        ReminderTriggerType.LOCATION -> {
-                            val locWindows = uiState.locationTimeWindows.ifEmpty {
-                                if (uiState.locationTimeWindow != null) listOf(uiState.locationTimeWindow) else emptyList()
-                            }
-                            ReminderLocationConfigSection(
-                                locationName = uiState.locationName,
-                                onLocationNameChange = onLocationNameChange,
-                                latitude = uiState.latitude,
-                                onLatitudeChange = onLatitudeChange,
-                                longitude = uiState.longitude,
-                                onLongitudeChange = onLongitudeChange,
-                                radiusMeters = uiState.radiusMeters,
-                                onRadiusChange = onRadiusChange,
-                                transitionType = uiState.geofenceTransitionType,
-                                onTransitionTypeChange = onTransitionTypeChange,
-                                repeatInterval = uiState.repeatInterval,
-                                onRepeatIntervalChange = onRepeatIntervalChange,
-                                date = uiState.date,
-                                onDateChange = onDateChange,
-                                repeatDays = uiState.repeatDays,
-                                onRepeatDaysChange = onRepeatDaysChange,
-                                onRepeatDayToggle = onRepeatDayToggle,
-                                monthlyDays = uiState.monthlyDays,
-                                onMonthlyDayToggle = onMonthlyDayToggle,
-                                yearlyDates = uiState.yearlyDates,
-                                onAddYearlyDate = onAddYearlyDate,
-                                onRemoveYearlyDate = onRemoveYearlyDate,
-                                timeWindows = locWindows,
-                                onTimeWindowsChange = onLocationTimeWindowsChange,
-                                onAddTimeWindow = onAddLocationTimeWindow,
-                                onRemoveTimeWindow = onRemoveLocationTimeWindow,
-                                onSetAllDayPreset = onSetAllDayPresetLocation,
-                                is24HourFormat = uiState.is24HourFormat,
-                                showLocationError = uiState.showLocationError,
-                                locationFocusRequester = locationFocusRequester
-                            )
-                        }
-                        ReminderTriggerType.WIFI -> {
-                            val wifiWindows = uiState.wifiTimeWindows.ifEmpty {
-                                if (uiState.wifiTimeWindow != null) listOf(uiState.wifiTimeWindow) else emptyList()
-                            }
-                            ReminderWifiConfigSection(
-                                ssid = uiState.wifiSsid,
-                                onSsidChange = onWifiSsidChange,
-                                bssid = uiState.wifiBssid,
-                                onBssidChange = onWifiBssidChange,
-                                triggerType = uiState.wifiTriggerType,
-                                onTriggerTypeChange = onWifiTriggerTypeChange,
-                                repeatInterval = uiState.repeatInterval,
-                                onRepeatIntervalChange = onRepeatIntervalChange,
-                                date = uiState.date,
-                                onDateChange = onDateChange,
-                                repeatDays = uiState.repeatDays,
-                                onRepeatDaysChange = onRepeatDaysChange,
-                                onRepeatDayToggle = onRepeatDayToggle,
-                                monthlyDays = uiState.monthlyDays,
-                                onMonthlyDayToggle = onMonthlyDayToggle,
-                                yearlyDates = uiState.yearlyDates,
-                                onAddYearlyDate = onAddYearlyDate,
-                                onRemoveYearlyDate = onRemoveYearlyDate,
-                                timeWindows = wifiWindows,
-                                onTimeWindowsChange = onWifiTimeWindowsChange,
-                                onAddTimeWindow = onAddWifiTimeWindow,
-                                onRemoveTimeWindow = onRemoveWifiTimeWindow,
-                                onSetAllDayPreset = onSetAllDayPresetWifi,
-                                is24HourFormat = uiState.is24HourFormat,
-                                showWifiError = uiState.showWifiError,
-                                wifiFocusRequester = wifiFocusRequester
-                            )
-                        }
-                    }
-                }
+                ReminderTriggerSection(
+                    uiState = uiState,
+                    onClick = onNavigateToTriggerEdit,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
 
             // 3. Checklist Builder Section
@@ -462,28 +369,208 @@ fun ReminderEditScreen(
 
     // Permission Warning "Save Anyway" Dialog
     if (uiState.showPermissionDialog) {
-        ReMindAlertDialog(
+        LvAlertDialog(
             onDismissRequest = onDismissPermissionDialog,
-            title = stringResource(R.string.reminder_permission_dialog_title),
-            text = stringResource(R.string.reminder_permission_dialog_message),
-            confirmButtonText = stringResource(R.string.action_go_to_settings),
-            onConfirmClick = onNavigateToPermissions,
-            dismissButtonText = stringResource(R.string.action_save_anyway),
-            onDismissClick = onSaveAnyway
+            title = { Text(stringResource(R.string.reminder_permission_dialog_title)) },
+            text = { Text(stringResource(R.string.reminder_permission_dialog_message)) },
+            confirmButton = {
+                LvButton(onClick = onNavigateToPermissions) {
+                    Text(stringResource(R.string.action_go_to_settings))
+                }
+            },
+            dismissButton = {
+                LvButton(
+                    onClick = onSaveAnyway,
+                    type = LvButtonType.Outlined,
+                    semantic = LvSemantic.Secondary
+                ) {
+                    Text(stringResource(R.string.action_save_anyway))
+                }
+            }
         )
     }
 
     // Discard Changes Dialog
     if (uiState.showDiscardDialog) {
-        ReMindAlertDialog(
+        LvAlertDialog(
             onDismissRequest = onDismissDiscardDialog,
-            title = stringResource(R.string.discard_changes_title),
-            text = stringResource(R.string.discard_changes_message),
-            confirmButtonText = stringResource(R.string.action_discard),
-            onConfirmClick = onConfirmDiscard,
-            dismissButtonText = stringResource(R.string.action_cancel),
-            onDismissClick = onDismissDiscardDialog
+            title = { Text(stringResource(R.string.discard_changes_title)) },
+            text = { Text(stringResource(R.string.discard_changes_message)) },
+            confirmButton = {
+                LvButton(
+                    onClick = onConfirmDiscard,
+                    semantic = LvSemantic.Destructive
+                ) {
+                    Text(stringResource(R.string.action_discard))
+                }
+            },
+            dismissButton = {
+                LvButton(
+                    onClick = onDismissDiscardDialog,
+                    type = LvButtonType.Outlined,
+                    semantic = LvSemantic.Secondary
+                ) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            }
         )
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun ReminderEditScreenPreview() {
+    ReMindTheme {
+        ReminderEditScreen(
+            uiState = ReminderEditUiState(
+                isLoading = false,
+                id = 1L,
+                title = "Buy groceries",
+                notes = "Milk, Eggs, Bread, Cheese",
+                triggerType = ReminderTriggerType.TIME,
+                time = LocalTime.of(18, 30),
+                date = LocalDate.now(),
+                repeatDays = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY),
+                repeatInterval = ReminderRepeatInterval.WEEKLY,
+                checklist = listOf(
+                    ChecklistItem(id = 1L, text = "Organic Milk", isCompleted = false),
+                    ChecklistItem(id = 2L, text = "Whole wheat bread", isCompleted = true)
+                ),
+                notificationStyle = NotificationStyle.STANDARD,
+                ringtoneTitle = "Default",
+                vibrationEnabled = true,
+                volume = 80,
+                snoozeEnabled = true,
+                snoozeIntervalMinutes = 10,
+                snoozeRepeatCount = 3,
+                is24HourFormat = true
+            ),
+            onBackClick = {},
+            onSaveClick = {},
+            onSaveAnyway = {},
+            onDismissPermissionDialog = {},
+            onNavigateToPermissions = {},
+            onDismissDiscardDialog = {},
+            onConfirmDiscard = {},
+            onTitleChange = {},
+            onNotesChange = {},
+            onTriggerTypeSelected = {},
+            onTimeChange = {},
+            onDateChange = {},
+            onRepeatDaysChange = {},
+            onRepeatDayToggle = {},
+            onRepeatIntervalChange = {},
+            onMonthlyDayToggle = {},
+            onAddYearlyDate = { _, _ -> },
+            onRemoveYearlyDate = {},
+            onLocationNameChange = {},
+            onLatitudeChange = {},
+            onLongitudeChange = {},
+            onRadiusChange = {},
+            onTransitionTypeChange = {},
+            onLocationTimeWindowsChange = {},
+            onAddLocationTimeWindow = {},
+            onRemoveLocationTimeWindow = {},
+            onSetAllDayPresetLocation = {},
+            onWifiSsidChange = {},
+            onWifiBssidChange = {},
+            onWifiTriggerTypeChange = {},
+            onWifiTimeWindowsChange = {},
+            onAddWifiTimeWindow = {},
+            onRemoveWifiTimeWindow = {},
+            onSetAllDayPresetWifi = {},
+            onAddChecklistItem = {},
+            onUpdateChecklistItemText = { _, _ -> },
+            onToggleChecklistItemInitial = { _, _ -> },
+            onDeleteChecklistItem = {},
+            onMoveChecklistItem = { _, _ -> },
+            onNotificationStyleChange = {},
+            onAutoSilenceMinutesChange = {},
+            onUseAlarmStreamChange = {},
+            onRingtoneClick = {},
+            onVibrationChange = {},
+            onVolumeChange = {},
+            onSnoozeSettingsClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun ReminderEditScreenDarkPreview() {
+    ReMindTheme(darkTheme = true) {
+        ReminderEditScreen(
+            uiState = ReminderEditUiState(
+                isLoading = false,
+                id = 1L,
+                title = "Buy groceries",
+                notes = "Milk, Eggs, Bread, Cheese",
+                triggerType = ReminderTriggerType.TIME,
+                time = LocalTime.of(18, 30),
+                date = LocalDate.now(),
+                repeatDays = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY),
+                repeatInterval = ReminderRepeatInterval.WEEKLY,
+                checklist = listOf(
+                    ChecklistItem(id = 1L, text = "Organic Milk", isCompleted = false),
+                    ChecklistItem(id = 2L, text = "Whole wheat bread", isCompleted = true)
+                ),
+                notificationStyle = NotificationStyle.STANDARD,
+                ringtoneTitle = "Default",
+                vibrationEnabled = true,
+                volume = 80,
+                snoozeEnabled = true,
+                snoozeIntervalMinutes = 10,
+                snoozeRepeatCount = 3,
+                is24HourFormat = true
+            ),
+            onBackClick = {},
+            onSaveClick = {},
+            onSaveAnyway = {},
+            onDismissPermissionDialog = {},
+            onNavigateToPermissions = {},
+            onDismissDiscardDialog = {},
+            onConfirmDiscard = {},
+            onTitleChange = {},
+            onNotesChange = {},
+            onTriggerTypeSelected = {},
+            onTimeChange = {},
+            onDateChange = {},
+            onRepeatDaysChange = {},
+            onRepeatDayToggle = {},
+            onRepeatIntervalChange = {},
+            onMonthlyDayToggle = {},
+            onAddYearlyDate = { _, _ -> },
+            onRemoveYearlyDate = {},
+            onLocationNameChange = {},
+            onLatitudeChange = {},
+            onLongitudeChange = {},
+            onRadiusChange = {},
+            onTransitionTypeChange = {},
+            onLocationTimeWindowsChange = {},
+            onAddLocationTimeWindow = {},
+            onRemoveLocationTimeWindow = {},
+            onSetAllDayPresetLocation = {},
+            onWifiSsidChange = {},
+            onWifiBssidChange = {},
+            onWifiTriggerTypeChange = {},
+            onWifiTimeWindowsChange = {},
+            onAddWifiTimeWindow = {},
+            onRemoveWifiTimeWindow = {},
+            onSetAllDayPresetWifi = {},
+            onAddChecklistItem = {},
+            onUpdateChecklistItemText = { _, _ -> },
+            onToggleChecklistItemInitial = { _, _ -> },
+            onDeleteChecklistItem = {},
+            onMoveChecklistItem = { _, _ -> },
+            onNotificationStyleChange = {},
+            onAutoSilenceMinutesChange = {},
+            onUseAlarmStreamChange = {},
+            onRingtoneClick = {},
+            onVibrationChange = {},
+            onVolumeChange = {},
+            onSnoozeSettingsClick = {}
+        )
+    }
+}
+
 

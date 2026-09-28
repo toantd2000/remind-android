@@ -49,9 +49,15 @@
 
     <!-- Trigger Type Selector -->
     <string name="section_trigger_type">Trigger Condition</string>
+    <string name="edit_trigger_title">Edit Trigger Condition</string>
+    <string name="tap_to_edit_trigger">Tap to edit trigger condition</string>
+    <string name="no_location_selected">No location set</string>
+    <string name="no_wifi_selected">No Wi-Fi network specified</string>
     <string name="trigger_time">Time</string>
     <string name="trigger_location">Location</string>
     <string name="trigger_wifi">Wi-Fi</string>
+    <string name="all_day">All day</string>
+    <string name="action_done">Done</string>
 
     <!-- Time Trigger Section -->
     <string name="section_time_trigger">Schedule</string>

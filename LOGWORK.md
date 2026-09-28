@@ -253,3 +253,35 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
   - Toàn bộ unit tests của `:features:alarms`, `:features:reminders`, `:core:alarm`, và `:app` đều pass 100%.
   - Xây dựng nền tảng vững chắc để chuyển sang bước tối ưu trải nghiệm và kiểm thử đồng thời (concurrency testing) giữa 2 module.
 
+### [TDR-079] - Tách Biệt Cấu Hình Điều Kiện Kích Hoạt Sang Màn Hình Chuyên Biệt & Nâng Cấp Thẻ Tóm Tắt (Trigger Summary Card)
+- **Ngày thực hiện:** 2026-09-28
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Trong `ReminderEditScreen`, các mục cấu hình điều kiện kích hoạt (Giờ & Lặp lại, Vị trí địa lý & Bán kính, Kết nối Wi-Fi) trước đây được render trực tiếp dạng inline cuộn dài trong cùng một màn hình chỉnh sửa nhắc nhở.
+  - Việc này khiến màn hình `ReminderEditScreen` quá dài, làm loãng các thông tin cốt lõi (Tiêu đề, Ghi chú, Danh sách công việc Checklist, Âm thanh & Báo thức) và gây rối mắt khi người dùng phải cuộn qua lại giữa các tùy chọn kích hoạt phức tạp.
+- **Quyết định:**
+  1. **Nâng cấp `ReminderTriggerSection` thành Thẻ Tóm Tắt (Summary Card):**
+     - Thay thế toàn bộ khối form inline tại `ReminderEditScreen` bằng một thẻ Card tóm tắt trực quan, phân cấp thị giác rõ ràng:
+       - **Badge Icon & Label:** Hiển thị biểu tượng tương ứng với điều kiện kích hoạt hiện tại (`AccessTime` cho Thời gian, `LocationOn` cho Vị trí, `Wifi` cho Wi-Fi) với màu sắc nổi bật.
+       - **Headline nổi bật:** Hiển thị giờ kích hoạt (vd: `08:30` định dạng theo cài đặt 12h/24h), tên địa điểm (hoặc toạ độ), hoặc tên mạng Wi-Fi (SSID).
+       - **Subtitle chi tiết:** Tóm tắt lịch lặp lại (Một lần, Hàng ngày, Hàng tuần kèm các thứ T2..CN, Hàng tháng ngày X, Hàng năm), loại sự kiện địa lý (Khi đến nơi / Khi rời đi) hoặc sự kiện Wi-Fi (Khi kết nối / Khi ngắt kết nối / Duy trì kết nối) kèm các khung giờ hiệu lực (Active time windows).
+       - **Trạng thái hợp lệ / Lỗi:** Đổi màu viền và hiển thị thông điệp đỏ nếu thiếu dữ liệu bắt buộc (chưa chọn vị trí hoặc chưa nhập Wi-Fi).
+       - **Affordance & Tương tác:** Bo góc squircle chuẩn, hỗ trợ `clickable` toàn vùng, icon mũi tên điều hướng (`KeyboardArrowRight`) và dòng chữ gợi ý "Nhấn để chỉnh sửa".
+  2. **Tạo Màn Hình Cấu Hình Chuyên Biệt `ReminderTriggerEditScreen`:**
+     - Thiết kế giao diện chuyên biệt cho điều kiện kích hoạt với `LiteverTopAppBar` mang tiêu đề "Chỉnh sửa điều kiện kích hoạt", nút Back và nút CTA "Xong" (`R.string.action_done`).
+     - Thanh tab chọn loại kích hoạt độc lập `ReminderTriggerTypeSelector` (Thời gian, Vị trí, Wi-Fi) ở đầu màn hình.
+     - Hiển thị phần cấu hình chuyên sâu tương ứng (`ReminderTimeConfigSection`, `ReminderLocationConfigSection`, `ReminderWifiConfigSection`).
+     - `ReMindBottomBar` ở chân màn hình với nút "Xong" giúp hoàn tất chỉnh sửa nhanh chóng bằng thao tác một tay.
+  3. **Đồng bộ Dữ liệu Hai Chiều qua Scoped ViewModel (`RemindersNavigation.kt`):**
+     - Đăng ký route điều hướng mới `ReminderTriggerEditRoute = "reminder_trigger_edit_route/{reminderId}"`.
+     - Tại `remindersGraph`, `ReminderTriggerEditRoute` trỏ tới ViewModel của màn hình chỉnh sửa cha thông qua `navController.getBackStackEntry(createReminderEditRoute(reminderId))` (fallback `previousBackStackEntry`).
+     - Nhờ chia sẻ chung thể hiện `ReminderEditViewModel`, mọi thay đổi cấu hình trên màn hình kích hoạt được phản ánh tức thì vào `ReminderEditUiState` theo thời gian thực (Zero Desync, State Hoisting). Khi người dùng nhấn "Xong" hoặc Back, dữ liệu đã được đồng bộ 100% về thẻ tóm tắt trên `ReminderEditScreen`.
+  4. **Chuẩn hóa Thành phần Giao diện & Thư viện:**
+     - Chuyển đổi toàn bộ dialog cảnh báo quyền và huỷ thay đổi trong `ReminderEditScreen` sang `LvAlertDialog` và `LvButton` chuẩn `litever-designsystem`.
+- **Hệ quả:**
+  - `ReminderEditScreen` trở nên gọn gàng, súc tích và dễ theo dõi.
+  - Người dùng có không gian tập trung tối đa khi tinh chỉnh các điều kiện kích hoạt phức tạp (Geofence, Wi-Fi, Time Windows).
+  - Trải nghiệm chuyển màn hình mượt mà, nhất quán, không xảy ra xung đột dữ liệu hay delay khi lưu.
+  - Toàn bộ unit tests của các module liên quan tiếp tục đạt 100% kiểm thử thành công.
+
+

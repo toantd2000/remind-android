@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,10 +34,12 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import vn.io.litever.designsystem.components.LiteverIconButton
 import vn.io.litever.designsystem.components.LiteverOutlinedCard
 import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.ChecklistItem
 import vn.io.litever.remind.features.reminders.R
 
@@ -59,15 +62,15 @@ fun ReminderChecklistBuilderSection(
         }
     }
 
-    LiteverOutlinedCard(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp)
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        color = LiteverTheme.colors.surfaceContainerLow,
+        shape = LiteverTheme.shapes.large
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(LiteverTheme.spacing.medium)
         ) {
             // Section Header
             Row(
@@ -249,3 +252,57 @@ fun ReminderChecklistBuilderSection(
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun ReminderChecklistBuilderSectionPreview() {
+    ReMindTheme {
+        ReminderChecklistBuilderSection(
+            checklist = listOf(
+                ChecklistItem(id = 1, text = "Buy milk", isCompleted = false, orderIndex = 0),
+                ChecklistItem(id = 2, text = "Buy eggs", isCompleted = true, orderIndex = 1),
+                ChecklistItem(id = 3, text = "Pick up dry cleaning", isCompleted = false, orderIndex = 2)
+            ),
+            onAddItem = {},
+            onUpdateItemText = { _, _ -> },
+            onToggleItemInitialCheck = { _, _ -> },
+            onDeleteItem = {},
+            onMoveItem = { _, _ -> }
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ReminderChecklistBuilderSectionEmptyPreview() {
+    ReMindTheme {
+        ReminderChecklistBuilderSection(
+            checklist = emptyList(),
+            onAddItem = {},
+            onUpdateItemText = { _, _ -> },
+            onToggleItemInitialCheck = { _, _ -> },
+            onDeleteItem = {},
+            onMoveItem = { _, _ -> }
+        )
+    }
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun ReminderChecklistBuilderSectionDarkPreview() {
+    ReMindTheme(darkTheme = true) {
+        ReminderChecklistBuilderSection(
+            checklist = listOf(
+                ChecklistItem(id = 1, text = "Buy milk", isCompleted = false, orderIndex = 0),
+                ChecklistItem(id = 2, text = "Buy eggs", isCompleted = true, orderIndex = 1),
+                ChecklistItem(id = 3, text = "Pick up dry cleaning", isCompleted = false, orderIndex = 2)
+            ),
+            onAddItem = {},
+            onUpdateItemText = { _, _ -> },
+            onToggleItemInitialCheck = { _, _ -> },
+            onDeleteItem = {},
+            onMoveItem = { _, _ -> }
+        )
+    }
+}
+

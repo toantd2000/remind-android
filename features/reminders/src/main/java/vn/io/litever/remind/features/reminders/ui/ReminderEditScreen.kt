@@ -303,7 +303,7 @@ fun ReminderEditScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            contentPadding = PaddingValues(LiteverTheme.spacing.medium),
+            contentPadding = PaddingValues(horizontal = LiteverTheme.spacing.medium),
             verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
         ) {
             // 1. Basic Info Section

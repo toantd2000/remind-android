@@ -266,9 +266,9 @@ private fun createLargeAdLayout(
     adView.bodyView = bodyView
 
     val ctaButton = Button(ctx).apply {
-        layoutParams = android.widget.LinearLayout.LayoutParams(
-            android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
-            android.widget.LinearLayout.LayoutParams.WRAP_CONTENT // Trả về bằng button default
+        layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT // Trả về bằng button default
         ).apply {
             topMargin = 12 * 3
         }
@@ -291,16 +291,16 @@ private fun createLargeAdLayout(
 private fun createSmallAdLayout(
     ctx: android.content.Context,
     adView: GmsNativeAdView,
-    colorOnSurface: androidx.compose.ui.graphics.Color,
-    colorOnSurfaceVariant: androidx.compose.ui.graphics.Color,
+    colorOnSurface: Color,
+    colorOnSurfaceVariant: Color,
     colorPrimary: Color,
     headlineTypeface: Typeface?,
     bodyTypeface: Typeface?
 ): LinearLayout {
     val density = ctx.resources.displayMetrics.density
-    val container = android.widget.LinearLayout(ctx).apply {
-        orientation = android.widget.LinearLayout.VERTICAL
-        val pad = (12 * density).toInt()
+    val container = LinearLayout(ctx).apply {
+        orientation = LinearLayout.VERTICAL
+        val pad = (16 * density).toInt()
         setPadding(pad, pad, pad, pad)
         layoutParams = android.widget.FrameLayout.LayoutParams(
             android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
@@ -309,18 +309,18 @@ private fun createSmallAdLayout(
     }
 
     // --- HÀNG 1: ICON + HEADLINE ---
-    val topRow = android.widget.LinearLayout(ctx).apply {
-        orientation = android.widget.LinearLayout.HORIZONTAL
-        layoutParams = android.widget.LinearLayout.LayoutParams(
-            android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
-            android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
+    val topRow = LinearLayout(ctx).apply {
+        orientation = LinearLayout.HORIZONTAL
+        layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
         )
         gravity = android.view.Gravity.CENTER_VERTICAL
     }
 
     val iconView = ImageView(ctx).apply {
         val size = (24 * density).toInt() // Vuông tầm 24dp tương đối với 2 dòng chữ
-        layoutParams = android.widget.LinearLayout.LayoutParams(size, size).apply {
+        layoutParams = LinearLayout.LayoutParams(size, size).apply {
             marginEnd = (8 * density).toInt()
         }
         scaleType = ImageView.ScaleType.FIT_CENTER
@@ -331,12 +331,12 @@ private fun createSmallAdLayout(
     adView.iconView = iconView
 
     val headlineView = TextView(ctx).apply {
-        layoutParams = android.widget.LinearLayout.LayoutParams(0, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+        layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         textSize = 15f
         setTextColor(colorOnSurface.toArgb())
-        typeface = headlineTypeface ?: android.graphics.Typeface.DEFAULT_BOLD
+        typeface = headlineTypeface ?: Typeface.DEFAULT_BOLD
         maxLines = 2 // Đổi thành max 2 dòng
-        ellipsize = android.text.TextUtils.TruncateAt.END
+        ellipsize = TextUtils.TruncateAt.END
     }
     topRow.addView(headlineView)
     adView.headlineView = headlineView
@@ -344,33 +344,33 @@ private fun createSmallAdLayout(
     container.addView(topRow)
 
     // --- HÀNG 2: MÔ TẢ + NÚT CTA ---
-    val bottomRow = android.widget.LinearLayout(ctx).apply {
-        orientation = android.widget.LinearLayout.HORIZONTAL
-        layoutParams = android.widget.LinearLayout.LayoutParams(
-            android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
-            android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
+    val bottomRow = LinearLayout(ctx).apply {
+        orientation = LinearLayout.HORIZONTAL
+        layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
         ).apply {
-            topMargin = (6 * density).toInt()
+            topMargin = (4 * density).toInt()
         }
         gravity = android.view.Gravity.CENTER_VERTICAL
     }
 
     val bodyView = TextView(ctx).apply {
-        layoutParams = android.widget.LinearLayout.LayoutParams(0, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply {
+        layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply {
             marginEnd = (12 * density).toInt()
         }
-        textSize = 13f
+        textSize = 12f
         setTextColor(colorOnSurfaceVariant.toArgb())
         bodyTypeface?.let { typeface = it }
-        maxLines = 2
-        ellipsize = android.text.TextUtils.TruncateAt.END
+        maxLines = 3
+        ellipsize = TextUtils.TruncateAt.END
     }
     bottomRow.addView(bodyView)
     adView.bodyView = bodyView
 
     val ctaButton = Button(ctx, null, android.R.attr.buttonStyleSmall).apply {
-        layoutParams = android.widget.LinearLayout.LayoutParams(
-            android.widget.LinearLayout.LayoutParams.WRAP_CONTENT,
+        layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT,
             (32 * density).toInt() // Giảm chiều cao xuống 32dp
         )
         textSize = 11f 

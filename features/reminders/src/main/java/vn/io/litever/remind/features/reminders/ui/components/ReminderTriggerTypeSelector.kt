@@ -1,7 +1,10 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccessTime
 import androidx.compose.material.icons.rounded.LocationOn
@@ -17,6 +20,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.ReminderTriggerType
 import vn.io.litever.remind.features.reminders.R
@@ -44,17 +49,21 @@ fun ReminderTriggerTypeSelector(
             Tab(
                 selected = triggerType == selectedTriggerType,
                 onClick = { onTriggerTypeSelected(triggerType) },
-                icon = {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                    )
-                },
                 text = {
-                    Text(
-                        text = stringResource(labelRes),
-                        fontWeight = if (selectedTriggerType == triggerType) FontWeight.Bold else FontWeight.Normal,
-                    )
+                    Row(
+                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.tiny)
+                    ) {
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = null,
+                            modifier = Modifier.size(14.dp),
+                        )
+                        Text(
+                            text = stringResource(labelRes),
+                            fontWeight = if (selectedTriggerType == triggerType) FontWeight.Bold else FontWeight.SemiBold,
+                        )
+                    }
                 },
             )
         }

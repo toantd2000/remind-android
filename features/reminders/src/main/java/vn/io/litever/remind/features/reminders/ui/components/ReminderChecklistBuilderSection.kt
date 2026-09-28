@@ -115,7 +115,7 @@ fun ReminderChecklistBuilderSection(
             } else {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                    verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.extraSmall)
                 ) {
                     checklist.forEachIndexed { index, item ->
                         Surface(
@@ -129,13 +129,13 @@ fun ReminderChecklistBuilderSection(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 8.dp, vertical = 6.dp)
+                                    .padding(vertical = 6.dp)
                             ) {
                                 // Drag Handle at Start
                                 Icon(
                                     imageVector = Icons.Rounded.DragHandle,
                                     contentDescription = stringResource(R.string.reorder_handle),
-                                    tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.5f),
+                                    tint = LiteverTheme.colors.onSurfaceVariant,
                                     modifier = Modifier
                                         .padding(start = 4.dp, end = 8.dp)
                                         .size(20.dp)
@@ -195,21 +195,24 @@ fun ReminderChecklistBuilderSection(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(LiteverTheme.shapes.medium),
-                color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.2f),
+                color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.38f),
                 shape = LiteverTheme.shapes.medium
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 4.dp)
+                        .padding(vertical = 4.dp)
                 ) {
                     BasicTextField(
                         value = newItemText,
                         onValueChange = { newItemText = it },
                         modifier = Modifier
                             .weight(1f)
-                            .padding(vertical = 8.dp),
+                            .padding(
+                                vertical = LiteverTheme.spacing.small,
+                                horizontal = LiteverTheme.spacing.medium
+                            ),
                         textStyle = LiteverTheme.typography.bodyMedium.copy(
                             color = LiteverTheme.colors.onSurface
                         ),
@@ -226,15 +229,13 @@ fun ReminderChecklistBuilderSection(
                                     Text(
                                         text = stringResource(R.string.checklist_item_placeholder),
                                         style = LiteverTheme.typography.bodyMedium,
-                                        color = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.6f)
+                                        color = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.6f),
                                     )
                                 }
                                 innerTextField()
                             }
                         }
                     )
-
-                    Spacer(modifier = Modifier.width(8.dp))
 
                     LiteverIconButton(
                         onClick = handleAddItem,

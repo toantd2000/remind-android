@@ -49,9 +49,12 @@ fun ReMindBottomBar(
         Row(
             modifier = Modifier
                 .windowInsetsPadding(windowInsets)
-                .padding(all = LiteverTheme.spacing.smallMedium,)
+                .padding(
+                    horizontal = LiteverTheme.spacing.smallMedium,
+                    vertical = LiteverTheme.spacing.small
+                )
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.smallMedium),
+            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small),
             verticalAlignment = Alignment.CenterVertically,
             content = content
         )

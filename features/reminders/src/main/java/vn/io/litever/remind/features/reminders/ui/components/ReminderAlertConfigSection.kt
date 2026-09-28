@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
+import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -37,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import vn.io.litever.designsystem.components.LiteverListItem
 import vn.io.litever.designsystem.components.LiteverOutlinedCard
@@ -46,6 +48,7 @@ import vn.io.litever.designsystem.components.LiteverSingleChoiceSegmentedButtonR
 import vn.io.litever.designsystem.components.LiteverSwitch
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingIcon
+import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.features.reminders.R
 import kotlin.math.roundToInt
@@ -88,15 +91,15 @@ fun ReminderAlertConfigSection(
         }
     }
 
-    LiteverOutlinedCard(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp)
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = LiteverTheme.shapes.large,
+        color = LiteverTheme.colors.surfaceContainerLow
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(LiteverTheme.spacing.medium)
         ) {
             Text(
                 text = stringResource(R.string.section_alert_settings),
@@ -105,7 +108,7 @@ fun ReminderAlertConfigSection(
                 color = LiteverTheme.colors.onSurface
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
 
             // Notification Style Selector (Standard Heads-Up vs Full-Screen Alarm)
             Text(
@@ -140,7 +143,7 @@ fun ReminderAlertConfigSection(
 
             // Sound & Ringtone Settings (Only shown for Alarm Ringing mode)
             if (notificationStyle == NotificationStyle.FULL_SCREEN) {
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
 
                 Text(
                     text = stringResource(R.string.sound_settings_title),
@@ -351,7 +354,7 @@ fun ReminderAlertConfigSection(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
 
             // Alert & Snooze Behavior Section
             Text(
@@ -446,7 +449,7 @@ fun ReminderAutoSilenceBottomSheetContent(
         Text(
             text = stringResource(R.string.auto_silence_title),
             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(LiteverTheme.spacing.medium)
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -474,5 +477,80 @@ fun ReminderAutoSilenceBottomSheetContent(
                 modifier = Modifier.clickable { onMinutesSelect(option) }
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ReminderAlertConfigSectionPreview() {
+    ReMindTheme {
+        ReminderAlertConfigSection(
+            notificationStyle = NotificationStyle.FULL_SCREEN,
+            onNotificationStyleChange = {},
+            ringtoneTitle = "Default Ringtone",
+            onRingtoneClick = {},
+            volume = 80,
+            onVolumeChange = {},
+            vibrationEnabled = true,
+            onVibrationChange = {},
+            autoSilenceMinutes = 5,
+            onAutoSilenceMinutesChange = {},
+            useAlarmStream = true,
+            onUseAlarmStreamChange = {},
+            snoozeEnabled = true,
+            snoozeIntervalMinutes = 10,
+            snoozeRepeatCount = 3,
+            onSnoozeSettingsClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ReminderAlertConfigSectionStandardPreview() {
+    ReMindTheme {
+        ReminderAlertConfigSection(
+            notificationStyle = NotificationStyle.STANDARD,
+            onNotificationStyleChange = {},
+            ringtoneTitle = "Default Ringtone",
+            onRingtoneClick = {},
+            volume = 80,
+            onVolumeChange = {},
+            vibrationEnabled = true,
+            onVibrationChange = {},
+            autoSilenceMinutes = 5,
+            onAutoSilenceMinutesChange = {},
+            useAlarmStream = true,
+            onUseAlarmStreamChange = {},
+            snoozeEnabled = true,
+            snoozeIntervalMinutes = 10,
+            snoozeRepeatCount = 3,
+            onSnoozeSettingsClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun ReminderAlertConfigSectionDarkPreview() {
+    ReMindTheme(darkTheme = true) {
+        ReminderAlertConfigSection(
+            notificationStyle = NotificationStyle.FULL_SCREEN,
+            onNotificationStyleChange = {},
+            ringtoneTitle = "Default Ringtone",
+            onRingtoneClick = {},
+            volume = 80,
+            onVolumeChange = {},
+            vibrationEnabled = true,
+            onVibrationChange = {},
+            autoSilenceMinutes = 5,
+            onAutoSilenceMinutesChange = {},
+            useAlarmStream = true,
+            onUseAlarmStreamChange = {},
+            snoozeEnabled = true,
+            snoozeIntervalMinutes = 10,
+            snoozeRepeatCount = 3,
+            onSnoozeSettingsClick = {}
+        )
     }
 }

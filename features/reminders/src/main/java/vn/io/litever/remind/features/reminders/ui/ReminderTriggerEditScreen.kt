@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -136,19 +137,24 @@ fun ReminderTriggerEditScreen(
     LiteverScaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
-            LiteverTopAppBar(
-                title = stringResource(R.string.edit_trigger_title),
-                onBackClick = onBackClick,
-                actions = {
-                    TextButton(onClick = onBackClick) {
-                        Text(
-                            text = stringResource(R.string.action_done),
-                            color = LiteverTheme.colors.primary,
-                            style = LiteverTheme.typography.labelLarge
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                LiteverTopAppBar(
+                    title = stringResource(R.string.edit_trigger_title),
+                    onBackClick = onBackClick,
+                    navigationIcon = {
+                        Icon(
+                            imageVector = Icons.Rounded.Close,
+                            contentDescription = "Back"
                         )
                     }
-                }
-            )
+                )
+                ReminderTriggerTypeSelector(
+                    selectedTriggerType = uiState.triggerType,
+                    onTriggerTypeSelected = onTriggerTypeSelected
+                )
+            }
         },
         bottomBar = {
             ReMindBottomBar {
@@ -169,21 +175,6 @@ fun ReminderTriggerEditScreen(
             contentPadding = PaddingValues(LiteverTheme.spacing.medium),
             verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
         ) {
-            // 1. Trigger Type Selector Tabs
-            item {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        text = stringResource(R.string.section_trigger_type),
-                        style = LiteverTheme.typography.titleMedium,
-                        color = LiteverTheme.colors.onSurface
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    ReminderTriggerTypeSelector(
-                        selectedTriggerType = uiState.triggerType,
-                        onTriggerTypeSelected = onTriggerTypeSelected
-                    )
-                }
-            }
 
             // 2. Active Trigger Configuration
             item {

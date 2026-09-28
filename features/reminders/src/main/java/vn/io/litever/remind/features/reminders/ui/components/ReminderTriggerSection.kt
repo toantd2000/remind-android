@@ -127,24 +127,18 @@ fun ReminderTriggerSection(
     }
 
     Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(LiteverTheme.shapes.large)
-            .clickable { onClick() },
+        modifier = modifier.fillMaxWidth(),
         color = if (hasError) {
             LiteverTheme.colors.errorContainer.copy(alpha = 0.15f)
         } else {
             LiteverTheme.colors.surfaceContainerLow
         },
         shape = LiteverTheme.shapes.large,
-        border = BorderStroke(
-            width = if (hasError) 1.5.dp else 1.dp,
-            color = if (hasError) {
-                LiteverTheme.colors.error
-            } else {
-                LiteverTheme.colors.outlineVariant.copy(alpha = 0.35f)
-            }
-        )
+        border = if (hasError) BorderStroke(
+            width = 1.dp,
+            color = LiteverTheme.colors.error
+        ) else null,
+        onClick = onClick
     ) {
         Column(
             modifier = Modifier
@@ -167,35 +161,38 @@ fun ReminderTriggerSection(
                 // Type Badge
                 Surface(
                     shape = CircleShape,
-                    color = LiteverTheme.colors.primaryContainer.copy(alpha = 0.6f)
+                    color = LiteverTheme.colors.tertiaryContainer,
+                    contentColor = LiteverTheme.colors.onTertiaryContainer
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                        modifier = Modifier.padding(
+                            horizontal = LiteverTheme.spacing.small,
+                            vertical = LiteverTheme.spacing.extraSmall
+                        ),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.extraSmall)
                     ) {
                         Icon(
                             imageVector = triggerIcon,
                             contentDescription = null,
-                            tint = LiteverTheme.colors.primary,
                             modifier = Modifier.size(14.dp)
                         )
                         Text(
                             text = stringResource(triggerTitleRes),
                             style = LiteverTheme.typography.labelSmall,
                             fontWeight = FontWeight.SemiBold,
-                            color = LiteverTheme.colors.onPrimaryContainer
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
 
             // Body: Icon + Content + Arrow
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
             ) {
                 // Leading Icon Container
                 Box(
@@ -218,8 +215,6 @@ fun ReminderTriggerSection(
                         modifier = Modifier.size(24.dp)
                     )
                 }
-
-                Spacer(modifier = Modifier.width(14.dp))
 
                 // Detail Column
                 Column(
@@ -261,17 +256,15 @@ fun ReminderTriggerSection(
                     }
                 }
 
-                Spacer(modifier = Modifier.width(8.dp))
-
                 Icon(
                     imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
                     contentDescription = stringResource(R.string.tap_to_edit_trigger),
-                    tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.7f),
+                    tint = LiteverTheme.colors.onSurfaceVariant,
                     modifier = Modifier.size(22.dp)
                 )
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
 
             // Footer hint: Tap to edit
             Row(

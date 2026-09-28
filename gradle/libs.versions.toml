@@ -35,6 +35,8 @@ emoji2-emojipicker = "1.7.0"
 mockk = "1.14.11"
 turbine = "1.2.1"
 robolectric = "4.17"
+screengrab = "2.1.1"
+uiautomator = "2.3.0"
 
 
 [libraries]
@@ -102,6 +104,8 @@ turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine
 
 # Testing
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+fastlane-screengrab = { group = "tools.fastlane", name = "screengrab", version.ref = "screengrab" }
+androidx-test-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
 
 
 [plugins]

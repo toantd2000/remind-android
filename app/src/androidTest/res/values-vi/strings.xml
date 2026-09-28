@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Screengrab Mock Data - Vietnamese -->
+    <!-- Alarms -->
+    <string name="mock_alarm_1_label">Thức dậy đi làm</string>
+    <string name="mock_alarm_2_label">Tập thể dục sáng</string>
+    <string name="mock_alarm_3_label">Uống vitamin &amp; khoáng chất</string>
+    <string name="mock_alarm_4_label">Đi ngủ đúng giờ</string>
+
+    <!-- Reminders -->
+    <string name="mock_reminder_1_title">Họp chiến lược &amp; Tổng kết quý</string>
+    <string name="mock_reminder_1_notes">Chuẩn bị báo cáo tiến độ và kế hoạch quý 4</string>
+    <string name="mock_reminder_2_title">Mua sắm hoa quả &amp; Thực phẩm</string>
+    <string name="mock_reminder_2_notes">Sữa chua không đường, táo tây, bánh mì yến mạch</string>
+    <string name="mock_reminder_3_title">Uống đủ 2L nước mỗi ngày</string>
+    <string name="mock_reminder_3_notes">Giữ gìn năng lượng và sức khoẻ cho ngày dài</string>
+    <string name="mock_reminder_4_title">Thanh toán hoá đơn tiền điện</string>
+    <string name="mock_reminder_4_notes">Hạn chót trước 17:00 chiều nay</string>
+
+    <!-- Ringing & Mission -->
+    <string name="mock_ringing_message">Thức dậy thôi nào! Một ngày tuyệt vời đang chờ đón bạn.</string>
+    <string name="mock_mission_typing_phrase">Mỗi sớm mai thức dậy là một cơ hội tuyệt vời để chinh phục ước mơ.</string>
+    <string name="mock_mission_memory_name">Thử thách Trí nhớ Lật ô</string>
+
+    <!-- Morning Briefing & Weather -->
+    <string name="mock_weather_city">Hà Nội</string>
+    <string name="mock_weather_condition">Trời nắng nhẹ, mát mẻ</string>
+    <string name="mock_briefing_greeting">Chào buổi sáng! Hãy sẵn sàng cho một ngày thật năng động nhé.</string>
+</resources>

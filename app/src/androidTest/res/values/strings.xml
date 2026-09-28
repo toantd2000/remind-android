@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Screengrab Mock Data - English -->
+    <!-- Alarms -->
+    <string name="mock_alarm_1_label">Wake up &amp; Work</string>
+    <string name="mock_alarm_2_label">Morning Workout</string>
+    <string name="mock_alarm_3_label">Take Vitamins</string>
+    <string name="mock_alarm_4_label">Bedtime &amp; Relaxation</string>
+
+    <!-- Reminders -->
+    <string name="mock_reminder_1_title">Quarterly Project Review</string>
+    <string name="mock_reminder_1_notes">Prepare slide presentation and roadmap review for Q4</string>
+    <string name="mock_reminder_2_title">Grocery &amp; Fresh Fruits</string>
+    <string name="mock_reminder_2_notes">Buy organic milk, apples, and whole grain bread</string>
+    <string name="mock_reminder_3_title">Drink 2L Water Daily</string>
+    <string name="mock_reminder_3_notes">Stay hydrated throughout the working day</string>
+    <string name="mock_reminder_4_title">Pay Apartment Electric Bill</string>
+    <string name="mock_reminder_4_notes">Due before 5:00 PM</string>
+
+    <!-- Ringing & Mission -->
+    <string name="mock_ringing_message">Wake up and shine! A wonderful day is waiting for you.</string>
+    <string name="mock_mission_typing_phrase">Every morning brings new potential to conquer your dreams.</string>
+    <string name="mock_mission_memory_name">Memory Match Challenge</string>
+
+    <!-- Morning Briefing & Weather -->
+    <string name="mock_weather_city">London</string>
+    <string name="mock_weather_condition">Partly Cloudy</string>
+    <string name="mock_briefing_greeting">Good morning! Ready for a productive day?</string>
+</resources>

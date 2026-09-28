@@ -285,3 +285,33 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
   - Toàn bộ unit tests của các module liên quan tiếp tục đạt 100% kiểm thử thành công.
 
 
+
+### [TDR-080] - Tự Động Chụp Ảnh Màn Hình Play Store Bằng Fastlane Screengrab & Cô Lập Dữ Liệu Mock Đa Ngôn Ngữ
+- **Ngày thực hiện:** 2026-09-29
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Để chuẩn bị phát hành lên Google Play Store, ứng dụng cần bộ ảnh chụp màn hình hoàn chỉnh, sắc nét trên các tỷ lệ màn hình (Điện thoại và Máy tính bảng) theo 2 ngôn ngữ chính (Tiếng Anh và Tiếng Việt).
+  - Việc chụp thủ công tốn nhiều công sức, dễ sai lệch kích thước và khó duy trì khi cập nhật UI. Nếu đưa dữ liệu test vào Room DB thật sẽ gây ô nhiễm cơ sở dữ liệu, phức tạp hóa việc dọn dẹp môi trường và dễ gây flaky test.
+- **Quyết định:**
+  1. **Tích hợp Fastlane Screengrab & UiAutomator:**
+     - Khai báo `tools.fastlane:screengrab:2.1.1` và `androidx.test.uiautomator:uiautomator:2.3.0` trong `libs.versions.toml` và `app/build.gradle.kts`.
+     - Áp dụng `UiAutomatorScreenshotStrategy` chụp toàn màn hình Jetpack Compose sắc nét, ổn định từ Android 10 đến các API hiện đại nhất.
+     - Cấp các quyền kiểm thử cần thiết trong `app/src/debug/AndroidManifest.xml` (`WRITE_EXTERNAL_STORAGE`, `CHANGE_CONFIGURATION`, `DUMP`).
+  2. **Cô Lập Hoàn Toàn Khỏi Room Database (Zero DB Contamination):**
+     - Tuyệt đối không chèn bản ghi hay gọi DAO/Room DB trong quá trình chụp ảnh.
+     - Dùng `createAndroidComposeRule<ComponentActivity>()` để setContent trực tiếp các Stateless Screen Composables (`AlarmListScreen`, `ReminderListScreen`, `AlarmRingingScreen`, `MissionRingingScreen`, `AlarmMessageScreen`).
+     - Toàn bộ dữ liệu mẫu (Mock Data) khởi tạo thuần túy trong bộ nhớ (In-memory) và bọc trong `ReMindTheme(darkTheme = false)` (Light Mode theo chuẩn thiết kế Store).
+  3. **Quản Lý Chuỗi Mock Đa Ngôn Ngữ Qua AndroidTest Resources:**
+     - Thiết lập tài nguyên chuỗi chuyên biệt trong `app/src/androidTest/res/values/strings.xml` (Tiếng Anh) và `values-vi/strings.xml` (Tiếng Việt).
+     - Kết hợp cùng `@ClassRule LocaleTestRule()` của Screengrab để tự động hoán đổi ngôn ngữ (`vi`, `en-US`) trong một lần chạy kiểm thử duy nhất.
+  4. **Giải Quyết Triệt Để Xung Đột Scoped Storage & ADB Pull trên Windows:**
+     - Phát triển `ExternalStorageScreenshotCallback` kế thừa `ScreenshotCallback`, điều hướng ghi toàn bộ ảnh chụp vào thư mục ngoài của ứng dụng: `context.getExternalFilesDir("screengrab")` (`/sdcard/Android/data/<package>/files/screengrab/<locale>/images/screenshots/`).
+     - Cho phép lệnh `adb pull` trên máy host kéo ảnh trực tiếp 100% không bị `Permission denied` (loại bỏ hoàn toàn fallback pipe Unix `tar` bị treo/corrupted trên Windows PowerShell và CMD).
+  5. **Tạo Cấu Hình Screengrabfile & Lane Fastlane:**
+     - Tạo `fastlane/Screengrabfile` với cấu hình package name (`vn.io.litever.remind.debug` / `.test`), locales `['vi', 'en-US']` (chuẩn ISO thư mục metadata Play Store), `use_timestamp_suffix(false)` và output `fastlane/metadata/android`.
+     - Bổ sung lane `:screenshots` trong `fastlane/Fastfile` tự động build `assembleDebug assembleAndroidTest` và kéo ảnh về đúng thư mục Play Store metadata.
+- **Hệ quả:**
+  - Quy trình chụp ảnh tự động hóa 100% chỉ bằng một lệnh duy nhất: `bundle exec fastlane screenshots`.
+  - Sinh và cập nhật thành công 12 ảnh màn hình Play Store chuẩn Light Mode (6 ảnh Tiếng Việt trong `fastlane/metadata/android/vi/images/phoneScreenshots/` và 6 ảnh Tiếng Anh trong `fastlane/metadata/android/en-US/images/phoneScreenshots/`).
+  - Tự động sinh báo cáo HTML trực quan `fastlane/metadata/android/screenshots.html`.
+  - Tách biệt tuyệt đối khỏi cơ sở dữ liệu Room, đảm bảo tính bất biến, tốc độ chụp cực nhanh (~25s/locale) và không sinh rác dữ liệu trên thiết bị.

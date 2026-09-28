@@ -47,6 +47,14 @@ Deploy a new version to the Google Play (Production)
 
 Deploy a new version to the Google Play (Internal Track)
 
+### android screenshots
+
+```sh
+[bundle exec] fastlane android screenshots
+```
+
+Automatically capture localized screenshots for Play Store using screengrab
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.

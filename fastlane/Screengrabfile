@@ -1,0 +1,29 @@
+# Configuration file for Fastlane Screengrab
+# Documentation: https://docs.fastlane.tools/actions/screengrab/
+
+# The package name of the app under test (debug build has .debug suffix)
+app_package_name('vn.io.litever.remind.debug')
+tests_package_name('vn.io.litever.remind.debug.test')
+
+# Explicit paths to the APK files
+app_apk_path('app/build/outputs/apk/debug/app-debug.apk')
+tests_apk_path('app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk')
+
+# Specify test classes to execute for screenshots
+use_tests_in_classes(['vn.io.litever.remind.app.ScreenshotsTest'])
+
+# Locales to capture screenshots for (matches Google Play Store metadata dirs: vi and en-US)
+locales(['vi', 'en-US'])
+
+# Use clean screenshot names without timestamp suffix (e.g. 1_alarm_list.png)
+use_timestamp_suffix(false)
+
+# Output directory mapping directly to Play Store Fastlane metadata
+output_directory('fastlane/metadata/android')
+
+# Test instrumentation runner
+test_instrumentation_runner('androidx.test.runner.AndroidJUnitRunner')
+
+# Do not clear whole folder to protect icon & featureGraphic assets
+clear_previous_screenshots(false)
+

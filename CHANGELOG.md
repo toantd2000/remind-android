@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.0] - 2026-09-23
 
 ### Added
+- **Play Store Screenshot Automation (Fastlane Screengrab):** Added `ScreenshotsTest` instrumented test suite using `tools.fastlane:screengrab:2.1.1` and `UiAutomatorScreenshotStrategy` to automate capturing 6 core Play Store screenshots (`1_alarm_list`, `2_reminder_tab`, `3_ringing`, `4_mission_typing`, `5_mission_memory`, `6_alarm_message`).
+- **In-Memory Mock Isolation & Multi-Language Strings:** Completely eliminated database dependencies from screenshot tests by rendering stateless Composables with in-memory mock data. Localized all mock text into English (`values/strings.xml`) and Vietnamese (`values-vi/strings.xml`) under `app/src/androidTest`, seamlessly switching via `LocaleTestRule`.
+- **Fastlane Screengrab Lane & Configuration:** Created `fastlane/Screengrabfile` and added `:screenshots` lane to `fastlane/Fastfile` for automated build and capture across phone and tablet form factors.
 - **AlarmSettingRow Component:** Created `AlarmSettingRow` in `:features:alarms` leveraging Material 3 `ListItem` and `ReMindSettingIcon` for consistent setting rows in `AlarmEditScreen`.
 - **8-Cell Palette Grid:** Added an 8-cell 2-row color palette selector (`IconButton`s with `primaryContainer` backgrounds, centered `primary` text, selection borders, and checkmark indicators) in `GeneralSettingsScreen`.
 - **Litever Palette Integration:** Integrated all 7 predefined Litever color palettes (Red, Orange, Yellow, Green, Blue, Indigo, Violet) and Dynamic wallpaper coloring.

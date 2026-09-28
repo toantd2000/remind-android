@@ -139,3 +139,28 @@ Cơ chế này đảm bảo "sự tiến hóa" liên tục qua các task, tránh
      `val illustrationRes = if (!LiteverTheme.colors.isLight) R.drawable.no_alarm_illustration_dark else R.drawable.no_alarm_illustration`
   3. Cách tiếp cận này hoàn toàn an toàn về mặt luồng thực thi, không đụng chạm đến Context gốc, hỗ trợ 100% Android Studio Preview và đổi theme mượt mà tức thì.
 
+---
+
+## [2026-09-29] Fastlane Screengrab trên Android Hiện Đại (API 29+) & Tương Thích Môi Trường Windows
+### Vấn đề / Task:
+Khi chạy lane `fastlane screenshots` trên thiết bị Android 13+ (API 33), lệnh kéo ảnh qua `adb pull` thất bại với lỗi `Permission denied`. Sau đó Fastlane chuyển sang cơ chế fallback Unix pipe `run-as ... tar -cC ... | tar -xv ...`, lệnh này bị treo vô hạn (hang/freeze) trên Windows PowerShell và Command Prompt.
+
+### Phân tích nguyên nhân:
+1. **Screengrab Library lưu vào Internal Storage trên API > 29:**
+   Lớp mặc định `FileWritingScreenshotCallback` trong thư viện `tools.fastlane:screengrab` có đoạn mã `if (Build.VERSION.SDK_INT > 29) context.getDir("screengrab", Context.MODE_PRIVATE)`. Đoạn mã này ép ghi ảnh vào thư mục riêng tư `/data/user/0/<package>/app_screengrab/`.
+2. **Hạn chế của `adb pull` & sự cố Pipe trên Windows:**
+   - Trên các thiết bị thương mại không root, `adb pull` không có quyền đọc trực tiếp từ thư mục riêng tư `/data/user/0/...` do cơ chế bảo mật Scoped Storage và sandbox của Android.
+   - Khi `adb pull` bị `Permission denied`, Fastlane fallback sang pipeline: `adb shell run-as <pkg> "tar -cC <dir> <base>" | tar -xv ...`. Trên Windows, stdout qua pipe của `adb shell` mặc định chuyển đổi LF thành CRLF làm hỏng binary stream của file `.tar`, khiến tiến trình `tar` giải nén bị kẹt hoặc treo vô hạn.
+3. **Quy ước thư mục Locale của Google Play Console:**
+   Google Play Store sử dụng mã ngôn ngữ `vi` (chứ không phải `vi-VN`) làm thư mục metadata cho Tiếng Việt (`fastlane/metadata/android/vi/`). Nếu để `locales(['vi-VN', ...])`, Screengrab sẽ tạo thư mục mới `vi-VN` thay vì đồng bộ vào `vi`.
+
+### Giải pháp / Rule mới:
+1. **Tạo `ExternalStorageScreenshotCallback`:**
+   Implement `ScreenshotCallback` tùy biến, chuyển hướng lưu toàn bộ ảnh chụp vào thư mục dữ liệu ngoài của ứng dụng: `appContext.getExternalFilesDir("screengrab")` (tương ứng với `/sdcard/Android/data/<package>/files/screengrab/<locale>/images/screenshots/`).
+   - Thư mục này được Android cấp quyền tự động cho ứng dụng mà không cần xin quyền runtime storage nguy hiểm.
+   - `adb pull` có toàn quyền đọc từ thư mục `/sdcard/Android/data/<package>/files/` mà không bị `Permission denied`.
+   - Screengrab runner trong Fastlane tự động ưu tiên quét đường dẫn external storage này trước. Vì `adb pull` thành công 100%, Fastlane không bao giờ kích hoạt fallback pipeline `tar` bị lỗi trên Windows.
+2. **Chuẩn hóa Screengrabfile:**
+   - Đặt `locales(['vi', 'en-US'])` khớp chuẩn 100% với cấu trúc Play Store metadata directory.
+   - Đặt `use_timestamp_suffix(false)` để sinh tên file ảnh sạch sẽ (`1_alarm_list.png` đến `6_alarm_message.png`), tự động ghi đè và cập nhật chính xác bộ ảnh Play Store.
+

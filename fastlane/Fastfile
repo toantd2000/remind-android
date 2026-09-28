@@ -49,4 +49,17 @@ platform :android do
         skip_upload_aab: options[:skip_upload_apk] ? true : false
     )
   end
+
+  desc "Automatically capture localized screenshots for Play Store using screengrab"
+  lane :screenshots do |options|
+    # Build debug and androidTest APKs specifically for the app module
+    gradle(task: ":app:assembleDebug :app:assembleAndroidTest")
+
+    # Run screengrab with device type / specific parameters if passed
+    device_type = options[:device_type] || "phone"
+    screengrab(
+      device_type: device_type
+    )
+  end
 end
+

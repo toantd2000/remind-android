@@ -163,3 +163,23 @@ This document records the solidified technical decisions and behavioral scenario
   - The TopAppBar refresh button only displays a spinning loading indicator and disables during an active network request (`isRefreshing`), never locking during background AI processing. Users can trigger a manual refresh at any time when not already refreshing.
   - The location picker in `WeatherInfoView` is disabled only during active network refresh (`!isRefreshing`).
 
+
+## 11. Play Store Screenshot Automation (Fastlane Screengrab)
+
+### Scenario: Automated Multi-Language Store Screenshots Without DB Side-Effects
+- **Expected Behavior**:
+  - Automatically captures high-resolution screenshots for 6 critical Play Store listing screens:
+    1. Alarm List (`1_alarm_list`)
+    2. Reminders Tab (`2_reminder_tab`)
+    3. Alarm Ringing (`3_ringing`)
+    4. Mission Typing (`4_mission_typing`)
+    5. Mission Memory Game (`5_mission_memory`)
+    6. Alarm Morning Message (`6_alarm_message`)
+  - Supports multiple locales (English `en-US` and Vietnamese `vi-VN`) seamlessly in a single command.
+  - Zero database contamination: absolutely no fake rows inserted or queried from Room DB / DAO.
+  - Consistent Light Mode theme presentation for clear store listing visibility.
+- **Technical Decision**:
+  - Adopt `tools.fastlane:screengrab:2.1.1` and `androidx.test.uiautomator:uiautomator:2.3.0` with `UiAutomatorScreenshotStrategy`.
+  - Use `createAndroidComposeRule<ComponentActivity>()` to directly render stateless screen composables with pure in-memory mock models.
+  - Store localized mock content in `app/src/androidTest/res/values/strings.xml` and `values-vi/strings.xml`, resolving dynamically per locale through `LocaleTestRule`.
+  - Maintain `fastlane/Screengrabfile` and Fastfile `:screenshots` lane for single-command end-to-end execution.

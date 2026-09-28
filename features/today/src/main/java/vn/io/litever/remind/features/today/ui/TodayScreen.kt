@@ -11,8 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Refresh
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -149,7 +148,7 @@ fun TodayScreen(
                 actions = {
                     ReMindLoadingIconButton(
                         onClick = onRefresh,
-                        icon = Icons.Rounded.Refresh,
+                        icon = ReMindIcons.Refresh,
                         loading = isRefreshing,
                         enabled = !isRefreshing,
                         contentDescription = stringResource(R.string.refresh)

@@ -17,12 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AccessTime
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.DateRange
-import androidx.compose.material.icons.rounded.DeleteOutline
-import androidx.compose.material.icons.rounded.WbSunny
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
@@ -95,7 +90,7 @@ fun ReminderTimeWindowConfigSection(
                     modifier = Modifier.weight(1f)
                 ) {
                     ReMindSettingIcon(
-                        imageVector = Icons.Rounded.DateRange,
+                        imageVector = ReMindIcons.DateRange,
                         selected = isEnabled
                     )
                     Spacer(modifier = Modifier.width(12.dp))
@@ -166,7 +161,7 @@ fun ReminderTimeWindowConfigSection(
                                 .height(36.dp)
                         ) {
                             Icon(
-                                imageVector = Icons.Rounded.WbSunny,
+                                imageVector = ReMindIcons.WbSunny,
                                 contentDescription = null,
                                 modifier = Modifier.size(16.dp)
                             )
@@ -192,7 +187,7 @@ fun ReminderTimeWindowConfigSection(
                                 .height(36.dp)
                         ) {
                             Icon(
-                                imageVector = Icons.Rounded.Add,
+                                imageVector = ReMindIcons.Add,
                                 contentDescription = null,
                                 modifier = Modifier.size(16.dp)
                             )
@@ -239,7 +234,7 @@ fun ReminderTimeWindowConfigSection(
                                             modifier = Modifier.size(24.dp)
                                         ) {
                                             Icon(
-                                                imageVector = Icons.Rounded.DeleteOutline,
+                                                imageVector = ReMindIcons.DeleteOutline,
                                                 contentDescription = "Remove Time Window",
                                                 tint = LiteverTheme.colors.error
                                             )

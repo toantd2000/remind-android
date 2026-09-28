@@ -3,9 +3,7 @@ package vn.io.litever.remind.features.settings.ui
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.*
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -72,7 +70,7 @@ fun AlarmSettingsScreen(
                         subtitle = stringResource(R.string.built_in_speaker_desc),
                         checked = uiState.useBuiltInSpeaker,
                         onCheckedChange = onBuiltInSpeakerChange,
-                        icon = Icons.Rounded.Speaker
+                        icon = ReMindIcons.Speaker
                     )
 
                     SettingsSwitchTile(
@@ -80,7 +78,7 @@ fun AlarmSettingsScreen(
                         subtitle = stringResource(R.string.pre_notification_desc),
                         checked = uiState.isPreNotificationEnabled,
                         onCheckedChange = onPreNotificationChange,
-                        icon = Icons.Rounded.NotificationImportant
+                        icon = ReMindIcons.NotificationImportant
                     )
                 }
             }

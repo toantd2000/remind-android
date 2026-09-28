@@ -16,17 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Code
-import androidx.compose.material.icons.rounded.Description
-import androidx.compose.material.icons.rounded.Favorite
-import androidx.compose.material.icons.rounded.History
-import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.Language
-import androidx.compose.material.icons.rounded.PrivacyTip
-import androidx.compose.material.icons.rounded.Security
-import androidx.compose.material.icons.rounded.Share
-import androidx.compose.material.icons.rounded.Star
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -160,14 +150,14 @@ fun SettingsScreen(
                     ReMindSettingsItem(
                         title = stringResource(R.string.setting_general_title),
                         subtitle = stringResource(R.string.setting_general_subtitle),
-                        icon = Icons.Rounded.Language,
+                        icon = ReMindIcons.Language,
                         onClick = onNavigateToGeneralSettings
                     )
 
                     ReMindSettingsItem(
                         title = stringResource(R.string.setting_permissions_title),
                         subtitle = stringResource(R.string.setting_permissions_subtitle),
-                        icon = Icons.Rounded.Security,
+                        icon = ReMindIcons.Security,
                         onClick = onNavigateToPermissions
                     )
 
@@ -180,26 +170,26 @@ fun SettingsScreen(
                 ReMindSettingsGroup(title = stringResource(R.string.category_support)) {
                     // SettingsItem(
                     //     title = stringResource(R.string.setting_qa),
-                    //     icon = Icons.Rounded.QuestionAnswer,
+                    //     icon = ReMindIcons.QuestionAnswer,
                     //     onClick = { showFaqDialog = true }
                     // )
 
                     ReMindSettingsItem(
                         title = stringResource(R.string.setting_rate),
-                        icon = Icons.Rounded.Star,
+                        icon = ReMindIcons.Star,
                         onClick = { rateApp(context) }
                     )
 
                     ReMindSettingsItem(
                         title = stringResource(R.string.setting_share),
-                        icon = Icons.Rounded.Share,
+                        icon = ReMindIcons.Share,
                         onClick = { shareApp(context) }
                     )
 
                     ReMindSettingsItem(
                         title = stringResource(R.string.setting_support_dev_title),
                         subtitle = stringResource(R.string.setting_support_dev_desc),
-                        icon = Icons.Rounded.Favorite,
+                        icon = ReMindIcons.Favorite,
                         onClick = { showSupportDeveloperDialog = true }
                     )
                 }
@@ -210,32 +200,32 @@ fun SettingsScreen(
                 ReMindSettingsGroup(title = stringResource(R.string.category_about)) {
                     ReMindSettingsItem(
                         title = stringResource(R.string.setting_story),
-                        icon = Icons.Rounded.History,
+                        icon = ReMindIcons.History,
                         onClick = { launchCustomTab(context, BuildConfig.URL_AUTHOR) }
                     )
 
                     ReMindSettingsItem(
                         title = stringResource(R.string.setting_history),
-                        icon = Icons.Rounded.Code,
+                        icon = ReMindIcons.Code,
                         onClick = { launchCustomTab(context, BuildConfig.URL_CHANGELOG) }
                     )
 
                     ReMindSettingsItem(
                         title = stringResource(R.string.setting_terms),
-                        icon = Icons.Rounded.Description,
+                        icon = ReMindIcons.Description,
                         onClick = { launchCustomTab(context, BuildConfig.URL_TERMS) }
                     )
 
                     ReMindSettingsItem(
                         title = stringResource(R.string.setting_privacy),
-                        icon = Icons.Rounded.PrivacyTip,
+                        icon = ReMindIcons.PrivacyTip,
                         onClick = { launchCustomTab(context, BuildConfig.URL_PRIVACY) }
                     )
 
                     ReMindSettingsItem(
                         title = stringResource(R.string.setting_attributions_title),
                         subtitle = stringResource(R.string.setting_attributions_subtitle),
-                        icon = Icons.Rounded.Description,
+                        icon = ReMindIcons.Description,
                         onClick = onNavigateToAttributions
                     )
                 }
@@ -261,7 +251,7 @@ fun SettingsScreen(
                             versionName,
                             versionCode
                         ),
-                        icon = Icons.Rounded.Info
+                        icon = ReMindIcons.Info
                     )
                 }
             }

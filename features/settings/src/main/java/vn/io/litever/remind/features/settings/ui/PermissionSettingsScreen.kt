@@ -18,14 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Alarm
-import androidx.compose.material.icons.rounded.BatteryChargingFull
-import androidx.compose.material.icons.rounded.DoNotDisturbOff
-import androidx.compose.material.icons.rounded.ErrorOutline
-import androidx.compose.material.icons.rounded.Layers
-import androidx.compose.material.icons.rounded.Notifications
-import androidx.compose.material.icons.rounded.SettingsSuggest
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -131,7 +124,7 @@ fun PermissionSettingsScreen(
                     title = stringResource(R.string.permission_exact_alarm_title),
                     description = stringResource(R.string.permission_exact_alarm_desc),
                     isGranted = uiState.isExactAlarmGranted,
-                    icon = Icons.Rounded.Alarm,
+                    icon = ReMindIcons.Alarm,
                     isCritical = true,
                     onRequest = onRequestExactAlarm
                 )
@@ -143,7 +136,7 @@ fun PermissionSettingsScreen(
                     title = stringResource(R.string.permission_notification_title),
                     description = stringResource(R.string.permission_notification_desc),
                     isGranted = uiState.isNotificationGranted,
-                    icon = Icons.Rounded.Notifications,
+                    icon = ReMindIcons.Notifications,
                     isCritical = true,
                     onRequest = onRequestNotification
                 )
@@ -155,7 +148,7 @@ fun PermissionSettingsScreen(
                     title = stringResource(R.string.permission_overlay_title),
                     description = stringResource(R.string.permission_overlay_desc),
                     isGranted = uiState.isOverlayGranted,
-                    icon = Icons.Rounded.Layers,
+                    icon = ReMindIcons.Layers,
                     onRequest = onRequestOverlay
                 )
             }
@@ -166,7 +159,7 @@ fun PermissionSettingsScreen(
                     title = stringResource(R.string.permission_battery_title),
                     description = stringResource(R.string.permission_battery_desc),
                     isGranted = uiState.isBatteryOptIgnored,
-                    icon = Icons.Rounded.BatteryChargingFull,
+                    icon = ReMindIcons.BatteryChargingFull,
                     onRequest = onRequestBatteryOptimization
                 )
             }
@@ -177,7 +170,7 @@ fun PermissionSettingsScreen(
                     title = stringResource(R.string.permission_dnd_title),
                     description = stringResource(R.string.permission_dnd_desc),
                     isGranted = uiState.isDndPolicyGranted,
-                    icon = Icons.Rounded.DoNotDisturbOff,
+                    icon = ReMindIcons.DoNotDisturbOff,
                     onRequest = onRequestDndPolicy
                 )
             }
@@ -275,7 +268,7 @@ fun PermissionTile(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Icon(
-                        imageVector = Icons.Rounded.ErrorOutline,
+                        imageVector = ReMindIcons.ErrorOutline,
                         contentDescription = null,
                         tint = LiteverTheme.colors.error,
                         modifier = Modifier.size(LiteverTheme.spacing.medium)
@@ -321,7 +314,7 @@ fun ManufacturerSettingsTile(onOpen: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.SettingsSuggest,
+                    imageVector = ReMindIcons.SettingsSuggest,
                     contentDescription = null,
                     tint = LiteverTheme.colors.secondary
                 )

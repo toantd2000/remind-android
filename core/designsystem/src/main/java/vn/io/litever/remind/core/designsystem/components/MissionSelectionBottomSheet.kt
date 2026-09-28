@@ -10,12 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Calculate
-import androidx.compose.material.icons.rounded.GridView
-import androidx.compose.material.icons.rounded.Keyboard
-import androidx.compose.material.icons.rounded.QrCodeScanner
-import androidx.compose.material.icons.rounded.Smartphone
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -84,35 +79,35 @@ fun MissionSelectionBottomSheetContent(
                 type = MissionType.TYPING,
                 title = stringResource(R.string.mission_typing),
                 description = stringResource(R.string.mission_typing_desc),
-                icon = Icons.Rounded.Keyboard,
+                icon = ReMindIcons.Keyboard,
                 isAvailable = true
             ),
             MissionItem(
                 type = MissionType.MEMORY_FIND_COLOR_TILES,
                 title = stringResource(R.string.mission_memory_tiles),
                 description = stringResource(R.string.mission_memory_tiles_desc),
-                icon = Icons.Rounded.GridView,
+                icon = ReMindIcons.GridView,
                 isAvailable = true
             ),
             MissionItem(
                 type = MissionType.MATH,
                 title = stringResource(R.string.mission_math),
                 description = stringResource(R.string.mission_math_desc),
-                icon = Icons.Rounded.Calculate,
+                icon = ReMindIcons.Calculate,
                 isAvailable = false
             ),
             MissionItem(
                 type = MissionType.SHAKE,
                 title = stringResource(R.string.mission_shake),
                 description = stringResource(R.string.mission_shake_desc),
-                icon = Icons.Rounded.Smartphone,
+                icon = ReMindIcons.Smartphone,
                 isAvailable = false
             ),
             MissionItem(
                 type = MissionType.QR_CODE,
                 title = stringResource(R.string.mission_qr_code),
                 description = stringResource(R.string.mission_qr_code_desc),
-                icon = Icons.Rounded.QrCodeScanner,
+                icon = ReMindIcons.QrCodeScanner,
                 isAvailable = false
             )
         )

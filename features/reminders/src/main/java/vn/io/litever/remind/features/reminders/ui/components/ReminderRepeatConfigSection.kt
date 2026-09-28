@@ -15,13 +15,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.ArrowDropDown
-import androidx.compose.material.icons.rounded.CalendarMonth
-import androidx.compose.material.icons.rounded.Clear
-import androidx.compose.material.icons.rounded.Close
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -148,7 +142,7 @@ fun ReminderRepeatConfigSection(
                             modifier = Modifier.weight(1f)
                         ) {
                             ReMindSettingIcon(
-                                imageVector = Icons.Rounded.CalendarMonth,
+                                imageVector = ReMindIcons.CalendarMonth,
                                 selected = date != null
                             )
                             Spacer(modifier = Modifier.width(12.dp))
@@ -177,14 +171,14 @@ fun ReminderRepeatConfigSection(
                                 modifier = Modifier.size(24.dp)
                             ) {
                                 Icon(
-                                    imageVector = Icons.Rounded.Clear,
+                                    imageVector = ReMindIcons.Clear,
                                     contentDescription = "Clear Date",
                                     tint = LiteverTheme.colors.onSurfaceVariant
                                 )
                             }
                         } else {
                             Icon(
-                                imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                                imageVector = ReMindIcons.KeyboardArrowRight,
                                 contentDescription = null,
                                 tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.5f)
                             )
@@ -328,7 +322,7 @@ fun ReminderRepeatConfigSection(
                             modifier = Modifier.height(36.dp)
                         ) {
                             Icon(
-                                imageVector = Icons.Rounded.Add,
+                                imageVector = ReMindIcons.Add,
                                 contentDescription = null,
                                 modifier = Modifier.size(16.dp)
                             )
@@ -358,7 +352,7 @@ fun ReminderRepeatConfigSection(
                                 trailingIcon = if (yearlyDates.size > 1) {
                                     {
                                         Icon(
-                                            imageVector = Icons.Rounded.Close,
+                                            imageVector = ReMindIcons.Close,
                                             contentDescription = "Remove Date",
                                             modifier = Modifier
                                                 .size(16.dp)
@@ -476,7 +470,7 @@ fun ReminderRepeatConfigSection(
                                     )
                                 }
                                 Icon(
-                                    imageVector = Icons.Rounded.ArrowDropDown,
+                                    imageVector = ReMindIcons.ArrowDropDown,
                                     contentDescription = null,
                                     tint = LiteverTheme.colors.onSurfaceVariant
                                 )
@@ -541,7 +535,7 @@ fun ReminderRepeatConfigSection(
                                     )
                                 }
                                 Icon(
-                                    imageVector = Icons.Rounded.ArrowDropDown,
+                                    imageVector = ReMindIcons.ArrowDropDown,
                                     contentDescription = null,
                                     tint = LiteverTheme.colors.onSurfaceVariant
                                 )

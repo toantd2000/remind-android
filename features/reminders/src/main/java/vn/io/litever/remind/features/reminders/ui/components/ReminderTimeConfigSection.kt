@@ -11,9 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
-import androidx.compose.material.icons.rounded.AccessTime
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -107,7 +105,7 @@ fun ReminderTimeConfigSection(
                         modifier = Modifier.weight(1f)
                     ) {
                         ReMindSettingIcon(
-                            imageVector = Icons.Rounded.AccessTime,
+                            imageVector = ReMindIcons.AccessTime,
                             selected = false
                         )
                         Spacer(modifier = Modifier.width(12.dp))
@@ -128,7 +126,7 @@ fun ReminderTimeConfigSection(
                     }
 
                     Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                        imageVector = ReMindIcons.KeyboardArrowRight,
                         contentDescription = null,
                         tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.5f)
                     )

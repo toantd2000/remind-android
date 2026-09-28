@@ -17,15 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.BrightnessMedium
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.ChevronRight
-import androidx.compose.material.icons.rounded.DarkMode
-import androidx.compose.material.icons.rounded.Language
-import androidx.compose.material.icons.rounded.LightMode
-import androidx.compose.material.icons.rounded.Palette
-import androidx.compose.material.icons.rounded.Schedule
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -226,9 +218,9 @@ fun GeneralSettingsScreen(
         ?: stringResource(R.string.language_english)
 
     val themeIcon = when (uiState.themeMode) {
-        "LIGHT" -> Icons.Rounded.LightMode
-        "DARK" -> Icons.Rounded.DarkMode
-        else -> Icons.Rounded.BrightnessMedium
+        "LIGHT" -> ReMindIcons.LightMode
+        "DARK" -> ReMindIcons.DarkMode
+        else -> ReMindIcons.BrightnessMedium
     }
 
     Scaffold(
@@ -254,7 +246,7 @@ fun GeneralSettingsScreen(
                         icon = themeIcon,
                         trailingContent = {
                             Icon(
-                                imageVector = Icons.Rounded.ChevronRight,
+                                imageVector = ReMindIcons.ChevronRight,
                                 contentDescription = null,
                                 tint = LiteverTheme.colors.onSurfaceVariant
                             )
@@ -270,7 +262,7 @@ fun GeneralSettingsScreen(
                     ReMindSettingsItem(
                         title = stringResource(R.string.color_source_headline),
                         subtitle = currentColorPaletteLabel,
-                        icon = Icons.Rounded.Palette,
+                        icon = ReMindIcons.Palette,
                         trailingContent = {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -283,7 +275,7 @@ fun GeneralSettingsScreen(
                                         .background(currentColorSwatch)
                                 )
                                 Icon(
-                                    imageVector = Icons.Rounded.ChevronRight,
+                                    imageVector = ReMindIcons.ChevronRight,
                                     contentDescription = null,
                                     tint = LiteverTheme.colors.onSurfaceVariant
                                 )
@@ -300,10 +292,10 @@ fun GeneralSettingsScreen(
                     ReMindSettingsItem(
                         title = stringResource(R.string.setting_language),
                         subtitle = currentLanguageLabel,
-                        icon = Icons.Rounded.Language,
+                        icon = ReMindIcons.Language,
                         trailingContent = {
                             Icon(
-                                imageVector = Icons.Rounded.ChevronRight,
+                                imageVector = ReMindIcons.ChevronRight,
                                 contentDescription = null,
                                 tint = LiteverTheme.colors.onSurfaceVariant
                             )
@@ -319,10 +311,10 @@ fun GeneralSettingsScreen(
                     ReMindSettingsItem(
                         title = stringResource(R.string.hour_format_24_headline),
                         subtitle = currentTimeFormatLabel,
-                        icon = Icons.Rounded.Schedule,
+                        icon = ReMindIcons.Schedule,
                         trailingContent = {
                             Icon(
-                                imageVector = Icons.Rounded.ChevronRight,
+                                imageVector = ReMindIcons.ChevronRight,
                                 contentDescription = null,
                                 tint = LiteverTheme.colors.onSurfaceVariant
                             )
@@ -529,7 +521,7 @@ private fun ColorCircleSwatch(
         ) {
             if (isSelected) {
                 Icon(
-                    imageVector = Icons.Rounded.Check,
+                    imageVector = ReMindIcons.Check,
                     contentDescription = null,
                     tint = containerColor,
                     modifier = Modifier.size(20.dp)

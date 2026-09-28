@@ -10,9 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.MoreVert
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -149,7 +147,7 @@ fun ReminderListScreen(
                     Box {
                         LiteverIconButton(onClick = { showTopMenu = true }) {
                             Icon(
-                                imageVector = Icons.Rounded.MoreVert,
+                                imageVector = ReMindIcons.MoreVert,
                                 contentDescription = stringResource(R.string.action_more),
                                 tint = LiteverTheme.colors.onSurface
                             )
@@ -182,7 +180,7 @@ fun ReminderListScreen(
                 onClick = onAddReminderClick
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.Add,
+                    imageVector = ReMindIcons.Add,
                     contentDescription = stringResource(R.string.add_reminder_title)
                 )
             }

@@ -14,11 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Checklist
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.DragHandle
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -80,7 +76,7 @@ fun ReminderChecklistBuilderSection(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = Icons.Rounded.Checklist,
+                        imageVector = ReMindIcons.Checklist,
                         contentDescription = null,
                         tint = LiteverTheme.colors.primary
                     )
@@ -133,7 +129,7 @@ fun ReminderChecklistBuilderSection(
                             ) {
                                 // Drag Handle at Start
                                 Icon(
-                                    imageVector = Icons.Rounded.DragHandle,
+                                    imageVector = ReMindIcons.DragHandle,
                                     contentDescription = stringResource(R.string.reorder_handle),
                                     tint = LiteverTheme.colors.onSurfaceVariant,
                                     modifier = Modifier
@@ -176,7 +172,7 @@ fun ReminderChecklistBuilderSection(
                                     modifier = Modifier.size(32.dp)
                                 ) {
                                     Icon(
-                                        imageVector = Icons.Rounded.Close,
+                                        imageVector = ReMindIcons.Close,
                                         contentDescription = "Delete",
                                         tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.7f),
                                         modifier = Modifier.size(18.dp)
@@ -242,7 +238,7 @@ fun ReminderChecklistBuilderSection(
                         modifier = Modifier.size(36.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.Add,
+                            imageVector = ReMindIcons.Add,
                             contentDescription = stringResource(R.string.add_checklist_item),
                             tint = if (newItemText.isNotBlank()) LiteverTheme.colors.primary else LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.4f),
                             modifier = Modifier.size(20.dp)

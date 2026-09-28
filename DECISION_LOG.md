@@ -183,3 +183,13 @@ This document records the solidified technical decisions and behavioral scenario
   - Use `createAndroidComposeRule<ComponentActivity>()` to directly render stateless screen composables with pure in-memory mock models.
   - Store localized mock content in `app/src/androidTest/res/values/strings.xml` and `values-vi/strings.xml`, resolving dynamically per locale through `LocaleTestRule`.
   - Maintain `fastlane/Screengrabfile` and Fastfile `:screenshots` lane for single-command end-to-end execution.
+
+## 12. Icon System & Dependency Isolation
+
+### Scenario: Centralized Iconography via ReMindIcons
+- **Expected Behavior**: Feature modules (`:app`, `:features:*`) must not depend directly on Material Icons Extended or import `androidx.compose.material.icons.*`. All icons across the application must be accessed through a centralized single source of truth.
+- **Technical Decision**:
+  - Centralize all used icons into `ReMindIcons` located at `vn.io.litever.remind.core.designsystem.icon.ReMindIcons` in `:core:designsystem`.
+  - Use Google NowInAndroid flat-properties convention (`ReMindIcons.Add`, `ReMindIcons.ArrowBack`, `ReMindIcons.Settings`, etc.) returning `ImageVector`.
+  - Confine `implementation(libs.material.icons.extended)` exclusively to `:core:designsystem`. Remove this dependency from `:app` and all `:features:*` modules to prevent classpath leaking and enforce strict encapsulation.
+

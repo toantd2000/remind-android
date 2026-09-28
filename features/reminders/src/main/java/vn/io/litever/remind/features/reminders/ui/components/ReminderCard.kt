@@ -13,14 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AccessTime
-import androidx.compose.material.icons.rounded.Checklist
-import androidx.compose.material.icons.rounded.DateRange
-import androidx.compose.material.icons.rounded.LocationOn
-import androidx.compose.material.icons.rounded.MoreVert
-import androidx.compose.material.icons.rounded.Snooze
-import androidx.compose.material.icons.rounded.Wifi
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -203,7 +196,7 @@ fun ReminderCard(
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.Checklist,
+                            imageVector = ReMindIcons.Checklist,
                             contentDescription = null,
                             tint = accentColor,
                             modifier = Modifier.size(16.dp)
@@ -260,7 +253,7 @@ fun ReminderCard(
                     modifier = Modifier.size(32.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Rounded.MoreVert,
+                        imageVector = ReMindIcons.MoreVert,
                         contentDescription = stringResource(R.string.action_more),
                         modifier = Modifier.size(20.dp),
                         tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.6f)
@@ -306,7 +299,7 @@ private fun TriggerBadge(
             } else {
                 stringResource(R.string.trigger_time)
             }
-            Icons.Rounded.AccessTime to timeStr
+            ReMindIcons.AccessTime to timeStr
         }
         ReminderTriggerType.LOCATION -> {
             val loc = reminder.locationTrigger
@@ -335,7 +328,7 @@ private fun TriggerBadge(
             } else {
                 stringResource(R.string.trigger_location)
             }
-            Icons.Rounded.LocationOn to locStr
+            ReMindIcons.LocationOn to locStr
         }
         ReminderTriggerType.WIFI -> {
             val wifi = reminder.wifiTrigger
@@ -364,7 +357,7 @@ private fun TriggerBadge(
             } else {
                 stringResource(R.string.trigger_wifi)
             }
-            Icons.Rounded.Wifi to wifiStr
+            ReMindIcons.Wifi to wifiStr
         }
     }
 
@@ -396,7 +389,7 @@ private fun SnoozingBadge(
             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
         ) {
             Icon(
-                imageVector = Icons.Rounded.Snooze,
+                imageVector = ReMindIcons.Snooze,
                 contentDescription = null,
                 tint = LiteverTheme.colors.onSecondaryContainer,
                 modifier = Modifier.size(12.dp)
@@ -423,7 +416,7 @@ private fun TimeWindowBadge(startTime: String, endTime: String) {
             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
         ) {
             Icon(
-                imageVector = Icons.Rounded.DateRange,
+                imageVector = ReMindIcons.DateRange,
                 contentDescription = null,
                 tint = LiteverTheme.colors.onSecondaryContainer,
                 modifier = Modifier.size(12.dp)

@@ -15,11 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
-import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
-import androidx.compose.material.icons.rounded.ChevronRight
-import androidx.compose.material.icons.rounded.Refresh
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -156,7 +152,7 @@ fun TypingMissionConfigScreen(
                     subtitle = stringResource(vn.io.litever.remind.features.mission.R.string.phrases_count, selectedPhrases.size),
                     trailingContent = {
                         Icon(
-                            imageVector = Icons.Rounded.ChevronRight,
+                            imageVector = ReMindIcons.ChevronRight,
                             contentDescription = null,
                         )
                     },
@@ -225,7 +221,7 @@ fun TypingMissionConfigScreen(
                         semantic = LvSemantic.Secondary
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.Refresh,
+                            imageVector = ReMindIcons.Refresh,
                             contentDescription = "Reset",
                             modifier = Modifier.size(20.dp)
                         )
@@ -250,7 +246,7 @@ fun TypingMissionConfigScreen(
                         semantic = LvSemantic.Text
                     ) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
+                            imageVector = ReMindIcons.KeyboardArrowLeft,
                             contentDescription = null,
                             modifier = Modifier.size(28.dp)
                         )
@@ -270,7 +266,7 @@ fun TypingMissionConfigScreen(
                         semantic = LvSemantic.Text
                     ) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                            imageVector = ReMindIcons.KeyboardArrowRight,
                             contentDescription = null,
                             modifier = Modifier.size(28.dp)
                         )

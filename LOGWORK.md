@@ -315,3 +315,10 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
   - Sinh và cập nhật thành công 12 ảnh màn hình Play Store chuẩn Light Mode (6 ảnh Tiếng Việt trong `fastlane/metadata/android/vi/images/phoneScreenshots/` và 6 ảnh Tiếng Anh trong `fastlane/metadata/android/en-US/images/phoneScreenshots/`).
   - Tự động sinh báo cáo HTML trực quan `fastlane/metadata/android/screenshots.html`.
   - Tách biệt tuyệt đối khỏi cơ sở dữ liệu Room, đảm bảo tính bất biến, tốc độ chụp cực nhanh (~25s/locale) và không sinh rác dữ liệu trên thiết bị.
+
+### [TDR-081] - Tập Trung Hóa Icons Vào ReMindIcons & Cô Lập Dependency Material Icons
+- **Date:** 2026-09-29 | **Status:** Accepted
+- **Context:** Các màn hình rải rác import trực tiếp `androidx.compose.material.icons.*` và phụ thuộc `libs.material.icons.extended` ở mọi feature module gây phình classpath và thiếu kiểm soát.
+- **Decision:** Tạo object `ReMindIcons` tập trung toàn bộ icons sử dụng trong `:core:designsystem`, xóa hoàn toàn `material.icons.extended` khỏi `:app` và tất cả `:features:*`.
+- **Consequences:** Toàn bộ modules chỉ sử dụng icons qua `ReMindIcons`, cô lập triệt để dependency và bảo đảm Single Source of Truth cho icon UI.
+

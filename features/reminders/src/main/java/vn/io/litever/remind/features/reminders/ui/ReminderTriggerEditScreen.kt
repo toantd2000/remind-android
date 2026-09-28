@@ -12,10 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.Close
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -145,7 +142,7 @@ fun ReminderTriggerEditScreen(
                     onBackClick = onBackClick,
                     navigationIcon = {
                         Icon(
-                            imageVector = Icons.Rounded.Close,
+                            imageVector = ReMindIcons.Close,
                             contentDescription = "Back"
                         )
                     }

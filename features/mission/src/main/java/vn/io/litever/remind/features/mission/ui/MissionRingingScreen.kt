@@ -23,11 +23,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowForward
-import androidx.compose.material.icons.rounded.Alarm
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Flag
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -170,7 +166,7 @@ fun MissionRingingScreen(
                                 semantic = LvSemantic.Text
                             ) {
                                 Icon(
-                                    imageVector = Icons.Rounded.Close,
+                                    imageVector = ReMindIcons.Close,
                                     contentDescription = stringResource(vn.io.litever.remind.core.designsystem.R.string.cancel)
                                 )
                             }
@@ -190,7 +186,7 @@ fun MissionRingingScreen(
                                     horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.extraSmall)
                                 ) {
                                     Icon(
-                                        imageVector = Icons.Rounded.Alarm,
+                                        imageVector = ReMindIcons.Alarm,
                                         contentDescription = null,
                                         tint = timerContentColor,
                                         modifier = Modifier.size(14.dp)
@@ -385,7 +381,7 @@ private fun MissionProgressScaffold(
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Rounded.Flag,
+                        imageVector = ReMindIcons.Flag,
                         contentDescription = null,
                         tint = LiteverTheme.colors.primary,
                         modifier = Modifier.size(14.dp)
@@ -511,7 +507,7 @@ private fun MissionBottomDockedBar(
                 )
                 Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
                 Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
+                    imageVector = ReMindIcons.ArrowForward,
                     contentDescription = null,
                     modifier = Modifier.size(16.dp)
                 )

@@ -15,11 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Alarm
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.NotificationsActive
-import androidx.compose.material.icons.rounded.Snooze
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -129,7 +125,7 @@ fun ReminderRingingScreen(
                 modifier = Modifier.padding(horizontal = 24.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.NotificationsActive,
+                    imageVector = ReMindIcons.NotificationsActive,
                     contentDescription = null,
                     tint = LiteverTheme.colors.primary,
                     modifier = Modifier.size(36.dp)
@@ -223,7 +219,7 @@ fun ReminderRingingScreen(
                         .height(56.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Rounded.Check,
+                        imageVector = ReMindIcons.Check,
                         contentDescription = null,
                         modifier = Modifier.size(24.dp)
                     )
@@ -256,7 +252,7 @@ fun ReminderRingingScreen(
                             .height(52.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.Snooze,
+                            imageVector = ReMindIcons.Snooze,
                             contentDescription = null,
                             modifier = Modifier.size(20.dp)
                         )

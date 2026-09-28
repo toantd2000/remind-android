@@ -28,8 +28,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Notifications
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -324,7 +323,7 @@ fun AlarmRingingContent(
                         )
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.Notifications,
+                            imageVector = ReMindIcons.Notifications,
                             contentDescription = null,
                             modifier = Modifier.size(14.dp),
                             tint = LiteverTheme.colors.onTertiaryContainer

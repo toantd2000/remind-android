@@ -15,8 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.WifiFind
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -141,7 +140,7 @@ fun ReminderWifiConfigSection(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.WifiFind,
+                    imageVector = ReMindIcons.WifiFind,
                     contentDescription = null,
                     modifier = Modifier.size(18.dp)
                 )

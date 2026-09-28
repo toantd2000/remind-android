@@ -6,8 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Notifications
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -229,7 +228,7 @@ fun AlarmPreviewContent(
                         )
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.Notifications,
+                            imageVector = ReMindIcons.Notifications,
                             contentDescription = null,
                             modifier = Modifier.size(14.dp),
                             tint = LiteverTheme.colors.onTertiaryContainer

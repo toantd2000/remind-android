@@ -10,8 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Checklist
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
@@ -65,7 +64,7 @@ fun ReminderRingingChecklist(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = Icons.Rounded.Checklist,
+                        imageVector = ReMindIcons.Checklist,
                         contentDescription = null,
                         tint = LiteverTheme.colors.primary,
                         modifier = Modifier.size(20.dp)

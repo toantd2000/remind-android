@@ -17,9 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.VolumeUp
-import androidx.compose.material.icons.rounded.LibraryMusic
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -148,7 +146,7 @@ fun RingtoneSelectionScreen(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Icon(
-                                imageVector = Icons.Rounded.LibraryMusic,
+                                imageVector = ReMindIcons.LibraryMusic,
                                 contentDescription = null,
                                 modifier = Modifier.size(LiteverTheme.spacing.mediumLarge)
                             )
@@ -214,7 +212,7 @@ fun RingtoneListItem(
 
             if (item.isPlaying) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.VolumeUp,
+                    imageVector = ReMindIcons.VolumeUp,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(LiteverTheme.spacing.mediumLarge)

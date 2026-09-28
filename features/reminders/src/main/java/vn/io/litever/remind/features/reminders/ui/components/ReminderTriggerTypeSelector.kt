@@ -5,10 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AccessTime
-import androidx.compose.material.icons.rounded.LocationOn
-import androidx.compose.material.icons.rounded.Wifi
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.PrimaryTabRow
@@ -41,9 +38,9 @@ fun ReminderTriggerTypeSelector(
     ) {
         ReminderTriggerType.entries.forEach { triggerType ->
             val (labelRes: Int, icon: ImageVector) = when (triggerType) {
-                ReminderTriggerType.TIME -> Pair(R.string.trigger_time, Icons.Rounded.AccessTime)
-                ReminderTriggerType.LOCATION -> Pair(R.string.trigger_location, Icons.Rounded.LocationOn)
-                ReminderTriggerType.WIFI -> Pair(R.string.trigger_wifi, Icons.Rounded.Wifi)
+                ReminderTriggerType.TIME -> Pair(R.string.trigger_time, ReMindIcons.AccessTime)
+                ReminderTriggerType.LOCATION -> Pair(R.string.trigger_location, ReMindIcons.LocationOn)
+                ReminderTriggerType.WIFI -> Pair(R.string.trigger_wifi, ReMindIcons.Wifi)
             }
 
             Tab(

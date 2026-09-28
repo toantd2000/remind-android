@@ -1,8 +1,7 @@
 package vn.io.litever.remind.features.alarms.ui.components
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Alarm
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,7 +29,7 @@ fun NextAlarmHeader(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
-                imageVector = Icons.Rounded.Alarm,
+                imageVector = ReMindIcons.Alarm,
                 contentDescription = null,
                 modifier = Modifier.size(LiteVerButtonDefaults.IconSize)
             )

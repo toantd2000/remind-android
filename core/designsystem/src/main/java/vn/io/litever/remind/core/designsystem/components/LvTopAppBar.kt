@@ -2,10 +2,7 @@ package vn.io.litever.remind.core.designsystem.components
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Menu
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -64,9 +61,9 @@ fun LvTopAppBar(
         navigationIcon = {
             if (onBackClick != null) {
                 val icon = when (navigationIconType) {
-                    LvNavigationIconType.Back -> Icons.AutoMirrored.Rounded.ArrowBack
-                    LvNavigationIconType.Close -> Icons.Rounded.Close
-                    LvNavigationIconType.Menu -> Icons.Rounded.Menu
+                    LvNavigationIconType.Back -> ReMindIcons.ArrowBack
+                    LvNavigationIconType.Close -> ReMindIcons.Close
+                    LvNavigationIconType.Menu -> ReMindIcons.Menu
                 }
                 val contentDesc = when (navigationIconType) {
                     LvNavigationIconType.Back -> stringResource(R.string.action_back)

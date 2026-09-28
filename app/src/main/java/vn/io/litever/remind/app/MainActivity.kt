@@ -75,7 +75,6 @@ import vn.io.litever.remind.features.settings.ui.settingsRoute
 import vn.io.litever.remind.features.today.ui.locationSearchRoute
 import vn.io.litever.remind.features.today.ui.todayGraph
 import vn.io.litever.remind.features.today.ui.todayRoute
-import androidx.compose.material.icons.rounded.Notifications
 import vn.io.litever.remind.core.alarm.ReminderSyncManager
 import vn.io.litever.remind.features.reminders.ui.RemindersListRoute
 import vn.io.litever.remind.features.reminders.ui.navigateToReminderEdit

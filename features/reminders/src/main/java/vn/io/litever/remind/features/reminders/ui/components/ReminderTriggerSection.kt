@@ -17,13 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
-import androidx.compose.material.icons.rounded.AccessTime
-import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.ErrorOutline
-import androidx.compose.material.icons.rounded.LocationOn
-import androidx.compose.material.icons.rounded.Wifi
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -121,9 +115,9 @@ fun ReminderTriggerSection(
             (triggerType == ReminderTriggerType.WIFI && hasWifiError)
 
     val (triggerTitleRes: Int, triggerIcon: ImageVector) = when (triggerType) {
-        ReminderTriggerType.TIME -> Pair(R.string.trigger_time, Icons.Rounded.AccessTime)
-        ReminderTriggerType.LOCATION -> Pair(R.string.trigger_location, Icons.Rounded.LocationOn)
-        ReminderTriggerType.WIFI -> Pair(R.string.trigger_wifi, Icons.Rounded.Wifi)
+        ReminderTriggerType.TIME -> Pair(R.string.trigger_time, ReMindIcons.AccessTime)
+        ReminderTriggerType.LOCATION -> Pair(R.string.trigger_location, ReMindIcons.LocationOn)
+        ReminderTriggerType.WIFI -> Pair(R.string.trigger_wifi, ReMindIcons.Wifi)
     }
 
     Surface(
@@ -209,7 +203,7 @@ fun ReminderTriggerSection(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = if (hasError) Icons.Rounded.ErrorOutline else triggerIcon,
+                        imageVector = if (hasError) ReMindIcons.ErrorOutline else triggerIcon,
                         contentDescription = null,
                         tint = if (hasError) LiteverTheme.colors.error else LiteverTheme.colors.primary,
                         modifier = Modifier.size(24.dp)
@@ -257,7 +251,7 @@ fun ReminderTriggerSection(
                 }
 
                 Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                    imageVector = ReMindIcons.KeyboardArrowRight,
                     contentDescription = stringResource(R.string.tap_to_edit_trigger),
                     tint = LiteverTheme.colors.onSurfaceVariant,
                     modifier = Modifier.size(22.dp)
@@ -272,7 +266,7 @@ fun ReminderTriggerSection(
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.Edit,
+                    imageVector = ReMindIcons.Edit,
                     contentDescription = null,
                     tint = LiteverTheme.colors.primary.copy(alpha = 0.8f),
                     modifier = Modifier.size(13.dp)

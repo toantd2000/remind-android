@@ -3,12 +3,7 @@ package vn.io.litever.remind.features.alarms.ui.components
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.NotificationsPaused
-import androidx.compose.material.icons.rounded.PowerOff
-import androidx.compose.material.icons.rounded.Security
-import androidx.compose.material.icons.rounded.DoNotDisturbOn
-import androidx.compose.material.icons.rounded.Warning
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -90,23 +85,23 @@ private fun MissedAlarmItem(missed: MissedAlarm) {
     val reasonText: String
     when (missed.reason) {
         MissedReason.TIMEOUT -> {
-            icon = Icons.Rounded.NotificationsPaused
+            icon = ReMindIcons.NotificationsPaused
             reasonText = stringResource(R.string.missed_reason_timeout)
         }
         MissedReason.POWER_OFF -> {
-            icon = Icons.Rounded.PowerOff
+            icon = ReMindIcons.PowerOff
             reasonText = stringResource(R.string.missed_reason_power_off)
         }
         MissedReason.PERMISSION_MISSING -> {
-            icon = Icons.Rounded.Security
+            icon = ReMindIcons.Security
             reasonText = stringResource(R.string.missed_reason_permission)
         }
         MissedReason.DND_ACTIVE -> {
-            icon = Icons.Rounded.DoNotDisturbOn
+            icon = ReMindIcons.DoNotDisturbOn
             reasonText = stringResource(R.string.missed_reason_dnd)
         }
         MissedReason.UNKNOWN -> {
-            icon = Icons.Rounded.Warning
+            icon = ReMindIcons.Warning
             reasonText = stringResource(R.string.missed_reason_unknown)
         }
     }

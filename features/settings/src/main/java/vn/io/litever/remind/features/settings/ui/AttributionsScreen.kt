@@ -5,9 +5,7 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Code
-import androidx.compose.material.icons.rounded.Palette
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -58,14 +56,14 @@ fun AttributionsScreen(
                     ReMindSettingsItem(
                         title = stringResource(R.string.attribution_oss_title),
                         subtitle = stringResource(R.string.attribution_oss_desc),
-                        icon = Icons.Rounded.Code,
+                        icon = ReMindIcons.Code,
                         onClick = onNavigateToLicenses
                     )
 
                     ReMindSettingsItem(
                         title = stringResource(R.string.attribution_storyset_title),
                         subtitle = stringResource(R.string.attribution_storyset_desc),
-                        icon = Icons.Rounded.Palette,
+                        icon = ReMindIcons.Palette,
                         onClick = { launchCustomTab(context, "https://storyset.com") }
                     )
                     

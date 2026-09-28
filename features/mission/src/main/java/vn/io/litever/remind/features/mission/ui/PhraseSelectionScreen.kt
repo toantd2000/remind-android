@@ -19,14 +19,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.EditNote
-import androidx.compose.material.icons.rounded.Lightbulb
-import androidx.compose.material.icons.rounded.MoreVert
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DropdownMenu
@@ -230,7 +223,7 @@ fun PhraseSelectionScreen(
                     contentColor = LiteverTheme.colors.onPrimary,
                     shape = LiteverTheme.shapes.medium
                 ) {
-                    Icon(Icons.Rounded.Add, contentDescription = null)
+                    Icon(ReMindIcons.Add, contentDescription = null)
                 }
             }
         },
@@ -444,7 +437,7 @@ fun PhraseItem(
                         semantic = LvSemantic.Text
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.MoreVert,
+                            imageVector = ReMindIcons.MoreVert,
                             contentDescription = "More options",
                             tint = LiteverTheme.colors.onSurfaceVariant
                         )
@@ -461,7 +454,7 @@ fun PhraseItem(
                                     text = { Text(stringResource(R.string.action_edit)) },
                                     leadingIcon = {
                                         Icon(
-                                            Icons.Rounded.Edit,
+                                            ReMindIcons.Edit,
                                             contentDescription = null
                                         )
                                     },
@@ -483,7 +476,7 @@ fun PhraseItem(
                                     },
                                     leadingIcon = {
                                         Icon(
-                                            Icons.Rounded.Delete,
+                                            ReMindIcons.Delete,
                                             contentDescription = null,
                                             tint = LiteverTheme.colors.error
                                         )
@@ -572,14 +565,14 @@ fun AddCustomPhraseContent(
                             modifier = Modifier.size(28.dp)
                         ) {
                             Icon(
-                                imageVector = Icons.Rounded.Close,
+                                imageVector = ReMindIcons.Close,
                                 contentDescription = "Clear text",
                                 modifier = Modifier.size(20.dp)
                             )
                         }
                     } else {
                         Icon(
-                            imageVector = Icons.Rounded.EditNote,
+                            imageVector = ReMindIcons.EditNote,
                             contentDescription = null,
                             tint = LiteverTheme.colors.outlineVariant,
                             modifier = Modifier
@@ -609,7 +602,7 @@ fun AddCustomPhraseContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector = Icons.Rounded.Lightbulb,
+                imageVector = ReMindIcons.Lightbulb,
                 contentDescription = null,
                 tint = LiteverTheme.colors.onTertiaryContainer,
                 modifier = Modifier.size(20.dp)

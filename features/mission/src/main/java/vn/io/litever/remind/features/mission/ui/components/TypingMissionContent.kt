@@ -15,9 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.EditNote
-import androidx.compose.material.icons.rounded.Spellcheck
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -151,7 +149,7 @@ fun TypingMissionContent(
     ) {
         // 1. Phía trên: Banner hướng dẫn ngắn gọn
         MissionInstructionBanner(
-            icon = Icons.Rounded.EditNote,
+            icon = ReMindIcons.EditNote,
             requirementText = stringResource(R.string.mission_typing_requirement)
         )
 
@@ -187,7 +185,7 @@ fun TypingMissionContent(
                     horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.extraSmall)
                 ) {
                     Icon(
-                        imageVector = Icons.Rounded.Spellcheck,
+                        imageVector = ReMindIcons.Spellcheck,
                         contentDescription = null,
                         tint = LiteverTheme.colors.primary,
                         modifier = Modifier.size(16.dp)

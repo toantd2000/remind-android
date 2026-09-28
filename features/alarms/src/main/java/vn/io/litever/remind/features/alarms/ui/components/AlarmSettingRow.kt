@@ -3,9 +3,7 @@ package vn.io.litever.remind.features.alarms.ui.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ChevronRight
-import androidx.compose.material.icons.rounded.Snooze
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -40,7 +38,7 @@ fun AlarmSettingRow(
     trailingContent: (@Composable () -> Unit)? = {
         if (onClick != null) {
             Icon(
-                imageVector = Icons.Rounded.ChevronRight,
+                imageVector = ReMindIcons.ChevronRight,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
             )
@@ -95,7 +93,7 @@ private fun AlarmSettingRowPreview() {
             AlarmSettingRow(
                 title = "Snooze",
                 subtitle = "5 minutes, 3 times",
-                icon = Icons.Rounded.Snooze,
+                icon = ReMindIcons.Snooze,
                 onClick = {},
             )
         }

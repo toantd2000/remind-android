@@ -10,8 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.GridView
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -110,7 +109,7 @@ fun MemoryTilesMissionContent(
     ) {
         // 1. Phía trên: Banner hướng dẫn ngắn gọn
         MissionInstructionBanner(
-            icon = Icons.Rounded.GridView,
+            icon = ReMindIcons.GridView,
             requirementText = stringResource(R.string.mission_memory_requirement)
         )
 

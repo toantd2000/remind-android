@@ -7,13 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AccessTime
-import androidx.compose.material.icons.rounded.CheckCircleOutline
-import androidx.compose.material.icons.rounded.DoneAll
-import androidx.compose.material.icons.rounded.LocationOff
-import androidx.compose.material.icons.rounded.NotificationsNone
-import androidx.compose.material.icons.rounded.WifiOff
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,32 +28,32 @@ fun ReminderEmptyState(
 ) {
     val (icon: ImageVector, titleRes: Int, descRes: Int) = when (selectedFilter) {
         ReminderFilterType.ALL -> Triple(
-            Icons.Rounded.NotificationsNone,
+            ReMindIcons.NotificationsNone,
             R.string.no_reminders,
             R.string.empty_reminders_description
         )
         ReminderFilterType.ACTIVE -> Triple(
-            Icons.Rounded.CheckCircleOutline,
+            ReMindIcons.CheckCircleOutline,
             R.string.no_active_reminders,
             R.string.empty_active_description
         )
         ReminderFilterType.COMPLETED -> Triple(
-            Icons.Rounded.DoneAll,
+            ReMindIcons.DoneAll,
             R.string.no_completed_reminders,
             R.string.empty_completed_description
         )
         ReminderFilterType.TIME -> Triple(
-            Icons.Rounded.AccessTime,
+            ReMindIcons.AccessTime,
             R.string.no_time_reminders,
             R.string.empty_reminders_description
         )
         ReminderFilterType.LOCATION -> Triple(
-            Icons.Rounded.LocationOff,
+            ReMindIcons.LocationOff,
             R.string.no_location_reminders,
             R.string.empty_reminders_description
         )
         ReminderFilterType.WIFI -> Triple(
-            Icons.Rounded.WifiOff,
+            ReMindIcons.WifiOff,
             R.string.no_wifi_reminders,
             R.string.empty_reminders_description
         )

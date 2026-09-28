@@ -7,13 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AccessTime
-import androidx.compose.material.icons.rounded.CheckCircle
-import androidx.compose.material.icons.rounded.FilterList
-import androidx.compose.material.icons.rounded.LocationOn
-import androidx.compose.material.icons.rounded.NotificationsActive
-import androidx.compose.material.icons.rounded.Wifi
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -64,12 +58,12 @@ fun ReminderFilterChips(
             }
             val displayLabel = if (count != null && count > 0) "$label ($count)" else label
             val icon: ImageVector = when (filterType) {
-                ReminderFilterType.ALL -> Icons.Rounded.FilterList
-                ReminderFilterType.ACTIVE -> Icons.Rounded.NotificationsActive
-                ReminderFilterType.COMPLETED -> Icons.Rounded.CheckCircle
-                ReminderFilterType.TIME -> Icons.Rounded.AccessTime
-                ReminderFilterType.LOCATION -> Icons.Rounded.LocationOn
-                ReminderFilterType.WIFI -> Icons.Rounded.Wifi
+                ReminderFilterType.ALL -> ReMindIcons.FilterList
+                ReminderFilterType.ACTIVE -> ReMindIcons.NotificationsActive
+                ReminderFilterType.COMPLETED -> ReMindIcons.CheckCircle
+                ReminderFilterType.TIME -> ReMindIcons.AccessTime
+                ReminderFilterType.LOCATION -> ReMindIcons.LocationOn
+                ReminderFilterType.WIFI -> ReMindIcons.Wifi
             }
 
             FilterChip(

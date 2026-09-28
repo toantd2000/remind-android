@@ -10,15 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.rounded.VolumeOff
-import androidx.compose.material.icons.automirrored.rounded.VolumeUp
-import androidx.compose.material.icons.rounded.AlarmOn
-import androidx.compose.material.icons.rounded.MusicNote
-import androidx.compose.material.icons.rounded.Snooze
-import androidx.compose.material.icons.rounded.Timer
-import androidx.compose.material.icons.rounded.Vibration
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -175,7 +167,7 @@ fun ReminderAlertConfigSection(
                             modifier = Modifier.weight(1f)
                         ) {
                             ReMindSettingIcon(
-                                imageVector = Icons.Rounded.MusicNote
+                                imageVector = ReMindIcons.MusicNote
                             )
                             Spacer(modifier = Modifier.width(12.dp))
                             Column {
@@ -194,7 +186,7 @@ fun ReminderAlertConfigSection(
                         }
 
                         Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                            imageVector = ReMindIcons.KeyboardArrowRight,
                             contentDescription = null,
                             tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.5f)
                         )
@@ -218,7 +210,7 @@ fun ReminderAlertConfigSection(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         ReMindSettingIcon(
-                            imageVector = if (volume == 0) Icons.AutoMirrored.Rounded.VolumeOff else Icons.AutoMirrored.Rounded.VolumeUp,
+                            imageVector = if (volume == 0) ReMindIcons.VolumeOff else ReMindIcons.VolumeUp,
                             selected = false
                         )
 
@@ -238,7 +230,7 @@ fun ReminderAlertConfigSection(
                         )
 
                         ReMindSettingIcon(
-                            imageVector = Icons.Rounded.Vibration,
+                            imageVector = ReMindIcons.Vibration,
                             selected = vibrationEnabled,
                             onClick = { onVibrationChange(!vibrationEnabled) }
                         )
@@ -268,7 +260,7 @@ fun ReminderAlertConfigSection(
                             modifier = Modifier.weight(1f)
                         ) {
                             ReMindSettingIcon(
-                                imageVector = Icons.Rounded.Timer,
+                                imageVector = ReMindIcons.Timer,
                                 selected = autoSilenceMinutes > 0
                             )
                             Spacer(modifier = Modifier.width(12.dp))
@@ -293,7 +285,7 @@ fun ReminderAlertConfigSection(
                         }
 
                         Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                            imageVector = ReMindIcons.KeyboardArrowRight,
                             contentDescription = null,
                             tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.5f)
                         )
@@ -323,7 +315,7 @@ fun ReminderAlertConfigSection(
                             modifier = Modifier.weight(1f)
                         ) {
                             ReMindSettingIcon(
-                                imageVector = Icons.Rounded.AlarmOn,
+                                imageVector = ReMindIcons.AlarmOn,
                                 selected = useAlarmStream
                             )
                             Spacer(modifier = Modifier.width(12.dp))
@@ -387,7 +379,7 @@ fun ReminderAlertConfigSection(
                         modifier = Modifier.weight(1f)
                     ) {
                         ReMindSettingIcon(
-                            imageVector = Icons.Rounded.Snooze,
+                            imageVector = ReMindIcons.Snooze,
                             selected = snoozeEnabled
                         )
                         Spacer(modifier = Modifier.width(12.dp))
@@ -424,7 +416,7 @@ fun ReminderAlertConfigSection(
                     }
 
                     Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                        imageVector = ReMindIcons.KeyboardArrowRight,
                         contentDescription = null,
                         tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.5f)
                     )

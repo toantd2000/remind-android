@@ -20,32 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.VolumeOff
-import androidx.compose.material.icons.automirrored.rounded.VolumeUp
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.AlarmOff
-import androidx.compose.material.icons.rounded.AlarmOn
-import androidx.compose.material.icons.rounded.Calculate
-import androidx.compose.material.icons.rounded.CalendarMonth
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.DoNotDisturbOff
-import androidx.compose.material.icons.rounded.DoNotDisturbOn
-import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.EditNote
-import androidx.compose.material.icons.rounded.Extension
-import androidx.compose.material.icons.rounded.GraphicEq
-import androidx.compose.material.icons.rounded.GridView
-import androidx.compose.material.icons.rounded.Keyboard
-import androidx.compose.material.icons.rounded.MusicNote
-import androidx.compose.material.icons.rounded.NewLabel
-import androidx.compose.material.icons.rounded.Pause
-import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material.icons.rounded.QrCodeScanner
-import androidx.compose.material.icons.rounded.Smartphone
-import androidx.compose.material.icons.rounded.Snooze
-import androidx.compose.material.icons.rounded.Vibration
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -748,7 +723,7 @@ fun AlarmEditScreen(
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Rounded.Edit,
+                                imageVector = ReMindIcons.Edit,
                                 contentDescription = null,
                                 modifier = Modifier.size(LiteverTheme.spacing.medium),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
@@ -837,14 +812,14 @@ fun AlarmEditScreen(
 
                                         ) {
                                         Icon(
-                                            imageVector = Icons.Rounded.Close,
+                                            imageVector = ReMindIcons.Close,
                                             contentDescription = "Clear label",
                                             modifier = Modifier.size(20.dp)
                                         )
                                     }
                                 } else {
                                     Icon(
-                                        imageVector = Icons.Rounded.NewLabel,
+                                        imageVector = ReMindIcons.NewLabel,
                                         contentDescription = "Ghi chú",
                                         tint = LiteverTheme.colors.outlineVariant
                                     )
@@ -904,14 +879,14 @@ fun AlarmEditScreen(
 
                                         ) {
                                         Icon(
-                                            imageVector = Icons.Rounded.Close,
+                                            imageVector = ReMindIcons.Close,
                                             contentDescription = "Clear message",
                                             modifier = Modifier.size(20.dp)
                                         )
                                     }
                                 } else {
                                     Icon(
-                                        imageVector = Icons.Rounded.EditNote,
+                                        imageVector = ReMindIcons.EditNote,
                                         contentDescription = "Ghi chú",
                                         tint = LiteverTheme.colors.outlineVariant,
                                         modifier = Modifier
@@ -933,7 +908,7 @@ fun AlarmEditScreen(
                     // Row 1: Ringtone Row
                     AlarmSettingRow(
                         title = uiState.ringtoneTitle,
-                        icon = if (uiState.isRingtonePlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
+                        icon = if (uiState.isRingtonePlaying) ReMindIcons.Pause else ReMindIcons.PlayArrow,
                         iconSelected = uiState.isRingtonePlaying,
                         onIconClick = onTogglePreview,
                         onClick = onRingtoneClick
@@ -966,7 +941,7 @@ fun AlarmEditScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         ReMindSettingIcon(
-                            imageVector = if (uiState.volume == 0) Icons.AutoMirrored.Rounded.VolumeOff else Icons.AutoMirrored.Rounded.VolumeUp,
+                            imageVector = if (uiState.volume == 0) ReMindIcons.VolumeOff else ReMindIcons.VolumeUp,
                             selected = false,
                             modifier = modifier.padding(start = LiteverTheme.spacing.medium)
                         )
@@ -987,7 +962,7 @@ fun AlarmEditScreen(
                         )
 
                         ReMindSettingIcon(
-                            imageVector = Icons.Rounded.Vibration,
+                            imageVector = ReMindIcons.Vibration,
                             selected = uiState.vibrationEnabled,
                             onClick = { onVibrationToggle(!uiState.vibrationEnabled) },
                             modifier = Modifier.padding(end = LiteverTheme.spacing.medium)
@@ -1017,7 +992,7 @@ fun AlarmEditScreen(
                     AlarmSettingRow(
                         title = stringResource(R.string.gentle_alarm_title),
                         subtitle = gentleAlarmSummary,
-                        icon = Icons.Rounded.GraphicEq,
+                        icon = ReMindIcons.GraphicEq,
                         iconSelected = uiState.gradualVolumeDurationSeconds > 0,
                         onClick = { showGradualVolumeSheet = true }
                     )
@@ -1034,7 +1009,7 @@ fun AlarmEditScreen(
                             stringResource(R.string.use_alarm_stream_desc)
                         else
                             stringResource(R.string.use_media_stream_desc),
-                        icon = if (uiState.useAlarmStream) Icons.Rounded.AlarmOn else Icons.Rounded.MusicNote,
+                        icon = if (uiState.useAlarmStream) ReMindIcons.AlarmOn else ReMindIcons.MusicNote,
                         iconSelected = uiState.useAlarmStream,
                         onClick = { onUseAlarmStreamChange(!uiState.useAlarmStream) },
                         trailingContent = {
@@ -1049,7 +1024,7 @@ fun AlarmEditScreen(
                     AlarmSettingRow(
                         title = stringResource(R.string.override_dnd_title),
                         subtitle = stringResource(R.string.override_dnd_desc),
-                        icon = if (uiState.overrideDndEnabled) Icons.Rounded.DoNotDisturbOff else Icons.Rounded.DoNotDisturbOn,
+                        icon = if (uiState.overrideDndEnabled) ReMindIcons.DoNotDisturbOff else ReMindIcons.DoNotDisturbOn,
                         iconSelected = uiState.overrideDndEnabled,
                         onClick = { onOverrideDndChange(!uiState.overrideDndEnabled) },
                         trailingContent = {
@@ -1090,7 +1065,7 @@ fun AlarmEditScreen(
                     AlarmSettingRow(
                         title = stringResource(R.string.snooze),
                         subtitle = snoozeSummary,
-                        icon = Icons.Rounded.Snooze,
+                        icon = ReMindIcons.Snooze,
                         onClick = { showSnoozeSheet = true }
                     )
 
@@ -1106,7 +1081,7 @@ fun AlarmEditScreen(
                             R.string.minutes_unit,
                             uiState.autoSilenceMinutes
                         ),
-                        icon = Icons.Rounded.AlarmOff,
+                        icon = ReMindIcons.AlarmOff,
                         onClick = { showAutoSilenceSheet = true }
                     )
                 }
@@ -1136,7 +1111,7 @@ fun AlarmEditScreen(
                             modifier = Modifier.fillMaxWidth().padding(all = LiteverTheme.spacing.medium),
                         ) {
                             Icon(
-                                imageVector = Icons.Rounded.Add,
+                                imageVector = ReMindIcons.Add,
                                 contentDescription = null,
                                 modifier = Modifier.size(LiteVerButtonDefaults.IconSize)
                             )
@@ -1187,7 +1162,7 @@ fun RepeatDaySelector(
                 semantic = if (date != null) LvSemantic.Primary else LvSemantic.Text
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.CalendarMonth,
+                    imageVector = ReMindIcons.CalendarMonth,
                     contentDescription = stringResource(R.string.set_alarm_date),
                 )
             }
@@ -1324,12 +1299,12 @@ private fun MissionRow(
     modifier: Modifier = Modifier
 ) {
     val icon = when (mission.type) {
-        MissionType.TYPING -> Icons.Rounded.Keyboard
-        MissionType.MATH -> Icons.Rounded.Calculate
-        MissionType.SHAKE -> Icons.Rounded.Smartphone
-        MissionType.QR_CODE -> Icons.Rounded.QrCodeScanner
-        MissionType.MEMORY_FIND_COLOR_TILES -> Icons.Rounded.GridView
-        else -> Icons.Rounded.Extension
+        MissionType.TYPING -> ReMindIcons.Keyboard
+        MissionType.MATH -> ReMindIcons.Calculate
+        MissionType.SHAKE -> ReMindIcons.Smartphone
+        MissionType.QR_CODE -> ReMindIcons.QrCodeScanner
+        MissionType.MEMORY_FIND_COLOR_TILES -> ReMindIcons.GridView
+        else -> ReMindIcons.Extension
     }
 
     val title = when (mission.type) {
@@ -1374,7 +1349,7 @@ private fun MissionRow(
                 semantic = LvSemantic.Destructive
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.Delete,
+                    imageVector = ReMindIcons.Delete,
                     contentDescription = null,
                     modifier = Modifier.size(LiteverTheme.spacing.mediumLarge),
                     tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f)

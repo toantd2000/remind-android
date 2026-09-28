@@ -4,10 +4,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Alarm
-import androidx.compose.material.icons.rounded.Lightbulb
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -17,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.material.icons.rounded.Notifications
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.features.alarms.ui.AlarmListRoute
 import vn.io.litever.remind.features.reminders.ui.RemindersListRoute
 import vn.io.litever.remind.features.settings.ui.settingsRoute
@@ -33,22 +29,22 @@ enum class TopLevelDestination(
 ) {
     TODAY(
         route = todayRoute,
-        icon = Icons.Rounded.Lightbulb,
+        icon = ReMindIcons.Lightbulb,
         labelResId = R.string.navigation_today
     ),
     ALARMS(
         route = AlarmListRoute,
-        icon = Icons.Rounded.Alarm,
+        icon = ReMindIcons.Alarm,
         labelResId = R.string.navigation_alarms
     ),
     REMINDERS(
         route = RemindersListRoute,
-        icon = Icons.Rounded.Notifications,
+        icon = ReMindIcons.Notifications,
         labelResId = R.string.navigation_reminders
     ),
     SETTINGS(
         route = settingsRoute,
-        icon = Icons.Rounded.Settings,
+        icon = ReMindIcons.Settings,
         labelResId = R.string.navigation_settings
     )
 }

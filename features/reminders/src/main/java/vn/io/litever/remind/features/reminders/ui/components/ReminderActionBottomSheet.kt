@@ -6,12 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.CheckCircle
-import androidx.compose.material.icons.rounded.ContentCopy
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.NotificationsActive
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -50,7 +45,7 @@ fun ReminderActionBottomSheet(
                 headlineContent = { Text(stringResource(R.string.action_edit)) },
                 leadingContent = {
                     Icon(
-                        imageVector = Icons.Rounded.Edit,
+                        imageVector = ReMindIcons.Edit,
                         contentDescription = null,
                         tint = LiteverTheme.colors.onSurface
                     )
@@ -68,7 +63,7 @@ fun ReminderActionBottomSheet(
                 headlineContent = { Text(stringResource(R.string.action_duplicate)) },
                 leadingContent = {
                     Icon(
-                        imageVector = Icons.Rounded.ContentCopy,
+                        imageVector = ReMindIcons.ContentCopy,
                         contentDescription = null,
                         tint = LiteverTheme.colors.onSurface
                     )
@@ -88,9 +83,9 @@ fun ReminderActionBottomSheet(
                 stringResource(R.string.action_mark_completed)
             }
             val completionIcon = if (reminder.isCompleted) {
-                Icons.Rounded.NotificationsActive
+                ReMindIcons.NotificationsActive
             } else {
-                Icons.Rounded.CheckCircle
+                ReMindIcons.CheckCircle
             }
             LiteverListItem(
                 headlineContent = { Text(completionText) },
@@ -119,7 +114,7 @@ fun ReminderActionBottomSheet(
                 },
                 leadingContent = {
                     Icon(
-                        imageVector = Icons.Rounded.Delete,
+                        imageVector = ReMindIcons.Delete,
                         contentDescription = null,
                         tint = LiteverTheme.colors.error
                     )

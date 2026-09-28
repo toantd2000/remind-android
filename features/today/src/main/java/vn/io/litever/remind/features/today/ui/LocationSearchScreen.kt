@@ -4,12 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.LocationOn
-import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.MyLocation
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -92,7 +87,7 @@ fun LocationSearchScreen(
                 type = LvTextFieldType.Outlined,
                 semantic = LvSemantic.Primary,
                 placeholder = stringResource(R.string.search_location_placeholder),
-                leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null) },
+                leadingIcon = { Icon(ReMindIcons.Search, contentDescription = null) },
                 trailingIcon = if (searchQuery.isNotEmpty()) {
                     {
                         LvIconButton(
@@ -100,7 +95,7 @@ fun LocationSearchScreen(
                             type = LvButtonType.Text,
                             semantic = LvSemantic.Primary
                         ) {
-                            Icon(Icons.Rounded.Close, contentDescription = "Clear")
+                            Icon(ReMindIcons.Close, contentDescription = "Clear")
                         }
                     }
                 } else null,
@@ -189,7 +184,7 @@ fun AutomaticLocationItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                Icons.Rounded.MyLocation,
+                ReMindIcons.MyLocation,
                 contentDescription = null,
                 tint = if (isSelected) LiteverTheme.colors.primary else LiteverTheme.colors.onSurfaceVariant
             )
@@ -209,7 +204,7 @@ fun AutomaticLocationItem(
             }
             if (isSelected) {
                 Icon(
-                    imageVector = Icons.Rounded.Check,
+                    imageVector = ReMindIcons.Check,
                     contentDescription = "Selected",
                     tint = LiteverTheme.colors.primary,
                     modifier = Modifier.size(LiteverTheme.spacing.mediumLarge)
@@ -246,7 +241,7 @@ fun LocationItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                Icons.Rounded.LocationOn,
+                ReMindIcons.LocationOn,
                 contentDescription = null,
                 tint = if (isSelected) LiteverTheme.colors.primary else LiteverTheme.colors.onSurfaceVariant
             )
@@ -266,7 +261,7 @@ fun LocationItem(
             }
             if (isSelected) {
                 Icon(
-                    imageVector = Icons.Rounded.Check,
+                    imageVector = ReMindIcons.Check,
                     contentDescription = "Selected",
                     tint = LiteverTheme.colors.primary,
                     modifier = Modifier.size(LiteverTheme.spacing.mediumLarge)

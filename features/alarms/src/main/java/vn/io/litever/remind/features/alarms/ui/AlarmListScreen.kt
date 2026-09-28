@@ -17,14 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.ContentCopy
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.MoreVert
-import androidx.compose.material.icons.rounded.NotificationsPaused
-import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material.icons.rounded.SkipNext
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -213,7 +206,7 @@ fun AlarmListScreen(
                         if (hasAlarms) {
                             LvIconButton(onClick = { showTopMenu = !showTopMenu }) {
                                 Icon(
-                                    Icons.Rounded.MoreVert,
+                                    ReMindIcons.MoreVert,
                                     contentDescription = actionMoreDescription
                                 )
                             }
@@ -256,7 +249,7 @@ fun AlarmListScreen(
         floatingActionButton = {
             if (hasAlarms) {
                 FloatingActionButton(onClick = onAddAlarmClick) {
-                    Icon(Icons.Rounded.Add, contentDescription = actionAddDescription)
+                    Icon(ReMindIcons.Add, contentDescription = actionAddDescription)
                 }
             }
         },
@@ -482,7 +475,7 @@ private fun AlarmActionBottomSheetContent(
                 },
                 leadingContent = {
                     Icon(
-                        if (isSkipped) Icons.Rounded.NotificationsPaused else Icons.Rounded.SkipNext,
+                        if (isSkipped) ReMindIcons.NotificationsPaused else ReMindIcons.SkipNext,
                         contentDescription = null
                     )
                 },
@@ -492,13 +485,13 @@ private fun AlarmActionBottomSheetContent(
 
         ListItem(
             headlineContent = { Text(stringResource(R.string.action_preview)) },
-            leadingContent = { Icon(Icons.Rounded.PlayArrow, contentDescription = null) },
+            leadingContent = { Icon(ReMindIcons.PlayArrow, contentDescription = null) },
             modifier = Modifier.clickable { onPreview() }
         )
 
         ListItem(
             headlineContent = { Text(stringResource(R.string.action_duplicate)) },
-            leadingContent = { Icon(Icons.Rounded.ContentCopy, contentDescription = null) },
+            leadingContent = { Icon(ReMindIcons.ContentCopy, contentDescription = null) },
             modifier = Modifier.clickable { onDuplicate() }
         )
 
@@ -511,7 +504,7 @@ private fun AlarmActionBottomSheetContent(
             },
             leadingContent = {
                 Icon(
-                    Icons.Rounded.Delete,
+                    ReMindIcons.Delete,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.error
                 )

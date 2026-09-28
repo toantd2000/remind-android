@@ -13,10 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
-import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
-import androidx.compose.material.icons.rounded.Refresh
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -162,7 +159,7 @@ fun MemoryGameConfigScreen(
                         semantic = LvSemantic.Text
                     ) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
+                            imageVector = ReMindIcons.KeyboardArrowLeft,
                             contentDescription = null,
                             modifier = Modifier.size(28.dp)
                         )
@@ -182,7 +179,7 @@ fun MemoryGameConfigScreen(
                         semantic = LvSemantic.Text
                     ) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                            imageVector = ReMindIcons.KeyboardArrowRight,
                             contentDescription = null,
                             modifier = Modifier.size(28.dp)
                         )
@@ -220,7 +217,7 @@ fun MemoryGameConfigScreen(
                         semantic = LvSemantic.Secondary
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.Refresh,
+                            imageVector = ReMindIcons.Refresh,
                             contentDescription = "Reset",
                             modifier = Modifier.size(20.dp)
                         )
@@ -245,7 +242,7 @@ fun MemoryGameConfigScreen(
                         semantic = LvSemantic.Text
                     ) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
+                            imageVector = ReMindIcons.KeyboardArrowLeft,
                             contentDescription = null,
                             modifier = Modifier.size(28.dp)
                         )
@@ -265,7 +262,7 @@ fun MemoryGameConfigScreen(
                         semantic = LvSemantic.Text
                     ) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                            imageVector = ReMindIcons.KeyboardArrowRight,
                             contentDescription = null,
                             modifier = Modifier.size(28.dp)
                         )

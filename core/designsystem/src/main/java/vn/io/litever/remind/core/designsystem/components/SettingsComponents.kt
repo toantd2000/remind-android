@@ -6,10 +6,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ChevronRight
-import androidx.compose.material.icons.rounded.Notifications
-import androidx.compose.material.icons.rounded.Palette
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -155,10 +152,10 @@ private fun ReMindSettingsGroupPreview() {
             ReMindSettingsItem(
                 title = "Notifications",
                 subtitle = "Sound, vibration and alerts",
-                icon = Icons.Rounded.Notifications,
+                icon = ReMindIcons.Notifications,
                 trailingContent = {
                     Icon(
-                        imageVector = Icons.Rounded.ChevronRight,
+                        imageVector = ReMindIcons.ChevronRight,
                         contentDescription = null
                     )
                 }
@@ -166,11 +163,11 @@ private fun ReMindSettingsGroupPreview() {
             ReMindSettingsItem(
                 title = "Theme",
                 subtitle = "Dark, light or system default",
-                icon = Icons.Rounded.Palette,
+                icon = ReMindIcons.Palette,
                 statusText = "System",
                 trailingContent = {
                     Icon(
-                        imageVector = Icons.Rounded.ChevronRight,
+                        imageVector = ReMindIcons.ChevronRight,
                         contentDescription = null
                     )
                 }

@@ -13,17 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.DirectionsWalk
-import androidx.compose.material.icons.rounded.Alarm
-import androidx.compose.material.icons.rounded.Calculate
-import androidx.compose.material.icons.rounded.GridView
-import androidx.compose.material.icons.rounded.Keyboard
-import androidx.compose.material.icons.rounded.Palette
-import androidx.compose.material.icons.rounded.QrCodeScanner
-import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material.icons.rounded.Smartphone
-import androidx.compose.material.icons.rounded.TouchApp
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -97,7 +87,7 @@ fun TodayNextAlarmView(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Rounded.Alarm,
+                                imageVector = ReMindIcons.Alarm,
                                 contentDescription = null,
                                 modifier = Modifier.size(38.dp),
                                 tint = LiteverTheme.colors.onSurface
@@ -303,15 +293,15 @@ private fun TodayMissionIcons(missions: List<Mission>, modifier: Modifier = Modi
 
 private fun getMissionIcon(type: MissionType): ImageVector {
     return when (type) {
-        MissionType.TYPING -> Icons.Rounded.Keyboard
-        MissionType.MATH -> Icons.Rounded.Calculate
-        MissionType.QR_CODE -> Icons.Rounded.QrCodeScanner
-        MissionType.SHAKE -> Icons.Rounded.Smartphone
-        MissionType.STEP -> Icons.AutoMirrored.Rounded.DirectionsWalk
-        MissionType.COLOR_MATCH -> Icons.Rounded.Palette
-        MissionType.TAP_CHALLENGE -> Icons.Rounded.TouchApp
-        MissionType.FIND_ITEM -> Icons.Rounded.Search
-        MissionType.MEMORY_FIND_COLOR_TILES -> Icons.Rounded.GridView
+        MissionType.TYPING -> ReMindIcons.Keyboard
+        MissionType.MATH -> ReMindIcons.Calculate
+        MissionType.QR_CODE -> ReMindIcons.QrCodeScanner
+        MissionType.SHAKE -> ReMindIcons.Smartphone
+        MissionType.STEP -> ReMindIcons.DirectionsWalk
+        MissionType.COLOR_MATCH -> ReMindIcons.Palette
+        MissionType.TAP_CHALLENGE -> ReMindIcons.TouchApp
+        MissionType.FIND_ITEM -> ReMindIcons.Search
+        MissionType.MEMORY_FIND_COLOR_TILES -> ReMindIcons.GridView
     }
 }
 

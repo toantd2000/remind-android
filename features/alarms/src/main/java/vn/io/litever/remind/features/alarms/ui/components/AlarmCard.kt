@@ -256,7 +256,7 @@ fun AlarmCardPreview() {
         time = java.time.LocalTime.of(7, 30),
         isEnabled = true,
         label = "Morning Workout",
-        repeatDays = listOf(vn.io.litever.remind.core.model.DayOfWeek.MONDAY, vn.io.litever.remind.core.model.DayOfWeek.WEDNESDAY, vn.io.litever.remind.core.model.DayOfWeek.FRIDAY)
+        repeatDays = listOf(java.time.DayOfWeek.MONDAY, java.time.DayOfWeek.WEDNESDAY, java.time.DayOfWeek.FRIDAY)
     )
     vn.io.litever.remind.core.designsystem.theme.ReMindTheme {
         Box(modifier = Modifier.padding(LiteverTheme.spacing.medium)) {
@@ -279,7 +279,7 @@ fun AlarmCardDisabledPreview() {
         time = java.time.LocalTime.of(8, 0),
         isEnabled = false,
         label = "Weekend Alarm",
-        repeatDays = listOf(vn.io.litever.remind.core.model.DayOfWeek.SATURDAY, vn.io.litever.remind.core.model.DayOfWeek.SUNDAY)
+        repeatDays = listOf(java.time.DayOfWeek.SATURDAY, java.time.DayOfWeek.SUNDAY)
     )
     vn.io.litever.remind.core.designsystem.theme.ReMindTheme {
         Box(modifier = Modifier.padding(LiteverTheme.spacing.medium)) {
@@ -302,7 +302,7 @@ fun AlarmCardSkippedPreview() {
         time = java.time.LocalTime.of(9, 15),
         isEnabled = true,
         label = "Office Meeting",
-        repeatDays = listOf(vn.io.litever.remind.core.model.DayOfWeek.MONDAY),
+        repeatDays = listOf(java.time.DayOfWeek.MONDAY),
         skippedAt = java.time.LocalDateTime.now()
     )
     vn.io.litever.remind.core.designsystem.theme.ReMindTheme {
@@ -326,7 +326,7 @@ fun AlarmCardNoLabelPreview() {
         time = java.time.LocalTime.of(6, 0),
         isEnabled = true,
         label = "",
-        repeatDays = listOf(vn.io.litever.remind.core.model.DayOfWeek.MONDAY, vn.io.litever.remind.core.model.DayOfWeek.TUESDAY)
+        repeatDays = listOf(java.time.DayOfWeek.MONDAY, java.time.DayOfWeek.TUESDAY)
     )
     vn.io.litever.remind.core.designsystem.theme.ReMindTheme {
         Box(modifier = Modifier.padding(LiteverTheme.spacing.medium)) {

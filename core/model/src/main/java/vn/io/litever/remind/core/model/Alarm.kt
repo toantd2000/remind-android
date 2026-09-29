@@ -2,6 +2,7 @@ package vn.io.litever.remind.core.model
 
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.DayOfWeek
 
 data class Alarm(
     val id: Long = 0,
@@ -49,7 +50,7 @@ data class Alarm(
             }
         } else {
             val todayDayValue = now.dayOfWeek.value
-            val repeatDayValues = repeatDays.map { it.toJavaDayValue() }.sorted()
+            val repeatDayValues = repeatDays.map { it.value }.sorted()
             
             if (repeatDayValues.contains(todayDayValue)) {
                 val todayOccurrence = now.with(time).withSecond(0).withNano(0)
@@ -72,27 +73,4 @@ data class Alarm(
         return skippedAt != null && skippedAt.isBefore(now)
     }
 }
-
-enum class DayOfWeek {
-    MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY;
-    
-    fun toJavaDayValue(): Int = when (this) {
-        MONDAY -> 1
-        TUESDAY -> 2
-        WEDNESDAY -> 3
-        THURSDAY -> 4
-        FRIDAY -> 5
-        SATURDAY -> 6
-        SUNDAY -> 7
-    }
-}
-
-
-
-
-
-
-
-
-
 

@@ -3,7 +3,7 @@ package vn.io.litever.remind.core.data.mapper
 import vn.io.litever.remind.core.database.model.AlarmEntity
 import vn.io.litever.remind.core.database.model.PopulatedAlarm
 import vn.io.litever.remind.core.model.Alarm
-import vn.io.litever.remind.core.model.DayOfWeek
+import java.time.DayOfWeek
 import java.time.LocalTime
 import java.time.LocalDateTime
 import java.time.ZoneId

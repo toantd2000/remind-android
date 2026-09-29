@@ -18,7 +18,7 @@ import vn.io.litever.remind.core.common.audio.AudioPlayer
 import vn.io.litever.remind.core.domain.repository.AlarmRepository
 import vn.io.litever.remind.core.domain.scheduler.AlarmScheduler
 import vn.io.litever.remind.core.model.Alarm
-import vn.io.litever.remind.core.model.DayOfWeek
+import java.time.DayOfWeek
 import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState
 import vn.io.litever.remind.features.alarms.ui.state.calculateNextAlarm
 import java.time.LocalTime

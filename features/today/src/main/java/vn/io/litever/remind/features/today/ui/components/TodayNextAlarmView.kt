@@ -34,7 +34,7 @@ import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.Alarm
-import vn.io.litever.remind.core.model.DayOfWeek
+import java.time.DayOfWeek
 import vn.io.litever.remind.core.model.Mission
 import vn.io.litever.remind.core.model.MissionType
 import vn.io.litever.remind.core.model.NextAlarmUiState

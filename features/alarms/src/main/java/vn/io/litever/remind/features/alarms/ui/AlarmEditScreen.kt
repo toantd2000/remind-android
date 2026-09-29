@@ -79,7 +79,7 @@ import vn.io.litever.remind.core.designsystem.components.ReMindSettingIcon
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
-import vn.io.litever.remind.core.model.DayOfWeek
+import java.time.DayOfWeek
 import vn.io.litever.remind.core.model.MissionType
 import vn.io.litever.remind.features.alarms.R
 import vn.io.litever.remind.features.alarms.ui.components.AlarmSettingRow

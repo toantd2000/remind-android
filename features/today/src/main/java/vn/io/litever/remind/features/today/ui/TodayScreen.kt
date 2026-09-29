@@ -242,9 +242,9 @@ fun TodayScreenPreview() {
                 isEnabled = true,
                 label = "Thức dậy đón bình minh",
                 repeatDays = listOf(
-                    vn.io.litever.remind.core.model.DayOfWeek.MONDAY,
-                    vn.io.litever.remind.core.model.DayOfWeek.WEDNESDAY,
-                    vn.io.litever.remind.core.model.DayOfWeek.FRIDAY
+                    java.time.DayOfWeek.MONDAY,
+                    java.time.DayOfWeek.WEDNESDAY,
+                    java.time.DayOfWeek.FRIDAY
                 )
             )
 

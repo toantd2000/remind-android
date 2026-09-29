@@ -3,7 +3,7 @@ package vn.io.litever.remind.features.alarms.ui.components
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import vn.io.litever.remind.core.model.DayOfWeek
+import java.time.DayOfWeek
 import vn.io.litever.remind.features.alarms.R
 import java.time.LocalTime as JavaLocalTime
 

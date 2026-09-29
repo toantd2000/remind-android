@@ -29,6 +29,7 @@ import kotlinx.coroutines.sync.withLock
 import vn.io.litever.remind.core.common.util.getAccessibleRingtoneUri
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder
+import vn.io.litever.remind.core.model.UrgencyLevel
 import vn.io.litever.remind.core.alarm.notification.ReminderNotificationManager
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
@@ -118,6 +119,9 @@ class ReminderAlertManagerImpl @Inject constructor(
     }
 
     override fun startAlert(reminder: Reminder) {
+        if (reminder.action.urgencyLevel == UrgencyLevel.SOFT) {
+            return
+        }
         val currentList = _activeAlertQueue.value
         val existingIndex = currentList.indexOfFirst { it.id == reminder.id }
         val updatedList = if (existingIndex >= 0) {

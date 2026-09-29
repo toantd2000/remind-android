@@ -81,7 +81,7 @@ class ReminderRepositoryImplTest {
     fun `insertReminder inserts entity and batch inserts checklist items with generated ID`() = runTest {
         val reminder = Reminder(
             title = "Morning Routine",
-            triggerType = ReminderTriggerType.TIME,
+            triggerType = ReminderTriggerType.FIXED_TIME,
             checklist = listOf(
                 ChecklistItem(text = "Drink Water"),
                 ChecklistItem(text = "Stretch")
@@ -107,7 +107,7 @@ class ReminderRepositoryImplTest {
     fun `insertReminder without checklist items skips checklist DAO insert`() = runTest {
         val reminder = Reminder(
             title = "Simple Alarm",
-            triggerType = ReminderTriggerType.TIME,
+            triggerType = ReminderTriggerType.FIXED_TIME,
             checklist = emptyList()
         )
 
@@ -125,7 +125,7 @@ class ReminderRepositoryImplTest {
         val reminder = Reminder(
             id = 7L,
             title = "Updated Task",
-            triggerType = ReminderTriggerType.TIME,
+            triggerType = ReminderTriggerType.FIXED_TIME,
             checklist = listOf(ChecklistItem(id = 1L, text = "New Item"))
         )
 
@@ -142,7 +142,7 @@ class ReminderRepositoryImplTest {
 
     @Test
     fun `deleteReminder delegates to DAO delete`() = runTest {
-        val reminder = Reminder(id = 12L, title = "To Delete", triggerType = ReminderTriggerType.TIME)
+        val reminder = Reminder(id = 12L, title = "To Delete", triggerType = ReminderTriggerType.FIXED_TIME)
 
         repository.deleteReminder(reminder)
 

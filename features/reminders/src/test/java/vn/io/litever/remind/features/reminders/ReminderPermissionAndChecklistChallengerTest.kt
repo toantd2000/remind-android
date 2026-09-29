@@ -10,7 +10,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -21,7 +20,6 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -34,14 +32,10 @@ import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
 import vn.io.litever.remind.core.model.ChecklistItem
-import vn.io.litever.remind.core.model.GeofenceTransitionType
-import vn.io.litever.remind.core.model.LocationTrigger
-import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder
+import vn.io.litever.remind.core.model.ReminderAction
 import vn.io.litever.remind.core.model.ReminderTriggerType
 import vn.io.litever.remind.core.model.TimeTrigger
-import vn.io.litever.remind.core.model.WifiTrigger
-import vn.io.litever.remind.core.model.WifiTriggerType
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderEditViewModel
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderListViewModel
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderRingingViewModel
@@ -84,8 +78,8 @@ class ReminderPermissionAndChecklistChallengerTest {
     @Test
     fun challenge1_saveAnyway_newReminder_setsDisabled_andNeverCallsSchedule() = runTest(testDispatcher) {
         every { permissionChecker.getMissingPermissions(any()) } returns listOf(
-            ReminderPermissionType.LOCATION,
-            ReminderPermissionType.BACKGROUND_LOCATION
+            ReminderPermissionType.NOTIFICATION,
+            ReminderPermissionType.EXACT_ALARM
         )
         coEvery { repository.insertReminder(any()) } returns 701L
 
@@ -100,10 +94,9 @@ class ReminderPermissionAndChecklistChallengerTest {
         )
         testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.setTitle("Office Geofence Alert")
-        viewModel.setTriggerType(ReminderTriggerType.LOCATION)
-        viewModel.setLatitude(21.0285)
-        viewModel.setLongitude(105.8542)
+        viewModel.setTitle("Scheduled Task")
+        viewModel.setTriggerType(ReminderTriggerType.FIXED_TIME)
+        viewModel.setTime(LocalTime.of(8, 0))
 
         var saveAnywaySuccess = false
         viewModel.saveAnyway(onSuccess = { saveAnywaySuccess = true })
@@ -113,15 +106,15 @@ class ReminderPermissionAndChecklistChallengerTest {
         assertFalse("Permission dialog must be dismissed", viewModel.uiState.value.showPermissionDialog)
 
         // Strict assertion: isEnabled must be FALSE and scheduler must NEVER be invoked
-        coVerify(exactly = 1) { repository.insertReminder(match { !it.isEnabled && it.title == "Office Geofence Alert" }) }
+        coVerify(exactly = 1) { repository.insertReminder(match { !it.isEnabled && it.title == "Scheduled Task" }) }
         coVerify(exactly = 0) { scheduler.schedule(any()) }
 
         // Second scenario: attempting standard saveReminder when permissions are missing
         val draft = Reminder(
             id = 0L,
-            title = "Supermarket",
-            triggerType = ReminderTriggerType.LOCATION,
-            locationTrigger = LocationTrigger(latitude = 37.7749, longitude = -122.4194, locationName = "Supermarket")
+            title = "Doctor Appointment",
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            timeTrigger = TimeTrigger(time = listOf(LocalTime.of(9, 0)))
         )
         every { permissionChecker.hasPermissionsForReminder(any()) } returns false
 
@@ -138,8 +131,7 @@ class ReminderPermissionAndChecklistChallengerTest {
 
         viewModel2.setTitle(draft.title)
         viewModel2.setTriggerType(draft.triggerType)
-        viewModel2.setLocationCoordinates(37.7749, -122.4194)
-        viewModel2.setLocationName("Supermarket")
+        viewModel2.setTime(LocalTime.of(9, 0))
 
         var saveReminderSuccess = false
         viewModel2.saveReminder(onSuccess = { saveReminderSuccess = true })
@@ -148,19 +140,19 @@ class ReminderPermissionAndChecklistChallengerTest {
         assertFalse(saveReminderSuccess)
         assertTrue(viewModel2.uiState.value.showPermissionDialog)
         assertEquals(2, viewModel2.uiState.value.missingPermissions.size)
-        assertTrue(viewModel2.uiState.value.missingPermissions.contains(ReminderPermissionType.LOCATION))
-        assertTrue(viewModel2.uiState.value.missingPermissions.contains(ReminderPermissionType.BACKGROUND_LOCATION))
+        assertTrue(viewModel2.uiState.value.missingPermissions.contains(ReminderPermissionType.NOTIFICATION))
+        assertTrue(viewModel2.uiState.value.missingPermissions.contains(ReminderPermissionType.EXACT_ALARM))
 
-        coVerify(exactly = 0) { repository.insertReminder(match { it.title == "Supermarket" }) }
+        coVerify(exactly = 0) { repository.insertReminder(match { it.title == "Doctor Appointment" }) }
     }
 
     @Test
-    fun challenge2_wifiReminder_permissionGranted_disablingCancelsScheduler() = runTest(testDispatcher) {
+    fun challenge2_reminder_permissionGranted_disablingCancelsScheduler() = runTest(testDispatcher) {
         val existingReminder = Reminder(
             id = 702L,
-            title = "Office Wi-Fi Connection",
-            triggerType = ReminderTriggerType.WIFI,
-            wifiTrigger = WifiTrigger(ssid = "Lab_Net_Secure", triggerType = WifiTriggerType.WHILE_CONNECTED),
+            title = "Morning Alarm",
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            timeTrigger = TimeTrigger(time = listOf(LocalTime.of(7, 0))),
             isEnabled = true,
             isCompleted = false
         )
@@ -198,14 +190,15 @@ class ReminderPermissionAndChecklistChallengerTest {
     fun challenge3_listToggle_missingPermissions_strictlyBlocked() = runTest(testDispatcher) {
         val disabledReminder = Reminder(
             id = 703L,
-            title = "Client Office Geofence",
-            triggerType = ReminderTriggerType.LOCATION,
+            title = "Afternoon Meeting",
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            timeTrigger = TimeTrigger(time = listOf(LocalTime.of(14, 0))),
             isEnabled = false
         )
         val allFlow = MutableStateFlow(listOf(disabledReminder))
         every { repository.getAllReminders() } returns allFlow
         every { permissionChecker.hasPermissionsForReminder(disabledReminder) } returns false
-        every { permissionChecker.getMissingPermissions(disabledReminder) } returns listOf(ReminderPermissionType.LOCATION)
+        every { permissionChecker.getMissingPermissions(disabledReminder) } returns listOf(ReminderPermissionType.EXACT_ALARM)
 
         val listViewModel = ReminderListViewModel(
             reminderRepository = repository,
@@ -229,7 +222,8 @@ class ReminderPermissionAndChecklistChallengerTest {
         val activeReminder = Reminder(
             id = 704L,
             title = "Morning Coffee",
-            triggerType = ReminderTriggerType.TIME,
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            timeTrigger = TimeTrigger(time = listOf(LocalTime.of(7, 30))),
             isEnabled = true
         )
         val allFlow = MutableStateFlow(listOf(activeReminder))
@@ -258,11 +252,11 @@ class ReminderPermissionAndChecklistChallengerTest {
     fun challenge5_editScreen_refreshPermissions_dismissesPermissionDialogWhenGranted() = runTest(testDispatcher) {
         val draft = Reminder(
             id = 0L,
-            title = "Home Wi-Fi Sync",
-            triggerType = ReminderTriggerType.WIFI,
-            wifiTrigger = WifiTrigger(ssid = "HomeNet")
+            title = "Evening Medication",
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            timeTrigger = TimeTrigger(time = listOf(LocalTime.of(20, 0)))
         )
-        every { permissionChecker.getMissingPermissions(any()) } returns listOf(ReminderPermissionType.WIFI)
+        every { permissionChecker.getMissingPermissions(any()) } returns listOf(ReminderPermissionType.EXACT_ALARM)
         every { permissionChecker.hasPermissionsForReminder(any()) } returns false
 
         val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
@@ -278,7 +272,7 @@ class ReminderPermissionAndChecklistChallengerTest {
 
         viewModel.setTitle(draft.title)
         viewModel.setTriggerType(draft.triggerType)
-        viewModel.setWifiSsid("HomeNet")
+        viewModel.setTime(LocalTime.of(20, 0))
 
         viewModel.saveReminder(onSuccess = {})
         testDispatcher.scheduler.advanceUntilIdle()
@@ -299,7 +293,8 @@ class ReminderPermissionAndChecklistChallengerTest {
         val reminder = Reminder(
             id = 801L,
             title = "Airport Departure Checklist",
-            triggerType = ReminderTriggerType.LOCATION,
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            timeTrigger = TimeTrigger(time = listOf(LocalTime.of(10, 0))),
             checklist = listOf(
                 ChecklistItem(id = 11L, reminderId = 801L, text = "Pack passport", isCompleted = false, orderIndex = 0)
             ),
@@ -332,9 +327,10 @@ class ReminderPermissionAndChecklistChallengerTest {
         val reminderV1 = Reminder(
             id = 901L,
             title = "Medication",
-            triggerType = ReminderTriggerType.TIME,
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            timeTrigger = TimeTrigger(time = listOf(LocalTime.of(8, 0))),
             checklist = listOf(item1),
-            snoozeEnabled = true
+            action = ReminderAction(snoozeEnabled = true)
         )
 
         val reminderFlow = MutableStateFlow<Reminder?>(reminderV1)

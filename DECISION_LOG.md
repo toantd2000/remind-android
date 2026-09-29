@@ -193,3 +193,21 @@ This document records the solidified technical decisions and behavioral scenario
   - Use Google NowInAndroid flat-properties convention (`ReMindIcons.Add`, `ReMindIcons.ArrowBack`, `ReMindIcons.Settings`, etc.) returning `ImageVector`.
   - Confine `implementation(libs.material.icons.extended)` exclusively to `:core:designsystem`. Remove this dependency from `:app` and all `:features:*` modules to prevent classpath leaking and enforce strict encapsulation.
 
+## 13. Reminder Architecture: Trigger Separation & Multi-day Recurrence
+
+### Scenario: Trigger Specialization & Complex Recurrence
+- **Expected Behavior**:
+  - `FIXED_TIME`: Triggers at exact static times without drifting. If user wakes up late or an alarm is missed, the next scheduled occurrence remains fixed at the designated daily/monthly/yearly time slot.
+  - `INTERVAL`: Calculates repeating periods based on elapsed minutes (e.g. every 2 hours) and only fires within user-defined active `timeWindows` (`startTime`, `endTime`, `activeDays`).
+  - `repeatValues` Multi-day Recurrence:
+    - Monthly: User can select multiple days in a month (e.g., 5th and 20th).
+    - Yearly: User can select multiple specific dates in a year (e.g., family birthdays, annual anniversaries).
+    - Weekly: User can select multiple days of the week.
+  - Alert Urgency & Persistence:
+    - `LOW`, `MEDIUM`, `HIGH`: Standard notification stream with appropriate channel priorities.
+    - `CRITICAL` or `isPersistentAlert = true`: Escalates to full-screen high-priority alert / alarm behavior.
+- **Technical Decision**:
+  - Room DB schema explicitly divides columns: `trigger_type`, `fixed_times`, `interval_minutes`, `time_windows`, `repeat_values`, `urgency_level`, `checklist`, `snooze_config`, `is_persistent_alert`.
+  - Database migration `MIGRATION_4_5` transparently maps legacy schema without losing user alarms.
+  - Domain `TimeTrigger` acts as single source of truth for recurring calculation and time validation.
+

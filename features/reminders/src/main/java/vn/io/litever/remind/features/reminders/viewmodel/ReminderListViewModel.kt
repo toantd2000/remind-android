@@ -69,7 +69,7 @@ class ReminderListViewModel @Inject constructor(
             ReminderFilterType.ALL to allReminders.size,
             ReminderFilterType.ACTIVE to allReminders.count { it.isEnabled && !it.isCompleted },
             ReminderFilterType.COMPLETED to allReminders.count { it.isCompleted },
-            ReminderFilterType.TIME to allReminders.count { it.triggerType == ReminderTriggerType.FIXED_TIME },
+            ReminderFilterType.TIME to allReminders.count { it.triggerType == ReminderTriggerType.FIXED_TIME || it.triggerType == ReminderTriggerType.INTERVAL },
             ReminderFilterType.LOCATION to allReminders.count { false },
             ReminderFilterType.WIFI to allReminders.count { false }
         )
@@ -78,7 +78,7 @@ class ReminderListViewModel @Inject constructor(
             ReminderFilterType.ALL -> allReminders
             ReminderFilterType.ACTIVE -> allReminders.filter { it.isEnabled && !it.isCompleted }
             ReminderFilterType.COMPLETED -> allReminders.filter { it.isCompleted }
-            ReminderFilterType.TIME -> allReminders.filter { it.triggerType == ReminderTriggerType.FIXED_TIME }
+            ReminderFilterType.TIME -> allReminders.filter { it.triggerType == ReminderTriggerType.FIXED_TIME || it.triggerType == ReminderTriggerType.INTERVAL }
             ReminderFilterType.LOCATION -> allReminders.filter { false }
             ReminderFilterType.WIFI -> allReminders.filter { false }
         }

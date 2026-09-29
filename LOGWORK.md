@@ -26,6 +26,35 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
 
 ## 🧠 Nhật Ký Quyết Định Kỹ Thuật (TDR)
 
+### [TDR-069] - Tái cấu trúc CSDL nhắc nhở (Reminders): Tách bạch FIXED_TIME & INTERVAL, hỗ trợ Multi-day Recurrence và đồng bộ Room Architecture
+- **Ngày thực hiện:** 2026-09-29
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Sau commit `82167122df0a9b3c4864400cfde2142852b981e2`, cấu trúc dữ liệu reminder đã loại bỏ các trigger Location/Wifi để tập trung vào TimeTrigger.
+  - Tuy nhiên, việc gộp chung các loại kích hoạt và thiếu sự phân tách giữa mốc giờ tĩnh (`FIXED_TIME`) và khoảng lặp động (`INTERVAL`) gây xung đột logic nghiệp vụ: `FIXED_TIME` là mốc giờ cố định (không bị trôi giờ nếu lỡ hẹn), trong khi `INTERVAL` tính khoảng thời gian trôi qua giữa các lần thực hiện và chỉ kích hoạt trong các khung giờ giới hạn (`time_windows`).
+  - Nhu cầu lặp lại định kỳ phức tạp: Lặp theo tháng (cho phép chọn nhiều ngày trong tháng `monthlyDays: List<Int>`), lặp theo năm (cho phép chọn nhiều ngày trong năm `yearlyDates: List<ReminderMonthDay>`), lặp theo tuần (`repeatDays: List<DayOfWeek>`).
+- **Quyết định:**
+  1. **Chuẩn hoá Schema Room Database & Entity (`reminders` table):**
+     - Bổ sung `trigger_type` (`FIXED_TIME` | `INTERVAL`).
+     - Tách trường `fixed_times: List<String>?` (lưu các mốc giờ cố định dạng HH:mm) và `interval_minutes: Int?` (chu kỳ lặp lại theo phút).
+     - Bổ sung `time_windows: List<TimeWindow>?` quy định khung giờ hiệu lực (`startTime`, `endTime`, `activeDays`) cho `INTERVAL`.
+     - Hỗ trợ đa ngày lặp lại: `repeat_values: List<String>?` lưu trữ `monthlyDays` (ví dụ `["1", "15", "30"]`) và `yearlyDates` (ví dụ `["MM-dd", ...]`), kết hợp `repeat_days` cho WEEKLY.
+     - Đồng bộ các thuộc tính ràng buộc và hành vi: `urgency_level` (`LOW`, `MEDIUM`, `HIGH`, `CRITICAL`), `checklist` (danh sách công việc con), `snooze_config` (`intervalMinutes`, `maxCount`), `is_persistent_alert`.
+  2. **Nâng cấp Migration Room DB (`MIGRATION_4_5`):**
+     - Đảm bảo migration an toàn, tự động migrate dữ liệu cũ từ `time_trigger_times` và `time_trigger_repeat_interval` sang `fixed_times` / `repeat_values` mà không làm mất mát dữ liệu người dùng.
+  3. **Đồng bộ Domain & UI/ViewModel Layer:**
+     - Tối ưu `TimeTrigger` với các helper `isRecurring`, hỗ trợ đầy đủ `monthlyDays`, `yearlyDates`.
+     - Cập nhật `ReminderEditViewModel` và `ReminderTriggerEditScreen`: Hỗ trợ giao diện chọn nhiều ngày trong tháng và nhiều ngày trong năm linh hoạt.
+     - Cập nhật `ReminderSyncManager` và `ReminderAlertManager`: Xử lý mượt mà khi app mở hoặc alarm kích hoạt.
+  4. **Bảo trì & Tinh giản Test Suite:**
+     - Xoá bỏ các unit test mồ côi phụ thuộc Location/Wifi cũ trong `:app` và `:core:alarm`.
+     - Cập nhật dependency `libs.junit` cho `:features:today` và `:features:mission`.
+     - Đưa toàn bộ 475 test task của project vượt qua 100% không có cảnh báo hay lỗi tiềm ẩn.
+- **Hệ quả:**
+  - Hệ thống dữ liệu nhắc nhở đạt chuẩn kiến trúc sạch (Clean Architecture), tách bạch rõ ràng giữa thời gian tĩnh và chu kỳ động.
+  - Hỗ trợ toàn diện các ca sử dụng phức tạp của người dùng (uống nước mỗi 2 tiếng trong giờ làm việc, nhắc đóng tiền nhà ngày 5 và 20 hàng tháng, nhắc sinh nhật nhiều người thân trong năm).
+  - Toàn bộ test suite xanh 100%, sẵn sàng cho release.
+
 ### [TDR-067] - Tái cấu trúc GeneralSettingsScreen: Thay thế SegmentedButton bằng ReMindSettingsItem & Selection Dialog
 - **Ngày thực hiện:** 2026-09-17
 - **Trạng thái:** Accepted

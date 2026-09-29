@@ -169,13 +169,13 @@ class ReminderDatabaseChallengerTest {
     }
 
     @Test
-    fun migration3To4_createsTablesAndIndexesProperly() {
+    fun migration4To5_createsTablesAndIndexesProperly() {
         val helper = androidx.sqlite.db.SupportSQLiteOpenHelper.Configuration.builder(ApplicationProvider.getApplicationContext())
             .name("migration_test.db")
-            .callback(object : androidx.sqlite.db.SupportSQLiteOpenHelper.Callback(3) {
+            .callback(object : androidx.sqlite.db.SupportSQLiteOpenHelper.Callback(4) {
                 override fun onCreate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
-                    // Create v3 schema: alarms table with useAlarmStream
-                    db.execSQL("CREATE TABLE IF NOT EXISTS `alarms` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `hour` INTEGER NOT NULL, `minute` INTEGER NOT NULL, `label` TEXT NOT NULL, `isEnabled` INTEGER NOT NULL, `repeatDays` TEXT NOT NULL, `date` TEXT, `vibrationEnabled` INTEGER NOT NULL, `ringtoneUri` TEXT, `volume` INTEGER NOT NULL, `snoozeEnabled` INTEGER NOT NULL, `snoozeInterval` INTEGER NOT NULL, `snoozeRepeatCount` INTEGER NOT NULL, `autoSilenceMinutes` INTEGER NOT NULL, `currentSnoozeCount` INTEGER NOT NULL, `snoozeNextTriggerTime` INTEGER, `message` TEXT NOT NULL, `skippedAt` INTEGER, `gradualVolumeDurationSeconds` INTEGER NOT NULL, `lastTriggeredTime` INTEGER, `useAlarmStream` INTEGER NOT NULL DEFAULT 1)")
+                    // Create v4 schema: alarms table with overrideDndEnabled
+                    db.execSQL("CREATE TABLE IF NOT EXISTS `alarms` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `hour` INTEGER NOT NULL, `minute` INTEGER NOT NULL, `label` TEXT NOT NULL, `isEnabled` INTEGER NOT NULL, `repeatDays` TEXT NOT NULL, `date` TEXT, `vibrationEnabled` INTEGER NOT NULL, `ringtoneUri` TEXT, `volume` INTEGER NOT NULL, `snoozeEnabled` INTEGER NOT NULL, `snoozeInterval` INTEGER NOT NULL, `snoozeRepeatCount` INTEGER NOT NULL, `autoSilenceMinutes` INTEGER NOT NULL, `currentSnoozeCount` INTEGER NOT NULL, `snoozeNextTriggerTime` INTEGER, `message` TEXT NOT NULL, `skippedAt` INTEGER, `gradualVolumeDurationSeconds` INTEGER NOT NULL, `lastTriggeredTime` INTEGER, `useAlarmStream` INTEGER NOT NULL DEFAULT 1, `overrideDndEnabled` INTEGER NOT NULL DEFAULT 0)")
                 }
                 override fun onUpgrade(db: androidx.sqlite.db.SupportSQLiteDatabase, oldVersion: Int, newVersion: Int) {}
             })
@@ -184,8 +184,8 @@ class ReminderDatabaseChallengerTest {
         val dbHelper = factory.create(helper)
         val db = dbHelper.writableDatabase
 
-        // Execute MIGRATION_3_4
-        RemindDatabase.MIGRATION_3_4.migrate(db)
+        // Execute MIGRATION_4_5
+        RemindDatabase.MIGRATION_4_5.migrate(db)
 
         // Verify reminders table exists and can be inserted into
         db.execSQL("INSERT INTO reminders (title, notes, isEnabled, triggerType, notificationStyle, isPersistentAlert, vibrationEnabled, volume, snoozeEnabled, snoozeIntervalMinutes, snoozeRepeatCount, currentSnoozeCount, isCompleted, createdAt) VALUES ('Migrated Task', 'Note', 1, 'TIME', 'STANDARD', 0, 1, 100, 1, 5, 3, 0, 0, 1000)")

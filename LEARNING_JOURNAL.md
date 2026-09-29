@@ -1,3 +1,14 @@
+## [2026-09-29] Multi-module Test Dependency Hygiene & Schema Separation
+### Key Lessons
+- **Multi-module Test Scope Visibility**: In Gradle multi-module projects, `testImplementation` dependencies declared in `:features:reminders` or `:core:testing` do not automatically propagate to other sibling feature modules (`:features:today`, `:features:mission`). Running module-specific test tasks might give a false sense of security while a root `./gradlew test` will fail due to unresolved references in siblings. Always run `./gradlew test` to ensure cross-module health.
+- **Trigger Specialization**: Attempting to model periodic recurring intervals (INTERVAL) as static points in time (FIXED_TIME) introduces cognitive complexity, unnecessary array mutations, and time-drift bugs. Keeping them in distinct fields (`fixed_times` vs `interval_minutes` + `time_windows`) ensures clean business invariants and straightforward Room queries.
+- **Dangling Test Cleanup**: When refactoring architectural components (e.g. deprecating location/wifi triggers in favor of time triggers), test suites in upper consumer layers (`:app`) that test legacy combinations must be systematically audited and cleaned or upgraded, rather than left dangling to fail in CI.
+
+### Corrective Actions
+- Added `libs.junit` to `features/today/build.gradle.kts` and `features/mission/build.gradle.kts`.
+- Refactored Room entity `ReminderEntity` to explicitly handle `FIXED_TIME` and `INTERVAL`.
+- Removed legacy location/wifi tests from `:app` and `:core:alarm`.
+
 ## [2026-05-07] Automatic Database Cleanup & Flow Loops
 ### Key Lessons
 - **Flow Trigger Loops**: When a `Flow` from a database (like Room) is mapped in a `ViewModel`, performing a database update within that `map` can potentially cause an infinite loop if the update triggers another emission that satisfies the same condition.

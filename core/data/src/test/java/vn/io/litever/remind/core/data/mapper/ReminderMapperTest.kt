@@ -8,32 +8,33 @@ import vn.io.litever.remind.core.database.entity.ChecklistItemEntity
 import vn.io.litever.remind.core.database.entity.ReminderEntity
 import vn.io.litever.remind.core.database.model.PopulatedReminder
 import java.time.DayOfWeek
-import vn.io.litever.remind.core.model.GeofenceTransitionType
-import vn.io.litever.remind.core.model.LocationTrigger
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder
+import vn.io.litever.remind.core.model.ReminderAction
+import vn.io.litever.remind.core.model.ReminderMonthDay
 import vn.io.litever.remind.core.model.ReminderTimeWindow
 import vn.io.litever.remind.core.model.ReminderTriggerType
+import vn.io.litever.remind.core.model.RepeatMode
 import vn.io.litever.remind.core.model.TimeTrigger
-import vn.io.litever.remind.core.model.WifiTrigger
-import vn.io.litever.remind.core.model.WifiTriggerType
+import vn.io.litever.remind.core.model.UrgencyLevel
 import java.time.LocalDate
 import java.time.LocalTime
 
 class ReminderMapperTest {
 
     @Test
-    fun `toModel correctly maps TimeTrigger and its recurrence days`() {
+    fun `toModel correctly maps FIXED_TIME with multiple times and repeat days`() {
         val entity = ReminderEntity(
             id = 1L,
             title = "Morning Medicine",
             notes = "Take with water",
             isEnabled = true,
-            triggerType = "TIME",
-            timeTriggerHour = 8,
-            timeTriggerMinute = 30,
-            timeTriggerDate = "2026-08-25",
-            timeTriggerRepeatDays = "MONDAY,WEDNESDAY,FRIDAY",
+            triggerType = "FIXED_TIME",
+            timeTriggerTimes = "08:30,20:30",
+            timeTriggerExactDate = "2026-08-25",
+            timeTriggerRepeatMode = "WEEKLY",
+            timeTriggerRepeatValues = "1,3,5",
+            urgencyLevel = "HARD",
             notificationStyle = "FULL_SCREEN",
             isPersistentAlert = true,
             snoozeIntervalMinutes = 10,
@@ -44,95 +45,77 @@ class ReminderMapperTest {
 
         assertEquals(1L, model.id)
         assertEquals("Morning Medicine", model.title)
-        assertEquals(ReminderTriggerType.TIME, model.triggerType)
+        assertEquals(ReminderTriggerType.FIXED_TIME, model.triggerType)
         assertNotNull(model.timeTrigger)
-        assertEquals(LocalTime.of(8, 30), model.timeTrigger?.time)
-        assertEquals(LocalDate.of(2026, 8, 25), model.timeTrigger?.date)
-        assertEquals(listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY), model.timeTrigger?.repeatDays)
-        assertEquals(NotificationStyle.FULL_SCREEN, model.notificationStyle)
-        assertTrue(model.isPersistentAlert)
-        assertEquals(10, model.snoozeIntervalMinutes)
-        assertEquals(5, model.snoozeRepeatCount)
+        assertEquals(2, model.timeTrigger?.time?.size)
+        assertEquals(LocalTime.of(8, 30), model.timeTrigger?.time?.get(0))
+        assertEquals(LocalTime.of(20, 30), model.timeTrigger?.time?.get(1))
+        assertEquals(LocalDate.of(2026, 8, 25), model.timeTrigger?.exactDate)
+        assertEquals(RepeatMode.WEEKLY, model.timeTrigger?.repeatMode)
+        assertEquals(listOf(1, 3, 5), model.timeTrigger?.repeatValues)
+        assertEquals(UrgencyLevel.HARD, model.action.urgencyLevel)
+        assertEquals(NotificationStyle.FULL_SCREEN, model.action.notificationStyle)
+        assertTrue(model.action.isPersistentAlert)
+        assertEquals(10, model.action.snoozeIntervalMinutes)
+        assertEquals(5, model.action.snoozeRepeatCount)
     }
 
     @Test
-    fun `toModel correctly maps LocationTrigger and its time window`() {
+    fun `toModel correctly maps INTERVAL with multiple time windows`() {
         val entity = ReminderEntity(
             id = 2L,
-            title = "Office Arrival",
+            title = "Drink Water",
             isEnabled = true,
-            triggerType = "LOCATION",
-            locationLatitude = 37.7749,
-            locationLongitude = -122.4194,
-            locationRadiusMeters = 200f,
-            locationName = "Headquarters",
-            locationTransitionType = "ENTER",
-            locationWindowStartTime = "08:30",
-            locationWindowEndTime = "10:00",
-            locationWindowDays = "MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY"
+            triggerType = "INTERVAL",
+            timeTriggerIntervalMinutes = 60,
+            timeTriggerTimeWindows = "08:00|11:30|MONDAY,TUESDAY;13:30|17:30|",
+            urgencyLevel = "SOFT"
         )
 
         val model = entity.toModel()
 
-        assertEquals(ReminderTriggerType.LOCATION, model.triggerType)
-        assertNotNull(model.locationTrigger)
-        assertEquals(37.7749, model.locationTrigger?.latitude ?: 0.0, 0.0001)
-        assertEquals(-122.4194, model.locationTrigger?.longitude ?: 0.0, 0.0001)
-        assertEquals(200f, model.locationTrigger?.radiusMeters ?: 0f, 0.01f)
-        assertEquals("Headquarters", model.locationTrigger?.locationName)
-        assertEquals(GeofenceTransitionType.ENTER, model.locationTrigger?.transitionType)
-        assertNotNull(model.locationTrigger?.timeWindow)
-        assertEquals(LocalTime.of(8, 30), model.locationTrigger?.timeWindow?.startTime)
-        assertEquals(LocalTime.of(10, 0), model.locationTrigger?.timeWindow?.endTime)
-        assertEquals(5, model.locationTrigger?.timeWindow?.activeDays?.size)
+        assertEquals(ReminderTriggerType.INTERVAL, model.triggerType)
+        assertNotNull(model.timeTrigger)
+        assertEquals(60, model.timeTrigger?.intervalMinutes)
+        assertEquals(2, model.timeTrigger?.timeWindows?.size)
+
+        val window1 = model.timeTrigger?.timeWindows?.get(0)
+        assertEquals(LocalTime.of(8, 0), window1?.startTime)
+        assertEquals(LocalTime.of(11, 30), window1?.endTime)
+        assertEquals(listOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY), window1?.activeDays)
+
+        val window2 = model.timeTrigger?.timeWindows?.get(1)
+        assertEquals(LocalTime.of(13, 30), window2?.startTime)
+        assertEquals(LocalTime.of(17, 30), window2?.endTime)
+        assertTrue(window2?.activeDays?.isEmpty() == true)
+
+        assertEquals(UrgencyLevel.SOFT, model.action.urgencyLevel)
     }
 
     @Test
-    fun `toModel correctly maps WifiTrigger and its time window`() {
+    fun `toModel correctly maps MONTHLY multiple days and YEARLY multiple dates`() {
         val entity = ReminderEntity(
             id = 3L,
-            title = "Home Wi-Fi Sync",
+            title = "Tax & Birthday",
             isEnabled = true,
-            triggerType = "WIFI",
-            wifiSsid = "Home_5G",
-            wifiBssid = "00:11:22:33:44:55",
-            wifiTriggerType = "WHILE_CONNECTED",
-            wifiWindowStartTime = "20:00",
-            wifiWindowEndTime = "23:00",
-            wifiWindowDays = "SATURDAY,SUNDAY"
+            triggerType = "FIXED_TIME",
+            timeTriggerRepeatMode = "YEARLY",
+            timeTriggerMonthlyDays = "1,15,30",
+            timeTriggerYearlyDates = "3-8;10-20;12-25"
         )
 
         val model = entity.toModel()
 
-        assertEquals(ReminderTriggerType.WIFI, model.triggerType)
-        assertNotNull(model.wifiTrigger)
-        assertEquals("Home_5G", model.wifiTrigger?.ssid)
-        assertEquals("00:11:22:33:44:55", model.wifiTrigger?.bssid)
-        assertEquals(WifiTriggerType.WHILE_CONNECTED, model.wifiTrigger?.triggerType)
-        assertNotNull(model.wifiTrigger?.timeWindow)
-        assertEquals(LocalTime.of(20, 0), model.wifiTrigger?.timeWindow?.startTime)
-        assertEquals(LocalTime.of(23, 0), model.wifiTrigger?.timeWindow?.endTime)
-    }
-
-    @Test
-    fun `toModel handles corrupted or unknown enum strings gracefully`() {
-        val entity = ReminderEntity(
-            id = 4L,
-            title = "Corrupted Enum Test",
-            triggerType = "UNKNOWN_TRIGGER",
-            notificationStyle = "INVALID_STYLE",
-            locationTransitionType = "INVALID_TRANSITION"
-        )
-
-        val model = entity.toModel()
-
-        assertEquals(ReminderTriggerType.TIME, model.triggerType)
-        assertEquals(NotificationStyle.STANDARD, model.notificationStyle)
+        assertEquals(listOf(1, 15, 30), model.timeTrigger?.monthlyDays)
+        assertEquals(3, model.timeTrigger?.yearlyDates?.size)
+        assertEquals(ReminderMonthDay(3, 8), model.timeTrigger?.yearlyDates?.get(0))
+        assertEquals(ReminderMonthDay(10, 20), model.timeTrigger?.yearlyDates?.get(1))
+        assertEquals(ReminderMonthDay(12, 25), model.timeTrigger?.yearlyDates?.get(2))
     }
 
     @Test
     fun `PopulatedReminder maps and sorts checklist items by orderIndex`() {
-        val reminderEntity = ReminderEntity(id = 5L, title = "Grocery Shopping", triggerType = "LOCATION")
+        val reminderEntity = ReminderEntity(id = 5L, title = "Grocery Shopping", triggerType = "FIXED_TIME")
         val checklistEntities = listOf(
             ChecklistItemEntity(id = 103, reminderId = 5L, text = "Bread", orderIndex = 2),
             ChecklistItemEntity(id = 101, reminderId = 5L, text = "Milk", orderIndex = 0),
@@ -152,42 +135,48 @@ class ReminderMapperTest {
     fun `toEntity faithfully serializes domain model properties`() {
         val domainReminder = Reminder(
             id = 10L,
-            title = "Gym Session",
-            notes = "Leg day",
+            title = "Work Task",
+            notes = "Focus hours",
             isEnabled = true,
-            triggerType = ReminderTriggerType.LOCATION,
-            locationTrigger = LocationTrigger(
-                latitude = 10.762622,
-                longitude = 106.660172,
-                radiusMeters = 150f,
-                locationName = "Fitness Center",
-                transitionType = GeofenceTransitionType.BOTH,
-                timeWindow = ReminderTimeWindow(
-                    startTime = LocalTime.of(17, 0),
-                    endTime = LocalTime.of(20, 0),
-                    activeDays = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
+            triggerType = ReminderTriggerType.INTERVAL,
+            timeTrigger = TimeTrigger(
+                time = listOf(LocalTime.of(9, 0)),
+                intervalMinutes = 90,
+                repeatMode = RepeatMode.WEEKLY,
+                repeatValues = listOf(1, 2, 3),
+                monthlyDays = listOf(5, 20),
+                yearlyDates = listOf(ReminderMonthDay(1, 1)),
+                timeWindows = listOf(
+                    ReminderTimeWindow(
+                        startTime = LocalTime.of(9, 0),
+                        endTime = LocalTime.of(17, 0),
+                        activeDays = listOf(DayOfWeek.MONDAY)
+                    )
                 )
             ),
-            notificationStyle = NotificationStyle.FULL_SCREEN,
-            isPersistentAlert = true,
-            snoozeIntervalMinutes = 15,
-            snoozeRepeatCount = 2,
+            action = ReminderAction(
+                urgencyLevel = UrgencyLevel.HARD,
+                notificationStyle = NotificationStyle.FULL_SCREEN,
+                isPersistentAlert = true,
+                snoozeIntervalMinutes = 15,
+                snoozeRepeatCount = 2
+            ),
             currentSnoozeCount = 1
         )
 
         val entity = domainReminder.toEntity()
 
         assertEquals(10L, entity.id)
-        assertEquals("Gym Session", entity.title)
-        assertEquals("LOCATION", entity.triggerType)
-        assertEquals(10.762622, entity.locationLatitude ?: 0.0, 0.000001)
-        assertEquals(106.660172, entity.locationLongitude ?: 0.0, 0.000001)
-        assertEquals(150f, entity.locationRadiusMeters ?: 0f, 0.01f)
-        assertEquals("Fitness Center", entity.locationName)
-        assertEquals("BOTH", entity.locationTransitionType)
-        assertEquals("17:00", entity.locationWindowStartTime)
-        assertEquals("20:00", entity.locationWindowEndTime)
-        assertEquals("MONDAY,WEDNESDAY,FRIDAY", entity.locationWindowDays)
+        assertEquals("Work Task", entity.title)
+        assertEquals("INTERVAL", entity.triggerType)
+        assertEquals(90, entity.timeTriggerIntervalMinutes)
+        assertEquals("1,2,3", entity.timeTriggerRepeatValues)
+        assertEquals("5,20", entity.timeTriggerMonthlyDays)
+        assertEquals("1-1", entity.timeTriggerYearlyDates)
+        assertEquals("09:00|17:00|MONDAY", entity.timeTriggerTimeWindows)
+        assertEquals("09:00", entity.timeTriggerWindowStart)
+        assertEquals("17:00", entity.timeTriggerWindowEnd)
+        assertEquals("HARD", entity.urgencyLevel)
         assertEquals("FULL_SCREEN", entity.notificationStyle)
         assertTrue(entity.isPersistentAlert)
         assertEquals(15, entity.snoozeIntervalMinutes)

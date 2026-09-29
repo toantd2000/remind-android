@@ -48,9 +48,8 @@ class ReminderDaoTest {
         val entity = ReminderEntity(
             title = "Test Reminder",
             notes = "Test Note",
-            triggerType = "TIME",
-            timeTriggerHour = 9,
-            timeTriggerMinute = 15
+            triggerType = "FIXED_TIME",
+            timeTriggerTimes = "09:15"
         )
 
         val id = reminderDao.insertReminder(entity)
@@ -58,14 +57,13 @@ class ReminderDaoTest {
 
         assertNotNull(fetched)
         assertEquals("Test Reminder", fetched?.reminder?.title)
-        assertEquals(9, fetched?.reminder?.timeTriggerHour)
-        assertEquals(15, fetched?.reminder?.timeTriggerMinute)
+        assertEquals("09:15", fetched?.reminder?.timeTriggerTimes)
     }
 
     @Test
     fun relationalPopulatedReminderQuery_returnsChecklistItems() = runTest {
         val reminderId = reminderDao.insertReminder(
-            ReminderEntity(title = "Shopping", triggerType = "LOCATION")
+            ReminderEntity(title = "Shopping", triggerType = "FIXED_TIME")
         )
 
         val items = listOf(
@@ -84,7 +82,7 @@ class ReminderDaoTest {
     @Test
     fun deleteReminder_cascadesDeletionToChecklistItems() = runTest {
         val reminderId = reminderDao.insertReminder(
-            ReminderEntity(title = "Task with Checklist", triggerType = "TIME")
+            ReminderEntity(title = "Task with Checklist", triggerType = "FIXED_TIME")
         )
 
         checklistItemDao.insertChecklistItems(
@@ -111,7 +109,7 @@ class ReminderDaoTest {
 
     @Test
     fun updateChecklistItemCompletion_togglesOnlyTargetItem() = runTest {
-        val reminderId = reminderDao.insertReminder(ReminderEntity(title = "Checklist", triggerType = "TIME"))
+        val reminderId = reminderDao.insertReminder(ReminderEntity(title = "Checklist", triggerType = "FIXED_TIME"))
         val itemId1 = checklistItemDao.insertChecklistItem(
             ChecklistItemEntity(reminderId = reminderId, text = "Step 1", isCompleted = false)
         )
@@ -130,17 +128,16 @@ class ReminderDaoTest {
     }
 
     @Test
-    fun getActiveMonitoringReminders_filtersOutDisabledOrCompletedOrTimeTriggers() = runTest {
-        reminderDao.insertReminder(ReminderEntity(title = "Active Location", triggerType = "LOCATION", isEnabled = true, isCompleted = false))
-        reminderDao.insertReminder(ReminderEntity(title = "Active Wifi", triggerType = "WIFI", isEnabled = true, isCompleted = false))
-        reminderDao.insertReminder(ReminderEntity(title = "Disabled Location", triggerType = "LOCATION", isEnabled = false, isCompleted = false))
-        reminderDao.insertReminder(ReminderEntity(title = "Completed Location", triggerType = "LOCATION", isEnabled = true, isCompleted = true))
-        reminderDao.insertReminder(ReminderEntity(title = "Active Time", triggerType = "TIME", isEnabled = true, isCompleted = false))
+    fun getActiveReminders_filtersOutDisabledOrCompleted() = runTest {
+        reminderDao.insertReminder(ReminderEntity(title = "Active 1", triggerType = "FIXED_TIME", isEnabled = true, isCompleted = false))
+        reminderDao.insertReminder(ReminderEntity(title = "Active 2", triggerType = "INTERVAL", isEnabled = true, isCompleted = false))
+        reminderDao.insertReminder(ReminderEntity(title = "Disabled", triggerType = "FIXED_TIME", isEnabled = false, isCompleted = false))
+        reminderDao.insertReminder(ReminderEntity(title = "Completed", triggerType = "FIXED_TIME", isEnabled = true, isCompleted = true))
 
-        val activeList = reminderDao.getActiveMonitoringReminders().first()
+        val activeList = reminderDao.getActiveReminders().first()
         assertEquals(2, activeList.size)
         val titles = activeList.map { it.reminder.title }
-        assertTrue(titles.contains("Active Location"))
-        assertTrue(titles.contains("Active Wifi"))
+        assertTrue(titles.contains("Active 1"))
+        assertTrue(titles.contains("Active 2"))
     }
 }

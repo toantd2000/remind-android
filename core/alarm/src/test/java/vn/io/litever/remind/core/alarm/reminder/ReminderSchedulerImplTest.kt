@@ -1,33 +1,30 @@
 package vn.io.litever.remind.core.alarm.reminder
 
-import org.robolectric.RobolectricTestRunner
-import org.junit.runner.RunWith
-
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import io.mockk.Runs
 import io.mockk.every
-import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkStatic
-import io.mockk.slot
 import io.mockk.unmockkAll
 import io.mockk.verify
 import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
+import vn.io.litever.remind.core.alarm.receiver.ReminderReceiver
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
-import vn.io.litever.remind.core.model.LocationTrigger
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder
+import vn.io.litever.remind.core.model.ReminderAction
 import vn.io.litever.remind.core.model.ReminderTriggerType
+import vn.io.litever.remind.core.model.RepeatMode
 import vn.io.litever.remind.core.model.TimeTrigger
 import java.time.LocalDate
 import java.time.LocalTime
+
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class ReminderSchedulerImplTest {
@@ -40,11 +37,19 @@ class ReminderSchedulerImplTest {
 
     @Before
     fun setup() {
-        mockkStatic(PendingIntent::class)
-        every { PendingIntent.getBroadcast(any(), any(), any(), any()) } returns pendingIntent
-        every { PendingIntent.getActivity(any(), any(), any(), any()) } returns pendingIntent
         every { context.getSystemService(Context.ALARM_SERVICE) } returns alarmManager
+        every { context.packageName } returns "vn.io.litever.remind"
         every { alarmManager.canScheduleExactAlarms() } returns true
+
+        mockkStatic(PendingIntent::class)
+        every {
+            PendingIntent.getBroadcast(
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        } returns pendingIntent
 
         scheduler = ReminderSchedulerImpl(context)
     }
@@ -60,9 +65,9 @@ class ReminderSchedulerImplTest {
         val reminder = Reminder(
             id = 101L,
             title = "Doctor",
-            triggerType = ReminderTriggerType.TIME,
-            timeTrigger = TimeTrigger(time = LocalTime.of(10, 0), date = futureDate),
-            notificationStyle = NotificationStyle.STANDARD
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            timeTrigger = TimeTrigger(time = listOf(LocalTime.of(10, 0)), exactDate = futureDate, repeatMode = RepeatMode.NONE),
+            action = ReminderAction(notificationStyle = NotificationStyle.STANDARD)
         )
 
         scheduler.schedule(reminder)
@@ -86,9 +91,9 @@ class ReminderSchedulerImplTest {
         val reminder = Reminder(
             id = 102L,
             title = "Urgent Call",
-            triggerType = ReminderTriggerType.TIME,
-            timeTrigger = TimeTrigger(time = LocalTime.of(14, 0), date = futureDate),
-            notificationStyle = NotificationStyle.FULL_SCREEN
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            timeTrigger = TimeTrigger(time = listOf(LocalTime.of(14, 0)), exactDate = futureDate, repeatMode = RepeatMode.NONE),
+            action = ReminderAction(notificationStyle = NotificationStyle.FULL_SCREEN)
         )
 
         scheduler.schedule(reminder)
@@ -104,15 +109,15 @@ class ReminderSchedulerImplTest {
             id = 103L,
             title = "Disabled",
             isEnabled = false,
-            triggerType = ReminderTriggerType.TIME,
-            timeTrigger = TimeTrigger(time = LocalTime.of(10, 0))
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            timeTrigger = TimeTrigger(time = listOf(LocalTime.of(10, 0)))
         )
         val completed = Reminder(
             id = 104L,
             title = "Completed",
             isCompleted = true,
-            triggerType = ReminderTriggerType.TIME,
-            timeTrigger = TimeTrigger(time = LocalTime.of(10, 0))
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            timeTrigger = TimeTrigger(time = listOf(LocalTime.of(10, 0)))
         )
 
         scheduler.schedule(disabled)
@@ -125,19 +130,18 @@ class ReminderSchedulerImplTest {
     }
 
     @Test
-    fun schedule_locationOrWifiReminder_ignoredByTimeScheduler() {
-        val locReminder = Reminder(
+    fun schedule_intervalReminder_schedulesAlarm() {
+        val intervalReminder = Reminder(
             id = 105L,
-            title = "Location",
-            triggerType = ReminderTriggerType.LOCATION,
-            locationTrigger = LocationTrigger(latitude = 21.0, longitude = 105.0, radiusMeters = 100f)
+            title = "Drink Water",
+            triggerType = ReminderTriggerType.INTERVAL,
+            timeTrigger = TimeTrigger(intervalMinutes = 60)
         )
 
-        scheduler.schedule(locReminder)
+        scheduler.schedule(intervalReminder)
 
-        verify(exactly = 0) {
-            alarmManager.setAlarmClock(any(), any())
-            alarmManager.setExactAndAllowWhileIdle(any(), any(), any())
+        verify(atLeast = 1) {
+            alarmManager.setExactAndAllowWhileIdle(any(), any(), eq(pendingIntent))
         }
     }
 
@@ -146,7 +150,7 @@ class ReminderSchedulerImplTest {
         val reminder = Reminder(
             id = 201L,
             title = "Snooze Test",
-            triggerType = ReminderTriggerType.TIME
+            triggerType = ReminderTriggerType.FIXED_TIME
         )
         val futureTime = System.currentTimeMillis() + 600000L
 
@@ -167,7 +171,7 @@ class ReminderSchedulerImplTest {
 
     @Test
     fun cancel_and_cancelSnooze_cancelsPendingIntents() {
-        val reminder = Reminder(id = 301L, title = "Cancel Me", triggerType = ReminderTriggerType.TIME)
+        val reminder = Reminder(id = 301L, title = "Cancel Me", triggerType = ReminderTriggerType.FIXED_TIME)
 
         scheduler.cancel(reminder)
         scheduler.cancelSnooze(reminder)
@@ -180,7 +184,7 @@ class ReminderSchedulerImplTest {
 
     @Test
     fun cancelAll_cancelsBothPrimaryAndSnooze() {
-        val reminder = Reminder(id = 302L, title = "Cancel All", triggerType = ReminderTriggerType.TIME)
+        val reminder = Reminder(id = 302L, title = "Cancel All", triggerType = ReminderTriggerType.FIXED_TIME)
 
         scheduler.cancelAll(reminder)
 

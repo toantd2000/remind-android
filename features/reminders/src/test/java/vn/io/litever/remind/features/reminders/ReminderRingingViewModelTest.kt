@@ -30,6 +30,7 @@ import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
 import vn.io.litever.remind.core.model.ChecklistItem
 import vn.io.litever.remind.core.model.Reminder
+import vn.io.litever.remind.core.model.ReminderAction
 import vn.io.litever.remind.core.model.ReminderTriggerType
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderRingingViewModel
 
@@ -64,7 +65,7 @@ class ReminderRingingViewModelTest {
         val reminder = Reminder(
             id = 1L,
             title = "Morning Medicine",
-            triggerType = ReminderTriggerType.TIME,
+            triggerType = ReminderTriggerType.FIXED_TIME,
             checklist = listOf(ChecklistItem(id = 10, reminderId = 1L, text = "Vitamin C"))
         )
         reminderFlow.value = reminder
@@ -93,7 +94,7 @@ class ReminderRingingViewModelTest {
         val reminder = Reminder(
             id = 1L,
             title = "Morning Medicine",
-            triggerType = ReminderTriggerType.TIME,
+            triggerType = ReminderTriggerType.FIXED_TIME,
             checklist = listOf(ChecklistItem(id = 10, reminderId = 1L, text = "Vitamin C", isCompleted = false))
         )
         val refreshed = reminder.copy(
@@ -126,10 +127,12 @@ class ReminderRingingViewModelTest {
         val reminder = Reminder(
             id = 1L,
             title = "Morning Medicine",
-            triggerType = ReminderTriggerType.TIME,
-            snoozeEnabled = true,
-            snoozeIntervalMinutes = 10,
-            snoozeRepeatCount = 3,
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            action = ReminderAction(
+                snoozeEnabled = true,
+                snoozeIntervalMinutes = 10,
+                snoozeRepeatCount = 3
+            ),
             currentSnoozeCount = 0
         )
         reminderFlow.value = reminder
@@ -168,7 +171,7 @@ class ReminderRingingViewModelTest {
         val reminder = Reminder(
             id = 1L,
             title = "Morning Medicine",
-            triggerType = ReminderTriggerType.TIME,
+            triggerType = ReminderTriggerType.FIXED_TIME,
             isCompleted = false
         )
         reminderFlow.value = reminder

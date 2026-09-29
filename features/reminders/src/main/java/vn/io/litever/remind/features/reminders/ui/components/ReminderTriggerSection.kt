@@ -33,13 +33,75 @@ fun ReminderTriggerSection(
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
+        shape = LiteverTheme.shapes.large,
+        color = LiteverTheme.colors.surfaceContainerLow,
         onClick = onClick
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(LiteverTheme.spacing.medium)
         ) {
-            Text(text = "Trigger: ")
-            Text(text = "Time: ")
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.section_trigger_type),
+                    style = LiteverTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = LiteverTheme.colors.onSurface
+                )
+                Text(
+                    text = stringResource(R.string.action_edit),
+                    style = LiteverTheme.typography.labelMedium,
+                    color = LiteverTheme.colors.primary
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            when (uiState.triggerType) {
+                ReminderTriggerType.FIXED_TIME -> {
+                    Text(
+                        text = "Time: ${uiState.time} (${uiState.repeatInterval})",
+                        style = LiteverTheme.typography.bodyMedium,
+                        color = LiteverTheme.colors.onSurface
+                    )
+                    if (uiState.repeatInterval == ReminderRepeatInterval.MONTHLY && uiState.monthlyDays.isNotEmpty()) {
+                        Text(
+                            text = "Days of month: ${uiState.monthlyDays.joinToString(", ")}",
+                            style = LiteverTheme.typography.bodySmall,
+                            color = LiteverTheme.colors.onSurfaceVariant
+                        )
+                    }
+                    if (uiState.repeatInterval == ReminderRepeatInterval.YEARLY && uiState.yearlyDates.isNotEmpty()) {
+                        Text(
+                            text = "Dates: ${uiState.yearlyDates.joinToString(", ") { "${it.day}/${it.month}" }}",
+                            style = LiteverTheme.typography.bodySmall,
+                            color = LiteverTheme.colors.onSurfaceVariant
+                        )
+                    }
+                }
+                ReminderTriggerType.INTERVAL -> {
+                    val intervalText = uiState.intervalMinutes?.let { "Every $it minutes" } ?: "Interval not set"
+                    Text(
+                        text = intervalText,
+                        style = LiteverTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = LiteverTheme.colors.onSurface
+                    )
+                    val windowSummary = if (uiState.timeWindows.isNotEmpty()) {
+                        uiState.timeWindows.joinToString("; ") { "${it.startTime} - ${it.endTime}" }
+                    } else {
+                        stringResource(R.string.time_window_24_7_desc)
+                    }
+                    Text(
+                        text = "Active: $windowSummary",
+                        style = LiteverTheme.typography.bodySmall,
+                        color = LiteverTheme.colors.onSurfaceVariant
+                    )
+                }
+            }
         }
     }
 }

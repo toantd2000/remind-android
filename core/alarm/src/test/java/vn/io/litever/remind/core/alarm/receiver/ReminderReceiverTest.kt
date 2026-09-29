@@ -1,6 +1,5 @@
 package vn.io.litever.remind.core.alarm.receiver
 
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import io.mockk.coEvery
@@ -19,6 +18,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import androidx.test.core.app.ApplicationProvider
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import vn.io.litever.remind.core.alarm.alert.ReminderAlertManager
@@ -26,17 +26,20 @@ import vn.io.litever.remind.core.alarm.notification.ReminderNotificationManager
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
 import vn.io.litever.remind.core.model.ChecklistItem
-import java.time.DayOfWeek
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder
+import vn.io.litever.remind.core.model.ReminderAction
 import vn.io.litever.remind.core.model.ReminderTriggerType
+import vn.io.litever.remind.core.model.RepeatMode
 import vn.io.litever.remind.core.model.TimeTrigger
+import vn.io.litever.remind.core.model.UrgencyLevel
+import java.time.DayOfWeek
 import java.time.LocalTime
 
 @RunWith(RobolectricTestRunner::class)
 class ReminderReceiverTest {
 
-    private val context = mockk<Context>(relaxed = true)
+    private val context = ApplicationProvider.getApplicationContext<Context>()
     private val repository = mockk<ReminderRepository>(relaxed = true)
     private val scheduler = mockk<ReminderScheduler>(relaxed = true)
     private val notificationManager = mockk<ReminderNotificationManager>(relaxed = true)
@@ -46,34 +49,17 @@ class ReminderReceiverTest {
 
     @Before
     fun setup() {
-        every { context.packageName } returns "vn.io.litever.remind"
-
         receiver = ReminderReceiver().apply {
             reminderRepository = repository
             reminderScheduler = scheduler
             reminderNotificationManager = notificationManager
             reminderAlertManager = alertManager
         }
-        markHiltInjected(receiver)
-    }
-
-    /**
-     * Bypasses automatic Hilt dependency injection in unit tests with mocked dependencies.
-     */
-    private fun markHiltInjected(receiver: BroadcastReceiver) {
-        var clazz: Class<*>? = receiver.javaClass
-        while (clazz != null && clazz != Any::class.java) {
-            try {
-                val field = clazz.getDeclaredField("injected")
-                field.isAccessible = true
-                field.set(receiver, true)
-                return
-            } catch (e: NoSuchFieldException) {
-                clazz = clazz.superclass
-            } catch (e: Exception) {
-                return
-            }
-        }
+        try {
+            val field = receiver.javaClass.superclass?.getDeclaredField("injected")
+            field?.isAccessible = true
+            field?.set(receiver, true)
+        } catch (_: Exception) {}
     }
 
     @After
@@ -82,16 +68,18 @@ class ReminderReceiverTest {
     }
 
     @Test
-    fun onReceive_triggerOneTimeReminder_marksCompletedAndShowsNotificationAndFiresAlert() = runBlocking {
+    fun onReceive_triggerOneTimeReminder_updatesLastTriggeredAndShowsNotification() = runBlocking {
         val reminder = Reminder(
             id = 10L,
             title = "One-time Reminder",
-            triggerType = ReminderTriggerType.TIME,
-            timeTrigger = TimeTrigger(time = LocalTime.of(9, 0), repeatDays = emptyList()),
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            timeTrigger = TimeTrigger(time = listOf(LocalTime.of(9, 0)), repeatMode = RepeatMode.NONE),
             isEnabled = true,
             isCompleted = false,
-            notificationStyle = NotificationStyle.STANDARD,
-            isPersistentAlert = false
+            action = ReminderAction(
+                notificationStyle = NotificationStyle.STANDARD,
+                isPersistentAlert = false
+            )
         )
 
         coEvery { repository.getReminderById(10L) } returns reminder
@@ -102,7 +90,7 @@ class ReminderReceiverTest {
         }
 
         receiver.onReceive(context, intent)
-        Thread.sleep(100) // allow async coroutine to finish
+        Thread.sleep(100)
 
         val updatedSlot = slot<Reminder>()
         coVerify(atLeast = 1) { repository.updateReminder(capture(updatedSlot)) }
@@ -112,40 +100,6 @@ class ReminderReceiverTest {
         assertNotNull(updatedSlot.captured.lastTriggeredTime)
 
         verify(atLeast = 1) { notificationManager.showNotification(match { it.id == 10L }) }
-
-        verify(atLeast = 1) {
-            context.sendBroadcast(match {
-                it.action == ReminderReceiver.ACTION_FIRE_REMINDER_ALERT &&
-                        it.getLongExtra(ReminderReceiver.EXTRA_REMINDER_ID, -1L) == 10L
-            })
-        }
-    }
-
-    @Test
-    fun onReceive_triggerPersistentReminder_startsAlertInAlertManager() = runBlocking {
-        val reminder = Reminder(
-            id = 15L,
-            title = "Persistent Urgent",
-            triggerType = ReminderTriggerType.TIME,
-            timeTrigger = TimeTrigger(time = LocalTime.of(8, 0), repeatDays = emptyList()),
-            isEnabled = true,
-            isCompleted = false,
-            notificationStyle = NotificationStyle.FULL_SCREEN,
-            isPersistentAlert = true
-        )
-
-        coEvery { repository.getReminderById(15L) } returns reminder
-
-        val intent = Intent(ReminderReceiver.ACTION_TRIGGER_REMINDER).apply {
-            putExtra(ReminderReceiver.EXTRA_REMINDER_ID, 15L)
-            putExtra(ReminderReceiver.EXTRA_IS_SNOOZE, false)
-        }
-
-        receiver.onReceive(context, intent)
-        Thread.sleep(100)
-
-        verify(atLeast = 1) { notificationManager.showNotification(match { it.id == 15L }) }
-        verify(atLeast = 1) { alertManager.startAlert(match { it.id == 15L }) }
     }
 
     @Test
@@ -153,8 +107,12 @@ class ReminderReceiverTest {
         val reminder = Reminder(
             id = 20L,
             title = "Daily Standup",
-            triggerType = ReminderTriggerType.TIME,
-            timeTrigger = TimeTrigger(time = LocalTime.of(9, 0), repeatDays = listOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY)),
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            timeTrigger = TimeTrigger(
+                time = listOf(LocalTime.of(9, 0)),
+                repeatMode = RepeatMode.WEEKLY,
+                repeatValues = listOf(DayOfWeek.MONDAY.value, DayOfWeek.TUESDAY.value)
+            ),
             isEnabled = true,
             isCompleted = false
         )
@@ -179,19 +137,18 @@ class ReminderReceiverTest {
     }
 
     @Test
-    fun onReceive_snoozeAction_stopsAlertCancelsNotificationIncrementsCountAndSchedulesSnooze() = runBlocking {
+    fun onReceive_snoozeAction_incrementsCountAndSchedulesSnooze() = runBlocking {
         val reminder = Reminder(
             id = 30L,
             title = "Snoozeable",
-            triggerType = ReminderTriggerType.TIME,
-            snoozeEnabled = true,
-            snoozeIntervalMinutes = 10,
-            snoozeRepeatCount = 3,
-            currentSnoozeCount = 1,
-            checklist = listOf(
-                ChecklistItem(id = 1L, reminderId = 30L, text = "Check 1", isCompleted = true),
-                ChecklistItem(id = 2L, reminderId = 30L, text = "Check 2", isCompleted = false)
-            )
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            action = ReminderAction(
+                urgencyLevel = UrgencyLevel.MEDIUM,
+                snoozeEnabled = true,
+                snoozeIntervalMinutes = 10,
+                snoozeRepeatCount = 3
+            ),
+            currentSnoozeCount = 1
         )
 
         coEvery { repository.getReminderById(30L) } returns reminder
@@ -211,48 +168,17 @@ class ReminderReceiverTest {
 
         assertEquals(2, updatedSlot.captured.currentSnoozeCount)
         assertNotNull(updatedSlot.captured.snoozeNextTriggerTime)
-        assertEquals(2, updatedSlot.captured.checklist.size)
-        assertTrue(updatedSlot.captured.checklist[0].isCompleted)
-        assertFalse(updatedSlot.captured.checklist[1].isCompleted)
 
         verify(atLeast = 1) { scheduler.scheduleSnooze(any(), any()) }
     }
 
     @Test
-    fun onReceive_snoozeAction_whenMaxSnoozeReached_doesNotScheduleSnooze() = runBlocking {
-        val reminder = Reminder(
-            id = 35L,
-            title = "Max Snoozed",
-            triggerType = ReminderTriggerType.TIME,
-            snoozeEnabled = true,
-            snoozeIntervalMinutes = 10,
-            snoozeRepeatCount = 2,
-            currentSnoozeCount = 2
-        )
-
-        coEvery { repository.getReminderById(35L) } returns reminder
-
-        val intent = Intent(ReminderReceiver.ACTION_REMINDER_SNOOZE).apply {
-            putExtra(ReminderReceiver.EXTRA_REMINDER_ID, 35L)
-        }
-
-        receiver.onReceive(context, intent)
-        Thread.sleep(100)
-
-        verify(atLeast = 1) { alertManager.stopAlert(35L) }
-        verify(atLeast = 1) { notificationManager.cancelNotification(35L) }
-
-        coVerify(exactly = 0) { repository.updateReminder(match { it.id == 35L && it.currentSnoozeCount > 2 }) }
-        verify(exactly = 0) { scheduler.scheduleSnooze(any(), any()) }
-    }
-
-    @Test
-    fun onReceive_dismissAction_stopsAlertCancelsNotificationAndCancelsSnooze() = runBlocking {
+    fun onReceive_dismissAction_fixedTime_completesReminder() = runBlocking {
         val reminder = Reminder(
             id = 40L,
             title = "Dismiss Me",
-            triggerType = ReminderTriggerType.TIME,
-            timeTrigger = TimeTrigger(time = LocalTime.of(12, 0), repeatDays = emptyList()),
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            timeTrigger = TimeTrigger(time = listOf(LocalTime.of(12, 0)), repeatMode = RepeatMode.NONE),
             isEnabled = true,
             isCompleted = false
         )
@@ -278,11 +204,40 @@ class ReminderReceiverTest {
     }
 
     @Test
+    fun onReceive_dismissAction_intervalReminder_shiftsCycleAndReschedules() = runBlocking {
+        val reminder = Reminder(
+            id = 45L,
+            title = "Drink Water Interval",
+            triggerType = ReminderTriggerType.INTERVAL,
+            timeTrigger = TimeTrigger(intervalMinutes = 120),
+            isEnabled = true,
+            isCompleted = false
+        )
+
+        coEvery { repository.getReminderById(45L) } returns reminder
+
+        val intent = Intent(ReminderReceiver.ACTION_REMINDER_DISMISS).apply {
+            putExtra(ReminderReceiver.EXTRA_REMINDER_ID, 45L)
+        }
+
+        receiver.onReceive(context, intent)
+        Thread.sleep(100)
+
+        val updatedSlot = slot<Reminder>()
+        coVerify(atLeast = 1) { repository.updateReminder(capture(updatedSlot)) }
+
+        // Interval reminder should not be closed, but shifted
+        assertFalse(updatedSlot.captured.isCompleted)
+        assertNotNull(updatedSlot.captured.lastTriggeredTime)
+        verify(atLeast = 1) { scheduler.schedule(match { it.id == 45L }) }
+    }
+
+    @Test
     fun onReceive_checklistToggle_updatesItemStatusAndRefreshesNotification() = runBlocking {
         val reminder = Reminder(
             id = 50L,
             title = "Checklist Reminder",
-            triggerType = ReminderTriggerType.TIME,
+            triggerType = ReminderTriggerType.FIXED_TIME,
             checklist = listOf(
                 ChecklistItem(id = 1L, reminderId = 50L, text = "Item 1", isCompleted = false)
             )

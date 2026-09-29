@@ -45,11 +45,15 @@ import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.features.reminders.R
 import kotlin.math.roundToInt
 
+import vn.io.litever.remind.core.model.UrgencyLevel
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReminderAlertConfigSection(
     notificationStyle: NotificationStyle,
     onNotificationStyleChange: (NotificationStyle) -> Unit,
+    urgencyLevel: UrgencyLevel = UrgencyLevel.MEDIUM,
+    onUrgencyLevelChange: (UrgencyLevel) -> Unit = {},
     ringtoneTitle: String,
     onRingtoneClick: () -> Unit,
     volume: Int,
@@ -101,6 +105,50 @@ fun ReminderAlertConfigSection(
             )
 
             Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+
+            // Urgency Level Selector
+            Text(
+                text = stringResource(R.string.urgency_level_title),
+                style = LiteverTheme.typography.labelLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = LiteverTheme.colors.onSurface
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            LiteverSingleChoiceSegmentedButtonRow(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                UrgencyLevel.entries.forEach { level ->
+                    val labelRes = when (level) {
+                        UrgencyLevel.SOFT -> R.string.urgency_soft
+                        UrgencyLevel.MEDIUM -> R.string.urgency_medium
+                        UrgencyLevel.HARD -> R.string.urgency_hard
+                    }
+                    LiteverSegmentedButton(
+                        onClick = { onUrgencyLevelChange(level) },
+                        selected = level == urgencyLevel,
+                        label = {
+                            Text(
+                                text = stringResource(labelRes),
+                                style = LiteverTheme.typography.labelMedium
+                            )
+                        }
+                    )
+                }
+            }
+
+            val urgencyDesc = when (urgencyLevel) {
+                UrgencyLevel.SOFT -> stringResource(R.string.urgency_soft_desc)
+                UrgencyLevel.MEDIUM -> stringResource(R.string.urgency_medium_desc)
+                UrgencyLevel.HARD -> stringResource(R.string.urgency_hard_desc)
+            }
+            Text(
+                text = urgencyDesc,
+                style = LiteverTheme.typography.bodySmall,
+                color = LiteverTheme.colors.onSurfaceVariant,
+                modifier = Modifier.padding(top = 4.dp, bottom = 12.dp)
+            )
 
             // Notification Style Selector (Standard Heads-Up vs Full-Screen Alarm)
             Text(

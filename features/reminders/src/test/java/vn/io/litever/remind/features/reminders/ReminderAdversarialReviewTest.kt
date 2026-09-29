@@ -27,22 +27,18 @@ import org.junit.Test
 import vn.io.litever.remind.core.alarm.ReminderSyncManager
 import vn.io.litever.remind.core.alarm.alert.ReminderAlertManager
 import vn.io.litever.remind.core.alarm.notification.ReminderNotificationManager
-import vn.io.litever.remind.core.alarm.reminder.ReminderTriggerEvaluator
 import vn.io.litever.remind.core.common.util.PermissionChecker
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
 import java.time.DayOfWeek
-import vn.io.litever.remind.core.model.GeofenceTransitionType
-import vn.io.litever.remind.core.model.LocationTrigger
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderMonthDay
 import vn.io.litever.remind.core.model.ReminderTimeWindow
 import vn.io.litever.remind.core.model.ReminderTriggerType
+import vn.io.litever.remind.core.model.RepeatMode
 import vn.io.litever.remind.core.model.TimeTrigger
-import vn.io.litever.remind.core.model.WifiTrigger
-import vn.io.litever.remind.core.model.WifiTriggerType
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderListViewModel
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderRingingViewModel
 import androidx.lifecycle.SavedStateHandle
@@ -84,36 +80,40 @@ class ReminderAdversarialReviewTest {
     @Test
     fun timeTrigger_isRecurring_evaluatesCorrectlyAcrossAllModes() {
         // Once with date
-        val onceWithDate = TimeTrigger(time = LocalTime.of(8, 0), date = LocalDate.of(2026, 9, 1))
+        val onceWithDate = TimeTrigger(time = listOf(LocalTime.of(8, 0)), exactDate = LocalDate.of(2026, 9, 1), repeatMode = RepeatMode.NONE)
         assertFalse(onceWithDate.isRecurring)
 
         // Once without date (daily once)
-        val onceNoDate = TimeTrigger(time = LocalTime.of(8, 0))
+        val onceNoDate = TimeTrigger(time = listOf(LocalTime.of(8, 0)), repeatMode = RepeatMode.NONE)
         assertFalse(onceNoDate.isRecurring)
 
         // Weekly single day
-        val weeklySingle = TimeTrigger(time = LocalTime.of(8, 0), repeatDays = listOf(DayOfWeek.MONDAY))
+        val weeklySingle = TimeTrigger(time = listOf(LocalTime.of(8, 0)), repeatMode = RepeatMode.WEEKLY, repeatValues = listOf(DayOfWeek.MONDAY.value))
         assertTrue(weeklySingle.isRecurring)
 
         // Weekly full week (all 7 days)
-        val weeklyFull = TimeTrigger(time = LocalTime.of(8, 0), repeatDays = DayOfWeek.entries)
+        val weeklyFull = TimeTrigger(time = listOf(LocalTime.of(8, 0)), repeatMode = RepeatMode.WEEKLY, repeatValues = DayOfWeek.entries.map { it.value })
         assertTrue(weeklyFull.isRecurring)
 
         // Monthly single day
-        val monthlySingle = TimeTrigger(time = LocalTime.of(8, 0), monthlyDays = listOf(15))
+        val monthlySingle = TimeTrigger(time = listOf(LocalTime.of(8, 0)), repeatMode = RepeatMode.MONTHLY, monthlyDays = listOf(15))
         assertTrue(monthlySingle.isRecurring)
 
         // Monthly multi days
-        val monthlyMulti = TimeTrigger(time = LocalTime.of(8, 0), monthlyDays = listOf(1, 15, 30))
+        val monthlyMulti = TimeTrigger(time = listOf(LocalTime.of(8, 0)), repeatMode = RepeatMode.MONTHLY, monthlyDays = listOf(1, 15, 30))
         assertTrue(monthlyMulti.isRecurring)
 
         // Yearly single date
-        val yearlySingle = TimeTrigger(time = LocalTime.of(8, 0), yearlyDates = listOf(ReminderMonthDay(12, 25)))
+        val yearlySingle = TimeTrigger(time = listOf(LocalTime.of(8, 0)), repeatMode = RepeatMode.YEARLY, yearlyDates = listOf(ReminderMonthDay(12, 25)))
         assertTrue(yearlySingle.isRecurring)
 
         // Yearly multi dates
-        val yearlyMulti = TimeTrigger(time = LocalTime.of(8, 0), yearlyDates = listOf(ReminderMonthDay(1, 1), ReminderMonthDay(5, 1), ReminderMonthDay(12, 25)))
+        val yearlyMulti = TimeTrigger(time = listOf(LocalTime.of(8, 0)), repeatMode = RepeatMode.YEARLY, yearlyDates = listOf(ReminderMonthDay(1, 1), ReminderMonthDay(5, 1), ReminderMonthDay(12, 25)))
         assertTrue(yearlyMulti.isRecurring)
+
+        // Interval mode
+        val intervalTrigger = TimeTrigger(intervalMinutes = 60)
+        assertTrue(intervalTrigger.isRecurring)
     }
 
     @Test
@@ -121,49 +121,26 @@ class ReminderAdversarialReviewTest {
         val recurringReminder = Reminder(
             id = 10L,
             title = "Monthly Rent",
-            triggerType = ReminderTriggerType.TIME,
-            timeTrigger = TimeTrigger(time = LocalTime.of(9, 0), monthlyDays = listOf(1))
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            timeTrigger = TimeTrigger(time = listOf(LocalTime.of(9, 0)), repeatMode = RepeatMode.MONTHLY, monthlyDays = listOf(1))
         )
         assertTrue(recurringReminder.isRecurring)
 
         val nonRecurringReminder = Reminder(
             id = 11L,
             title = "Doctor Appointment",
-            triggerType = ReminderTriggerType.TIME,
-            timeTrigger = TimeTrigger(time = LocalTime.of(14, 0), date = LocalDate.of(2026, 10, 10))
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            timeTrigger = TimeTrigger(time = listOf(LocalTime.of(14, 0)), exactDate = LocalDate.of(2026, 10, 10), repeatMode = RepeatMode.NONE)
         )
         assertFalse(nonRecurringReminder.isRecurring)
 
-        val locationReminder = Reminder(
+        val intervalReminder = Reminder(
             id = 12L,
-            title = "Supermarket",
-            triggerType = ReminderTriggerType.LOCATION,
-            locationTrigger = LocationTrigger(latitude = 21.0, longitude = 105.0)
+            title = "Drink Water",
+            triggerType = ReminderTriggerType.INTERVAL,
+            timeTrigger = TimeTrigger(intervalMinutes = 120)
         )
-        assertFalse(locationReminder.isRecurring)
-
-        val recurringLocationReminder = Reminder(
-            id = 13L,
-            title = "Office Arrival Recurring",
-            triggerType = ReminderTriggerType.LOCATION,
-            locationTrigger = LocationTrigger(
-                latitude = 21.0,
-                longitude = 105.0,
-                repeatDays = listOf(DayOfWeek.MONDAY, DayOfWeek.FRIDAY)
-            )
-        )
-        assertTrue(recurringLocationReminder.isRecurring)
-
-        val recurringWifiReminder = Reminder(
-            id = 14L,
-            title = "Office Wifi Recurring",
-            triggerType = ReminderTriggerType.WIFI,
-            wifiTrigger = WifiTrigger(
-                ssid = "Office_SSID",
-                monthlyDays = listOf(1, 15)
-            )
-        )
-        assertTrue(recurringWifiReminder.isRecurring)
+        assertTrue(intervalReminder.isRecurring)
     }
 
     // =========================================================================
@@ -175,8 +152,8 @@ class ReminderAdversarialReviewTest {
         val monthlyReminder = Reminder(
             id = 50L,
             title = "Monthly Utility Bill",
-            triggerType = ReminderTriggerType.TIME,
-            timeTrigger = TimeTrigger(time = LocalTime.of(9, 0), monthlyDays = listOf(5)),
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            timeTrigger = TimeTrigger(time = listOf(LocalTime.of(9, 0)), repeatMode = RepeatMode.MONTHLY, monthlyDays = listOf(5)),
             isEnabled = true,
             isCompleted = false
         )
@@ -214,8 +191,8 @@ class ReminderAdversarialReviewTest {
         val yearlyReminder = Reminder(
             id = 51L,
             title = "Annual Insurance Renewal",
-            triggerType = ReminderTriggerType.TIME,
-            timeTrigger = TimeTrigger(time = LocalTime.of(10, 0), yearlyDates = listOf(ReminderMonthDay(6, 15))),
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            timeTrigger = TimeTrigger(time = listOf(LocalTime.of(10, 0)), repeatMode = RepeatMode.YEARLY, yearlyDates = listOf(ReminderMonthDay(6, 15))),
             isEnabled = true,
             isCompleted = false
         )
@@ -257,7 +234,7 @@ class ReminderAdversarialReviewTest {
         val snoozedReminder = Reminder(
             id = 77L,
             title = "Snoozed Task",
-            triggerType = ReminderTriggerType.TIME,
+            triggerType = ReminderTriggerType.FIXED_TIME,
             isEnabled = true,
             snoozeNextTriggerTime = System.currentTimeMillis() + 300000L,
             currentSnoozeCount = 2
@@ -305,10 +282,10 @@ class ReminderAdversarialReviewTest {
         val afternoonTime = LocalDateTime.of(2026, 8, 27, 15, 0)
         val eveningTime = LocalDateTime.of(2026, 8, 27, 19, 0)
 
-        assertTrue(ReminderTriggerEvaluator.isWithinTimeWindows(windows, morningTime))
-        assertFalse(ReminderTriggerEvaluator.isWithinTimeWindows(windows, lunchTime))
-        assertTrue(ReminderTriggerEvaluator.isWithinTimeWindows(windows, afternoonTime))
-        assertFalse(ReminderTriggerEvaluator.isWithinTimeWindows(windows, eveningTime))
+        assertTrue(windows.any { it.isWithinWindow(morningTime) })
+        assertFalse(windows.any { it.isWithinWindow(lunchTime) })
+        assertTrue(windows.any { it.isWithinWindow(afternoonTime) })
+        assertFalse(windows.any { it.isWithinWindow(eveningTime) })
     }
 
     @Test
@@ -319,9 +296,9 @@ class ReminderAdversarialReviewTest {
         val noon = LocalDateTime.of(2026, 8, 27, 12, 0)
         val endOfDay = LocalDateTime.of(2026, 8, 27, 23, 59)
 
-        assertTrue(ReminderTriggerEvaluator.isWithinTimeWindows(allDay, startOfDay))
-        assertTrue(ReminderTriggerEvaluator.isWithinTimeWindows(allDay, noon))
-        assertTrue(ReminderTriggerEvaluator.isWithinTimeWindows(allDay, endOfDay))
+        assertTrue(allDay.any { it.isWithinWindow(startOfDay) })
+        assertTrue(allDay.any { it.isWithinWindow(noon) })
+        assertTrue(allDay.any { it.isWithinWindow(endOfDay) })
     }
 
     // =========================================================================
@@ -335,8 +312,8 @@ class ReminderAdversarialReviewTest {
         val unhandledReminder = Reminder(
             id = 99L,
             title = "Unhandled Doctor Appointment",
-            triggerType = ReminderTriggerType.TIME,
-            timeTrigger = TimeTrigger(time = LocalTime.of(8, 0), date = pastDate),
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            timeTrigger = TimeTrigger(time = listOf(LocalTime.of(8, 0)), exactDate = pastDate, repeatMode = RepeatMode.NONE),
             isEnabled = true,
             isCompleted = false,
             lastTriggeredTime = triggeredTime,
@@ -369,7 +346,7 @@ class ReminderAdversarialReviewTest {
         val activeReminder = Reminder(
             id = 101L,
             title = "Active Reminder",
-            triggerType = ReminderTriggerType.TIME,
+            triggerType = ReminderTriggerType.FIXED_TIME,
             isEnabled = true,
             isCompleted = false
         )
@@ -400,7 +377,7 @@ class ReminderAdversarialReviewTest {
         val activeReminder = Reminder(
             id = 102L,
             title = "Delete Reminder",
-            triggerType = ReminderTriggerType.TIME,
+            triggerType = ReminderTriggerType.FIXED_TIME,
             isEnabled = true,
             isCompleted = false
         )

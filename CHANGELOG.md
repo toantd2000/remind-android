@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-09-29
+
+### Added
+- **Explicit Trigger Types (FIXED_TIME & INTERVAL):** Separated reminders into two distinct operational paradigms:
+  - `FIXED_TIME`: Static, non-drifting time targets (e.g. medicine reminders at "08:00", "20:00").
+  - `INTERVAL`: Dynamic recurring intervals (e.g. drink water every 120 minutes) bounded within customizable active `timeWindows` (`startTime`, `endTime`, `activeDays`).
+- **Multi-day Recurrence (repeatValues):**
+  - Monthly recurrence: Supports selecting multiple specific days of the month (`monthlyDays: List<Int>`).
+  - Yearly recurrence: Supports selecting multiple dates in a year (`yearlyDates: List<ReminderMonthDay>`).
+  - Weekly recurrence: Supports selecting multiple days of the week (`repeatDays: List<DayOfWeek>`).
+- **Urgency & Action Constraints:** Added `UrgencyLevel` (`LOW`, `MEDIUM`, `HIGH`, `CRITICAL`), `Checklist` (subtasks with completion status & ordering), customizable `SnoozeConfig`, and `isPersistentAlert` mode for full-screen alarm behavior.
+- **Room Database Migration v5:** Added `MIGRATION_4_5` preserving existing data while transitioning to the new schema.
+
+### Changed
+- **Reminder Architecture & Entities:** Streamlined `ReminderEntity` and domain `Reminder` model, removing legacy location/wifi triggers in favor of a robust time-based trigger system.
+- **ViewModel & UI Integration:** Updated `ReminderEditViewModel` and composable screens (`ReminderTriggerEditScreen`, `ReminderEditScreen`, `ReminderTriggerSection`, `ReminderAlertConfigSection`) with intuitive multi-day selector dialogs and responsive reactive state.
+
+### Fixed
+- **Multi-module Test Dependencies:** Fixed missing `libs.junit` dependencies in `:features:today` and `:features:mission` test configurations.
+- **Test Suite Hygiene:** Cleaned up orphaned location/wifi tests, ensuring 100% test pass across all project modules (475 tasks).
+
 ## [2.0.0] - 2026-09-23
 
 ### Added

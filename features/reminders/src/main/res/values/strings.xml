@@ -216,4 +216,24 @@
     <string name="add_date">Add Date</string>
     <string name="select_day">Select Day</string>
     <string name="day_number_format">%d</string>
+
+    <!-- Urgency Level -->
+    <string name="urgency_level_title">Urgency Level</string>
+    <string name="urgency_soft">Soft</string>
+    <string name="urgency_medium">Medium</string>
+    <string name="urgency_hard">Hard</string>
+    <string name="urgency_soft_desc">Notification only, shifts automatically without continuous alarm</string>
+    <string name="urgency_medium_desc">Standard ringtone &amp; vibration</string>
+    <string name="urgency_hard_desc">Persistent alarm until dismissed or snoozed</string>
+
+    <!-- Interval Trigger -->
+    <string name="interval_section_title">Repeat Interval</string>
+    <string name="interval_minutes_label">Repeat Every (Minutes)</string>
+    <string name="interval_minutes_hint">e.g. 60 (every 1 hour)</string>
+    <string name="interval_preset_15m">15m</string>
+    <string name="interval_preset_30m">30m</string>
+    <string name="interval_preset_1h">1h</string>
+    <string name="interval_preset_2h">2h</string>
+    <string name="interval_preset_3h">3h</string>
+    <string name="interval_preset_4h">4h</string>
 </resources>

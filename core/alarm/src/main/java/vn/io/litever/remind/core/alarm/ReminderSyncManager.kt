@@ -46,7 +46,14 @@ class ReminderSyncManager @Inject constructor(
                     } else {
                         val timeTrigger = reminder.timeTrigger
                         if (timeTrigger != null) {
-                            val nextOccurrence = timeTrigger.getNextOccurrence(LocalDateTime.now())
+                            val lastTriggeredLdt = reminder.lastTriggeredTime?.let {
+                                java.time.Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDateTime()
+                            }
+                            val nextOccurrence = timeTrigger.getNextOccurrence(
+                                now = LocalDateTime.now(),
+                                lastTriggeredTime = lastTriggeredLdt,
+                                isInterval = reminder.triggerType == ReminderTriggerType.INTERVAL
+                            )
                             if (nextOccurrence != null) {
                                 val nextEpoch = nextOccurrence.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
                                 if (timeTrigger.isRecurring) {
@@ -68,6 +75,10 @@ class ReminderSyncManager @Inject constructor(
                                             context.sendBroadcast(intent)
                                         }
                                     }
+                                }
+                            } else {
+                                if (reminder.lastTriggeredTime != null) {
+                                    reminderAlertManager?.startAlert(reminder)
                                 }
                             }
                         }

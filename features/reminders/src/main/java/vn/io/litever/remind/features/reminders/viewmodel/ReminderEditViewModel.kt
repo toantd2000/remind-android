@@ -52,13 +52,13 @@ data class ReminderEditUiState(
     val isEnabled: Boolean = true,
     val triggerType: ReminderTriggerType = ReminderTriggerType.FIXED_TIME,
     val time: LocalTime = LocalTime.now().plusMinutes(5).withSecond(0).withNano(0),
-    val date: LocalDate = LocalDate.now(),
+    val date: LocalDate? = LocalDate.now(),
     val repeatInterval: ReminderRepeatInterval = ReminderRepeatInterval.NONE,
     val repeatDays: List<DayOfWeek> = emptyList(),
-    val monthlyDays: List<ReminderMonthDay> = emptyList(),
-    val yearlyDates: List<LocalDate> = emptyList(),
+    val monthlyDays: List<Int> = emptyList(),
+    val yearlyDates: List<ReminderMonthDay> = emptyList(),
     val intervalMinutes: Int? = null,
-    val timeWindow: ReminderTimeWindow? = null,
+    val timeWindows: List<ReminderTimeWindow> = emptyList(),
     val urgencyLevel: UrgencyLevel = UrgencyLevel.MEDIUM,
     val checklist: List<ChecklistItem> = emptyList(),
     val notificationStyle: NotificationStyle = NotificationStyle.STANDARD,
@@ -78,16 +78,19 @@ data class ReminderEditUiState(
     val showTitleError: Boolean = false,
     val validationErrorField: ReminderValidationErrorField? = null,
     val validationErrorTrigger: Long = 0L
-)
+) {
+    val timeWindow: ReminderTimeWindow?
+        get() = timeWindows.firstOrNull()
+}
 
 @HiltViewModel
 class ReminderEditViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+    savedStateHandle: SavedStateHandle = SavedStateHandle(),
     private val reminderRepository: ReminderRepository,
     private val preferencesDataSource: AlarmPreferencesDataSource,
     private val reminderScheduler: ReminderScheduler,
-    private val reminderAlertManager: ReminderAlertManager?,
-    private val reminderNotificationManager: ReminderNotificationManager?,
+    private val reminderAlertManager: ReminderAlertManager? = null,
+    private val reminderNotificationManager: ReminderNotificationManager? = null,
     private val permissionChecker: PermissionChecker,
     private val reminderSyncManager: ReminderSyncManager
 ) : ViewModel() {
@@ -124,8 +127,10 @@ class ReminderEditViewModel @Inject constructor(
                         date = activeTriggerDate,
                         repeatInterval = repeatInterval,
                         repeatDays = if (repeatInterval == ReminderRepeatInterval.WEEKLY) (timeTrigger?.repeatValues?.mapNotNull { v -> DayOfWeek.values().find { it.value == v } } ?: emptyList()) else emptyList(),
+                        monthlyDays = timeTrigger?.monthlyDays ?: emptyList(),
+                        yearlyDates = timeTrigger?.yearlyDates ?: emptyList(),
                         intervalMinutes = timeTrigger?.intervalMinutes,
-                        timeWindow = timeTrigger?.timeWindow,
+                        timeWindows = timeTrigger?.timeWindows ?: (timeTrigger?.timeWindow?.let { listOf(it) } ?: emptyList()),
                         urgencyLevel = existing.action.urgencyLevel,
                         checklist = existing.checklist,
                         notificationStyle = existing.action.notificationStyle,
@@ -145,7 +150,7 @@ class ReminderEditViewModel @Inject constructor(
         }
     }
 
-    private fun createDraftReminder(): Reminder {
+    internal fun createDraftReminder(): Reminder {
         val state = _uiState.value
         val now = System.currentTimeMillis()
 
@@ -164,7 +169,9 @@ class ReminderEditViewModel @Inject constructor(
                 exactDate = if (repeatMode == RepeatMode.NONE) state.date else null,
                 repeatMode = repeatMode,
                 repeatValues = if (repeatMode == RepeatMode.WEEKLY) state.repeatDays.map { it.value } else emptyList(),
-                timeWindow = state.timeWindow
+                monthlyDays = if (repeatMode == RepeatMode.MONTHLY) state.monthlyDays else emptyList(),
+                yearlyDates = if (repeatMode == RepeatMode.YEARLY) state.yearlyDates else emptyList(),
+                timeWindows = state.timeWindows
             )
         } else null
 
@@ -297,8 +304,11 @@ class ReminderEditViewModel @Inject constructor(
                 curr.date != init.date ||
                 curr.repeatDays != init.repeatDays ||
                 curr.repeatInterval != init.repeatInterval ||
+                curr.monthlyDays != init.monthlyDays ||
+                curr.yearlyDates != init.yearlyDates ||
                 curr.intervalMinutes != init.intervalMinutes ||
-                curr.timeWindow != init.timeWindow ||
+                curr.timeWindows != init.timeWindows ||
+                curr.urgencyLevel != init.urgencyLevel ||
                 curr.checklist != init.checklist ||
                 curr.notificationStyle != init.notificationStyle ||
                 curr.isPersistentAlert != init.isPersistentAlert ||
@@ -320,22 +330,113 @@ class ReminderEditViewModel @Inject constructor(
     fun setNotes(notes: String) { _uiState.update { it.copy(notes = notes) } }
     fun setTriggerType(type: ReminderTriggerType) { _uiState.update { it.copy(triggerType = type) } }
     fun setTime(time: LocalTime) { _uiState.update { it.copy(time = time) } }
-    fun setDate(date: LocalDate?) { date?.let { d -> _uiState.update { it.copy(date = d) } } }
-    fun setRepeatDays(days: List<DayOfWeek>) { _uiState.update { it.copy(repeatDays = days) } }
+    fun setDate(date: LocalDate?) {
+        _uiState.update { it.copy(date = date, repeatDays = if (date != null) emptyList() else it.repeatDays) }
+    }
+    fun setRepeatDays(days: List<DayOfWeek>) {
+        _uiState.update { it.copy(repeatDays = days, date = if (days.isNotEmpty()) null else it.date) }
+    }
     fun toggleRepeatDay(day: DayOfWeek) {
         _uiState.update {
             val days = if (it.repeatDays.contains(day)) it.repeatDays - day else it.repeatDays + day
             it.copy(repeatDays = days.sorted())
         }
     }
-    fun setRepeatInterval(interval: ReminderRepeatInterval) { _uiState.update { it.copy(repeatInterval = interval) } }
-    fun toggleMonthlyDay(day: Int) {}
-    fun addYearlyDate(month: Int, day: Int) {}
-    fun removeYearlyDate(index: Int) {}
+    fun setRepeatInterval(interval: ReminderRepeatInterval) {
+        _uiState.update { state ->
+            when (interval) {
+                ReminderRepeatInterval.NONE -> state.copy(
+                    repeatInterval = interval,
+                    date = state.date ?: LocalDate.now()
+                )
+                ReminderRepeatInterval.DAILY -> state.copy(
+                    repeatInterval = interval,
+                    date = null,
+                    repeatDays = emptyList()
+                )
+                ReminderRepeatInterval.WEEKLY -> state.copy(
+                    repeatInterval = interval,
+                    date = null,
+                    repeatDays = if (state.repeatDays.isEmpty()) listOf(DayOfWeek.MONDAY) else state.repeatDays
+                )
+                ReminderRepeatInterval.MONTHLY -> state.copy(
+                    repeatInterval = interval,
+                    date = null
+                )
+                ReminderRepeatInterval.YEARLY -> state.copy(
+                    repeatInterval = interval,
+                    date = null
+                )
+                ReminderRepeatInterval.CUSTOM -> state.copy(
+                    repeatInterval = interval
+                )
+            }
+        }
+    }
+    
+    fun toggleMonthlyDay(day: Int) {
+        _uiState.update { state ->
+            val updated = if (state.monthlyDays.contains(day)) {
+                state.monthlyDays - day
+            } else {
+                (state.monthlyDays + day).sorted()
+            }
+            state.copy(monthlyDays = updated)
+        }
+    }
+
+    fun addYearlyDate(month: Int, day: Int) {
+        _uiState.update { state ->
+            val newItem = ReminderMonthDay(month = month, day = day)
+            if (state.yearlyDates.any { it.month == month && it.day == day }) {
+                state
+            } else {
+                val updated = (state.yearlyDates + newItem).sortedWith(compareBy({ it.month }, { it.day }))
+                state.copy(yearlyDates = updated)
+            }
+        }
+    }
+
+    fun removeYearlyDate(index: Int) {
+        _uiState.update { state ->
+            val list = state.yearlyDates.toMutableList()
+            if (index in list.indices) {
+                list.removeAt(index)
+            }
+            state.copy(yearlyDates = list)
+        }
+    }
+
+    fun setTimeWindows(windows: List<ReminderTimeWindow>) {
+        _uiState.update { it.copy(timeWindows = windows) }
+    }
+
+    fun addTimeWindow(window: ReminderTimeWindow) {
+        _uiState.update { it.copy(timeWindows = it.timeWindows + window) }
+    }
+
+    fun removeTimeWindow(index: Int) {
+        _uiState.update { state ->
+            val list = state.timeWindows.toMutableList()
+            if (index in list.indices) {
+                list.removeAt(index)
+            }
+            state.copy(timeWindows = list)
+        }
+    }
+
     fun setIntervalMinutes(v: Int?) { _uiState.update { it.copy(intervalMinutes = v) } }
+    fun setUrgencyLevel(level: UrgencyLevel) { _uiState.update { it.copy(urgencyLevel = level) } }
     
     fun addChecklistItem(text: String) {
-        _uiState.update { it.copy(checklist = it.checklist + ChecklistItem(id = System.currentTimeMillis(), text = text)) }
+        _uiState.update { state ->
+            val newItem = ChecklistItem(
+                id = System.currentTimeMillis(),
+                text = text,
+                orderIndex = state.checklist.size
+            )
+            state.copy(checklist = state.checklist + newItem)
+        }
     }
     fun updateChecklistItemText(index: Int, text: String) {
         _uiState.update { state -> 
@@ -362,14 +463,29 @@ class ReminderEditViewModel @Inject constructor(
         _uiState.update { state -> 
             val list = state.checklist.toMutableList()
             if (from in list.indices && to in list.indices) {
-                Collections.swap(list, from, to)
+                val item = list.removeAt(from)
+                list.add(to, item)
+                val reindexed = list.mapIndexed { index, checklistItem ->
+                    checklistItem.copy(orderIndex = index)
+                }
+                state.copy(checklist = reindexed)
+            } else {
+                state
             }
-            state.copy(checklist = list)
         }
     }
-    fun setNotificationStyle(style: NotificationStyle) { _uiState.update { it.copy(notificationStyle = style) } }
+    fun setNotificationStyle(style: NotificationStyle) {
+        _uiState.update {
+            it.copy(
+                notificationStyle = style,
+                isPersistentAlert = if (style == NotificationStyle.FULL_SCREEN) it.isPersistentAlert else false
+            )
+        }
+    }
     fun setAutoSilenceMinutes(m: Int) { _uiState.update { it.copy(autoSilenceMinutes = m) } }
     fun setUseAlarmStream(use: Boolean) { _uiState.update { it.copy(useAlarmStream = use) } }
     fun setVibrationEnabled(enabled: Boolean) { _uiState.update { it.copy(vibrationEnabled = enabled) } }
     fun setVolume(v: Int) { _uiState.update { it.copy(volume = v) } }
+    fun setIsEnabled(enabled: Boolean) { _uiState.update { it.copy(isEnabled = enabled) } }
+    fun setPersistentAlert(persistent: Boolean) { _uiState.update { it.copy(isPersistentAlert = persistent) } }
 }

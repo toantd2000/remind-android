@@ -29,13 +29,9 @@ import vn.io.litever.remind.core.common.util.PermissionChecker
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
-import vn.io.litever.remind.core.model.GeofenceTransitionType
-import vn.io.litever.remind.core.model.LocationTrigger
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderTriggerType
 import vn.io.litever.remind.core.model.TimeTrigger
-import vn.io.litever.remind.core.model.WifiTrigger
-import vn.io.litever.remind.core.model.WifiTriggerType
 import vn.io.litever.remind.features.reminders.ui.components.ReminderFilterType
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderEditViewModel
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderListViewModel
@@ -44,7 +40,7 @@ import java.time.LocalTime
 /**
  * Adversarial Challenger Test Suite for R1 & R2:
  * - R1: Immediate Service Start (ReminderSyncManager.sync() on save, saveAnyway, toggle, delete, restore, bulk delete, duplicate, toggleCompleted)
- * - R2: Snoozed Reminders Pinned in List across all filters (ALL, ACTIVE, COMPLETED, TIME, LOCATION, WIFI),
+ * - R2: Snoozed Reminders Pinned in List across all filters (ALL, ACTIVE, COMPLETED, TIME),
  *       Toggle switch suppression on snoozed cards, and routing directly to Ringing screen on click.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -84,8 +80,8 @@ class ReminderR1R2EmpiricalChallengerTest {
         val draft = Reminder(
             id = 0L,
             title = "Test Reminder R1",
-            triggerType = ReminderTriggerType.TIME,
-            timeTrigger = TimeTrigger(time = LocalTime.of(8, 0)),
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            timeTrigger = TimeTrigger(time = listOf(LocalTime.of(8, 0))),
             isEnabled = true
         )
         coEvery { repository.insertReminder(any()) } returns 101L
@@ -119,8 +115,8 @@ class ReminderR1R2EmpiricalChallengerTest {
         val existing = Reminder(
             id = 201L,
             title = "Existing Reminder",
-            triggerType = ReminderTriggerType.TIME,
-            timeTrigger = TimeTrigger(time = LocalTime.of(9, 0)),
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            timeTrigger = TimeTrigger(time = listOf(LocalTime.of(9, 0))),
             isEnabled = true
         )
         coEvery { repository.getReminderById(201L) } returns existing
@@ -152,8 +148,8 @@ class ReminderR1R2EmpiricalChallengerTest {
         val existing = Reminder(
             id = 301L,
             title = "Delete Me",
-            triggerType = ReminderTriggerType.TIME,
-            timeTrigger = TimeTrigger(time = LocalTime.of(10, 0)),
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            timeTrigger = TimeTrigger(time = listOf(LocalTime.of(10, 0))),
             isEnabled = true
         )
         coEvery { repository.getReminderById(301L) } returns existing
@@ -180,7 +176,7 @@ class ReminderR1R2EmpiricalChallengerTest {
 
     @Test
     fun r1_listScreen_toggleReminder_callsSync() = runTest(testDispatcher) {
-        val reminder = Reminder(id = 401L, title = "Toggle Me", triggerType = ReminderTriggerType.TIME, isEnabled = false)
+        val reminder = Reminder(id = 401L, title = "Toggle Me", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = false)
 
         val listViewModel = ReminderListViewModel(
             reminderRepository = repository,
@@ -202,7 +198,7 @@ class ReminderR1R2EmpiricalChallengerTest {
 
     @Test
     fun r1_listScreen_deleteReminder_callsSync() = runTest(testDispatcher) {
-        val reminder = Reminder(id = 501L, title = "List Delete", triggerType = ReminderTriggerType.TIME, isEnabled = true)
+        val reminder = Reminder(id = 501L, title = "List Delete", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = true)
 
         val listViewModel = ReminderListViewModel(
             reminderRepository = repository,
@@ -225,7 +221,7 @@ class ReminderR1R2EmpiricalChallengerTest {
 
     @Test
     fun r1_listScreen_undoDelete_callsSync() = runTest(testDispatcher) {
-        val reminder = Reminder(id = 601L, title = "Restore Me", triggerType = ReminderTriggerType.TIME, isEnabled = true)
+        val reminder = Reminder(id = 601L, title = "Restore Me", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = true)
         coEvery { repository.insertReminder(any()) } returns 602L
 
         val listViewModel = ReminderListViewModel(
@@ -251,9 +247,9 @@ class ReminderR1R2EmpiricalChallengerTest {
 
     @Test
     fun r1_deleteCompletedReminders_callsSync() = runTest(testDispatcher) {
-        val active = Reminder(id = 701L, title = "Active", triggerType = ReminderTriggerType.TIME, isCompleted = false)
-        val completed1 = Reminder(id = 702L, title = "Done 1", triggerType = ReminderTriggerType.TIME, isCompleted = true)
-        val completed2 = Reminder(id = 703L, title = "Done 2", triggerType = ReminderTriggerType.TIME, isCompleted = true)
+        val active = Reminder(id = 701L, title = "Active", triggerType = ReminderTriggerType.FIXED_TIME, isCompleted = false)
+        val completed1 = Reminder(id = 702L, title = "Done 1", triggerType = ReminderTriggerType.FIXED_TIME, isCompleted = true)
+        val completed2 = Reminder(id = 703L, title = "Done 2", triggerType = ReminderTriggerType.FIXED_TIME, isCompleted = true)
 
         allRemindersFlow.value = listOf(active, completed1, completed2)
 
@@ -278,9 +274,9 @@ class ReminderR1R2EmpiricalChallengerTest {
 
     @Test
     fun r1_deleteDisabledReminders_callsSync() = runTest(testDispatcher) {
-        val active = Reminder(id = 801L, title = "Active", triggerType = ReminderTriggerType.TIME, isEnabled = true, isCompleted = false)
-        val disabled1 = Reminder(id = 802L, title = "Disabled 1", triggerType = ReminderTriggerType.TIME, isEnabled = false, isCompleted = false)
-        val disabled2 = Reminder(id = 803L, title = "Disabled 2", triggerType = ReminderTriggerType.TIME, isEnabled = false, isCompleted = false)
+        val active = Reminder(id = 801L, title = "Active", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = true, isCompleted = false)
+        val disabled1 = Reminder(id = 802L, title = "Disabled 1", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = false, isCompleted = false)
+        val disabled2 = Reminder(id = 803L, title = "Disabled 2", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = false, isCompleted = false)
 
         allRemindersFlow.value = listOf(active, disabled1, disabled2)
 
@@ -305,7 +301,7 @@ class ReminderR1R2EmpiricalChallengerTest {
 
     @Test
     fun r1_duplicateReminder_callsSync() = runTest(testDispatcher) {
-        val original = Reminder(id = 901L, title = "Original Template", triggerType = ReminderTriggerType.TIME, isEnabled = true)
+        val original = Reminder(id = 901L, title = "Original Template", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = true)
         coEvery { repository.insertReminder(any()) } returns 902L
 
         val listViewModel = ReminderListViewModel(
@@ -328,7 +324,7 @@ class ReminderR1R2EmpiricalChallengerTest {
 
     @Test
     fun r1_toggleCompleted_callsSync() = runTest(testDispatcher) {
-        val active = Reminder(id = 1001L, title = "To Complete", triggerType = ReminderTriggerType.TIME, isEnabled = true, isCompleted = false)
+        val active = Reminder(id = 1001L, title = "To Complete", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = true, isCompleted = false)
 
         val listViewModel = ReminderListViewModel(
             reminderRepository = repository,
@@ -354,11 +350,11 @@ class ReminderR1R2EmpiricalChallengerTest {
 
     @Test
     fun r2_sorting_allFilter_pinsSnoozedToTop_withStableTieBreaking() = runTest(testDispatcher) {
-        val normalOld = Reminder(id = 1L, title = "Normal Old", triggerType = ReminderTriggerType.TIME, createdAt = 100L)
-        val snoozedOld = Reminder(id = 2L, title = "Snoozed Old", triggerType = ReminderTriggerType.TIME, snoozeNextTriggerTime = 5000L, createdAt = 200L)
-        val normalNew = Reminder(id = 3L, title = "Normal New", triggerType = ReminderTriggerType.TIME, createdAt = 300L)
-        val snoozedNew = Reminder(id = 4L, title = "Snoozed New", triggerType = ReminderTriggerType.TIME, snoozeNextTriggerTime = 6000L, createdAt = 400L)
-        val normalMid = Reminder(id = 5L, title = "Normal Mid", triggerType = ReminderTriggerType.TIME, createdAt = 250L)
+        val normalOld = Reminder(id = 1L, title = "Normal Old", triggerType = ReminderTriggerType.FIXED_TIME, createdAt = 100L)
+        val snoozedOld = Reminder(id = 2L, title = "Snoozed Old", triggerType = ReminderTriggerType.FIXED_TIME, snoozeNextTriggerTime = 5000L, createdAt = 200L)
+        val normalNew = Reminder(id = 3L, title = "Normal New", triggerType = ReminderTriggerType.FIXED_TIME, createdAt = 300L)
+        val snoozedNew = Reminder(id = 4L, title = "Snoozed New", triggerType = ReminderTriggerType.FIXED_TIME, snoozeNextTriggerTime = 6000L, createdAt = 400L)
+        val normalMid = Reminder(id = 5L, title = "Normal Mid", triggerType = ReminderTriggerType.FIXED_TIME, createdAt = 250L)
 
         allRemindersFlow.value = listOf(normalOld, snoozedOld, normalNew, snoozedNew, normalMid)
 
@@ -387,10 +383,10 @@ class ReminderR1R2EmpiricalChallengerTest {
 
     @Test
     fun r2_sorting_activeFilter_pinsSnoozedActiveItems() = runTest(testDispatcher) {
-        val activeNormal = Reminder(id = 10L, title = "Active Normal", triggerType = ReminderTriggerType.TIME, isEnabled = true, isCompleted = false, createdAt = 1000L)
-        val activeSnoozed = Reminder(id = 11L, title = "Active Snoozed", triggerType = ReminderTriggerType.TIME, isEnabled = true, isCompleted = false, snoozeNextTriggerTime = 99999L, createdAt = 1100L)
-        val disabledSnoozed = Reminder(id = 12L, title = "Disabled Snoozed", triggerType = ReminderTriggerType.TIME, isEnabled = false, isCompleted = false, snoozeNextTriggerTime = 99999L, createdAt = 1200L)
-        val completedSnoozed = Reminder(id = 13L, title = "Completed Snoozed", triggerType = ReminderTriggerType.TIME, isEnabled = true, isCompleted = true, snoozeNextTriggerTime = 99999L, createdAt = 1300L)
+        val activeNormal = Reminder(id = 10L, title = "Active Normal", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = true, isCompleted = false, createdAt = 1000L)
+        val activeSnoozed = Reminder(id = 11L, title = "Active Snoozed", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = true, isCompleted = false, snoozeNextTriggerTime = 99999L, createdAt = 1100L)
+        val disabledSnoozed = Reminder(id = 12L, title = "Disabled Snoozed", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = false, isCompleted = false, snoozeNextTriggerTime = 99999L, createdAt = 1200L)
+        val completedSnoozed = Reminder(id = 13L, title = "Completed Snoozed", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = true, isCompleted = true, snoozeNextTriggerTime = 99999L, createdAt = 1300L)
 
         allRemindersFlow.value = listOf(activeNormal, activeSnoozed, disabledSnoozed, completedSnoozed)
 
@@ -415,12 +411,12 @@ class ReminderR1R2EmpiricalChallengerTest {
 
     @Test
     fun r2_sorting_timeFilter_pinsSnoozedTimeReminders() = runTest(testDispatcher) {
-        val timeNormal1 = Reminder(id = 21L, title = "Time Normal 1", triggerType = ReminderTriggerType.TIME, createdAt = 200L)
-        val timeSnoozed1 = Reminder(id = 22L, title = "Time Snoozed 1", triggerType = ReminderTriggerType.TIME, snoozeNextTriggerTime = 10000L, createdAt = 300L)
-        val locSnoozed = Reminder(id = 23L, title = "Loc Snoozed", triggerType = ReminderTriggerType.LOCATION, snoozeNextTriggerTime = 10000L, createdAt = 400L)
-        val timeNormal2 = Reminder(id = 24L, title = "Time Normal 2", triggerType = ReminderTriggerType.TIME, createdAt = 500L)
+        val fixedNormal1 = Reminder(id = 21L, title = "Fixed Normal 1", triggerType = ReminderTriggerType.FIXED_TIME, createdAt = 200L)
+        val fixedSnoozed1 = Reminder(id = 22L, title = "Fixed Snoozed 1", triggerType = ReminderTriggerType.FIXED_TIME, snoozeNextTriggerTime = 10000L, createdAt = 300L)
+        val intervalSnoozed = Reminder(id = 23L, title = "Interval Snoozed", triggerType = ReminderTriggerType.INTERVAL, snoozeNextTriggerTime = 10000L, createdAt = 400L)
+        val fixedNormal2 = Reminder(id = 24L, title = "Fixed Normal 2", triggerType = ReminderTriggerType.FIXED_TIME, createdAt = 500L)
 
-        allRemindersFlow.value = listOf(timeNormal1, timeSnoozed1, locSnoozed, timeNormal2)
+        allRemindersFlow.value = listOf(fixedNormal1, fixedSnoozed1, intervalSnoozed, fixedNormal2)
 
         val listViewModel = ReminderListViewModel(
             reminderRepository = repository,
@@ -436,65 +432,11 @@ class ReminderR1R2EmpiricalChallengerTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         val list = listViewModel.uiState.value.filteredReminders
-        assertEquals(3, list.size)
-        assertEquals(22L, list[0].id)
-        assertEquals(24L, list[1].id)
-        assertEquals(21L, list[2].id)
-    }
-
-    @Test
-    fun r2_sorting_locationFilter_pinsSnoozedLocationReminders() = runTest(testDispatcher) {
-        val locNormal = Reminder(id = 31L, title = "Loc Normal", triggerType = ReminderTriggerType.LOCATION, createdAt = 100L)
-        val locSnoozed = Reminder(id = 32L, title = "Loc Snoozed", triggerType = ReminderTriggerType.LOCATION, snoozeNextTriggerTime = 8000L, createdAt = 200L)
-        val timeSnoozed = Reminder(id = 33L, title = "Time Snoozed", triggerType = ReminderTriggerType.TIME, snoozeNextTriggerTime = 8000L, createdAt = 300L)
-
-        allRemindersFlow.value = listOf(locNormal, locSnoozed, timeSnoozed)
-
-        val listViewModel = ReminderListViewModel(
-            reminderRepository = repository,
-            reminderScheduler = scheduler,
-            permissionChecker = permissionChecker,
-            preferencesDataSource = preferencesDataSource,
-            reminderSyncManager = reminderSyncManager
-        )
-        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { listViewModel.uiState.collect() }
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        listViewModel.setFilter(ReminderFilterType.LOCATION)
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        val list = listViewModel.uiState.value.filteredReminders
-        assertEquals(2, list.size)
-        assertEquals(32L, list[0].id)
-        assertEquals(31L, list[1].id)
-    }
-
-    @Test
-    fun r2_sorting_wifiFilter_pinsSnoozedWifiReminders() = runTest(testDispatcher) {
-        val wifiNormal1 = Reminder(id = 41L, title = "Wifi Normal 1", triggerType = ReminderTriggerType.WIFI, createdAt = 100L)
-        val wifiNormal2 = Reminder(id = 42L, title = "Wifi Normal 2", triggerType = ReminderTriggerType.WIFI, createdAt = 500L)
-        val wifiSnoozed = Reminder(id = 43L, title = "Wifi Snoozed", triggerType = ReminderTriggerType.WIFI, snoozeNextTriggerTime = 9000L, createdAt = 200L)
-
-        allRemindersFlow.value = listOf(wifiNormal1, wifiNormal2, wifiSnoozed)
-
-        val listViewModel = ReminderListViewModel(
-            reminderRepository = repository,
-            reminderScheduler = scheduler,
-            permissionChecker = permissionChecker,
-            preferencesDataSource = preferencesDataSource,
-            reminderSyncManager = reminderSyncManager
-        )
-        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { listViewModel.uiState.collect() }
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        listViewModel.setFilter(ReminderFilterType.WIFI)
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        val list = listViewModel.uiState.value.filteredReminders
-        assertEquals(3, list.size)
-        assertEquals(43L, list[0].id)
-        assertEquals(42L, list[1].id)
-        assertEquals(41L, list[2].id)
+        assertEquals(4, list.size)
+        assertEquals(23L, list[0].id)
+        assertEquals(22L, list[1].id)
+        assertEquals(24L, list[2].id)
+        assertEquals(21L, list[3].id)
     }
 
     @Test
@@ -502,11 +444,7 @@ class ReminderR1R2EmpiricalChallengerTest {
         val testReminders = mutableListOf<Reminder>()
         for (i in 1..20) {
             val isSnoozed = (i % 3 == 0)
-            val trigger = when (i % 3) {
-                0 -> ReminderTriggerType.TIME
-                1 -> ReminderTriggerType.LOCATION
-                else -> ReminderTriggerType.WIFI
-            }
+            val trigger = if (i % 2 == 0) ReminderTriggerType.FIXED_TIME else ReminderTriggerType.INTERVAL
             val isCompleted = (i % 5 == 0)
             val isEnabled = (i % 2 == 0)
 
@@ -535,7 +473,7 @@ class ReminderR1R2EmpiricalChallengerTest {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { listViewModel.uiState.collect() }
         testDispatcher.scheduler.advanceUntilIdle()
 
-        for (filter in ReminderFilterType.entries) {
+        for (filter in listOf(ReminderFilterType.ALL, ReminderFilterType.ACTIVE, ReminderFilterType.COMPLETED, ReminderFilterType.TIME)) {
             listViewModel.setFilter(filter)
             testDispatcher.scheduler.advanceUntilIdle()
 
@@ -576,7 +514,7 @@ class ReminderR1R2EmpiricalChallengerTest {
         val snoozedReminder = Reminder(
             id = 888L,
             title = "Snoozed Alarm",
-            triggerType = ReminderTriggerType.TIME,
+            triggerType = ReminderTriggerType.FIXED_TIME,
             snoozeNextTriggerTime = 123456789L
         )
 
@@ -602,7 +540,7 @@ class ReminderR1R2EmpiricalChallengerTest {
         val nonSnoozedReminder = Reminder(
             id = 999L,
             title = "Normal Alarm",
-            triggerType = ReminderTriggerType.TIME,
+            triggerType = ReminderTriggerType.FIXED_TIME,
             snoozeNextTriggerTime = null
         )
 
@@ -628,18 +566,16 @@ class ReminderR1R2EmpiricalChallengerTest {
         val snoozedReminder = Reminder(
             id = 777L,
             title = "Snoozed Item",
-            triggerType = ReminderTriggerType.TIME,
+            triggerType = ReminderTriggerType.FIXED_TIME,
             snoozeNextTriggerTime = 999999L
         )
         val normalReminder = Reminder(
             id = 778L,
             title = "Normal Item",
-            triggerType = ReminderTriggerType.TIME,
+            triggerType = ReminderTriggerType.FIXED_TIME,
             snoozeNextTriggerTime = null
         )
 
-        // The exact condition used in ReminderCard.kt:
-        // if (reminder.snoozeNextTriggerTime == null) { LiteverSwitch(...) }
         val isSwitchVisibleForSnoozed = (snoozedReminder.snoozeNextTriggerTime == null)
         val isSwitchVisibleForNormal = (normalReminder.snoozeNextTriggerTime == null)
 

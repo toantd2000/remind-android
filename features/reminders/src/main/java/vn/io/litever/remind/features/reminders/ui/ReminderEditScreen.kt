@@ -50,6 +50,7 @@ import vn.io.litever.remind.core.model.GeofenceTransitionType
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.ReminderTimeWindow
 import vn.io.litever.remind.core.model.ReminderTriggerType
+import vn.io.litever.remind.core.model.UrgencyLevel
 import vn.io.litever.remind.features.reminders.R
 import vn.io.litever.remind.features.reminders.ui.components.ReminderAlertConfigSection
 import vn.io.litever.remind.features.reminders.ui.components.ReminderBasicInfoSection
@@ -167,7 +168,7 @@ fun ReminderEditRoute(
         onDeleteChecklistItem = viewModel::deleteChecklistItem,
         onMoveChecklistItem = viewModel::moveChecklistItem,
         onNotificationStyleChange = viewModel::setNotificationStyle,
-                    
+        onUrgencyLevelChange = viewModel::setUrgencyLevel,
         onAutoSilenceMinutesChange = viewModel::setAutoSilenceMinutes,
         onUseAlarmStreamChange = viewModel::setUseAlarmStream,
         onRingtoneClick = {
@@ -231,6 +232,7 @@ fun ReminderEditScreen(
     onDeleteChecklistItem: (Int) -> Unit,
     onMoveChecklistItem: (Int, Int) -> Unit,
     onNotificationStyleChange: (NotificationStyle) -> Unit,
+    onUrgencyLevelChange: (UrgencyLevel) -> Unit = {},
     onAutoSilenceMinutesChange: (Int) -> Unit,
     onUseAlarmStreamChange: (Boolean) -> Unit,
     onRingtoneClick: () -> Unit,
@@ -323,6 +325,8 @@ fun ReminderEditScreen(
                 ReminderAlertConfigSection(
                     notificationStyle = uiState.notificationStyle,
                     onNotificationStyleChange = onNotificationStyleChange,
+                    urgencyLevel = uiState.urgencyLevel,
+                    onUrgencyLevelChange = onUrgencyLevelChange,
                     ringtoneTitle = "Default",
                     
                     

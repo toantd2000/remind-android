@@ -15,6 +15,7 @@ import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderTriggerType
+import vn.io.litever.remind.core.model.UrgencyLevel
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -86,6 +87,12 @@ class ReminderReceiver : BroadcastReceiver() {
             if (!isSnooze && timeTrigger != null && timeTrigger.isRecurring) {
                 reminderScheduler.schedule(updatedReminder)
             }
+        } else if (updatedReminder.triggerType == ReminderTriggerType.INTERVAL) {
+            reminderRepository.updateReminder(updatedReminder)
+            // For SOFT reminders (Fire & Forget), automatically schedule next occurrence
+            if (!isSnooze && updatedReminder.action.urgencyLevel == UrgencyLevel.SOFT && updatedReminder.isEnabled) {
+                reminderScheduler.schedule(updatedReminder)
+            }
         } else {
             reminderRepository.updateReminder(updatedReminder)
         }
@@ -118,14 +125,32 @@ class ReminderReceiver : BroadcastReceiver() {
         reminderAlertManager.stopAlert(reminder.id)
         reminderNotificationManager.cancelNotification(reminder.id)
 
-        val isRecurring = reminder.isRecurring
-        val completedReminder = reminder.copy(
-            isCompleted = true,
-            isEnabled = if (isRecurring) reminder.isEnabled else false,
-            snoozeNextTriggerTime = null
-        )
-        reminderRepository.updateReminder(completedReminder)
-        reminderScheduler.cancelSnooze(reminder)
+        val isInterval = reminder.triggerType == ReminderTriggerType.INTERVAL
+        if (isInterval) {
+            // Acknowledging an INTERVAL reminder shifts the cycle:
+            // next cycle = actual acknowledge time + intervalMinutes
+            val nowMillis = System.currentTimeMillis()
+            val shiftedReminder = reminder.copy(
+                isCompleted = false,
+                currentSnoozeCount = 0,
+                snoozeNextTriggerTime = null,
+                lastTriggeredTime = nowMillis
+            )
+            reminderRepository.updateReminder(shiftedReminder)
+            reminderScheduler.cancelSnooze(reminder)
+            if (shiftedReminder.isEnabled) {
+                reminderScheduler.schedule(shiftedReminder)
+            }
+        } else {
+            val isRecurring = reminder.isRecurring
+            val completedReminder = reminder.copy(
+                isCompleted = true,
+                isEnabled = if (isRecurring) reminder.isEnabled else false,
+                snoozeNextTriggerTime = null
+            )
+            reminderRepository.updateReminder(completedReminder)
+            reminderScheduler.cancelSnooze(reminder)
+        }
     }
 
     private suspend fun handleChecklistToggleAction(

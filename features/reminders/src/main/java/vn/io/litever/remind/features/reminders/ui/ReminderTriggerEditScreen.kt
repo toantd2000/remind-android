@@ -48,6 +48,13 @@ import vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval
 import java.time.LocalDate
 import java.time.LocalTime
 
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
+import vn.io.litever.designsystem.components.LiteverFilterChip
+import vn.io.litever.remind.features.reminders.ui.components.ReminderTimeWindowConfigSection
+
 @Composable
 fun ReminderTriggerEditRoute(
     viewModel: ReminderEditViewModel,
@@ -73,11 +80,15 @@ fun ReminderTriggerEditRoute(
         onMonthlyDayToggle = viewModel::toggleMonthlyDay,
         onAddYearlyDate = viewModel::addYearlyDate,
         onRemoveYearlyDate = viewModel::removeYearlyDate,
+        onIntervalMinutesChange = { str -> viewModel.setIntervalMinutes(str.toIntOrNull()) },
+        onTimeWindowsChange = viewModel::setTimeWindows,
+        onAddTimeWindow = viewModel::addTimeWindow,
+        onRemoveTimeWindow = viewModel::removeTimeWindow,
         modifier = modifier
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun ReminderTriggerEditScreen(
     uiState: ReminderEditUiState,
@@ -92,6 +103,9 @@ fun ReminderTriggerEditScreen(
     onAddYearlyDate: (Int, Int) -> Unit,
     onRemoveYearlyDate: (Int) -> Unit,
     onIntervalMinutesChange: (String) -> Unit = {},
+    onTimeWindowsChange: (List<ReminderTimeWindow>) -> Unit = {},
+    onAddTimeWindow: (ReminderTimeWindow) -> Unit = {},
+    onRemoveTimeWindow: (Int) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val locationFocusRequester = remember { FocusRequester() }
@@ -154,16 +168,94 @@ fun ReminderTriggerEditScreen(
                             onRepeatDayToggle = onRepeatDayToggle,
                             repeatInterval = uiState.repeatInterval,
                             onRepeatIntervalChange = onRepeatIntervalChange,
-                            monthlyDays = uiState.monthlyDays.map { it.day },
+                            monthlyDays = uiState.monthlyDays,
                             onMonthlyDayToggle = onMonthlyDayToggle,
-                            yearlyDates = uiState.yearlyDates.map { vn.io.litever.remind.core.model.ReminderMonthDay(month = it.monthValue, day = it.dayOfMonth) },
+                            yearlyDates = uiState.yearlyDates,
                             onAddYearlyDate = onAddYearlyDate,
                             onRemoveYearlyDate = onRemoveYearlyDate,
                             is24HourFormat = true
                         )
                     }
-                    ReminderTriggerType.INTERVAL -> { 
-                        androidx.compose.material3.OutlinedTextField(value = uiState.intervalMinutes?.toString() ?: "", onValueChange = { onIntervalMinutesChange(it) }, label = { Text("Interval Minutes") }, modifier = Modifier.fillMaxWidth()) 
+                    ReminderTriggerType.INTERVAL -> {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
+                        ) {
+                            androidx.compose.material3.Surface(
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = LiteverTheme.shapes.large,
+                                color = LiteverTheme.colors.surfaceContainerLow
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(LiteverTheme.spacing.medium)
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.interval_section_title),
+                                        style = LiteverTheme.typography.titleMedium,
+                                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                                        color = LiteverTheme.colors.onSurface
+                                    )
+
+                                    Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+
+                                    androidx.compose.material3.OutlinedTextField(
+                                        value = uiState.intervalMinutes?.toString() ?: "",
+                                        onValueChange = { onIntervalMinutesChange(it.filter { char -> char.isDigit() }) },
+                                        label = { Text(stringResource(R.string.interval_minutes_label)) },
+                                        placeholder = { Text(stringResource(R.string.interval_minutes_hint)) },
+                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+
+                                    Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+
+                                    // Quick interval presets
+                                    val presets = listOf(
+                                        15 to stringResource(R.string.interval_preset_15m),
+                                        30 to stringResource(R.string.interval_preset_30m),
+                                        60 to stringResource(R.string.interval_preset_1h),
+                                        120 to stringResource(R.string.interval_preset_2h),
+                                        180 to stringResource(R.string.interval_preset_3h),
+                                        240 to stringResource(R.string.interval_preset_4h)
+                                    )
+
+                                    FlowRow(
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                                    ) {
+                                        presets.forEach { (minutes, label) ->
+                                            LiteverFilterChip(
+                                                selected = uiState.intervalMinutes == minutes,
+                                                onClick = { onIntervalMinutesChange(minutes.toString()) },
+                                                label = { Text(label, style = LiteverTheme.typography.labelSmall) }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Multi-TimeWindow Configuration
+                            ReminderTimeWindowConfigSection(
+                                timeWindows = uiState.timeWindows,
+                                onTimeWindowsChange = onTimeWindowsChange,
+                                onAddTimeWindow = onAddTimeWindow,
+                                onRemoveTimeWindow = onRemoveTimeWindow,
+                                onSetAllDayPreset = {
+                                    onTimeWindowsChange(
+                                        listOf(
+                                            ReminderTimeWindow(
+                                                startTime = LocalTime.of(0, 0),
+                                                endTime = LocalTime.of(23, 59),
+                                                activeDays = emptyList()
+                                            )
+                                        )
+                                    )
+                                },
+                                is24HourFormat = true
+                            )
+                        }
                     }
                 }
             }

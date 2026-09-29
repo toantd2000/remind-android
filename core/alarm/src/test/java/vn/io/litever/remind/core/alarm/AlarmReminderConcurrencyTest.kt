@@ -36,6 +36,7 @@ import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
 import vn.io.litever.remind.core.model.Alarm
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder
+import vn.io.litever.remind.core.model.ReminderAction
 import vn.io.litever.remind.core.model.ReminderTriggerType
 import vn.io.litever.remind.core.model.TimeTrigger
 import java.time.LocalTime
@@ -87,9 +88,11 @@ class AlarmReminderConcurrencyTest {
         val reminder = Reminder(
             id = 202L,
             title = "Morning Sync",
-            triggerType = ReminderTriggerType.TIME,
-            isPersistentAlert = true,
-            notificationStyle = NotificationStyle.FULL_SCREEN
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            action = ReminderAction(
+                isPersistentAlert = true,
+                notificationStyle = NotificationStyle.FULL_SCREEN
+            )
         )
 
         reminderAlertManager.startAlert(reminder)
@@ -109,8 +112,10 @@ class AlarmReminderConcurrencyTest {
         val reminder = Reminder(
             id = 303L,
             title = "Doctor Appointment",
-            triggerType = ReminderTriggerType.TIME,
-            snoozeEnabled = true,
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            action = ReminderAction(
+                snoozeEnabled = true
+            ),
             currentSnoozeCount = 1,
             snoozeNextTriggerTime = System.currentTimeMillis() + 600000L
         )
@@ -129,8 +134,8 @@ class AlarmReminderConcurrencyTest {
         val reminder = Reminder(
             id = 505L,
             title = "Standup",
-            triggerType = ReminderTriggerType.TIME,
-            timeTrigger = TimeTrigger(time = LocalTime.now().plusHours(3)),
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            timeTrigger = TimeTrigger(time = listOf(LocalTime.now().plusHours(3))),
             isEnabled = true,
             isCompleted = false
         )

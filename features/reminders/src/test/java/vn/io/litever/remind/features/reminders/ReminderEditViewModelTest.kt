@@ -29,19 +29,16 @@ import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
 import vn.io.litever.remind.core.model.ChecklistItem
 import java.time.DayOfWeek
-import vn.io.litever.remind.core.model.GeofenceTransitionType
-import vn.io.litever.remind.core.model.LocationTrigger
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderTriggerType
 import vn.io.litever.remind.core.model.TimeTrigger
-import vn.io.litever.remind.core.model.WifiTrigger
-import vn.io.litever.remind.core.model.WifiTriggerType
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderEditViewModel
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderValidationErrorField
 import java.time.LocalDate
 import java.time.LocalTime
 import vn.io.litever.remind.core.model.ReminderTimeWindow
+import vn.io.litever.remind.core.model.UrgencyLevel
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ReminderEditViewModelTest {
@@ -83,8 +80,7 @@ class ReminderEditViewModelTest {
         assertFalse(state.isLoading)
         assertEquals(0L, state.id)
         assertEquals("", state.title)
-        assertEquals(ReminderTriggerType.TIME, state.triggerType)
-        assertTrue(state.isNewDraft)
+        assertEquals(ReminderTriggerType.FIXED_TIME, state.triggerType)
     }
 
     @Test
@@ -93,13 +89,10 @@ class ReminderEditViewModelTest {
             id = 42L,
             title = "Dentist Appointment",
             notes = "Bring insurance card",
-            triggerType = ReminderTriggerType.LOCATION,
-            locationTrigger = LocationTrigger(
-                latitude = 21.03,
-                longitude = 105.85,
-                radiusMeters = 200f,
-                locationName = "Clinic",
-                transitionType = GeofenceTransitionType.ENTER
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            timeTrigger = TimeTrigger(
+                time = listOf(LocalTime.of(9, 30)),
+                exactDate = LocalDate.of(2026, 10, 15)
             ),
             checklist = listOf(
                 ChecklistItem(id = 1, reminderId = 42L, text = "Card", isCompleted = false)
@@ -123,11 +116,10 @@ class ReminderEditViewModelTest {
         assertEquals(42L, state.id)
         assertEquals("Dentist Appointment", state.title)
         assertEquals("Bring insurance card", state.notes)
-        assertEquals(ReminderTriggerType.LOCATION, state.triggerType)
-        assertEquals("Clinic", state.locationName)
-        assertEquals(200f, state.radiusMeters)
+        assertEquals(ReminderTriggerType.FIXED_TIME, state.triggerType)
+        assertEquals(LocalTime.of(9, 30), state.time)
+        assertEquals(LocalDate.of(2026, 10, 15), state.date)
         assertEquals(1, state.checklist.size)
-        assertFalse(state.isNewDraft)
     }
 
     @Test
@@ -204,7 +196,7 @@ class ReminderEditViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.setTitle("Buy Coffee")
-        viewModel.setTriggerType(ReminderTriggerType.TIME)
+        viewModel.setTriggerType(ReminderTriggerType.FIXED_TIME)
         viewModel.setTime(LocalTime.of(8, 30))
 
         var saved = false
@@ -218,7 +210,7 @@ class ReminderEditViewModelTest {
 
     @Test
     fun saveReminder_whenPermissionsMissing_showsPermissionDialog() = runTest {
-        every { permissionChecker.getMissingPermissions(any()) } returns listOf(ReminderPermissionType.LOCATION)
+        every { permissionChecker.getMissingPermissions(any()) } returns listOf(ReminderPermissionType.EXACT_ALARM)
         val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
@@ -230,10 +222,9 @@ class ReminderEditViewModelTest {
         )
         testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.setTitle("Office Arrival")
-        viewModel.setTriggerType(ReminderTriggerType.LOCATION)
-        viewModel.setLocationCoordinates(37.7749, -122.4194)
-        viewModel.setLocationName("Office")
+        viewModel.setTitle("Scheduled Alarm")
+        viewModel.setTriggerType(ReminderTriggerType.FIXED_TIME)
+        viewModel.setTime(LocalTime.of(8, 30))
 
         var saved = false
         viewModel.saveReminder(onSuccess = { saved = true })
@@ -258,8 +249,9 @@ class ReminderEditViewModelTest {
         )
         testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.setTitle("Wi-Fi Sync")
-        viewModel.setTriggerType(ReminderTriggerType.WIFI)
+        viewModel.setTitle("Important Task")
+        viewModel.setTriggerType(ReminderTriggerType.FIXED_TIME)
+        viewModel.setTime(LocalTime.of(12, 0))
 
         var saved = false
         viewModel.saveAnyway(onSuccess = { saved = true })
@@ -267,7 +259,7 @@ class ReminderEditViewModelTest {
 
         assertTrue(saved)
         assertFalse(viewModel.uiState.value.showPermissionDialog)
-        coVerify { repository.insertReminder(match { it.title == "Wi-Fi Sync" && !it.isEnabled }) }
+        coVerify { repository.insertReminder(match { it.title == "Important Task" && !it.isEnabled }) }
         coVerify(exactly = 0) { scheduler.schedule(any()) }
     }
 
@@ -316,7 +308,7 @@ class ReminderEditViewModelTest {
         assertFalse(viewModel.uiState.value.isPersistentAlert)
 
         val draft = viewModel.createDraftReminder()
-        assertFalse(draft.isPersistentAlert)
+        assertFalse(draft.action.isPersistentAlert)
     }
 
     @Test
@@ -381,9 +373,9 @@ class ReminderEditViewModelTest {
         )
         testDispatcher.scheduler.advanceUntilIdle()
 
-        // Change Location Time Window
+        // Change Time Windows
         val window = ReminderTimeWindow(startTime = LocalTime.of(9, 0), endTime = LocalTime.of(17, 0))
-        viewModel.setLocationTimeWindow(window)
+        viewModel.setTimeWindows(listOf(window))
         var backNavigated = false
         viewModel.onBackClick(onNavigateBack = { backNavigated = true })
 
@@ -425,7 +417,7 @@ class ReminderEditViewModelTest {
     }
 
     @Test
-    fun wifiConfigUpdates_createsExpectedDraft() = runTest {
+    fun intervalConfigUpdates_createsExpectedDraft() = runTest {
         val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
@@ -437,16 +429,23 @@ class ReminderEditViewModelTest {
         )
         testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.setTriggerType(ReminderTriggerType.WIFI)
-        viewModel.setWifiSsid("MyOffice_5G")
-        viewModel.setWifiBssid("00:11:22:33:44:55")
-        viewModel.setWifiTriggerType(WifiTriggerType.ON_DISCONNECT)
+        viewModel.setTriggerType(ReminderTriggerType.INTERVAL)
+        viewModel.setIntervalMinutes(90)
+        viewModel.setTimeWindows(listOf(ReminderTimeWindow(startTime = LocalTime.of(8, 0), endTime = LocalTime.of(17, 0))))
 
-        val draft = viewModel.createDraftReminder()
-        assertEquals(ReminderTriggerType.WIFI, draft.triggerType)
-        assertEquals("MyOffice_5G", draft.wifiTrigger?.ssid)
-        assertEquals("00:11:22:33:44:55", draft.wifiTrigger?.bssid)
-        assertEquals(WifiTriggerType.ON_DISCONNECT, draft.wifiTrigger?.triggerType)
+        viewModel.setTitle("Drink Water")
+        var saved = false
+        viewModel.saveReminder(onSuccess = { saved = true })
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertTrue(saved)
+        coVerify {
+            repository.insertReminder(match {
+                it.triggerType == ReminderTriggerType.INTERVAL &&
+                        it.timeTrigger?.intervalMinutes == 90 &&
+                        it.timeTrigger?.timeWindows?.size == 1
+            })
+        }
     }
 
     @Test
@@ -535,8 +534,8 @@ class ReminderEditViewModelTest {
         assertFalse(state.vibrationEnabled)
 
         val draft = viewModel.createDraftReminder()
-        assertEquals(50, draft.volume)
-        assertFalse(draft.vibrationEnabled)
+        assertEquals(50, draft.action.volume)
+        assertFalse(draft.action.vibrationEnabled)
     }
 
     @Test
@@ -560,8 +559,8 @@ class ReminderEditViewModelTest {
         assertFalse(state.useAlarmStream)
 
         val draft = viewModel.createDraftReminder()
-        assertEquals(10, draft.autoSilenceMinutes)
-        assertFalse(draft.useAlarmStream)
+        assertEquals(10, draft.action.autoSilenceMinutes)
+        assertFalse(draft.action.useAlarmStream)
     }
 
     @Test
@@ -577,13 +576,13 @@ class ReminderEditViewModelTest {
         )
         testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.setTriggerType(ReminderTriggerType.LOCATION)
-        viewModel.setAllDayPresetLocation()
+        viewModel.setTriggerType(ReminderTriggerType.INTERVAL)
+        viewModel.setTimeWindows(listOf(ReminderTimeWindow.ALL_DAY))
 
         val state = viewModel.uiState.value
-        assertEquals(1, state.locationTimeWindows.size)
-        assertEquals(LocalTime.of(0, 0), state.locationTimeWindows[0].startTime)
-        assertEquals(LocalTime.of(23, 59), state.locationTimeWindows[0].endTime)
+        assertEquals(1, state.timeWindows.size)
+        assertEquals(LocalTime.of(0, 0), state.timeWindows[0].startTime)
+        assertEquals(LocalTime.of(23, 59), state.timeWindows[0].endTime)
     }
 
     @Test
@@ -717,7 +716,7 @@ class ReminderEditViewModelTest {
     }
 
     @Test
-    fun saveReminder_locationTrigger_emptyLocation_showsLocationError() = runTest {
+    fun urgencyLevel_updatesUiStateAndDraft() = runTest {
         val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
@@ -729,20 +728,24 @@ class ReminderEditViewModelTest {
         )
         testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.setTitle("Location Reminder")
-        viewModel.setTriggerType(ReminderTriggerType.LOCATION)
+        viewModel.setUrgencyLevel(UrgencyLevel.HARD)
+        assertEquals(UrgencyLevel.HARD, viewModel.uiState.value.urgencyLevel)
+
+        viewModel.setTitle("Emergency Call")
         var saved = false
         viewModel.saveReminder(onSuccess = { saved = true })
         testDispatcher.scheduler.advanceUntilIdle()
 
-        assertFalse(saved)
-        assertTrue(viewModel.uiState.value.showLocationError)
-        assertEquals(ReminderValidationErrorField.LOCATION, viewModel.uiState.value.validationErrorField)
-        assertTrue(viewModel.uiState.value.validationErrorTrigger > 0L)
+        assertTrue(saved)
+        coVerify {
+            repository.insertReminder(match {
+                it.action.urgencyLevel == UrgencyLevel.HARD
+            })
+        }
     }
 
     @Test
-    fun saveReminder_wifiTrigger_emptySsid_showsWifiError() = runTest {
+    fun multiTimeWindows_addsAndRemovesWindows() = runTest {
         val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
         val viewModel = ReminderEditViewModel(
             reminderRepository = repository,
@@ -754,96 +757,16 @@ class ReminderEditViewModelTest {
         )
         testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.setTitle("Wi-Fi Reminder")
-        viewModel.setTriggerType(ReminderTriggerType.WIFI)
-        var saved = false
-        viewModel.saveReminder(onSuccess = { saved = true })
-        testDispatcher.scheduler.advanceUntilIdle()
+        val w1 = ReminderTimeWindow(startTime = LocalTime.of(8, 0), endTime = LocalTime.of(12, 0))
+        val w2 = ReminderTimeWindow(startTime = LocalTime.of(13, 0), endTime = LocalTime.of(17, 0))
 
-        assertFalse(saved)
-        assertTrue(viewModel.uiState.value.showWifiError)
-        assertEquals(ReminderValidationErrorField.WIFI_SSID, viewModel.uiState.value.validationErrorField)
-        assertTrue(viewModel.uiState.value.validationErrorTrigger > 0L)
-    }
+        viewModel.addTimeWindow(w1)
+        viewModel.addTimeWindow(w2)
+        assertEquals(2, viewModel.uiState.value.timeWindows.size)
 
-    @Test
-    fun setLocationName_clearsLocationError() = runTest {
-        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
-        val viewModel = ReminderEditViewModel(
-            reminderRepository = repository,
-            reminderScheduler = scheduler,
-            reminderSyncManager = reminderSyncManager,
-            permissionChecker = permissionChecker,
-            preferencesDataSource = preferencesDataSource,
-            savedStateHandle = savedStateHandle
-        )
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        viewModel.setTitle("Location Reminder")
-        viewModel.setTriggerType(ReminderTriggerType.LOCATION)
-        viewModel.saveReminder(onSuccess = {})
-        testDispatcher.scheduler.advanceUntilIdle()
-        assertTrue(viewModel.uiState.value.showLocationError)
-
-        viewModel.setLocationName("Supermarket")
-        assertFalse(viewModel.uiState.value.showLocationError)
-    }
-
-    @Test
-    fun setWifiSsid_clearsWifiError() = runTest {
-        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
-        val viewModel = ReminderEditViewModel(
-            reminderRepository = repository,
-            reminderScheduler = scheduler,
-            reminderSyncManager = reminderSyncManager,
-            permissionChecker = permissionChecker,
-            preferencesDataSource = preferencesDataSource,
-            savedStateHandle = savedStateHandle
-        )
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        viewModel.setTitle("Wi-Fi Reminder")
-        viewModel.setTriggerType(ReminderTriggerType.WIFI)
-        viewModel.saveReminder(onSuccess = {})
-        testDispatcher.scheduler.advanceUntilIdle()
-        assertTrue(viewModel.uiState.value.showWifiError)
-
-        viewModel.setWifiSsid("Home_Network")
-        assertFalse(viewModel.uiState.value.showWifiError)
-    }
-
-    @Test
-    fun timeWindow_toggle_nullRepresents24SevenMode() = runTest {
-        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
-        val viewModel = ReminderEditViewModel(
-            reminderRepository = repository,
-            reminderScheduler = scheduler,
-            reminderSyncManager = reminderSyncManager,
-            permissionChecker = permissionChecker,
-            preferencesDataSource = preferencesDataSource,
-            savedStateHandle = savedStateHandle
-        )
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // By default, Location and Wi-Fi time window is null (24/7)
-        viewModel.setTriggerType(ReminderTriggerType.LOCATION)
-        assertNull(viewModel.uiState.value.locationTimeWindow)
-        val draft247 = viewModel.createDraftReminder()
-        assertNull(draft247.locationTrigger?.timeWindow)
-
-        // Toggle Time Window ON
-        val window = ReminderTimeWindow(startTime = LocalTime.of(8, 0), endTime = LocalTime.of(18, 0))
-        viewModel.setLocationTimeWindow(window)
-        assertNotNull(viewModel.uiState.value.locationTimeWindow)
-        val draftWithWindow = viewModel.createDraftReminder()
-        assertNotNull(draftWithWindow.locationTrigger?.timeWindow)
-        assertEquals(LocalTime.of(8, 0), draftWithWindow.locationTrigger?.timeWindow?.startTime)
-
-        // Toggle Time Window OFF (back to 24/7)
-        viewModel.setLocationTimeWindow(null)
-        assertNull(viewModel.uiState.value.locationTimeWindow)
-        val draftReset247 = viewModel.createDraftReminder()
-        assertNull(draftReset247.locationTrigger?.timeWindow)
+        viewModel.removeTimeWindow(0)
+        assertEquals(1, viewModel.uiState.value.timeWindows.size)
+        assertEquals(w2, viewModel.uiState.value.timeWindows.first())
     }
 
     @Test
@@ -870,8 +793,8 @@ class ReminderEditViewModelTest {
         assertFalse(viewModel.uiState.value.isPersistentAlert)
 
         val draft = viewModel.createDraftReminder()
-        assertEquals(NotificationStyle.STANDARD, draft.notificationStyle)
-        assertFalse(draft.isPersistentAlert)
+        assertEquals(NotificationStyle.STANDARD, draft.action.notificationStyle)
+        assertFalse(draft.action.isPersistentAlert)
     }
 }
 

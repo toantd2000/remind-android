@@ -796,5 +796,75 @@ class ReminderEditViewModelTest {
         assertEquals(NotificationStyle.STANDARD, draft.action.notificationStyle)
         assertFalse(draft.action.isPersistentAlert)
     }
+
+    @Test
+    fun fixedTimes_addRemoveAndUpdate_managesListAndDraftCorrectly() = runTest {
+        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
+        val viewModel = ReminderEditViewModel(
+            reminderRepository = repository,
+            reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
+            permissionChecker = permissionChecker,
+            preferencesDataSource = preferencesDataSource,
+            savedStateHandle = savedStateHandle
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.setTime(LocalTime.of(8, 0))
+        assertEquals(listOf(LocalTime.of(8, 0)), viewModel.uiState.value.fixedTimes)
+
+        // Add 20:00 and 12:00
+        viewModel.addFixedTime(LocalTime.of(20, 0))
+        viewModel.addFixedTime(LocalTime.of(12, 0))
+
+        val expectedSorted = listOf(LocalTime.of(8, 0), LocalTime.of(12, 0), LocalTime.of(20, 0))
+        assertEquals(expectedSorted, viewModel.uiState.value.fixedTimes)
+
+        var draft = viewModel.createDraftReminder()
+        assertEquals(expectedSorted, draft.timeTrigger?.time)
+
+        // Update 12:00 to 13:00
+        viewModel.updateFixedTime(1, LocalTime.of(13, 0))
+        val expectedUpdated = listOf(LocalTime.of(8, 0), LocalTime.of(13, 0), LocalTime.of(20, 0))
+        assertEquals(expectedUpdated, viewModel.uiState.value.fixedTimes)
+
+        // Remove 13:00
+        viewModel.removeFixedTime(1)
+        val expectedAfterRemove = listOf(LocalTime.of(8, 0), LocalTime.of(20, 0))
+        assertEquals(expectedAfterRemove, viewModel.uiState.value.fixedTimes)
+
+        draft = viewModel.createDraftReminder()
+        assertEquals(expectedAfterRemove, draft.timeTrigger?.time)
+    }
+
+    @Test
+    fun loadExistingReminder_withMultipleFixedTimes_populatesUiState() = runTest {
+        val reminderId = 42L
+        val existingTimes = listOf(LocalTime.of(7, 30), LocalTime.of(11, 45), LocalTime.of(19, 15))
+        val existingReminder = Reminder(
+            id = reminderId,
+            title = "Medicine Reminder",
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            timeTrigger = TimeTrigger(
+                time = existingTimes,
+                repeatMode = vn.io.litever.remind.core.model.RepeatMode.DAILY
+            )
+        )
+        coEvery { repository.getReminderById(reminderId) } returns existingReminder
+
+        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to reminderId))
+        val viewModel = ReminderEditViewModel(
+            reminderRepository = repository,
+            reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
+            permissionChecker = permissionChecker,
+            preferencesDataSource = preferencesDataSource,
+            savedStateHandle = savedStateHandle
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(existingTimes, viewModel.uiState.value.fixedTimes)
+        assertEquals(existingTimes.first(), viewModel.uiState.value.time)
+    }
 }
 

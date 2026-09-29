@@ -45,6 +45,8 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
   3. **Đồng bộ Domain & UI/ViewModel Layer:**
      - Tối ưu `TimeTrigger` với các helper `isRecurring`, hỗ trợ đầy đủ `monthlyDays`, `yearlyDates`.
      - Cập nhật `ReminderEditViewModel` và `ReminderTriggerEditScreen`: Hỗ trợ giao diện chọn nhiều ngày trong tháng và nhiều ngày trong năm linh hoạt.
+     - **UI Multi-Time Targets cho `FIXED_TIME`**: Bổ sung bộ chọn nhiều mốc giờ tĩnh trong ngày (`fixedTimes: List<LocalTime>`), hỗ trợ thêm/xóa/sửa từng mốc giờ dạng chip trực quan, đồng bộ lưu trữ vào `TimeTrigger.time`.
+     - **Nâng cấp `ReminderCard`**: Tách bạch hiển thị `FIXED_TIME` (tóm tắt các mốc giờ và chu kỳ) và `INTERVAL` (chu kỳ lặp + khung giờ hiệu lực), bổ sung Urgency badge (`HARD`) và Persistent Alert badge ("Chuông liên tục").
      - Cập nhật `ReminderSyncManager` và `ReminderAlertManager`: Xử lý mượt mà khi app mở hoặc alarm kích hoạt.
   4. **Bảo trì & Tinh giản Test Suite:**
      - Xoá bỏ các unit test mồ côi phụ thuộc Location/Wifi cũ trong `:app` và `:core:alarm`.

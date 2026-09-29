@@ -236,4 +236,14 @@
     <string name="interval_preset_2h">2h</string>
     <string name="interval_preset_3h">3h</string>
     <string name="interval_preset_4h">4h</string>
+
+    <!-- Fixed Times Multi-Picker & Badges -->
+    <string name="section_fixed_times_title">Fixed Time Targets</string>
+    <string name="add_fixed_time">Add Time</string>
+    <string name="remove_fixed_time">Remove Time</string>
+    <string name="fixed_time_badge_format">%s</string>
+    <string name="badge_interval_format">Every %d min</string>
+    <string name="badge_urgency_critical">CRITICAL</string>
+    <string name="badge_urgency_high">HIGH</string>
+    <string name="badge_persistent_alert">Continuous Alarm</string>
 </resources>

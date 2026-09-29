@@ -5,12 +5,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.InputChip
+import androidx.compose.material3.InputChipDefaults
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -48,6 +52,10 @@ import java.time.LocalTime
 fun ReminderTimeConfigSection(
     time: LocalTime,
     onTimeChange: (LocalTime) -> Unit,
+    fixedTimes: List<LocalTime> = listOf(time),
+    onAddFixedTime: (LocalTime) -> Unit = {},
+    onRemoveFixedTime: (Int) -> Unit = {},
+    onUpdateFixedTime: (Int, LocalTime) -> Unit = { _, t -> onTimeChange(t) },
     date: LocalDate?,
     onDateChange: (LocalDate?) -> Unit,
     repeatDays: List<DayOfWeek>,
@@ -63,9 +71,10 @@ fun ReminderTimeConfigSection(
     is24HourFormat: Boolean,
     modifier: Modifier = Modifier
 ) {
-    var showTimePicker by remember { mutableStateOf(false) }
-    var showDatePicker by remember { mutableStateOf(false) }
-    var showAddYearlyDateDialog by remember { mutableStateOf(false) }
+    var showAddTimePicker by remember { mutableStateOf(false) }
+    var showEditTimePicker by remember { mutableStateOf(false) }
+    var editingTimeIndex by remember { mutableStateOf(0) }
+    var editingInitialTime by remember { mutableStateOf(time) }
 
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -77,58 +86,81 @@ fun ReminderTimeConfigSection(
                 .fillMaxWidth()
                 .padding(LiteverTheme.spacing.medium)
         ) {
-            Text(
-                text = stringResource(R.string.section_time_trigger),
-                style = LiteverTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = LiteverTheme.colors.onSurface
-            )
-
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
-
-            // 1. Time Setting Row
-            Surface(
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                color = LiteverTheme.colors.surfaceContainer,
-                shape = LiteverTheme.shapes.medium,
-                onClick = { showTimePicker = true }
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 14.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        ReMindSettingIcon(
-                            imageVector = ReMindIcons.AccessTime,
-                            selected = false
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Column {
-                            Text(
-                                text = stringResource(R.string.select_time),
-                                style = LiteverTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.SemiBold,
-                                color = LiteverTheme.colors.onSurface
-                            )
-                            Text(
-                                text = TimeFormatUtils.formatTime(time, is24HourFormat),
-                                style = LiteverTheme.typography.bodyMedium,
-                                color = LiteverTheme.colors.primary,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
+                Text(
+                    text = stringResource(R.string.section_fixed_times_title),
+                    style = LiteverTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = LiteverTheme.colors.onSurface
+                )
 
+                LiteverOutlinedButton(
+                    onClick = { showAddTimePicker = true },
+                    modifier = Modifier.height(36.dp)
+                ) {
                     Icon(
-                        imageVector = ReMindIcons.KeyboardArrowRight,
+                        imageVector = ReMindIcons.Add,
                         contentDescription = null,
-                        tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.5f)
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = stringResource(R.string.add_fixed_time),
+                        style = LiteverTheme.typography.labelSmall
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+
+            // Multi-Time Target Chips
+            val timesList = if (fixedTimes.isNotEmpty()) fixedTimes else listOf(time)
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                timesList.forEachIndexed { index, targetTime ->
+                    androidx.compose.material3.InputChip(
+                        selected = true,
+                        onClick = {
+                            editingTimeIndex = index
+                            editingInitialTime = targetTime
+                            showEditTimePicker = true
+                        },
+                        label = {
+                            Text(
+                                text = TimeFormatUtils.formatTime(targetTime, is24HourFormat),
+                                style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold)
+                            )
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = ReMindIcons.AccessTime,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        },
+                        trailingIcon = if (timesList.size > 1) {
+                            {
+                                Icon(
+                                    imageVector = ReMindIcons.Close,
+                                    contentDescription = stringResource(R.string.remove_fixed_time),
+                                    modifier = Modifier
+                                        .size(16.dp)
+                                        .clickable { onRemoveFixedTime(index) }
+                                )
+                            }
+                        } else null,
+                        colors = androidx.compose.material3.InputChipDefaults.inputChipColors(
+                            selectedContainerColor = LiteverTheme.colors.primaryContainer,
+                            selectedLabelColor = LiteverTheme.colors.onPrimaryContainer,
+                            selectedLeadingIconColor = LiteverTheme.colors.onPrimaryContainer
+                        )
                     )
                 }
             }
@@ -153,26 +185,49 @@ fun ReminderTimeConfigSection(
         }
     }
 
-    // TimePicker Dialog
-    if (showTimePicker) {
-        val timePickerState = rememberTimePickerState(
-            initialHour = time.hour,
-            initialMinute = time.minute,
+    // Add TimePicker Dialog
+    if (showAddTimePicker) {
+        val addTimeState = rememberTimePickerState(
+            initialHour = 12,
+            initialMinute = 0,
             is24Hour = is24HourFormat
         )
         LiteverTimePickerDialog(
-            onDismissRequest = { showTimePicker = false },
+            onDismissRequest = { showAddTimePicker = false },
             confirmButton = {
                 LiteverButton(onClick = {
-                    onTimeChange(LocalTime.of(timePickerState.hour, timePickerState.minute))
-                    showTimePicker = false
+                    onAddFixedTime(LocalTime.of(addTimeState.hour, addTimeState.minute))
+                    showAddTimePicker = false
                 }) { Text(stringResource(R.string.action_save)) }
             },
             dismissButton = {
-                LiteverOutlinedButton(onClick = { showTimePicker = false }) { Text(stringResource(R.string.action_cancel)) }
+                LiteverOutlinedButton(onClick = { showAddTimePicker = false }) { Text(stringResource(R.string.action_cancel)) }
             }
         ) {
-            TimePicker(state = timePickerState)
+            TimePicker(state = addTimeState)
+        }
+    }
+
+    // Edit TimePicker Dialog
+    if (showEditTimePicker) {
+        val editTimeState = rememberTimePickerState(
+            initialHour = editingInitialTime.hour,
+            initialMinute = editingInitialTime.minute,
+            is24Hour = is24HourFormat
+        )
+        LiteverTimePickerDialog(
+            onDismissRequest = { showEditTimePicker = false },
+            confirmButton = {
+                LiteverButton(onClick = {
+                    onUpdateFixedTime(editingTimeIndex, LocalTime.of(editTimeState.hour, editTimeState.minute))
+                    showEditTimePicker = false
+                }) { Text(stringResource(R.string.action_save)) }
+            },
+            dismissButton = {
+                LiteverOutlinedButton(onClick = { showEditTimePicker = false }) { Text(stringResource(R.string.action_cancel)) }
+            }
+        ) {
+            TimePicker(state = editTimeState)
         }
     }
 }

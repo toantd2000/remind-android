@@ -62,9 +62,15 @@ fun ReminderTriggerSection(
 
             when (uiState.triggerType) {
                 ReminderTriggerType.FIXED_TIME -> {
+                    val timesSummary = if (uiState.fixedTimes.isNotEmpty()) {
+                        uiState.fixedTimes.joinToString(", ")
+                    } else {
+                        uiState.time.toString()
+                    }
                     Text(
-                        text = "Time: ${uiState.time} (${uiState.repeatInterval})",
+                        text = "Time: $timesSummary (${uiState.repeatInterval})",
                         style = LiteverTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold,
                         color = LiteverTheme.colors.onSurface
                     )
                     if (uiState.repeatInterval == ReminderRepeatInterval.MONTHLY && uiState.monthlyDays.isNotEmpty()) {

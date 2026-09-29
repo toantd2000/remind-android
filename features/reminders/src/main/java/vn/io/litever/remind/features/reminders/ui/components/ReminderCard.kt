@@ -43,6 +43,8 @@ import vn.io.litever.remind.core.common.util.TimeFormatUtils
 
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderTriggerType
+import vn.io.litever.remind.core.model.RepeatMode
+import vn.io.litever.remind.core.model.UrgencyLevel
 
 import vn.io.litever.remind.features.reminders.R
 import java.time.Instant
@@ -136,10 +138,39 @@ fun ReminderCard(
                         contentColor = onAccentContainerColor
                     )
 
+                    if (reminder.triggerType == ReminderTriggerType.INTERVAL) {
+                        val activeWindows = reminder.timeTrigger?.timeWindows ?: emptyList()
+                        if (activeWindows.isNotEmpty()) {
+                            val firstWindow = activeWindows.first()
+                            TimeWindowBadge(
+                                startTime = firstWindow.startTime.toString(),
+                                endTime = firstWindow.endTime.toString()
+                            )
+                        }
+                    }
+
                     if (isSnoozed) {
                         SnoozingBadge(
                             snoozeTimeMillis = reminder.snoozeNextTriggerTime!!,
                             is24HourFormat = is24HourFormat
+                        )
+                    }
+
+                    if (reminder.action.urgencyLevel == UrgencyLevel.HARD) {
+                        BadgeContainer(
+                            icon = ReMindIcons.NotificationImportant,
+                            text = stringResource(R.string.urgency_hard),
+                            containerColor = LiteverTheme.colors.errorContainer,
+                            contentColor = LiteverTheme.colors.onErrorContainer
+                        )
+                    }
+
+                    if (reminder.action.isPersistentAlert) {
+                        BadgeContainer(
+                            icon = ReMindIcons.Alarm,
+                            text = stringResource(R.string.badge_persistent_alert),
+                            containerColor = LiteverTheme.colors.primaryContainer.copy(alpha = 0.8f),
+                            contentColor = LiteverTheme.colors.onPrimaryContainer
                         )
                     }
                 }
@@ -255,22 +286,41 @@ private fun TriggerBadge(
     containerColor: Color,
     contentColor: Color
 ) {
-    val (icon: ImageVector, text: String) = when (reminder.triggerType) {
-        ReminderTriggerType.FIXED_TIME, ReminderTriggerType.INTERVAL -> {
-            val timeTrigger = reminder.timeTrigger
-            val timeStr = if (timeTrigger != null) {
-                val formattedTime = TimeFormatUtils.formatTime(timeTrigger.time.firstOrNull() ?: java.time.LocalTime.now(), is24HourFormat)
-                if (timeTrigger.repeatValues.isNotEmpty()) {
-                    "$formattedTime • Repeat configured"
-                } else {
-                    formattedTime
-                }
-            } else {
+    val timeTrigger = reminder.timeTrigger
+    val pair: Pair<ImageVector, String> = when (reminder.triggerType) {
+        ReminderTriggerType.INTERVAL -> {
+            val interval = timeTrigger?.intervalMinutes ?: 60
+            Pair(ReMindIcons.Schedule, stringResource(R.string.badge_interval_format, interval))
+        }
+        ReminderTriggerType.FIXED_TIME -> {
+            val times = timeTrigger?.time ?: emptyList()
+            val timesText = if (times.isEmpty()) {
                 stringResource(R.string.trigger_time)
+            } else if (times.size == 1) {
+                TimeFormatUtils.formatTime(times.first(), is24HourFormat)
+            } else if (times.size <= 2) {
+                times.joinToString(", ") { TimeFormatUtils.formatTime(it, is24HourFormat) }
+            } else {
+                "${TimeFormatUtils.formatTime(times[0], is24HourFormat)}, ${TimeFormatUtils.formatTime(times[1], is24HourFormat)} +${times.size - 2}"
             }
-            ReMindIcons.AccessTime to timeStr
+
+            val repeatSuffix = when {
+                timeTrigger?.repeatMode == RepeatMode.DAILY -> " • Daily"
+                timeTrigger?.repeatMode == RepeatMode.WEEKLY && timeTrigger.repeatValues.isNotEmpty() -> " • Weekly"
+                timeTrigger?.repeatMode == RepeatMode.MONTHLY && timeTrigger.monthlyDays.isNotEmpty() -> {
+                    " • Days: ${timeTrigger.monthlyDays.take(3).joinToString(",")}${if (timeTrigger.monthlyDays.size > 3) "…" else ""}"
+                }
+                timeTrigger?.repeatMode == RepeatMode.YEARLY && timeTrigger.yearlyDates.isNotEmpty() -> {
+                    " • Yearly"
+                }
+                else -> ""
+            }
+
+            Pair(ReMindIcons.AccessTime, timesText + repeatSuffix)
         }
     }
+    val icon = pair.first
+    val text = pair.second
 
     BadgeContainer(
         icon = icon,

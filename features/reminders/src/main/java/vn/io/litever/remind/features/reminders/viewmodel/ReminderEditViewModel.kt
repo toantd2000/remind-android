@@ -52,6 +52,7 @@ data class ReminderEditUiState(
     val isEnabled: Boolean = true,
     val triggerType: ReminderTriggerType = ReminderTriggerType.FIXED_TIME,
     val time: LocalTime = LocalTime.now().plusMinutes(5).withSecond(0).withNano(0),
+    val fixedTimes: List<LocalTime> = listOf(time),
     val date: LocalDate? = LocalDate.now(),
     val repeatInterval: ReminderRepeatInterval = ReminderRepeatInterval.NONE,
     val repeatDays: List<DayOfWeek> = emptyList(),
@@ -117,13 +118,17 @@ class ReminderEditViewModel @Inject constructor(
                         null -> ReminderRepeatInterval.NONE
                     }
                     
+                    val existingTimes = timeTrigger?.time ?: emptyList()
+                    val primaryTime = existingTimes.firstOrNull() ?: LocalTime.now()
+
                     _uiState.value = ReminderEditUiState(
                         id = existing.id,
                         title = existing.title,
                         notes = existing.notes,
                         isEnabled = existing.isEnabled,
                         triggerType = existing.triggerType,
-                        time = timeTrigger?.time?.firstOrNull() ?: LocalTime.now(),
+                        time = primaryTime,
+                        fixedTimes = if (existingTimes.isNotEmpty()) existingTimes else listOf(primaryTime),
                         date = activeTriggerDate,
                         repeatInterval = repeatInterval,
                         repeatDays = if (repeatInterval == ReminderRepeatInterval.WEEKLY) (timeTrigger?.repeatValues?.mapNotNull { v -> DayOfWeek.values().find { it.value == v } } ?: emptyList()) else emptyList(),
@@ -163,8 +168,9 @@ class ReminderEditViewModel @Inject constructor(
                 ReminderRepeatInterval.YEARLY -> RepeatMode.YEARLY
                 ReminderRepeatInterval.CUSTOM -> RepeatMode.NONE
             }
+            val timeList = if (state.fixedTimes.isNotEmpty()) state.fixedTimes else listOf(state.time)
             TimeTrigger(
-                time = listOf(state.time),
+                time = timeList,
                 intervalMinutes = state.intervalMinutes,
                 exactDate = if (repeatMode == RepeatMode.NONE) state.date else null,
                 repeatMode = repeatMode,
@@ -318,6 +324,7 @@ class ReminderEditViewModel @Inject constructor(
                 curr.vibrationEnabled != init.vibrationEnabled ||
                 curr.volume != init.volume ||
                 curr.snoozeEnabled != init.snoozeEnabled ||
+                curr.fixedTimes != init.fixedTimes ||
                 curr.snoozeIntervalMinutes != init.snoozeIntervalMinutes ||
                 curr.snoozeRepeatCount != init.snoozeRepeatCount
     }
@@ -329,7 +336,48 @@ class ReminderEditViewModel @Inject constructor(
     fun setTitle(title: String) { _uiState.update { it.copy(title = title, showTitleError = false) } }
     fun setNotes(notes: String) { _uiState.update { it.copy(notes = notes) } }
     fun setTriggerType(type: ReminderTriggerType) { _uiState.update { it.copy(triggerType = type) } }
-    fun setTime(time: LocalTime) { _uiState.update { it.copy(time = time) } }
+    
+    fun setTime(time: LocalTime) {
+        _uiState.update { state ->
+            val updatedFixedTimes = if (state.fixedTimes.size <= 1) listOf(time) else state.fixedTimes
+            state.copy(time = time, fixedTimes = updatedFixedTimes)
+        }
+    }
+
+    fun addFixedTime(time: LocalTime) {
+        _uiState.update { state ->
+            if (state.fixedTimes.contains(time)) state
+            else {
+                val updated = (state.fixedTimes + time).sorted()
+                state.copy(fixedTimes = updated, time = updated.first())
+            }
+        }
+    }
+
+    fun removeFixedTime(index: Int) {
+        _uiState.update { state ->
+            val list = state.fixedTimes.toMutableList()
+            if (index in list.indices && list.size > 1) {
+                list.removeAt(index)
+                state.copy(fixedTimes = list, time = list.first())
+            } else {
+                state
+            }
+        }
+    }
+
+    fun updateFixedTime(index: Int, time: LocalTime) {
+        _uiState.update { state ->
+            val list = state.fixedTimes.toMutableList()
+            if (index in list.indices) {
+                list[index] = time
+                val sorted = list.distinct().sorted()
+                state.copy(fixedTimes = sorted, time = sorted.first())
+            } else {
+                state
+            }
+        }
+    }
     fun setDate(date: LocalDate?) {
         _uiState.update { it.copy(date = date, repeatDays = if (date != null) emptyList() else it.repeatDays) }
     }

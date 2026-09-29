@@ -216,4 +216,34 @@
     <string name="add_date">Thêm ngày</string>
     <string name="select_day">Chọn ngày</string>
     <string name="day_number_format">%d</string>
+
+    <!-- Urgency Level -->
+    <string name="urgency_level_title">Mức độ khẩn cấp</string>
+    <string name="urgency_soft">Nhẹ (Soft)</string>
+    <string name="urgency_medium">Bình thường (Medium)</string>
+    <string name="urgency_hard">Khẩn cấp (Hard)</string>
+    <string name="urgency_soft_desc">Chỉ hiện thông báo, tự dời lượt mà không reo chuông kéo dài</string>
+    <string name="urgency_medium_desc">Phát chuông và rung tiêu chuẩn</string>
+    <string name="urgency_hard_desc">Báo động liên tục cho đến khi tắt hoặc hoãn</string>
+
+    <!-- Interval Trigger -->
+    <string name="interval_section_title">Chu kỳ lặp lại</string>
+    <string name="interval_minutes_label">Lặp lại mỗi (Phút)</string>
+    <string name="interval_minutes_hint">Ví dụ: 60 (mỗi 1 tiếng)</string>
+    <string name="interval_preset_15m">15p</string>
+    <string name="interval_preset_30m">30p</string>
+    <string name="interval_preset_1h">1h</string>
+    <string name="interval_preset_2h">2h</string>
+    <string name="interval_preset_3h">3h</string>
+    <string name="interval_preset_4h">4h</string>
+
+    <!-- Fixed Times Multi-Picker & Badges -->
+    <string name="section_fixed_times_title">Các mốc giờ nhắc nhở</string>
+    <string name="add_fixed_time">Thêm mốc giờ</string>
+    <string name="remove_fixed_time">Xóa mốc giờ</string>
+    <string name="fixed_time_badge_format">%s</string>
+    <string name="badge_interval_format">Mỗi %d phút</string>
+    <string name="badge_urgency_critical">KHẨN CẤP</string>
+    <string name="badge_urgency_high">ƯU TIÊN</string>
+    <string name="badge_persistent_alert">Chuông liên tục</string>
 </resources>

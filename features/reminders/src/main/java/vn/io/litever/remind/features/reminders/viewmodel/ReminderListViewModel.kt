@@ -58,6 +58,16 @@ class ReminderListViewModel @Inject constructor(
 
     private var recentlyDeletedReminder: Reminder? = null
 
+    init {
+        viewModelScope.launch {
+            try {
+                reminderRepository.checkAndResetRecurringChecklists()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
     val uiState: StateFlow<ReminderListUiState> = combine(
         reminderRepository.getAllReminders(),
         preferencesDataSource.is24HourFormat,
@@ -253,7 +263,20 @@ class ReminderListViewModel @Inject constructor(
         }
     }
 
+    fun toggleChecklistItem(itemId: Long, isCompleted: Boolean) {
+        viewModelScope.launch {
+            reminderRepository.updateChecklistItemCompletion(itemId, isCompleted)
+        }
+    }
+
     fun refreshPermissions() {
+        viewModelScope.launch {
+            try {
+                reminderRepository.checkAndResetRecurringChecklists()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
         val activeReminders = uiState.value.reminders?.filter { it.isEnabled && !it.isCompleted } ?: emptyList()
         val hasMissingForActive = activeReminders.any { !permissionChecker.hasPermissionsForReminder(it) }
         _hasPermissionWarning.value = !permissionChecker.hasNotificationPermission() || hasMissingForActive

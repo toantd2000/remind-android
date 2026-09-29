@@ -15,11 +15,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,8 +67,10 @@ fun ReminderCard(
     onToggle: (Boolean) -> Unit,
     onClick: () -> Unit,
     onMoreClick: () -> Unit,
+    onChecklistToggle: ((reminderId: Long, itemId: Long, isCompleted: Boolean) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
+    var isChecklistExpanded by remember { mutableStateOf(false) }
     val isSnoozed = reminder.snoozeNextTriggerTime != null
     val isCardActive = reminder.isEnabled && !reminder.isCompleted
     val alpha = if (isCardActive) 1f else 0.6f
@@ -203,12 +212,17 @@ fun ReminderCard(
                     )
                 }
 
-                // Checklist progress
+                // Checklist progress & expandable items
                 if (reminder.checklist.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(6.dp))
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(LiteverTheme.shapes.small)
+                            .clickable { isChecklistExpanded = !isChecklistExpanded }
+                            .padding(vertical = 2.dp)
                     ) {
                         Icon(
                             imageVector = ReMindIcons.Checklist,
@@ -235,6 +249,58 @@ fun ReminderCard(
                             color = accentColor,
                             trackColor = accentContainerColor.copy(alpha = 0.4f),
                         )
+                        Icon(
+                            imageVector = if (isChecklistExpanded) ReMindIcons.ArrowDropDown else ReMindIcons.KeyboardArrowRight,
+                            contentDescription = if (isChecklistExpanded) "Collapse" else "Expand",
+                            tint = accentColor.copy(alpha = 0.7f),
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+
+                    if (isChecklistExpanded) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 4.dp, start = 4.dp),
+                            verticalArrangement = Arrangement.spacedBy(2.dp)
+                        ) {
+                            reminder.checklist.sortedBy { it.orderIndex }.forEach { item ->
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(LiteverTheme.shapes.small)
+                                        .clickable {
+                                            onChecklistToggle?.invoke(reminder.id, item.id, !item.isCompleted)
+                                        }
+                                        .padding(vertical = 2.dp)
+                                ) {
+                                    Checkbox(
+                                        checked = item.isCompleted,
+                                        onCheckedChange = { isChecked ->
+                                            onChecklistToggle?.invoke(reminder.id, item.id, isChecked)
+                                        },
+                                        colors = CheckboxDefaults.colors(
+                                            checkedColor = LiteverTheme.colors.primary
+                                        ),
+                                        modifier = Modifier.size(24.dp).padding(end = 4.dp)
+                                    )
+                                    Text(
+                                        text = item.text,
+                                        style = LiteverTheme.typography.bodySmall.copy(
+                                            textDecoration = if (item.isCompleted) TextDecoration.LineThrough else null
+                                        ),
+                                        color = if (item.isCompleted) {
+                                            LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.6f)
+                                        } else {
+                                            LiteverTheme.colors.onSurface
+                                        },
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }

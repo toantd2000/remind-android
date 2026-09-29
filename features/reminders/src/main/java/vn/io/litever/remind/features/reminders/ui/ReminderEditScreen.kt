@@ -167,6 +167,7 @@ fun ReminderEditRoute(
         onToggleChecklistItemInitial = viewModel::toggleChecklistItemInitial,
         onDeleteChecklistItem = viewModel::deleteChecklistItem,
         onMoveChecklistItem = viewModel::moveChecklistItem,
+        onDraftTextChange = viewModel::setDraftChecklistText,
         onNotificationStyleChange = viewModel::setNotificationStyle,
         onUrgencyLevelChange = viewModel::setUrgencyLevel,
         onAutoSilenceMinutesChange = viewModel::setAutoSilenceMinutes,
@@ -231,6 +232,7 @@ fun ReminderEditScreen(
     onToggleChecklistItemInitial: (Int, Boolean) -> Unit,
     onDeleteChecklistItem: (Int) -> Unit,
     onMoveChecklistItem: (Int, Int) -> Unit,
+    onDraftTextChange: (String) -> Unit = {},
     onNotificationStyleChange: (NotificationStyle) -> Unit,
     onUrgencyLevelChange: (UrgencyLevel) -> Unit = {},
     onAutoSilenceMinutesChange: (Int) -> Unit,
@@ -316,7 +318,8 @@ fun ReminderEditScreen(
                     onUpdateItemText = onUpdateChecklistItemText,
                     onToggleItemInitialCheck = onToggleChecklistItemInitial,
                     onDeleteItem = onDeleteChecklistItem,
-                    onMoveItem = onMoveChecklistItem
+                    onMoveItem = onMoveChecklistItem,
+                    onDraftTextChange = onDraftTextChange
                 )
             }
 

@@ -26,7 +26,7 @@ import vn.io.litever.remind.core.database.model.PhraseEntity
         ReminderEntity::class,
         ChecklistItemEntity::class
     ],
-    version = 6,
+    version = 7,
     exportSchema = false
 )
 abstract class RemindDatabase : RoomDatabase() {
@@ -145,6 +145,12 @@ abstract class RemindDatabase : RoomDatabase() {
                 db.execSQL("ALTER TABLE `reminders` ADD COLUMN `wifiRepeatDays` TEXT")
                 db.execSQL("ALTER TABLE `reminders` ADD COLUMN `wifiMonthlyDays` TEXT")
                 db.execSQL("ALTER TABLE `reminders` ADD COLUMN `wifiYearlyDates` TEXT")
+            }
+        }
+
+        val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `reminders` ADD COLUMN `lastChecklistResetTime` INTEGER")
             }
         }
     }

@@ -174,4 +174,27 @@ class ReminderAlertManagerTest {
         assertFalse(alertManager.isAlerting(106L))
         assertEquals(AlertPlaybackState.Idle, alertManager.playbackState.value)
     }
+
+    @Test
+    fun startAlert_standardStyle_preservesConfiguredVolume() = runTest {
+        val reminder = Reminder(
+            id = 107L,
+            title = "Standard with Volume 40",
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            action = ReminderAction(
+                urgencyLevel = UrgencyLevel.HARD,
+                notificationStyle = NotificationStyle.STANDARD,
+                isPersistentAlert = true,
+                volume = 40
+            )
+        )
+
+        alertManager.startAlert(reminder)
+        testScheduler.runCurrent()
+
+        val state = alertManager.playbackState.value
+        assertTrue(state is AlertPlaybackState.Playing)
+        val playingState = state as AlertPlaybackState.Playing
+        assertEquals(40, playingState.volume)
+    }
 }

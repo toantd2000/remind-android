@@ -207,10 +207,8 @@ class ReminderAlertManagerImpl @Inject constructor(
         }
 
         val isAlarmStyle = reminder.action.notificationStyle == NotificationStyle.FULL_SCREEN
-        val usage = if (isAlarmStyle && reminder.action.useAlarmStream) {
+        val usage = if (reminder.action.useAlarmStream || isAlarmStyle) {
             AudioAttributes.USAGE_ALARM
-        } else if (isAlarmStyle) {
-            AudioAttributes.USAGE_MEDIA
         } else {
             AudioAttributes.USAGE_NOTIFICATION_EVENT
         }
@@ -227,8 +225,10 @@ class ReminderAlertManagerImpl @Inject constructor(
         focusRequest = request
         audioManager.requestAudioFocus(request)
 
-        val uri = if (isAlarmStyle) {
+        val uri = if (!reminder.action.ringtoneUri.isNullOrBlank()) {
             getAccessibleRingtoneUri(context, reminder.action.ringtoneUri)
+        } else if (isAlarmStyle || reminder.action.useAlarmStream) {
+            getAccessibleRingtoneUri(context, null)
         } else {
             RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION) ?: getAccessibleRingtoneUri(context, null)
         }
@@ -242,15 +242,11 @@ class ReminderAlertManagerImpl @Inject constructor(
             mediaPlayer = player
 
             player.setOnPreparedListener { mp ->
-                val volumeScale = if (isAlarmStyle) {
-                    (reminder.action.volume.coerceIn(0, 100)).toFloat() / 100f
-                } else {
-                    1.0f
-                }
+                val volumeScale = (reminder.action.volume.coerceIn(0, 100)).toFloat() / 100f
                 mp.setVolume(volumeScale, volumeScale)
                 mp.start()
                 if (reminder.action.vibrationEnabled) {
-                    startVibration(isPersistent)
+                    startVibration(isPersistent, audioAttributes)
                 }
             }
 
@@ -267,12 +263,12 @@ class ReminderAlertManagerImpl @Inject constructor(
             e.printStackTrace()
             // Fallback: Vibrate anyway if audio setup failed
             if (reminder.action.vibrationEnabled) {
-                startVibration(isPersistent)
+                startVibration(isPersistent, audioAttributes)
             }
         }
     }
 
-    private fun startVibration(isPersistent: Boolean) {
+    private fun startVibration(isPersistent: Boolean, audioAttributes: AudioAttributes? = null) {
         vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val manager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
             manager?.defaultVibrator
@@ -291,7 +287,11 @@ class ReminderAlertManagerImpl @Inject constructor(
         val repeatIndex = if (isPersistent) 0 else -1
 
         val effect = VibrationEffect.createWaveform(pattern, repeatIndex)
-        vibrator?.vibrate(effect)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && audioAttributes != null) {
+            vibrator?.vibrate(effect, audioAttributes)
+        } else {
+            vibrator?.vibrate(effect)
+        }
     }
 
     private fun startAutoSilenceTimer(reminder: Reminder) {

@@ -14,6 +14,7 @@ data class Reminder(
     val currentSnoozeCount: Int = 0,
     val snoozeNextTriggerTime: Long? = null,
     val lastTriggeredTime: Long? = null,
+    val lastChecklistResetTime: Long? = null,
     val isCompleted: Boolean = false,
     val createdAt: Long = System.currentTimeMillis()
 ) : Serializable {

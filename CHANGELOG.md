@@ -16,15 +16,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Yearly recurrence: Supports selecting multiple dates in a year (`yearlyDates: List<ReminderMonthDay>`).
   - Weekly recurrence: Supports selecting multiple days of the week (`repeatDays: List<DayOfWeek>`).
 - **Urgency & Action Constraints:** Added `UrgencyLevel` (`LOW`, `MEDIUM`, `HIGH`, `CRITICAL`), `Checklist` (subtasks with completion status & ordering), customizable `SnoozeConfig`, and `isPersistentAlert` mode for full-screen alarm behavior.
-- **Room Database Migration v5:** Added `MIGRATION_4_5` preserving existing data while transitioning to the new schema.
+- **Checklist In-Place Interaction:** Added expandable checklist view directly on `ReminderCard` with instant check/uncheck toggling synced to SQLite.
+- **Checklist Recurring Cycle Auto-Reset:** Automatically resets completed checklist items when entering a new cycle (daily, weekly, monthly, yearly, or interval interval trigger) backed by `lastChecklistResetTime` in Room Database.
+- **Room Database Migration v7:** Added `MIGRATION_6_7` to add `lastChecklistResetTime` column to `reminders` table.
 
 ### Changed
 - **Reminder Architecture & Entities:** Streamlined `ReminderEntity` and domain `Reminder` model, removing legacy location/wifi triggers in favor of a robust time-based trigger system.
 - **ViewModel & UI Integration:** Updated `ReminderEditViewModel` and composable screens (`ReminderTriggerEditScreen`, `ReminderEditScreen`, `ReminderTriggerSection`, `ReminderAlertConfigSection`) with intuitive multi-day selector dialogs and responsive reactive state.
+- **Draft Checklist Auto-Flush:** Automatically saves any uncommitted checklist draft input text when the user clicks Save without pressing Add (+).
 
 ### Fixed
+- **Alert Volume & Vibration Stream:** Enforced configured `reminder.action.volume` across both standard notifications and persistent alerts via `AudioAttributes.USAGE_ALARM` and `MediaPlayer.setVolume()`, honoring custom ringtones and vibrator attributes.
+- **Checklist Persistence & Primary Key Duplication:** Prevented item replacement collisions in Room by enforcing auto-generated `id = 0L` on new items and using nanoTime for temporary UI keys.
 - **Multi-module Test Dependencies:** Fixed missing `libs.junit` dependencies in `:features:today` and `:features:mission` test configurations.
-- **Test Suite Hygiene:** Cleaned up orphaned location/wifi tests, ensuring 100% test pass across all project modules (475 tasks).
+- **Test Suite Hygiene:** Cleaned up orphaned location/wifi tests, ensuring 100% test pass across all project modules.
 
 ## [2.0.0] - 2026-09-23
 

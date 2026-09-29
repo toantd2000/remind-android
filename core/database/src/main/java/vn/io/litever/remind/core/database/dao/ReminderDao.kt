@@ -80,4 +80,11 @@ interface ReminderDao {
 
     @Query("UPDATE reminders SET lastTriggeredTime = :lastTriggeredTime WHERE id = :id")
     suspend fun updateLastTriggeredTime(id: Long, lastTriggeredTime: Long)
+
+    @Query("UPDATE reminders SET lastChecklistResetTime = :lastChecklistResetTime WHERE id = :id")
+    suspend fun updateLastChecklistResetTime(id: Long, lastChecklistResetTime: Long)
+
+    @Transaction
+    @Query("SELECT * FROM reminders WHERE isEnabled = 1")
+    suspend fun getActiveRemindersSync(): List<PopulatedReminder>
 }

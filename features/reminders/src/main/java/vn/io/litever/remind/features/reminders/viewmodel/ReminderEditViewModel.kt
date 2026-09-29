@@ -62,6 +62,7 @@ data class ReminderEditUiState(
     val timeWindows: List<ReminderTimeWindow> = emptyList(),
     val urgencyLevel: UrgencyLevel = UrgencyLevel.MEDIUM,
     val checklist: List<ChecklistItem> = emptyList(),
+    val draftChecklistText: String = "",
     val notificationStyle: NotificationStyle = NotificationStyle.STANDARD,
     val isPersistentAlert: Boolean = false,
     val autoSilenceMinutes: Int = 5,
@@ -195,12 +196,22 @@ class ReminderEditViewModel @Inject constructor(
             notificationStyle = state.notificationStyle
         )
 
+        val finalChecklist = if (state.draftChecklistText.isNotBlank()) {
+            state.checklist + ChecklistItem(
+                id = System.nanoTime(),
+                text = state.draftChecklistText.trim(),
+                orderIndex = state.checklist.size
+            )
+        } else {
+            state.checklist
+        }
+
         return Reminder(
             id = state.id,
             title = state.title.trim(),
             notes = state.notes.trim(),
             triggerType = state.triggerType,
-            checklist = state.checklist,
+            checklist = finalChecklist,
             timeTrigger = timeTrigger,
             action = action,
             createdAt = now,
@@ -209,6 +220,11 @@ class ReminderEditViewModel @Inject constructor(
     }
 
     fun saveReminder(onSuccess: () -> Unit) {
+        if (_uiState.value.draftChecklistText.isNotBlank()) {
+            addChecklistItem(_uiState.value.draftChecklistText.trim())
+            _uiState.update { it.copy(draftChecklistText = "") }
+        }
+
         if (_uiState.value.title.isBlank()) {
             _uiState.update {
                 it.copy(
@@ -476,10 +492,14 @@ class ReminderEditViewModel @Inject constructor(
     fun setIntervalMinutes(v: Int?) { _uiState.update { it.copy(intervalMinutes = v) } }
     fun setUrgencyLevel(level: UrgencyLevel) { _uiState.update { it.copy(urgencyLevel = level) } }
     
+    fun setDraftChecklistText(text: String) {
+        _uiState.update { it.copy(draftChecklistText = text) }
+    }
+
     fun addChecklistItem(text: String) {
         _uiState.update { state ->
             val newItem = ChecklistItem(
-                id = System.currentTimeMillis(),
+                id = System.nanoTime(),
                 text = text,
                 orderIndex = state.checklist.size
             )

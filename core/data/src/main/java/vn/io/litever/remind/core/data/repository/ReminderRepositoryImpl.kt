@@ -6,6 +6,7 @@ import vn.io.litever.remind.core.data.mapper.*
 
 import vn.io.litever.remind.core.database.dao.ChecklistItemDao
 import vn.io.litever.remind.core.database.dao.ReminderDao
+import vn.io.litever.remind.core.database.entity.ChecklistItemEntity
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.model.Reminder
 import javax.inject.Inject
@@ -37,10 +38,16 @@ class ReminderRepositoryImpl @Inject constructor(
         val reminderId = reminderDao.insertReminder(reminderEntity)
 
         // 2. Batch insert checklist items associated with the generated reminder ID
+        // Always use id = 0L for newly created reminder items so Room auto-generates primary keys
         if (reminder.checklist.isNotEmpty()) {
             val checklistEntities = reminder.checklist.mapIndexed { index, item ->
-                item.copy(reminderId = reminderId, orderIndex = index)
-                    .toEntity(parentReminderId = reminderId)
+                ChecklistItemEntity(
+                    id = 0L,
+                    reminderId = reminderId,
+                    text = item.text,
+                    isCompleted = item.isCompleted,
+                    orderIndex = index
+                )
             }
             checklistItemDao.insertChecklistItems(checklistEntities)
         }
@@ -52,11 +59,16 @@ class ReminderRepositoryImpl @Inject constructor(
         val reminderEntity = reminder.toEntity()
         val checklistEntities = if (reminder.checklist.isNotEmpty()) {
             reminder.checklist.mapIndexed { index, item ->
-                item.copy(reminderId = reminder.id, orderIndex = index)
-                    .toEntity(parentReminderId = reminder.id)
+                ChecklistItemEntity(
+                    id = if (item.id <= 0L || item.id > 1000000000000L) 0L else item.id,
+                    reminderId = reminder.id,
+                    text = item.text,
+                    isCompleted = item.isCompleted,
+                    orderIndex = index
+                )
             }
         } else {
-            emptyList()
+            emptyList<ChecklistItemEntity>()
         }
 
         reminderDao.updateReminderWithChecklist(reminderEntity, checklistEntities, checklistItemDao)
@@ -76,6 +88,22 @@ class ReminderRepositoryImpl @Inject constructor(
     override fun getActiveMonitoringReminders(): Flow<List<Reminder>> {
         return reminderDao.getActiveMonitoringReminders().map { populatedList ->
             populatedList.map { it.toModel() }
+        }
+    }
+
+    override suspend fun resetChecklist(reminderId: Long, resetTime: Long) {
+        checklistItemDao.resetChecklistCompletionForReminder(reminderId)
+        reminderDao.updateLastChecklistResetTime(reminderId, resetTime)
+    }
+
+    override suspend fun checkAndResetRecurringChecklists() {
+        val activeReminders = reminderDao.getActiveRemindersSync()
+        val now = java.time.LocalDateTime.now()
+        for (populated in activeReminders) {
+            val reminder = populated.toModel()
+            if (vn.io.litever.remind.core.domain.util.ChecklistCycleUtil.shouldResetChecklist(reminder, now)) {
+                resetChecklist(reminder.id, System.currentTimeMillis())
+            }
         }
     }
 }

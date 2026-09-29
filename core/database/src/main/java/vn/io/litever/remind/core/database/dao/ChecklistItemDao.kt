@@ -32,6 +32,9 @@ interface ChecklistItemDao {
     @Query("UPDATE checklist_items SET isCompleted = :isCompleted WHERE id = :itemId")
     suspend fun updateChecklistItemCompletion(itemId: Long, isCompleted: Boolean)
 
+    @Query("UPDATE checklist_items SET isCompleted = 0 WHERE reminderId = :reminderId")
+    suspend fun resetChecklistCompletionForReminder(reminderId: Long)
+
     @Delete
     suspend fun deleteChecklistItem(item: ChecklistItemEntity)
 

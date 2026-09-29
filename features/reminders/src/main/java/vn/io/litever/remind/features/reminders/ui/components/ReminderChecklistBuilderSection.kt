@@ -15,6 +15,8 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,6 +32,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import vn.io.litever.designsystem.components.LiteverIconButton
@@ -47,6 +50,7 @@ fun ReminderChecklistBuilderSection(
     onToggleItemInitialCheck: (index: Int, isCompleted: Boolean) -> Unit,
     onDeleteItem: (index: Int) -> Unit,
     onMoveItem: (fromIndex: Int, toIndex: Int) -> Unit,
+    onDraftTextChange: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var newItemText by remember { mutableStateOf("") }
@@ -55,6 +59,7 @@ fun ReminderChecklistBuilderSection(
         if (newItemText.isNotBlank()) {
             onAddItem(newItemText.trim())
             newItemText = ""
+            onDraftTextChange("")
         }
     }
 
@@ -133,8 +138,18 @@ fun ReminderChecklistBuilderSection(
                                     contentDescription = stringResource(R.string.reorder_handle),
                                     tint = LiteverTheme.colors.onSurfaceVariant,
                                     modifier = Modifier
-                                        .padding(start = 4.dp, end = 8.dp)
+                                        .padding(start = 4.dp, end = 4.dp)
                                         .size(20.dp)
+                                )
+
+                                // Checkbox for completion state
+                                Checkbox(
+                                    checked = item.isCompleted,
+                                    onCheckedChange = { onToggleItemInitialCheck(index, it) },
+                                    colors = CheckboxDefaults.colors(
+                                        checkedColor = LiteverTheme.colors.primary
+                                    ),
+                                    modifier = Modifier.size(32.dp).padding(end = 4.dp)
                                 )
 
                                 // Flat modern input
@@ -145,7 +160,12 @@ fun ReminderChecklistBuilderSection(
                                         .weight(1f)
                                         .padding(vertical = 6.dp),
                                     textStyle = LiteverTheme.typography.bodyMedium.copy(
-                                        color = LiteverTheme.colors.onSurface
+                                        color = if (item.isCompleted) {
+                                            LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.6f)
+                                        } else {
+                                            LiteverTheme.colors.onSurface
+                                        },
+                                        textDecoration = if (item.isCompleted) TextDecoration.LineThrough else null
                                     ),
                                     cursorBrush = SolidColor(LiteverTheme.colors.primary),
                                     singleLine = true,
@@ -202,7 +222,10 @@ fun ReminderChecklistBuilderSection(
                 ) {
                     BasicTextField(
                         value = newItemText,
-                        onValueChange = { newItemText = it },
+                        onValueChange = {
+                            newItemText = it
+                            onDraftTextChange(it)
+                        },
                         modifier = Modifier
                             .weight(1f)
                             .padding(

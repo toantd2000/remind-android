@@ -8,14 +8,13 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
+import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import vn.io.litever.remind.core.domain.repository.AlarmRepository
 import vn.io.litever.remind.core.domain.repository.MissedAlarmRepository
 import vn.io.litever.remind.core.domain.scheduler.AlarmScheduler
-import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import vn.io.litever.remind.core.model.Alarm
 import java.time.DayOfWeek
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.ZoneId
 
 class AlarmSyncManagerTest {
@@ -47,7 +46,7 @@ class AlarmSyncManagerTest {
             id = 1,
             time = alarmTime,
             isEnabled = true,
-            repeatDays = listOf(DayOfWeek.values()[now.dayOfWeek.value - 1]), // Today
+            repeatDays = listOf(DayOfWeek.entries[now.dayOfWeek.value - 1]), // Today
             skippedAt = skippedTime
         )
         

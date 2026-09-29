@@ -353,3 +353,36 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
 - **Decision:** Tạo object `ReMindIcons` tập trung toàn bộ icons sử dụng trong `:core:designsystem`, xóa hoàn toàn `material.icons.extended` khỏi `:app` và tất cả `:features:*`.
 - **Consequences:** Toàn bộ modules chỉ sử dụng icons qua `ReMindIcons`, cô lập triệt để dependency và bảo đảm Single Source of Truth cho icon UI.
 
+### [TDR-082] - Chuẩn Hóa Âm Lượng & Rung Nhắc Nhở, Lưu Bền Vững Checklist Và Tự Động Reset Theo Chu Kỳ
+- **Ngày thực hiện:** 2026-09-29
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Nhắc nhở (Reminders) gặp phải các vấn đề:
+    1. Không phát chuông hoặc rung đúng mức âm lượng đã cấu hình (`reminder.action.volume`), kênh stream bị lệch giữa standard notification và persistent alert.
+    2. Danh sách checklist không được lưu bền vững khi tạo/sửa; người dùng nhập dở checklist item nhưng bấm thẳng nút Lưu (Save) thì bị mất text.
+    3. Trạng thái hoàn thành checklist (`isCompleted`) chưa thể tương tác trực tiếp ngoài danh sách nhắc nhở.
+    4. Thiếu cơ chế tự động reset checklist khi bước sang chu kỳ mới (ngày/tháng/năm hoặc sau khoảng thời gian lặp `INTERVAL`).
+- **Quyết định:**
+  1. **Chuẩn Hóa Âm Lượng & Rung (`ReminderAlertManager`, `ReminderNotificationManager`):**
+     - Quy đổi tỷ lệ âm lượng `(volume.coerceIn(0, 100)).toFloat() / 100f` cho cả `STANDARD` notification sound lẫn `FULL_SCREEN` alert.
+     - Sử dụng `AudioAttributes.USAGE_ALARM` kết hợp `USAGE_NOTIFICATION` đúng ngữ cảnh khi `useAlarmStream || isAlarmStyle`. Phát đúng chuông tùy chỉnh `reminder.action.ringtoneUri` thay vì gán cứng nhạc chuông mặc định.
+     - Gắn `AudioAttributes` vào `Vibrator` để đảm bảo xung rung đồng bộ với mức độ ưu tiên của cảnh báo.
+  2. **Quản Lý Bền Vững ID & Auto-flush Draft Checklist:**
+     - Tại `ReminderRepositoryImpl`: Đảm bảo khi tạo mới Reminder, các checklist item luôn được gán `id = 0L` để Room SQLite tự động sinh khóa chính (Primary Key Auto-generate), tránh tình trạng trùng ID dẫn đến ghi đè bản ghi (`OnConflictStrategy.REPLACE`). Khi cập nhật, chỉ các item mới tạo tạm thời (id âm hoặc nanoTime) mới được reset về 0L để chèn mới.
+     - Tại `ReminderEditViewModel`: Thêm cơ chế tự động nạp text đang gõ dở (`draftChecklistText`) vào danh sách checklist trước khi lưu nếu người dùng bấm nút Lưu trên TopBar mà quên bấm nút Thêm (+).
+  3. **Tương Tác Checklist Trực Tiếp Tại ReminderCard:**
+     - Nâng cấp `ReminderCard`: Người dùng có thể nhấn vào hàng tiến độ checklist để mở rộng (Expand) toàn bộ danh sách các đầu việc và tương tác check/uncheck trực tiếp.
+     - `ReminderListViewModel` và `ReminderListScreen`: Thêm callback `toggleChecklistItem` ghi nhận trạng thái tức thời xuống SQLite DB mà không làm reload toàn bộ giao diện hay ngắt quãng trải nghiệm.
+  4. **Tự Động Reset Checklist Theo Chu Kỳ (Cycle Auto-Reset):**
+     - Bổ sung trường `lastChecklistResetTime: Long?` vào `Reminder` và `ReminderEntity`.
+     - Tạo `MIGRATION_6_7` nâng database lên version 7 (`ALTER TABLE reminders ADD COLUMN lastChecklistResetTime INTEGER`).
+     - Phát triển `ChecklistCycleUtil`: Tính toán chu kỳ reset dựa trên `repeatMode` (`DAILY`, `WEEKLY`, `MONTHLY`, `YEARLY`) hoặc `INTERVAL` (theo khoảng thời gian) so với `lastChecklistResetTime` hoặc `lastTriggeredTime`.
+     - Tích hợp tự động quét và reset checklist:
+       - Trong `ReminderReceiver`: Khi chu kỳ reo mới được kích hoạt, tự động reset checklist về chưa hoàn thành (`isCompleted = 0`) trước khi phát chuông/thông báo.
+       - Trong `ReminderSyncManager` và `ReminderListViewModel`: Định kỳ kiểm tra và reset khi đồng bộ hoặc mở màn hình danh sách nhắc nhở.
+- **Hệ quả:**
+  - Nhắc nhở đổ chuông và rung chính xác với âm lượng người dùng lựa chọn.
+  - Checklist được lưu trữ bền vững 100%, không bị mất nội dung khi gõ nhanh.
+  - Các công việc định kỳ hàng ngày/tuần/tháng/năm tự động sẵn sàng cho ngày mới mà không cần thao tác dọn dẹp thủ công.
+  - Toàn bộ unit tests bao gồm `ChecklistCycleUtilTest` và `ReminderAlertManagerTest` pass 100%.
+

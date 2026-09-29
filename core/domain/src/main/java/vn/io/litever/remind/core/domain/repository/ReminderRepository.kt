@@ -47,4 +47,16 @@ interface ReminderRepository {
      * Observes enabled, non-completed reminders that have active background triggers (Location or Wi-Fi).
      */
     fun getActiveMonitoringReminders(): Flow<List<Reminder>>
+
+    /**
+     * Resets all checklist items of the specified reminder to uncompleted (isCompleted = false)
+     * and updates the last checklist reset timestamp.
+     */
+    suspend fun resetChecklist(reminderId: Long, resetTime: Long = System.currentTimeMillis())
+
+    /**
+     * Checks all active recurring/interval reminders and resets their checklists if their cycle
+     * (day/week/month/year) has passed.
+     */
+    suspend fun checkAndResetRecurringChecklists()
 }

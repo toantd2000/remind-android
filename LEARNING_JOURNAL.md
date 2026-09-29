@@ -175,3 +175,37 @@ Khi chạy lane `fastlane screenshots` trên thiết bị Android 13+ (API 33), 
    - Đặt `locales(['vi', 'en-US'])` khớp chuẩn 100% với cấu trúc Play Store metadata directory.
    - Đặt `use_timestamp_suffix(false)` để sinh tên file ảnh sạch sẽ (`1_alarm_list.png` đến `6_alarm_message.png`), tự động ghi đè và cập nhật chính xác bộ ảnh Play Store.
 
+---
+
+## [2026-09-29] Bài Học Về Quản Lý State Form Nhập Liệu, Khóa Chính Room Cho Child Items & Âm Lượng Cảnh Báo
+### Vấn đề / Task:
+Trong quá trình phát triển tính năng Nhắc nhở (Reminders):
+1. Người dùng phàn nàn âm lượng chuông nhắc nhở không đổi theo cấu hình (`volume`), chuông bị mặc định và không rung.
+2. Danh sách checklist khi tạo mới hoặc sửa đôi khi bị mất mục hoặc không lưu được.
+3. Người dùng nhập nội dung vào ô checklist nhưng quên nhấn nút (+) mà nhấn thẳng nút Lưu trên TopBar dẫn đến mất dữ liệu vừa gõ.
+4. Nhu cầu tự động xóa dấu tick (reset completion) khi bước sang ngày mới cho các nhắc nhở lặp lại.
+
+### Phân tích nguyên nhân:
+1. **Xung đột Khóa chính Room (PrimaryKey Conflict) khi dùng timestamp giả lập:**
+   - Trong ViewModel, các checklist item chưa lưu được tạo với `id = System.currentTimeMillis()`. Khi người dùng thêm nhiều item liên tiếp trong cùng 1 mili-giây hoặc khi lưu nhiều item cùng lúc, các item có cùng ID.
+   - Lệnh `@Insert(onConflict = OnConflictStrategy.REPLACE)` của Room sẽ coi các item cùng ID là cùng một bản ghi và ghi đè lên nhau, chỉ còn lại 1 item duy nhất trong database.
+2. **Hiện tượng "Bỏ quên Draft Text" khi Submit Form:**
+   - Người dùng có thói quen: gõ xong chữ trong ô nhập liệu rồi lập tức đưa ngón tay lên góc trên màn hình bấm icon "Lưu" (Save).
+   - Nếu luồng logic chỉ đọc mảng `checklist` hiện tại mà không gom giá trị đang lưu trong `draftText`, dữ liệu của người dùng sẽ bị biến mất âm thầm, gây ức chế cao.
+3. **Âm lượng và Audio Stream của Notification vs Alarm:**
+   - `RingtoneManager` hoặc `MediaPlayer` nếu không được set volume theo tỉ lệ `0.0f .. 1.0f` qua `setVolume()` thì sẽ luôn phát ở mức âm lượng hệ thống mặc định.
+   - Notification Sound nếu không được gắn đúng `AudioAttributes.USAGE_ALARM` khi người dùng chọn chế độ báo động (Persistent Alert) sẽ bị tắt tiếng khi thiết bị ở chế độ im lặng/rung.
+
+### Giải pháp / Rule mới:
+1. **Quy tắc Sinh Khóa Chính cho Child Entities trong Room:**
+   - Khi lưu một entity cha mới (hoặc các child items mới được thêm vào), LUÔN LUÔN gán `id = 0L` cho child items trước khi gọi DAO `insertChecklistItems()`. Điều này kích hoạt cơ chế `autoGenerate = true` của SQLite, bảo đảm mỗi bản ghi có ID duy nhất tuyệt đối.
+   - Trong UI State / ViewModel tạm thời, nếu cần ID làm key cho LazyColumn, sử dụng `System.nanoTime()` hoặc ID âm giảm dần (`-1L, -2L...`) thay vì `currentTimeMillis()`.
+2. **Quy tắc "Flush On Submit" cho Form Nhập Liệu:**
+   - Bất cứ form nhập liệu nào có ô nhập draft (như checklist, tags, keywords), trong hàm `save()` hoặc `submit()` của ViewModel PHẢI LUÔN LUÔN tự động kiểm tra: nếu `draftText.isNotBlank()`, tự động thêm vào danh sách trước khi thực hiện lưu dữ liệu.
+3. **Quy tắc Tự Động Reset Theo Chu Kỳ (Cycle Reset Rule):**
+   - Lưu trữ dấu mốc `lastChecklistResetTime` trên thực thể Reminder.
+   - Khi reminder kích hoạt chu kỳ mới (hoặc khi app mở lên / sync data), so sánh thời gian hiện tại với `lastChecklistResetTime` dựa trên quy tắc chu kỳ (`ChecklistCycleUtil`: cùng ngày, cùng tuần, cùng tháng hay cùng năm). Nếu đã sang chu kỳ mới, thực hiện `resetChecklistCompletionForReminder` đồng thời cập nhật `lastChecklistResetTime = System.currentTimeMillis()`.
+4. **Quy tắc Quản Lý Âm Lượng Nhắc Nhở:**
+   - Luôn quy đổi volume `0..100` thành `0.0f..1.0f` và áp dụng trực tiếp cho `MediaPlayer.setVolume(vol, vol)`.
+   - Kết hợp `AudioAttributes.USAGE_ALARM` cho cả âm thanh và `Vibrator` khi nhắc nhở yêu cầu báo động ưu tiên cao.
+

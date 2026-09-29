@@ -111,6 +111,7 @@ fun ReminderEntity.toModel(checklistItems: List<ChecklistItemEntity> = emptyList
         currentSnoozeCount = currentSnoozeCount,
         snoozeNextTriggerTime = snoozeNextTriggerTime,
         lastTriggeredTime = lastTriggeredTime,
+        lastChecklistResetTime = lastChecklistResetTime,
         isCompleted = isCompleted,
         createdAt = createdAt
     )
@@ -161,6 +162,7 @@ fun Reminder.toEntity(): ReminderEntity {
         snoozeNextTriggerTime = snoozeNextTriggerTime,
 
         lastTriggeredTime = lastTriggeredTime,
+        lastChecklistResetTime = lastChecklistResetTime,
         isCompleted = isCompleted,
         createdAt = createdAt
     )

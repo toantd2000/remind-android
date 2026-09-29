@@ -71,11 +71,21 @@ class ReminderReceiver : BroadcastReceiver() {
 
     private suspend fun handleTriggerReminder(context: Context, reminder: Reminder, isSnooze: Boolean) {
         val nowMillis = System.currentTimeMillis()
+        val isRecurring = reminder.isRecurring || reminder.triggerType == ReminderTriggerType.INTERVAL
+        val resetChecklist = if (!isSnooze && isRecurring && reminder.checklist.isNotEmpty()) {
+            reminderRepository.resetChecklist(reminder.id, nowMillis)
+            reminder.checklist.map { it.copy(isCompleted = false) }
+        } else {
+            reminder.checklist
+        }
+
         val updatedReminder = if (!isSnooze) {
             reminder.copy(
                 currentSnoozeCount = 0,
                 snoozeNextTriggerTime = null,
-                lastTriggeredTime = nowMillis
+                lastTriggeredTime = nowMillis,
+                lastChecklistResetTime = if (isRecurring && reminder.checklist.isNotEmpty()) nowMillis else reminder.lastChecklistResetTime,
+                checklist = resetChecklist
             )
         } else {
             reminder.copy(snoozeNextTriggerTime = null)

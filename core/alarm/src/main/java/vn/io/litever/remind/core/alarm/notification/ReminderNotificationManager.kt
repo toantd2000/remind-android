@@ -161,13 +161,15 @@ class ReminderNotificationManager @Inject constructor(
             .setAutoCancel(!isAlarmRinging && !reminder.action.isPersistentAlert)
 
         // Sound configuration:
-        // For Standard mode: uses system default notification sound (1-shot)
-        // For Alarm Ringing mode: custom ringtone if provided
-        if (isAlarmRinging && !reminder.action.ringtoneUri.isNullOrBlank()) {
+        // Respect custom ringtone if provided, otherwise fallback according to style/stream
+        if (!reminder.action.ringtoneUri.isNullOrBlank()) {
             try {
                 builder.setSound(Uri.parse(reminder.action.ringtoneUri))
             } catch (_: Exception) {}
-        } else if (!isAlarmRinging) {
+        } else if (isAlarmRinging || reminder.action.useAlarmStream) {
+            val defaultAlarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+            builder.setSound(defaultAlarmUri)
+        } else {
             val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
             builder.setSound(defaultSoundUri)
         }

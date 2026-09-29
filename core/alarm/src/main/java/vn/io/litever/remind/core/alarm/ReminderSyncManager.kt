@@ -23,6 +23,12 @@ class ReminderSyncManager @Inject constructor(
 ) {
 
     suspend fun sync() {
+        try {
+            reminderRepository.checkAndResetRecurringChecklists()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
         val nowMillis = System.currentTimeMillis()
         val reminders = reminderRepository.getAllReminders().first()
 

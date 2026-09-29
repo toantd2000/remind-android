@@ -5,12 +5,10 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
 ---
 
 ## 🚀 Trạng Thái Dự Án
-- **Phase Hiện Tại:** Phase 8 (LiteVer 2.1.0 & Opinionated Lv* Components Adoption)
+- **Phase Hiện Tại:** Phase 9 (Tái Cấu Trúc CSDL Nhắc Nhở & Hoàn Thiện Mô Hình FIXED_TIME / INTERVAL)
 - **Tiến Độ:** 100%
-- **Ngày cập nhật cuối:** 2026-09-12
-- **Phiên bản hiện tại:** 1.1.7 (Build 10)
-
-
+- **Ngày cập nhật cuối:** 2026-09-29
+- **Phiên bản hiện tại:** 2.1.0
 
 ## 📍 Lộ Trình Tổng Thể
 - [x] **Phase 1:** Hoàn thiện Tầng Dữ liệu (Room DB & Repository)
@@ -21,6 +19,8 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
 - [x] **Phase 6:** Tối ưu hóa & Bảo trì (Maintenance & Optimization)
 - [x] **Phase 7:** Nâng cấp thư viện LiteVer Design System 2.0.0 & Refactor toàn diện Material 3 (includeBuild & M3 Defaults)
 - [x] **Phase 8:** Nâng cấp thư viện LiteVer Design System 2.1.0 & Chuyển đổi toàn diện sang bộ thành phần Opinionated Lv* (LvButton, LvIconButton, LvTextField, LvAlertDialog, LvChip, LvSnackbar)
+- [x] **Phase 9:** Tái Cấu Trúc CSDL Nhắc Nhở & Hoàn Thiện Mô Hình FIXED_TIME / INTERVAL (Multi-day Recurrence, UrgencyLevel, Room MIGRATION_4_5)
+
 
 ---
 

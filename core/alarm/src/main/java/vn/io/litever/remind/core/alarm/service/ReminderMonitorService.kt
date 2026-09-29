@@ -33,11 +33,9 @@ class ReminderMonitorService : Service() {
     @Inject
     lateinit var reminderRepository: ReminderRepository
 
-    @Inject
-    lateinit var locationTracker: LocationTracker
+    
 
-    @Inject
-    lateinit var wifiTracker: WifiTracker
+    
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var activeReminderCount = 0
@@ -79,8 +77,8 @@ class ReminderMonitorService : Service() {
     private fun handleRemindersChanged(reminders: List<Reminder>) {
         activeReminderCount = reminders.size
         if (reminders.isEmpty()) {
-            locationTracker.stopTracking()
-            wifiTracker.stopTracking()
+            
+            
             stopForeground(STOP_FOREGROUND_REMOVE)
             stopSelf()
             return
@@ -90,25 +88,17 @@ class ReminderMonitorService : Service() {
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         manager.notify(NOTIFICATION_ID, notification)
 
-        val locationReminders = reminders.filter { it.triggerType == ReminderTriggerType.LOCATION }
-        val wifiReminders = reminders.filter { it.triggerType == ReminderTriggerType.WIFI }
+        
+        
 
-        if (locationReminders.isNotEmpty()) {
-            locationTracker.startTracking(locationReminders)
-        } else {
-            locationTracker.stopTracking()
-        }
+        
 
-        if (wifiReminders.isNotEmpty()) {
-            wifiTracker.startTracking(wifiReminders)
-        } else {
-            wifiTracker.stopTracking()
-        }
+        
     }
 
     override fun onDestroy() {
-        locationTracker.stopTracking()
-        wifiTracker.stopTracking()
+        
+        
         scope.cancel()
         super.onDestroy()
     }

@@ -131,10 +131,10 @@ class ReminderNotificationManager @Inject constructor(
      * Builds a Notification object for the given Reminder model.
      */
     fun buildNotification(reminder: Reminder): Notification {
-        val isAlarmRinging = reminder.notificationStyle == NotificationStyle.FULL_SCREEN
+        val isAlarmRinging = reminder.action.notificationStyle == NotificationStyle.FULL_SCREEN
         val canUseFsi = permissionChecker.hasFullScreenIntentPermission()
 
-        val channelId = if (isAlarmRinging || reminder.isPersistentAlert) {
+        val channelId = if (isAlarmRinging || reminder.action.isPersistentAlert) {
             CHANNEL_ID_URGENT
         } else {
             CHANNEL_ID_STANDARD
@@ -158,21 +158,21 @@ class ReminderNotificationManager @Inject constructor(
             .setContentIntent(contentPendingIntent)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setOnlyAlertOnce(true)
-            .setAutoCancel(!isAlarmRinging && !reminder.isPersistentAlert)
+            .setAutoCancel(!isAlarmRinging && !reminder.action.isPersistentAlert)
 
         // Sound configuration:
         // For Standard mode: uses system default notification sound (1-shot)
         // For Alarm Ringing mode: custom ringtone if provided
-        if (isAlarmRinging && !reminder.ringtoneUri.isNullOrBlank()) {
+        if (isAlarmRinging && !reminder.action.ringtoneUri.isNullOrBlank()) {
             try {
-                builder.setSound(Uri.parse(reminder.ringtoneUri))
+                builder.setSound(Uri.parse(reminder.action.ringtoneUri))
             } catch (_: Exception) {}
         } else if (!isAlarmRinging) {
             val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
             builder.setSound(defaultSoundUri)
         }
 
-        if (!reminder.vibrationEnabled) {
+        if (!reminder.action.vibrationEnabled) {
             builder.setVibrate(longArrayOf(0))
         }
 
@@ -182,24 +182,24 @@ class ReminderNotificationManager @Inject constructor(
             builder.setPriority(NotificationCompat.PRIORITY_MAX)
             builder.setCategory(if (isAlarmRinging) NotificationCompat.CATEGORY_ALARM else NotificationCompat.CATEGORY_REMINDER)
             builder.setFullScreenIntent(fsiPendingIntent, true)
-            if (isAlarmRinging && reminder.isPersistentAlert) {
+            if (isAlarmRinging && reminder.action.isPersistentAlert) {
                 builder.setOngoing(true)
             }
         } else {
             // Android 14+ Fallback: High priority heads-up without FSI
             builder.setPriority(NotificationCompat.PRIORITY_HIGH)
             builder.setCategory(if (isAlarmRinging) NotificationCompat.CATEGORY_ALARM else NotificationCompat.CATEGORY_REMINDER)
-            if (isAlarmRinging && reminder.isPersistentAlert) {
+            if (isAlarmRinging && reminder.action.isPersistentAlert) {
                 builder.setOngoing(true)
             }
         }
 
         // Action: Snooze (omitted if snooze disabled or snooze limit reached)
-        if (reminder.snoozeEnabled && reminder.canSnooze()) {
+        if (reminder.action.snoozeEnabled && reminder.canSnooze()) {
             val snoozePendingIntent = createSnoozePendingIntent(reminder.id)
             val snoozeLabel = context.getString(
                 R.string.reminder_action_snooze_interval,
-                reminder.snoozeIntervalMinutes
+                reminder.action.snoozeIntervalMinutes
             )
             builder.addAction(0, snoozeLabel, snoozePendingIntent)
         }
@@ -210,7 +210,7 @@ class ReminderNotificationManager @Inject constructor(
         builder.addAction(0, dismissLabel, dismissPendingIntent)
 
         val notification = builder.build()
-        if (isAlarmRinging && reminder.isPersistentAlert) {
+        if (isAlarmRinging && reminder.action.isPersistentAlert) {
             notification.flags = notification.flags or Notification.FLAG_NO_CLEAR or Notification.FLAG_ONGOING_EVENT
         }
         return notification

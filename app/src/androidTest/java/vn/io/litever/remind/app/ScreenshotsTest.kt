@@ -23,7 +23,7 @@ import vn.io.litever.remind.core.model.Alarm
 import vn.io.litever.remind.core.model.ChecklistItem
 import vn.io.litever.remind.core.model.CurrentWeather
 import vn.io.litever.remind.core.model.DailySummary
-import vn.io.litever.remind.core.model.DayOfWeek
+import java.time.DayOfWeek
 import vn.io.litever.remind.core.model.MemoryGameBoard
 import vn.io.litever.remind.core.model.MemoryTilesMissionConfig
 import vn.io.litever.remind.core.model.Mission

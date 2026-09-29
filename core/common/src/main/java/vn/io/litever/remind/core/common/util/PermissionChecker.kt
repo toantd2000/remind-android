@@ -1,14 +1,11 @@
 package vn.io.litever.remind.core.common.util
 
-import android.Manifest
 import android.app.AlarmManager
 import android.app.NotificationManager
 import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.PowerManager
 import android.provider.Settings
-import androidx.core.content.ContextCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder
@@ -19,9 +16,6 @@ import javax.inject.Singleton
 enum class ReminderPermissionType {
     NOTIFICATION,
     EXACT_ALARM,
-    LOCATION,
-    BACKGROUND_LOCATION,
-    WIFI,
     FULL_SCREEN_INTENT,
     OVERLAY
 }
@@ -48,67 +42,6 @@ class PermissionChecker @Inject constructor(
         } else {
             true
         }
-    }
-
-    /**
-     * Checks if either FINE or COARSE location permission is granted.
-     */
-    fun hasLocationPermission(): Boolean {
-        val hasFine = context.checkSelfPermission(
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-        val hasCoarse = context.checkSelfPermission(
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-        return hasFine || hasCoarse
-    }
-
-    /**
-     * Checks if FINE location permission is granted (required for high-accuracy geofencing).
-     */
-    fun hasFineLocationPermission(): Boolean {
-        return context.checkSelfPermission(
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    /**
-     * Checks if BACKGROUND location permission is granted (API 29+).
-     */
-    fun hasBackgroundLocationPermission(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            context.checkSelfPermission(
-                Manifest.permission.ACCESS_BACKGROUND_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        } else {
-            true
-        }
-    }
-
-    /**
-     * Checks if Wi-Fi state permission is granted.
-     */
-    fun hasWifiStatePermission(): Boolean {
-        return context.checkSelfPermission(
-            Manifest.permission.ACCESS_WIFI_STATE
-        ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    /**
-     * Checks if Network state permission is granted.
-     */
-    fun hasNetworkStatePermission(): Boolean {
-        return context.checkSelfPermission(
-            Manifest.permission.ACCESS_NETWORK_STATE
-        ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    /**
-     * Checks if permissions required for Wi-Fi SSID identification are granted.
-     * On Android 10+ (API 29+), ACCESS_FINE_LOCATION is required alongside ACCESS_WIFI_STATE.
-     */
-    fun hasWifiTriggerPermissions(): Boolean {
-        return hasWifiStatePermission() && hasLocationPermission()
     }
 
     /**
@@ -157,9 +90,8 @@ class PermissionChecker @Inject constructor(
         if (!hasNotificationPermission()) return false
 
         return when (reminder.triggerType) {
-            ReminderTriggerType.TIME -> hasExactAlarmPermission()
-            ReminderTriggerType.LOCATION -> hasLocationPermission()
-            ReminderTriggerType.WIFI -> hasWifiTriggerPermissions()
+            ReminderTriggerType.FIXED_TIME,
+            ReminderTriggerType.INTERVAL -> hasExactAlarmPermission()
         }
     }
 
@@ -173,40 +105,18 @@ class PermissionChecker @Inject constructor(
         }
 
         when (reminder.triggerType) {
-            ReminderTriggerType.TIME -> {
+            ReminderTriggerType.FIXED_TIME,
+            ReminderTriggerType.INTERVAL -> {
                 if (!hasExactAlarmPermission()) {
                     missing.add(ReminderPermissionType.EXACT_ALARM)
                 }
             }
-            ReminderTriggerType.LOCATION -> {
-                if (!hasLocationPermission()) {
-                    missing.add(ReminderPermissionType.LOCATION)
-                }
-            }
-            ReminderTriggerType.WIFI -> {
-                if (!hasWifiStatePermission()) {
-                    missing.add(ReminderPermissionType.WIFI)
-                }
-                if (!hasLocationPermission()) {
-                    missing.add(ReminderPermissionType.LOCATION)
-                }
-            }
         }
 
-        if (reminder.notificationStyle == NotificationStyle.FULL_SCREEN && !hasFullScreenIntentPermission()) {
+        if (reminder.action.notificationStyle == NotificationStyle.FULL_SCREEN && !hasFullScreenIntentPermission()) {
             missing.add(ReminderPermissionType.FULL_SCREEN_INTENT)
         }
 
         return missing
     }
 }
-
-
-
-
-
-
-
-
-
-

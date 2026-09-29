@@ -8,6 +8,7 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
+import java.time.LocalTime
 
 /**
  * Adversarial Challenger Stress Test for Checklist & Snooze semantics.
@@ -29,7 +30,7 @@ class ChecklistAndSnoozeChallengerTest {
         val reminder = Reminder(
             id = 100L,
             title = "Massive Checklist",
-            triggerType = ReminderTriggerType.TIME,
+            triggerType = ReminderTriggerType.FIXED_TIME,
             checklist = items
         )
 
@@ -43,7 +44,7 @@ class ChecklistAndSnoozeChallengerTest {
     fun allItemsCompleted_boundaryValidation() {
         val singleCompleted = Reminder(
             title = "One Item",
-            triggerType = ReminderTriggerType.TIME,
+            triggerType = ReminderTriggerType.FIXED_TIME,
             checklist = listOf(ChecklistItem(id = 1, text = "Only task", isCompleted = true))
         )
         assertEquals(1, singleCompleted.totalChecklistCount)
@@ -53,7 +54,7 @@ class ChecklistAndSnoozeChallengerTest {
 
         val singleIncomplete = Reminder(
             title = "One Item Incomplete",
-            triggerType = ReminderTriggerType.TIME,
+            triggerType = ReminderTriggerType.FIXED_TIME,
             checklist = listOf(ChecklistItem(id = 1, text = "Only task", isCompleted = false))
         )
         assertEquals(1, singleIncomplete.totalChecklistCount)
@@ -66,10 +67,12 @@ class ChecklistAndSnoozeChallengerTest {
     fun snoozeProgressionAndExhaustion_stateTransitions() {
         var reminder = Reminder(
             title = "Snoozable Reminder",
-            triggerType = ReminderTriggerType.TIME,
-            snoozeEnabled = true,
-            snoozeIntervalMinutes = 10,
-            snoozeRepeatCount = 3,
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            action = ReminderAction(
+                snoozeEnabled = true,
+                snoozeIntervalMinutes = 10,
+                snoozeRepeatCount = 3
+            ),
             currentSnoozeCount = 0
         )
 
@@ -100,9 +103,11 @@ class ChecklistAndSnoozeChallengerTest {
     fun snoozeRepeatCountZero_cannotSnooze() {
         val reminder = Reminder(
             title = "No Snooze Allowed",
-            triggerType = ReminderTriggerType.TIME,
-            snoozeEnabled = true,
-            snoozeRepeatCount = 0,
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            action = ReminderAction(
+                snoozeEnabled = true,
+                snoozeRepeatCount = 0
+            ),
             currentSnoozeCount = 0
         )
         assertFalse(reminder.canSnooze())
@@ -112,9 +117,11 @@ class ChecklistAndSnoozeChallengerTest {
     fun snoozeRepeatCountUnlimited_canAlwaysSnooze() {
         val reminder = Reminder(
             title = "Unlimited Snoozes Allowed",
-            triggerType = ReminderTriggerType.TIME,
-            snoozeEnabled = true,
-            snoozeRepeatCount = -1,
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            action = ReminderAction(
+                snoozeEnabled = true,
+                snoozeRepeatCount = -1
+            ),
             currentSnoozeCount = 100
         )
         assertTrue(reminder.canSnooze())
@@ -127,13 +134,10 @@ class ChecklistAndSnoozeChallengerTest {
             title = "Serialization Test",
             notes = "Special notes",
             isEnabled = true,
-            triggerType = ReminderTriggerType.LOCATION,
-            locationTrigger = LocationTrigger(
-                latitude = 37.7749,
-                longitude = -122.4194,
-                radiusMeters = 150f,
-                locationName = "San Francisco Office",
-                transitionType = GeofenceTransitionType.BOTH,
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            timeTrigger = TimeTrigger(
+                time = listOf(LocalTime.of(8, 0)),
+                repeatMode = RepeatMode.DAILY,
                 timeWindow = ReminderTimeWindow(
                     startTime = java.time.LocalTime.of(8, 0),
                     endTime = java.time.LocalTime.of(18, 0),
@@ -144,10 +148,12 @@ class ChecklistAndSnoozeChallengerTest {
                 ChecklistItem(id = 1L, reminderId = 777L, text = "Badge", isCompleted = true, orderIndex = 0),
                 ChecklistItem(id = 2L, reminderId = 777L, text = "Laptop", isCompleted = false, orderIndex = 1)
             ),
-            notificationStyle = NotificationStyle.FULL_SCREEN,
-            isPersistentAlert = true,
-            snoozeIntervalMinutes = 15,
-            snoozeRepeatCount = 5,
+            action = ReminderAction(
+                notificationStyle = NotificationStyle.FULL_SCREEN,
+                isPersistentAlert = true,
+                snoozeIntervalMinutes = 15,
+                snoozeRepeatCount = 5
+            ),
             currentSnoozeCount = 2,
             snoozeNextTriggerTime = 9999999L,
             lastTriggeredTime = 8888888L,

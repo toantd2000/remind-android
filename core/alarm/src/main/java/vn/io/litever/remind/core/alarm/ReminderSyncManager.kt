@@ -26,19 +26,16 @@ class ReminderSyncManager @Inject constructor(
         val nowMillis = System.currentTimeMillis()
         val reminders = reminderRepository.getAllReminders().first()
 
-        var hasActiveLocationOrWifi = false
-
         for (reminder in reminders) {
             if (!reminder.isEnabled || reminder.isCompleted) continue
 
             when (reminder.triggerType) {
-                ReminderTriggerType.TIME -> {
+                ReminderTriggerType.FIXED_TIME, ReminderTriggerType.INTERVAL -> {
                     val snoozeTime = reminder.snoozeNextTriggerTime
                     if (snoozeTime != null) {
                         if (snoozeTime > nowMillis) {
                             reminderScheduler.scheduleSnooze(reminder, snoozeTime)
                         } else {
-                            // Snooze expired while device was off/rebooting: trigger immediately
                             val intent = Intent(context, vn.io.litever.remind.core.alarm.receiver.ReminderReceiver::class.java).apply {
                                 action = ReminderScheduler.ACTION_TRIGGER_REMINDER_SNOOZE
                                 putExtra(ReminderScheduler.EXTRA_REMINDER_ID, reminder.id)
@@ -50,54 +47,39 @@ class ReminderSyncManager @Inject constructor(
                         val timeTrigger = reminder.timeTrigger
                         if (timeTrigger != null) {
                             val nextOccurrence = timeTrigger.getNextOccurrence(LocalDateTime.now())
-                            val nextEpoch = nextOccurrence.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-                            if (timeTrigger.isRecurring) {
-                                reminderScheduler.schedule(reminder)
-                                if (reminder.lastTriggeredTime != null) {
-                                    reminderAlertManager?.startAlert(reminder)
-                                }
-                            } else {
-                                if (nextEpoch > nowMillis) {
+                            if (nextOccurrence != null) {
+                                val nextEpoch = nextOccurrence.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                                if (timeTrigger.isRecurring) {
                                     reminderScheduler.schedule(reminder)
-                                } else {
-                                    // One-time reminder whose time has passed or arrived:
-                                    // If already triggered and unhandled, enqueue in reminderAlertManager
                                     if (reminder.lastTriggeredTime != null) {
                                         reminderAlertManager?.startAlert(reminder)
+                                    }
+                                } else {
+                                    if (nextEpoch > nowMillis) {
+                                        reminderScheduler.schedule(reminder)
                                     } else {
-                                        // Due while device was off: trigger it!
-                                        val intent = Intent(context, vn.io.litever.remind.core.alarm.receiver.ReminderReceiver::class.java).apply {
-                                            action = ReminderScheduler.ACTION_TRIGGER_REMINDER
-                                            putExtra(ReminderScheduler.EXTRA_REMINDER_ID, reminder.id)
+                                        if (reminder.lastTriggeredTime != null) {
+                                            reminderAlertManager?.startAlert(reminder)
+                                        } else {
+                                            val intent = Intent(context, vn.io.litever.remind.core.alarm.receiver.ReminderReceiver::class.java).apply {
+                                                action = ReminderScheduler.ACTION_TRIGGER_REMINDER
+                                                putExtra(ReminderScheduler.EXTRA_REMINDER_ID, reminder.id)
+                                            }
+                                            context.sendBroadcast(intent)
                                         }
-                                        context.sendBroadcast(intent)
                                     }
                                 }
                             }
                         }
                     }
                 }
-                ReminderTriggerType.LOCATION, ReminderTriggerType.WIFI -> {
-                    hasActiveLocationOrWifi = true
-                    if (reminder.lastTriggeredTime != null && reminder.snoozeNextTriggerTime == null) {
-                        reminderAlertManager?.startAlert(reminder)
-                    }
-                }
             }
         }
-
-        if (hasActiveLocationOrWifi) {
-            try {
-                ReminderMonitorService.sync(context)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        } else {
-            try {
-                ReminderMonitorService.stop(context)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+        
+        try {
+            ReminderMonitorService.stop(context)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 }

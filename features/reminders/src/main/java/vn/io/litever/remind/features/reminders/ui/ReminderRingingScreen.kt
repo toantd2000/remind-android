@@ -231,11 +231,11 @@ fun ReminderRingingScreen(
                 }
 
                 // Snooze Action (if enabled)
-                if (reminder.snoozeEnabled) {
-                    val canSnooze = reminder.canSnooze()
+                if (reminder.action.snoozeEnabled) {
+                    val canSnooze = reminder.action.canSnooze(reminder.currentSnoozeCount)
                     val snoozeText = if (canSnooze) {
-                        if (reminder.snoozeRepeatCount > 0) {
-                            val remaining = reminder.snoozeRepeatCount - reminder.currentSnoozeCount
+                        if (reminder.action.snoozeRepeatCount > 0) {
+                            val remaining = reminder.action.snoozeRepeatCount - reminder.currentSnoozeCount
                             "${stringResource(R.string.snooze_action)} ($remaining left)"
                         } else {
                             stringResource(R.string.snooze_action)

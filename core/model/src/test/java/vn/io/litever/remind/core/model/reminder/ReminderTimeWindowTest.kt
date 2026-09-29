@@ -3,7 +3,7 @@ package vn.io.litever.remind.core.model.reminder
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import vn.io.litever.remind.core.model.DayOfWeek
+import java.time.DayOfWeek
 import vn.io.litever.remind.core.model.ReminderTimeWindow
 import java.time.LocalDate
 import java.time.LocalDateTime

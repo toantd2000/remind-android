@@ -13,7 +13,7 @@ import vn.io.litever.remind.core.domain.repository.MissedAlarmRepository
 import vn.io.litever.remind.core.domain.scheduler.AlarmScheduler
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import vn.io.litever.remind.core.model.Alarm
-import vn.io.litever.remind.core.model.DayOfWeek
+import java.time.DayOfWeek
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId

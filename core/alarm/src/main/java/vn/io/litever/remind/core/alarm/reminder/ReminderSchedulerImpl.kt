@@ -12,6 +12,7 @@ import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderTriggerType
+import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import javax.inject.Inject
@@ -26,10 +27,20 @@ class ReminderSchedulerImpl @Inject constructor(
 
     override fun schedule(reminder: Reminder) {
         if (!reminder.isEnabled || reminder.isCompleted) return
-        if (reminder.triggerType != ReminderTriggerType.TIME) return
+        if (reminder.triggerType != ReminderTriggerType.FIXED_TIME && reminder.triggerType != ReminderTriggerType.INTERVAL) return
 
         val timeTrigger = reminder.timeTrigger ?: return
-        val nextOccurrence = timeTrigger.getNextOccurrence(LocalDateTime.now())
+        
+        val lastTriggeredLdt = reminder.lastTriggeredTime?.let {
+            Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDateTime()
+        }
+        
+        val nextOccurrence = timeTrigger.getNextOccurrence(
+            now = LocalDateTime.now(),
+            lastTriggeredTime = lastTriggeredLdt,
+            isInterval = reminder.triggerType == ReminderTriggerType.INTERVAL
+        ) ?: return
+
         val triggerTime = nextOccurrence
             .atZone(ZoneId.systemDefault())
             .toInstant()
@@ -69,7 +80,7 @@ class ReminderSchedulerImpl @Inject constructor(
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val requiresAlarmClock = reminder.notificationStyle == NotificationStyle.FULL_SCREEN || reminder.isPersistentAlert
+        val requiresAlarmClock = reminder.action.notificationStyle == NotificationStyle.FULL_SCREEN || reminder.action.isPersistentAlert
 
         if (requiresAlarmClock) {
             setAlarmClock(reminder.id, triggerTime, pendingIntent)
@@ -129,9 +140,6 @@ class ReminderSchedulerImpl @Inject constructor(
         pendingIntent.cancel()
     }
 
-    /**
-     * Namespace separation for broadcast request codes.
-     */
     private fun getRequestCode(reminderId: Long, isSnooze: Boolean): Int {
         val baseHash = (reminderId.hashCode() and 0x0FFFFFFF)
         return if (isSnooze) {

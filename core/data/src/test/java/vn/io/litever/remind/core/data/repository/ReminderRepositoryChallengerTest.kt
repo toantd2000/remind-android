@@ -19,7 +19,7 @@ import vn.io.litever.remind.core.database.entity.ChecklistItemEntity
 import vn.io.litever.remind.core.database.entity.ReminderEntity
 import vn.io.litever.remind.core.database.model.PopulatedReminder
 import vn.io.litever.remind.core.model.ChecklistItem
-import vn.io.litever.remind.core.model.DayOfWeek
+import java.time.DayOfWeek
 import vn.io.litever.remind.core.model.GeofenceTransitionType
 import vn.io.litever.remind.core.model.LocationTrigger
 import vn.io.litever.remind.core.model.NotificationStyle

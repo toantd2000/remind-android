@@ -76,7 +76,7 @@ class ReminderRingingViewModel @Inject constructor(
 
             if (reminder != null && reminder.canSnooze()) {
                 val nextSnoozeCount = reminder.currentSnoozeCount + 1
-                val snoozeIntervalMillis = reminder.snoozeIntervalMinutes * 60 * 1000L
+                val snoozeIntervalMillis = reminder.action.snoozeIntervalMinutes * 60 * 1000L
                 val nextTriggerTime = System.currentTimeMillis() + snoozeIntervalMillis
 
                 val snoozedReminder = reminder.copy(

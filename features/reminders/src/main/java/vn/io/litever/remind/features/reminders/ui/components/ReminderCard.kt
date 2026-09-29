@@ -40,10 +40,10 @@ import vn.io.litever.designsystem.components.LiteverLinearProgressIndicator
 import vn.io.litever.designsystem.components.LiteverSwitch
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
-import vn.io.litever.remind.core.model.GeofenceTransitionType
+
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderTriggerType
-import vn.io.litever.remind.core.model.WifiTriggerType
+
 import vn.io.litever.remind.features.reminders.R
 import java.time.Instant
 import java.time.LocalDateTime
@@ -140,22 +140,6 @@ fun ReminderCard(
                         SnoozingBadge(
                             snoozeTimeMillis = reminder.snoozeNextTriggerTime!!,
                             is24HourFormat = is24HourFormat
-                        )
-                    }
-
-                    val timeWindows = when (reminder.triggerType) {
-                        ReminderTriggerType.LOCATION -> reminder.locationTrigger?.activeTimeWindows?.ifEmpty {
-                            reminder.locationTrigger?.timeWindow?.let { listOf(it) } ?: emptyList()
-                        } ?: emptyList()
-                        ReminderTriggerType.WIFI -> reminder.wifiTrigger?.activeTimeWindows?.ifEmpty {
-                            reminder.wifiTrigger?.timeWindow?.let { listOf(it) } ?: emptyList()
-                        } ?: emptyList()
-                        else -> emptyList()
-                    }
-                    timeWindows.forEach { window ->
-                        TimeWindowBadge(
-                            startTime = TimeFormatUtils.formatTime(window.startTime, is24HourFormat),
-                            endTime = TimeFormatUtils.formatTime(window.endTime, is24HourFormat)
                         )
                     }
                 }
@@ -272,92 +256,19 @@ private fun TriggerBadge(
     contentColor: Color
 ) {
     val (icon: ImageVector, text: String) = when (reminder.triggerType) {
-        ReminderTriggerType.TIME -> {
+        ReminderTriggerType.FIXED_TIME, ReminderTriggerType.INTERVAL -> {
             val timeTrigger = reminder.timeTrigger
             val timeStr = if (timeTrigger != null) {
-                val formattedTime = TimeFormatUtils.formatTime(timeTrigger.time, is24HourFormat)
-                if (timeTrigger.repeatDays.isNotEmpty()) {
-                    val daysStr = timeTrigger.repeatDays.joinToString(", ") { day ->
-                        day.name.take(2).lowercase().replaceFirstChar { it.uppercase() }
-                    }
-                    "$formattedTime • $daysStr"
-                } else if (timeTrigger.monthlyDays.isNotEmpty()) {
-                    val daysStr = timeTrigger.monthlyDays.joinToString(",")
-                    "$formattedTime • d.$daysStr"
-                } else if (timeTrigger.yearlyDates.isNotEmpty()) {
-                    val datesStr = timeTrigger.yearlyDates.joinToString(", ") { "${it.day}/${it.month}" }
-                    "$formattedTime • $datesStr"
+                val formattedTime = TimeFormatUtils.formatTime(timeTrigger.time.firstOrNull() ?: java.time.LocalTime.now(), is24HourFormat)
+                if (timeTrigger.repeatValues.isNotEmpty()) {
+                    "$formattedTime • Repeat configured"
                 } else {
-                    val date = timeTrigger.date
-                    if (date != null) {
-                        val dateStr = date.format(DateTimeFormatter.ofPattern("MMM dd"))
-                        "$formattedTime • $dateStr"
-                    } else {
-                        formattedTime
-                    }
+                    formattedTime
                 }
             } else {
                 stringResource(R.string.trigger_time)
             }
             ReMindIcons.AccessTime to timeStr
-        }
-        ReminderTriggerType.LOCATION -> {
-            val loc = reminder.locationTrigger
-            val locStr = if (loc != null) {
-                val name = loc.locationName.ifBlank { "(${loc.latitude}, ${loc.longitude})" }
-                val transition = when (loc.transitionType) {
-                    GeofenceTransitionType.ENTER -> stringResource(R.string.transition_enter)
-                    GeofenceTransitionType.EXIT -> stringResource(R.string.transition_exit)
-                    GeofenceTransitionType.BOTH -> stringResource(R.string.transition_both)
-                }
-                val date = loc.date
-                val scheduleStr = if (loc.repeatDays.isNotEmpty()) {
-                    " • " + loc.repeatDays.joinToString(", ") { day ->
-                        day.name.take(2).lowercase().replaceFirstChar { it.uppercase() }
-                    }
-                } else if (loc.monthlyDays.isNotEmpty()) {
-                    " • d." + loc.monthlyDays.joinToString(",")
-                } else if (loc.yearlyDates.isNotEmpty()) {
-                    " • " + loc.yearlyDates.joinToString(", ") { "${it.day}/${it.month}" }
-                } else if (date != null) {
-                    " • " + date.format(DateTimeFormatter.ofPattern("MMM dd"))
-                } else {
-                    ""
-                }
-                "$name • $transition$scheduleStr"
-            } else {
-                stringResource(R.string.trigger_location)
-            }
-            ReMindIcons.LocationOn to locStr
-        }
-        ReminderTriggerType.WIFI -> {
-            val wifi = reminder.wifiTrigger
-            val wifiStr = if (wifi != null) {
-                val ssid = wifi.ssid.ifBlank { "Wi-Fi" }
-                val event = when (wifi.triggerType) {
-                    WifiTriggerType.ON_CONNECT -> stringResource(R.string.wifi_on_connect)
-                    WifiTriggerType.ON_DISCONNECT -> stringResource(R.string.wifi_on_disconnect)
-                    WifiTriggerType.WHILE_CONNECTED -> stringResource(R.string.wifi_while_connected)
-                }
-                val date = wifi.date
-                val scheduleStr = if (wifi.repeatDays.isNotEmpty()) {
-                    " • " + wifi.repeatDays.joinToString(", ") { day ->
-                        day.name.take(2).lowercase().replaceFirstChar { it.uppercase() }
-                    }
-                } else if (wifi.monthlyDays.isNotEmpty()) {
-                    " • d." + wifi.monthlyDays.joinToString(",")
-                } else if (wifi.yearlyDates.isNotEmpty()) {
-                    " • " + wifi.yearlyDates.joinToString(", ") { "${it.day}/${it.month}" }
-                } else if (date != null) {
-                    " • " + date.format(DateTimeFormatter.ofPattern("MMM dd"))
-                } else {
-                    ""
-                }
-                "$ssid • $event$scheduleStr"
-            } else {
-                stringResource(R.string.trigger_wifi)
-            }
-            ReMindIcons.Wifi to wifiStr
         }
     }
 

@@ -178,10 +178,10 @@ class ReminderAlertManagerImpl @Inject constructor(
             return // Already playing target reminder
         }
 
-        val isAlarmStyle = nextAudible.notificationStyle == NotificationStyle.FULL_SCREEN
-        val isPersistent = if (isAlarmStyle) true else nextAudible.isPersistentAlert
+        val isAlarmStyle = nextAudible.action.notificationStyle == NotificationStyle.FULL_SCREEN
+        val isPersistent = if (isAlarmStyle) true else nextAudible.action.isPersistentAlert
         startAudiblePlayback(nextAudible, isPersistent)
-        if (isPersistent && nextAudible.autoSilenceMinutes > 0) {
+        if (isPersistent && nextAudible.action.autoSilenceMinutes > 0) {
             startAutoSilenceTimer(nextAudible)
         } else {
             stopAutoSilenceTimer()
@@ -191,19 +191,19 @@ class ReminderAlertManagerImpl @Inject constructor(
             reminderId = nextAudible.id,
             reminder = nextAudible,
             isPersistent = isPersistent,
-            volume = nextAudible.volume,
-            vibrationEnabled = nextAudible.vibrationEnabled
+            volume = nextAudible.action.volume,
+            vibrationEnabled = nextAudible.action.vibrationEnabled
         )
     }
 
     private fun startAudiblePlayback(reminder: Reminder, isPersistent: Boolean) {
         if (isCallActive()) {
-            if (reminder.vibrationEnabled) startVibration(isPersistent)
+            if (reminder.action.vibrationEnabled) startVibration(isPersistent)
             return
         }
 
-        val isAlarmStyle = reminder.notificationStyle == NotificationStyle.FULL_SCREEN
-        val usage = if (isAlarmStyle && reminder.useAlarmStream) {
+        val isAlarmStyle = reminder.action.notificationStyle == NotificationStyle.FULL_SCREEN
+        val usage = if (isAlarmStyle && reminder.action.useAlarmStream) {
             AudioAttributes.USAGE_ALARM
         } else if (isAlarmStyle) {
             AudioAttributes.USAGE_MEDIA
@@ -224,7 +224,7 @@ class ReminderAlertManagerImpl @Inject constructor(
         audioManager.requestAudioFocus(request)
 
         val uri = if (isAlarmStyle) {
-            getAccessibleRingtoneUri(context, reminder.ringtoneUri)
+            getAccessibleRingtoneUri(context, reminder.action.ringtoneUri)
         } else {
             RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION) ?: getAccessibleRingtoneUri(context, null)
         }
@@ -239,13 +239,13 @@ class ReminderAlertManagerImpl @Inject constructor(
 
             player.setOnPreparedListener { mp ->
                 val volumeScale = if (isAlarmStyle) {
-                    (reminder.volume.coerceIn(0, 100)).toFloat() / 100f
+                    (reminder.action.volume.coerceIn(0, 100)).toFloat() / 100f
                 } else {
                     1.0f
                 }
                 mp.setVolume(volumeScale, volumeScale)
                 mp.start()
-                if (reminder.vibrationEnabled) {
+                if (reminder.action.vibrationEnabled) {
                     startVibration(isPersistent)
                 }
             }
@@ -262,7 +262,7 @@ class ReminderAlertManagerImpl @Inject constructor(
         } catch (e: Exception) {
             e.printStackTrace()
             // Fallback: Vibrate anyway if audio setup failed
-            if (reminder.vibrationEnabled) {
+            if (reminder.action.vibrationEnabled) {
                 startVibration(isPersistent)
             }
         }
@@ -292,7 +292,7 @@ class ReminderAlertManagerImpl @Inject constructor(
 
     private fun startAutoSilenceTimer(reminder: Reminder) {
         stopAutoSilenceTimer()
-        val minutes = reminder.autoSilenceMinutes
+        val minutes = reminder.action.autoSilenceMinutes
         if (minutes > 0) {
             autoSilenceJob = scope.launch {
                 val totalSeconds = minutes * 60
@@ -320,7 +320,7 @@ class ReminderAlertManagerImpl @Inject constructor(
                     if (reminder != null && reminder.isEnabled && !reminder.isCompleted) {
                         if (reminder.canSnooze()) {
                             val nextSnoozeCount = reminder.currentSnoozeCount + 1
-                            val snoozeIntervalMillis = reminder.snoozeIntervalMinutes * 60 * 1000L
+                            val snoozeIntervalMillis = reminder.action.snoozeIntervalMinutes * 60 * 1000L
                             val nextTriggerTime = System.currentTimeMillis() + snoozeIntervalMillis
                             val snoozedReminder = reminder.copy(
                                 currentSnoozeCount = nextSnoozeCount,

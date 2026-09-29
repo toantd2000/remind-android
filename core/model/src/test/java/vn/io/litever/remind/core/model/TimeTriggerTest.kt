@@ -9,19 +9,41 @@ import java.time.LocalTime
 class TimeTriggerTest {
 
     @Test
-    fun getNextOccurrence_withSpecificDate_returnsExactDateTime() {
+    fun getNextOccurrence_interval_noLastTrigger_returnsFromNow() {
         val trigger = TimeTrigger(
-            time = LocalTime.of(8, 30),
-            date = LocalDate.of(2026, 8, 25)
+            intervalMinutes = 120,
+            repeatMode = RepeatMode.NONE
         )
 
-        val next = trigger.getNextOccurrence(LocalDateTime.of(2026, 8, 19, 10, 0))
-        assertEquals(LocalDateTime.of(2026, 8, 25, 8, 30, 0, 0), next)
+        val now = LocalDateTime.of(2026, 8, 19, 10, 0)
+        val next = trigger.getNextOccurrence(now, lastTriggeredTime = null, isInterval = true)
+        
+        // now + 120 minutes
+        assertEquals(LocalDateTime.of(2026, 8, 19, 12, 0, 0, 0), next)
+    }
+    
+    @Test
+    fun getNextOccurrence_interval_withLastTrigger_returnsShiftedTime() {
+        val trigger = TimeTrigger(
+            intervalMinutes = 120,
+            repeatMode = RepeatMode.NONE
+        )
+
+        val now = LocalDateTime.of(2026, 8, 19, 10, 45) // user checks late
+        val lastTriggered = LocalDateTime.of(2026, 8, 19, 10, 30) // user snoozed/completed at 10:30
+        
+        val next = trigger.getNextOccurrence(now, lastTriggeredTime = lastTriggered, isInterval = true)
+        
+        // lastTriggered + 120 minutes
+        assertEquals(LocalDateTime.of(2026, 8, 19, 12, 30, 0, 0), next)
     }
 
     @Test
-    fun getNextOccurrence_todayUpcoming_returnsToday() {
-        val trigger = TimeTrigger(time = LocalTime.of(9, 0))
+    fun getNextOccurrence_fixedTime_todayUpcoming_returnsToday() {
+        val trigger = TimeTrigger(
+            time = listOf(LocalTime.of(9, 0)),
+            repeatMode = RepeatMode.DAILY
+        )
         val now = LocalDateTime.of(2026, 8, 19, 8, 0)
 
         val next = trigger.getNextOccurrence(now)
@@ -29,39 +51,14 @@ class TimeTriggerTest {
     }
 
     @Test
-    fun getNextOccurrence_todayPassed_returnsTomorrow() {
-        val trigger = TimeTrigger(time = LocalTime.of(9, 0))
+    fun getNextOccurrence_fixedTime_todayPassed_returnsTomorrow() {
+        val trigger = TimeTrigger(
+            time = listOf(LocalTime.of(9, 0)),
+            repeatMode = RepeatMode.DAILY
+        )
         val now = LocalDateTime.of(2026, 8, 19, 10, 0)
 
         val next = trigger.getNextOccurrence(now)
         assertEquals(LocalDateTime.of(2026, 8, 20, 9, 0, 0, 0), next)
-    }
-
-    @Test
-    fun getNextOccurrence_repeatDays_nextDayInWeek() {
-        // Monday = 2026-08-17
-        val now = LocalDateTime.of(2026, 8, 17, 10, 0)
-        val trigger = TimeTrigger(
-            time = LocalTime.of(9, 0),
-            repeatDays = listOf(DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
-        )
-
-        val next = trigger.getNextOccurrence(now)
-        // Wednesday = 2026-08-19
-        assertEquals(LocalDateTime.of(2026, 8, 19, 9, 0, 0, 0), next)
-    }
-
-    @Test
-    fun getNextOccurrence_repeatDays_wrapToNextWeek() {
-        // Friday = 2026-08-21
-        val now = LocalDateTime.of(2026, 8, 21, 10, 0)
-        val trigger = TimeTrigger(
-            time = LocalTime.of(9, 0),
-            repeatDays = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY)
-        )
-
-        val next = trigger.getNextOccurrence(now)
-        // Next Monday = 2026-08-24
-        assertEquals(LocalDateTime.of(2026, 8, 24, 9, 0, 0, 0), next)
     }
 }

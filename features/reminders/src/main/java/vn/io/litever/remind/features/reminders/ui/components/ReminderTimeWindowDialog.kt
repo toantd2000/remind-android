@@ -37,7 +37,7 @@ import vn.io.litever.designsystem.components.LiteverSingleChoiceSegmentedButtonR
 import vn.io.litever.designsystem.components.LiteverTimePickerDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
-import vn.io.litever.remind.core.model.DayOfWeek
+import java.time.DayOfWeek
 import vn.io.litever.remind.core.model.ReminderTimeWindow
 import vn.io.litever.remind.features.reminders.R
 import java.time.LocalTime
@@ -193,7 +193,7 @@ fun ReminderTimeWindowDialog(
                                     activeDays = if (isSelected) {
                                         activeDays - day
                                     } else {
-                                        (activeDays + day).sortedBy { it.toJavaDayValue() }
+                                        (activeDays + day).sortedBy { it.value }
                                     }
                                 },
                                 label = { Text(stringResource(labelRes)) },

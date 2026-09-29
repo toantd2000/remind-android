@@ -47,7 +47,7 @@ import vn.io.litever.designsystem.components.LiteverTimePickerDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingIcon
-import vn.io.litever.remind.core.model.DayOfWeek
+import java.time.DayOfWeek
 import vn.io.litever.remind.core.model.ReminderTimeWindow
 import vn.io.litever.remind.features.reminders.R
 import java.time.LocalTime
@@ -359,7 +359,7 @@ fun ReminderTimeWindowConfigSection(
                                                     val newDays = if (isSelected) {
                                                         window.activeDays - day
                                                     } else {
-                                                        (window.activeDays + day).sortedBy { it.toJavaDayValue() }
+                                                        (window.activeDays + day).sortedBy { it.value }
                                                     }
                                                     val updated = timeWindows.toMutableList()
                                                     updated[index] = window.copy(activeDays = newDays)

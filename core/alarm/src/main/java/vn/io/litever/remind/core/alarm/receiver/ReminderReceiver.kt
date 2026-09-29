@@ -80,7 +80,7 @@ class ReminderReceiver : BroadcastReceiver() {
             reminder.copy(snoozeNextTriggerTime = null)
         }
 
-        if (updatedReminder.triggerType == ReminderTriggerType.TIME) {
+        if (updatedReminder.triggerType == ReminderTriggerType.FIXED_TIME) {
             val timeTrigger = updatedReminder.timeTrigger
             reminderRepository.updateReminder(updatedReminder)
             if (!isSnooze && timeTrigger != null && timeTrigger.isRecurring) {
@@ -102,7 +102,7 @@ class ReminderReceiver : BroadcastReceiver() {
         if (!reminder.canSnooze()) return
 
         val nextSnoozeCount = reminder.currentSnoozeCount + 1
-        val snoozeIntervalMillis = reminder.snoozeIntervalMinutes * 60 * 1000L
+        val snoozeIntervalMillis = reminder.action.snoozeIntervalMinutes * 60 * 1000L
         val nextTriggerTime = System.currentTimeMillis() + snoozeIntervalMillis
 
         val snoozedReminder = reminder.copy(
@@ -146,8 +146,8 @@ class ReminderReceiver : BroadcastReceiver() {
         val alertIntent = Intent(ACTION_FIRE_REMINDER_ALERT).apply {
             setPackage(context.packageName)
             putExtra(EXTRA_REMINDER_ID, reminder.id)
-            putExtra(EXTRA_NOTIFICATION_STYLE, reminder.notificationStyle.name)
-            putExtra(EXTRA_IS_PERSISTENT, reminder.isPersistentAlert)
+            putExtra(EXTRA_NOTIFICATION_STYLE, reminder.action.notificationStyle.name)
+            putExtra(EXTRA_IS_PERSISTENT, reminder.action.isPersistentAlert)
         }
         context.sendBroadcast(alertIntent)
     }

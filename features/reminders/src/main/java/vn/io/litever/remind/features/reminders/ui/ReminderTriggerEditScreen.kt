@@ -33,17 +33,15 @@ import vn.io.litever.designsystem.components.LiteverTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
-import vn.io.litever.remind.core.model.DayOfWeek
+import java.time.DayOfWeek
 import vn.io.litever.remind.core.model.GeofenceTransitionType
-import vn.io.litever.remind.core.model.ReminderMonthDay
 import vn.io.litever.remind.core.model.ReminderTimeWindow
 import vn.io.litever.remind.core.model.ReminderTriggerType
-import vn.io.litever.remind.core.model.WifiTriggerType
 import vn.io.litever.remind.features.reminders.R
-import vn.io.litever.remind.features.reminders.ui.components.ReminderLocationConfigSection
+
 import vn.io.litever.remind.features.reminders.ui.components.ReminderTimeConfigSection
 import vn.io.litever.remind.features.reminders.ui.components.ReminderTriggerTypeSelector
-import vn.io.litever.remind.features.reminders.ui.components.ReminderWifiConfigSection
+
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderEditUiState
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderEditViewModel
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval
@@ -75,22 +73,6 @@ fun ReminderTriggerEditRoute(
         onMonthlyDayToggle = viewModel::toggleMonthlyDay,
         onAddYearlyDate = viewModel::addYearlyDate,
         onRemoveYearlyDate = viewModel::removeYearlyDate,
-        onLocationNameChange = viewModel::setLocationName,
-        onLatitudeChange = viewModel::setLatitude,
-        onLongitudeChange = viewModel::setLongitude,
-        onRadiusChange = viewModel::setRadiusMeters,
-        onTransitionTypeChange = viewModel::setGeofenceTransitionType,
-        onLocationTimeWindowsChange = viewModel::setLocationTimeWindows,
-        onAddLocationTimeWindow = viewModel::addLocationTimeWindow,
-        onRemoveLocationTimeWindow = viewModel::removeLocationTimeWindow,
-        onSetAllDayPresetLocation = viewModel::setAllDayPresetLocation,
-        onWifiSsidChange = viewModel::setWifiSsid,
-        onWifiBssidChange = viewModel::setWifiBssid,
-        onWifiTriggerTypeChange = viewModel::setWifiTriggerType,
-        onWifiTimeWindowsChange = viewModel::setWifiTimeWindows,
-        onAddWifiTimeWindow = viewModel::addWifiTimeWindow,
-        onRemoveWifiTimeWindow = viewModel::removeWifiTimeWindow,
-        onSetAllDayPresetWifi = viewModel::setAllDayPresetWifi,
         modifier = modifier
     )
 }
@@ -109,22 +91,7 @@ fun ReminderTriggerEditScreen(
     onMonthlyDayToggle: (Int) -> Unit,
     onAddYearlyDate: (Int, Int) -> Unit,
     onRemoveYearlyDate: (Int) -> Unit,
-    onLocationNameChange: (String) -> Unit,
-    onLatitudeChange: (Double) -> Unit,
-    onLongitudeChange: (Double) -> Unit,
-    onRadiusChange: (Float) -> Unit,
-    onTransitionTypeChange: (GeofenceTransitionType) -> Unit,
-    onLocationTimeWindowsChange: (List<ReminderTimeWindow>) -> Unit,
-    onAddLocationTimeWindow: (ReminderTimeWindow) -> Unit,
-    onRemoveLocationTimeWindow: (Int) -> Unit,
-    onSetAllDayPresetLocation: () -> Unit,
-    onWifiSsidChange: (String) -> Unit,
-    onWifiBssidChange: (String?) -> Unit,
-    onWifiTriggerTypeChange: (WifiTriggerType) -> Unit,
-    onWifiTimeWindowsChange: (List<ReminderTimeWindow>) -> Unit,
-    onAddWifiTimeWindow: (ReminderTimeWindow) -> Unit,
-    onRemoveWifiTimeWindow: (Int) -> Unit,
-    onSetAllDayPresetWifi: () -> Unit,
+    onIntervalMinutesChange: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val locationFocusRequester = remember { FocusRequester() }
@@ -176,7 +143,7 @@ fun ReminderTriggerEditScreen(
             // 2. Active Trigger Configuration
             item {
                 when (uiState.triggerType) {
-                    ReminderTriggerType.TIME -> {
+                    ReminderTriggerType.FIXED_TIME -> {
                         ReminderTimeConfigSection(
                             time = uiState.time,
                             onTimeChange = onTimeChange,
@@ -187,83 +154,16 @@ fun ReminderTriggerEditScreen(
                             onRepeatDayToggle = onRepeatDayToggle,
                             repeatInterval = uiState.repeatInterval,
                             onRepeatIntervalChange = onRepeatIntervalChange,
-                            monthlyDays = uiState.monthlyDays,
+                            monthlyDays = uiState.monthlyDays.map { it.day },
                             onMonthlyDayToggle = onMonthlyDayToggle,
-                            yearlyDates = uiState.yearlyDates,
+                            yearlyDates = uiState.yearlyDates.map { vn.io.litever.remind.core.model.ReminderMonthDay(month = it.monthValue, day = it.dayOfMonth) },
                             onAddYearlyDate = onAddYearlyDate,
                             onRemoveYearlyDate = onRemoveYearlyDate,
-                            is24HourFormat = uiState.is24HourFormat
+                            is24HourFormat = true
                         )
                     }
-                    ReminderTriggerType.LOCATION -> {
-                        val locWindows = uiState.locationTimeWindows.ifEmpty {
-                            if (uiState.locationTimeWindow != null) listOf(uiState.locationTimeWindow) else emptyList()
-                        }
-                        ReminderLocationConfigSection(
-                            locationName = uiState.locationName,
-                            onLocationNameChange = onLocationNameChange,
-                            latitude = uiState.latitude,
-                            onLatitudeChange = onLatitudeChange,
-                            longitude = uiState.longitude,
-                            onLongitudeChange = onLongitudeChange,
-                            radiusMeters = uiState.radiusMeters,
-                            onRadiusChange = onRadiusChange,
-                            transitionType = uiState.geofenceTransitionType,
-                            onTransitionTypeChange = onTransitionTypeChange,
-                            repeatInterval = uiState.repeatInterval,
-                            onRepeatIntervalChange = onRepeatIntervalChange,
-                            date = uiState.date,
-                            onDateChange = onDateChange,
-                            repeatDays = uiState.repeatDays,
-                            onRepeatDaysChange = onRepeatDaysChange,
-                            onRepeatDayToggle = onRepeatDayToggle,
-                            monthlyDays = uiState.monthlyDays,
-                            onMonthlyDayToggle = onMonthlyDayToggle,
-                            yearlyDates = uiState.yearlyDates,
-                            onAddYearlyDate = onAddYearlyDate,
-                            onRemoveYearlyDate = onRemoveYearlyDate,
-                            timeWindows = locWindows,
-                            onTimeWindowsChange = onLocationTimeWindowsChange,
-                            onAddTimeWindow = onAddLocationTimeWindow,
-                            onRemoveTimeWindow = onRemoveLocationTimeWindow,
-                            onSetAllDayPreset = onSetAllDayPresetLocation,
-                            is24HourFormat = uiState.is24HourFormat,
-                            showLocationError = uiState.showLocationError,
-                            locationFocusRequester = locationFocusRequester
-                        )
-                    }
-                    ReminderTriggerType.WIFI -> {
-                        val wifiWindows = uiState.wifiTimeWindows.ifEmpty {
-                            if (uiState.wifiTimeWindow != null) listOf(uiState.wifiTimeWindow) else emptyList()
-                        }
-                        ReminderWifiConfigSection(
-                            ssid = uiState.wifiSsid,
-                            onSsidChange = onWifiSsidChange,
-                            bssid = uiState.wifiBssid,
-                            onBssidChange = onWifiBssidChange,
-                            triggerType = uiState.wifiTriggerType,
-                            onTriggerTypeChange = onWifiTriggerTypeChange,
-                            repeatInterval = uiState.repeatInterval,
-                            onRepeatIntervalChange = onRepeatIntervalChange,
-                            date = uiState.date,
-                            onDateChange = onDateChange,
-                            repeatDays = uiState.repeatDays,
-                            onRepeatDaysChange = onRepeatDaysChange,
-                            onRepeatDayToggle = onRepeatDayToggle,
-                            monthlyDays = uiState.monthlyDays,
-                            onMonthlyDayToggle = onMonthlyDayToggle,
-                            yearlyDates = uiState.yearlyDates,
-                            onAddYearlyDate = onAddYearlyDate,
-                            onRemoveYearlyDate = onRemoveYearlyDate,
-                            timeWindows = wifiWindows,
-                            onTimeWindowsChange = onWifiTimeWindowsChange,
-                            onAddTimeWindow = onAddWifiTimeWindow,
-                            onRemoveTimeWindow = onRemoveWifiTimeWindow,
-                            onSetAllDayPreset = onSetAllDayPresetWifi,
-                            is24HourFormat = uiState.is24HourFormat,
-                            showWifiError = uiState.showWifiError,
-                            wifiFocusRequester = wifiFocusRequester
-                        )
+                    ReminderTriggerType.INTERVAL -> { 
+                        androidx.compose.material3.OutlinedTextField(value = uiState.intervalMinutes?.toString() ?: "", onValueChange = { onIntervalMinutesChange(it) }, label = { Text("Interval Minutes") }, modifier = Modifier.fillMaxWidth()) 
                     }
                 }
             }
@@ -287,22 +187,7 @@ private fun ReminderTriggerEditScreenPreview() {
             onMonthlyDayToggle = {},
             onAddYearlyDate = { _, _ -> },
             onRemoveYearlyDate = {},
-            onLocationNameChange = {},
-            onLatitudeChange = {},
-            onLongitudeChange = {},
-            onRadiusChange = {},
-            onTransitionTypeChange = {},
-            onLocationTimeWindowsChange = {},
-            onAddLocationTimeWindow = {},
-            onRemoveLocationTimeWindow = {},
-            onSetAllDayPresetLocation = {},
-            onWifiSsidChange = {},
-            onWifiBssidChange = {},
-            onWifiTriggerTypeChange = {},
-            onWifiTimeWindowsChange = {},
-            onAddWifiTimeWindow = {},
-            onRemoveWifiTimeWindow = {},
-            onSetAllDayPresetWifi = {}
+            
         )
     }
 }
@@ -312,7 +197,7 @@ private fun ReminderTriggerEditScreenPreview() {
 private fun ReminderTriggerEditScreenDarkPreview() {
     ReMindTheme(darkTheme = true) {
         ReminderTriggerEditScreen(
-            uiState = ReminderEditUiState(triggerType = ReminderTriggerType.LOCATION),
+            uiState = ReminderEditUiState(triggerType = ReminderTriggerType.FIXED_TIME),
             onBackClick = {},
             onTriggerTypeSelected = {},
             onTimeChange = {},
@@ -323,22 +208,7 @@ private fun ReminderTriggerEditScreenDarkPreview() {
             onMonthlyDayToggle = {},
             onAddYearlyDate = { _, _ -> },
             onRemoveYearlyDate = {},
-            onLocationNameChange = {},
-            onLatitudeChange = {},
-            onLongitudeChange = {},
-            onRadiusChange = {},
-            onTransitionTypeChange = {},
-            onLocationTimeWindowsChange = {},
-            onAddLocationTimeWindow = {},
-            onRemoveLocationTimeWindow = {},
-            onSetAllDayPresetLocation = {},
-            onWifiSsidChange = {},
-            onWifiBssidChange = {},
-            onWifiTriggerTypeChange = {},
-            onWifiTimeWindowsChange = {},
-            onAddWifiTimeWindow = {},
-            onRemoveWifiTimeWindow = {},
-            onSetAllDayPresetWifi = {}
+            
         )
     }
 }

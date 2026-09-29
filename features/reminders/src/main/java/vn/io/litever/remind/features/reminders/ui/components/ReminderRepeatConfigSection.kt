@@ -46,7 +46,7 @@ import vn.io.litever.designsystem.components.LiteverSegmentedButton
 import vn.io.litever.designsystem.components.LiteverSingleChoiceSegmentedButtonRow
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingIcon
-import vn.io.litever.remind.core.model.DayOfWeek
+import java.time.DayOfWeek
 import vn.io.litever.remind.core.model.ReminderMonthDay
 import vn.io.litever.remind.features.reminders.R
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval
@@ -92,17 +92,18 @@ fun ReminderRepeatConfigSection(
             modifier = Modifier.fillMaxWidth()
         ) {
             val intervals = listOf(
-                ReminderRepeatInterval.ONCE,
+                ReminderRepeatInterval.NONE,
                 ReminderRepeatInterval.WEEKLY,
                 ReminderRepeatInterval.MONTHLY,
                 ReminderRepeatInterval.YEARLY
             )
             intervals.forEach { interval ->
                 val labelRes = when (interval) {
-                    ReminderRepeatInterval.ONCE -> R.string.repeat_interval_once
+                    ReminderRepeatInterval.NONE -> R.string.repeat_interval_once
                     ReminderRepeatInterval.WEEKLY -> R.string.repeat_interval_weekly
                     ReminderRepeatInterval.MONTHLY -> R.string.repeat_interval_monthly
                     ReminderRepeatInterval.YEARLY -> R.string.repeat_interval_yearly
+                    else -> R.string.repeat_interval_once
                 }
                 LiteverSegmentedButton(
                     onClick = { onRepeatIntervalChange(interval) },
@@ -120,7 +121,7 @@ fun ReminderRepeatConfigSection(
         Spacer(modifier = Modifier.height(12.dp))
 
         when (repeatInterval) {
-            ReminderRepeatInterval.ONCE -> {
+            ReminderRepeatInterval.NONE -> {
                 // One-time: Date selector row
                 Surface(
                     modifier = Modifier
@@ -193,7 +194,7 @@ fun ReminderRepeatConfigSection(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    DayOfWeek.entries.forEach { day ->
+                    DayOfWeek.values().forEach { day ->
                         val isSelected = repeatDays.contains(day)
                         val dayLabelRes = when (day) {
                             DayOfWeek.MONDAY -> R.string.day_mon
@@ -203,6 +204,7 @@ fun ReminderRepeatConfigSection(
                             DayOfWeek.FRIDAY -> R.string.day_fri
                             DayOfWeek.SATURDAY -> R.string.day_sat
                             DayOfWeek.SUNDAY -> R.string.day_sun
+                            else -> R.string.day_mon
                         }
 
                         Surface(
@@ -302,6 +304,7 @@ fun ReminderRepeatConfigSection(
                 }
             }
 
+            ReminderRepeatInterval.DAILY, ReminderRepeatInterval.CUSTOM -> {}
             ReminderRepeatInterval.YEARLY -> {
                 // Yearly: Multi-date list with chip items and "+ Add Date" button
                 Column(modifier = Modifier.fillMaxWidth()) {

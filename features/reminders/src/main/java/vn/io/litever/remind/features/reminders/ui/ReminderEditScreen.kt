@@ -45,20 +45,17 @@ import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.ChecklistItem
-import vn.io.litever.remind.core.model.DayOfWeek
+import java.time.DayOfWeek
 import vn.io.litever.remind.core.model.GeofenceTransitionType
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.ReminderTimeWindow
 import vn.io.litever.remind.core.model.ReminderTriggerType
-import vn.io.litever.remind.core.model.WifiTriggerType
 import vn.io.litever.remind.features.reminders.R
 import vn.io.litever.remind.features.reminders.ui.components.ReminderAlertConfigSection
 import vn.io.litever.remind.features.reminders.ui.components.ReminderBasicInfoSection
 import vn.io.litever.remind.features.reminders.ui.components.ReminderChecklistBuilderSection
-import vn.io.litever.remind.features.reminders.ui.components.ReminderLocationConfigSection
 import vn.io.litever.remind.features.reminders.ui.components.ReminderTimeConfigSection
 import vn.io.litever.remind.features.reminders.ui.components.ReminderTriggerSection
-import vn.io.litever.remind.features.reminders.ui.components.ReminderWifiConfigSection
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderEditUiState
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderEditViewModel
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval
@@ -164,28 +161,13 @@ fun ReminderEditRoute(
         onMonthlyDayToggle = viewModel::toggleMonthlyDay,
         onAddYearlyDate = viewModel::addYearlyDate,
         onRemoveYearlyDate = viewModel::removeYearlyDate,
-        onLocationNameChange = viewModel::setLocationName,
-        onLatitudeChange = viewModel::setLatitude,
-        onLongitudeChange = viewModel::setLongitude,
-        onRadiusChange = viewModel::setRadiusMeters,
-        onTransitionTypeChange = viewModel::setGeofenceTransitionType,
-        onLocationTimeWindowsChange = viewModel::setLocationTimeWindows,
-        onAddLocationTimeWindow = viewModel::addLocationTimeWindow,
-        onRemoveLocationTimeWindow = viewModel::removeLocationTimeWindow,
-        onSetAllDayPresetLocation = viewModel::setAllDayPresetLocation,
-        onWifiSsidChange = viewModel::setWifiSsid,
-        onWifiBssidChange = viewModel::setWifiBssid,
-        onWifiTriggerTypeChange = viewModel::setWifiTriggerType,
-        onWifiTimeWindowsChange = viewModel::setWifiTimeWindows,
-        onAddWifiTimeWindow = viewModel::addWifiTimeWindow,
-        onRemoveWifiTimeWindow = viewModel::removeWifiTimeWindow,
-        onSetAllDayPresetWifi = viewModel::setAllDayPresetWifi,
         onAddChecklistItem = viewModel::addChecklistItem,
         onUpdateChecklistItemText = viewModel::updateChecklistItemText,
         onToggleChecklistItemInitial = viewModel::toggleChecklistItemInitial,
         onDeleteChecklistItem = viewModel::deleteChecklistItem,
         onMoveChecklistItem = viewModel::moveChecklistItem,
         onNotificationStyleChange = viewModel::setNotificationStyle,
+                    
         onAutoSilenceMinutesChange = viewModel::setAutoSilenceMinutes,
         onUseAlarmStreamChange = viewModel::setUseAlarmStream,
         onRingtoneClick = {
@@ -227,22 +209,22 @@ fun ReminderEditScreen(
     onMonthlyDayToggle: (Int) -> Unit = {},
     onAddYearlyDate: (Int, Int) -> Unit = { _, _ -> },
     onRemoveYearlyDate: (Int) -> Unit = {},
-    onLocationNameChange: (String) -> Unit = {},
-    onLatitudeChange: (Double) -> Unit = {},
-    onLongitudeChange: (Double) -> Unit = {},
-    onRadiusChange: (Float) -> Unit = {},
-    onTransitionTypeChange: (GeofenceTransitionType) -> Unit = {},
-    onLocationTimeWindowsChange: (List<ReminderTimeWindow>) -> Unit = {},
-    onAddLocationTimeWindow: (ReminderTimeWindow) -> Unit = {},
-    onRemoveLocationTimeWindow: (Int) -> Unit = {},
-    onSetAllDayPresetLocation: () -> Unit = {},
-    onWifiSsidChange: (String) -> Unit = {},
-    onWifiBssidChange: (String?) -> Unit = {},
-    onWifiTriggerTypeChange: (WifiTriggerType) -> Unit = {},
-    onWifiTimeWindowsChange: (List<ReminderTimeWindow>) -> Unit = {},
-    onAddWifiTimeWindow: (ReminderTimeWindow) -> Unit = {},
-    onRemoveWifiTimeWindow: (Int) -> Unit = {},
-    onSetAllDayPresetWifi: () -> Unit = {},
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     onAddChecklistItem: (String) -> Unit,
     onUpdateChecklistItemText: (Int, String) -> Unit,
     onToggleChecklistItemInitial: (Int, Boolean) -> Unit,
@@ -270,10 +252,7 @@ fun ReminderEditScreen(
                         titleFocusRequester.requestFocus()
                     } catch (_: Exception) {}
                 }
-                ReminderValidationErrorField.LOCATION,
-                ReminderValidationErrorField.WIFI_SSID -> {
-                    lazyListState.animateScrollToItem(1)
-                }
+                
                 null -> {}
             }
         }
@@ -344,7 +323,9 @@ fun ReminderEditScreen(
                 ReminderAlertConfigSection(
                     notificationStyle = uiState.notificationStyle,
                     onNotificationStyleChange = onNotificationStyleChange,
-                    ringtoneTitle = uiState.ringtoneTitle,
+                    ringtoneTitle = "Default",
+                    
+                    
                     onRingtoneClick = onRingtoneClick,
                     volume = uiState.volume,
                     onVolumeChange = onVolumeChange,
@@ -427,7 +408,7 @@ private fun ReminderEditScreenPreview() {
                 id = 1L,
                 title = "Buy groceries",
                 notes = "Milk, Eggs, Bread, Cheese",
-                triggerType = ReminderTriggerType.TIME,
+                triggerType = ReminderTriggerType.FIXED_TIME,
                 time = LocalTime.of(18, 30),
                 date = LocalDate.now(),
                 repeatDays = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY),
@@ -437,13 +418,13 @@ private fun ReminderEditScreenPreview() {
                     ChecklistItem(id = 2L, text = "Whole wheat bread", isCompleted = true)
                 ),
                 notificationStyle = NotificationStyle.STANDARD,
-                ringtoneTitle = "Default",
+                
                 vibrationEnabled = true,
                 volume = 80,
                 snoozeEnabled = true,
                 snoozeIntervalMinutes = 10,
                 snoozeRepeatCount = 3,
-                is24HourFormat = true
+                
             ),
             onBackClick = {},
             onSaveClick = {},
@@ -463,22 +444,6 @@ private fun ReminderEditScreenPreview() {
             onMonthlyDayToggle = {},
             onAddYearlyDate = { _, _ -> },
             onRemoveYearlyDate = {},
-            onLocationNameChange = {},
-            onLatitudeChange = {},
-            onLongitudeChange = {},
-            onRadiusChange = {},
-            onTransitionTypeChange = {},
-            onLocationTimeWindowsChange = {},
-            onAddLocationTimeWindow = {},
-            onRemoveLocationTimeWindow = {},
-            onSetAllDayPresetLocation = {},
-            onWifiSsidChange = {},
-            onWifiBssidChange = {},
-            onWifiTriggerTypeChange = {},
-            onWifiTimeWindowsChange = {},
-            onAddWifiTimeWindow = {},
-            onRemoveWifiTimeWindow = {},
-            onSetAllDayPresetWifi = {},
             onAddChecklistItem = {},
             onUpdateChecklistItemText = { _, _ -> },
             onToggleChecklistItemInitial = { _, _ -> },
@@ -505,7 +470,7 @@ private fun ReminderEditScreenDarkPreview() {
                 id = 1L,
                 title = "Buy groceries",
                 notes = "Milk, Eggs, Bread, Cheese",
-                triggerType = ReminderTriggerType.TIME,
+                triggerType = ReminderTriggerType.FIXED_TIME,
                 time = LocalTime.of(18, 30),
                 date = LocalDate.now(),
                 repeatDays = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY),
@@ -515,13 +480,13 @@ private fun ReminderEditScreenDarkPreview() {
                     ChecklistItem(id = 2L, text = "Whole wheat bread", isCompleted = true)
                 ),
                 notificationStyle = NotificationStyle.STANDARD,
-                ringtoneTitle = "Default",
+                
                 vibrationEnabled = true,
                 volume = 80,
                 snoozeEnabled = true,
                 snoozeIntervalMinutes = 10,
                 snoozeRepeatCount = 3,
-                is24HourFormat = true
+                
             ),
             onBackClick = {},
             onSaveClick = {},
@@ -541,22 +506,6 @@ private fun ReminderEditScreenDarkPreview() {
             onMonthlyDayToggle = {},
             onAddYearlyDate = { _, _ -> },
             onRemoveYearlyDate = {},
-            onLocationNameChange = {},
-            onLatitudeChange = {},
-            onLongitudeChange = {},
-            onRadiusChange = {},
-            onTransitionTypeChange = {},
-            onLocationTimeWindowsChange = {},
-            onAddLocationTimeWindow = {},
-            onRemoveLocationTimeWindow = {},
-            onSetAllDayPresetLocation = {},
-            onWifiSsidChange = {},
-            onWifiBssidChange = {},
-            onWifiTriggerTypeChange = {},
-            onWifiTimeWindowsChange = {},
-            onAddWifiTimeWindow = {},
-            onRemoveWifiTimeWindow = {},
-            onSetAllDayPresetWifi = {},
             onAddChecklistItem = {},
             onUpdateChecklistItemText = { _, _ -> },
             onToggleChecklistItemInitial = { _, _ -> },

@@ -1,5 +1,4 @@
 package vn.io.litever.remind.features.reminders.ui.components
-
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -38,9 +37,8 @@ fun ReminderTriggerTypeSelector(
     ) {
         ReminderTriggerType.entries.forEach { triggerType ->
             val (labelRes: Int, icon: ImageVector) = when (triggerType) {
-                ReminderTriggerType.TIME -> Pair(R.string.trigger_time, ReMindIcons.AccessTime)
-                ReminderTriggerType.LOCATION -> Pair(R.string.trigger_location, ReMindIcons.LocationOn)
-                ReminderTriggerType.WIFI -> Pair(R.string.trigger_wifi, ReMindIcons.Wifi)
+                ReminderTriggerType.FIXED_TIME -> Pair(R.string.trigger_time, ReMindIcons.AccessTime)
+                ReminderTriggerType.INTERVAL -> Pair(R.string.trigger_time, ReMindIcons.AccessTime)
             }
 
             Tab(
@@ -64,27 +62,5 @@ fun ReminderTriggerTypeSelector(
                 },
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ReminderTriggerTypeSelectorPreview() {
-    ReMindTheme {
-        ReminderTriggerTypeSelector(
-            selectedTriggerType = ReminderTriggerType.TIME,
-            onTriggerTypeSelected = {}
-        )
-    }
-}
-
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun ReminderTriggerTypeSelectorDarkPreview() {
-    ReMindTheme(darkTheme = true) {
-        ReminderTriggerTypeSelector(
-            selectedTriggerType = ReminderTriggerType.TIME,
-            onTriggerTypeSelected = {}
-        )
     }
 }

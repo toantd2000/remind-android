@@ -69,18 +69,18 @@ class ReminderListViewModel @Inject constructor(
             ReminderFilterType.ALL to allReminders.size,
             ReminderFilterType.ACTIVE to allReminders.count { it.isEnabled && !it.isCompleted },
             ReminderFilterType.COMPLETED to allReminders.count { it.isCompleted },
-            ReminderFilterType.TIME to allReminders.count { it.triggerType == ReminderTriggerType.TIME },
-            ReminderFilterType.LOCATION to allReminders.count { it.triggerType == ReminderTriggerType.LOCATION },
-            ReminderFilterType.WIFI to allReminders.count { it.triggerType == ReminderTriggerType.WIFI }
+            ReminderFilterType.TIME to allReminders.count { it.triggerType == ReminderTriggerType.FIXED_TIME },
+            ReminderFilterType.LOCATION to allReminders.count { false },
+            ReminderFilterType.WIFI to allReminders.count { false }
         )
 
         val filtered = when (filter) {
             ReminderFilterType.ALL -> allReminders
             ReminderFilterType.ACTIVE -> allReminders.filter { it.isEnabled && !it.isCompleted }
             ReminderFilterType.COMPLETED -> allReminders.filter { it.isCompleted }
-            ReminderFilterType.TIME -> allReminders.filter { it.triggerType == ReminderTriggerType.TIME }
-            ReminderFilterType.LOCATION -> allReminders.filter { it.triggerType == ReminderTriggerType.LOCATION }
-            ReminderFilterType.WIFI -> allReminders.filter { it.triggerType == ReminderTriggerType.WIFI }
+            ReminderFilterType.TIME -> allReminders.filter { it.triggerType == ReminderTriggerType.FIXED_TIME }
+            ReminderFilterType.LOCATION -> allReminders.filter { false }
+            ReminderFilterType.WIFI -> allReminders.filter { false }
         }
 
         val sortedFiltered = filtered.sortedWith(

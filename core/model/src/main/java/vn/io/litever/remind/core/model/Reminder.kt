@@ -9,19 +9,8 @@ data class Reminder(
     val isEnabled: Boolean = true,
     val triggerType: ReminderTriggerType,
     val timeTrigger: TimeTrigger? = null,
-    val locationTrigger: LocationTrigger? = null,
-    val wifiTrigger: WifiTrigger? = null,
     val checklist: List<ChecklistItem> = emptyList(),
-    val notificationStyle: NotificationStyle = NotificationStyle.STANDARD,
-    val isPersistentAlert: Boolean = false,
-    val autoSilenceMinutes: Int = 5,
-    val useAlarmStream: Boolean = true,
-    val ringtoneUri: String? = null,
-    val vibrationEnabled: Boolean = true,
-    val volume: Int = 100,
-    val snoozeEnabled: Boolean = true,
-    val snoozeIntervalMinutes: Int = 5,
-    val snoozeRepeatCount: Int = 3,
+    val action: ReminderAction = ReminderAction(),
     val currentSnoozeCount: Int = 0,
     val snoozeNextTriggerTime: Long? = null,
     val lastTriggeredTime: Long? = null,
@@ -42,13 +31,9 @@ data class Reminder(
         get() = checklist.isNotEmpty() && checklist.all { it.isCompleted }
 
     val isRecurring: Boolean
-        get() = when (triggerType) {
-            ReminderTriggerType.TIME -> timeTrigger?.isRecurring == true
-            ReminderTriggerType.LOCATION -> locationTrigger?.isRecurring == true
-            ReminderTriggerType.WIFI -> wifiTrigger?.isRecurring == true
-        }
+        get() = timeTrigger?.isRecurring == true
 
     fun canSnooze(): Boolean {
-        return snoozeEnabled && (snoozeRepeatCount == -1 || currentSnoozeCount < snoozeRepeatCount)
+        return action.canSnooze(currentSnoozeCount)
     }
 }

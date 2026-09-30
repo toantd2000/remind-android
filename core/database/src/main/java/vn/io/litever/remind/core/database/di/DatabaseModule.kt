@@ -8,9 +8,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import vn.io.litever.remind.core.database.RemindDatabase
-import vn.io.litever.remind.core.database.callback.RemindDatabaseCallback
 import vn.io.litever.remind.core.database.dao.AlarmDao
-import vn.io.litever.remind.core.database.dao.ChecklistItemDao
 import vn.io.litever.remind.core.database.dao.MissedAlarmDao
 import vn.io.litever.remind.core.database.dao.MissionDao
 import vn.io.litever.remind.core.database.dao.PhraseDao
@@ -38,7 +36,6 @@ object DatabaseModule {
             RemindDatabase.MIGRATION_5_6,
             RemindDatabase.MIGRATION_6_7
         )
-        .addCallback(RemindDatabaseCallback())
         .fallbackToDestructiveMigration(true)
         .build()
     }
@@ -66,10 +63,5 @@ object DatabaseModule {
     @Provides
     fun provideReminderDao(database: RemindDatabase): ReminderDao {
         return database.reminderDao()
-    }
-
-    @Provides
-    fun provideChecklistItemDao(database: RemindDatabase): ChecklistItemDao {
-        return database.checklistItemDao()
     }
 }

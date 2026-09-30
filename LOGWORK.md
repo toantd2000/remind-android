@@ -5,10 +5,10 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
 ---
 
 ## 🚀 Trạng Thái Dự Án
-- **Phase Hiện Tại:** Phase 9 (Tái Cấu Trúc CSDL Nhắc Nhở & Hoàn Thiện Mô Hình FIXED_TIME / INTERVAL)
+- **Phase Hiện Tại:** Phase 10 (Loại Bỏ Hoàn Toàn Checklist Trong Tính Năng Reminder - Tối Giản Trải Nghiệm & Kiến Trúc)
 - **Tiến Độ:** 100%
-- **Ngày cập nhật cuối:** 2026-09-29
-- **Phiên bản hiện tại:** 2.1.0
+- **Ngày cập nhật cuối:** 2026-09-30
+- **Phiên bản hiện tại:** 2.2.0
 
 ## 📍 Lộ Trình Tổng Thể
 - [x] **Phase 1:** Hoàn thiện Tầng Dữ liệu (Room DB & Repository)
@@ -385,4 +385,58 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
   - Checklist được lưu trữ bền vững 100%, không bị mất nội dung khi gõ nhanh.
   - Các công việc định kỳ hàng ngày/tuần/tháng/năm tự động sẵn sàng cho ngày mới mà không cần thao tác dọn dẹp thủ công.
   - Toàn bộ unit tests bao gồm `ChecklistCycleUtilTest` và `ReminderAlertManagerTest` pass 100%.
+
+### [TDR-083] - Loại Bỏ Hoàn Toàn Checklist Trong Tính Năng Nhắc Nhở (Reminder)
+- **Ngày thực hiện:** 2026-09-30
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Nhắc nhở (Reminders) ban đầu tích hợp subtask/checklist nhằm phục vụ việc theo dõi danh sách việc cần làm kèm theo thông báo.
+  - Tuy nhiên, trong thực tế sử dụng và định hướng sản phẩm, Reminder cần tập trung tối đa vào độ tin cậy của việc cảnh báo thời gian (`FIXED_TIME` & `INTERVAL`), tránh làm rối trải nghiệm người dùng với việc quản lý danh sách công việc phức tạp vốn thuộc về app Todo chuyên biệt.
+  - Sự tồn tại của Checklist làm phát sinh nhiều phức tạp: bảng quan hệ `checklist_items`, `PopulatedReminder`, các vòng lặp reset chu kỳ, thao tác inline checklist toggle trên notification, kéo dài màn hình sửa nhắc nhở và gia tăng rủi ro race condition khi đồng bộ Room.
+- **Quyết định:**
+  1. **Tầng Model (`:core:model`):**
+     - Xóa hoàn toàn model `ChecklistItem.kt`.
+     - Loại bỏ trường `checklist` cùng toàn bộ helper tính tiến độ (`checklistProgress`, `totalChecklistCount`, `completedChecklistCount`, `isAllChecklistCompleted`) khỏi model `Reminder.kt`.
+  2. **Tầng Cơ Sở Dữ Liệu (`:core:database`):**
+     - Xóa `ChecklistItemEntity.kt`, `ChecklistItemDao.kt`, và model quan hệ `PopulatedReminder.kt`.
+     - `ReminderDao`: Trực tiếp trả về `ReminderEntity` thay vì bọc trong `PopulatedReminder`, bỏ `updateReminderWithChecklist`.
+     - `RemindDatabase`: Loại bỏ `ChecklistItemEntity` khỏi danh sách `@Database.entities`, xóa DAO getter `checklistItemDao()`.
+     - `DatabaseModule`: Loại bỏ `provideChecklistItemDao`.
+  3. **Tầng Domain & Data (`:core:domain`, `:core:data`):**
+     - Xóa tiện ích `ChecklistCycleUtil.kt`.
+     - `ReminderRepository`: Loại bỏ các phương thức `updateChecklistItemCompletion`, `resetChecklist`, `checkAndResetRecurringChecklists`.
+     - Xóa mapper `ChecklistItemMapper.kt` và mapper test tương ứng.
+     - `ReminderMapper`: Tinh gọn chỉ map trực tiếp giữa `ReminderEntity` và `Reminder`.
+  4. **Tầng Cảnh Báo & Thông Báo (`:core:alarm`):**
+     - Loại bỏ action `ACTION_REMINDER_CHECKLIST_TOGGLE` khỏi `ReminderReceiver` và `AndroidManifest.xml`.
+     - `ReminderNotificationManager`: Bỏ việc render checklist tóm tắt và pending intent toggle checklist item inline.
+     - `ReminderSyncManager`: Bỏ lệnh tự động kiểm tra và reset recurring checklists.
+  5. **Tầng Giao Diện & ViewModel (`:features:reminders`):**
+     - Xóa các composable component: `ReminderChecklistBuilderSection.kt` và `ReminderRingingChecklist.kt`.
+     - `ReminderCard.kt`: Loại bỏ thanh tiến độ checklist và danh sách checklist con mở rộng.
+     - `ReminderListViewModel.kt` & `ReminderListScreen.kt`: Bỏ callback `toggleChecklistItem` và logic duplicate checklist.
+     - `ReminderEditViewModel.kt` & `ReminderEditScreen.kt`: Xóa `checklist`, `draftChecklistText`, và toàn bộ hàm CRUD checklist (`addChecklistItem`, `moveChecklistItem`, v.v.).
+     - `ReminderRingingViewModel.kt` & `ReminderRingingScreen.kt`: Xóa phần render checklist khi đang reo chuông và action `toggleChecklistItem`.
+     - Xóa toàn bộ chuỗi ký tự i18n liên quan đến checklist trong `values/strings.xml` và `values-vi/strings.xml`.
+  6. **Đồng Bộ & Dọn Sạch Test Suite:**
+     - Tái cấu trúc các challenger test (`ReminderDatabaseChallengerTest`, `ReminderSnoozeChallengerTest`, `ReminderPermissionChallengerTest`) để tập trung vào Snooze, State Isolation và Permission UX.
+     - Dọn sạch `ReminderEditViewModelTest`, `ReminderListViewModelTest`, `ReminderRingingViewModelTest`, và `ScreenshotsTest`.
+- **Hệ quả:**
+  - Kiến trúc Reminder trở nên tinh gọn, hiệu năng truy vấn Room DB tăng đáng kể (không cần JOIN hay Transaction đa bảng).
+  - Giao diện người dùng thanh thoát, tập trung đúng vào trọng tâm thiết lập nhắc nhở và báo thức.
+  - Toàn bộ 473 task build và unit tests của dự án vượt qua 100% không lỗi.
+
+### [TDR-084] - Loại Bỏ Cơ Chế Tự Động Thêm Dữ Liệu Mẫu Cho Database (Debug Seeding)
+- **Ngày thực hiện:** 2026-09-30
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Trước đây, ứng dụng có callback `RemindDatabaseCallback` trong source set `debug` tự động chèn 5 báo thức và 3 nhiệm vụ mẫu (`MATH`, `SHAKE`, `TYPING`) vào SQLite Room DB khi mở CSDL lần đầu nếu bảng `alarms` trống.
+  - Việc tự động sinh dữ liệu mẫu này gây phiền toái khi test thực tế hoặc kiểm thử luồng trống (Empty State UI), không phản ánh đúng trạng thái dữ liệu người dùng thực thụ khi cài mới app.
+- **Quyết định:**
+  - Xóa bỏ file `RemindDatabaseCallback.kt` ở cả hai source set `core/database/src/debug` và `core/database/src/release`.
+  - Trong `DatabaseModule.kt`: Loại bỏ `.addCallback(RemindDatabaseCallback())` khỏi builder của Room Database.
+- **Hệ quả:**
+  - Cơ sở dữ liệu luôn bắt đầu ở trạng thái trống hoàn toàn (clean state), giúp kiểm thử chính xác các màn hình và trạng thái empty state.
+  - Toàn bộ 473 task build và test của dự án hoàn thành 100% không lỗi.
+
 

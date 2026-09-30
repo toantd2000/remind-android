@@ -207,7 +207,10 @@ This document records the solidified technical decisions and behavioral scenario
     - `LOW`, `MEDIUM`, `HIGH`: Standard notification stream with appropriate channel priorities.
     - `CRITICAL` or `isPersistentAlert = true`: Escalates to full-screen high-priority alert / alarm behavior.
 - **Technical Decision**:
-  - Room DB schema explicitly divides columns: `trigger_type`, `fixed_times`, `interval_minutes`, `time_windows`, `repeat_values`, `urgency_level`, `checklist`, `snooze_config`, `is_persistent_alert`.
-  - Database migration `MIGRATION_4_5` transparently maps legacy schema without losing user alarms.
-  - Domain `TimeTrigger` acts as single source of truth for recurring calculation and time validation.
+## 14. Deprecation & Complete Removal of Checklist Subtasks
+- **Context**: The Checklist/subtask subsystem added substantial architectural overhead (`PopulatedReminder` joins, periodic cycle reset listeners, notification action handlers, and extended UI layouts). Product direction prioritized high-reliability time triggering over secondary task list management.
+- **Decision**:
+  - Completely deprecate and excise checklist components across all layers (Model, Room DB, Repository, Notification/Alarm Manager, and Jetpack Compose UI).
+  - DAOs now return `ReminderEntity` directly without multi-table relation mapping.
+  - Notification and broadcast receivers handle only pure reminder triggers and snoozes.
 

@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-09-30
+
+### Removed
+- **Reminder Checklist Feature:** Completely eliminated all checklist and subtask components from the Reminder feature:
+  - Removed `ChecklistItem` domain model and related checklist progress calculations from `Reminder`.
+  - Dropped `ChecklistItemEntity`, `ChecklistItemDao`, and multi-table relation `PopulatedReminder` from Room database.
+  - Removed checklist inline toggle actions (`ACTION_REMINDER_CHECKLIST_TOGGLE`) from notifications, broadcast receivers, and manifest.
+  - Purged periodic recurring checklist reset mechanisms (`ChecklistCycleUtil`) from sync and background alarm managers.
+  - Removed checklist builder UI, ringing checklist viewer, expandable progress card views, and all checklist string resources.
+  - Refactored test suites (`ReminderDatabaseChallengerTest`, `ReminderSnoozeChallengerTest`, `ReminderPermissionChallengerTest`) to focus cleanly on core reminder behaviors.
+- **Debug Database Seeding:** Removed `RemindDatabaseCallback` and automatic sample alarm/mission insertion on debug database creation, ensuring the database starts completely clean.
+
 ## [2.1.0] - 2026-09-29
 
 ### Added

@@ -28,7 +28,6 @@ import vn.io.litever.remind.core.common.util.ReminderPermissionType
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
-import vn.io.litever.remind.core.model.ChecklistItem
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderTriggerType
 import vn.io.litever.remind.core.model.TimeTrigger
@@ -207,8 +206,7 @@ class ReminderListViewModelTest {
             id = 10,
             title = "Original",
             triggerType = ReminderTriggerType.FIXED_TIME,
-            timeTrigger = TimeTrigger(time = listOf(LocalTime.of(9, 0))),
-            checklist = listOf(ChecklistItem(id = 1, reminderId = 10, text = "Task", isCompleted = true))
+            timeTrigger = TimeTrigger(time = listOf(LocalTime.of(9, 0)))
         )
         coEvery { repository.insertReminder(any()) } returns 101L
 
@@ -217,9 +215,7 @@ class ReminderListViewModelTest {
 
         coVerify {
             repository.insertReminder(match {
-                it.title == "Original (Copy)" &&
-                        it.checklist.size == 1 &&
-                        !it.checklist.first().isCompleted
+                it.title == "Original (Copy)"
             })
         }
     }

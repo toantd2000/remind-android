@@ -5,12 +5,10 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import vn.io.litever.remind.core.database.dao.AlarmDao
-import vn.io.litever.remind.core.database.dao.ChecklistItemDao
 import vn.io.litever.remind.core.database.dao.MissedAlarmDao
 import vn.io.litever.remind.core.database.dao.MissionDao
 import vn.io.litever.remind.core.database.dao.PhraseDao
 import vn.io.litever.remind.core.database.dao.ReminderDao
-import vn.io.litever.remind.core.database.entity.ChecklistItemEntity
 import vn.io.litever.remind.core.database.entity.ReminderEntity
 import vn.io.litever.remind.core.database.model.AlarmEntity
 import vn.io.litever.remind.core.database.model.MissedAlarmEntity
@@ -23,8 +21,7 @@ import vn.io.litever.remind.core.database.model.PhraseEntity
         MissionEntity::class,
         PhraseEntity::class,
         MissedAlarmEntity::class,
-        ReminderEntity::class,
-        ChecklistItemEntity::class
+        ReminderEntity::class
     ],
     version = 7,
     exportSchema = false
@@ -35,7 +32,6 @@ abstract class RemindDatabase : RoomDatabase() {
     abstract fun phraseDao(): PhraseDao
     abstract fun missedAlarmDao(): MissedAlarmDao
     abstract fun reminderDao(): ReminderDao
-    abstract fun checklistItemDao(): ChecklistItemDao
 
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {

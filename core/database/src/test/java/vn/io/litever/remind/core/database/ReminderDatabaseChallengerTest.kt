@@ -16,9 +16,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
-import vn.io.litever.remind.core.database.dao.ChecklistItemDao
 import vn.io.litever.remind.core.database.dao.ReminderDao
-import vn.io.litever.remind.core.database.entity.ChecklistItemEntity
 import vn.io.litever.remind.core.database.entity.ReminderEntity
 
 /**
@@ -31,7 +29,6 @@ class ReminderDatabaseChallengerTest {
 
     private lateinit var database: RemindDatabase
     private lateinit var reminderDao: ReminderDao
-    private lateinit var checklistItemDao: ChecklistItemDao
 
     @Before
     fun setup() {
@@ -40,7 +37,6 @@ class ReminderDatabaseChallengerTest {
             .allowMainThreadQueries()
             .build()
         reminderDao = database.reminderDao()
-        checklistItemDao = database.checklistItemDao()
     }
 
     @After
@@ -49,48 +45,32 @@ class ReminderDatabaseChallengerTest {
     }
 
     @Test
-    fun multiParentCascadeIsolation_deletingOneParentDoesNotAffectOthers() = runTest {
-        // Create parent A with 3 items
-        val parentAId = reminderDao.insertReminder(ReminderEntity(title = "Parent A", triggerType = "TIME"))
-        val itemsA = listOf(
-            ChecklistItemEntity(reminderId = parentAId, text = "A1", orderIndex = 0),
-            ChecklistItemEntity(reminderId = parentAId, text = "A2", orderIndex = 1),
-            ChecklistItemEntity(reminderId = parentAId, text = "A3", orderIndex = 2)
-        )
-        checklistItemDao.insertChecklistItems(itemsA)
+    fun multiReminderIsolation_deletingOneParentDoesNotAffectOthers() = runTest {
+        // Create reminder A
+        val reminderAId = reminderDao.insertReminder(ReminderEntity(title = "Reminder A", triggerType = "TIME"))
 
-        // Create parent B with 2 items
-        val parentBId = reminderDao.insertReminder(ReminderEntity(title = "Parent B", triggerType = "LOCATION"))
-        val itemsB = listOf(
-            ChecklistItemEntity(reminderId = parentBId, text = "B1", orderIndex = 0),
-            ChecklistItemEntity(reminderId = parentBId, text = "B2", orderIndex = 1)
-        )
-        checklistItemDao.insertChecklistItems(itemsB)
+        // Create reminder B
+        val reminderBId = reminderDao.insertReminder(ReminderEntity(title = "Reminder B", triggerType = "LOCATION"))
 
         // Verify initial state
-        assertEquals(3, checklistItemDao.getChecklistItemsForReminderSync(parentAId).size)
-        assertEquals(2, checklistItemDao.getChecklistItemsForReminderSync(parentBId).size)
+        assertNotNull(reminderDao.getReminderById(reminderAId))
+        assertNotNull(reminderDao.getReminderById(reminderBId))
 
-        // Delete parent A by entity
-        val parentAEntity = reminderDao.getReminderById(parentAId)!!.reminder
-        reminderDao.deleteReminder(parentAEntity)
+        // Delete reminder A by entity
+        val reminderAEntity = reminderDao.getReminderById(reminderAId)!!
+        reminderDao.deleteReminder(reminderAEntity)
 
-        // Verify Parent A and its items are gone
-        assertNull(reminderDao.getReminderById(parentAId))
-        assertTrue(checklistItemDao.getChecklistItemsForReminderSync(parentAId).isEmpty())
+        // Verify Reminder A is gone
+        assertNull(reminderDao.getReminderById(reminderAId))
 
-        // Verify Parent B and its items are completely intact
-        val parentBFetched = reminderDao.getReminderById(parentBId)
-        assertNotNull(parentBFetched)
-        assertEquals("Parent B", parentBFetched?.reminder?.title)
-        val parentBItems = checklistItemDao.getChecklistItemsForReminderSync(parentBId)
-        assertEquals(2, parentBItems.size)
-        assertEquals("B1", parentBItems[0].text)
-        assertEquals("B2", parentBItems[1].text)
+        // Verify Reminder B is completely intact
+        val reminderBFetched = reminderDao.getReminderById(reminderBId)
+        assertNotNull(reminderBFetched)
+        assertEquals("Reminder B", reminderBFetched?.title)
     }
 
     @Test
-    fun reactiveFlowEmitsOnChecklistToggleAndSnoozeUpdate() = runTest {
+    fun reactiveFlowEmitsOnSnoozeUpdate() = runTest {
         val reminderId = reminderDao.insertReminder(
             ReminderEntity(
                 title = "Reactive Test",
@@ -99,27 +79,15 @@ class ReminderDatabaseChallengerTest {
                 snoozeRepeatCount = 3
             )
         )
-        val itemId = checklistItemDao.insertChecklistItem(
-            ChecklistItemEntity(reminderId = reminderId, text = "Subtask", isCompleted = false)
-        )
 
         reminderDao.getReminderFlow(reminderId).test {
             // Initial emission
             val initial = awaitItem()
             assertNotNull(initial)
-            assertEquals("Reactive Test", initial?.reminder?.title)
-            assertEquals(0, initial?.reminder?.currentSnoozeCount)
-            assertEquals(1, initial?.checklist?.size)
-            assertEquals(false, initial?.checklist?.get(0)?.isCompleted)
+            assertEquals("Reactive Test", initial?.title)
+            assertEquals(0, initial?.currentSnoozeCount)
 
-            // Step 1: Update checklist item completion
-            checklistItemDao.updateChecklistItemCompletion(itemId, true)
-            val updatedChecklist = awaitItem()
-            assertNotNull(updatedChecklist)
-            assertEquals(true, updatedChecklist?.checklist?.get(0)?.isCompleted)
-            assertEquals(0, updatedChecklist?.reminder?.currentSnoozeCount)
-
-            // Step 2: Update snooze state (checklist state should be preserved)
+            // Step 1: Update snooze state
             reminderDao.updateSnoozeState(
                 id = reminderId,
                 currentSnoozeCount = 1,
@@ -127,45 +95,16 @@ class ReminderDatabaseChallengerTest {
             )
             val updatedSnooze = awaitItem()
             assertNotNull(updatedSnooze)
-            assertEquals(1, updatedSnooze?.reminder?.currentSnoozeCount)
-            assertEquals(123456789L, updatedSnooze?.reminder?.snoozeNextTriggerTime)
-            assertEquals(true, updatedSnooze?.checklist?.get(0)?.isCompleted)
+            assertEquals(1, updatedSnooze?.currentSnoozeCount)
+            assertEquals(123456789L, updatedSnooze?.snoozeNextTriggerTime)
 
-            // Step 3: Delete parent reminder
+            // Step 2: Delete parent reminder
             reminderDao.deleteReminderById(reminderId)
             val deletedEmission = awaitItem()
             assertNull(deletedEmission)
 
             cancelAndIgnoreRemainingEvents()
         }
-    }
-
-    @Test
-    fun updateChecklistBatchSync_replacesItemsCorrectly() = runTest {
-        val reminderId = reminderDao.insertReminder(ReminderEntity(title = "List Sync", triggerType = "TIME"))
-
-        // Add 3 original items
-        checklistItemDao.insertChecklistItems(
-            listOf(
-                ChecklistItemEntity(reminderId = reminderId, text = "Old 1", orderIndex = 0),
-                ChecklistItemEntity(reminderId = reminderId, text = "Old 2", orderIndex = 1),
-                ChecklistItemEntity(reminderId = reminderId, text = "Old 3", orderIndex = 2)
-            )
-        )
-
-        // Replace with 2 new items
-        checklistItemDao.deleteChecklistItemsForReminder(reminderId)
-        checklistItemDao.insertChecklistItems(
-            listOf(
-                ChecklistItemEntity(reminderId = reminderId, text = "New 1", orderIndex = 0),
-                ChecklistItemEntity(reminderId = reminderId, text = "New 2", orderIndex = 1)
-            )
-        )
-
-        val updatedItems = checklistItemDao.getChecklistItemsForReminderSync(reminderId)
-        assertEquals(2, updatedItems.size)
-        assertEquals("New 1", updatedItems[0].text)
-        assertEquals("New 2", updatedItems[1].text)
     }
 
     @Test

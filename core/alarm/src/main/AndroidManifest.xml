@@ -54,7 +54,6 @@
                 <action android:name="vn.io.litever.remind.core.alarm.ACTION_TRIGGER_REMINDER_SNOOZE" />
                 <action android:name="vn.io.litever.remind.core.alarm.ACTION_REMINDER_SNOOZE" />
                 <action android:name="vn.io.litever.remind.core.alarm.ACTION_REMINDER_DISMISS" />
-                <action android:name="vn.io.litever.remind.core.alarm.ACTION_REMINDER_CHECKLIST_TOGGLE" />
             </intent-filter>
         </receiver>
 

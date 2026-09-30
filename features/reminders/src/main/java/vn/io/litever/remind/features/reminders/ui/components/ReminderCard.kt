@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
+import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,20 +14,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,25 +32,26 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import vn.io.litever.designsystem.components.LiteverCard
 import vn.io.litever.designsystem.components.LiteverIconButton
-import vn.io.litever.designsystem.components.LiteverLinearProgressIndicator
 import vn.io.litever.designsystem.components.LiteverSwitch
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
-
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
+import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderTriggerType
 import vn.io.litever.remind.core.model.RepeatMode
+import vn.io.litever.remind.core.model.TimeTrigger
 import vn.io.litever.remind.core.model.UrgencyLevel
-
 import vn.io.litever.remind.features.reminders.R
 import java.time.Instant
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -67,10 +61,8 @@ fun ReminderCard(
     onToggle: (Boolean) -> Unit,
     onClick: () -> Unit,
     onMoreClick: () -> Unit,
-    onChecklistToggle: ((reminderId: Long, itemId: Long, isCompleted: Boolean) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
-    var isChecklistExpanded by remember { mutableStateOf(false) }
     val isSnoozed = reminder.snoozeNextTriggerTime != null
     val isCardActive = reminder.isEnabled && !reminder.isCompleted
     val alpha = if (isCardActive) 1f else 0.6f
@@ -210,98 +202,6 @@ fun ReminderCard(
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
-                }
-
-                // Checklist progress & expandable items
-                if (reminder.checklist.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(LiteverTheme.shapes.small)
-                            .clickable { isChecklistExpanded = !isChecklistExpanded }
-                            .padding(vertical = 2.dp)
-                    ) {
-                        Icon(
-                            imageVector = ReMindIcons.Checklist,
-                            contentDescription = null,
-                            tint = accentColor,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Text(
-                            text = stringResource(
-                                R.string.checklist_progress_format,
-                                reminder.completedChecklistCount,
-                                reminder.totalChecklistCount
-                            ),
-                            style = LiteverTheme.typography.labelSmall,
-                            color = accentColor,
-                            fontWeight = FontWeight.Medium
-                        )
-                        LiteverLinearProgressIndicator(
-                            progress = { reminder.checklistProgress },
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(4.dp)
-                                .clip(MaterialTheme.shapes.small),
-                            color = accentColor,
-                            trackColor = accentContainerColor.copy(alpha = 0.4f),
-                        )
-                        Icon(
-                            imageVector = if (isChecklistExpanded) ReMindIcons.ArrowDropDown else ReMindIcons.KeyboardArrowRight,
-                            contentDescription = if (isChecklistExpanded) "Collapse" else "Expand",
-                            tint = accentColor.copy(alpha = 0.7f),
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-
-                    if (isChecklistExpanded) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 4.dp, start = 4.dp),
-                            verticalArrangement = Arrangement.spacedBy(2.dp)
-                        ) {
-                            reminder.checklist.sortedBy { it.orderIndex }.forEach { item ->
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clip(LiteverTheme.shapes.small)
-                                        .clickable {
-                                            onChecklistToggle?.invoke(reminder.id, item.id, !item.isCompleted)
-                                        }
-                                        .padding(vertical = 2.dp)
-                                ) {
-                                    Checkbox(
-                                        checked = item.isCompleted,
-                                        onCheckedChange = { isChecked ->
-                                            onChecklistToggle?.invoke(reminder.id, item.id, isChecked)
-                                        },
-                                        colors = CheckboxDefaults.colors(
-                                            checkedColor = LiteverTheme.colors.primary
-                                        ),
-                                        modifier = Modifier.size(24.dp).padding(end = 4.dp)
-                                    )
-                                    Text(
-                                        text = item.text,
-                                        style = LiteverTheme.typography.bodySmall.copy(
-                                            textDecoration = if (item.isCompleted) TextDecoration.LineThrough else null
-                                        ),
-                                        color = if (item.isCompleted) {
-                                            LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.6f)
-                                        } else {
-                                            LiteverTheme.colors.onSurface
-                                        },
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                }
-                            }
-                        }
-                    }
                 }
             }
 
@@ -492,3 +392,52 @@ private fun BadgeContainer(
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun ReminderCardPreview() {
+    ReMindTheme {
+        ReminderCard(
+            reminder = Reminder(
+                id = 1L,
+                title = "Drink Water & Take Vitamins",
+                notes = "Stay hydrated throughout the day and take daily supplements.",
+                isEnabled = true,
+                triggerType = ReminderTriggerType.FIXED_TIME,
+                timeTrigger = TimeTrigger(
+                    time = listOf(LocalTime.of(9, 0), LocalTime.of(14, 0)),
+                    repeatMode = RepeatMode.DAILY
+                )
+            ),
+            is24HourFormat = false,
+            onToggle = {},
+            onClick = {},
+            onMoreClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun ReminderCardDarkPreview() {
+    ReMindTheme(darkTheme = true) {
+        ReminderCard(
+            reminder = Reminder(
+                id = 1L,
+                title = "Drink Water & Take Vitamins",
+                notes = "Stay hydrated throughout the day and take daily supplements.",
+                isEnabled = true,
+                triggerType = ReminderTriggerType.FIXED_TIME,
+                timeTrigger = TimeTrigger(
+                    time = listOf(LocalTime.of(9, 0), LocalTime.of(14, 0)),
+                    repeatMode = RepeatMode.DAILY
+                )
+            ),
+            is24HourFormat = false,
+            onToggle = {},
+            onClick = {},
+            onMoreClick = {}
+        )
+    }
+}
+

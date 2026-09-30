@@ -12,57 +12,9 @@ import java.time.DayOfWeek
 import java.time.LocalTime
 
 /**
- * Adversarial Challenger Stress Test for Checklist & Snooze semantics.
+ * Adversarial Challenger Stress Test for Snooze semantics.
  */
-class ChecklistAndSnoozeChallengerTest {
-
-    @Test
-    fun largeScaleChecklistProgress_computesAccurately() {
-        val items = (1..1000).map { i ->
-            ChecklistItem(
-                id = i.toLong(),
-                reminderId = 100L,
-                text = "Item $i",
-                isCompleted = (i <= 350),
-                orderIndex = i
-            )
-        }
-
-        val reminder = Reminder(
-            id = 100L,
-            title = "Massive Checklist",
-            triggerType = ReminderTriggerType.FIXED_TIME,
-            checklist = items
-        )
-
-        assertEquals(1000, reminder.totalChecklistCount)
-        assertEquals(350, reminder.completedChecklistCount)
-        assertEquals(0.35f, reminder.checklistProgress, 0.0001f)
-        assertFalse(reminder.isAllChecklistCompleted)
-    }
-
-    @Test
-    fun allItemsCompleted_boundaryValidation() {
-        val singleCompleted = Reminder(
-            title = "One Item",
-            triggerType = ReminderTriggerType.FIXED_TIME,
-            checklist = listOf(ChecklistItem(id = 1, text = "Only task", isCompleted = true))
-        )
-        assertEquals(1, singleCompleted.totalChecklistCount)
-        assertEquals(1, singleCompleted.completedChecklistCount)
-        assertEquals(1.0f, singleCompleted.checklistProgress, 0.0001f)
-        assertTrue(singleCompleted.isAllChecklistCompleted)
-
-        val singleIncomplete = Reminder(
-            title = "One Item Incomplete",
-            triggerType = ReminderTriggerType.FIXED_TIME,
-            checklist = listOf(ChecklistItem(id = 1, text = "Only task", isCompleted = false))
-        )
-        assertEquals(1, singleIncomplete.totalChecklistCount)
-        assertEquals(0, singleIncomplete.completedChecklistCount)
-        assertEquals(0.0f, singleIncomplete.checklistProgress, 0.0001f)
-        assertFalse(singleIncomplete.isAllChecklistCompleted)
-    }
+class ReminderSnoozeChallengerTest {
 
     @Test
     fun snoozeProgressionAndExhaustion_stateTransitions() {
@@ -129,7 +81,7 @@ class ChecklistAndSnoozeChallengerTest {
     }
 
     @Test
-    fun javaSerializationRoundTrip_preservesFullStateAndChecklist() {
+    fun javaSerializationRoundTrip_preservesFullState() {
         val original = Reminder(
             id = 777L,
             title = "Serialization Test",
@@ -144,10 +96,6 @@ class ChecklistAndSnoozeChallengerTest {
                     endTime = java.time.LocalTime.of(18, 0),
                     activeDays = listOf(DayOfWeek.MONDAY, DayOfWeek.FRIDAY)
                 )
-            ),
-            checklist = listOf(
-                ChecklistItem(id = 1L, reminderId = 777L, text = "Badge", isCompleted = true, orderIndex = 0),
-                ChecklistItem(id = 2L, reminderId = 777L, text = "Laptop", isCompleted = false, orderIndex = 1)
             ),
             action = ReminderAction(
                 notificationStyle = NotificationStyle.FULL_SCREEN,
@@ -170,8 +118,6 @@ class ChecklistAndSnoozeChallengerTest {
         val deserialized = ObjectInputStream(bais).use { it.readObject() as Reminder }
 
         assertEquals(original, deserialized)
-        assertEquals(2, deserialized.checklist.size)
-        assertEquals(0.5f, deserialized.checklistProgress, 0.0001f)
         assertTrue(deserialized.canSnooze())
     }
 }

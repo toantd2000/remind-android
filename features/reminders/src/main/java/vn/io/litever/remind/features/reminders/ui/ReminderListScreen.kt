@@ -112,7 +112,6 @@ fun ReminderListRoute(
         onToggleCompleted = viewModel::toggleCompleted,
         onDeleteCompletedReminders = viewModel::deleteCompletedReminders,
         onDeleteDisabledReminders = viewModel::deleteDisabledReminders,
-        onChecklistToggle = viewModel::toggleChecklistItem,
         modifier = modifier
     )
 }
@@ -133,7 +132,6 @@ fun ReminderListScreen(
     onToggleCompleted: (Reminder) -> Unit,
     onDeleteCompletedReminders: () -> Unit,
     onDeleteDisabledReminders: () -> Unit,
-    onChecklistToggle: (itemId: Long, isCompleted: Boolean) -> Unit = { _, _ -> },
     modifier: Modifier = Modifier
 ) {
     var showTopMenu by remember { mutableStateOf(false) }
@@ -243,8 +241,7 @@ fun ReminderListScreen(
                                 }
                             },
                             onClick = { onReminderClick(reminder) },
-                            onMoreClick = { selectedReminderForAction = reminder },
-                            onChecklistToggle = { _, itemId, isCompleted -> onChecklistToggle(itemId, isCompleted) }
+                            onMoreClick = { selectedReminderForAction = reminder }
                         )
                     }
                 }

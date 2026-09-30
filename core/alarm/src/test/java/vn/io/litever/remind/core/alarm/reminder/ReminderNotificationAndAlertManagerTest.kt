@@ -5,7 +5,6 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import vn.io.litever.remind.core.model.ChecklistItem
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderAction
@@ -32,15 +31,7 @@ object ReminderNotificationTestHelper {
             CHANNEL_ID_STANDARD
         }
 
-        val body = buildString {
-            if (reminder.notes.isNotBlank()) {
-                append(reminder.notes)
-            }
-            if (reminder.checklist.isNotEmpty()) {
-                if (isNotEmpty()) append("\n")
-                append("Checklist: ${reminder.completedChecklistCount}/${reminder.totalChecklistCount} completed")
-            }
-        }
+        val body = reminder.notes
 
         return NotificationPayload(
             channelId = channelId,
@@ -132,27 +123,6 @@ class ReminderNotificationAndAlertManagerTest {
         assertEquals(ReminderNotificationTestHelper.CHANNEL_ID_URGENT, payload.channelId)
         assertTrue(payload.isFullScreen)
         assertTrue(payload.hasSnoozeAction)
-    }
-
-    @Test
-    fun notification_withChecklistSummary_formatsBodyProperly() {
-        val reminder = Reminder(
-            id = 3,
-            title = "Grocery",
-            triggerType = ReminderTriggerType.FIXED_TIME,
-            checklist = listOf(
-                ChecklistItem(text = "Milk", isCompleted = true),
-                ChecklistItem(text = "Eggs", isCompleted = false)
-            ),
-            action = ReminderAction(
-                snoozeEnabled = true,
-                snoozeRepeatCount = 3
-            )
-        )
-
-        val payload = ReminderNotificationTestHelper.buildNotificationPayload(reminder)
-
-        assertTrue(payload.body.contains("Checklist: 1/2 completed"))
     }
 
     @Test

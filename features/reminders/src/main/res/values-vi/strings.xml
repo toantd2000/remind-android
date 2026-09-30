@@ -35,7 +35,6 @@
     <string name="delete_disabled_reminders">Xóa các lời nhắc đã tắt</string>
     <string name="reminder_deleted">Đã xóa lời nhắc</string>
     <string name="undo">Hoàn tác</string>
-    <string name="checklist_progress_format">%1$d/%2$d xong</string>
     <string name="snoozing_badge_format">Đang hoãn (%s)</string>
     <string name="defined_time_window_badge">Khung giờ: %1$s - %2$s</string>
 
@@ -124,12 +123,6 @@
     <string name="configure_time_window">Thiết lập khung giờ</string>
     <string name="clear_time_window">Xóa khung giờ</string>
 
-    <!-- Checklist Builder Section -->
-    <string name="section_checklist">Danh sách mục cần làm (Checklist)</string>
-    <string name="add_checklist_item">Thêm mục</string>
-    <string name="checklist_item_placeholder">Nội dung mục cần làm…</string>
-    <string name="no_checklist_items">Chưa có mục nào được thêm</string>
-
     <!-- Alert & Notification Settings Section -->
     <string name="section_alert_settings">Cảnh báo &amp; Thông báo</string>
     <string name="notification_style_label">Kiểu cảnh báo</string>
@@ -156,8 +149,6 @@
     <string name="snooze_action">Báo lại</string>
     <string name="snooze_limit_reached">Đã đạt giới hạn báo lại</string>
     <string name="dismiss_action">Đã xong</string>
-    <string name="mark_item_done">Hoàn thành</string>
-    <string name="interactive_checklist_title">Danh sách mục cần làm</string>
 
     <!-- Permissions Warning & Save Anyway Dialog -->
     <string name="reminder_permission_warning_banner_title">Thiếu quyền hệ thống</string>

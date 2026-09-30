@@ -44,7 +44,6 @@ import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
-import vn.io.litever.remind.core.model.ChecklistItem
 import java.time.DayOfWeek
 import vn.io.litever.remind.core.model.GeofenceTransitionType
 import vn.io.litever.remind.core.model.NotificationStyle
@@ -54,7 +53,6 @@ import vn.io.litever.remind.core.model.UrgencyLevel
 import vn.io.litever.remind.features.reminders.R
 import vn.io.litever.remind.features.reminders.ui.components.ReminderAlertConfigSection
 import vn.io.litever.remind.features.reminders.ui.components.ReminderBasicInfoSection
-import vn.io.litever.remind.features.reminders.ui.components.ReminderChecklistBuilderSection
 import vn.io.litever.remind.features.reminders.ui.components.ReminderTimeConfigSection
 import vn.io.litever.remind.features.reminders.ui.components.ReminderTriggerSection
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderEditUiState
@@ -162,12 +160,6 @@ fun ReminderEditRoute(
         onMonthlyDayToggle = viewModel::toggleMonthlyDay,
         onAddYearlyDate = viewModel::addYearlyDate,
         onRemoveYearlyDate = viewModel::removeYearlyDate,
-        onAddChecklistItem = viewModel::addChecklistItem,
-        onUpdateChecklistItemText = viewModel::updateChecklistItemText,
-        onToggleChecklistItemInitial = viewModel::toggleChecklistItemInitial,
-        onDeleteChecklistItem = viewModel::deleteChecklistItem,
-        onMoveChecklistItem = viewModel::moveChecklistItem,
-        onDraftTextChange = viewModel::setDraftChecklistText,
         onNotificationStyleChange = viewModel::setNotificationStyle,
         onUrgencyLevelChange = viewModel::setUrgencyLevel,
         onAutoSilenceMinutesChange = viewModel::setAutoSilenceMinutes,
@@ -211,28 +203,6 @@ fun ReminderEditScreen(
     onMonthlyDayToggle: (Int) -> Unit = {},
     onAddYearlyDate: (Int, Int) -> Unit = { _, _ -> },
     onRemoveYearlyDate: (Int) -> Unit = {},
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    onAddChecklistItem: (String) -> Unit,
-    onUpdateChecklistItemText: (Int, String) -> Unit,
-    onToggleChecklistItemInitial: (Int, Boolean) -> Unit,
-    onDeleteChecklistItem: (Int) -> Unit,
-    onMoveChecklistItem: (Int, Int) -> Unit,
-    onDraftTextChange: (String) -> Unit = {},
     onNotificationStyleChange: (NotificationStyle) -> Unit,
     onUrgencyLevelChange: (UrgencyLevel) -> Unit = {},
     onAutoSilenceMinutesChange: (Int) -> Unit,
@@ -310,20 +280,7 @@ fun ReminderEditScreen(
                 )
             }
 
-            // 3. Checklist Builder Section
-            item {
-                ReminderChecklistBuilderSection(
-                    checklist = uiState.checklist,
-                    onAddItem = onAddChecklistItem,
-                    onUpdateItemText = onUpdateChecklistItemText,
-                    onToggleItemInitialCheck = onToggleChecklistItemInitial,
-                    onDeleteItem = onDeleteChecklistItem,
-                    onMoveItem = onMoveChecklistItem,
-                    onDraftTextChange = onDraftTextChange
-                )
-            }
-
-            // 4. Alert & Notification Settings
+            // 3. Alert & Notification Settings
             item {
                 ReminderAlertConfigSection(
                     notificationStyle = uiState.notificationStyle,
@@ -420,10 +377,6 @@ private fun ReminderEditScreenPreview() {
                 date = LocalDate.now(),
                 repeatDays = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY),
                 repeatInterval = ReminderRepeatInterval.WEEKLY,
-                checklist = listOf(
-                    ChecklistItem(id = 1L, text = "Organic Milk", isCompleted = false),
-                    ChecklistItem(id = 2L, text = "Whole wheat bread", isCompleted = true)
-                ),
                 notificationStyle = NotificationStyle.STANDARD,
                 
                 vibrationEnabled = true,
@@ -451,11 +404,6 @@ private fun ReminderEditScreenPreview() {
             onMonthlyDayToggle = {},
             onAddYearlyDate = { _, _ -> },
             onRemoveYearlyDate = {},
-            onAddChecklistItem = {},
-            onUpdateChecklistItemText = { _, _ -> },
-            onToggleChecklistItemInitial = { _, _ -> },
-            onDeleteChecklistItem = {},
-            onMoveChecklistItem = { _, _ -> },
             onNotificationStyleChange = {},
             onAutoSilenceMinutesChange = {},
             onUseAlarmStreamChange = {},
@@ -482,10 +430,6 @@ private fun ReminderEditScreenDarkPreview() {
                 date = LocalDate.now(),
                 repeatDays = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY),
                 repeatInterval = ReminderRepeatInterval.WEEKLY,
-                checklist = listOf(
-                    ChecklistItem(id = 1L, text = "Organic Milk", isCompleted = false),
-                    ChecklistItem(id = 2L, text = "Whole wheat bread", isCompleted = true)
-                ),
                 notificationStyle = NotificationStyle.STANDARD,
                 
                 vibrationEnabled = true,
@@ -513,11 +457,6 @@ private fun ReminderEditScreenDarkPreview() {
             onMonthlyDayToggle = {},
             onAddYearlyDate = { _, _ -> },
             onRemoveYearlyDate = {},
-            onAddChecklistItem = {},
-            onUpdateChecklistItemText = { _, _ -> },
-            onToggleChecklistItemInitial = { _, _ -> },
-            onDeleteChecklistItem = {},
-            onMoveChecklistItem = { _, _ -> },
             onNotificationStyleChange = {},
             onAutoSilenceMinutesChange = {},
             onUseAlarmStreamChange = {},

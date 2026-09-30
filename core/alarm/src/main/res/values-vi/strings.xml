@@ -25,7 +25,6 @@
     <string name="reminder_action_snooze">Báo lại</string>
     <string name="reminder_action_snooze_interval">Báo lại (%1$d ph)</string>
     <string name="reminder_action_dismiss">Bỏ qua</string>
-    <string name="reminder_checklist_summary_header">Danh sách kiểm tra (đã xong %1$d/%2$d):</string>
 </resources>
 
 

@@ -44,7 +44,6 @@ import vn.io.litever.designsystem.components.LiteverOutlinedButton
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import vn.io.litever.remind.features.reminders.R
-import vn.io.litever.remind.features.reminders.ui.components.ReminderRingingChecklist
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderRingingViewModel
 import java.time.LocalDate
 import java.time.LocalTime
@@ -81,7 +80,6 @@ fun ReminderRingingRoute(
         uiState = uiState,
         onSnoozeClick = { viewModel.snooze(onFinish) },
         onDismissClick = { viewModel.dismiss(onFinish) },
-        onChecklistItemToggle = viewModel::toggleChecklistItem,
         modifier = modifier
     )
 }
@@ -91,7 +89,6 @@ fun ReminderRingingScreen(
     uiState: vn.io.litever.remind.features.reminders.viewmodel.ReminderRingingUiState,
     onSnoozeClick: () -> Unit,
     onDismissClick: () -> Unit,
-    onChecklistItemToggle: (itemId: Long, isCompleted: Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val reminder = uiState.reminder ?: return
@@ -168,7 +165,7 @@ fun ReminderRingingScreen(
                 }
             }
 
-            // Middle Section: Reminder Title, Notes & Live Checklist
+            // Middle Section: Reminder Title & Notes
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
@@ -191,15 +188,6 @@ fun ReminderRingingScreen(
                         color = LiteverTheme.colors.onSurfaceVariant,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(horizontal = 24.dp)
-                    )
-                }
-
-                // Interactive Checklist
-                if (reminder.checklist.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    ReminderRingingChecklist(
-                        checklist = reminder.checklist,
-                        onItemToggle = onChecklistItemToggle
                     )
                 }
             }

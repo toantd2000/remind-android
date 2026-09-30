@@ -35,7 +35,6 @@
     <string name="delete_disabled_reminders">Delete disabled reminders</string>
     <string name="reminder_deleted">Reminder deleted</string>
     <string name="undo">Undo</string>
-    <string name="checklist_progress_format">%1$d/%2$d done</string>
     <string name="snoozing_badge_format">Snoozing (%s)</string>
     <string name="defined_time_window_badge">Time Window: %1$s - %2$s</string>
 
@@ -124,12 +123,6 @@
     <string name="configure_time_window">Configure Time Window</string>
     <string name="clear_time_window">Remove Time Window</string>
 
-    <!-- Checklist Builder Section -->
-    <string name="section_checklist">Checklist</string>
-    <string name="add_checklist_item">Add item</string>
-    <string name="checklist_item_placeholder">Checklist item…</string>
-    <string name="no_checklist_items">No checklist items added</string>
-
     <!-- Alert & Notification Settings Section -->
     <string name="section_alert_settings">Alert &amp; Notification</string>
     <string name="notification_style_label">Alert Mode</string>
@@ -156,8 +149,6 @@
     <string name="snooze_action">Snooze</string>
     <string name="snooze_limit_reached">Snooze limit reached</string>
     <string name="dismiss_action">Dismiss</string>
-    <string name="mark_item_done">Completed</string>
-    <string name="interactive_checklist_title">Interactive Checklist</string>
 
     <!-- Permissions Warning & Save Anyway Dialog -->
     <string name="reminder_permission_warning_banner_title">Missing Permissions</string>

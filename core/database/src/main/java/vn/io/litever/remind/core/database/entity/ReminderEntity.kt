@@ -47,7 +47,6 @@ data class ReminderEntity(
     
     // State & Timestamps
     val lastTriggeredTime: Long? = null,
-    val lastChecklistResetTime: Long? = null,
     val isCompleted: Boolean = false,
     val createdAt: Long = System.currentTimeMillis()
 )

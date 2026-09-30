@@ -1,9 +1,6 @@
 package vn.io.litever.remind.core.data.mapper
 
-import vn.io.litever.remind.core.database.entity.ChecklistItemEntity
-import vn.io.litever.remind.core.database.model.PopulatedReminder
 import vn.io.litever.remind.core.database.entity.ReminderEntity
-import vn.io.litever.remind.core.model.ChecklistItem
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderAction
@@ -17,7 +14,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
 
-fun ReminderEntity.toModel(checklistItems: List<ChecklistItemEntity> = emptyList()): Reminder {
+fun ReminderEntity.toModel(): Reminder {
     val triggerTypeEnum = runCatching {
         ReminderTriggerType.valueOf(triggerType)
     }.getOrDefault(ReminderTriggerType.FIXED_TIME)
@@ -106,19 +103,13 @@ fun ReminderEntity.toModel(checklistItems: List<ChecklistItemEntity> = emptyList
         isEnabled = isEnabled,
         triggerType = triggerTypeEnum,
         timeTrigger = timeTrigger,
-        checklist = checklistItems.map { it.toModel() }.sortedBy { it.orderIndex },
         action = action,
         currentSnoozeCount = currentSnoozeCount,
         snoozeNextTriggerTime = snoozeNextTriggerTime,
         lastTriggeredTime = lastTriggeredTime,
-        lastChecklistResetTime = lastChecklistResetTime,
         isCompleted = isCompleted,
         createdAt = createdAt
     )
-}
-
-fun PopulatedReminder.toModel(): Reminder {
-    return reminder.toModel(checklistItems = checklist)
 }
 
 fun Reminder.toEntity(): ReminderEntity {
@@ -162,7 +153,6 @@ fun Reminder.toEntity(): ReminderEntity {
         snoozeNextTriggerTime = snoozeNextTriggerTime,
 
         lastTriggeredTime = lastTriggeredTime,
-        lastChecklistResetTime = lastChecklistResetTime,
         isCompleted = isCompleted,
         createdAt = createdAt
     )

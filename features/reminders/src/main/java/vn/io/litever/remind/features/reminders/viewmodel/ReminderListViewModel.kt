@@ -22,7 +22,6 @@ import vn.io.litever.remind.core.common.util.ReminderPermissionType
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
-import vn.io.litever.remind.core.model.ChecklistItem
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderTriggerType
 import vn.io.litever.remind.features.reminders.R
@@ -57,16 +56,6 @@ class ReminderListViewModel @Inject constructor(
     val uiMessage: SharedFlow<Int> = _uiMessage.asSharedFlow()
 
     private var recentlyDeletedReminder: Reminder? = null
-
-    init {
-        viewModelScope.launch {
-            try {
-                reminderRepository.checkAndResetRecurringChecklists()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
 
     val uiState: StateFlow<ReminderListUiState> = combine(
         reminderRepository.getAllReminders(),
@@ -210,9 +199,6 @@ class ReminderListViewModel @Inject constructor(
 
     fun duplicateReminder(reminder: Reminder) {
         viewModelScope.launch {
-            val duplicatedChecklist = reminder.checklist.map { item ->
-                item.copy(id = 0, reminderId = 0, isCompleted = false)
-            }
             val duplicated = reminder.copy(
                 id = 0,
                 title = "${reminder.title} (Copy)",
@@ -220,7 +206,6 @@ class ReminderListViewModel @Inject constructor(
                 isCompleted = false,
                 currentSnoozeCount = 0,
                 snoozeNextTriggerTime = null,
-                checklist = duplicatedChecklist,
                 createdAt = System.currentTimeMillis()
             )
             val newId = reminderRepository.insertReminder(duplicated)
@@ -263,20 +248,7 @@ class ReminderListViewModel @Inject constructor(
         }
     }
 
-    fun toggleChecklistItem(itemId: Long, isCompleted: Boolean) {
-        viewModelScope.launch {
-            reminderRepository.updateChecklistItemCompletion(itemId, isCompleted)
-        }
-    }
-
     fun refreshPermissions() {
-        viewModelScope.launch {
-            try {
-                reminderRepository.checkAndResetRecurringChecklists()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
         val activeReminders = uiState.value.reminders?.filter { it.isEnabled && !it.isCompleted } ?: emptyList()
         val hasMissingForActive = activeReminders.any { !permissionChecker.hasPermissionsForReminder(it) }
         _hasPermissionWarning.value = !permissionChecker.hasNotificationPermission() || hasMissingForActive

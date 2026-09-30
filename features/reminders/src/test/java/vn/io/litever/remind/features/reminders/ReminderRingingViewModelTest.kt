@@ -28,7 +28,6 @@ import vn.io.litever.remind.core.alarm.notification.ReminderNotificationManager
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
-import vn.io.litever.remind.core.model.ChecklistItem
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderAction
 import vn.io.litever.remind.core.model.ReminderTriggerType
@@ -65,8 +64,7 @@ class ReminderRingingViewModelTest {
         val reminder = Reminder(
             id = 1L,
             title = "Morning Medicine",
-            triggerType = ReminderTriggerType.FIXED_TIME,
-            checklist = listOf(ChecklistItem(id = 10, reminderId = 1L, text = "Vitamin C"))
+            triggerType = ReminderTriggerType.FIXED_TIME
         )
         reminderFlow.value = reminder
         countdownFlow.value = 45
@@ -87,39 +85,6 @@ class ReminderRingingViewModelTest {
         assertEquals("Morning Medicine", state.reminder?.title)
         assertEquals(45, state.autoSilenceCountdown)
         assertTrue(state.isRinging)
-    }
-
-    @Test
-    fun toggleChecklistItem_persistsToRepositoryAndUpdatesNotification() = runTest(testDispatcher) {
-        val reminder = Reminder(
-            id = 1L,
-            title = "Morning Medicine",
-            triggerType = ReminderTriggerType.FIXED_TIME,
-            checklist = listOf(ChecklistItem(id = 10, reminderId = 1L, text = "Vitamin C", isCompleted = false))
-        )
-        val refreshed = reminder.copy(
-            checklist = listOf(ChecklistItem(id = 10, reminderId = 1L, text = "Vitamin C", isCompleted = true))
-        )
-        reminderFlow.value = reminder
-        coEvery { repository.getReminderById(1L) } returns refreshed
-
-        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 1L))
-        val viewModel = ReminderRingingViewModel(
-            reminderRepository = repository,
-            reminderScheduler = scheduler,
-            reminderAlertManager = alertManager,
-            reminderNotificationManager = notificationManager,
-            preferencesDataSource = preferencesDataSource,
-            savedStateHandle = savedStateHandle
-        )
-        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        viewModel.toggleChecklistItem(10L, true)
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        coVerify { repository.updateChecklistItemCompletion(10L, true) }
-        coVerify { notificationManager.updateNotification(refreshed) }
     }
 
     @Test

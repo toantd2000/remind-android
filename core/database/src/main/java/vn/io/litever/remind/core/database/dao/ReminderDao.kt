@@ -9,37 +9,29 @@ import androidx.room.Transaction
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 import vn.io.litever.remind.core.database.entity.ReminderEntity
-import vn.io.litever.remind.core.database.model.PopulatedReminder
 
 @Dao
 interface ReminderDao {
-    @Transaction
     @Query("SELECT * FROM reminders ORDER BY createdAt DESC")
-    fun getAllReminders(): Flow<List<PopulatedReminder>>
+    fun getAllReminders(): Flow<List<ReminderEntity>>
 
-    @Transaction
     @Query("SELECT * FROM reminders WHERE id = :id")
-    fun getReminderFlow(id: Long): Flow<PopulatedReminder?>
+    fun getReminderFlow(id: Long): Flow<ReminderEntity?>
 
-    @Transaction
     @Query("SELECT * FROM reminders WHERE id = :id")
-    suspend fun getReminderById(id: Long): PopulatedReminder?
+    suspend fun getReminderById(id: Long): ReminderEntity?
 
-    @Transaction
     @Query("SELECT * FROM reminders WHERE isEnabled = 1 AND isCompleted = 0 AND triggerType IN ('LOCATION', 'WIFI')")
-    fun getActiveMonitoringReminders(): Flow<List<PopulatedReminder>>
+    fun getActiveMonitoringReminders(): Flow<List<ReminderEntity>>
 
-    @Transaction
     @Query("SELECT * FROM reminders WHERE isEnabled = 1 AND isCompleted = 0 AND triggerType IN ('LOCATION', 'WIFI')")
-    suspend fun getActiveMonitoringRemindersSync(): List<PopulatedReminder>
+    suspend fun getActiveMonitoringRemindersSync(): List<ReminderEntity>
 
-    @Transaction
     @Query("SELECT * FROM reminders WHERE isEnabled = 1 AND isCompleted = 0")
-    fun getActiveReminders(): Flow<List<PopulatedReminder>>
+    fun getActiveReminders(): Flow<List<ReminderEntity>>
 
-    @Transaction
     @Query("SELECT * FROM reminders WHERE triggerType = :triggerType")
-    fun getRemindersByTriggerType(triggerType: String): Flow<List<PopulatedReminder>>
+    fun getRemindersByTriggerType(triggerType: String): Flow<List<ReminderEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertReminder(reminder: ReminderEntity): Long
@@ -59,19 +51,6 @@ interface ReminderDao {
     @Query("UPDATE reminders SET isEnabled = :isEnabled WHERE id = :id")
     suspend fun updateReminderEnabled(id: Long, isEnabled: Boolean)
 
-    @Transaction
-    suspend fun updateReminderWithChecklist(
-        reminder: ReminderEntity,
-        checklist: List<vn.io.litever.remind.core.database.entity.ChecklistItemEntity>,
-        checklistItemDao: ChecklistItemDao
-    ) {
-        updateReminder(reminder)
-        checklistItemDao.deleteChecklistItemsForReminder(reminder.id)
-        if (checklist.isNotEmpty()) {
-            checklistItemDao.insertChecklistItems(checklist)
-        }
-    }
-
     @Query("UPDATE reminders SET isCompleted = :isCompleted WHERE id = :id")
     suspend fun updateReminderCompleted(id: Long, isCompleted: Boolean)
 
@@ -81,10 +60,6 @@ interface ReminderDao {
     @Query("UPDATE reminders SET lastTriggeredTime = :lastTriggeredTime WHERE id = :id")
     suspend fun updateLastTriggeredTime(id: Long, lastTriggeredTime: Long)
 
-    @Query("UPDATE reminders SET lastChecklistResetTime = :lastChecklistResetTime WHERE id = :id")
-    suspend fun updateLastChecklistResetTime(id: Long, lastChecklistResetTime: Long)
-
-    @Transaction
     @Query("SELECT * FROM reminders WHERE isEnabled = 1")
-    suspend fun getActiveRemindersSync(): List<PopulatedReminder>
+    suspend fun getActiveRemindersSync(): List<ReminderEntity>
 }

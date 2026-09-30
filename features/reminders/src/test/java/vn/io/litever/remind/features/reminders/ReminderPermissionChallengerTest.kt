@@ -31,7 +31,6 @@ import vn.io.litever.remind.core.common.util.ReminderPermissionType
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
-import vn.io.litever.remind.core.model.ChecklistItem
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderAction
 import vn.io.litever.remind.core.model.ReminderTriggerType
@@ -43,11 +42,10 @@ import java.time.LocalTime
 
 /**
  * Empirical Challenger Test Suite for Milestone 4:
- * 1. Permission UX Edge Cases (Save Anyway, List Toggle Gating, Permission Refresh/Restoration)
- * 2. Checklist State Preservation Across Snooze & Ringing Events
+ * Permission UX Edge Cases (Save Anyway, List Toggle Gating, Permission Refresh/Restoration)
  */
 @OptIn(ExperimentalCoroutinesApi::class)
-class ReminderPermissionAndChecklistChallengerTest {
+class ReminderPermissionChallengerTest {
 
     private val testDispatcher = StandardTestDispatcher()
     private val repository = mockk<ReminderRepository>(relaxed = true)
@@ -287,101 +285,5 @@ class ReminderPermissionAndChecklistChallengerTest {
         assertFalse(viewModel.uiState.value.showPermissionDialog)
         assertTrue(viewModel.uiState.value.missingPermissions.isEmpty())
     }
-
-    @Test
-    fun challenge6_checklistLiveToggleInNotification_persistsDirectlyWithoutTriggeringReschedule() = runTest(testDispatcher) {
-        val reminder = Reminder(
-            id = 801L,
-            title = "Airport Departure Checklist",
-            triggerType = ReminderTriggerType.FIXED_TIME,
-            timeTrigger = TimeTrigger(time = listOf(LocalTime.of(10, 0))),
-            checklist = listOf(
-                ChecklistItem(id = 11L, reminderId = 801L, text = "Pack passport", isCompleted = false, orderIndex = 0)
-            ),
-            isEnabled = true
-        )
-        val reminderFlow = MutableStateFlow<Reminder?>(reminder)
-        every { repository.getReminderFlow(801L) } returns reminderFlow
-        coEvery { repository.getReminderById(801L) } returns reminder.copy(checklist = listOf(ChecklistItem(id = 11L, reminderId = 801L, text = "Pack passport", isCompleted = true, orderIndex = 0)))
-
-        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 801L))
-        val ringingViewModel = ReminderRingingViewModel(
-            reminderRepository = repository,
-            reminderScheduler = scheduler,
-            reminderAlertManager = alertManager,
-            reminderNotificationManager = notificationManager,
-            preferencesDataSource = preferencesDataSource,
-            savedStateHandle = savedStateHandle
-        )
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        ringingViewModel.toggleChecklistItem(11L, true)
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        coVerify(exactly = 1) { repository.updateChecklistItemCompletion(11L, true) }
-    }
-
-    @Test
-    fun challenge7_checklistPreservationAcrossMultiSnoozeCycles() = runTest(testDispatcher) {
-        val item1 = ChecklistItem(id = 101L, reminderId = 901L, text = "Drink water", isCompleted = false, orderIndex = 0)
-        val reminderV1 = Reminder(
-            id = 901L,
-            title = "Medication",
-            triggerType = ReminderTriggerType.FIXED_TIME,
-            timeTrigger = TimeTrigger(time = listOf(LocalTime.of(8, 0))),
-            checklist = listOf(item1),
-            action = ReminderAction(snoozeEnabled = true)
-        )
-
-        val reminderFlow = MutableStateFlow<Reminder?>(reminderV1)
-        every { repository.getReminderFlow(901L) } returns reminderFlow
-        coEvery { repository.getReminderById(901L) } returns reminderV1
-
-        val vmCycle1 = ReminderRingingViewModel(
-            reminderRepository = repository,
-            reminderScheduler = scheduler,
-            reminderAlertManager = alertManager,
-            reminderNotificationManager = notificationManager,
-            preferencesDataSource = preferencesDataSource,
-            savedStateHandle = SavedStateHandle(mapOf("reminderId" to 901L))
-        )
-        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vmCycle1.uiState.collect() }
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        vmCycle1.toggleChecklistItem(101L, true)
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        reminderFlow.value = reminderV1.copy(checklist = listOf(item1.copy(isCompleted = true)))
-        vmCycle1.snooze(onFinished = {})
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        val vmCycle2 = ReminderRingingViewModel(
-            reminderRepository = repository,
-            reminderScheduler = scheduler,
-            reminderAlertManager = alertManager,
-            reminderNotificationManager = notificationManager,
-            preferencesDataSource = preferencesDataSource,
-            savedStateHandle = SavedStateHandle(mapOf("reminderId" to 901L))
-        )
-        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vmCycle2.uiState.collect() }
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        assertTrue(vmCycle2.uiState.value.reminder!!.checklist[0].isCompleted)
-
-        val vmCycle3 = ReminderRingingViewModel(
-            reminderRepository = repository,
-            reminderScheduler = scheduler,
-            reminderAlertManager = alertManager,
-            reminderNotificationManager = notificationManager,
-            preferencesDataSource = preferencesDataSource,
-            savedStateHandle = SavedStateHandle(mapOf("reminderId" to 901L))
-        )
-        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vmCycle3.uiState.collect() }
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        vmCycle3.dismiss(onFinished = {})
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        coVerify(atLeast = 1) { repository.updateReminder(any()) }
-    }
 }
+

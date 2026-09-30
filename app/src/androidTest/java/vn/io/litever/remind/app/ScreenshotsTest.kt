@@ -20,7 +20,6 @@ import vn.io.litever.remind.app.test.R
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.AdConfig
 import vn.io.litever.remind.core.model.Alarm
-import vn.io.litever.remind.core.model.ChecklistItem
 import vn.io.litever.remind.core.model.CurrentWeather
 import vn.io.litever.remind.core.model.DailySummary
 import java.time.DayOfWeek
@@ -185,11 +184,7 @@ class ScreenshotsTest {
                 notes = getTestString(R.string.mock_reminder_1_notes),
                 isEnabled = true,
                 triggerType = ReminderTriggerType.TIME,
-                timeTrigger = TimeTrigger(time = LocalTime.of(9, 30)),
-                checklist = listOf(
-                    ChecklistItem(id = 1L, text = "Slides", isCompleted = true),
-                    ChecklistItem(id = 2L, text = "Roadmap", isCompleted = false)
-                )
+                timeTrigger = TimeTrigger(time = LocalTime.of(9, 30))
             ),
             Reminder(
                 id = 102L,

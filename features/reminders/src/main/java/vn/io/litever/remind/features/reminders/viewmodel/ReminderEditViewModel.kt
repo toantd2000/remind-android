@@ -15,7 +15,6 @@ import vn.io.litever.remind.core.alarm.alert.ReminderAlertManager
 import vn.io.litever.remind.core.alarm.notification.ReminderNotificationManager
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
-import vn.io.litever.remind.core.model.ChecklistItem
 import vn.io.litever.remind.core.model.NotificationStyle
 
 import vn.io.litever.remind.core.model.Reminder
@@ -61,8 +60,6 @@ data class ReminderEditUiState(
     val intervalMinutes: Int? = null,
     val timeWindows: List<ReminderTimeWindow> = emptyList(),
     val urgencyLevel: UrgencyLevel = UrgencyLevel.MEDIUM,
-    val checklist: List<ChecklistItem> = emptyList(),
-    val draftChecklistText: String = "",
     val notificationStyle: NotificationStyle = NotificationStyle.STANDARD,
     val isPersistentAlert: Boolean = false,
     val autoSilenceMinutes: Int = 5,
@@ -138,7 +135,6 @@ class ReminderEditViewModel @Inject constructor(
                         intervalMinutes = timeTrigger?.intervalMinutes,
                         timeWindows = timeTrigger?.timeWindows ?: (timeTrigger?.timeWindow?.let { listOf(it) } ?: emptyList()),
                         urgencyLevel = existing.action.urgencyLevel,
-                        checklist = existing.checklist,
                         notificationStyle = existing.action.notificationStyle,
                         isPersistentAlert = existing.action.isPersistentAlert,
                         autoSilenceMinutes = existing.action.autoSilenceMinutes,
@@ -196,22 +192,11 @@ class ReminderEditViewModel @Inject constructor(
             notificationStyle = state.notificationStyle
         )
 
-        val finalChecklist = if (state.draftChecklistText.isNotBlank()) {
-            state.checklist + ChecklistItem(
-                id = System.nanoTime(),
-                text = state.draftChecklistText.trim(),
-                orderIndex = state.checklist.size
-            )
-        } else {
-            state.checklist
-        }
-
         return Reminder(
             id = state.id,
             title = state.title.trim(),
             notes = state.notes.trim(),
             triggerType = state.triggerType,
-            checklist = finalChecklist,
             timeTrigger = timeTrigger,
             action = action,
             createdAt = now,
@@ -220,11 +205,6 @@ class ReminderEditViewModel @Inject constructor(
     }
 
     fun saveReminder(onSuccess: () -> Unit) {
-        if (_uiState.value.draftChecklistText.isNotBlank()) {
-            addChecklistItem(_uiState.value.draftChecklistText.trim())
-            _uiState.update { it.copy(draftChecklistText = "") }
-        }
-
         if (_uiState.value.title.isBlank()) {
             _uiState.update {
                 it.copy(
@@ -331,7 +311,6 @@ class ReminderEditViewModel @Inject constructor(
                 curr.intervalMinutes != init.intervalMinutes ||
                 curr.timeWindows != init.timeWindows ||
                 curr.urgencyLevel != init.urgencyLevel ||
-                curr.checklist != init.checklist ||
                 curr.notificationStyle != init.notificationStyle ||
                 curr.isPersistentAlert != init.isPersistentAlert ||
                 curr.autoSilenceMinutes != init.autoSilenceMinutes ||
@@ -492,56 +471,6 @@ class ReminderEditViewModel @Inject constructor(
     fun setIntervalMinutes(v: Int?) { _uiState.update { it.copy(intervalMinutes = v) } }
     fun setUrgencyLevel(level: UrgencyLevel) { _uiState.update { it.copy(urgencyLevel = level) } }
     
-    fun setDraftChecklistText(text: String) {
-        _uiState.update { it.copy(draftChecklistText = text) }
-    }
-
-    fun addChecklistItem(text: String) {
-        _uiState.update { state ->
-            val newItem = ChecklistItem(
-                id = System.nanoTime(),
-                text = text,
-                orderIndex = state.checklist.size
-            )
-            state.copy(checklist = state.checklist + newItem)
-        }
-    }
-    fun updateChecklistItemText(index: Int, text: String) {
-        _uiState.update { state -> 
-            val list = state.checklist.toMutableList()
-            if(index in list.indices) { list[index] = list[index].copy(text = text) }
-            state.copy(checklist = list) 
-        }
-    }
-    fun toggleChecklistItemInitial(index: Int, isCompleted: Boolean) {
-        _uiState.update { state -> 
-            val list = state.checklist.toMutableList()
-            if(index in list.indices) { list[index] = list[index].copy(isCompleted = isCompleted) }
-            state.copy(checklist = list) 
-        }
-    }
-    fun deleteChecklistItem(index: Int) {
-        _uiState.update { state -> 
-            val list = state.checklist.toMutableList()
-            if(index in list.indices) { list.removeAt(index) }
-            state.copy(checklist = list) 
-        }
-    }
-    fun moveChecklistItem(from: Int, to: Int) {
-        _uiState.update { state -> 
-            val list = state.checklist.toMutableList()
-            if (from in list.indices && to in list.indices) {
-                val item = list.removeAt(from)
-                list.add(to, item)
-                val reindexed = list.mapIndexed { index, checklistItem ->
-                    checklistItem.copy(orderIndex = index)
-                }
-                state.copy(checklist = reindexed)
-            } else {
-                state
-            }
-        }
-    }
     fun setNotificationStyle(style: NotificationStyle) {
         _uiState.update {
             it.copy(

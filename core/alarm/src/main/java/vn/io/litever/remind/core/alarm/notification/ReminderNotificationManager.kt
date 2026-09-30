@@ -99,7 +99,7 @@ class ReminderNotificationManager @Inject constructor(
     }
 
     /**
-     * Updates an active notification (e.g. after a checklist toggle) without re-alerting.
+     * Updates an active notification without re-alerting.
      */
     fun updateNotification(reminder: Reminder) {
         showNotification(reminder)
@@ -219,63 +219,20 @@ class ReminderNotificationManager @Inject constructor(
     }
 
     fun formatContentText(reminder: Reminder): String {
-        val hasNotes = reminder.notes.isNotBlank()
-        val hasChecklist = reminder.checklist.isNotEmpty()
-
-        if (hasNotes && hasChecklist) {
-            val nextItem = reminder.checklist.sortedBy { it.orderIndex }.firstOrNull { !it.isCompleted }
-            val nextItemSnippet = nextItem?.let { " - ${it.text}" } ?: ""
-            return "${reminder.notes} [${reminder.completedChecklistCount}/${reminder.totalChecklistCount} done]$nextItemSnippet"
-        }
-
-        if (hasChecklist) {
-            val nextItem = reminder.checklist.sortedBy { it.orderIndex }.firstOrNull { !it.isCompleted }
-            val nextItemSnippet = nextItem?.let { " - ${it.text}" } ?: ""
-            return "[${reminder.completedChecklistCount}/${reminder.totalChecklistCount} done]$nextItemSnippet"
-        }
-
-        if (hasNotes) {
+        if (reminder.notes.isNotBlank()) {
             return reminder.notes
         }
-
         return context.getString(R.string.reminder_default_triggered)
     }
 
     fun formatBigTextStyle(reminder: Reminder, title: String): NotificationCompat.BigTextStyle {
-        val bigText = buildString {
-            if (reminder.notes.isNotBlank()) {
-                append(reminder.notes)
-            }
-
-            if (reminder.checklist.isNotEmpty()) {
-                if (isNotEmpty()) append("\n\n")
-                append(context.getString(
-                    R.string.reminder_checklist_summary_header,
-                    reminder.completedChecklistCount,
-                    reminder.totalChecklistCount
-                ))
-                reminder.checklist.sortedBy { it.orderIndex }.forEach { item ->
-                    append("\n")
-                    append(if (item.isCompleted) "[✓] " else "[  ] ")
-                    append(item.text)
-                }
-            }
-        }
-
-        val summaryText = if (reminder.checklist.isNotEmpty()) {
-            "[${reminder.completedChecklistCount}/${reminder.totalChecklistCount} done]"
-        } else {
-            null
+        val bigText = reminder.notes.ifBlank {
+            context.getString(R.string.reminder_default_triggered)
         }
 
         return NotificationCompat.BigTextStyle()
             .setBigContentTitle(title)
             .bigText(bigText)
-            .also {
-                if (summaryText != null) {
-                    it.setSummaryText(summaryText)
-                }
-            }
     }
 
     private fun createContentPendingIntent(reminderId: Long): PendingIntent {
@@ -326,21 +283,6 @@ class ReminderNotificationManager @Inject constructor(
         return PendingIntent.getBroadcast(
             context,
             (reminderId * 100 + 2).toInt(),
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-    }
-
-    private fun createChecklistTogglePendingIntent(reminderId: Long, itemId: Long): PendingIntent {
-        val intent = Intent(context, ReminderReceiver::class.java).apply {
-            action = ReminderReceiver.ACTION_REMINDER_CHECKLIST_TOGGLE
-            putExtra(ReminderReceiver.EXTRA_REMINDER_ID, reminderId)
-            putExtra(ReminderReceiver.EXTRA_CHECKLIST_ITEM_ID, itemId)
-            putExtra(ReminderReceiver.EXTRA_CHECKLIST_IS_COMPLETED, true)
-        }
-        return PendingIntent.getBroadcast(
-            context,
-            (reminderId * 1000 + itemId).toInt(),
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )

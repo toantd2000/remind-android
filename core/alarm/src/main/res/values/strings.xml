@@ -28,7 +28,6 @@
     <string name="reminder_action_snooze">Snooze</string>
     <string name="reminder_action_snooze_interval">Snooze (%1$dm)</string>
     <string name="reminder_action_dismiss">Dismiss</string>
-    <string name="reminder_checklist_summary_header">Checklist (%1$d/%2$d completed):</string>
 </resources>
 
 

@@ -12,42 +12,32 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
-import vn.io.litever.remind.core.database.dao.ChecklistItemDao
 import vn.io.litever.remind.core.database.dao.ReminderDao
-import vn.io.litever.remind.core.database.entity.ChecklistItemEntity
 import vn.io.litever.remind.core.database.entity.ReminderEntity
-import vn.io.litever.remind.core.database.model.PopulatedReminder
-import vn.io.litever.remind.core.model.ChecklistItem
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderTriggerType
 
 class ReminderRepositoryImplTest {
 
     private val reminderDao = mockk<ReminderDao>(relaxed = true)
-    private val checklistItemDao = mockk<ChecklistItemDao>(relaxed = true)
     private lateinit var repository: ReminderRepositoryImpl
 
     @Before
     fun setup() {
-        repository = ReminderRepositoryImpl(reminderDao, checklistItemDao)
+        repository = ReminderRepositoryImpl(reminderDao)
     }
 
     @Test
     fun `getAllReminders emits mapped domain reminders from DAO flow`() = runTest {
-        val populatedList = listOf(
-            PopulatedReminder(
-                reminder = ReminderEntity(id = 1L, title = "Task 1", triggerType = "TIME"),
-                checklist = listOf(ChecklistItemEntity(id = 10L, reminderId = 1L, text = "Subtask 1"))
-            )
+        val entityList = listOf(
+            ReminderEntity(id = 1L, title = "Task 1", triggerType = "TIME")
         )
-        every { reminderDao.getAllReminders() } returns flowOf(populatedList)
+        every { reminderDao.getAllReminders() } returns flowOf(entityList)
 
         repository.getAllReminders().test {
             val emissions = awaitItem()
             assertEquals(1, emissions.size)
             assertEquals("Task 1", emissions[0].title)
-            assertEquals(1, emissions[0].checklist.size)
-            assertEquals("Subtask 1", emissions[0].checklist[0].text)
             awaitComplete()
         }
     }
@@ -65,11 +55,8 @@ class ReminderRepositoryImplTest {
 
     @Test
     fun `getReminderById returns mapped reminder when present`() = runTest {
-        val populated = PopulatedReminder(
-            reminder = ReminderEntity(id = 5L, title = "Doctor Appointment", triggerType = "TIME"),
-            checklist = emptyList()
-        )
-        coEvery { reminderDao.getReminderById(5L) } returns populated
+        val entity = ReminderEntity(id = 5L, title = "Doctor Appointment", triggerType = "TIME")
+        coEvery { reminderDao.getReminderById(5L) } returns entity
 
         val result = repository.getReminderById(5L)
 
@@ -78,14 +65,10 @@ class ReminderRepositoryImplTest {
     }
 
     @Test
-    fun `insertReminder inserts entity and batch inserts checklist items with generated ID`() = runTest {
+    fun `insertReminder inserts entity and returns generated ID`() = runTest {
         val reminder = Reminder(
             title = "Morning Routine",
-            triggerType = ReminderTriggerType.FIXED_TIME,
-            checklist = listOf(
-                ChecklistItem(text = "Drink Water"),
-                ChecklistItem(text = "Stretch")
-            )
+            triggerType = ReminderTriggerType.FIXED_TIME
         )
 
         coEvery { reminderDao.insertReminder(any()) } returns 42L
@@ -94,48 +77,21 @@ class ReminderRepositoryImplTest {
 
         assertEquals(42L, generatedId)
         coVerify(exactly = 1) { reminderDao.insertReminder(match { it.title == "Morning Routine" }) }
-        coVerify(exactly = 1) {
-            checklistItemDao.insertChecklistItems(match { list ->
-                list.size == 2 &&
-                list[0].reminderId == 42L && list[0].orderIndex == 0 && list[0].text == "Drink Water" &&
-                list[1].reminderId == 42L && list[1].orderIndex == 1 && list[1].text == "Stretch"
-            })
-        }
     }
 
     @Test
-    fun `insertReminder without checklist items skips checklist DAO insert`() = runTest {
-        val reminder = Reminder(
-            title = "Simple Alarm",
-            triggerType = ReminderTriggerType.FIXED_TIME,
-            checklist = emptyList()
-        )
-
-        coEvery { reminderDao.insertReminder(any()) } returns 100L
-
-        val id = repository.insertReminder(reminder)
-
-        assertEquals(100L, id)
-        coVerify(exactly = 1) { reminderDao.insertReminder(any()) }
-        coVerify(exactly = 0) { checklistItemDao.insertChecklistItems(any()) }
-    }
-
-    @Test
-    fun `updateReminder updates entity and replaces checklist items`() = runTest {
+    fun `updateReminder updates entity`() = runTest {
         val reminder = Reminder(
             id = 7L,
             title = "Updated Task",
-            triggerType = ReminderTriggerType.FIXED_TIME,
-            checklist = listOf(ChecklistItem(id = 1L, text = "New Item"))
+            triggerType = ReminderTriggerType.FIXED_TIME
         )
 
         repository.updateReminder(reminder)
 
         coVerify(exactly = 1) {
-            reminderDao.updateReminderWithChecklist(
-                match { it.id == 7L && it.title == "Updated Task" },
-                match { it.size == 1 && it[0].reminderId == 7L },
-                checklistItemDao
+            reminderDao.updateReminder(
+                match { it.id == 7L && it.title == "Updated Task" }
             )
         }
     }
@@ -150,19 +106,9 @@ class ReminderRepositoryImplTest {
     }
 
     @Test
-    fun `updateChecklistItemCompletion directly invokes checklistItemDao completion update`() = runTest {
-        repository.updateChecklistItemCompletion(itemId = 25L, isCompleted = true)
-
-        coVerify(exactly = 1) { checklistItemDao.updateChecklistItemCompletion(25L, true) }
-    }
-
-    @Test
     fun `getActiveMonitoringReminders emits active background triggers`() = runTest {
         val activeList = listOf(
-            PopulatedReminder(
-                reminder = ReminderEntity(id = 2L, title = "Geofence Alert", triggerType = "LOCATION", isEnabled = true, isCompleted = false),
-                checklist = emptyList()
-            )
+            ReminderEntity(id = 2L, title = "Geofence Alert", triggerType = "LOCATION", isEnabled = true, isCompleted = false)
         )
         every { reminderDao.getActiveMonitoringReminders() } returns flowOf(activeList)
 

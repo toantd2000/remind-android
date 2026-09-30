@@ -44,7 +44,7 @@ class ReminderReceiver : BroadcastReceiver() {
         scope.launch {
             try {
                 val reminder = reminderRepository.getReminderById(reminderId)
-                if (reminder == null || (!reminder.isEnabled && action != ACTION_REMINDER_DISMISS && action != ACTION_REMINDER_SNOOZE && action != ACTION_REMINDER_CHECKLIST_TOGGLE)) {
+                if (reminder == null || (!reminder.isEnabled && action != ACTION_REMINDER_DISMISS && action != ACTION_REMINDER_SNOOZE)) {
                     return@launch
                 }
 
@@ -53,13 +53,6 @@ class ReminderReceiver : BroadcastReceiver() {
                     ACTION_TRIGGER_REMINDER_SNOOZE -> handleTriggerReminder(context, reminder, isSnooze = true)
                     ACTION_REMINDER_SNOOZE -> handleSnoozeAction(reminder)
                     ACTION_REMINDER_DISMISS -> handleDismissAction(reminder)
-                    ACTION_REMINDER_CHECKLIST_TOGGLE -> {
-                        val itemId = intent.getLongExtra(EXTRA_CHECKLIST_ITEM_ID, -1L)
-                        val isCompleted = intent.getBooleanExtra(EXTRA_CHECKLIST_IS_COMPLETED, false)
-                        if (itemId != -1L) {
-                            handleChecklistToggleAction(context, reminder, itemId, isCompleted)
-                        }
-                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -71,21 +64,11 @@ class ReminderReceiver : BroadcastReceiver() {
 
     private suspend fun handleTriggerReminder(context: Context, reminder: Reminder, isSnooze: Boolean) {
         val nowMillis = System.currentTimeMillis()
-        val isRecurring = reminder.isRecurring || reminder.triggerType == ReminderTriggerType.INTERVAL
-        val resetChecklist = if (!isSnooze && isRecurring && reminder.checklist.isNotEmpty()) {
-            reminderRepository.resetChecklist(reminder.id, nowMillis)
-            reminder.checklist.map { it.copy(isCompleted = false) }
-        } else {
-            reminder.checklist
-        }
-
         val updatedReminder = if (!isSnooze) {
             reminder.copy(
                 currentSnoozeCount = 0,
                 snoozeNextTriggerTime = null,
-                lastTriggeredTime = nowMillis,
-                lastChecklistResetTime = if (isRecurring && reminder.checklist.isNotEmpty()) nowMillis else reminder.lastChecklistResetTime,
-                checklist = resetChecklist
+                lastTriggeredTime = nowMillis
             )
         } else {
             reminder.copy(snoozeNextTriggerTime = null)
@@ -163,20 +146,6 @@ class ReminderReceiver : BroadcastReceiver() {
         }
     }
 
-    private suspend fun handleChecklistToggleAction(
-        context: Context,
-        reminder: Reminder,
-        itemId: Long,
-        isCompleted: Boolean
-    ) {
-        reminderRepository.updateChecklistItemCompletion(itemId, isCompleted)
-        val refreshed = reminderRepository.getReminderById(reminder.id)
-        if (refreshed != null) {
-            reminderNotificationManager.updateNotification(refreshed)
-            fireReminderAlert(context, refreshed)
-        }
-    }
-
     private fun fireReminderAlert(context: Context, reminder: Reminder) {
         val alertIntent = Intent(ACTION_FIRE_REMINDER_ALERT).apply {
             setPackage(context.packageName)
@@ -192,13 +161,10 @@ class ReminderReceiver : BroadcastReceiver() {
         const val ACTION_TRIGGER_REMINDER_SNOOZE = "vn.io.litever.remind.core.alarm.ACTION_TRIGGER_REMINDER_SNOOZE"
         const val ACTION_REMINDER_SNOOZE = "vn.io.litever.remind.core.alarm.ACTION_REMINDER_SNOOZE"
         const val ACTION_REMINDER_DISMISS = "vn.io.litever.remind.core.alarm.ACTION_REMINDER_DISMISS"
-        const val ACTION_REMINDER_CHECKLIST_TOGGLE = "vn.io.litever.remind.core.alarm.ACTION_REMINDER_CHECKLIST_TOGGLE"
         const val ACTION_FIRE_REMINDER_ALERT = "vn.io.litever.remind.core.alarm.ACTION_FIRE_REMINDER_ALERT"
 
         const val EXTRA_REMINDER_ID = "extra_reminder_id"
         const val EXTRA_IS_SNOOZE = "extra_is_snooze"
-        const val EXTRA_CHECKLIST_ITEM_ID = "extra_checklist_item_id"
-        const val EXTRA_CHECKLIST_IS_COMPLETED = "extra_checklist_is_completed"
         const val EXTRA_NOTIFICATION_STYLE = "extra_notification_style"
         const val EXTRA_IS_PERSISTENT = "extra_is_persistent"
     }

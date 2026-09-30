@@ -58,15 +58,6 @@ class ReminderRingingViewModel @Inject constructor(
         initialValue = ReminderRingingUiState()
     )
 
-    fun toggleChecklistItem(itemId: Long, isCompleted: Boolean) {
-        viewModelScope.launch {
-            reminderRepository.updateChecklistItemCompletion(itemId, isCompleted)
-            val refreshed = reminderRepository.getReminderById(reminderId)
-            if (refreshed != null) {
-                reminderNotificationManager.updateNotification(refreshed)
-            }
-        }
-    }
 
     fun snooze(onFinished: () -> Unit) {
         viewModelScope.launch {

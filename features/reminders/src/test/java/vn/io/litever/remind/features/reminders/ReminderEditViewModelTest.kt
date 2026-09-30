@@ -27,7 +27,6 @@ import vn.io.litever.remind.core.common.util.ReminderPermissionType
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
-import vn.io.litever.remind.core.model.ChecklistItem
 import java.time.DayOfWeek
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder
@@ -93,9 +92,6 @@ class ReminderEditViewModelTest {
             timeTrigger = TimeTrigger(
                 time = listOf(LocalTime.of(9, 30)),
                 exactDate = LocalDate.of(2026, 10, 15)
-            ),
-            checklist = listOf(
-                ChecklistItem(id = 1, reminderId = 42L, text = "Card", isCompleted = false)
             )
         )
         coEvery { repository.getReminderById(42L) } returns existing
@@ -119,7 +115,6 @@ class ReminderEditViewModelTest {
         assertEquals(ReminderTriggerType.FIXED_TIME, state.triggerType)
         assertEquals(LocalTime.of(9, 30), state.time)
         assertEquals(LocalDate.of(2026, 10, 15), state.date)
-        assertEquals(1, state.checklist.size)
     }
 
     @Test
@@ -143,42 +138,6 @@ class ReminderEditViewModelTest {
         assertTrue(viewModel.uiState.value.showTitleError)
         assertFalse(onSuccessCalled)
         coVerify(exactly = 0) { repository.insertReminder(any()) }
-    }
-
-    @Test
-    fun checklistOperations_add_edit_toggle_delete_move() = runTest {
-        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
-        val viewModel = ReminderEditViewModel(
-            reminderRepository = repository,
-            reminderScheduler = scheduler,
-            reminderSyncManager = reminderSyncManager,
-            permissionChecker = permissionChecker,
-            preferencesDataSource = preferencesDataSource,
-            savedStateHandle = savedStateHandle
-        )
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // 1. Add
-        viewModel.addChecklistItem("Milk")
-        viewModel.addChecklistItem("Eggs")
-        viewModel.addChecklistItem("Bread")
-        assertEquals(3, viewModel.uiState.value.checklist.size)
-
-        // 2. Edit
-        viewModel.updateChecklistItemText(1, "Fresh Eggs")
-        assertEquals("Fresh Eggs", viewModel.uiState.value.checklist[1].text)
-
-        // 3. Toggle Initial
-        viewModel.toggleChecklistItemInitial(0, true)
-        assertTrue(viewModel.uiState.value.checklist[0].isCompleted)
-
-        // 4. Move Bread (index 2) to index 0
-        viewModel.moveChecklistItem(2, 0)
-        assertEquals("Bread", viewModel.uiState.value.checklist[0].text)
-
-        // 5. Delete item at index 1
-        viewModel.deleteChecklistItem(1)
-        assertEquals(2, viewModel.uiState.value.checklist.size)
     }
 
     @Test
@@ -381,39 +340,6 @@ class ReminderEditViewModelTest {
 
         assertTrue(viewModel.uiState.value.showDiscardDialog)
         assertFalse(backNavigated)
-    }
-
-    @Test
-    fun moveChecklistItem_reordersItemsCorrectly() = runTest {
-        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
-        val viewModel = ReminderEditViewModel(
-            reminderRepository = repository,
-            reminderScheduler = scheduler,
-            reminderSyncManager = reminderSyncManager,
-            permissionChecker = permissionChecker,
-            preferencesDataSource = preferencesDataSource,
-            savedStateHandle = savedStateHandle
-        )
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        viewModel.addChecklistItem("Task 1")
-        viewModel.addChecklistItem("Task 2")
-        viewModel.addChecklistItem("Task 3")
-
-        assertEquals("Task 1", viewModel.uiState.value.checklist[0].text)
-        assertEquals("Task 2", viewModel.uiState.value.checklist[1].text)
-        assertEquals("Task 3", viewModel.uiState.value.checklist[2].text)
-
-        // Move Task 1 (index 0) to index 2
-        viewModel.moveChecklistItem(0, 2)
-
-        val updated = viewModel.uiState.value.checklist
-        assertEquals("Task 2", updated[0].text)
-        assertEquals(0, updated[0].orderIndex)
-        assertEquals("Task 3", updated[1].text)
-        assertEquals(1, updated[1].orderIndex)
-        assertEquals("Task 1", updated[2].text)
-        assertEquals(2, updated[2].orderIndex)
     }
 
     @Test

@@ -25,7 +25,6 @@ import vn.io.litever.remind.core.alarm.alert.ReminderAlertManager
 import vn.io.litever.remind.core.alarm.notification.ReminderNotificationManager
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
-import vn.io.litever.remind.core.model.ChecklistItem
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderAction
@@ -230,36 +229,5 @@ class ReminderReceiverTest {
         assertFalse(updatedSlot.captured.isCompleted)
         assertNotNull(updatedSlot.captured.lastTriggeredTime)
         verify(atLeast = 1) { scheduler.schedule(match { it.id == 45L }) }
-    }
-
-    @Test
-    fun onReceive_checklistToggle_updatesItemStatusAndRefreshesNotification() = runBlocking {
-        val reminder = Reminder(
-            id = 50L,
-            title = "Checklist Reminder",
-            triggerType = ReminderTriggerType.FIXED_TIME,
-            checklist = listOf(
-                ChecklistItem(id = 1L, reminderId = 50L, text = "Item 1", isCompleted = false)
-            )
-        )
-        val refreshedReminder = reminder.copy(
-            checklist = listOf(
-                ChecklistItem(id = 1L, reminderId = 50L, text = "Item 1", isCompleted = true)
-            )
-        )
-
-        coEvery { repository.getReminderById(50L) } returnsMany listOf(reminder, refreshedReminder)
-
-        val intent = Intent(ReminderReceiver.ACTION_REMINDER_CHECKLIST_TOGGLE).apply {
-            putExtra(ReminderReceiver.EXTRA_REMINDER_ID, 50L)
-            putExtra(ReminderReceiver.EXTRA_CHECKLIST_ITEM_ID, 1L)
-            putExtra(ReminderReceiver.EXTRA_CHECKLIST_IS_COMPLETED, true)
-        }
-
-        receiver.onReceive(context, intent)
-        Thread.sleep(100)
-
-        coVerify(atLeast = 1) { repository.updateChecklistItemCompletion(1L, true) }
-        verify(atLeast = 1) { notificationManager.updateNotification(match { it.id == 50L && it.checklist[0].isCompleted }) }
     }
 }

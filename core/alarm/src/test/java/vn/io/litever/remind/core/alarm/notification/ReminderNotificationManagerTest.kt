@@ -20,7 +20,6 @@ import org.junit.Before
 import org.junit.Test
 import vn.io.litever.remind.core.alarm.R
 import vn.io.litever.remind.core.common.util.PermissionChecker
-import vn.io.litever.remind.core.model.ChecklistItem
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderAction
@@ -55,52 +54,25 @@ class ReminderNotificationManagerTest {
     }
 
     @Test
-    fun formatContentText_withNotesAndChecklist_formatsSnippetCorrectly() {
+    fun formatContentText_withNotes_formatsSnippetCorrectly() {
         val reminder = Reminder(
             id = 1L,
             title = "Groceries",
             notes = "Target Store",
-            triggerType = ReminderTriggerType.FIXED_TIME,
-            checklist = listOf(
-                ChecklistItem(id = 1L, reminderId = 1L, text = "Milk", isCompleted = true, orderIndex = 0),
-                ChecklistItem(id = 2L, reminderId = 1L, text = "Bread", isCompleted = false, orderIndex = 1)
-            )
+            triggerType = ReminderTriggerType.FIXED_TIME
         )
 
         val text = manager.formatContentText(reminder)
         assertTrue(text.contains("Target Store"))
-        assertTrue(text.contains("[1/2 done]"))
-        assertTrue(text.contains("Bread"))
     }
 
     @Test
-    fun formatContentText_withChecklistOnly_formatsSnippetCorrectly() {
-        val reminder = Reminder(
-            id = 2L,
-            title = "Tasks",
-            notes = "",
-            triggerType = ReminderTriggerType.FIXED_TIME,
-            checklist = listOf(
-                ChecklistItem(id = 1L, reminderId = 2L, text = "Write tests", isCompleted = false, orderIndex = 0)
-            )
-        )
-
-        val text = manager.formatContentText(reminder)
-        assertTrue(text.contains("[0/1 done]"))
-        assertTrue(text.contains("Write tests"))
-    }
-
-    @Test
-    fun formatBigTextStyle_includesAllItemsWithCheckedMarkers() {
+    fun formatBigTextStyle_includesNotes() {
         val reminder = Reminder(
             id = 3L,
             title = "Daily Routine",
             notes = "Morning list",
-            triggerType = ReminderTriggerType.FIXED_TIME,
-            checklist = listOf(
-                ChecklistItem(id = 1L, reminderId = 3L, text = "Meditation", isCompleted = true, orderIndex = 0),
-                ChecklistItem(id = 2L, reminderId = 3L, text = "Jogging", isCompleted = false, orderIndex = 1)
-            )
+            triggerType = ReminderTriggerType.FIXED_TIME
         )
 
         val bigTextStyle = manager.formatBigTextStyle(reminder, "Daily Routine")
@@ -233,15 +205,12 @@ class ReminderNotificationManagerTest {
     fun buildNotification_containsSnoozeAndDismissActions() {
         val reminder = Reminder(
             id = 100L,
-            title = "Task with checklist",
+            title = "Task with actions",
             triggerType = ReminderTriggerType.FIXED_TIME,
             action = ReminderAction(
                 urgencyLevel = UrgencyLevel.MEDIUM,
                 snoozeEnabled = true,
                 snoozeIntervalMinutes = 10
-            ),
-            checklist = listOf(
-                ChecklistItem(id = 1L, reminderId = 100L, text = "Subtask 1", isCompleted = false)
             )
         )
 
@@ -258,9 +227,6 @@ class ReminderNotificationManagerTest {
             triggerType = ReminderTriggerType.FIXED_TIME,
             action = ReminderAction(
                 snoozeEnabled = false
-            ),
-            checklist = listOf(
-                ChecklistItem(id = 1L, reminderId = 101L, text = "Subtask 1", isCompleted = false)
             )
         )
 

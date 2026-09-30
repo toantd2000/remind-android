@@ -4,9 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import vn.io.litever.remind.core.database.entity.ChecklistItemEntity
 import vn.io.litever.remind.core.database.entity.ReminderEntity
-import vn.io.litever.remind.core.database.model.PopulatedReminder
 import java.time.DayOfWeek
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder
@@ -111,24 +109,6 @@ class ReminderMapperTest {
         assertEquals(ReminderMonthDay(3, 8), model.timeTrigger?.yearlyDates?.get(0))
         assertEquals(ReminderMonthDay(10, 20), model.timeTrigger?.yearlyDates?.get(1))
         assertEquals(ReminderMonthDay(12, 25), model.timeTrigger?.yearlyDates?.get(2))
-    }
-
-    @Test
-    fun `PopulatedReminder maps and sorts checklist items by orderIndex`() {
-        val reminderEntity = ReminderEntity(id = 5L, title = "Grocery Shopping", triggerType = "FIXED_TIME")
-        val checklistEntities = listOf(
-            ChecklistItemEntity(id = 103, reminderId = 5L, text = "Bread", orderIndex = 2),
-            ChecklistItemEntity(id = 101, reminderId = 5L, text = "Milk", orderIndex = 0),
-            ChecklistItemEntity(id = 102, reminderId = 5L, text = "Eggs", orderIndex = 1)
-        )
-        val populated = PopulatedReminder(reminder = reminderEntity, checklist = checklistEntities)
-
-        val model = populated.toModel()
-
-        assertEquals(3, model.checklist.size)
-        assertEquals("Milk", model.checklist[0].text)
-        assertEquals("Eggs", model.checklist[1].text)
-        assertEquals("Bread", model.checklist[2].text)
     }
 
     @Test

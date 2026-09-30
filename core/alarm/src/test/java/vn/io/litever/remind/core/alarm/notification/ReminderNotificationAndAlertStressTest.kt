@@ -32,7 +32,6 @@ import vn.io.litever.remind.core.alarm.alert.AlertPlaybackState
 import vn.io.litever.remind.core.alarm.alert.ReminderAlertManagerImpl
 import vn.io.litever.remind.core.common.util.PermissionChecker
 import vn.io.litever.remind.core.common.util.getAccessibleRingtoneUri
-import vn.io.litever.remind.core.model.ChecklistItem
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderAction
@@ -145,13 +144,12 @@ class ReminderNotificationAndAlertStressTest {
     }
 
     @Test
-    fun formatContentText_withBlankTitleAndBlankNotesAndEmptyChecklist_returnsDefaultTriggered() {
+    fun formatContentText_withBlankTitleAndBlankNotes_returnsDefaultTriggered() {
         val reminder = Reminder(
             id = 2001L,
             title = "   ",
             notes = "   ",
-            triggerType = ReminderTriggerType.FIXED_TIME,
-            checklist = emptyList()
+            triggerType = ReminderTriggerType.FIXED_TIME
         )
 
         val text = reminderNotificationManager.formatContentText(reminder)
@@ -168,8 +166,7 @@ class ReminderNotificationAndAlertStressTest {
             id = 2002L,
             title = "Massive Reminder",
             notes = massiveNote,
-            triggerType = ReminderTriggerType.FIXED_TIME,
-            checklist = emptyList()
+            triggerType = ReminderTriggerType.FIXED_TIME
         )
 
         val text = reminderNotificationManager.formatContentText(reminder)
@@ -177,62 +174,6 @@ class ReminderNotificationAndAlertStressTest {
 
         val bigStyle = reminderNotificationManager.formatBigTextStyle(reminder, "Massive Reminder")
         assertNotNull(bigStyle)
-    }
-
-    @Test
-    fun formatBigTextStyle_with50ChecklistItems_formatsAllItemsAndCountersCorrectly() {
-        val items = (1..50).map { i ->
-            ChecklistItem(
-                id = i.toLong(),
-                reminderId = 2003L,
-                text = "Item #$i description",
-                isCompleted = (i <= 20),
-                orderIndex = i
-            )
-        }
-
-        val reminder = Reminder(
-            id = 2003L,
-            title = "Big Packing List",
-            notes = "Pack for international flight",
-            triggerType = ReminderTriggerType.INTERVAL,
-            checklist = items
-        )
-
-        assertEquals(20, reminder.completedChecklistCount)
-        assertEquals(50, reminder.totalChecklistCount)
-
-        val text = reminderNotificationManager.formatContentText(reminder)
-        assertTrue(text.contains("Pack for international flight"))
-        assertTrue(text.contains("[20/50 done]"))
-        assertTrue(text.contains("Item #21 description"))
-
-        val bigStyle = reminderNotificationManager.formatBigTextStyle(reminder, reminder.title)
-        assertNotNull(bigStyle)
-
-        val notification = reminderNotificationManager.buildNotification(reminder)
-        assertNotNull(notification)
-        assertTrue(notification.actions != null && notification.actions.isNotEmpty())
-    }
-
-    @Test
-    fun buildNotification_whenAllChecklistItemsCompleted_omitsInlineChecklistToggle() {
-        val items = listOf(
-            ChecklistItem(id = 1L, reminderId = 2004L, text = "Done A", isCompleted = true, orderIndex = 0),
-            ChecklistItem(id = 2L, reminderId = 2004L, text = "Done B", isCompleted = true, orderIndex = 1)
-        )
-        val reminder = Reminder(
-            id = 2004L,
-            title = "Completed Checklist",
-            triggerType = ReminderTriggerType.FIXED_TIME,
-            checklist = items,
-            action = ReminderAction(snoozeEnabled = false)
-        )
-
-        val notification = reminderNotificationManager.buildNotification(reminder)
-        assertNotNull(notification)
-        assertEquals(1, notification.actions?.size ?: 0)
-        assertEquals("Dismiss", notification.actions?.firstOrNull()?.title?.toString())
     }
 
     @Test

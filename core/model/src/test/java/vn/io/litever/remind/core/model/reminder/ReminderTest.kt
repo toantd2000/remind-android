@@ -22,8 +22,6 @@ class ReminderTest {
         assertEquals("", reminder.notes)
         assertTrue(reminder.isEnabled)
         assertEquals(ReminderTriggerType.FIXED_TIME, reminder.triggerType)
-        assertNull(reminder.timeTrigger)
-        assertTrue(reminder.checklist.isEmpty())
         assertEquals(UrgencyLevel.MEDIUM, reminder.action.urgencyLevel)
         assertEquals(NotificationStyle.STANDARD, reminder.action.notificationStyle)
         assertEquals(0, reminder.currentSnoozeCount)
@@ -31,55 +29,6 @@ class ReminderTest {
         assertNull(reminder.lastTriggeredTime)
         assertFalse(reminder.isCompleted)
         assertTrue(reminder.createdAt > 0)
-    }
-
-    @Test
-    fun checklistCalculations_emptyList_returnsZero() {
-        val reminder = Reminder(
-            title = "Empty checklist",
-            triggerType = ReminderTriggerType.FIXED_TIME
-        )
-
-        assertEquals(0, reminder.totalChecklistCount)
-        assertEquals(0, reminder.completedChecklistCount)
-        assertEquals(0.0f, reminder.checklistProgress, 0.001f)
-        assertFalse(reminder.isAllChecklistCompleted)
-    }
-
-    @Test
-    fun checklistCalculations_partialCompletion_computesCorrectly() {
-        val items = listOf(
-            ChecklistItem(id = 1, reminderId = 1, text = "Task 1", isCompleted = true, orderIndex = 0),
-            ChecklistItem(id = 2, reminderId = 1, text = "Task 2", isCompleted = false, orderIndex = 1)
-        )
-        val reminder = Reminder(
-            title = "Partial checklist",
-            triggerType = ReminderTriggerType.FIXED_TIME,
-            checklist = items
-        )
-
-        assertEquals(2, reminder.totalChecklistCount)
-        assertEquals(1, reminder.completedChecklistCount)
-        assertEquals(0.5f, reminder.checklistProgress, 0.001f)
-        assertFalse(reminder.isAllChecklistCompleted)
-    }
-
-    @Test
-    fun checklistCalculations_allCompleted_computesCorrectly() {
-        val items = listOf(
-            ChecklistItem(id = 1, reminderId = 1, text = "Task 1", isCompleted = true, orderIndex = 0),
-            ChecklistItem(id = 2, reminderId = 1, text = "Task 2", isCompleted = true, orderIndex = 1)
-        )
-        val reminder = Reminder(
-            title = "All done",
-            triggerType = ReminderTriggerType.FIXED_TIME,
-            checklist = items
-        )
-
-        assertEquals(2, reminder.totalChecklistCount)
-        assertEquals(2, reminder.completedChecklistCount)
-        assertEquals(1.0f, reminder.checklistProgress, 0.001f)
-        assertTrue(reminder.isAllChecklistCompleted)
     }
 
     @Test

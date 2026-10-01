@@ -15,8 +15,8 @@ class ReminderTriggerEvaluator {
         reminder: Reminder,
         now: LocalDateTime = LocalDateTime.now()
     ): ReminderEvaluationResult {
-        if (!reminder.isEnabled || reminder.isCompleted) {
-            return ReminderEvaluationResult(reminder, isTriggered = false, reason = "Disabled or completed")
+        if (!reminder.isEnabled) {
+            return ReminderEvaluationResult(reminder, isTriggered = false, reason = "Disabled")
         }
 
         if (reminder.triggerType != ReminderTriggerType.FIXED_TIME && reminder.triggerType != ReminderTriggerType.INTERVAL) {

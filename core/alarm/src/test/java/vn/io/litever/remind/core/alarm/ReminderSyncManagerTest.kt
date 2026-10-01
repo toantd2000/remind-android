@@ -52,8 +52,7 @@ class ReminderSyncManagerTest {
             title = "Meeting",
             triggerType = ReminderTriggerType.FIXED_TIME,
             timeTrigger = TimeTrigger(time = listOf(LocalTime.of(10, 0)), exactDate = futureDate, repeatMode = RepeatMode.NONE),
-            isEnabled = true,
-            isCompleted = false
+            isEnabled = true
         )
 
         coEvery { repository.getAllReminders() } returns flowOf(listOf(reminder))
@@ -71,8 +70,7 @@ class ReminderSyncManagerTest {
             title = "Snooze Sync",
             triggerType = ReminderTriggerType.FIXED_TIME,
             snoozeNextTriggerTime = futureSnooze,
-            isEnabled = true,
-            isCompleted = false
+            isEnabled = true
         )
 
         coEvery { repository.getAllReminders() } returns flowOf(listOf(reminder))
@@ -89,8 +87,7 @@ class ReminderSyncManagerTest {
             title = "Hydration Interval",
             triggerType = ReminderTriggerType.INTERVAL,
             timeTrigger = TimeTrigger(intervalMinutes = 120),
-            isEnabled = true,
-            isCompleted = false
+            isEnabled = true
         )
 
         coEvery { repository.getAllReminders() } returns flowOf(listOf(reminder))

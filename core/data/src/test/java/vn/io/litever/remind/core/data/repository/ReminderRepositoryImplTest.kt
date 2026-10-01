@@ -108,7 +108,7 @@ class ReminderRepositoryImplTest {
     @Test
     fun `getActiveMonitoringReminders emits active background triggers`() = runTest {
         val activeList = listOf(
-            ReminderEntity(id = 2L, title = "Geofence Alert", triggerType = "LOCATION", isEnabled = true, isCompleted = false)
+            ReminderEntity(id = 2L, title = "Geofence Alert", triggerType = "LOCATION", isEnabled = true)
         )
         every { reminderDao.getActiveMonitoringReminders() } returns flowOf(activeList)
 

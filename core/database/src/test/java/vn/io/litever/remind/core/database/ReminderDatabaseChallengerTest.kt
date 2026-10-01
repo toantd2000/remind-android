@@ -143,4 +143,69 @@ class ReminderDatabaseChallengerTest {
 
         db.close()
     }
+
+    @Test
+    fun migration7To8_dropsIsCompletedProperly() {
+        val helper = androidx.sqlite.db.SupportSQLiteOpenHelper.Configuration.builder(ApplicationProvider.getApplicationContext())
+            .name("migration7_8_test.db")
+            .callback(object : androidx.sqlite.db.SupportSQLiteOpenHelper.Callback(7) {
+                override fun onCreate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
+                    db.execSQL(
+                        """
+                        CREATE TABLE IF NOT EXISTS `reminders` (
+                            `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                            `title` TEXT NOT NULL,
+                            `notes` TEXT NOT NULL,
+                            `isEnabled` INTEGER NOT NULL,
+                            `triggerType` TEXT NOT NULL,
+                            `timeTriggerTimes` TEXT,
+                            `timeTriggerIntervalMinutes` INTEGER,
+                            `timeTriggerExactDate` TEXT,
+                            `timeTriggerRepeatMode` TEXT NOT NULL DEFAULT 'NONE',
+                            `timeTriggerRepeatValues` TEXT,
+                            `timeTriggerMonthlyDays` TEXT,
+                            `timeTriggerYearlyDates` TEXT,
+                            `timeTriggerTimeWindows` TEXT,
+                            `timeTriggerWindowStart` TEXT,
+                            `timeTriggerWindowEnd` TEXT,
+                            `timeTriggerWindowActiveDays` TEXT,
+                            `urgencyLevel` TEXT NOT NULL DEFAULT 'MEDIUM',
+                            `notificationStyle` TEXT NOT NULL DEFAULT 'STANDARD',
+                            `isPersistentAlert` INTEGER NOT NULL DEFAULT 0,
+                            `autoSilenceMinutes` INTEGER NOT NULL DEFAULT 5,
+                            `useAlarmStream` INTEGER NOT NULL DEFAULT 1,
+                            `ringtoneUri` TEXT,
+                            `vibrationEnabled` INTEGER NOT NULL DEFAULT 1,
+                            `volume` INTEGER NOT NULL DEFAULT 100,
+                            `snoozeEnabled` INTEGER NOT NULL DEFAULT 1,
+                            `snoozeIntervalMinutes` INTEGER NOT NULL DEFAULT 5,
+                            `snoozeRepeatCount` INTEGER NOT NULL DEFAULT 3,
+                            `currentSnoozeCount` INTEGER NOT NULL DEFAULT 0,
+                            `snoozeNextTriggerTime` INTEGER,
+                            `lastTriggeredTime` INTEGER,
+                            `isCompleted` INTEGER NOT NULL DEFAULT 0,
+                            `createdAt` INTEGER NOT NULL
+                        )
+                        """.trimIndent()
+                    )
+                    db.execSQL("INSERT INTO `reminders` (`id`, `title`, `notes`, `isEnabled`, `triggerType`, `isCompleted`, `createdAt`) VALUES (1, 'V7 Task', 'Note', 1, 'FIXED_TIME', 1, 1000)")
+                }
+                override fun onUpgrade(db: androidx.sqlite.db.SupportSQLiteDatabase, oldVersion: Int, newVersion: Int) {}
+            })
+            .build()
+        val factory = androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory()
+        val dbHelper = factory.create(helper)
+        val db = dbHelper.writableDatabase
+
+        // Execute MIGRATION_7_8
+        RemindDatabase.MIGRATION_7_8.migrate(db)
+
+        val cursor = db.query("SELECT id, title, isEnabled FROM reminders WHERE id = 1")
+        assertTrue(cursor.moveToFirst())
+        assertEquals("V7 Task", cursor.getString(1))
+        assertEquals(1, cursor.getInt(2))
+        cursor.close()
+
+        db.close()
+    }
 }

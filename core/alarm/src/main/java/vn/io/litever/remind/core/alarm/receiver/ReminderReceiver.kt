@@ -127,7 +127,6 @@ class ReminderReceiver : BroadcastReceiver() {
             // next cycle = actual acknowledge time + intervalMinutes
             val nowMillis = System.currentTimeMillis()
             val shiftedReminder = reminder.copy(
-                isCompleted = false,
                 snoozeNextTriggerTime = null,
                 lastTriggeredTime = nowMillis
             )
@@ -138,12 +137,11 @@ class ReminderReceiver : BroadcastReceiver() {
             }
         } else {
             val isRecurring = reminder.isRecurring
-            val completedReminder = reminder.copy(
-                isCompleted = true,
+            val updatedReminder = reminder.copy(
                 isEnabled = if (isRecurring) reminder.isEnabled else false,
                 snoozeNextTriggerTime = null
             )
-            reminderRepository.updateReminder(completedReminder)
+            reminderRepository.updateReminder(updatedReminder)
             reminderScheduler.cancelSnooze(reminder)
         }
     }

@@ -5,9 +5,9 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
 ---
 
 ## 🚀 Trạng Thái Dự Án
-- **Phase Hiện Tại:** Phase 10 (Loại Bỏ Hoàn Toàn Checklist Trong Tính Năng Reminder - Tối Giản Trải Nghiệm & Kiến Trúc)
+- **Phase Hiện Tại:** Phase 11 (Tái Cấu Trúc Vòng Đời Reminder - Loại Bỏ isCompleted & Tối Giản UX Danh Sách Nhắc Nhở)
 - **Tiến Độ:** 100%
-- **Ngày cập nhật cuối:** 2026-09-30
+- **Ngày cập nhật cuối:** 2026-10-01
 - **Phiên bản hiện tại:** 2.2.0
 
 ## 📍 Lộ Trình Tổng Thể
@@ -20,11 +20,42 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
 - [x] **Phase 7:** Nâng cấp thư viện LiteVer Design System 2.0.0 & Refactor toàn diện Material 3 (includeBuild & M3 Defaults)
 - [x] **Phase 8:** Nâng cấp thư viện LiteVer Design System 2.1.0 & Chuyển đổi toàn diện sang bộ thành phần Opinionated Lv* (LvButton, LvIconButton, LvTextField, LvAlertDialog, LvChip, LvSnackbar)
 - [x] **Phase 9:** Tái Cấu Trúc CSDL Nhắc Nhở & Hoàn Thiện Mô Hình FIXED_TIME / INTERVAL (Multi-day Recurrence, UrgencyLevel, Room MIGRATION_4_5)
+- [x] **Phase 10:** Loại Bỏ Hoàn Toàn Checklist Trong Tính Năng Reminder - Tối Giản Trải Nghiệm & Kiến Trúc
+- [x] **Phase 11:** Tái Cấu Trúc Vòng Đời Reminder (Loại bỏ hoàn toàn isCompleted, thống nhất quản lý qua isEnabled, gỡ bỏ Switch khỏi ReminderCard)
 
 
 ---
 
 ## 🧠 Nhật Ký Quyết Định Kỹ Thuật (TDR)
+
+### [TDR-088] - Tái Cấu Trúc Vòng Đời Reminder: Loại Bỏ `isCompleted`, Thống Nhất Trạng Thái Qua `isEnabled` và Tinh Gọn UX Danh Sách
+- **Ngày thực hiện:** 2026-10-01
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Trước đây, `Reminder` tồn tại đồng thời 2 trường trạng thái: `isEnabled: Boolean` và `isCompleted: Boolean`.
+  - Phân tích nghiệp vụ chỉ ra sự dư thừa và xung đột logic:
+    + Với nhắc nhở 1 lần (`!isRecurring`): Khi chuông kêu xong hoặc người dùng dismiss, nhắc nhở coi như xong việc. Cả `isCompleted = true` và `isEnabled = false` đều biểu diễn cùng một trạng thái ngừng kích hoạt.
+    + Với nhắc nhở lặp lại (`isRecurring` / `INTERVAL`): Việc đánh dấu `isCompleted = true` trước đây khiến bộ lập lịch (`ReminderSchedulerImpl`) bỏ qua không lập lịch cho chu kỳ tiếp theo (`if (!reminder.isEnabled || reminder.isCompleted) return`).
+    + Sự nhập nhằng này dẫn đến việc phải duy trì logic reset chu kỳ phức tạp, tạo bug tiềm ẩn.
+  - Về mặt UI/UX:
+    + Khác với Báo thức (người dùng bật/tắt liên tục hàng ngày/cuối tuần), Nhắc nhở là nhiệm vụ/thói quen có tần suất tắt rất thấp.
+    + Việc đặt `LiteverSwitch` ngay trên từng item danh sách (`ReminderCard`) dễ gây chạm nhầm (accidental click) và làm giao diện bị rối mắt.
+- **Quyết định:**
+  1. **Loại bỏ hoàn toàn trường `isCompleted` khỏi toàn bộ hệ thống:**
+     - Domain Model: Xóa `isCompleted` trong `Reminder.kt`.
+     - Database & Migration: Xóa `isCompleted` trong `ReminderEntity.kt`, `ReminderDao.kt`. Tăng Room database version từ 7 lên 8 với `MIGRATION_7_8` (tái tạo bảng an toàn bằng SQLite table recreation theo đúng chuẩn Room).
+     - Data Mapping: Xóa bỏ `isCompleted` trong `ReminderMapper.kt`.
+     - Logic & Scheduler: Cập nhật `ReminderSchedulerImpl.kt`, `ReminderTriggerEvaluator.kt`, `ReminderSyncManager.kt`, `ReminderReceiver.kt`, `ReminderAlertManager.kt`, `ReminderRingingViewModel.kt`.
+       * Nhắc nhở 1 lần: Khi kết thúc -> cập nhật `isEnabled = false`.
+       * Nhắc nhở lặp lại: Giữ nguyên `isEnabled = true`, chỉ tịnh tiến/cập nhật `lastTriggeredTime` hoặc `snoozeNextTriggerTime`.
+  2. **Tinh gọn giao diện và hành vi UI:**
+     - `ReminderCard.kt`: Gỡ bỏ `LiteverSwitch`, loại bỏ `onToggle`. Hiển thị làm mờ màu (alpha 0.6f / onSurface) khi `!isEnabled`. Nút menu 3 chấm được căn phải gọn gàng, thoáng đãng.
+     - `ReminderActionBottomSheet.kt`: Thay thế tùy chọn "Đánh dấu hoàn thành" bằng "Tắt nhắc nhở" / "Bật nhắc nhở" (`onToggleEnabledClick`).
+     - `ReminderEditScreen.kt`: Bổ sung nút bấm dạng Outlined/Primary ở cuối màn hình chỉnh sửa ("Tắt nhắc nhở" / "Bật nhắc nhở") cho các nhắc nhở đã tồn tại (`uiState.id != 0L`).
+     - `ReminderListViewModel.kt`: Xóa bỏ logic lọc theo `isCompleted`, xóa `deleteCompletedReminders()`, `toggleCompleted()`.
+  3. **Kiểm thử & Đảm bảo chất lượng:**
+     - Cập nhật 100% test suites: `ReminderTest`, `ReminderSnoozeChallengerTest`, `ReminderDaoTest`, `ReminderDatabaseChallengerTest`, `ReminderRepositoryImplTest`, `AlarmReminderConcurrencyTest`, `ReminderSyncManagerTest`, `ReminderReceiverTest`, `ReminderSchedulerAndServiceTest`, `ReminderSchedulerImplTest`, `ReminderTriggerEvaluatorTest`, `ReminderListViewModelTest`, `ReminderAdversarialReviewTest`, `ReminderPermissionChallengerTest`, `ReminderR1R2EmpiricalChallengerTest`, `ReminderRingingViewModelTest`, `ScreenshotsTest`.
+     - Chạy `./gradlew testDebugUnitTest` vượt qua 100% tests.
 
 ### [TDR-087] - Thống nhất PermissionWarningBanner vào :core:designsystem và Cập nhật Tính năng Reminders với Lời văn Chuyên biệt
 - **Ngày thực hiện:** 2026-10-01

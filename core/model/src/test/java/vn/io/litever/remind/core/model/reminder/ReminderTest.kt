@@ -26,7 +26,6 @@ class ReminderTest {
         assertEquals(NotificationStyle.FULL_SCREEN, reminder.action.notificationStyle)
         assertNull(reminder.snoozeNextTriggerTime)
         assertNull(reminder.lastTriggeredTime)
-        assertFalse(reminder.isCompleted)
         assertTrue(reminder.createdAt > 0)
     }
 

@@ -17,7 +17,6 @@ class ReminderTriggerEvaluatorTest {
             id = 1L,
             title = "Morning Medicine",
             isEnabled = true,
-            isCompleted = false,
             triggerType = ReminderTriggerType.FIXED_TIME
         )
         val result = evaluator.evaluateTimeTrigger(reminder, LocalDateTime.now())
@@ -30,7 +29,6 @@ class ReminderTriggerEvaluatorTest {
             id = 2L,
             title = "Drink Water",
             isEnabled = true,
-            isCompleted = false,
             triggerType = ReminderTriggerType.INTERVAL
         )
         val result = evaluator.evaluateTimeTrigger(reminder, LocalDateTime.now())
@@ -43,20 +41,6 @@ class ReminderTriggerEvaluatorTest {
             id = 3L,
             title = "Disabled",
             isEnabled = false,
-            isCompleted = false,
-            triggerType = ReminderTriggerType.FIXED_TIME
-        )
-        val result = evaluator.evaluateTimeTrigger(reminder, LocalDateTime.now())
-        assertFalse(result.isTriggered)
-    }
-
-    @Test
-    fun evaluateTimeTrigger_completed_returnsNotTriggered() {
-        val reminder = Reminder(
-            id = 4L,
-            title = "Completed",
-            isEnabled = true,
-            isCompleted = true,
             triggerType = ReminderTriggerType.FIXED_TIME
         )
         val result = evaluator.evaluateTimeTrigger(reminder, LocalDateTime.now())

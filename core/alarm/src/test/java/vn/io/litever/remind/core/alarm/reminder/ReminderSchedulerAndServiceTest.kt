@@ -18,7 +18,7 @@ object ReminderSchedulerTestHelper {
         reminder: Reminder,
         referenceTime: LocalDateTime = LocalDateTime.now()
     ): Long? {
-        if (!reminder.isEnabled || reminder.isCompleted) return null
+        if (!reminder.isEnabled) return null
 
         val snoozeTime = reminder.snoozeNextTriggerTime
         if (snoozeTime != null && snoozeTime > 0) {

@@ -27,7 +27,7 @@ fun ReminderActionBottomSheet(
     onDismissRequest: () -> Unit,
     onEditClick: () -> Unit,
     onDuplicateClick: () -> Unit,
-    onToggleCompletedClick: () -> Unit,
+    onToggleEnabledClick: () -> Unit,
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -41,6 +41,34 @@ fun ReminderActionBottomSheet(
                 .fillMaxWidth()
                 .padding(bottom = 24.dp)
         ) {
+            // Turn off / Turn on
+            val toggleText = if (reminder.isEnabled) {
+                stringResource(R.string.action_turn_off)
+            } else {
+                stringResource(R.string.action_turn_on)
+            }
+            val toggleIcon = if (reminder.isEnabled) {
+                ReMindIcons.NotificationsPaused
+            } else {
+                ReMindIcons.NotificationsActive
+            }
+            LiteverListItem(
+                headlineContent = { Text(toggleText) },
+                leadingContent = {
+                    Icon(
+                        imageVector = toggleIcon,
+                        contentDescription = null,
+                        tint = if (reminder.isEnabled) LiteverTheme.colors.error else LiteverTheme.colors.primary
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        onDismissRequest()
+                        onToggleEnabledClick()
+                    }
+            )
+
             // Edit
             LiteverListItem(
                 headlineContent = { Text(stringResource(R.string.action_edit)) },
@@ -74,34 +102,6 @@ fun ReminderActionBottomSheet(
                     .clickable {
                         onDismissRequest()
                         onDuplicateClick()
-                    }
-            )
-
-            // Mark as completed / active
-            val completionText = if (reminder.isCompleted) {
-                stringResource(R.string.action_mark_active)
-            } else {
-                stringResource(R.string.action_mark_completed)
-            }
-            val completionIcon = if (reminder.isCompleted) {
-                ReMindIcons.NotificationsActive
-            } else {
-                ReMindIcons.CheckCircle
-            }
-            LiteverListItem(
-                headlineContent = { Text(completionText) },
-                leadingContent = {
-                    Icon(
-                        imageVector = completionIcon,
-                        contentDescription = null,
-                        tint = LiteverTheme.colors.primary
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        onDismissRequest()
-                        onToggleCompletedClick()
                     }
             )
 

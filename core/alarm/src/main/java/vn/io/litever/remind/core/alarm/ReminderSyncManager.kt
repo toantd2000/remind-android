@@ -27,7 +27,7 @@ class ReminderSyncManager @Inject constructor(
         val reminders = reminderRepository.getAllReminders().first()
 
         for (reminder in reminders) {
-            if (!reminder.isEnabled || reminder.isCompleted) continue
+            if (!reminder.isEnabled) continue
 
             when (reminder.triggerType) {
                 ReminderTriggerType.FIXED_TIME, ReminderTriggerType.INTERVAL -> {

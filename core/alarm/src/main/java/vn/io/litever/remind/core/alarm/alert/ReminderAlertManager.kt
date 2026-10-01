@@ -1,4 +1,4 @@
-﻿package vn.io.litever.remind.core.alarm.alert
+package vn.io.litever.remind.core.alarm.alert
 
 import android.content.Context
 import android.media.AudioAttributes
@@ -314,7 +314,7 @@ class ReminderAlertManagerImpl @Inject constructor(
                 val notificationManager = reminderNotificationManagerProvider?.get()
                 if (repository != null) {
                     val reminder = repository.getReminderById(reminderId)
-                    if (reminder != null && reminder.isEnabled && !reminder.isCompleted) {
+                    if (reminder != null && reminder.isEnabled) {
                         if (reminder.canSnooze()) {
                             
                             val snoozeIntervalMillis = reminder.action.snoozeIntervalMinutes * 60 * 1000L
@@ -327,12 +327,11 @@ class ReminderAlertManagerImpl @Inject constructor(
                             notificationManager?.cancelNotification(reminderId)
                         } else {
                             val isRecurring = reminder.isRecurring
-                            val completedReminder = reminder.copy(
-                                isCompleted = !isRecurring,
+                            val updatedReminder = reminder.copy(
                                 isEnabled = isRecurring,
                                 snoozeNextTriggerTime = null
                             )
-                            repository.updateReminder(completedReminder)
+                            repository.updateReminder(updatedReminder)
                             scheduler?.cancelSnooze(reminder)
                             notificationManager?.cancelNotification(reminderId)
                         }

@@ -246,37 +246,10 @@ class ReminderR1R2EmpiricalChallengerTest {
     }
 
     @Test
-    fun r1_deleteCompletedReminders_callsSync() = runTest(testDispatcher) {
-        val active = Reminder(id = 701L, title = "Active", triggerType = ReminderTriggerType.FIXED_TIME, isCompleted = false)
-        val completed1 = Reminder(id = 702L, title = "Done 1", triggerType = ReminderTriggerType.FIXED_TIME, isCompleted = true)
-        val completed2 = Reminder(id = 703L, title = "Done 2", triggerType = ReminderTriggerType.FIXED_TIME, isCompleted = true)
-
-        allRemindersFlow.value = listOf(active, completed1, completed2)
-
-        val listViewModel = ReminderListViewModel(
-            reminderRepository = repository,
-            reminderScheduler = scheduler,
-            permissionChecker = permissionChecker,
-            preferencesDataSource = preferencesDataSource,
-            reminderSyncManager = reminderSyncManager
-        )
-        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { listViewModel.uiState.collect() }
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        listViewModel.deleteCompletedReminders()
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        coVerify(exactly = 1) { repository.deleteReminder(completed1) }
-        coVerify(exactly = 1) { repository.deleteReminder(completed2) }
-        coVerify(exactly = 0) { repository.deleteReminder(active) }
-        coVerify(exactly = 1) { reminderSyncManager.sync() }
-    }
-
-    @Test
     fun r1_deleteDisabledReminders_callsSync() = runTest(testDispatcher) {
-        val active = Reminder(id = 801L, title = "Active", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = true, isCompleted = false)
-        val disabled1 = Reminder(id = 802L, title = "Disabled 1", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = false, isCompleted = false)
-        val disabled2 = Reminder(id = 803L, title = "Disabled 2", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = false, isCompleted = false)
+        val active = Reminder(id = 801L, title = "Active", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = true)
+        val disabled1 = Reminder(id = 802L, title = "Disabled 1", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = false)
+        val disabled2 = Reminder(id = 803L, title = "Disabled 2", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = false)
 
         allRemindersFlow.value = listOf(active, disabled1, disabled2)
 
@@ -322,28 +295,6 @@ class ReminderR1R2EmpiricalChallengerTest {
         coVerify(exactly = 1) { reminderSyncManager.sync() }
     }
 
-    @Test
-    fun r1_toggleCompleted_callsSync() = runTest(testDispatcher) {
-        val active = Reminder(id = 1001L, title = "To Complete", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = true, isCompleted = false)
-
-        val listViewModel = ReminderListViewModel(
-            reminderRepository = repository,
-            reminderScheduler = scheduler,
-            permissionChecker = permissionChecker,
-            preferencesDataSource = preferencesDataSource,
-            reminderSyncManager = reminderSyncManager
-        )
-        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { listViewModel.uiState.collect() }
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        listViewModel.toggleCompleted(active)
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        coVerify(exactly = 1) { repository.updateReminder(match { it.id == 1001L && it.isCompleted && !it.isEnabled }) }
-        coVerify(exactly = 1) { scheduler.cancel(match { it.id == 1001L }) }
-        coVerify(exactly = 1) { reminderSyncManager.sync() }
-    }
-
     // =========================================================================
     // SECTION 2: R2 — Snoozed Reminders Pinned in List Across All Filters
     // =========================================================================
@@ -368,7 +319,7 @@ class ReminderR1R2EmpiricalChallengerTest {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { listViewModel.uiState.collect() }
         testDispatcher.scheduler.advanceUntilIdle()
 
-        val list = listViewModel.uiState.value.filteredReminders
+        val list = listViewModel.uiState.value.reminders
         assertEquals(5, list.size)
 
         assertEquals(4L, list[0].id)
@@ -380,12 +331,12 @@ class ReminderR1R2EmpiricalChallengerTest {
 
     @Test
     fun r2_sorting_pinsSnoozedActiveItems() = runTest(testDispatcher) {
-        val activeNormal = Reminder(id = 10L, title = "Active Normal", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = true, isCompleted = false, createdAt = 1000L)
-        val activeSnoozed = Reminder(id = 11L, title = "Active Snoozed", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = true, isCompleted = false, snoozeNextTriggerTime = 99999L, createdAt = 1100L)
-        val disabledSnoozed = Reminder(id = 12L, title = "Disabled Snoozed", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = false, isCompleted = false, snoozeNextTriggerTime = 99999L, createdAt = 1200L)
-        val completedSnoozed = Reminder(id = 13L, title = "Completed Snoozed", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = true, isCompleted = true, snoozeNextTriggerTime = 99999L, createdAt = 1300L)
+        val activeNormal = Reminder(id = 10L, title = "Active Normal", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = true, createdAt = 1000L)
+        val activeSnoozed = Reminder(id = 11L, title = "Active Snoozed", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = true, snoozeNextTriggerTime = 99999L, createdAt = 1100L)
+        val disabledSnoozed = Reminder(id = 12L, title = "Disabled Snoozed", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = false, snoozeNextTriggerTime = 99999L, createdAt = 1200L)
+        val anotherSnoozed = Reminder(id = 13L, title = "Another Snoozed", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = true, snoozeNextTriggerTime = 99999L, createdAt = 1300L)
 
-        allRemindersFlow.value = listOf(activeNormal, activeSnoozed, disabledSnoozed, completedSnoozed)
+        allRemindersFlow.value = listOf(activeNormal, activeSnoozed, disabledSnoozed, anotherSnoozed)
 
         val listViewModel = ReminderListViewModel(
             reminderRepository = repository,
@@ -397,7 +348,7 @@ class ReminderR1R2EmpiricalChallengerTest {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { listViewModel.uiState.collect() }
         testDispatcher.scheduler.advanceUntilIdle()
 
-        val list = listViewModel.uiState.value.filteredReminders
+        val list = listViewModel.uiState.value.reminders
         assertEquals(4, list.size)
         // All 3 snoozed reminders come first (sorted by createdAt descending among snoozed), then non-snoozed
         assertTrue(list[0].snoozeNextTriggerTime != null)
@@ -412,7 +363,6 @@ class ReminderR1R2EmpiricalChallengerTest {
         for (i in 1..20) {
             val isSnoozed = (i % 3 == 0)
             val trigger = if (i % 2 == 0) ReminderTriggerType.FIXED_TIME else ReminderTriggerType.INTERVAL
-            val isCompleted = (i % 5 == 0)
             val isEnabled = (i % 2 == 0)
 
             testReminders.add(
@@ -421,7 +371,6 @@ class ReminderR1R2EmpiricalChallengerTest {
                     title = "Reminder #$i",
                     triggerType = trigger,
                     isEnabled = isEnabled,
-                    isCompleted = isCompleted,
                     snoozeNextTriggerTime = if (isSnoozed) (100000L + i * 100) else null,
                     createdAt = 1000L + (i * 37 % 50)
                 )
@@ -440,12 +389,12 @@ class ReminderR1R2EmpiricalChallengerTest {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { listViewModel.uiState.collect() }
         testDispatcher.scheduler.advanceUntilIdle()
 
-        val filtered = listViewModel.uiState.value.filteredReminders
+        val reminders = listViewModel.uiState.value.reminders
         var seenNonSnoozed = false
         var lastCreatedAtInPartition = Long.MAX_VALUE
         var currentPartitionIsSnoozed = true
 
-        for (item in filtered) {
+        for (item in reminders) {
             val itemIsSnoozed = item.snoozeNextTriggerTime != null
             if (itemIsSnoozed) {
                 assertFalse(
@@ -468,7 +417,7 @@ class ReminderR1R2EmpiricalChallengerTest {
     }
 
     // =========================================================================
-    // SECTION 3: R2 — Snoozed Card Toggle Suppression & Navigation Routing Logic
+    // SECTION 3: R2 — Snoozed Card Navigation Routing Logic
     // =========================================================================
 
     @Test
@@ -521,27 +470,5 @@ class ReminderR1R2EmpiricalChallengerTest {
 
         assertEquals(null, navigatedToRingingId)
         assertEquals(999L, navigatedToEditId)
-    }
-
-    @Test
-    fun r2_snoozedCardToggleVisibility_predicateEvaluatesToFalseWhenSnoozed() {
-        val snoozedReminder = Reminder(
-            id = 777L,
-            title = "Snoozed Item",
-            triggerType = ReminderTriggerType.FIXED_TIME,
-            snoozeNextTriggerTime = 999999L
-        )
-        val normalReminder = Reminder(
-            id = 778L,
-            title = "Normal Item",
-            triggerType = ReminderTriggerType.FIXED_TIME,
-            snoozeNextTriggerTime = null
-        )
-
-        val isSwitchVisibleForSnoozed = (snoozedReminder.snoozeNextTriggerTime == null)
-        val isSwitchVisibleForNormal = (normalReminder.snoozeNextTriggerTime == null)
-
-        assertFalse("Switch MUST be hidden for snoozed reminder", isSwitchVisibleForSnoozed)
-        assertTrue("Switch MUST be shown for non-snoozed reminder", isSwitchVisibleForNormal)
     }
 }

@@ -108,8 +108,6 @@ fun ReminderListRoute(
         onDismissPermissionWarning = viewModel::dismissPermissionWarning,
         onDeleteReminder = viewModel::deleteReminder,
         onDuplicateReminder = viewModel::duplicateReminder,
-        onToggleCompleted = viewModel::toggleCompleted,
-        onDeleteCompletedReminders = viewModel::deleteCompletedReminders,
         onDeleteDisabledReminders = viewModel::deleteDisabledReminders,
         modifier = modifier
     )
@@ -128,8 +126,6 @@ fun ReminderListScreen(
     onDismissPermissionWarning: () -> Unit = {},
     onDeleteReminder: (Reminder) -> Unit,
     onDuplicateReminder: (Reminder) -> Unit,
-    onToggleCompleted: (Reminder) -> Unit,
-    onDeleteCompletedReminders: () -> Unit,
     onDeleteDisabledReminders: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -155,13 +151,6 @@ fun ReminderListScreen(
                             expanded = showTopMenu,
                             onDismissRequest = { showTopMenu = false }
                         ) {
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.delete_completed_reminders)) },
-                                onClick = {
-                                    showTopMenu = false
-                                    onDeleteCompletedReminders()
-                                }
-                            )
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.delete_disabled_reminders)) },
                                 onClick = {
@@ -247,13 +236,6 @@ fun ReminderListScreen(
                         ReminderCard(
                             reminder = reminder,
                             is24HourFormat = uiState.is24HourFormat,
-                            onToggle = {
-                                if (reminder.snoozeNextTriggerTime != null) {
-                                    reminderForSnoozePuzzle = reminder
-                                } else {
-                                    onToggleReminder(reminder)
-                                }
-                            },
                             onClick = { onReminderClick(reminder) },
                             onMoreClick = { selectedReminderForAction = reminder }
                         )
@@ -270,7 +252,13 @@ fun ReminderListScreen(
             onDismissRequest = { selectedReminderForAction = null },
             onEditClick = { onEditReminderClick(reminder.id) },
             onDuplicateClick = { onDuplicateReminder(reminder) },
-            onToggleCompletedClick = { onToggleCompleted(reminder) },
+            onToggleEnabledClick = {
+                if (reminder.isEnabled && reminder.snoozeNextTriggerTime != null) {
+                    reminderForSnoozePuzzle = reminder
+                } else {
+                    onToggleReminder(reminder)
+                }
+            },
             onDeleteClick = { onDeleteReminder(reminder) }
         )
     }

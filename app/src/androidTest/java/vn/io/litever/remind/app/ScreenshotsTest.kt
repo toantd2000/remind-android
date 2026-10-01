@@ -42,7 +42,6 @@ import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState
 import vn.io.litever.remind.features.mission.ui.MissionRingingScreen
 import vn.io.litever.remind.features.mission.viewmodel.MissionRingingUiState
 import vn.io.litever.remind.features.reminders.ui.ReminderListScreen
-import vn.io.litever.remind.features.reminders.ui.components.ReminderFilterType
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderListUiState
 import java.time.LocalTime
 
@@ -183,33 +182,32 @@ class ScreenshotsTest {
                 title = getTestString(R.string.mock_reminder_1_title),
                 notes = getTestString(R.string.mock_reminder_1_notes),
                 isEnabled = true,
-                triggerType = ReminderTriggerType.TIME,
-                timeTrigger = TimeTrigger(time = LocalTime.of(9, 30))
+                triggerType = ReminderTriggerType.FIXED_TIME,
+                timeTrigger = TimeTrigger(time = listOf(LocalTime.of(9, 30)))
             ),
             Reminder(
                 id = 102L,
                 title = getTestString(R.string.mock_reminder_2_title),
                 notes = getTestString(R.string.mock_reminder_2_notes),
                 isEnabled = true,
-                triggerType = ReminderTriggerType.TIME,
-                timeTrigger = TimeTrigger(time = LocalTime.of(17, 30))
+                triggerType = ReminderTriggerType.FIXED_TIME,
+                timeTrigger = TimeTrigger(time = listOf(LocalTime.of(17, 30)))
             ),
             Reminder(
                 id = 103L,
                 title = getTestString(R.string.mock_reminder_3_title),
                 notes = getTestString(R.string.mock_reminder_3_notes),
                 isEnabled = true,
-                triggerType = ReminderTriggerType.TIME,
-                timeTrigger = TimeTrigger(time = LocalTime.of(14, 0))
+                triggerType = ReminderTriggerType.FIXED_TIME,
+                timeTrigger = TimeTrigger(time = listOf(LocalTime.of(14, 0)))
             ),
             Reminder(
                 id = 104L,
                 title = getTestString(R.string.mock_reminder_4_title),
                 notes = getTestString(R.string.mock_reminder_4_notes),
                 isEnabled = false,
-                isCompleted = true,
-                triggerType = ReminderTriggerType.TIME,
-                timeTrigger = TimeTrigger(time = LocalTime.of(18, 0))
+                triggerType = ReminderTriggerType.FIXED_TIME,
+                timeTrigger = TimeTrigger(time = listOf(LocalTime.of(18, 0)))
             )
         )
 
@@ -219,27 +217,18 @@ class ScreenshotsTest {
                 ReminderListScreen(
                     uiState = ReminderListUiState(
                         reminders = mockReminders,
-                        filteredReminders = mockReminders,
-                        selectedFilter = ReminderFilterType.ALL,
-                        filterCounts = mapOf(
-                            ReminderFilterType.ALL to mockReminders.size,
-                            ReminderFilterType.ACTIVE to 3,
-                            ReminderFilterType.COMPLETED to 1
-                        ),
                         is24HourFormat = false,
                         hasPermissionWarning = false
                     ),
                     snackbarHostState = snackbarHostState,
-                    onFilterSelected = {},
                     onToggleReminder = {},
                     onReminderClick = {},
                     onEditReminderClick = {},
                     onAddReminderClick = {},
                     onNavigateToPermissions = {},
+                    onDismissPermissionWarning = {},
                     onDeleteReminder = {},
                     onDuplicateReminder = {},
-                    onToggleCompleted = {},
-                    onDeleteCompletedReminders = {},
                     onDeleteDisabledReminders = {}
                 )
             }

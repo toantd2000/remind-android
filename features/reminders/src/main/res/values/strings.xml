@@ -14,9 +14,10 @@
     <string name="action_edit">Edit</string>
     <string name="action_duplicate">Duplicate</string>
     <string name="action_delete">Delete</string>
-    <string name="action_mark_completed">Mark as completed</string>
-    <string name="action_mark_active">Mark as active</string>
-    <string name="delete_completed_reminders">Delete completed reminders</string>
+    <string name="action_turn_off">Turn off reminder</string>
+    <string name="action_turn_on">Turn on reminder</string>
+    <string name="action_pause_reminder">Pause reminder</string>
+    <string name="action_resume_reminder">Resume reminder</string>
     <string name="delete_disabled_reminders">Delete disabled reminders</string>
     <string name="reminder_deleted">Reminder deleted</string>
     <string name="undo">Undo</string>

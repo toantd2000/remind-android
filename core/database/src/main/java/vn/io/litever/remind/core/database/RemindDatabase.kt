@@ -23,7 +23,7 @@ import vn.io.litever.remind.core.database.model.PhraseEntity
         MissedAlarmEntity::class,
         ReminderEntity::class
     ],
-    version = 7,
+    version = 8,
     exportSchema = false
 )
 abstract class RemindDatabase : RoomDatabase() {
@@ -147,6 +147,78 @@ abstract class RemindDatabase : RoomDatabase() {
         val MIGRATION_6_7 = object : Migration(6, 7) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE `reminders` ADD COLUMN `lastChecklistResetTime` INTEGER")
+            }
+        }
+
+        val MIGRATION_7_8 = object : Migration(7, 8) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `reminders_new` (
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        `title` TEXT NOT NULL,
+                        `notes` TEXT NOT NULL,
+                        `isEnabled` INTEGER NOT NULL,
+                        `triggerType` TEXT NOT NULL,
+                        `timeTriggerTimes` TEXT,
+                        `timeTriggerIntervalMinutes` INTEGER,
+                        `timeTriggerExactDate` TEXT,
+                        `timeTriggerRepeatMode` TEXT NOT NULL DEFAULT 'NONE',
+                        `timeTriggerRepeatValues` TEXT,
+                        `timeTriggerMonthlyDays` TEXT,
+                        `timeTriggerYearlyDates` TEXT,
+                        `timeTriggerTimeWindows` TEXT,
+                        `timeTriggerWindowStart` TEXT,
+                        `timeTriggerWindowEnd` TEXT,
+                        `timeTriggerWindowActiveDays` TEXT,
+                        `urgencyLevel` TEXT NOT NULL DEFAULT 'MEDIUM',
+                        `notificationStyle` TEXT NOT NULL DEFAULT 'STANDARD',
+                        `isPersistentAlert` INTEGER NOT NULL DEFAULT 0,
+                        `autoSilenceMinutes` INTEGER NOT NULL DEFAULT 5,
+                        `useAlarmStream` INTEGER NOT NULL DEFAULT 1,
+                        `ringtoneUri` TEXT,
+                        `vibrationEnabled` INTEGER NOT NULL DEFAULT 1,
+                        `volume` INTEGER NOT NULL DEFAULT 100,
+                        `snoozeEnabled` INTEGER NOT NULL DEFAULT 1,
+                        `snoozeIntervalMinutes` INTEGER NOT NULL DEFAULT 5,
+                        `snoozeRepeatCount` INTEGER NOT NULL DEFAULT 3,
+                        `currentSnoozeCount` INTEGER NOT NULL DEFAULT 0,
+                        `snoozeNextTriggerTime` INTEGER,
+                        `lastTriggeredTime` INTEGER,
+                        `createdAt` INTEGER NOT NULL
+                    )
+                    """.trimIndent()
+                )
+
+                db.execSQL(
+                    """
+                    INSERT INTO `reminders_new` (
+                        `id`, `title`, `notes`, `isEnabled`, `triggerType`,
+                        `timeTriggerTimes`, `timeTriggerIntervalMinutes`, `timeTriggerExactDate`,
+                        `timeTriggerRepeatMode`, `timeTriggerRepeatValues`, `timeTriggerMonthlyDays`,
+                        `timeTriggerYearlyDates`, `timeTriggerTimeWindows`, `timeTriggerWindowStart`,
+                        `timeTriggerWindowEnd`, `timeTriggerWindowActiveDays`, `urgencyLevel`,
+                        `notificationStyle`, `isPersistentAlert`, `autoSilenceMinutes`,
+                        `useAlarmStream`, `ringtoneUri`, `vibrationEnabled`, `volume`,
+                        `snoozeEnabled`, `snoozeIntervalMinutes`, `snoozeRepeatCount`,
+                        `currentSnoozeCount`, `snoozeNextTriggerTime`, `lastTriggeredTime`, `createdAt`
+                    )
+                    SELECT 
+                        `id`, `title`, `notes`, `isEnabled`, `triggerType`,
+                        `timeTriggerTimes`, `timeTriggerIntervalMinutes`, `timeTriggerExactDate`,
+                        `timeTriggerRepeatMode`, `timeTriggerRepeatValues`, `timeTriggerMonthlyDays`,
+                        `timeTriggerYearlyDates`, `timeTriggerTimeWindows`, `timeTriggerWindowStart`,
+                        `timeTriggerWindowEnd`, `timeTriggerWindowActiveDays`, `urgencyLevel`,
+                        `notificationStyle`, `isPersistentAlert`, `autoSilenceMinutes`,
+                        `useAlarmStream`, `ringtoneUri`, `vibrationEnabled`, `volume`,
+                        `snoozeEnabled`, `snoozeIntervalMinutes`, `snoozeRepeatCount`,
+                        `currentSnoozeCount`, `snoozeNextTriggerTime`, `lastTriggeredTime`, `createdAt`
+                    FROM `reminders`
+                    """.trimIndent()
+                )
+
+                db.execSQL("DROP TABLE `reminders`")
+                db.execSQL("ALTER TABLE `reminders_new` RENAME TO `reminders`")
             }
         }
     }

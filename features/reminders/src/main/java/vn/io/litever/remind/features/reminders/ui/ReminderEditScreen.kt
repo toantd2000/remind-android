@@ -141,6 +141,7 @@ fun ReminderEditRoute(
         onTogglePreview = viewModel::toggleRingtonePlayback,
         onSnoozeEnabledChange = viewModel::setSnoozeEnabled,
         onSnoozeIntervalChange = viewModel::setSnoozeIntervalMinutes,
+        onToggleEnabled = viewModel::setIsEnabled,
         onNavigateToTriggerEdit = { onNavigateToTriggerEdit(uiState.id) }
     )
 }
@@ -168,6 +169,7 @@ fun ReminderEditScreen(
     onTogglePreview: () -> Unit = {},
     onSnoozeEnabledChange: (Boolean) -> Unit = {},
     onSnoozeIntervalChange: (Int) -> Unit = {},
+    onToggleEnabled: (Boolean) -> Unit = {},
     onNavigateToTriggerEdit: () -> Unit = {}
 ) {
     val context = LocalContext.current
@@ -273,6 +275,27 @@ fun ReminderEditScreen(
                     snoozeIntervalMinutes = uiState.snoozeIntervalMinutes,
                     onSnoozeIntervalChange = onSnoozeIntervalChange
                 )
+            }
+
+            // 4. Toggle Enabled Action Button (Only for existing reminders)
+            if (uiState.id != 0L) {
+                item {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    LvButton(
+                        onClick = { onToggleEnabled(!uiState.isEnabled) },
+                        type = LvButtonType.Outlined,
+                        semantic = if (uiState.isEnabled) LvSemantic.Destructive else LvSemantic.Primary,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = if (uiState.isEnabled) {
+                                stringResource(R.string.action_turn_off)
+                            } else {
+                                stringResource(R.string.action_turn_on)
+                            }
+                        )
+                    }
+                }
             }
 
             item {

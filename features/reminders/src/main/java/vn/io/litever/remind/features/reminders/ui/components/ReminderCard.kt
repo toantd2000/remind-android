@@ -1,7 +1,6 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
 import android.content.res.Configuration
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -54,13 +53,12 @@ import java.time.ZoneId
 fun ReminderCard(
     reminder: Reminder,
     is24HourFormat: Boolean,
-    onToggle: (Boolean) -> Unit,
     onClick: () -> Unit,
     onMoreClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val isSnoozed = reminder.snoozeNextTriggerTime != null
-    val isCardActive = reminder.isEnabled && !reminder.isCompleted
+    val isCardActive = reminder.isEnabled
     val alpha = if (isCardActive) 1f else 0.6f
     val containerColor = if (isCardActive) {
         LiteverTheme.colors.surface
@@ -91,7 +89,6 @@ fun ReminderCard(
         onClick = onClick,
         color = containerColor,
         shape = LiteverTheme.shapes.large,
-        border = BorderStroke(1.dp, LiteverTheme.colors.outlineVariant.copy(alpha = 0.3f))
     ) {
         Row(
             modifier = Modifier
@@ -106,7 +103,7 @@ fun ReminderCard(
                 }
                 .padding(
                     start = 16.dp,
-                    end = 0.dp,
+                    end = 8.dp,
                     top = 12.dp,
                     bottom = 12.dp
                 ),
@@ -171,11 +168,10 @@ fun ReminderCard(
                 Text(
                     text = reminder.title,
                     style = LiteverTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.SemiBold,
-                        textDecoration = if (reminder.isCompleted) TextDecoration.LineThrough else null
+                        fontWeight = FontWeight.SemiBold
                     ),
                     color = when {
-                        reminder.isCompleted -> LiteverTheme.colors.onSurface.copy(alpha = 0.5f)
+                        !reminder.isEnabled -> LiteverTheme.colors.onSurface.copy(alpha = 0.5f)
                         isSnoozed -> LiteverTheme.colors.secondary
                         else -> LiteverTheme.colors.onSurface
                     },
@@ -198,39 +194,17 @@ fun ReminderCard(
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            // Options menu button (3-dots) positioned immediately to the left of the Switch
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(2.dp)
+            // Options menu button (3-dots)
+            LiteverIconButton(
+                onClick = onMoreClick,
+                modifier = Modifier.size(36.dp)
             ) {
-
-                MaterialTheme(
-                    colorScheme = if (isSnoozed) {
-                        MaterialTheme.colorScheme.copy(
-                            primary = LiteverTheme.colors.secondary,
-                            primaryContainer = LiteverTheme.colors.secondaryContainer
-                        )
-                    } else {
-                        MaterialTheme.colorScheme
-                    }
-                ) {
-                    LiteverSwitch(
-                        checked = reminder.isEnabled,
-                        onCheckedChange = onToggle
-                    )
-                }
-
-                LiteverIconButton(
-                    onClick = onMoreClick,
-                    modifier = Modifier.size(32.dp)
-                ) {
-                    Icon(
-                        imageVector = ReMindIcons.MoreVert,
-                        contentDescription = stringResource(R.string.action_more),
-                        modifier = Modifier.size(20.dp),
-                        tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.6f)
-                    )
-                }
+                Icon(
+                    imageVector = ReMindIcons.MoreVert,
+                    contentDescription = stringResource(R.string.action_more),
+                    modifier = Modifier.size(20.dp),
+                    tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.7f)
+                )
             }
         }
     }
@@ -401,7 +375,6 @@ private fun ReminderCardPreview() {
                 )
             ),
             is24HourFormat = false,
-            onToggle = {},
             onClick = {},
             onMoreClick = {}
         )
@@ -425,7 +398,6 @@ private fun ReminderCardDarkPreview() {
                 )
             ),
             is24HourFormat = false,
-            onToggle = {},
             onClick = {},
             onMoreClick = {}
         )

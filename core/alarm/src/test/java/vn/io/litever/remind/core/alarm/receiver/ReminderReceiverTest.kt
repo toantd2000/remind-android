@@ -74,7 +74,6 @@ class ReminderReceiverTest {
             triggerType = ReminderTriggerType.FIXED_TIME,
             timeTrigger = TimeTrigger(time = listOf(LocalTime.of(9, 0)), repeatMode = RepeatMode.NONE),
             isEnabled = true,
-            isCompleted = false,
             action = ReminderAction(
                 notificationStyle = NotificationStyle.STANDARD,
                 isPersistentAlert = false
@@ -94,7 +93,6 @@ class ReminderReceiverTest {
         val updatedSlot = slot<Reminder>()
         coVerify(atLeast = 1) { repository.updateReminder(capture(updatedSlot)) }
 
-        assertFalse(updatedSlot.captured.isCompleted)
         assertTrue(updatedSlot.captured.isEnabled)
         assertNotNull(updatedSlot.captured.lastTriggeredTime)
 
@@ -112,8 +110,7 @@ class ReminderReceiverTest {
                 repeatMode = RepeatMode.WEEKLY,
                 repeatValues = listOf(DayOfWeek.MONDAY.value, DayOfWeek.TUESDAY.value)
             ),
-            isEnabled = true,
-            isCompleted = false
+            isEnabled = true
         )
 
         coEvery { repository.getReminderById(20L) } returns reminder
@@ -128,7 +125,6 @@ class ReminderReceiverTest {
 
         val updatedSlot = slot<Reminder>()
         coVerify(atLeast = 1) { repository.updateReminder(capture(updatedSlot)) }
-        assertFalse(updatedSlot.captured.isCompleted)
         assertTrue(updatedSlot.captured.isEnabled)
 
         verify(atLeast = 1) { scheduler.schedule(any()) }
@@ -144,10 +140,8 @@ class ReminderReceiverTest {
             action = ReminderAction(
                 urgencyLevel = UrgencyLevel.MEDIUM,
                 snoozeEnabled = true,
-                snoozeIntervalMinutes = 10,
-                
-            ),
-            
+                snoozeIntervalMinutes = 10
+            )
         )
 
         coEvery { repository.getReminderById(30L) } returns reminder
@@ -171,14 +165,13 @@ class ReminderReceiverTest {
     }
 
     @Test
-    fun onReceive_dismissAction_fixedTime_completesReminder() = runBlocking {
+    fun onReceive_dismissAction_fixedTime_disablesReminder() = runBlocking {
         val reminder = Reminder(
             id = 40L,
             title = "Dismiss Me",
             triggerType = ReminderTriggerType.FIXED_TIME,
             timeTrigger = TimeTrigger(time = listOf(LocalTime.of(12, 0)), repeatMode = RepeatMode.NONE),
-            isEnabled = true,
-            isCompleted = false
+            isEnabled = true
         )
 
         coEvery { repository.getReminderById(40L) } returns reminder
@@ -196,7 +189,7 @@ class ReminderReceiverTest {
         val updatedSlot = slot<Reminder>()
         coVerify(atLeast = 1) { repository.updateReminder(capture(updatedSlot)) }
 
-        assertTrue(updatedSlot.captured.isCompleted)
+        assertFalse(updatedSlot.captured.isEnabled)
         assertNull(updatedSlot.captured.snoozeNextTriggerTime)
         verify(atLeast = 1) { scheduler.cancelSnooze(reminder) }
     }
@@ -208,8 +201,7 @@ class ReminderReceiverTest {
             title = "Drink Water Interval",
             triggerType = ReminderTriggerType.INTERVAL,
             timeTrigger = TimeTrigger(intervalMinutes = 120),
-            isEnabled = true,
-            isCompleted = false
+            isEnabled = true
         )
 
         coEvery { repository.getReminderById(45L) } returns reminder
@@ -224,8 +216,8 @@ class ReminderReceiverTest {
         val updatedSlot = slot<Reminder>()
         coVerify(atLeast = 1) { repository.updateReminder(capture(updatedSlot)) }
 
-        // Interval reminder should not be closed, but shifted
-        assertFalse(updatedSlot.captured.isCompleted)
+        // Interval reminder should remain enabled and be shifted
+        assertTrue(updatedSlot.captured.isEnabled)
         assertNotNull(updatedSlot.captured.lastTriggeredTime)
         verify(atLeast = 1) { scheduler.schedule(match { it.id == 45L }) }
     }

@@ -89,12 +89,11 @@ class ReminderRingingViewModel @Inject constructor(
 
             if (reminder != null) {
                 val isRecurring = reminder.isRecurring
-                val completedReminder = reminder.copy(
-                    isCompleted = true,
+                val updatedReminder = reminder.copy(
                     isEnabled = if (isRecurring) reminder.isEnabled else false,
                     snoozeNextTriggerTime = null
                 )
-                reminderRepository.updateReminder(completedReminder)
+                reminderRepository.updateReminder(updatedReminder)
                 reminderScheduler.cancelSnooze(reminder)
             }
 

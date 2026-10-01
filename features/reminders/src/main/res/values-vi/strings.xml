@@ -14,9 +14,10 @@
     <string name="action_edit">Chỉnh sửa</string>
     <string name="action_duplicate">Nhân bản</string>
     <string name="action_delete">Xóa</string>
-    <string name="action_mark_completed">Đánh dấu đã xong</string>
-    <string name="action_mark_active">Đánh dấu đang bật</string>
-    <string name="delete_completed_reminders">Xóa các nhắc nhở đã xong</string>
+    <string name="action_turn_off">Tắt lời nhắc</string>
+    <string name="action_turn_on">Bật lời nhắc</string>
+    <string name="action_pause_reminder">Tạm dừng lời nhắc</string>
+    <string name="action_resume_reminder">Kích hoạt lời nhắc</string>
     <string name="delete_disabled_reminders">Xóa các nhắc nhở đã tắt</string>
     <string name="reminder_deleted">Đã xóa nhắc nhở</string>
     <string name="undo">Hoàn tác</string>

@@ -104,7 +104,7 @@ class ReminderSchedulerImplTest {
     }
 
     @Test
-    fun schedule_disabledOrCompletedReminder_doesNotSchedule() {
+    fun schedule_disabledReminder_doesNotSchedule() {
         val disabled = Reminder(
             id = 103L,
             title = "Disabled",
@@ -112,16 +112,8 @@ class ReminderSchedulerImplTest {
             triggerType = ReminderTriggerType.FIXED_TIME,
             timeTrigger = TimeTrigger(time = listOf(LocalTime.of(10, 0)))
         )
-        val completed = Reminder(
-            id = 104L,
-            title = "Completed",
-            isCompleted = true,
-            triggerType = ReminderTriggerType.FIXED_TIME,
-            timeTrigger = TimeTrigger(time = listOf(LocalTime.of(10, 0)))
-        )
 
         scheduler.schedule(disabled)
-        scheduler.schedule(completed)
 
         verify(exactly = 0) {
             alarmManager.setAlarmClock(any(), any())

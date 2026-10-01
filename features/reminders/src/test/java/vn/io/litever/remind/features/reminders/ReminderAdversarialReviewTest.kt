@@ -154,8 +154,7 @@ class ReminderAdversarialReviewTest {
             title = "Monthly Utility Bill",
             triggerType = ReminderTriggerType.FIXED_TIME,
             timeTrigger = TimeTrigger(time = listOf(LocalTime.of(9, 0)), repeatMode = RepeatMode.MONTHLY, monthlyDays = listOf(5)),
-            isEnabled = true,
-            isCompleted = false
+            isEnabled = true
         )
         val reminderFlow = MutableStateFlow<Reminder?>(monthlyReminder)
         every { repository.getReminderFlow(50L) } returns reminderFlow
@@ -181,7 +180,7 @@ class ReminderAdversarialReviewTest {
         // Must stay isEnabled = true because it is recurring!
         coVerify {
             repository.updateReminder(match {
-                it.id == 50L && it.isCompleted && it.isEnabled
+                it.id == 50L && it.isEnabled
             })
         }
     }
@@ -193,8 +192,7 @@ class ReminderAdversarialReviewTest {
             title = "Annual Insurance Renewal",
             triggerType = ReminderTriggerType.FIXED_TIME,
             timeTrigger = TimeTrigger(time = listOf(LocalTime.of(10, 0)), repeatMode = RepeatMode.YEARLY, yearlyDates = listOf(ReminderMonthDay(6, 15))),
-            isEnabled = true,
-            isCompleted = false
+            isEnabled = true
         )
         val reminderFlow = MutableStateFlow<Reminder?>(yearlyReminder)
         every { repository.getReminderFlow(51L) } returns reminderFlow
@@ -220,7 +218,7 @@ class ReminderAdversarialReviewTest {
         // Must stay isEnabled = true because it is recurring!
         coVerify {
             repository.updateReminder(match {
-                it.id == 51L && it.isCompleted && it.isEnabled
+                it.id == 51L && it.isEnabled
             })
         }
     }
@@ -314,7 +312,6 @@ class ReminderAdversarialReviewTest {
             triggerType = ReminderTriggerType.FIXED_TIME,
             timeTrigger = TimeTrigger(time = listOf(LocalTime.of(8, 0)), exactDate = pastDate, repeatMode = RepeatMode.NONE),
             isEnabled = true,
-            isCompleted = false,
             lastTriggeredTime = triggeredTime,
             snoozeNextTriggerTime = null
         )
@@ -332,12 +329,6 @@ class ReminderAdversarialReviewTest {
 
         // Verify alertManager.startAlert was called to enqueue into sequential stack
         io.mockk.verify { syncAlertManager.startAlert(unhandledReminder) }
-        // Verify repository did NOT mark it completed or disabled!
-        coVerify(exactly = 0) {
-            syncRepository.updateReminder(match {
-                it.id == 99L && it.isCompleted
-            })
-        }
     }
 
     @Test
@@ -346,8 +337,7 @@ class ReminderAdversarialReviewTest {
             id = 101L,
             title = "Active Reminder",
             triggerType = ReminderTriggerType.FIXED_TIME,
-            isEnabled = true,
-            isCompleted = false
+            isEnabled = true
         )
         val allFlow = MutableStateFlow(listOf(activeReminder))
         every { repository.getAllReminders() } returns allFlow
@@ -377,8 +367,7 @@ class ReminderAdversarialReviewTest {
             id = 102L,
             title = "Delete Reminder",
             triggerType = ReminderTriggerType.FIXED_TIME,
-            isEnabled = true,
-            isCompleted = false
+            isEnabled = true
         )
         val allFlow = MutableStateFlow(listOf(activeReminder))
         every { repository.getAllReminders() } returns allFlow

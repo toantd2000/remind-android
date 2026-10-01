@@ -148,24 +148,6 @@ class ReminderListViewModelTest {
     }
 
     @Test
-    fun deleteCompletedReminders_deletesOnlyCompleted() = runTest(testDispatcher) {
-        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
-        val active = Reminder(id = 1, title = "Active", triggerType = ReminderTriggerType.FIXED_TIME, isCompleted = false)
-        val done1 = Reminder(id = 2, title = "Done 1", triggerType = ReminderTriggerType.FIXED_TIME, isCompleted = true)
-        val done2 = Reminder(id = 3, title = "Done 2", triggerType = ReminderTriggerType.FIXED_TIME, isCompleted = true)
-
-        allRemindersFlow.value = listOf(active, done1, done2)
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        viewModel.deleteCompletedReminders()
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        coVerify { repository.deleteReminder(done1) }
-        coVerify { repository.deleteReminder(done2) }
-        coVerify(exactly = 0) { repository.deleteReminder(active) }
-    }
-
-    @Test
     fun duplicateReminder_createsDeepCopy() = runTest(testDispatcher) {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
         val original = Reminder(
@@ -187,18 +169,6 @@ class ReminderListViewModelTest {
     }
 
     @Test
-    fun toggleCompleted_marksCompletedAndCancelsSchedule() = runTest(testDispatcher) {
-        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
-        val active = Reminder(id = 1, title = "Active", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = true, isCompleted = false)
-
-        viewModel.toggleCompleted(active)
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        coVerify { repository.updateReminder(match { it.id == 1L && it.isCompleted && !it.isEnabled }) }
-        coVerify { scheduler.cancel(match { it.id == 1L }) }
-    }
-
-    @Test
     fun snoozedReminders_pinnedToTopOfFilteredList() = runTest(testDispatcher) {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
         val normalOld = Reminder(id = 1, title = "Normal Old", triggerType = ReminderTriggerType.FIXED_TIME, createdAt = 1000L)
@@ -209,20 +179,20 @@ class ReminderListViewModelTest {
         allRemindersFlow.value = listOf(normalOld, snoozedOld, normalNew, snoozedNew)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        val filtered = viewModel.uiState.value.filteredReminders
-        assertEquals(4, filtered.size)
+        val reminders = viewModel.uiState.value.reminders
+        assertEquals(4, reminders.size)
         // Snoozed items must be first, ordered by createdAt descending
-        assertEquals(4L, filtered[0].id)
-        assertEquals(2L, filtered[1].id)
+        assertEquals(4L, reminders[0].id)
+        assertEquals(2L, reminders[1].id)
         // Non-snoozed items follow, ordered by createdAt descending
-        assertEquals(3L, filtered[2].id)
-        assertEquals(1L, filtered[3].id)
+        assertEquals(3L, reminders[2].id)
+        assertEquals(1L, reminders[3].id)
     }
 
     @Test
     fun toggleReminder_callsSync() = runTest(testDispatcher) {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
-        val reminder = Reminder(id = 1, title = "Active", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = true, isCompleted = false)
+        val reminder = Reminder(id = 1, title = "Active", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = true)
 
         viewModel.toggleReminder(reminder)
         testDispatcher.scheduler.advanceUntilIdle()

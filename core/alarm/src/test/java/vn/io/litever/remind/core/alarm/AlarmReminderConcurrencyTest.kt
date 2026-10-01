@@ -1,4 +1,4 @@
-﻿package vn.io.litever.remind.core.alarm
+package vn.io.litever.remind.core.alarm
 
 import android.content.Context
 import android.media.AudioManager
@@ -136,8 +136,7 @@ class AlarmReminderConcurrencyTest {
             title = "Standup",
             triggerType = ReminderTriggerType.FIXED_TIME,
             timeTrigger = TimeTrigger(time = listOf(LocalTime.now().plusHours(3))),
-            isEnabled = true,
-            isCompleted = false
+            isEnabled = true
         )
 
         coEvery { alarmRepository.getAllAlarms() } returns flowOf(listOf(alarm))

@@ -26,7 +26,7 @@ class ReminderSchedulerImpl @Inject constructor(
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
     override fun schedule(reminder: Reminder) {
-        if (!reminder.isEnabled || reminder.isCompleted) return
+        if (!reminder.isEnabled) return
         if (reminder.triggerType != ReminderTriggerType.FIXED_TIME && reminder.triggerType != ReminderTriggerType.INTERVAL) return
 
         val timeTrigger = reminder.timeTrigger ?: return
@@ -52,7 +52,7 @@ class ReminderSchedulerImpl @Inject constructor(
     }
 
     override fun scheduleSnooze(reminder: Reminder, triggerTime: Long) {
-        if (!reminder.isEnabled || reminder.isCompleted) return
+        if (!reminder.isEnabled) return
         if (triggerTime <= System.currentTimeMillis()) return
 
         setAlarmInternal(reminder, triggerTime, isSnooze = true)

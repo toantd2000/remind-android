@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Reminder Toggle Action on Edit Screen:** Added dedicated action button ("Tắt nhắc nhở" / "Bật nhắc nhở") at the bottom of `ReminderEditScreen` for existing reminders.
 - **Shared AutoSilenceBottomSheet:** Consolidated `AutoSilenceBottomSheet` and `AutoSilenceBottomSheetContent` into `:core:designsystem` with customizable duration options and standardized descriptive text.
 - **Flexible Reminder Snooze:** Added quick snooze chips (+5m, +10m, +15m) and custom minute entry dialog (`LvAlertDialog`) on the ringing screen.
 - **Notification Quick Actions:** Added 5-minute quick snooze action and completion action to heads-up reminder notifications.
@@ -15,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Sound Preview Playback Control:** Added interactive Play/Stop audio preview button (`ReMindSettingIcon`) at the trailing end of the Volume slider row in both `AlarmEditScreen` and `ReminderEditScreen`.
 
 ### Changed
+- **Unified Reminder Lifecycle Management (`isEnabled` as Single Source of Truth):** Removed redundant `isCompleted` column across database (Room Migration 7->8), domain model, data mapper, and schedulers. One-time reminders naturally complete by disabling themselves (`isEnabled = false`), while recurring reminders advance their trigger timestamp while maintaining `isEnabled = true`.
+- **Streamlined Reminder Card UI:** Removed inline `LiteverSwitch` from `ReminderCard`, preventing accidental toggles. Toggling reminders is now available via the 3-dot overflow menu bottom sheet ("Tắt nhắc nhở" / "Bật nhắc nhở") and the bottom of the edit screen.
 - **Shared Permission Warning Banner:** Consolidated `PermissionWarningBanner` into `:core:designsystem` for shared use across both `:features:alarms` and `:features:reminders`. Added semantic severity handling: displays an error surface (`errorContainer`, `LvSemantic.Destructive`) when critical permissions are missing, and a warning surface (`warningContainer`, `ReMindIcons.Warning`, `LvSemantic.Warning`) with a "Remind me later" (`permission_warning_banner_remind_later`) dismissal action button when only non-critical permissions are missing. Tailored copy independently: Alarms reference alarm reliability, while Reminders specifically reference reminder precision and background stability ("Nhắc nhở" semantics).
 - **Configuration-Aware Resource Queries:** Replaced `LocalContext.current.getString()` with `stringResource()` in `ReminderEditScreen.kt` for lifecycle- and configuration-aware string resolution, and replaced `Uri.parse()` with `toUri()`.
 - **Compose Parameter Guidelines Compliance:** Reordered parameters in `ReminderEditRoute` and `ReminderEditScreen` so `modifier: Modifier = Modifier` is the first optional parameter.
@@ -25,6 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Standardized Navigation & Title Label:** Standardized bottom navigation tab label and top bar title to "Nhắc nhở" (Reminders).
 
 ### Removed
+- **Redundant `isCompleted` Field:** Dropped `isCompleted` column from Room database table `reminders` via `MIGRATION_7_8`, domain model `Reminder`, DAOs, repositories, and schedulers.
+- **Completed Reminders Filter & Bulk Actions:** Excised obsolete completed reminders filter and batch delete completed actions from ViewModel and screens.
 - **Duplicate AutoSilence Implementations:** Removed duplicated `AutoSilenceBottomSheet.kt` in `:features:alarms` and `ReminderAutoSilenceBottomSheetContent` in `:features:reminders`.
 - **Dead Parameters & Callbacks:** Removed 9 legacy trigger callbacks, unused `reminderId`, and `onNavigateToSnoozeSettings` from `ReminderEditRoute`, `ReminderEditScreen`, and `remindersGraph`.
 - **Snooze Repeat Limits:** Completely excised `snoozeRepeatCount` and `currentSnoozeCount` across domain model, database mapper, receivers, and UI.

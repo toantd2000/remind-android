@@ -79,8 +79,7 @@ class ReminderSnoozeChallengerTest {
             ),
             
             snoozeNextTriggerTime = 9999999L,
-            lastTriggeredTime = 8888888L,
-            isCompleted = false
+            lastTriggeredTime = 8888888L
         )
 
         // Serialize

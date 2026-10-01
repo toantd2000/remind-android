@@ -70,11 +70,10 @@ class ReminderDaoTest {
     }
 
     @Test
-    fun getActiveReminders_filtersOutDisabledOrCompleted() = runTest {
-        reminderDao.insertReminder(ReminderEntity(title = "Active 1", triggerType = "FIXED_TIME", isEnabled = true, isCompleted = false))
-        reminderDao.insertReminder(ReminderEntity(title = "Active 2", triggerType = "INTERVAL", isEnabled = true, isCompleted = false))
-        reminderDao.insertReminder(ReminderEntity(title = "Disabled", triggerType = "FIXED_TIME", isEnabled = false, isCompleted = false))
-        reminderDao.insertReminder(ReminderEntity(title = "Completed", triggerType = "FIXED_TIME", isEnabled = true, isCompleted = true))
+    fun getActiveReminders_filtersOutDisabled() = runTest {
+        reminderDao.insertReminder(ReminderEntity(title = "Active 1", triggerType = "FIXED_TIME", isEnabled = true))
+        reminderDao.insertReminder(ReminderEntity(title = "Active 2", triggerType = "INTERVAL", isEnabled = true))
+        reminderDao.insertReminder(ReminderEntity(title = "Disabled", triggerType = "FIXED_TIME", isEnabled = false))
 
         val activeList = reminderDao.getActiveReminders().first()
         assertEquals(2, activeList.size)

@@ -132,12 +132,11 @@ class ReminderRingingViewModelTest {
     }
 
     @Test
-    fun dismissAction_stopsAlert_marksCompleted_cancelsScheduler_andFinishes() = runTest(testDispatcher) {
+    fun dismissAction_stopsAlert_disablesOneTimeReminder_cancelsScheduler_andFinishes() = runTest(testDispatcher) {
         val reminder = Reminder(
             id = 1L,
             title = "Morning Medicine",
-            triggerType = ReminderTriggerType.FIXED_TIME,
-            isCompleted = false
+            triggerType = ReminderTriggerType.FIXED_TIME
         )
         reminderFlow.value = reminder
         coEvery { repository.getReminderById(1L) } returns reminder
@@ -164,7 +163,7 @@ class ReminderRingingViewModelTest {
         coVerify { notificationManager.cancelNotification(1L) }
         coVerify {
             repository.updateReminder(match {
-                it.id == 1L && it.isCompleted && !it.isEnabled
+                it.id == 1L && !it.isEnabled
             })
         }
         coVerify { scheduler.cancelSnooze(match { it.id == 1L }) }

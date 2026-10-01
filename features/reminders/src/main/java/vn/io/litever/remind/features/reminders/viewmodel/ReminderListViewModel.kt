@@ -68,7 +68,7 @@ class ReminderListViewModel @Inject constructor(
                 .thenByDescending { it.createdAt }
         )
 
-        val hasMissingForActive = allReminders.filter { it.isEnabled && !it.isCompleted }
+        val hasMissingForActive = allReminders.filter { it.isEnabled }
             .any { !permissionChecker.hasPermissionsForReminder(it) }
         val isCritical = permissionWarning || !permissionChecker.hasNotificationPermission() || hasMissingForActive
         val isNonCritical = !permissionChecker.hasNonCriticalPermissions()
@@ -110,7 +110,7 @@ class ReminderListViewModel @Inject constructor(
             reminderScheduler.cancelSnooze(reminder)
             reminderRepository.updateReminder(updated)
 
-            if (updated.isEnabled && !updated.isCompleted) {
+            if (updated.isEnabled) {
                 reminderScheduler.schedule(updated)
             } else {
                 reminderScheduler.cancel(updated)
@@ -139,7 +139,7 @@ class ReminderListViewModel @Inject constructor(
             recentlyDeletedReminder?.let { reminder ->
                 val restoredId = reminderRepository.insertReminder(reminder.copy(id = 0))
                 val restored = reminder.copy(id = restoredId)
-                if (restored.isEnabled && !restored.isCompleted) {
+                if (restored.isEnabled) {
                     reminderScheduler.schedule(restored)
                 }
                 recentlyDeletedReminder = null
@@ -148,25 +148,10 @@ class ReminderListViewModel @Inject constructor(
         }
     }
 
-    fun deleteCompletedReminders() {
-        viewModelScope.launch {
-            val allReminders = reminderRepository.getAllReminders().first()
-            val completed = allReminders.filter { it.isCompleted }
-            completed.forEach { reminder ->
-                reminderScheduler.cancel(reminder)
-                reminderScheduler.cancelSnooze(reminder)
-                reminderAlertManager?.stopAlert(reminder.id)
-                reminderNotificationManager?.cancelNotification(reminder.id)
-                reminderRepository.deleteReminder(reminder)
-            }
-            reminderSyncManager?.sync()
-        }
-    }
-
     fun deleteDisabledReminders() {
         viewModelScope.launch {
             val allReminders = reminderRepository.getAllReminders().first()
-            val disabled = allReminders.filter { !it.isEnabled && !it.isCompleted }
+            val disabled = allReminders.filter { !it.isEnabled }
             disabled.forEach { reminder ->
                 reminderScheduler.cancel(reminder)
                 reminderScheduler.cancelSnooze(reminder)
@@ -184,7 +169,6 @@ class ReminderListViewModel @Inject constructor(
                 id = 0,
                 title = "${reminder.title} (Copy)",
                 isEnabled = true,
-                isCompleted = false,
                 snoozeNextTriggerTime = null,
                 createdAt = System.currentTimeMillis()
             )
@@ -197,39 +181,8 @@ class ReminderListViewModel @Inject constructor(
         }
     }
 
-    fun toggleCompleted(reminder: Reminder) {
-        viewModelScope.launch {
-            val willBeCompleted = !reminder.isCompleted
-            val updated = if (willBeCompleted) {
-                reminder.copy(
-                    isCompleted = true,
-                    isEnabled = false,
-                    snoozeNextTriggerTime = null
-                )
-            } else {
-                reminder.copy(
-                    isCompleted = false,
-                    isEnabled = true,
-                    snoozeNextTriggerTime = null
-                )
-            }
-
-            reminderScheduler.cancelSnooze(reminder)
-            reminderRepository.updateReminder(updated)
-
-            if (updated.isEnabled && !updated.isCompleted) {
-                if (permissionChecker.hasPermissionsForReminder(updated)) {
-                    reminderScheduler.schedule(updated)
-                }
-            } else {
-                reminderScheduler.cancel(updated)
-            }
-            reminderSyncManager?.sync()
-        }
-    }
-
     fun refreshPermissions() {
-        val activeReminders = uiState.value.reminders.filter { it.isEnabled && !it.isCompleted }
+        val activeReminders = uiState.value.reminders.filter { it.isEnabled }
         val hasMissingForActive = activeReminders.any { !permissionChecker.hasPermissionsForReminder(it) }
         _hasPermissionWarning.value = !permissionChecker.hasNotificationPermission() || hasMissingForActive
         _permissionCheckTrigger.update { it + 1 }

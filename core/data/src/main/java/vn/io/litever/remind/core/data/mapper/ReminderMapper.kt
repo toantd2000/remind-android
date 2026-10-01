@@ -105,7 +105,6 @@ fun ReminderEntity.toModel(): Reminder {
         action = action,
         snoozeNextTriggerTime = snoozeNextTriggerTime,
         lastTriggeredTime = lastTriggeredTime,
-        isCompleted = isCompleted,
         createdAt = createdAt
     )
 }
@@ -151,7 +150,6 @@ fun Reminder.toEntity(): ReminderEntity {
         snoozeNextTriggerTime = snoozeNextTriggerTime,
 
         lastTriggeredTime = lastTriggeredTime,
-        isCompleted = isCompleted,
         createdAt = createdAt
     )
 }

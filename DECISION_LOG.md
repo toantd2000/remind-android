@@ -304,5 +304,25 @@ This document records the solidified technical decisions and behavioral scenario
   - Removed outdated feature-specific banners (`AlarmPermissionWarningBanner.kt` in `:features:alarms` and `ReminderPermissionWarningBanner.kt` in `:features:reminders`).
   - `ReminderListViewModel` and `AlarmListViewModel` both maintain `isPermissionWarningDismissed` state flows and expose `dismissPermissionWarning()`.
 
+## 19. Reminder Lifecycle Unification & List Item UX Simplification
+
+### Scenario: Elimination of `isCompleted` & List Item Switch Removal
+- **Expected Behavior**:
+  - Reminders have a single source of truth for active state: `isEnabled: Boolean`.
+  - There is no separate `isCompleted` column in the database or domain model.
+  - **One-time Reminders** (`!isRecurring`): When the reminder triggers and is dismissed or times out (auto-silence), it naturally turns off by setting `isEnabled = false`.
+  - **Recurring / Interval Reminders** (`isRecurring == true` or `triggerType == INTERVAL`): Remains `isEnabled = true` upon dismiss, advancing `lastTriggeredTime` to the occurrence time and automatically recalculating the next trigger for future occurrences.
+  - **List Card UI**: The `LiteverSwitch` is completely removed from the reminder card (`ReminderCard`). The card shows title, notes, time trigger info, repeat days/intervals, and a 3-dot overflow menu button. When `!isEnabled`, the card is rendered with dimmed alpha (0.6f) and `onSurface` color.
+  - **Pausing / Disabling Reminders**:
+    1. From list: Click 3-dot menu on the card -> Bottom Sheet displays "Tắt nhắc nhở" (or "Bật nhắc nhở" if disabled).
+    2. From edit screen: A full-width action button ("Tắt nhắc nhở" / "Bật nhắc nhở") is placed at the bottom of `ReminderEditScreen` for existing reminders (`uiState.id != 0L`).
+- **Technical Decision**:
+  - Removed `isCompleted` field from `Reminder.kt`, `ReminderEntity.kt`, and `ReminderDao.kt`.
+  - Executed Room Database `MIGRATION_7_8` (table recreation in SQLite dropping `is_completed` cleanly).
+  - Cleaned up scheduler & receiver logic: `ReminderSchedulerImpl`, `ReminderSyncManager`, `ReminderTriggerEvaluator`, and `ReminderReceiver` only gate on `!reminder.isEnabled`.
+  - Removed obsolete actions in `ReminderListViewModel`: `deleteCompletedReminders()`, `toggleCompleted()`.
+  - Updated `ReminderActionBottomSheet.kt` with `onToggleEnabledClick` replacing `onToggleCompletedClick`.
+  - Updated `ReminderCard.kt` removing `LiteverSwitch` and `onToggle` parameter.
+
 
 

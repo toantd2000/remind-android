@@ -152,8 +152,7 @@ class ReminderPermissionChallengerTest {
             title = "Morning Alarm",
             triggerType = ReminderTriggerType.FIXED_TIME,
             timeTrigger = TimeTrigger(time = listOf(LocalTime.of(7, 0))),
-            isEnabled = true,
-            isCompleted = false
+            isEnabled = true
         )
         coEvery { repository.getReminderById(702L) } returns existingReminder
         every { permissionChecker.getMissingPermissions(any()) } returns emptyList()

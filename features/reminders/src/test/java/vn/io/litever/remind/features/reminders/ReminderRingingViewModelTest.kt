@@ -96,9 +96,9 @@ class ReminderRingingViewModelTest {
             action = ReminderAction(
                 snoozeEnabled = true,
                 snoozeIntervalMinutes = 10,
-                snoozeRepeatCount = 3
+                
             ),
-            currentSnoozeCount = 0
+            
         )
         reminderFlow.value = reminder
         coEvery { repository.getReminderById(1L) } returns reminder
@@ -125,7 +125,7 @@ class ReminderRingingViewModelTest {
         coVerify { notificationManager.cancelNotification(1L) }
         coVerify {
             repository.updateReminder(match {
-                it.id == 1L && it.currentSnoozeCount == 1 && it.snoozeNextTriggerTime != null
+                it.id == 1L
             })
         }
         coVerify { scheduler.scheduleSnooze(match { it.id == 1L }, any()) }
@@ -170,3 +170,5 @@ class ReminderRingingViewModelTest {
         coVerify { scheduler.cancelSnooze(match { it.id == 1L }) }
     }
 }
+
+

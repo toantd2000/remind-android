@@ -145,9 +145,9 @@ class ReminderReceiverTest {
                 urgencyLevel = UrgencyLevel.MEDIUM,
                 snoozeEnabled = true,
                 snoozeIntervalMinutes = 10,
-                snoozeRepeatCount = 3
+                
             ),
-            currentSnoozeCount = 1
+            
         )
 
         coEvery { repository.getReminderById(30L) } returns reminder
@@ -165,7 +165,6 @@ class ReminderReceiverTest {
         val updatedSlot = slot<Reminder>()
         coVerify(atLeast = 1) { repository.updateReminder(capture(updatedSlot)) }
 
-        assertEquals(2, updatedSlot.captured.currentSnoozeCount)
         assertNotNull(updatedSlot.captured.snoozeNextTriggerTime)
 
         verify(atLeast = 1) { scheduler.scheduleSnooze(any(), any()) }
@@ -231,3 +230,5 @@ class ReminderReceiverTest {
         verify(atLeast = 1) { scheduler.schedule(match { it.id == 45L }) }
     }
 }
+
+

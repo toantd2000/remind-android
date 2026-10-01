@@ -126,8 +126,10 @@
     <!-- Alert & Notification Settings Section -->
     <string name="section_alert_settings">Cảnh báo &amp; Thông báo</string>
     <string name="notification_style_label">Kiểu cảnh báo</string>
-    <string name="style_standard">Thông báo tiêu chuẩn</string>
-    <string name="style_full_screen">Đổ chuông báo thức</string>
+    <string name="style_standard">Thông báo thường</string>
+    <string name="style_standard_desc">Hiển thị toàn màn hình với thông báo tiêu chuẩn, không chạy service phát chuông liên tục</string>
+    <string name="style_full_screen">Đổ chuông</string>
+    <string name="style_full_screen_desc">Hiển thị toàn màn hình và phát chuông liên tục qua service cho đến khi tắt hoặc báo lại</string>
     <string name="persistent_alert_title">Lặp chuông liên tục</string>
     <string name="persistent_alert_desc">Đổ chuông/rung liên tục cho đến khi tắt</string>
     <string name="sound_settings_title">Âm thanh &amp; Rung</string>
@@ -147,6 +149,9 @@
     <string name="ringing_screen_title">Cảnh báo lời nhắc</string>
     <string name="auto_silence_countdown_format">Tự tắt tiếng sau %ds</string>
     <string name="snooze_action">Báo lại</string>
+    <string name="snooze_custom">Tùy chỉnh</string>
+    <string name="snooze_custom_dialog_title">Báo lại tùy chỉnh</string>
+    <string name="snooze_custom_minutes_hint">Số phút (vd: 20)</string>
     <string name="snooze_limit_reached">Đã đạt giới hạn báo lại</string>
     <string name="dismiss_action">Đã xong</string>
 

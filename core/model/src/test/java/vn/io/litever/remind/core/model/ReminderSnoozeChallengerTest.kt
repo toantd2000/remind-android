@@ -17,67 +17,41 @@ import java.time.LocalTime
 class ReminderSnoozeChallengerTest {
 
     @Test
-    fun snoozeProgressionAndExhaustion_stateTransitions() {
+    fun snoozeProgression_alwaysCanSnoozeWhenEnabled() {
         var reminder = Reminder(
             title = "Snoozable Reminder",
             triggerType = ReminderTriggerType.FIXED_TIME,
             action = ReminderAction(
                 snoozeEnabled = true,
-                snoozeIntervalMinutes = 10,
-                snoozeRepeatCount = 3
-            ),
-            currentSnoozeCount = 0
+                snoozeIntervalMinutes = 10
+            )
         )
 
-        // 0 of 3 snoozes used
         assertTrue(reminder.canSnooze())
 
         // 1st snooze
-        reminder = reminder.copy(currentSnoozeCount = 1, snoozeNextTriggerTime = 10000L)
+        reminder = reminder.copy(snoozeNextTriggerTime = 10000L)
         assertTrue(reminder.canSnooze())
-        assertEquals(1, reminder.currentSnoozeCount)
 
         // 2nd snooze
-        reminder = reminder.copy(currentSnoozeCount = 2, snoozeNextTriggerTime = 20000L)
+        reminder = reminder.copy(snoozeNextTriggerTime = 20000L)
         assertTrue(reminder.canSnooze())
-        assertEquals(2, reminder.currentSnoozeCount)
 
-        // 3rd snooze (limit reached)
-        reminder = reminder.copy(currentSnoozeCount = 3, snoozeNextTriggerTime = 30000L)
-        assertFalse(reminder.canSnooze())
-        assertEquals(3, reminder.currentSnoozeCount)
-
-        // Beyond limit
-        reminder = reminder.copy(currentSnoozeCount = 4)
-        assertFalse(reminder.canSnooze())
+        // Multiple snoozes continue to be allowed
+        reminder = reminder.copy(snoozeNextTriggerTime = 30000L)
+        assertTrue(reminder.canSnooze())
     }
 
     @Test
-    fun snoozeRepeatCountZero_cannotSnooze() {
+    fun snoozeDisabled_cannotSnooze() {
         val reminder = Reminder(
             title = "No Snooze Allowed",
             triggerType = ReminderTriggerType.FIXED_TIME,
             action = ReminderAction(
-                snoozeEnabled = true,
-                snoozeRepeatCount = 0
-            ),
-            currentSnoozeCount = 0
+                snoozeEnabled = false
+            )
         )
         assertFalse(reminder.canSnooze())
-    }
-
-    @Test
-    fun snoozeRepeatCountUnlimited_canAlwaysSnooze() {
-        val reminder = Reminder(
-            title = "Unlimited Snoozes Allowed",
-            triggerType = ReminderTriggerType.FIXED_TIME,
-            action = ReminderAction(
-                snoozeEnabled = true,
-                snoozeRepeatCount = -1
-            ),
-            currentSnoozeCount = 100
-        )
-        assertTrue(reminder.canSnooze())
     }
 
     @Test
@@ -101,9 +75,9 @@ class ReminderSnoozeChallengerTest {
                 notificationStyle = NotificationStyle.FULL_SCREEN,
                 isPersistentAlert = true,
                 snoozeIntervalMinutes = 15,
-                snoozeRepeatCount = 5
+                
             ),
-            currentSnoozeCount = 2,
+            
             snoozeNextTriggerTime = 9999999L,
             lastTriggeredTime = 8888888L,
             isCompleted = false
@@ -121,3 +95,5 @@ class ReminderSnoozeChallengerTest {
         assertTrue(deserialized.canSnooze())
     }
 }
+
+

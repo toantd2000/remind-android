@@ -90,9 +90,9 @@ class ReminderNotificationManagerTest {
                 notificationStyle = NotificationStyle.STANDARD,
                 snoozeEnabled = true,
                 snoozeIntervalMinutes = 5,
-                snoozeRepeatCount = 3
+                
             ),
-            currentSnoozeCount = 0
+            
         )
 
         val notification = manager.buildNotification(reminder)
@@ -100,16 +100,14 @@ class ReminderNotificationManagerTest {
     }
 
     @Test
-    fun buildNotification_whenSnoozeMaxCountReached_omitsSnoozeAction() {
+    fun buildNotification_whenSnoozeDisabled_omitsSnoozeAction() {
         val reminder = Reminder(
             id = 20L,
             title = "Final Reminder",
             triggerType = ReminderTriggerType.FIXED_TIME,
             action = ReminderAction(
-                snoozeEnabled = true,
-                snoozeRepeatCount = 2
-            ),
-            currentSnoozeCount = 2
+                snoozeEnabled = false
+            )
         )
 
         assertFalse(reminder.canSnooze())
@@ -235,3 +233,5 @@ class ReminderNotificationManagerTest {
         assertEquals(1, notification.actions?.size ?: 0)
     }
 }
+
+

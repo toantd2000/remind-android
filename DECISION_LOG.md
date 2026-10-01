@@ -214,3 +214,31 @@ This document records the solidified technical decisions and behavioral scenario
   - DAOs now return `ReminderEntity` directly without multi-table relation mapping.
   - Notification and broadcast receivers handle only pure reminder triggers and snoozes.
 
+
+## 15. Flexible Snooze & Dual Alert Styles (Normal Notification vs Ringing)
+
+### Scenario: Flexible Snooze & Complete Removal of Snooze Count Limit
+- **Expected Behavior**:
+  - Ringing screen offers quick snooze chips (+5m, +10m, +15m) alongside a "Custom" ("Tùy chỉnh") button that opens a dialog to enter any custom snooze duration.
+  - Snoozing has no maximum repetition count (snoozeRepeatCount and currentSnoozeCount are completely removed from models, UI, and logic). Snoozing is available indefinitely as long as snooze is enabled.
+  - In the heads-up notification (status bar / banner), only two quick actions are presented: "Báo lại 5 phút" (Snooze 5m) and "Hoàn thành" (Done).
+- **Technical Decision**:
+  - Excised snoozeRepeatCount from ReminderAction and currentSnoozeCount from Reminder.
+  - Updated ReminderReceiver and ReminderNotificationManager to support EXTRA_SNOOZE_MINUTES = 5 for notification quick action.
+  - Ringing screen uses LvAlertDialog and LiteverTextField from :core:designsystem for the custom snooze picker.
+
+### Scenario: Dual Alert Modes (Normal vs Ringing)
+- **Expected Behavior**:
+  - Alerts are categorized into "Thông báo thường" (NotificationStyle.STANDARD) and "Đổ chuông" (NotificationStyle.FULL_SCREEN).
+  - Default style when creating new reminders is "Đổ chuông" (FULL_SCREEN).
+  - Both modes open the full-screen ringing UI on trigger.
+  - Mode differentiation:
+    - "Đổ chuông" runs ReminderAlertService to play continuous audio loop until dismissed or snoozed, and supports "Tự động tắt tiếng" (Auto-silence) and "Kênh báo thức" (STREAM_ALARM).
+    - "Thông báo thường" does not run continuous foreground alert service, but supports sound, ringtone, volume, and vibration configuration.
+  - In Add/Edit Reminder Screen:
+    - The obsolete UrgencyLevel selector (SOFT/MEDIUM/HARD) is completely removed from the UI.
+    - Notification Style selector is prominently placed at the top with descriptive subtitles explaining each mode.
+    - Sound and Vibration options (Ringtone, Volume, Vibration) apply to both modes; Ringtone title is dynamically resolved via `RingtoneManager`.
+    - Auto-silence and STREAM_ALARM switch are exclusively shown under "Đổ chuông".
+    - Snooze configuration is embedded directly inline (Switch to enable/disable + quick interval choices of 5, 10, 15, 30 minutes) without navigating away to a separate screen.
+

@@ -43,7 +43,7 @@ fun NavController.navigateToReminderRinging(reminderId: Long, navOptions: NavOpt
 fun NavGraphBuilder.remindersGraph(
     onNavigateToEdit: (Long) -> Unit,
     onNavigateToRingtoneSelection: (String?) -> Unit = {},
-    onNavigateToSnoozeSettings: (Boolean, Int, Int) -> Unit = { _, _, _ -> },
+    onNavigateToSnoozeSettings: (Boolean, Int) -> Unit = { _, _ -> },
     onNavigateToPermissions: () -> Unit,
     onNavigateBack: () -> Unit,
     navController: NavController

@@ -39,8 +39,15 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
 import vn.io.litever.designsystem.components.LiteverButton
 import vn.io.litever.designsystem.components.LiteverOutlinedButton
+import vn.io.litever.designsystem.components.LiteverTextField
+import vn.io.litever.designsystem.components.button.LvButton
+import vn.io.litever.designsystem.components.button.LvButtonType
+import vn.io.litever.designsystem.components.core.LvSemantic
+import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import vn.io.litever.remind.features.reminders.R
@@ -78,7 +85,7 @@ fun ReminderRingingRoute(
 
     ReminderRingingScreen(
         uiState = uiState,
-        onSnoozeClick = { viewModel.snooze(onFinish) },
+        onSnoozeClick = { mins -> viewModel.snooze(mins, onFinish) },
         onDismissClick = { viewModel.dismiss(onFinish) },
         modifier = modifier
     )
@@ -87,12 +94,14 @@ fun ReminderRingingRoute(
 @Composable
 fun ReminderRingingScreen(
     uiState: vn.io.litever.remind.features.reminders.viewmodel.ReminderRingingUiState,
-    onSnoozeClick: () -> Unit,
+    onSnoozeClick: (Int) -> Unit,
     onDismissClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val reminder = uiState.reminder ?: return
     var currentTime by remember { mutableStateOf(LocalTime.now()) }
+    var showCustomSnoozeDialog by remember { mutableStateOf(false) }
+    var customMinutesText by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         while (true) {
@@ -192,13 +201,100 @@ fun ReminderRingingScreen(
                 }
             }
 
-            // Bottom Section: Snooze & Dismiss Action Buttons
+                        // Bottom Section: Snooze & Dismiss Action Buttons
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+                // Snooze Action (if enabled)
+                if (reminder.action.snoozeEnabled) {
+                    val canSnooze = reminder.action.canSnooze()
+                    if (canSnooze) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            val options = listOf(5, 10, 15)
+                            options.forEach { mins ->
+                                LiteverOutlinedButton(
+                                    onClick = { onSnoozeClick(mins) },
+                                    modifier = Modifier.weight(1f).height(48.dp)
+                                ) {
+                                    Text(
+                                        text = "+${mins}m",
+                                        style = LiteverTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold)
+                                    )
+                                }
+                            }
+                            LiteverOutlinedButton(
+                                onClick = { showCustomSnoozeDialog = true },
+                                modifier = Modifier.weight(1.3f).height(48.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.snooze_custom),
+                                    style = LiteverTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold)
+                                )
+                            }
+                        }
+                    } else {
+                        LiteverOutlinedButton(
+                            onClick = {},
+                            enabled = false,
+                            modifier = Modifier.fillMaxWidth().height(48.dp)
+                        ) {
+                            Text(
+                                text = stringResource(R.string.snooze_limit_reached),
+                                style = LiteverTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold)
+                            )
+                        }
+                    }
+                }
+
+                if (showCustomSnoozeDialog) {
+                    LvAlertDialog(
+                        onDismissRequest = { showCustomSnoozeDialog = false },
+                        title = { Text(stringResource(R.string.snooze_custom_dialog_title)) },
+                        text = {
+                            Column {
+                                LiteverTextField(
+                                    value = customMinutesText,
+                                    onValueChange = {
+                                        customMinutesText = it.filter { char -> char.isDigit() }.take(4)
+                                    },
+                                    placeholder = stringResource(R.string.snooze_custom_minutes_hint),
+                                    label = stringResource(R.string.snooze_custom_minutes_hint),
+                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                                )
+                            }
+                        },
+                        confirmButton = {
+                            LvButton(
+                                onClick = {
+                                    val minutes = customMinutesText.toIntOrNull()
+                                    if (minutes != null && minutes > 0) {
+                                        showCustomSnoozeDialog = false
+                                        onSnoozeClick(minutes)
+                                    }
+                                },
+                                enabled = (customMinutesText.toIntOrNull() ?: 0) > 0
+                            ) {
+                                Text(stringResource(R.string.snooze_action))
+                            }
+                        },
+                        dismissButton = {
+                            LvButton(
+                                onClick = { showCustomSnoozeDialog = false },
+                                type = LvButtonType.Outlined,
+                                semantic = LvSemantic.Secondary
+                            ) {
+                                Text(stringResource(R.string.action_cancel))
+                            }
+                        }
+                    )
+                }
+
                 // Dismiss Action
                 LiteverButton(
                     onClick = onDismissClick,
@@ -216,40 +312,6 @@ fun ReminderRingingScreen(
                         text = stringResource(R.string.dismiss_action),
                         style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                     )
-                }
-
-                // Snooze Action (if enabled)
-                if (reminder.action.snoozeEnabled) {
-                    val canSnooze = reminder.action.canSnooze(reminder.currentSnoozeCount)
-                    val snoozeText = if (canSnooze) {
-                        if (reminder.action.snoozeRepeatCount > 0) {
-                            val remaining = reminder.action.snoozeRepeatCount - reminder.currentSnoozeCount
-                            "${stringResource(R.string.snooze_action)} ($remaining left)"
-                        } else {
-                            stringResource(R.string.snooze_action)
-                        }
-                    } else {
-                        stringResource(R.string.snooze_limit_reached)
-                    }
-
-                    LiteverOutlinedButton(
-                        onClick = onSnoozeClick,
-                        enabled = canSnooze,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(52.dp)
-                    ) {
-                        Icon(
-                            imageVector = ReMindIcons.Snooze,
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = snoozeText,
-                            style = LiteverTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold)
-                        )
-                    }
                 }
             }
         }

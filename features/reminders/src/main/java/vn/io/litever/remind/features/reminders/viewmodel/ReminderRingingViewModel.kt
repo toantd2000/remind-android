@@ -59,19 +59,17 @@ class ReminderRingingViewModel @Inject constructor(
     )
 
 
-    fun snooze(onFinished: () -> Unit) {
+    fun snooze(minutes: Int? = null, onFinished: () -> Unit) {
         viewModelScope.launch {
             val reminder = uiState.value.reminder ?: reminderRepository.getReminderById(reminderId)
             reminderAlertManager.stopAlert(reminderId)
             reminderNotificationManager.cancelNotification(reminderId)
 
             if (reminder != null && reminder.canSnooze()) {
-                val nextSnoozeCount = reminder.currentSnoozeCount + 1
-                val snoozeIntervalMillis = reminder.action.snoozeIntervalMinutes * 60 * 1000L
+                val snoozeIntervalMillis = (minutes ?: reminder.action.snoozeIntervalMinutes) * 60 * 1000L
                 val nextTriggerTime = System.currentTimeMillis() + snoozeIntervalMillis
 
                 val snoozedReminder = reminder.copy(
-                    currentSnoozeCount = nextSnoozeCount,
                     snoozeNextTriggerTime = nextTriggerTime
                 )
                 reminderRepository.updateReminder(snoozedReminder)

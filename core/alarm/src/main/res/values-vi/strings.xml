@@ -23,8 +23,10 @@
     <string name="reminder_default_title">Nhắc nhở</string>
     <string name="reminder_default_triggered">Đến giờ nhắc nhở</string>
     <string name="reminder_action_snooze">Báo lại</string>
+    <string name="reminder_action_snooze_5m">Báo lại 5 phút</string>
     <string name="reminder_action_snooze_interval">Báo lại (%1$d ph)</string>
     <string name="reminder_action_dismiss">Bỏ qua</string>
+    <string name="reminder_action_complete">Hoàn thành</string>
 </resources>
 
 

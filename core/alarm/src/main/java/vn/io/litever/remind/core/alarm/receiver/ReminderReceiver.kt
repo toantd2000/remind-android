@@ -51,7 +51,12 @@ class ReminderReceiver : BroadcastReceiver() {
                 when (action) {
                     ACTION_TRIGGER_REMINDER -> handleTriggerReminder(context, reminder, isSnooze = false)
                     ACTION_TRIGGER_REMINDER_SNOOZE -> handleTriggerReminder(context, reminder, isSnooze = true)
-                    ACTION_REMINDER_SNOOZE -> handleSnoozeAction(reminder)
+                    ACTION_REMINDER_SNOOZE -> {
+                        val snoozeMinutes = if (intent.hasExtra(EXTRA_SNOOZE_MINUTES)) {
+                            intent.getIntExtra(EXTRA_SNOOZE_MINUTES, 5)
+                        } else null
+                        handleSnoozeAction(reminder, snoozeMinutes)
+                    }
                     ACTION_REMINDER_DISMISS -> handleDismissAction(reminder)
                 }
             } catch (e: Exception) {
@@ -66,7 +71,6 @@ class ReminderReceiver : BroadcastReceiver() {
         val nowMillis = System.currentTimeMillis()
         val updatedReminder = if (!isSnooze) {
             reminder.copy(
-                currentSnoozeCount = 0,
                 snoozeNextTriggerTime = null,
                 lastTriggeredTime = nowMillis
             )
@@ -95,18 +99,17 @@ class ReminderReceiver : BroadcastReceiver() {
         fireReminderAlert(context, updatedReminder)
     }
 
-    private suspend fun handleSnoozeAction(reminder: Reminder) {
+    private suspend fun handleSnoozeAction(reminder: Reminder, snoozeMinutes: Int? = null) {
         reminderAlertManager.stopAlert(reminder.id)
         reminderNotificationManager.cancelNotification(reminder.id)
 
         if (!reminder.canSnooze()) return
 
-        val nextSnoozeCount = reminder.currentSnoozeCount + 1
-        val snoozeIntervalMillis = reminder.action.snoozeIntervalMinutes * 60 * 1000L
+        val minutes = snoozeMinutes ?: reminder.action.snoozeIntervalMinutes
+        val snoozeIntervalMillis = minutes * 60 * 1000L
         val nextTriggerTime = System.currentTimeMillis() + snoozeIntervalMillis
 
         val snoozedReminder = reminder.copy(
-            currentSnoozeCount = nextSnoozeCount,
             snoozeNextTriggerTime = nextTriggerTime
         )
 
@@ -125,7 +128,6 @@ class ReminderReceiver : BroadcastReceiver() {
             val nowMillis = System.currentTimeMillis()
             val shiftedReminder = reminder.copy(
                 isCompleted = false,
-                currentSnoozeCount = 0,
                 snoozeNextTriggerTime = null,
                 lastTriggeredTime = nowMillis
             )
@@ -164,8 +166,11 @@ class ReminderReceiver : BroadcastReceiver() {
         const val ACTION_FIRE_REMINDER_ALERT = "vn.io.litever.remind.core.alarm.ACTION_FIRE_REMINDER_ALERT"
 
         const val EXTRA_REMINDER_ID = "extra_reminder_id"
+        const val EXTRA_SNOOZE_MINUTES = "extra_snooze_minutes"
         const val EXTRA_IS_SNOOZE = "extra_is_snooze"
         const val EXTRA_NOTIFICATION_STYLE = "extra_notification_style"
         const val EXTRA_IS_PERSISTENT = "extra_is_persistent"
     }
 }
+
+

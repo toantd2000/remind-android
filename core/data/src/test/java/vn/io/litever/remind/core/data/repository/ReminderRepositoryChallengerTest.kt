@@ -1,4 +1,4 @@
-package vn.io.litever.remind.core.data.repository
+﻿package vn.io.litever.remind.core.data.repository
 
 import app.cash.turbine.test
 import io.mockk.coEvery
@@ -86,7 +86,7 @@ class ReminderRepositoryChallengerTest {
                 notificationStyle = NotificationStyle.STANDARD,
                 isPersistentAlert = false,
                 snoozeIntervalMinutes = 10,
-                snoozeRepeatCount = 5
+                
             )
         )
 
@@ -109,3 +109,4 @@ class ReminderRepositoryChallengerTest {
         }
     }
 }
+

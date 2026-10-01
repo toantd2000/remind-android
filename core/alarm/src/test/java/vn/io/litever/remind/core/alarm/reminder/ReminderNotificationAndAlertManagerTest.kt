@@ -1,4 +1,4 @@
-package vn.io.litever.remind.core.alarm.reminder
+﻿package vn.io.litever.remind.core.alarm.reminder
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -114,7 +114,7 @@ class ReminderNotificationAndAlertManagerTest {
             action = ReminderAction(
                 notificationStyle = NotificationStyle.FULL_SCREEN,
                 snoozeEnabled = true,
-                snoozeRepeatCount = 3
+                
             )
         )
 
@@ -173,3 +173,4 @@ class ReminderNotificationAndAlertManagerTest {
         assertFalse(controller.isAutoSilenced)
     }
 }
+

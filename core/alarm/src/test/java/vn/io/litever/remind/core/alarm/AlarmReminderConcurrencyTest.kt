@@ -1,4 +1,4 @@
-package vn.io.litever.remind.core.alarm
+﻿package vn.io.litever.remind.core.alarm
 
 import android.content.Context
 import android.media.AudioManager
@@ -116,7 +116,7 @@ class AlarmReminderConcurrencyTest {
             action = ReminderAction(
                 snoozeEnabled = true
             ),
-            currentSnoozeCount = 1,
+            
             snoozeNextTriggerTime = System.currentTimeMillis() + 600000L
         )
 
@@ -167,3 +167,4 @@ class AlarmReminderConcurrencyTest {
         assertEquals("reminder_standard_channel", reminderStandardChannel)
     }
 }
+

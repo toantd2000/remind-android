@@ -1,6 +1,8 @@
 package vn.io.litever.remind.features.reminders.ui
 
 import android.content.res.Configuration
+import android.media.RingtoneManager
+import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,15 +48,11 @@ import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import java.time.DayOfWeek
-import vn.io.litever.remind.core.model.GeofenceTransitionType
 import vn.io.litever.remind.core.model.NotificationStyle
-import vn.io.litever.remind.core.model.ReminderTimeWindow
 import vn.io.litever.remind.core.model.ReminderTriggerType
-import vn.io.litever.remind.core.model.UrgencyLevel
 import vn.io.litever.remind.features.reminders.R
 import vn.io.litever.remind.features.reminders.ui.components.ReminderAlertConfigSection
 import vn.io.litever.remind.features.reminders.ui.components.ReminderBasicInfoSection
-import vn.io.litever.remind.features.reminders.ui.components.ReminderTimeConfigSection
 import vn.io.litever.remind.features.reminders.ui.components.ReminderTriggerSection
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderEditUiState
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderEditViewModel
@@ -68,7 +67,7 @@ fun ReminderEditRoute(
     reminderId: Long,
     onBackClick: () -> Unit,
     onNavigateToRingtoneSelection: (String?) -> Unit,
-    onNavigateToSnoozeSettings: (Boolean, Int, Int) -> Unit,
+    onNavigateToSnoozeSettings: (Boolean, Int) -> Unit = { _, _ -> },
     onNavigateToPermissions: () -> Unit,
     onNavigateToTriggerEdit: (Long) -> Unit = {},
     navController: NavController,
@@ -81,30 +80,10 @@ fun ReminderEditRoute(
     val currentBackStackEntry = navController.currentBackStackEntry
     val savedStateHandle = currentBackStackEntry?.savedStateHandle
 
-    val returnedSnoozeEnabled by savedStateHandle?.getStateFlow<Boolean?>("snoozeEnabled", null)
-        ?.collectAsState() ?: remember { mutableStateOf(null) }
-    val returnedSnoozeInterval by savedStateHandle?.getStateFlow<Int?>("snoozeInterval", null)
-        ?.collectAsState() ?: remember { mutableStateOf(null) }
-    val returnedSnoozeRepeatCount by savedStateHandle?.getStateFlow<Int?>("snoozeRepeatCount", null)
-        ?.collectAsState() ?: remember { mutableStateOf(null) }
-
     val returnedRingtoneUri by savedStateHandle?.getStateFlow<String?>("selectedRingtoneUri", null)
         ?.collectAsState() ?: remember { mutableStateOf(null) }
     val ringtoneResultWasSet by savedStateHandle?.getStateFlow("selectedRingtoneUri_set", false)
         ?.collectAsState() ?: remember { mutableStateOf(false) }
-
-    LaunchedEffect(returnedSnoozeEnabled, returnedSnoozeInterval, returnedSnoozeRepeatCount) {
-        if (returnedSnoozeEnabled != null || returnedSnoozeInterval != null || returnedSnoozeRepeatCount != null) {
-            viewModel.updateSnoozeSettings(
-                enabled = returnedSnoozeEnabled ?: uiState.snoozeEnabled,
-                interval = returnedSnoozeInterval ?: uiState.snoozeIntervalMinutes,
-                repeatCount = returnedSnoozeRepeatCount ?: uiState.snoozeRepeatCount
-            )
-            savedStateHandle?.remove<Boolean>("snoozeEnabled")
-            savedStateHandle?.remove<Int>("snoozeInterval")
-            savedStateHandle?.remove<Int>("snoozeRepeatCount")
-        }
-    }
 
     LaunchedEffect(returnedRingtoneUri, ringtoneResultWasSet) {
         if (ringtoneResultWasSet) {
@@ -161,7 +140,6 @@ fun ReminderEditRoute(
         onAddYearlyDate = viewModel::addYearlyDate,
         onRemoveYearlyDate = viewModel::removeYearlyDate,
         onNotificationStyleChange = viewModel::setNotificationStyle,
-        onUrgencyLevelChange = viewModel::setUrgencyLevel,
         onAutoSilenceMinutesChange = viewModel::setAutoSilenceMinutes,
         onUseAlarmStreamChange = viewModel::setUseAlarmStream,
         onRingtoneClick = {
@@ -169,13 +147,8 @@ fun ReminderEditRoute(
         },
         onVibrationChange = viewModel::setVibrationEnabled,
         onVolumeChange = viewModel::setVolume,
-        onSnoozeSettingsClick = {
-            onNavigateToSnoozeSettings(
-                uiState.snoozeEnabled,
-                uiState.snoozeIntervalMinutes,
-                uiState.snoozeRepeatCount
-            )
-        },
+        onSnoozeEnabledChange = viewModel::setSnoozeEnabled,
+        onSnoozeIntervalChange = viewModel::setSnoozeIntervalMinutes,
         onNavigateToTriggerEdit = { onNavigateToTriggerEdit(uiState.id) },
         modifier = modifier
     )
@@ -204,18 +177,33 @@ fun ReminderEditScreen(
     onAddYearlyDate: (Int, Int) -> Unit = { _, _ -> },
     onRemoveYearlyDate: (Int) -> Unit = {},
     onNotificationStyleChange: (NotificationStyle) -> Unit,
-    onUrgencyLevelChange: (UrgencyLevel) -> Unit = {},
     onAutoSilenceMinutesChange: (Int) -> Unit,
     onUseAlarmStreamChange: (Boolean) -> Unit,
     onRingtoneClick: () -> Unit,
     onVibrationChange: (Boolean) -> Unit,
     onVolumeChange: (Int) -> Unit,
-    onSnoozeSettingsClick: () -> Unit,
+    onSnoozeEnabledChange: (Boolean) -> Unit = {},
+    onSnoozeIntervalChange: (Int) -> Unit = {},
     onNavigateToTriggerEdit: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     val lazyListState = rememberLazyListState()
     val titleFocusRequester = remember { FocusRequester() }
+
+    val ringtoneTitle = remember(uiState.ringtoneUri) {
+        if (uiState.ringtoneUri.isNullOrBlank()) {
+            context.getString(R.string.default_ringtone)
+        } else {
+            try {
+                val uri = Uri.parse(uiState.ringtoneUri)
+                RingtoneManager.getRingtone(context, uri)?.getTitle(context)
+                    ?: context.getString(R.string.default_ringtone)
+            } catch (_: Exception) {
+                context.getString(R.string.default_ringtone)
+            }
+        }
+    }
 
     LaunchedEffect(uiState.validationErrorTrigger) {
         if (uiState.validationErrorTrigger > 0L) {
@@ -226,7 +214,6 @@ fun ReminderEditScreen(
                         titleFocusRequester.requestFocus()
                     } catch (_: Exception) {}
                 }
-                
                 null -> {}
             }
         }
@@ -285,11 +272,7 @@ fun ReminderEditScreen(
                 ReminderAlertConfigSection(
                     notificationStyle = uiState.notificationStyle,
                     onNotificationStyleChange = onNotificationStyleChange,
-                    urgencyLevel = uiState.urgencyLevel,
-                    onUrgencyLevelChange = onUrgencyLevelChange,
-                    ringtoneTitle = "Default",
-                    
-                    
+                    ringtoneTitle = ringtoneTitle,
                     onRingtoneClick = onRingtoneClick,
                     volume = uiState.volume,
                     onVolumeChange = onVolumeChange,
@@ -300,9 +283,9 @@ fun ReminderEditScreen(
                     useAlarmStream = uiState.useAlarmStream,
                     onUseAlarmStreamChange = onUseAlarmStreamChange,
                     snoozeEnabled = uiState.snoozeEnabled,
+                    onSnoozeEnabledChange = onSnoozeEnabledChange,
                     snoozeIntervalMinutes = uiState.snoozeIntervalMinutes,
-                    snoozeRepeatCount = uiState.snoozeRepeatCount,
-                    onSnoozeSettingsClick = onSnoozeSettingsClick
+                    onSnoozeIntervalChange = onSnoozeIntervalChange
                 )
             }
 
@@ -378,13 +361,10 @@ private fun ReminderEditScreenPreview() {
                 repeatDays = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY),
                 repeatInterval = ReminderRepeatInterval.WEEKLY,
                 notificationStyle = NotificationStyle.STANDARD,
-                
                 vibrationEnabled = true,
                 volume = 80,
                 snoozeEnabled = true,
-                snoozeIntervalMinutes = 10,
-                snoozeRepeatCount = 3,
-                
+                snoozeIntervalMinutes = 10
             ),
             onBackClick = {},
             onSaveClick = {},
@@ -410,7 +390,8 @@ private fun ReminderEditScreenPreview() {
             onRingtoneClick = {},
             onVibrationChange = {},
             onVolumeChange = {},
-            onSnoozeSettingsClick = {}
+            onSnoozeEnabledChange = {},
+            onSnoozeIntervalChange = {}
         )
     }
 }
@@ -431,13 +412,10 @@ private fun ReminderEditScreenDarkPreview() {
                 repeatDays = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY),
                 repeatInterval = ReminderRepeatInterval.WEEKLY,
                 notificationStyle = NotificationStyle.STANDARD,
-                
                 vibrationEnabled = true,
                 volume = 80,
                 snoozeEnabled = true,
-                snoozeIntervalMinutes = 10,
-                snoozeRepeatCount = 3,
-                
+                snoozeIntervalMinutes = 10
             ),
             onBackClick = {},
             onSaveClick = {},
@@ -463,9 +441,8 @@ private fun ReminderEditScreenDarkPreview() {
             onRingtoneClick = {},
             onVibrationChange = {},
             onVolumeChange = {},
-            onSnoozeSettingsClick = {}
+            onSnoozeEnabledChange = {},
+            onSnoozeIntervalChange = {}
         )
     }
 }
-
-

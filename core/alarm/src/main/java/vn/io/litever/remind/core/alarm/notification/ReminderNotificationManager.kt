@@ -196,19 +196,16 @@ class ReminderNotificationManager @Inject constructor(
             }
         }
 
-        // Action: Snooze (omitted if snooze disabled or snooze limit reached)
+        // Action: Snooze 5 minutes (heads-up notification quick action)
         if (reminder.action.snoozeEnabled && reminder.canSnooze()) {
-            val snoozePendingIntent = createSnoozePendingIntent(reminder.id)
-            val snoozeLabel = context.getString(
-                R.string.reminder_action_snooze_interval,
-                reminder.action.snoozeIntervalMinutes
-            )
+            val snoozePendingIntent = createSnoozePendingIntent(reminder.id, snoozeMinutes = 5)
+            val snoozeLabel = context.getString(R.string.reminder_action_snooze_5m)
             builder.addAction(0, snoozeLabel, snoozePendingIntent)
         }
 
-        // Action: Dismiss
+        // Action: Complete / Dismiss
         val dismissPendingIntent = createDismissPendingIntent(reminder.id)
-        val dismissLabel = context.getString(R.string.reminder_action_dismiss)
+        val dismissLabel = context.getString(R.string.reminder_action_complete)
         builder.addAction(0, dismissLabel, dismissPendingIntent)
 
         val notification = builder.build()
@@ -262,10 +259,11 @@ class ReminderNotificationManager @Inject constructor(
         )
     }
 
-    private fun createSnoozePendingIntent(reminderId: Long): PendingIntent {
+    private fun createSnoozePendingIntent(reminderId: Long, snoozeMinutes: Int = 5): PendingIntent {
         val intent = Intent(context, ReminderReceiver::class.java).apply {
             action = ReminderReceiver.ACTION_REMINDER_SNOOZE
             putExtra(ReminderReceiver.EXTRA_REMINDER_ID, reminderId)
+            putExtra(ReminderReceiver.EXTRA_SNOOZE_MINUTES, snoozeMinutes)
         }
         return PendingIntent.getBroadcast(
             context,

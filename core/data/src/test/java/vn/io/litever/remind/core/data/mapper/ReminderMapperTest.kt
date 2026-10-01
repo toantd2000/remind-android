@@ -36,7 +36,7 @@ class ReminderMapperTest {
             notificationStyle = "FULL_SCREEN",
             isPersistentAlert = true,
             snoozeIntervalMinutes = 10,
-            snoozeRepeatCount = 5
+            
         )
 
         val model = entity.toModel()
@@ -55,7 +55,6 @@ class ReminderMapperTest {
         assertEquals(NotificationStyle.FULL_SCREEN, model.action.notificationStyle)
         assertTrue(model.action.isPersistentAlert)
         assertEquals(10, model.action.snoozeIntervalMinutes)
-        assertEquals(5, model.action.snoozeRepeatCount)
     }
 
     @Test
@@ -139,9 +138,9 @@ class ReminderMapperTest {
                 notificationStyle = NotificationStyle.FULL_SCREEN,
                 isPersistentAlert = true,
                 snoozeIntervalMinutes = 15,
-                snoozeRepeatCount = 2
+                
             ),
-            currentSnoozeCount = 1
+            
         )
 
         val entity = domainReminder.toEntity()
@@ -160,7 +159,7 @@ class ReminderMapperTest {
         assertEquals("FULL_SCREEN", entity.notificationStyle)
         assertTrue(entity.isPersistentAlert)
         assertEquals(15, entity.snoozeIntervalMinutes)
-        assertEquals(2, entity.snoozeRepeatCount)
-        assertEquals(1, entity.currentSnoozeCount)
     }
 }
+
+

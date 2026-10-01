@@ -92,8 +92,7 @@ fun ReminderEntity.toModel(): Reminder {
         vibrationEnabled = vibrationEnabled,
         volume = volume,
         snoozeEnabled = snoozeEnabled,
-        snoozeIntervalMinutes = snoozeIntervalMinutes,
-        snoozeRepeatCount = snoozeRepeatCount
+        snoozeIntervalMinutes = snoozeIntervalMinutes
     )
 
     return Reminder(
@@ -104,7 +103,6 @@ fun ReminderEntity.toModel(): Reminder {
         triggerType = triggerTypeEnum,
         timeTrigger = timeTrigger,
         action = action,
-        currentSnoozeCount = currentSnoozeCount,
         snoozeNextTriggerTime = snoozeNextTriggerTime,
         lastTriggeredTime = lastTriggeredTime,
         isCompleted = isCompleted,
@@ -148,8 +146,8 @@ fun Reminder.toEntity(): ReminderEntity {
 
         snoozeEnabled = action.snoozeEnabled,
         snoozeIntervalMinutes = action.snoozeIntervalMinutes,
-        snoozeRepeatCount = action.snoozeRepeatCount,
-        currentSnoozeCount = currentSnoozeCount,
+        snoozeRepeatCount = 3,
+        currentSnoozeCount = 0,
         snoozeNextTriggerTime = snoozeNextTriggerTime,
 
         lastTriggeredTime = lastTriggeredTime,

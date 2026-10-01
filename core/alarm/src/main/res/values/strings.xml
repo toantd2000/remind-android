@@ -26,8 +26,10 @@
     <string name="reminder_default_title">Reminder</string>
     <string name="reminder_default_triggered">Reminder triggered</string>
     <string name="reminder_action_snooze">Snooze</string>
+    <string name="reminder_action_snooze_5m">Snooze 5m</string>
     <string name="reminder_action_snooze_interval">Snooze (%1$dm)</string>
     <string name="reminder_action_dismiss">Dismiss</string>
+    <string name="reminder_action_complete">Done</string>
 </resources>
 
 

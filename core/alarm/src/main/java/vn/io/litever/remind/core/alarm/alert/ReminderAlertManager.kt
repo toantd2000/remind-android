@@ -1,4 +1,4 @@
-package vn.io.litever.remind.core.alarm.alert
+﻿package vn.io.litever.remind.core.alarm.alert
 
 import android.content.Context
 import android.media.AudioAttributes
@@ -323,11 +323,10 @@ class ReminderAlertManagerImpl @Inject constructor(
                     val reminder = repository.getReminderById(reminderId)
                     if (reminder != null && reminder.isEnabled && !reminder.isCompleted) {
                         if (reminder.canSnooze()) {
-                            val nextSnoozeCount = reminder.currentSnoozeCount + 1
+                            
                             val snoozeIntervalMillis = reminder.action.snoozeIntervalMinutes * 60 * 1000L
                             val nextTriggerTime = System.currentTimeMillis() + snoozeIntervalMillis
                             val snoozedReminder = reminder.copy(
-                                currentSnoozeCount = nextSnoozeCount,
                                 snoozeNextTriggerTime = nextTriggerTime
                             )
                             repository.updateReminder(snoozedReminder)
@@ -395,3 +394,5 @@ class ReminderAlertManagerImpl @Inject constructor(
         const val DEFAULT_AUTO_SILENCE_MINUTES = 5
     }
 }
+
+

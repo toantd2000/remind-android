@@ -10,7 +10,6 @@ data class Reminder(
     val triggerType: ReminderTriggerType,
     val timeTrigger: TimeTrigger? = null,
     val action: ReminderAction = ReminderAction(),
-    val currentSnoozeCount: Int = 0,
     val snoozeNextTriggerTime: Long? = null,
     val lastTriggeredTime: Long? = null,
     val isCompleted: Boolean = false,
@@ -21,6 +20,6 @@ data class Reminder(
         get() = timeTrigger?.isRecurring == true
 
     fun canSnooze(): Boolean {
-        return action.canSnooze(currentSnoozeCount)
+        return action.canSnooze()
     }
 }

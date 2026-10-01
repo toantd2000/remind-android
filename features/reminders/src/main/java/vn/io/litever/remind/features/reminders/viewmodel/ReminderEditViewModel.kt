@@ -60,7 +60,7 @@ data class ReminderEditUiState(
     val intervalMinutes: Int? = null,
     val timeWindows: List<ReminderTimeWindow> = emptyList(),
     val urgencyLevel: UrgencyLevel = UrgencyLevel.MEDIUM,
-    val notificationStyle: NotificationStyle = NotificationStyle.STANDARD,
+    val notificationStyle: NotificationStyle = NotificationStyle.FULL_SCREEN,
     val isPersistentAlert: Boolean = false,
     val autoSilenceMinutes: Int = 5,
     val useAlarmStream: Boolean = true,
@@ -69,7 +69,6 @@ data class ReminderEditUiState(
     val volume: Int = 100,
     val snoozeEnabled: Boolean = true,
     val snoozeIntervalMinutes: Int = 5,
-    val snoozeRepeatCount: Int = 3,
     val showPermissionDialog: Boolean = false,
     val missingPermissions: List<ReminderPermissionType> = emptyList(),
     val showDiscardDialog: Boolean = false,
@@ -143,8 +142,7 @@ class ReminderEditViewModel @Inject constructor(
                         vibrationEnabled = existing.action.vibrationEnabled,
                         volume = existing.action.volume,
                         snoozeEnabled = existing.action.snoozeEnabled,
-                        snoozeIntervalMinutes = existing.action.snoozeIntervalMinutes,
-                        snoozeRepeatCount = existing.action.snoozeRepeatCount
+                        snoozeIntervalMinutes = existing.action.snoozeIntervalMinutes
                     )
                 }
             }
@@ -182,7 +180,6 @@ class ReminderEditViewModel @Inject constructor(
             urgencyLevel = state.urgencyLevel,
             snoozeEnabled = state.snoozeEnabled,
             snoozeIntervalMinutes = state.snoozeIntervalMinutes,
-            snoozeRepeatCount = state.snoozeRepeatCount,
             volume = state.volume,
             vibrationEnabled = state.vibrationEnabled,
             isPersistentAlert = if (state.notificationStyle == NotificationStyle.FULL_SCREEN) state.isPersistentAlert else false,
@@ -320,12 +317,17 @@ class ReminderEditViewModel @Inject constructor(
                 curr.volume != init.volume ||
                 curr.snoozeEnabled != init.snoozeEnabled ||
                 curr.fixedTimes != init.fixedTimes ||
-                curr.snoozeIntervalMinutes != init.snoozeIntervalMinutes ||
-                curr.snoozeRepeatCount != init.snoozeRepeatCount
+                curr.snoozeIntervalMinutes != init.snoozeIntervalMinutes
     }
 
-    fun updateSnoozeSettings(enabled: Boolean, interval: Int, repeatCount: Int = 3) {
-        _uiState.update { it.copy(snoozeEnabled = enabled, snoozeIntervalMinutes = interval, snoozeRepeatCount = repeatCount) }
+    fun updateSnoozeSettings(enabled: Boolean, interval: Int) {
+        _uiState.update { it.copy(snoozeEnabled = enabled, snoozeIntervalMinutes = interval) }
+    }
+    fun setSnoozeEnabled(enabled: Boolean) {
+        _uiState.update { it.copy(snoozeEnabled = enabled) }
+    }
+    fun setSnoozeIntervalMinutes(interval: Int) {
+        _uiState.update { it.copy(snoozeIntervalMinutes = interval) }
     }
     fun updateRingtone(uri: String?) { _uiState.update { it.copy(ringtoneUri = uri) } }
     fun setTitle(title: String) { _uiState.update { it.copy(title = title, showTitleError = false) } }

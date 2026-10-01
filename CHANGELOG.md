@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **Flexible Reminder Snooze:** Added quick snooze chips (+5m, +10m, +15m) and custom minute entry dialog (`LvAlertDialog`) on the ringing screen.
+- **Notification Quick Actions:** Added 5-minute quick snooze action and completion action to heads-up reminder notifications.
+- **Inline Snooze Configuration:** Integrated snooze enable toggle and quick interval selector (5, 10, 15, 30 min) directly into the Add/Edit Reminder screen.
+
+### Changed
+- **Dual Notification Modes:** Streamlined alert modes into "Ringing" (`NotificationStyle.FULL_SCREEN`, default) and "Normal Notification" (`NotificationStyle.STANDARD`) with clear descriptive subtitles.
+- **Unified Sound & Vibration:** Sound, ringtone, volume slider, and vibration toggle are now supported and configurable for both alert styles, with dynamic ringtone title resolution via `RingtoneManager`.
+- **Ringing-Specific Configurations:** Confined Auto-silence and STREAM_ALARM switch exclusively to "Ringing" mode.
+
+### Removed
+- **Snooze Repeat Limits:** Completely excised `snoozeRepeatCount` and `currentSnoozeCount` across domain model, database mapper, receivers, and UI.
+- **Urgency Selector in UI:** Removed cluttered `UrgencyLevel` selector from the Add/Edit reminder configuration section.
+
 ## [2.2.0] - 2026-09-30
 
 ### Removed

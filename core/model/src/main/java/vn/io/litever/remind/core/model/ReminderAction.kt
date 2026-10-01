@@ -4,7 +4,7 @@ import java.io.Serializable
 
 data class ReminderAction(
     val urgencyLevel: UrgencyLevel = UrgencyLevel.MEDIUM,
-    val notificationStyle: NotificationStyle = NotificationStyle.STANDARD,
+    val notificationStyle: NotificationStyle = NotificationStyle.FULL_SCREEN,
     val isPersistentAlert: Boolean = false,
     val autoSilenceMinutes: Int = 5,
     val useAlarmStream: Boolean = true,
@@ -12,12 +12,11 @@ data class ReminderAction(
     val vibrationEnabled: Boolean = true,
     val volume: Int = 100,
     val snoozeEnabled: Boolean = true,
-    val snoozeIntervalMinutes: Int = 5,
-    val snoozeRepeatCount: Int = 3
+    val snoozeIntervalMinutes: Int = 5
 ) : Serializable {
 
-    fun canSnooze(currentSnoozeCount: Int): Boolean {
+    fun canSnooze(): Boolean {
         if (urgencyLevel == UrgencyLevel.SOFT) return false
-        return snoozeEnabled && (snoozeRepeatCount == -1 || currentSnoozeCount < snoozeRepeatCount)
+        return snoozeEnabled
     }
 }

@@ -237,7 +237,7 @@ class ReminderAdversarialReviewTest {
             triggerType = ReminderTriggerType.FIXED_TIME,
             isEnabled = true,
             snoozeNextTriggerTime = System.currentTimeMillis() + 300000L,
-            currentSnoozeCount = 2
+            
         )
         val allRemindersFlow = MutableStateFlow(listOf(snoozedReminder))
         every { repository.getAllReminders() } returns allRemindersFlow
@@ -261,8 +261,7 @@ class ReminderAdversarialReviewTest {
             repository.updateReminder(match {
                 it.id == 77L &&
                         !it.isEnabled &&
-                        it.snoozeNextTriggerTime == null &&
-                        it.currentSnoozeCount == 0
+                        it.snoozeNextTriggerTime == null
             })
         }
     }
@@ -403,3 +402,4 @@ class ReminderAdversarialReviewTest {
         io.mockk.verify { notificationManager.cancelNotification(102L) }
     }
 }
+

@@ -123,8 +123,7 @@ class ReminderListViewModel @Inject constructor(
 
             val updated = reminder.copy(
                 isEnabled = isEnabling,
-                snoozeNextTriggerTime = null,
-                currentSnoozeCount = if (!isEnabling) 0 else reminder.currentSnoozeCount
+                snoozeNextTriggerTime = null
             )
             reminderScheduler.cancelSnooze(reminder)
             reminderRepository.updateReminder(updated)
@@ -204,7 +203,6 @@ class ReminderListViewModel @Inject constructor(
                 title = "${reminder.title} (Copy)",
                 isEnabled = true,
                 isCompleted = false,
-                currentSnoozeCount = 0,
                 snoozeNextTriggerTime = null,
                 createdAt = System.currentTimeMillis()
             )
@@ -255,3 +253,4 @@ class ReminderListViewModel @Inject constructor(
         _permissionCheckTrigger.update { it + 1 }
     }
 }
+

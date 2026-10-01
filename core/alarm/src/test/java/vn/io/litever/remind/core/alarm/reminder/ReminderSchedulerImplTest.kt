@@ -135,7 +135,8 @@ class ReminderSchedulerImplTest {
             id = 105L,
             title = "Drink Water",
             triggerType = ReminderTriggerType.INTERVAL,
-            timeTrigger = TimeTrigger(intervalMinutes = 60)
+            timeTrigger = TimeTrigger(intervalMinutes = 60),
+            action = ReminderAction(notificationStyle = NotificationStyle.STANDARD)
         )
 
         scheduler.schedule(intervalReminder)

@@ -240,10 +240,9 @@ class ReminderEditViewModelTest {
         assertEquals("content://media/internal/audio/media/42", viewModel.uiState.value.ringtoneUri)
 
         // 2. Snooze settings
-        viewModel.updateSnoozeSettings(enabled = true, interval = 10, repeatCount = 5)
+        viewModel.updateSnoozeSettings(enabled = true, interval = 10)
         assertTrue(viewModel.uiState.value.snoozeEnabled)
         assertEquals(10, viewModel.uiState.value.snoozeIntervalMinutes)
-        assertEquals(5, viewModel.uiState.value.snoozeRepeatCount)
     }
 
     @Test
@@ -793,4 +792,5 @@ class ReminderEditViewModelTest {
         assertEquals(existingTimes.first(), viewModel.uiState.value.time)
     }
 }
+
 

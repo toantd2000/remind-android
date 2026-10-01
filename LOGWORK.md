@@ -440,3 +440,59 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
   - Toàn bộ 473 task build và test của dự án hoàn thành 100% không lỗi.
 
 
+
+### [TDR-085] - Tái Cấu Trúc Logic Báo Lại (Flexible Snooze) và Phân Loại Cảnh Báo Nhắc Nhở
+- **Ngày thực hiện:** 2026-10-01
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Người dùng yêu cầu hiện đại hóa và làm sạch logic nhắc nhở:
+    1. Cơ chế hoãn/báo lại linh hoạt (Flexible Snooze): Cho phép chọn nhanh thời gian báo lại (+5m, +10m, +15m) hoặc nhập số phút tùy chỉnh ngay trên màn hình reo chuông, loại bỏ hoàn toàn giới hạn số lần lặp lại (snoozeRepeatCount).
+    2. Phân loại kiểu thông báo thành "Thông báo thường" (STANDARD) và "Đổ chuông" (FULL_SCREEN). Mặc định khi tạo mới là "Đổ chuông". Cả hai đều hiển thị giao diện toàn màn hình, nhưng dạng "Đổ chuông" có Foreground Service (ReminderAlertService) phát nhạc chuông liên tục và hỗ trợ tự động tắt tiếng / phát qua kênh báo thức (STREAM_ALARM).
+    3. Cả hai kiểu thông báo đều hỗ trợ tùy chỉnh nhạc chuông, âm lượng và rung.
+    4. Trên thông báo thu nhỏ (heads-up / banner), cung cấp nút "Báo lại 5 phút" và nút xác nhận hoàn thành ("Hoàn thành").
+    5. Dọn dẹp sạch mã nguồn, loại bỏ snoozeRepeatCount và currentSnoozeCount.
+- **Quyết định:**
+  1. **Domain Model (:core:model):**
+     - Loại bỏ snoozeRepeatCount khỏi ReminderAction và currentSnoozeCount khỏi Reminder.
+     - Chuyển giá trị mặc định của 
+otificationStyle sang NotificationStyle.FULL_SCREEN.
+     - Tinh giản canSnooze(): chỉ kiểm tra snoozeEnabled && urgencyLevel != UrgencyLevel.SOFT.
+  2. **Data Mapper (:core:data):**
+     - Cập nhật ReminderMapper.kt bỏ mapping 2 trường đã xóa sang domain model, gán giá trị mặc định ổn định khi ghi xuống Room Entity.
+  3. **Alarm & Notification Subsystem (:core:alarm):**
+     - ReminderNotificationManager.kt: Heads-up notification hiển thị nút "Báo lại 5 phút" (kèm EXTRA_SNOOZE_MINUTES = 5) và nút "Hoàn thành".
+     - ReminderReceiver.kt: Hỗ trợ EXTRA_SNOOZE_MINUTES để lập lịch snooze theo số phút người dùng chọn.
+  4. **Giao diện & ViewModel (:features:reminders):**
+     - ReminderAlertConfigSection.kt: Đổi nhãn thành "Thông báo thường" và "Đổ chuông". Cấu hình âm thanh (nhạc chuông, âm lượng, rung) áp dụng cho cả hai chế độ. Tự động tắt tiếng và Kênh báo thức chỉ hiển thị ở chế độ "Đổ chuông". Loại bỏ mục chọn số lần lặp lại snooze.
+     - ReminderRingingScreen.kt: Bổ sung hàng nút chọn nhanh (+5m, +10m, +15m) và nút "Tùy chỉnh" mở LvAlertDialog với LiteverTextField để nhập số phút tùy thích.
+     - ReminderRingingViewModel.kt: Nâng cấp hàm snooze(minutes: Int, onFinish: () -> Unit) nhận số phút linh hoạt.
+     - ReminderEditViewModel.kt & ReminderEditScreen.kt: Loại bỏ toàn bộ references đến snoozeRepeatCount.
+  5. **Đồng bộ Unit Tests:**
+     - Cập nhật toàn bộ các bài test liên quan trong :core:alarm, :core:model, :core:data, :features:reminders. Toàn bộ 473 task build và unit tests của dự án vượt qua 100%.
+- **Hệ quả:**
+  - Trải nghiệm người dùng khi nhắc nhở đến hạn trực quan, linh hoạt và thuận tiện.
+  - Codebase sạch, tuân thủ Clean Architecture và Design System chung.
+
+### [2026-10-01] Hoàn thiện và làm sạch giao diện Thêm/Sửa Lời nhắc (ReminderEditScreen & ReminderAlertConfigSection)
+- **Mục tiêu:**
+  - Làm sạch mục "Cảnh báo & Thông báo" trong màn hình Thêm/Sửa lời nhắc:
+    - Loại bỏ hoàn toàn bộ chọn UrgencyLevel (SOFT/MEDIUM/HARD) gây rườm rà.
+    - Đưa 2 chế độ thông báo lên đầu: "Đổ chuông" (mặc định) và "Thông báo thường" với mô tả chi tiết trực quan.
+    - Cấu hình Nhạc chuông, Âm lượng và Rung hiển thị và áp dụng cho cả 2 kiểu thông báo; Tên nhạc chuông được trích xuất động qua RingtoneManager thay vì chuỗi cứng.
+    - Tự động tắt tiếng và Kênh âm thanh báo thức hiển thị duy nhất khi chọn "Đổ chuông".
+    - Cấu hình Báo lại (Snooze) được nhúng trực tiếp ngay trong section (công tắc bật/tắt + chọn nhanh khoảng thời gian 5p, 10p, 15p, 30p), loại bỏ việc điều hướng sang màn hình riêng và loại bỏ giới hạn số lần lặp lại.
+- **Thực hiện:**
+  - `features/reminders/src/main/java/vn/io/litever/remind/features/reminders/ui/components/ReminderAlertConfigSection.kt`:
+    - Loại bỏ tham số và UI của `UrgencyLevel`.
+    - Thêm mô tả trực quan dưới bộ chọn chế độ: `style_full_screen_desc` và `style_standard_desc`.
+    - Tích hợp inline Snooze: Switch bật/tắt và `LiteverSingleChoiceSegmentedButtonRow` chọn khoảng thời gian (5, 10, 15, 30 phút).
+    - Cập nhật các hàm Preview (chuẩn, thường, chế độ tối).
+  - `features/reminders/src/main/java/vn/io/litever/remind/features/reminders/ui/ReminderEditScreen.kt`:
+    - Trích xuất tên nhạc chuông từ `RingtoneManager.getRingtone()` dựa trên `uiState.ringtoneUri`.
+    - Kết nối `onSnoozeEnabledChange` và `onSnoozeIntervalChange` trực tiếp với ViewModel.
+    - Loại bỏ các param dư thừa và listener không dùng đến.
+  - `features/reminders/src/main/java/vn/io/litever/remind/features/reminders/viewmodel/ReminderEditViewModel.kt`:
+    - Thêm `setSnoozeEnabled` và `setSnoozeIntervalMinutes`.
+- **Kết quả kiểm thử:**
+  - `./gradlew testDebugUnitTest`: Vượt qua 100% toàn bộ 473 task của dự án không một lỗi nào.
+

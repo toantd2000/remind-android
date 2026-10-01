@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -33,27 +32,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import vn.io.litever.designsystem.components.LiteverListItem
-import vn.io.litever.designsystem.components.LiteverOutlinedCard
 import vn.io.litever.designsystem.components.LiteverRadioButton
 import vn.io.litever.designsystem.components.LiteverSegmentedButton
 import vn.io.litever.designsystem.components.LiteverSingleChoiceSegmentedButtonRow
 import vn.io.litever.designsystem.components.LiteverSwitch
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingIcon
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.features.reminders.R
 import kotlin.math.roundToInt
-
-import vn.io.litever.remind.core.model.UrgencyLevel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReminderAlertConfigSection(
     notificationStyle: NotificationStyle,
     onNotificationStyleChange: (NotificationStyle) -> Unit,
-    urgencyLevel: UrgencyLevel = UrgencyLevel.MEDIUM,
-    onUrgencyLevelChange: (UrgencyLevel) -> Unit = {},
     ringtoneTitle: String,
     onRingtoneClick: () -> Unit,
     volume: Int,
@@ -65,9 +60,9 @@ fun ReminderAlertConfigSection(
     useAlarmStream: Boolean,
     onUseAlarmStreamChange: (Boolean) -> Unit,
     snoozeEnabled: Boolean,
+    onSnoozeEnabledChange: (Boolean) -> Unit,
     snoozeIntervalMinutes: Int,
-    snoozeRepeatCount: Int,
-    onSnoozeSettingsClick: () -> Unit,
+    onSnoozeIntervalChange: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showAutoSilenceSheet by remember { mutableStateOf(false) }
@@ -106,51 +101,7 @@ fun ReminderAlertConfigSection(
 
             Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
 
-            // Urgency Level Selector
-            Text(
-                text = stringResource(R.string.urgency_level_title),
-                style = LiteverTheme.typography.labelLarge,
-                fontWeight = FontWeight.SemiBold,
-                color = LiteverTheme.colors.onSurface
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            LiteverSingleChoiceSegmentedButtonRow(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                UrgencyLevel.entries.forEach { level ->
-                    val labelRes = when (level) {
-                        UrgencyLevel.SOFT -> R.string.urgency_soft
-                        UrgencyLevel.MEDIUM -> R.string.urgency_medium
-                        UrgencyLevel.HARD -> R.string.urgency_hard
-                    }
-                    LiteverSegmentedButton(
-                        onClick = { onUrgencyLevelChange(level) },
-                        selected = level == urgencyLevel,
-                        label = {
-                            Text(
-                                text = stringResource(labelRes),
-                                style = LiteverTheme.typography.labelMedium
-                            )
-                        }
-                    )
-                }
-            }
-
-            val urgencyDesc = when (urgencyLevel) {
-                UrgencyLevel.SOFT -> stringResource(R.string.urgency_soft_desc)
-                UrgencyLevel.MEDIUM -> stringResource(R.string.urgency_medium_desc)
-                UrgencyLevel.HARD -> stringResource(R.string.urgency_hard_desc)
-            }
-            Text(
-                text = urgencyDesc,
-                style = LiteverTheme.typography.bodySmall,
-                color = LiteverTheme.colors.onSurfaceVariant,
-                modifier = Modifier.padding(top = 4.dp, bottom = 12.dp)
-            )
-
-            // Notification Style Selector (Standard Heads-Up vs Full-Screen Alarm)
+            // 1. Notification Style Selector (Đổ chuông vs Thông báo thường)
             Text(
                 text = stringResource(R.string.notification_style_label),
                 style = LiteverTheme.typography.labelLarge,
@@ -163,10 +114,10 @@ fun ReminderAlertConfigSection(
             LiteverSingleChoiceSegmentedButtonRow(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                NotificationStyle.entries.forEachIndexed { index, style ->
+                NotificationStyle.entries.forEach { style ->
                     val labelRes = when (style) {
-                        NotificationStyle.STANDARD -> R.string.style_standard
                         NotificationStyle.FULL_SCREEN -> R.string.style_full_screen
+                        NotificationStyle.STANDARD -> R.string.style_standard
                     }
                     LiteverSegmentedButton(
                         onClick = { onNotificationStyleChange(style) },
@@ -181,110 +132,120 @@ fun ReminderAlertConfigSection(
                 }
             }
 
-            // Sound & Ringtone Settings (Only shown for Alarm Ringing mode)
-            if (notificationStyle == NotificationStyle.FULL_SCREEN) {
-                Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+            val styleDesc = when (notificationStyle) {
+                NotificationStyle.FULL_SCREEN -> stringResource(R.string.style_full_screen_desc)
+                NotificationStyle.STANDARD -> stringResource(R.string.style_standard_desc)
+            }
+            Text(
+                text = styleDesc,
+                style = LiteverTheme.typography.bodySmall,
+                color = LiteverTheme.colors.onSurfaceVariant,
+                modifier = Modifier.padding(top = 6.dp, bottom = 12.dp)
+            )
 
-                Text(
-                    text = stringResource(R.string.sound_settings_title),
-                    style = LiteverTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = LiteverTheme.colors.primary
-                )
+            // 2. Sound & Vibration Settings (Applies to both ringing and standard)
+            Text(
+                text = stringResource(R.string.sound_settings_title),
+                style = LiteverTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = LiteverTheme.colors.primary
+            )
 
-                Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-                // Ringtone Selection Row
-                Surface(
+            // Ringtone Selection Row
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(LiteverTheme.shapes.medium)
+                    .clickable(onClick = onRingtoneClick),
+                color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.4f),
+                shape = LiteverTheme.shapes.medium
+            ) {
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(LiteverTheme.shapes.medium)
-                        .clickable(onClick = onRingtoneClick),
-                    color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.4f),
-                    shape = LiteverTheme.shapes.medium
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 14.dp, vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        modifier = Modifier.weight(1f)
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            ReMindSettingIcon(
-                                imageVector = ReMindIcons.MusicNote
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column {
-                                Text(
-                                    text = stringResource(R.string.ringtone_title),
-                                    style = LiteverTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = LiteverTheme.colors.onSurface
-                                )
-                                Text(
-                                    text = ringtoneTitle.ifBlank { stringResource(R.string.default_ringtone) },
-                                    style = LiteverTheme.typography.bodySmall,
-                                    color = LiteverTheme.colors.onSurfaceVariant
-                                )
-                            }
-                        }
-
-                        Icon(
-                            imageVector = ReMindIcons.KeyboardArrowRight,
-                            contentDescription = null,
-                            tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.5f)
+                        ReMindSettingIcon(
+                            imageVector = ReMindIcons.MusicNote
                         )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            Text(
+                                text = stringResource(R.string.ringtone_title),
+                                style = LiteverTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = LiteverTheme.colors.onSurface
+                            )
+                            Text(
+                                text = ringtoneTitle.ifBlank { stringResource(R.string.default_ringtone) },
+                                style = LiteverTheme.typography.bodySmall,
+                                color = LiteverTheme.colors.onSurfaceVariant
+                            )
+                        }
                     }
+
+                    Icon(
+                        imageVector = ReMindIcons.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.5f)
+                    )
                 }
+            }
 
-                Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-                // Grouped Volume & Vibration Row
-                Surface(
+            // Grouped Volume & Vibration Row
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(LiteverTheme.shapes.medium),
+                color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.4f),
+                shape = LiteverTheme.shapes.medium
+            ) {
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(LiteverTheme.shapes.medium),
-                    color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.4f),
-                    shape = LiteverTheme.shapes.medium
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
+                    ReMindSettingIcon(
+                        imageVector = if (volume == 0) ReMindIcons.VolumeOff else ReMindIcons.VolumeUp,
+                        selected = false
+                    )
+
+                    Slider(
+                        value = volume.toFloat(),
+                        onValueChange = { onVolumeChange(it.roundToInt()) },
+                        valueRange = 0f..100f,
+                        steps = 9,
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 14.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        ReMindSettingIcon(
-                            imageVector = if (volume == 0) ReMindIcons.VolumeOff else ReMindIcons.VolumeUp,
-                            selected = false
+                            .weight(1f)
+                            .padding(horizontal = 12.dp),
+                        colors = SliderDefaults.colors(
+                            thumbColor = MaterialTheme.colorScheme.primary,
+                            activeTrackColor = MaterialTheme.colorScheme.primary,
+                            inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant
                         )
+                    )
 
-                        Slider(
-                            value = volume.toFloat(),
-                            onValueChange = { onVolumeChange(it.roundToInt()) },
-                            valueRange = 0f..100f,
-                            steps = 9,
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(horizontal = 12.dp),
-                            colors = SliderDefaults.colors(
-                                thumbColor = MaterialTheme.colorScheme.primary,
-                                activeTrackColor = MaterialTheme.colorScheme.primary,
-                                inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant
-                            )
-                        )
-
-                        ReMindSettingIcon(
-                            imageVector = ReMindIcons.Vibration,
-                            selected = vibrationEnabled,
-                            onClick = { onVibrationChange(!vibrationEnabled) }
-                        )
-                    }
+                    ReMindSettingIcon(
+                        imageVector = ReMindIcons.Vibration,
+                        selected = vibrationEnabled,
+                        onClick = { onVibrationChange(!vibrationEnabled) }
+                    )
                 }
+            }
 
+            // 3. Ringing-only Settings (Auto-Silence & Alarm Stream)
+            if (notificationStyle == NotificationStyle.FULL_SCREEN) {
                 Spacer(modifier = Modifier.height(12.dp))
 
                 // Auto-Silence Row
@@ -396,7 +357,7 @@ fun ReminderAlertConfigSection(
 
             Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
 
-            // Alert & Snooze Behavior Section
+            // 4. Alert Behavior & Snooze (Inline Snooze Configuration)
             Text(
                 text = stringResource(R.string.alert_behavior_snooze_title),
                 style = LiteverTheme.typography.titleSmall,
@@ -406,68 +367,94 @@ fun ReminderAlertConfigSection(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Snooze Settings Row (Click opens shared SnoozeSettingsScreen)
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(LiteverTheme.shapes.medium)
-                    .clickable(onClick = onSnoozeSettingsClick),
+                    .clip(LiteverTheme.shapes.medium),
                 color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.4f),
                 shape = LiteverTheme.shapes.medium
             ) {
-                Row(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 14.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .padding(vertical = 12.dp)
                 ) {
+                    // Snooze Enable Switch Row
                     Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onSnoozeEnabledChange(!snoozeEnabled) }
+                            .padding(horizontal = 14.dp),
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.weight(1f)
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        ReMindSettingIcon(
-                            imageVector = ReMindIcons.Snooze,
-                            selected = snoozeEnabled
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Column {
-                            Text(
-                                text = stringResource(R.string.snooze_settings_title),
-                                style = LiteverTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.SemiBold,
-                                color = LiteverTheme.colors.onSurface
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            ReMindSettingIcon(
+                                imageVector = ReMindIcons.Snooze,
+                                selected = snoozeEnabled
                             )
-
-                            val repeatText = when (snoozeRepeatCount) {
-                                -1 -> stringResource(R.string.snooze_unlimited)
-                                1 -> stringResource(R.string.times_format, 1)
-                                else -> stringResource(R.string.times_format, snoozeRepeatCount)
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column {
+                                Text(
+                                    text = stringResource(R.string.snooze_enabled_label),
+                                    style = LiteverTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = LiteverTheme.colors.onSurface
+                                )
+                                val summary = if (snoozeEnabled) {
+                                    stringResource(R.string.minutes_format, snoozeIntervalMinutes)
+                                } else {
+                                    stringResource(R.string.off)
+                                }
+                                Text(
+                                    text = summary,
+                                    style = LiteverTheme.typography.bodySmall,
+                                    color = LiteverTheme.colors.onSurfaceVariant
+                                )
                             }
-                            val summary = if (snoozeEnabled) {
-                                "${
-                                    stringResource(
-                                        R.string.minutes_format,
-                                        snoozeIntervalMinutes
-                                    )
-                                }, $repeatText"
-                            } else {
-                                stringResource(R.string.off)
-                            }
-
-                            Text(
-                                text = summary,
-                                style = LiteverTheme.typography.bodySmall,
-                                color = LiteverTheme.colors.onSurfaceVariant
-                            )
                         }
+
+                        LiteverSwitch(
+                            checked = snoozeEnabled,
+                            onCheckedChange = onSnoozeEnabledChange
+                        )
                     }
 
-                    Icon(
-                        imageVector = ReMindIcons.KeyboardArrowRight,
-                        contentDescription = null,
-                        tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.5f)
-                    )
+                    // Snooze Default Interval Selector (Visible when snooze is enabled)
+                    if (snoozeEnabled) {
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = stringResource(R.string.snooze_interval_label),
+                            style = LiteverTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Medium,
+                            color = LiteverTheme.colors.onSurfaceVariant,
+                            modifier = Modifier.padding(horizontal = 14.dp)
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+
+                        val intervalOptions = listOf(5, 10, 15, 30)
+                        LiteverSingleChoiceSegmentedButtonRow(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 14.dp)
+                        ) {
+                            intervalOptions.forEach { interval ->
+                                LiteverSegmentedButton(
+                                    selected = snoozeIntervalMinutes == interval,
+                                    onClick = { onSnoozeIntervalChange(interval) },
+                                    label = {
+                                        Text(
+                                            text = stringResource(R.string.minutes_format, interval),
+                                            style = LiteverTheme.typography.labelMedium
+                                        )
+                                    }
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -538,9 +525,9 @@ private fun ReminderAlertConfigSectionPreview() {
             useAlarmStream = true,
             onUseAlarmStreamChange = {},
             snoozeEnabled = true,
+            onSnoozeEnabledChange = {},
             snoozeIntervalMinutes = 10,
-            snoozeRepeatCount = 3,
-            onSnoozeSettingsClick = {}
+            onSnoozeIntervalChange = {}
         )
     }
 }
@@ -562,10 +549,10 @@ private fun ReminderAlertConfigSectionStandardPreview() {
             onAutoSilenceMinutesChange = {},
             useAlarmStream = true,
             onUseAlarmStreamChange = {},
-            snoozeEnabled = true,
-            snoozeIntervalMinutes = 10,
-            snoozeRepeatCount = 3,
-            onSnoozeSettingsClick = {}
+            snoozeEnabled = false,
+            onSnoozeEnabledChange = {},
+            snoozeIntervalMinutes = 5,
+            onSnoozeIntervalChange = {}
         )
     }
 }
@@ -588,9 +575,9 @@ private fun ReminderAlertConfigSectionDarkPreview() {
             useAlarmStream = true,
             onUseAlarmStreamChange = {},
             snoozeEnabled = true,
+            onSnoozeEnabledChange = {},
             snoozeIntervalMinutes = 10,
-            snoozeRepeatCount = 3,
-            onSnoozeSettingsClick = {}
+            onSnoozeIntervalChange = {}
         )
     }
 }

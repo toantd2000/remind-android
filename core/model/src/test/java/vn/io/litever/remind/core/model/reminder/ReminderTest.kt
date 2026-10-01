@@ -23,8 +23,7 @@ class ReminderTest {
         assertTrue(reminder.isEnabled)
         assertEquals(ReminderTriggerType.FIXED_TIME, reminder.triggerType)
         assertEquals(UrgencyLevel.MEDIUM, reminder.action.urgencyLevel)
-        assertEquals(NotificationStyle.STANDARD, reminder.action.notificationStyle)
-        assertEquals(0, reminder.currentSnoozeCount)
+        assertEquals(NotificationStyle.FULL_SCREEN, reminder.action.notificationStyle)
         assertNull(reminder.snoozeNextTriggerTime)
         assertNull(reminder.lastTriggeredTime)
         assertFalse(reminder.isCompleted)
@@ -32,34 +31,18 @@ class ReminderTest {
     }
 
     @Test
-    fun canSnooze_whenEnabledAndCountBelowRepeatCount_returnsTrue() {
+    fun canSnooze_whenEnabled_returnsTrue() {
         val reminder = Reminder(
             title = "Snooze test",
             triggerType = ReminderTriggerType.FIXED_TIME,
             action = ReminderAction(
-                snoozeEnabled = true,
-                snoozeRepeatCount = 3
-            ),
-            currentSnoozeCount = 0
+                snoozeEnabled = true
+            )
         )
         assertTrue(reminder.canSnooze())
 
-        val snoozedTwice = reminder.copy(currentSnoozeCount = 2)
+        val snoozedTwice = reminder.copy(snoozeNextTriggerTime = 1000L)
         assertTrue(snoozedTwice.canSnooze())
-    }
-
-    @Test
-    fun canSnooze_whenCountReachesRepeatCount_returnsFalse() {
-        val reminder = Reminder(
-            title = "Snooze limit",
-            triggerType = ReminderTriggerType.FIXED_TIME,
-            action = ReminderAction(
-                snoozeEnabled = true,
-                snoozeRepeatCount = 3
-            ),
-            currentSnoozeCount = 3
-        )
-        assertFalse(reminder.canSnooze())
     }
 
     @Test
@@ -69,9 +52,9 @@ class ReminderTest {
             triggerType = ReminderTriggerType.FIXED_TIME,
             action = ReminderAction(
                 snoozeEnabled = false,
-                snoozeRepeatCount = 3
+                
             ),
-            currentSnoozeCount = 0
+            
         )
         assertFalse(reminder.canSnooze())
     }
@@ -84,9 +67,9 @@ class ReminderTest {
             action = ReminderAction(
                 urgencyLevel = UrgencyLevel.SOFT,
                 snoozeEnabled = true,
-                snoozeRepeatCount = 3
+                
             ),
-            currentSnoozeCount = 0
+            
         )
         assertFalse(reminder.canSnooze())
     }
@@ -124,3 +107,5 @@ class ReminderTest {
         assertTrue(trigger.isRecurring)
     }
 }
+
+

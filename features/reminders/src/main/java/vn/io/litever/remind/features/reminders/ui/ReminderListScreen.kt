@@ -47,7 +47,7 @@ import vn.io.litever.remind.features.reminders.R
 import vn.io.litever.remind.features.reminders.ui.components.ReminderActionBottomSheet
 import vn.io.litever.remind.features.reminders.ui.components.ReminderCard
 import vn.io.litever.remind.features.reminders.ui.components.ReminderEmptyState
-import vn.io.litever.remind.features.reminders.ui.components.ReminderPermissionWarningBanner
+import vn.io.litever.remind.core.designsystem.components.PermissionWarningBanner
 import vn.io.litever.remind.features.reminders.ui.components.ReminderPuzzleDialog
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderListUiState
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderListViewModel
@@ -105,6 +105,7 @@ fun ReminderListRoute(
         onEditReminderClick = onEditReminderClick,
         onAddReminderClick = onAddReminderClick,
         onNavigateToPermissions = onNavigateToPermissions,
+        onDismissPermissionWarning = viewModel::dismissPermissionWarning,
         onDeleteReminder = viewModel::deleteReminder,
         onDuplicateReminder = viewModel::duplicateReminder,
         onToggleCompleted = viewModel::toggleCompleted,
@@ -124,6 +125,7 @@ fun ReminderListScreen(
     onEditReminderClick: (Long) -> Unit = {},
     onAddReminderClick: () -> Unit,
     onNavigateToPermissions: () -> Unit,
+    onDismissPermissionWarning: () -> Unit = {},
     onDeleteReminder: (Reminder) -> Unit,
     onDuplicateReminder: (Reminder) -> Unit,
     onToggleCompleted: (Reminder) -> Unit,
@@ -193,9 +195,31 @@ fun ReminderListScreen(
         ) {
             // Permission Warning Banner
             if (uiState.hasPermissionWarning) {
-                ReminderPermissionWarningBanner(
-                    onClick = onNavigateToPermissions
-                )
+                if (uiState.isCriticalPermissionWarning) {
+                    PermissionWarningBanner(
+                        title = stringResource(R.string.reminder_permission_warning_banner_title),
+                        message = stringResource(R.string.reminder_permission_warning_banner_desc),
+                        isCritical = true,
+                        onClick = onNavigateToPermissions,
+                        modifier = Modifier.padding(
+                            horizontal = LiteverTheme.spacing.medium,
+                            vertical = LiteverTheme.spacing.small
+                        )
+                    )
+                } else if (!uiState.isPermissionWarningDismissed) {
+                    PermissionWarningBanner(
+                        title = stringResource(R.string.reminder_permission_warning_banner_non_critical_title),
+                        message = stringResource(R.string.reminder_permission_warning_banner_non_critical_desc),
+                        isCritical = false,
+                        onClick = onNavigateToPermissions,
+                        dismissLabel = stringResource(R.string.permission_warning_banner_remind_later),
+                        onDismiss = onDismissPermissionWarning,
+                        modifier = Modifier.padding(
+                            horizontal = LiteverTheme.spacing.medium,
+                            vertical = LiteverTheme.spacing.small
+                        )
+                    )
+                }
             }
 
             // Content List or Empty State

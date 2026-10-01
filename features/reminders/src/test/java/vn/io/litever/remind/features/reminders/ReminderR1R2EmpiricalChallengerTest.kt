@@ -63,6 +63,7 @@ class ReminderR1R2EmpiricalChallengerTest {
         every { permissionChecker.hasNotificationPermission() } returns true
         every { permissionChecker.hasPermissionsForReminder(any()) } returns true
         every { permissionChecker.getMissingPermissions(any()) } returns emptyList()
+        every { permissionChecker.hasNonCriticalPermissions() } returns true
     }
 
     @After

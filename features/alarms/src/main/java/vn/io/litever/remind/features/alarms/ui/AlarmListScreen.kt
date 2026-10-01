@@ -71,9 +71,9 @@ import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.Alarm
 import java.time.DayOfWeek
 import vn.io.litever.remind.features.alarms.R
+import vn.io.litever.remind.core.designsystem.components.PermissionWarningBanner
 import vn.io.litever.remind.features.alarms.ui.components.AlarmCard
 import vn.io.litever.remind.features.alarms.ui.components.NextAlarmHeader
-import vn.io.litever.remind.features.alarms.ui.components.PermissionWarningBanner
 import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState
 import vn.io.litever.remind.features.alarms.viewmodel.AlarmListViewModel
 import java.time.LocalTime
@@ -93,6 +93,8 @@ fun AlarmListRoute(
     val nextAlarmTime by viewModel.nextAlarmTime.collectAsState()
     val is24HourFormat by viewModel.is24HourFormat.collectAsState()
     val hasCriticalPermissions by viewModel.hasCriticalPermissions.collectAsState()
+    val hasNonCriticalPermissions by viewModel.hasNonCriticalPermissions.collectAsState()
+    val isPermissionWarningDismissed by viewModel.isPermissionWarningDismissed.collectAsState()
     val isAdFreeActive by viewModel.isAdFreeActive.collectAsState()
 
     LocalContext.current
@@ -144,6 +146,9 @@ fun AlarmListRoute(
         is24HourFormat = is24HourFormat,
         nextAlarmState = nextAlarmTime,
         hasCriticalPermissions = hasCriticalPermissions,
+        hasNonCriticalPermissions = hasNonCriticalPermissions,
+        isPermissionWarningDismissed = isPermissionWarningDismissed,
+        onDismissPermissionWarning = viewModel::dismissPermissionWarning,
         snackbarHostState = snackbarHostState,
         onToggleAlarm = viewModel::toggleAlarm,
         onDeleteAlarm = viewModel::deleteAlarm,
@@ -168,6 +173,9 @@ fun AlarmListScreen(
     is24HourFormat: Boolean,
     nextAlarmState: NextAlarmUiState,
     hasCriticalPermissions: Boolean,
+    hasNonCriticalPermissions: Boolean = true,
+    isPermissionWarningDismissed: Boolean = false,
+    onDismissPermissionWarning: () -> Unit = {},
     snackbarHostState: SnackbarHostState,
     onToggleAlarm: (Alarm) -> Unit,
     onDeleteAlarm: (Alarm) -> Unit,
@@ -227,6 +235,9 @@ fun AlarmListScreen(
                 )
                 if (!hasCriticalPermissions) {
                     PermissionWarningBanner(
+                        title = stringResource(R.string.permission_warning_banner_title),
+                        message = stringResource(R.string.permission_warning_banner_desc),
+                        isCritical = true,
                         onClick = onNavigateToPermissions,
                         modifier = Modifier.padding(
                             start = LiteverTheme.spacing.medium,
@@ -234,15 +245,31 @@ fun AlarmListScreen(
                             bottom = LiteverTheme.spacing.small
                         )
                     )
-                } else if (hasAlarms) {
-                    NextAlarmHeader(
-                        modifier = Modifier.padding(
-                            start = LiteverTheme.spacing.medium,
-                            end = LiteverTheme.spacing.medium,
-                            bottom = LiteverTheme.spacing.small
-                        ),
-                        state = nextAlarmState
-                    )
+                } else {
+                    if (!hasNonCriticalPermissions && !isPermissionWarningDismissed) {
+                        PermissionWarningBanner(
+                            title = stringResource(R.string.permission_warning_banner_non_critical_title),
+                            message = stringResource(R.string.permission_warning_banner_non_critical_desc),
+                            isCritical = false,
+                            onClick = onNavigateToPermissions,
+                            onDismiss = onDismissPermissionWarning,
+                            modifier = Modifier.padding(
+                                start = LiteverTheme.spacing.medium,
+                                end = LiteverTheme.spacing.medium,
+                                bottom = LiteverTheme.spacing.small
+                            )
+                        )
+                    }
+                    if (hasAlarms) {
+                        NextAlarmHeader(
+                            modifier = Modifier.padding(
+                                start = LiteverTheme.spacing.medium,
+                                end = LiteverTheme.spacing.medium,
+                                bottom = LiteverTheme.spacing.small
+                            ),
+                            state = nextAlarmState
+                        )
+                    }
                 }
             }
         },
@@ -687,6 +714,37 @@ fun AlarmListScreenNoPermissionsPreview() {
             is24HourFormat = false,
             nextAlarmState = NextAlarmUiState.Remaining(days = 0, hours = 7, minutes = 15),
             hasCriticalPermissions = false,
+            snackbarHostState = remember { SnackbarHostState() },
+            onToggleAlarm = {},
+            onDeleteAlarm = {},
+            onDuplicateAlarm = {},
+            onSkipOnce = {},
+            onCancelSkip = {},
+            onDeleteDisabledAlarms = {},
+            onAddAlarmClick = {},
+            onAlarmClick = {},
+            onPreviewClick = {},
+            onNavigateToPermissions = {},
+            onRewardGranted = {},
+            isAdFreeActive = false
+        )
+    }
+}
+
+@Preview(
+    name = "Alarm List - Non-Critical Permission Warning",
+    showBackground = true,
+    device = Devices.PIXEL_7
+)
+@Composable
+fun AlarmListScreenNonCriticalPermissionsWarningPreview() {
+    ReMindTheme {
+        AlarmListScreen(
+            alarms = sampleAlarmsForPreview,
+            is24HourFormat = false,
+            nextAlarmState = NextAlarmUiState.Remaining(days = 0, hours = 7, minutes = 15),
+            hasCriticalPermissions = true,
+            hasNonCriticalPermissions = false,
             snackbarHostState = remember { SnackbarHostState() },
             onToggleAlarm = {},
             onDeleteAlarm = {},

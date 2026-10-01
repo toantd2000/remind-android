@@ -26,6 +26,29 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
 
 ## 🧠 Nhật Ký Quyết Định Kỹ Thuật (TDR)
 
+### [TDR-087] - Thống nhất PermissionWarningBanner vào :core:designsystem và Cập nhật Tính năng Reminders với Lời văn Chuyên biệt
+- **Ngày thực hiện:** 2026-10-01
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Cả hai tính năng Báo thức (`:features:alarms`) và Nhắc nhở (`:features:reminders`) đều cần cảnh báo quyền hệ thống bị thiếu cho người dùng, nhưng trước đó mỗi module lại có banner riêng (`AlarmPermissionWarningBanner` và `ReminderPermissionWarningBanner`), gây phân mảnh và không đồng bộ về giao diện Design System.
+  - Cần phân cấp mức độ cảnh báo rõ ràng:
+    + **Critical (Lỗi cốt lõi)**: Thiếu quyền thông báo hoặc quyền báo thức chính xác cho tác vụ đang kích hoạt -> Hiển thị cảnh báo lỗi (đỏ/errorContainer) và bắt buộc người dùng sửa để hoạt động, không cho ẩn.
+    + **Non-critical (Cảnh báo khuyến nghị)**: Thiếu các quyền tối ưu như Tối ưu hóa pin, Vẽ trên ứng dụng khác -> Hiển thị dạng cảnh báo (vàng/warningContainer) kèm nút "Nhắc tôi sau" để ẩn tạm thời.
+  - Lời văn trong tính năng Nhắc nhở phải phù hợp với bối cảnh nhắc việc/thông báo ("Nhắc nhở"), không được dùng ngôn từ của "Báo thức".
+- **Quyết định:**
+  1. **Chuyển `PermissionWarningBanner` vào `:core:designsystem`:**
+     - Tạo `vn.io.litever.remind.core.designsystem.components.PermissionWarningBanner.kt`.
+     - Nhận các thuộc tính ngữ nghĩa (`isCritical`, `title`, `message`, `actionLabel`, `dismissLabel`, `onDismiss`).
+     - Tuân thủ nghiêm ngặt quy chuẩn của Litever Design System (`LvButton`, `LvSemantic`, `LiteverTheme`).
+     - Xóa bỏ hoàn toàn các file banner cũ trong `:features:alarms` và `:features:reminders`.
+  2. **Cập nhật `:features:reminders`:**
+     - Bổ sung chuỗi tài nguyên tiếng Việt và tiếng Anh dành riêng cho tính năng Nhắc nhở (`reminder_permission_warning_banner_non_critical_title`, `reminder_permission_warning_banner_non_critical_desc`).
+     - Mở rộng `ReminderListUiState` với `isCriticalPermissionWarning` và `isPermissionWarningDismissed`.
+     - Cung cấp hàm `dismissPermissionWarning()` trong `ReminderListViewModel` và liên kết với nút "Nhắc tôi sau".
+  3. **Kiểm thử toàn diện:**
+     - Cập nhật test suite `ReminderListViewModelTest`, `ReminderPermissionChallengerTest`, `ReminderR1R2EmpiricalChallengerTest`.
+     - Build và chạy thành công toàn bộ test suite và `assembleDebug`.
+
 ### [TDR-086] - Thống nhất AutoSilenceBottomSheet vào :core:designsystem và Dọn dẹp Code Smells / Linter Warnings tại ReminderEditScreen & Navigation
 - **Ngày thực hiện:** 2026-10-01
 - **Trạng thái:** Accepted

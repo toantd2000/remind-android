@@ -84,6 +84,16 @@ class PermissionChecker @Inject constructor(
     }
 
     /**
+     * Checks if all non-critical alarm permissions (Overlay, Battery Optimization, DND policy, Full-Screen Intent) are granted.
+     */
+    fun hasNonCriticalPermissions(): Boolean {
+        return hasOverlayPermission() &&
+                isIgnoringBatteryOptimizations() &&
+                hasNotificationPolicyAccess() &&
+                hasFullScreenIntentPermission()
+    }
+
+    /**
      * Checks if all required permissions for a specific Reminder instance are granted.
      */
     fun hasPermissionsForReminder(reminder: Reminder): Boolean {

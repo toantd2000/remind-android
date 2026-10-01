@@ -61,6 +61,7 @@ class ReminderPermissionChallengerTest {
         Dispatchers.setMain(testDispatcher)
         every { preferencesDataSource.is24HourFormat } returns flowOf(true)
         every { permissionChecker.hasNotificationPermission() } returns true
+        every { permissionChecker.hasNonCriticalPermissions() } returns true
         every { alertManager.autoSilenceCountdown } returns MutableStateFlow(null)
     }
 

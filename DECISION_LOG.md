@@ -55,6 +55,13 @@ This document records the solidified technical decisions and behavioral scenario
     - **Conditional Ad-Free Layout**: Wrap the AdMob `NativeAdView` inside a conditional Compose block checking `!isAdFreeActive`, and conditionally set the body description string dynamically based on the ad-free active status.
     - **Context Unwrapping**: Use a helper extension `Context.findActivity()` to safely unwrap `baseContext` until `Activity` is resolved for finishing.
 
+### Scenario: Alarm Permission Warning vs Error Display
+- **Expected Behavior**: When critical permissions (Notification, Exact Alarm) are missing, the alarm cannot ring reliably, so the app displays a prominent error banner (`isCritical = true`, `errorContainer`, `ReMindIcons.ErrorOutline`, `LvSemantic.Destructive`). When critical permissions are granted but secondary permissions (Overlay, Battery Optimization, DND policy) are missing, the app displays a warning banner (`isCritical = false`, `warningContainer`, `ReMindIcons.Warning`, `LvSemantic.Warning`) and continues showing the Next Alarm counter.
+- **Technical Decision**:
+    - Renamed component from `PermissionWarningBanner` to `AlarmPermissionWarningBanner`.
+    - Added `hasNonCriticalPermissions()` to `PermissionChecker` and exposed `hasNonCriticalPermissions` StateFlow on `AlarmListViewModel`.
+    - `AlarmPermissionWarningBanner` handles both error and warning themes dynamically using Design System tokens.
+
 ## 6. Ad System & Supporter Mechanisms
 
 ### Scenario: Supporter Ad-Free Status
@@ -279,6 +286,23 @@ This document records the solidified technical decisions and behavioral scenario
     - Exposed `toggleRingtonePlayback()`, `startRingtonePlayback()`, and `stopRingtonePlayback()`.
     - Added `isRingtonePlaying: Boolean` to `ReminderEditUiState` and wired playback controls into `ReminderAlertConfigSection`.
     - Automated playback teardown in `onDispose`, `onCleared`, `updateRingtone`, `setVibrationEnabled`, and `setNotificationStyle`.
+
+## 18. Shared PermissionWarningBanner in Core DesignSystem with Semantic Severity & Dismissal
+
+### Scenario: Consolidated Permission Warning Banner Across Alarms and Reminders
+- **Expected Behavior**:
+  - `PermissionWarningBanner` resides in `:core:designsystem` as a reusable component adhering to Litever Design System guidelines.
+  - Distinguishes two UX severity states:
+    1. **Critical (Error)**: Core permissions required for operation are missing (`POST_NOTIFICATIONS`, `SCHEDULE_EXACT_ALARM` for active tasks). Rendered on `errorContainer` with `LvSemantic.Destructive` and `ReMindIcons.ErrorOutline`. Cannot be dismissed via "Remind me later".
+    2. **Non-Critical (Warning)**: Optional/optimizing permissions are missing (Battery Optimization, System Overlay, DND access). Rendered on `warningContainer` with `LvSemantic.Warning` and `ReMindIcons.Warning`. Includes a "Remind me later" ("Nhắc tôi sau") dismissal button allowing the user to hide the banner.
+  - Independent, feature-specific copy:
+    - `:features:alarms` copy emphasizes alarm sound playback and ringing reliability on lock screen.
+    - `:features:reminders` copy specifically emphasizes reminder trigger accuracy in the background ("Nhắc nhở"), avoiding alarm-specific terminology.
+- **Technical Decision**:
+  - Located at `vn.io.litever.remind.core.designsystem.components.PermissionWarningBanner.kt`.
+  - Common button action labels (`permission_warning_banner_action` = "Fix Now" / "Sửa ngay" and `permission_warning_banner_remind_later` = "Remind me later" / "Nhắc tôi sau") defined in `:core:designsystem`.
+  - Removed outdated feature-specific banners (`AlarmPermissionWarningBanner.kt` in `:features:alarms` and `ReminderPermissionWarningBanner.kt` in `:features:reminders`).
+  - `ReminderListViewModel` and `AlarmListViewModel` both maintain `isPermissionWarningDismissed` state flows and expose `dismissPermissionWarning()`.
 
 
 

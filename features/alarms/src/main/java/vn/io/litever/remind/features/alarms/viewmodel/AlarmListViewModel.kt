@@ -39,6 +39,12 @@ class AlarmListViewModel @Inject constructor(
     private val _hasCriticalPermissions = MutableStateFlow(true)
     val hasCriticalPermissions: StateFlow<Boolean> = _hasCriticalPermissions.asStateFlow()
 
+    private val _hasNonCriticalPermissions = MutableStateFlow(true)
+    val hasNonCriticalPermissions: StateFlow<Boolean> = _hasNonCriticalPermissions.asStateFlow()
+
+    private val _isPermissionWarningDismissed = MutableStateFlow(false)
+    val isPermissionWarningDismissed: StateFlow<Boolean> = _isPermissionWarningDismissed.asStateFlow()
+
     private val _uiMessage = MutableSharedFlow<Int>()
     val uiMessage = _uiMessage.asSharedFlow()
 
@@ -48,6 +54,11 @@ class AlarmListViewModel @Inject constructor(
 
     fun refreshPermissions() {
         _hasCriticalPermissions.value = permissionChecker.hasCriticalPermissions()
+        _hasNonCriticalPermissions.value = permissionChecker.hasNonCriticalPermissions()
+    }
+
+    fun dismissPermissionWarning() {
+        _isPermissionWarningDismissed.value = true
     }
 
     val is24HourFormat: StateFlow<Boolean> = preferencesDataSource.is24HourFormat

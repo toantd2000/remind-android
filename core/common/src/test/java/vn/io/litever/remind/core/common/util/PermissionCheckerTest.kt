@@ -63,6 +63,31 @@ class PermissionCheckerTest {
     }
 
     @Test
+    fun hasCriticalPermissions_requiresBothNotificationAndExactAlarm() {
+        every { notificationManager.areNotificationsEnabled() } returns true
+        assertTrue(permissionChecker.hasCriticalPermissions())
+
+        every { notificationManager.areNotificationsEnabled() } returns false
+        assertFalse(permissionChecker.hasCriticalPermissions())
+    }
+
+    @Test
+    fun hasNonCriticalPermissions_requiresOverlayBatteryDndFullScreen() {
+        io.mockk.mockkStatic(android.provider.Settings::class)
+        try {
+            every { android.provider.Settings.canDrawOverlays(any()) } returns true
+            every { powerManager.isIgnoringBatteryOptimizations("vn.io.litever.remind") } returns true
+            every { notificationManager.isNotificationPolicyAccessGranted } returns true
+            assertTrue(permissionChecker.hasNonCriticalPermissions())
+
+            every { powerManager.isIgnoringBatteryOptimizations("vn.io.litever.remind") } returns false
+            assertFalse(permissionChecker.hasNonCriticalPermissions())
+        } finally {
+            io.mockk.unmockkStatic(android.provider.Settings::class)
+        }
+    }
+
+    @Test
     fun hasPermissionsForReminder_fixedTimeReminder_checksNotificationsAndAlarms() {
         val reminder = Reminder(
             title = "Medicine",

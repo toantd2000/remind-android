@@ -144,7 +144,10 @@
     <!-- Permissions Warning & Save Anyway Dialog -->
     <string name="reminder_permission_warning_banner_title">Missing Permissions</string>
     <string name="reminder_permission_warning_banner_desc">Notifications, Location, or Alarm permissions are required for reminders to trigger reliably in the background.</string>
+    <string name="reminder_permission_warning_banner_non_critical_title">Permission Recommendation</string>
+    <string name="reminder_permission_warning_banner_non_critical_desc">Exact Alarm and Battery Optimization permissions ensure reminders trigger reliably and accurately in the background.</string>
     <string name="permission_warning_banner_action">Fix Now</string>
+    <string name="permission_warning_banner_remind_later">Remind me later</string>
     <string name="reminder_permission_dialog_title">Permission Required</string>
     <string name="reminder_permission_dialog_message">To ensure this reminder triggers reliably in the background, required permissions must be granted. If you save now, the reminder will be saved as disabled.</string>
     <string name="action_save_anyway">Save Anyway (Disabled)</string>

@@ -65,6 +65,7 @@ class AlarmListViewModelTest {
         every { preferencesDataSource.is24HourFormat } returns is24HourFlow
         every { preferencesDataSource.adsDisabledUntil } returns adsDisabledUntilFlow
         every { permissionChecker.hasCriticalPermissions() } returns true
+        every { permissionChecker.hasNonCriticalPermissions() } returns true
 
         viewModel = AlarmListViewModel(
             repository = repository,
@@ -239,11 +240,31 @@ class AlarmListViewModelTest {
     @Test
     fun refreshPermissions_updatesHasCriticalPermissions() = runTest(testDispatcher) {
         every { permissionChecker.hasCriticalPermissions() } returns false
+        every { permissionChecker.hasNonCriticalPermissions() } returns false
         viewModel.refreshPermissions()
         assertFalse(viewModel.hasCriticalPermissions.value)
+        assertFalse(viewModel.hasNonCriticalPermissions.value)
 
         every { permissionChecker.hasCriticalPermissions() } returns true
+        every { permissionChecker.hasNonCriticalPermissions() } returns true
         viewModel.refreshPermissions()
         assertTrue(viewModel.hasCriticalPermissions.value)
+        assertTrue(viewModel.hasNonCriticalPermissions.value)
+    }
+
+    @Test
+    fun refreshPermissions_whenOnlyNonCriticalMissing_criticalIsTrueAndNonCriticalIsFalse() = runTest(testDispatcher) {
+        every { permissionChecker.hasCriticalPermissions() } returns true
+        every { permissionChecker.hasNonCriticalPermissions() } returns false
+        viewModel.refreshPermissions()
+        assertTrue(viewModel.hasCriticalPermissions.value)
+        assertFalse(viewModel.hasNonCriticalPermissions.value)
+    }
+
+    @Test
+    fun dismissPermissionWarning_updatesDismissedState() = runTest(testDispatcher) {
+        assertFalse(viewModel.isPermissionWarningDismissed.value)
+        viewModel.dismissPermissionWarning()
+        assertTrue(viewModel.isPermissionWarningDismissed.value)
     }
 }

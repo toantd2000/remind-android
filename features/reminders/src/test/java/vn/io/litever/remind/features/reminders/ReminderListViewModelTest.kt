@@ -57,6 +57,7 @@ class ReminderListViewModelTest {
         every { permissionChecker.hasNotificationPermission() } returns true
         every { permissionChecker.hasPermissionsForReminder(any()) } returns true
         every { permissionChecker.getMissingPermissions(any()) } returns emptyList()
+        every { permissionChecker.hasNonCriticalPermissions() } returns true
 
         viewModel = ReminderListViewModel(
             reminderRepository = repository,
@@ -228,4 +229,32 @@ class ReminderListViewModelTest {
 
         io.mockk.coVerify(atLeast = 1) { reminderSyncManager.sync() }
     }
+
+    @Test
+    fun uiState_whenNonCriticalPermissionMissing_showsNonCriticalWarning() = runTest(testDispatcher) {
+        every { permissionChecker.hasNonCriticalPermissions() } returns false
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertTrue(state.hasPermissionWarning)
+        assertFalse("Should be non-critical warning", state.isCriticalPermissionWarning)
+        assertFalse(state.isPermissionWarningDismissed)
+    }
+
+    @Test
+    fun dismissPermissionWarning_setsDismissedToTrue() = runTest(testDispatcher) {
+        every { permissionChecker.hasNonCriticalPermissions() } returns false
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertTrue(viewModel.uiState.value.hasPermissionWarning)
+        assertFalse(viewModel.uiState.value.isPermissionWarningDismissed)
+
+        viewModel.dismissPermissionWarning()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertTrue(viewModel.uiState.value.isPermissionWarningDismissed)
+    }
 }
+

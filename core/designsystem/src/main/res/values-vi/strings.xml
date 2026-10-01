@@ -97,6 +97,10 @@
     <string name="auto_silence_title">Tự động tắt tiếng</string>
     <string name="auto_silence_description">Chuông báo sẽ tự động tắt nếu bạn không tương tác sau một khoảng thời gian.</string>
     <string name="auto_silence_never">Không bao giờ</string>
+
+    <!-- Permission Warning Banner -->
+    <string name="permission_warning_banner_action">Sửa ngay</string>
+    <string name="permission_warning_banner_remind_later">Nhắc tôi sau</string>
 </resources>
 
 

@@ -30,6 +30,8 @@ data class ReminderListUiState(
     val reminders: List<Reminder> = emptyList(),
     val is24HourFormat: Boolean = true,
     val hasPermissionWarning: Boolean = false,
+    val isCriticalPermissionWarning: Boolean = true,
+    val isPermissionWarningDismissed: Boolean = false,
     val missingPermissions: List<ReminderPermissionType> = emptyList()
 ) {
     val filteredReminders: List<Reminder> get() = reminders
@@ -48,6 +50,7 @@ class ReminderListViewModel @Inject constructor(
 
     private val _hasPermissionWarning = MutableStateFlow(false)
     private val _permissionCheckTrigger = MutableStateFlow(0)
+    private val _isPermissionWarningDismissed = MutableStateFlow(false)
     private val _uiMessage = MutableSharedFlow<Int>()
     val uiMessage: SharedFlow<Int> = _uiMessage.asSharedFlow()
 
@@ -57,8 +60,9 @@ class ReminderListViewModel @Inject constructor(
         reminderRepository.getAllReminders(),
         preferencesDataSource.is24HourFormat,
         _hasPermissionWarning,
-        _permissionCheckTrigger
-    ) { allReminders, is24Hour, permissionWarning, _ ->
+        _permissionCheckTrigger,
+        _isPermissionWarningDismissed
+    ) { allReminders, is24Hour, permissionWarning, _, isDismissed ->
         val sortedReminders = allReminders.sortedWith(
             compareByDescending<Reminder> { it.snoozeNextTriggerTime != null }
                 .thenByDescending { it.createdAt }
@@ -66,18 +70,26 @@ class ReminderListViewModel @Inject constructor(
 
         val hasMissingForActive = allReminders.filter { it.isEnabled && !it.isCompleted }
             .any { !permissionChecker.hasPermissionsForReminder(it) }
-        val warningVisible = permissionWarning || !permissionChecker.hasNotificationPermission() || hasMissingForActive
+        val isCritical = permissionWarning || !permissionChecker.hasNotificationPermission() || hasMissingForActive
+        val isNonCritical = !permissionChecker.hasNonCriticalPermissions()
+        val hasWarning = isCritical || isNonCritical
 
         ReminderListUiState(
             reminders = sortedReminders,
             is24HourFormat = is24Hour,
-            hasPermissionWarning = warningVisible
+            hasPermissionWarning = hasWarning,
+            isCriticalPermissionWarning = isCritical,
+            isPermissionWarningDismissed = isDismissed
         )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = ReminderListUiState()
     )
+
+    fun dismissPermissionWarning() {
+        _isPermissionWarningDismissed.value = true
+    }
 
     fun toggleReminder(reminder: Reminder) {
         viewModelScope.launch {

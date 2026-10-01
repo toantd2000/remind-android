@@ -234,11 +234,51 @@ This document records the solidified technical decisions and behavioral scenario
   - Both modes open the full-screen ringing UI on trigger.
   - Mode differentiation:
     - "Đổ chuông" runs ReminderAlertService to play continuous audio loop until dismissed or snoozed, and supports "Tự động tắt tiếng" (Auto-silence) and "Kênh báo thức" (STREAM_ALARM).
-    - "Thông báo thường" does not run continuous foreground alert service, but supports sound, ringtone, volume, and vibration configuration.
+    - "Thông báo thường" does not run continuous foreground alert service, and supports ringtone and vibration configuration (volume follows the system notification stream).
   - In Add/Edit Reminder Screen:
     - The obsolete UrgencyLevel selector (SOFT/MEDIUM/HARD) is completely removed from the UI.
     - Notification Style selector is prominently placed at the top with descriptive subtitles explaining each mode.
-    - Sound and Vibration options (Ringtone, Volume, Vibration) apply to both modes; Ringtone title is dynamically resolved via `RingtoneManager`.
-    - Auto-silence and STREAM_ALARM switch are exclusively shown under "Đổ chuông".
+    - Ringtone selection applies to both modes (dynamically resolved via `RingtoneManager`).
+    - Volume Slider, Auto-silence, and STREAM_ALARM switch are exclusively shown under "Đổ chuông".
+    - "Thông báo thường" displays a clean standalone Vibration switch (without volume slider, as notification sound volume is governed by Android system notification volume).
     - Snooze configuration is embedded directly inline (Switch to enable/disable + quick interval choices of 5, 10, 15, 30 minutes) without navigating away to a separate screen.
+
+## 16. Reminder List Screen Simplification & Tab Labeling
+
+### Scenario: Direct Reminder List & Removal of Obsolete Filters
+- **Expected Behavior**:
+  - Bottom navigation tab label and top bar title are standardized to "Nhắc nhở" (Reminders).
+  - The reminder list screen presents reminders directly without any filter chips bar (ALL, ACTIVE, COMPLETED, TIME, LOCATION, WIFI).
+  - Reminders are automatically sorted with snoozed active reminders pinned at the top, followed by remaining reminders in descending order of `createdAt`.
+  - When no reminders exist, a clean empty state illustration and prompt are rendered.
+- **Technical Decision**:
+  - Completely excised `ReminderFilterChips`, `ReminderFilterType`, `setFilter`, and `filterCounts`.
+  - Streamlined `ReminderListUiState` to hold the unified, sorted list of reminders.
+  - Simplified `ReminderEmptyState` to render the default empty state without branching on filter types.
+
+## 17. Decoupled Volume Slider and Vibration Toggle with Sound Preview Play/Stop Control
+
+### Scenario: Separation of Volume & Vibration Rows in Edit Screens
+- **Expected Behavior**:
+  - In both `AlarmEditScreen` and `ReminderEditScreen` (`ReminderAlertConfigSection`), Volume and Vibration controls are decoupled into two distinct, dedicated UI rows instead of being cramped into a single row.
+  - The Volume row contains:
+    - Leading Volume icon (`VolumeOff` when 0, `VolumeUp` otherwise).
+    - Centered Volume `Slider`.
+    - Trailing Play/Preview button (`ReMindSettingIcon` displaying `PlayArrow` when stopped, and `Pause`/`Stop` with primary container highlight when playing).
+  - The Vibration row is a dedicated setting row with title, description, and toggle switch (`Switch` or `LiteverSwitch`).
+  - Clicking the Play button plays a preview of the selected ringtone at the current volume. Clicking it again stops playback.
+  - Toggling vibration, picking a new ringtone, changing notification styles, saving, discarding, or navigating away from the screen immediately and safely halts playback without coroutine or media player leaks.
+- **Technical Decision**:
+  - In `AlarmEditScreen`:
+    - Row 1: Ringtone row with `ReMindIcons.MusicNote`.
+    - Row 2: Ringtone playback progress bar (`LinearProgressIndicator`).
+    - Row 3: Dedicated Volume row with Slider and trailing `onTogglePreview` button (`ReMindSettingIcon`).
+    - Row 4: Dedicated Vibration row using `AlarmSettingRow` with `ReMindIcons.Vibration` and trailing `Switch`.
+  - In `ReminderAlertConfigSection` & `ReminderEditViewModel`:
+    - Injected `AudioPlayer` into `ReminderEditViewModel` alongside `@ApplicationContext Context`.
+    - Exposed `toggleRingtonePlayback()`, `startRingtonePlayback()`, and `stopRingtonePlayback()`.
+    - Added `isRingtonePlaying: Boolean` to `ReminderEditUiState` and wired playback controls into `ReminderAlertConfigSection`.
+    - Automated playback teardown in `onDispose`, `onCleared`, `updateRingtone`, `setVibrationEnabled`, and `setNotificationStyle`.
+
+
 

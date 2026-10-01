@@ -23,20 +23,17 @@ import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
 import vn.io.litever.remind.core.model.Reminder
-import vn.io.litever.remind.core.model.ReminderTriggerType
 import vn.io.litever.remind.features.reminders.R
-import vn.io.litever.remind.features.reminders.ui.components.ReminderFilterType
 import javax.inject.Inject
 
 data class ReminderListUiState(
-    val reminders: List<Reminder>? = null,
-    val filteredReminders: List<Reminder> = emptyList(),
-    val selectedFilter: ReminderFilterType = ReminderFilterType.ALL,
-    val filterCounts: Map<ReminderFilterType, Int> = emptyMap(),
+    val reminders: List<Reminder> = emptyList(),
     val is24HourFormat: Boolean = true,
     val hasPermissionWarning: Boolean = false,
     val missingPermissions: List<ReminderPermissionType> = emptyList()
-)
+) {
+    val filteredReminders: List<Reminder> get() = reminders
+}
 
 @HiltViewModel
 class ReminderListViewModel @Inject constructor(
@@ -49,7 +46,6 @@ class ReminderListViewModel @Inject constructor(
     private val reminderNotificationManager: ReminderNotificationManager? = null
 ) : ViewModel() {
 
-    private val _selectedFilter = MutableStateFlow(ReminderFilterType.ALL)
     private val _hasPermissionWarning = MutableStateFlow(false)
     private val _permissionCheckTrigger = MutableStateFlow(0)
     private val _uiMessage = MutableSharedFlow<Int>()
@@ -60,29 +56,10 @@ class ReminderListViewModel @Inject constructor(
     val uiState: StateFlow<ReminderListUiState> = combine(
         reminderRepository.getAllReminders(),
         preferencesDataSource.is24HourFormat,
-        _selectedFilter,
         _hasPermissionWarning,
         _permissionCheckTrigger
-    ) { allReminders, is24Hour, filter, permissionWarning, _ ->
-        val counts = mapOf(
-            ReminderFilterType.ALL to allReminders.size,
-            ReminderFilterType.ACTIVE to allReminders.count { it.isEnabled && !it.isCompleted },
-            ReminderFilterType.COMPLETED to allReminders.count { it.isCompleted },
-            ReminderFilterType.TIME to allReminders.count { it.triggerType == ReminderTriggerType.FIXED_TIME || it.triggerType == ReminderTriggerType.INTERVAL },
-            ReminderFilterType.LOCATION to allReminders.count { false },
-            ReminderFilterType.WIFI to allReminders.count { false }
-        )
-
-        val filtered = when (filter) {
-            ReminderFilterType.ALL -> allReminders
-            ReminderFilterType.ACTIVE -> allReminders.filter { it.isEnabled && !it.isCompleted }
-            ReminderFilterType.COMPLETED -> allReminders.filter { it.isCompleted }
-            ReminderFilterType.TIME -> allReminders.filter { it.triggerType == ReminderTriggerType.FIXED_TIME || it.triggerType == ReminderTriggerType.INTERVAL }
-            ReminderFilterType.LOCATION -> allReminders.filter { false }
-            ReminderFilterType.WIFI -> allReminders.filter { false }
-        }
-
-        val sortedFiltered = filtered.sortedWith(
+    ) { allReminders, is24Hour, permissionWarning, _ ->
+        val sortedReminders = allReminders.sortedWith(
             compareByDescending<Reminder> { it.snoozeNextTriggerTime != null }
                 .thenByDescending { it.createdAt }
         )
@@ -92,10 +69,7 @@ class ReminderListViewModel @Inject constructor(
         val warningVisible = permissionWarning || !permissionChecker.hasNotificationPermission() || hasMissingForActive
 
         ReminderListUiState(
-            reminders = allReminders,
-            filteredReminders = sortedFiltered,
-            selectedFilter = filter,
-            filterCounts = counts,
+            reminders = sortedReminders,
             is24HourFormat = is24Hour,
             hasPermissionWarning = warningVisible
         )
@@ -104,10 +78,6 @@ class ReminderListViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = ReminderListUiState()
     )
-
-    fun setFilter(filter: ReminderFilterType) {
-        _selectedFilter.value = filter
-    }
 
     fun toggleReminder(reminder: Reminder) {
         viewModelScope.launch {
@@ -247,10 +217,9 @@ class ReminderListViewModel @Inject constructor(
     }
 
     fun refreshPermissions() {
-        val activeReminders = uiState.value.reminders?.filter { it.isEnabled && !it.isCompleted } ?: emptyList()
+        val activeReminders = uiState.value.reminders.filter { it.isEnabled && !it.isCompleted }
         val hasMissingForActive = activeReminders.any { !permissionChecker.hasPermissionsForReminder(it) }
         _hasPermissionWarning.value = !permissionChecker.hasNotificationPermission() || hasMissingForActive
         _permissionCheckTrigger.update { it + 1 }
     }
 }
-

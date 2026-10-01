@@ -1,12 +1,12 @@
 package vn.io.litever.remind.features.reminders.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -27,11 +27,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -49,8 +47,9 @@ import vn.io.litever.remind.features.reminders.R
 import vn.io.litever.remind.features.reminders.ui.components.ReminderActionBottomSheet
 import vn.io.litever.remind.features.reminders.ui.components.ReminderCard
 import vn.io.litever.remind.features.reminders.ui.components.ReminderEmptyState
-import vn.io.litever.remind.features.reminders.ui.components.ReminderFilterChips
 import vn.io.litever.remind.features.reminders.ui.components.ReminderPermissionWarningBanner
+import vn.io.litever.remind.features.reminders.ui.components.ReminderPuzzleDialog
+import vn.io.litever.remind.features.reminders.viewmodel.ReminderListUiState
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -101,7 +100,6 @@ fun ReminderListRoute(
     ReminderListScreen(
         uiState = uiState,
         snackbarHostState = snackbarHostState,
-        onFilterSelected = viewModel::setFilter,
         onToggleReminder = viewModel::toggleReminder,
         onReminderClick = onReminderClick,
         onEditReminderClick = onEditReminderClick,
@@ -119,9 +117,8 @@ fun ReminderListRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReminderListScreen(
-    uiState: vn.io.litever.remind.features.reminders.viewmodel.ReminderListUiState,
+    uiState: ReminderListUiState,
     snackbarHostState: SnackbarHostState,
-    onFilterSelected: (vn.io.litever.remind.features.reminders.ui.components.ReminderFilterType) -> Unit,
     onToggleReminder: (Reminder) -> Unit,
     onReminderClick: (Reminder) -> Unit,
     onEditReminderClick: (Long) -> Unit = {},
@@ -201,23 +198,16 @@ fun ReminderListScreen(
                 )
             }
 
-            // Filter Chips
-            ReminderFilterChips(
-                selectedFilter = uiState.selectedFilter,
-                onFilterSelected = onFilterSelected,
-                counts = uiState.filterCounts
-            )
-
             // Content List or Empty State
-            if (uiState.filteredReminders.isEmpty()) {
+            if (uiState.reminders.isEmpty()) {
                 ReminderEmptyState(
-                    selectedFilter = uiState.selectedFilter,
                     modifier = Modifier.weight(1f)
                 )
             } else {
                 LazyColumn(
                     modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp).let {
+                    verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small),
+                    contentPadding = PaddingValues(LiteverTheme.spacing.medium).let {
                         PaddingValues(
                             start = it.calculateStartPadding(androidx.compose.ui.unit.LayoutDirection.Ltr),
                             top = it.calculateTopPadding(),
@@ -227,7 +217,7 @@ fun ReminderListScreen(
                     }
                 ) {
                     items(
-                        items = uiState.filteredReminders,
+                        items = uiState.reminders,
                         key = { it.id }
                     ) { reminder ->
                         ReminderCard(
@@ -263,7 +253,7 @@ fun ReminderListScreen(
 
     // Snooze Cancel Confirmation Puzzle Dialog
     reminderForSnoozePuzzle?.let { snoozedReminder ->
-        vn.io.litever.remind.features.reminders.ui.components.ReminderPuzzleDialog(
+        ReminderPuzzleDialog(
             onDismissRequest = { reminderForSnoozePuzzle = null },
             onConfirmed = {
                 onToggleReminder(snoozedReminder)

@@ -1,4 +1,4 @@
-package vn.io.litever.remind.features.alarms.ui.components
+package vn.io.litever.remind.core.designsystem.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -18,9 +18,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import vn.io.litever.designsystem.theme.LiteverTheme
-import vn.io.litever.remind.core.designsystem.components.ReMindBottomSheetContent
+import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
-import vn.io.litever.remind.features.alarms.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,6 +28,7 @@ fun AutoSilenceBottomSheet(
     onMinutesSelect: (Int) -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
+    options: List<Int> = listOf(1, 3, 5, 10, 15, 30),
     sheetState: SheetState = rememberModalBottomSheetState()
 ) {
     ModalBottomSheet(
@@ -42,7 +42,8 @@ fun AutoSilenceBottomSheet(
         ) {
             AutoSilenceBottomSheetContent(
                 currentMinutes = currentMinutes,
-                onMinutesSelect = onMinutesSelect
+                onMinutesSelect = onMinutesSelect,
+                options = options
             )
         }
     }
@@ -52,10 +53,9 @@ fun AutoSilenceBottomSheet(
 fun AutoSilenceBottomSheetContent(
     currentMinutes: Int,
     onMinutesSelect: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    options: List<Int> = listOf(1, 3, 5, 10, 15, 30)
 ) {
-    val options = listOf(1, 3, 5, 10, 30)
-
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -65,14 +65,23 @@ fun AutoSilenceBottomSheetContent(
             text = stringResource(R.string.auto_silence_description),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(horizontal = LiteverTheme.spacing.medium, vertical = LiteverTheme.spacing.small)
+            modifier = Modifier.padding(
+                horizontal = LiteverTheme.spacing.medium,
+                vertical = LiteverTheme.spacing.small
+            )
         )
 
         options.forEach { option ->
+            val label = if (option == 0) {
+                stringResource(R.string.auto_silence_never)
+            } else {
+                stringResource(R.string.minutes_unit, option)
+            }
+
             ListItem(
                 headlineContent = {
                     Text(
-                        stringResource(R.string.minutes_unit, option),
+                        text = label,
                         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
                     )
                 },

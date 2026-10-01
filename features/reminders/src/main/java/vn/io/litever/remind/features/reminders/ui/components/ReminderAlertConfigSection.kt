@@ -13,12 +13,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,12 +29,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.components.LiteverListItem
-import vn.io.litever.designsystem.components.LiteverRadioButton
 import vn.io.litever.designsystem.components.LiteverSegmentedButton
 import vn.io.litever.designsystem.components.LiteverSingleChoiceSegmentedButtonRow
 import vn.io.litever.designsystem.components.LiteverSwitch
 import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.components.AutoSilenceBottomSheet
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingIcon
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -63,23 +60,22 @@ fun ReminderAlertConfigSection(
     onSnoozeEnabledChange: (Boolean) -> Unit,
     snoozeIntervalMinutes: Int,
     onSnoozeIntervalChange: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isPlaying: Boolean = false,
+    onTogglePlay: () -> Unit = {}
 ) {
     var showAutoSilenceSheet by remember { mutableStateOf(false) }
 
     if (showAutoSilenceSheet) {
-        ModalBottomSheet(
+        AutoSilenceBottomSheet(
+            currentMinutes = autoSilenceMinutes,
+            onMinutesSelect = { minutes ->
+                onAutoSilenceMinutesChange(minutes)
+                showAutoSilenceSheet = false
+            },
             onDismissRequest = { showAutoSilenceSheet = false },
-            sheetState = rememberModalBottomSheetState()
-        ) {
-            ReminderAutoSilenceBottomSheetContent(
-                currentMinutes = autoSilenceMinutes,
-                onMinutesSelect = { minutes ->
-                    onAutoSilenceMinutesChange(minutes)
-                    showAutoSilenceSheet = false
-                }
-            )
-        }
+            options = listOf(1, 3, 5, 10, 15, 30, 0)
+        )
     }
 
     Surface(
@@ -202,11 +198,58 @@ fun ReminderAlertConfigSection(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Grouped Volume & Vibration Row
+            if (notificationStyle == NotificationStyle.FULL_SCREEN) {
+                // Volume Slider Row (Full Screen Ringing Mode)
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(LiteverTheme.shapes.medium),
+                    color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.4f),
+                    shape = LiteverTheme.shapes.medium
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 14.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        ReMindSettingIcon(
+                            imageVector = if (volume == 0) ReMindIcons.VolumeOff else ReMindIcons.VolumeUp,
+                            selected = false
+                        )
+
+                        Slider(
+                            value = volume.toFloat(),
+                            onValueChange = { onVolumeChange(it.roundToInt()) },
+                            valueRange = 0f..100f,
+                            steps = 9,
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(horizontal = 12.dp),
+                            colors = SliderDefaults.colors(
+                                thumbColor = MaterialTheme.colorScheme.primary,
+                                activeTrackColor = MaterialTheme.colorScheme.primary,
+                                inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                            )
+                        )
+
+                        ReMindSettingIcon(
+                            imageVector = if (isPlaying) ReMindIcons.Pause else ReMindIcons.PlayArrow,
+                            selected = isPlaying,
+                            onClick = onTogglePlay
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+
+            // Vibration Switch Row (Both FULL_SCREEN and STANDARD modes)
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(LiteverTheme.shapes.medium),
+                    .clip(LiteverTheme.shapes.medium)
+                    .clickable { onVibrationChange(!vibrationEnabled) },
                 color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.4f),
                 shape = LiteverTheme.shapes.medium
             ) {
@@ -214,32 +257,40 @@ fun ReminderAlertConfigSection(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 14.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    ReMindSettingIcon(
-                        imageVector = if (volume == 0) ReMindIcons.VolumeOff else ReMindIcons.VolumeUp,
-                        selected = false
-                    )
-
-                    Slider(
-                        value = volume.toFloat(),
-                        onValueChange = { onVolumeChange(it.roundToInt()) },
-                        valueRange = 0f..100f,
-                        steps = 9,
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(horizontal = 12.dp),
-                        colors = SliderDefaults.colors(
-                            thumbColor = MaterialTheme.colorScheme.primary,
-                            activeTrackColor = MaterialTheme.colorScheme.primary,
-                            inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        ReMindSettingIcon(
+                            imageVector = ReMindIcons.Vibration,
+                            selected = vibrationEnabled
                         )
-                    )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            Text(
+                                text = stringResource(R.string.vibration_label),
+                                style = LiteverTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = LiteverTheme.colors.onSurface
+                            )
+                            Text(
+                                text = if (vibrationEnabled) {
+                                    stringResource(R.string.vibration_enabled_desc)
+                                } else {
+                                    stringResource(R.string.off)
+                                },
+                                style = LiteverTheme.typography.bodySmall,
+                                color = LiteverTheme.colors.onSurfaceVariant
+                            )
+                        }
+                    }
 
-                    ReMindSettingIcon(
-                        imageVector = ReMindIcons.Vibration,
-                        selected = vibrationEnabled,
-                        onClick = { onVibrationChange(!vibrationEnabled) }
+                    LiteverSwitch(
+                        checked = vibrationEnabled,
+                        onCheckedChange = onVibrationChange
                     )
                 }
             }
@@ -457,52 +508,6 @@ fun ReminderAlertConfigSection(
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun ReminderAutoSilenceBottomSheetContent(
-    currentMinutes: Int,
-    onMinutesSelect: (Int) -> Unit
-) {
-    val options = listOf(1, 5, 10, 15, 0)
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 32.dp)
-    ) {
-        Text(
-            text = stringResource(R.string.auto_silence_title),
-            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(LiteverTheme.spacing.medium)
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        options.forEach { option ->
-            val label = if (option == 0) {
-                stringResource(R.string.auto_silence_never)
-            } else {
-                stringResource(R.string.minutes_format, option)
-            }
-
-            LiteverListItem(
-                headlineContent = {
-                    Text(
-                        text = label,
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
-                    )
-                },
-                leadingContent = {
-                    LiteverRadioButton(
-                        selected = currentMinutes == option,
-                        onClick = { onMinutesSelect(option) }
-                    )
-                },
-                modifier = Modifier.clickable { onMinutesSelect(option) }
-            )
         }
     }
 }

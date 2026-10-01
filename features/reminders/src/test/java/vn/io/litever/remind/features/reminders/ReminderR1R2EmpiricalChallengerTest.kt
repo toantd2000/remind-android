@@ -32,7 +32,6 @@ import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderTriggerType
 import vn.io.litever.remind.core.model.TimeTrigger
-import vn.io.litever.remind.features.reminders.ui.components.ReminderFilterType
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderEditViewModel
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderListViewModel
 import java.time.LocalTime
@@ -368,9 +367,6 @@ class ReminderR1R2EmpiricalChallengerTest {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { listViewModel.uiState.collect() }
         testDispatcher.scheduler.advanceUntilIdle()
 
-        listViewModel.setFilter(ReminderFilterType.ALL)
-        testDispatcher.scheduler.advanceUntilIdle()
-
         val list = listViewModel.uiState.value.filteredReminders
         assertEquals(5, list.size)
 
@@ -382,7 +378,7 @@ class ReminderR1R2EmpiricalChallengerTest {
     }
 
     @Test
-    fun r2_sorting_activeFilter_pinsSnoozedActiveItems() = runTest(testDispatcher) {
+    fun r2_sorting_pinsSnoozedActiveItems() = runTest(testDispatcher) {
         val activeNormal = Reminder(id = 10L, title = "Active Normal", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = true, isCompleted = false, createdAt = 1000L)
         val activeSnoozed = Reminder(id = 11L, title = "Active Snoozed", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = true, isCompleted = false, snoozeNextTriggerTime = 99999L, createdAt = 1100L)
         val disabledSnoozed = Reminder(id = 12L, title = "Disabled Snoozed", triggerType = ReminderTriggerType.FIXED_TIME, isEnabled = false, isCompleted = false, snoozeNextTriggerTime = 99999L, createdAt = 1200L)
@@ -400,47 +396,17 @@ class ReminderR1R2EmpiricalChallengerTest {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { listViewModel.uiState.collect() }
         testDispatcher.scheduler.advanceUntilIdle()
 
-        listViewModel.setFilter(ReminderFilterType.ACTIVE)
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        val list = listViewModel.uiState.value.filteredReminders
-        assertEquals(2, list.size)
-        assertEquals(11L, list[0].id)
-        assertEquals(10L, list[1].id)
-    }
-
-    @Test
-    fun r2_sorting_timeFilter_pinsSnoozedTimeReminders() = runTest(testDispatcher) {
-        val fixedNormal1 = Reminder(id = 21L, title = "Fixed Normal 1", triggerType = ReminderTriggerType.FIXED_TIME, createdAt = 200L)
-        val fixedSnoozed1 = Reminder(id = 22L, title = "Fixed Snoozed 1", triggerType = ReminderTriggerType.FIXED_TIME, snoozeNextTriggerTime = 10000L, createdAt = 300L)
-        val intervalSnoozed = Reminder(id = 23L, title = "Interval Snoozed", triggerType = ReminderTriggerType.INTERVAL, snoozeNextTriggerTime = 10000L, createdAt = 400L)
-        val fixedNormal2 = Reminder(id = 24L, title = "Fixed Normal 2", triggerType = ReminderTriggerType.FIXED_TIME, createdAt = 500L)
-
-        allRemindersFlow.value = listOf(fixedNormal1, fixedSnoozed1, intervalSnoozed, fixedNormal2)
-
-        val listViewModel = ReminderListViewModel(
-            reminderRepository = repository,
-            reminderScheduler = scheduler,
-            permissionChecker = permissionChecker,
-            preferencesDataSource = preferencesDataSource,
-            reminderSyncManager = reminderSyncManager
-        )
-        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { listViewModel.uiState.collect() }
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        listViewModel.setFilter(ReminderFilterType.TIME)
-        testDispatcher.scheduler.advanceUntilIdle()
-
         val list = listViewModel.uiState.value.filteredReminders
         assertEquals(4, list.size)
-        assertEquals(23L, list[0].id)
-        assertEquals(22L, list[1].id)
-        assertEquals(24L, list[2].id)
-        assertEquals(21L, list[3].id)
+        // All 3 snoozed reminders come first (sorted by createdAt descending among snoozed), then non-snoozed
+        assertTrue(list[0].snoozeNextTriggerTime != null)
+        assertTrue(list[1].snoozeNextTriggerTime != null)
+        assertTrue(list[2].snoozeNextTriggerTime != null)
+        assertEquals(10L, list[3].id)
     }
 
     @Test
-    fun r2_sorting_stressTest_arbitrary20RemindersAcrossFilters() = runTest(testDispatcher) {
+    fun r2_sorting_stressTest_arbitrary20Reminders() = runTest(testDispatcher) {
         val testReminders = mutableListOf<Reminder>()
         for (i in 1..20) {
             val isSnoozed = (i % 3 == 0)
@@ -473,35 +439,30 @@ class ReminderR1R2EmpiricalChallengerTest {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { listViewModel.uiState.collect() }
         testDispatcher.scheduler.advanceUntilIdle()
 
-        for (filter in listOf(ReminderFilterType.ALL, ReminderFilterType.ACTIVE, ReminderFilterType.COMPLETED, ReminderFilterType.TIME)) {
-            listViewModel.setFilter(filter)
-            testDispatcher.scheduler.advanceUntilIdle()
+        val filtered = listViewModel.uiState.value.filteredReminders
+        var seenNonSnoozed = false
+        var lastCreatedAtInPartition = Long.MAX_VALUE
+        var currentPartitionIsSnoozed = true
 
-            val filtered = listViewModel.uiState.value.filteredReminders
-            var seenNonSnoozed = false
-            var lastCreatedAtInPartition = Long.MAX_VALUE
-            var currentPartitionIsSnoozed = true
-
-            for (item in filtered) {
-                val itemIsSnoozed = item.snoozeNextTriggerTime != null
-                if (itemIsSnoozed) {
-                    assertFalse(
-                        "Violation in filter $filter: Snoozed item ${item.id} appeared after non-snoozed items",
-                        seenNonSnoozed
-                    )
-                } else {
-                    if (currentPartitionIsSnoozed) {
-                        currentPartitionIsSnoozed = false
-                        seenNonSnoozed = true
-                        lastCreatedAtInPartition = Long.MAX_VALUE
-                    }
-                }
-                assertTrue(
-                    "Violation in filter $filter: createdAt should be descending (got ${item.createdAt} > $lastCreatedAtInPartition)",
-                    item.createdAt <= lastCreatedAtInPartition
+        for (item in filtered) {
+            val itemIsSnoozed = item.snoozeNextTriggerTime != null
+            if (itemIsSnoozed) {
+                assertFalse(
+                    "Snoozed item ${item.id} appeared after non-snoozed items",
+                    seenNonSnoozed
                 )
-                lastCreatedAtInPartition = item.createdAt
+            } else {
+                if (currentPartitionIsSnoozed) {
+                    currentPartitionIsSnoozed = false
+                    seenNonSnoozed = true
+                    lastCreatedAtInPartition = Long.MAX_VALUE
+                }
             }
+            assertTrue(
+                "createdAt should be descending (got ${item.createdAt} > $lastCreatedAtInPartition)",
+                item.createdAt <= lastCreatedAtInPartition
+            )
+            lastCreatedAtInPartition = item.createdAt
         }
     }
 

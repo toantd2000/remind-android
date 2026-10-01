@@ -6,17 +6,17 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import vn.io.litever.designsystem.components.LiteverListItem
-import vn.io.litever.designsystem.components.LiteverModalBottomSheet
 import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.features.reminders.R
 
@@ -31,8 +31,9 @@ fun ReminderActionBottomSheet(
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LiteverModalBottomSheet(
+    ModalBottomSheet(
         onDismissRequest = onDismissRequest,
+        containerColor = LiteverTheme.colors.surface,
         modifier = modifier
     ) {
         Column(

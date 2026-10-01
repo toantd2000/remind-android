@@ -83,7 +83,7 @@ import java.time.DayOfWeek
 import vn.io.litever.remind.core.model.MissionType
 import vn.io.litever.remind.features.alarms.R
 import vn.io.litever.remind.features.alarms.ui.components.AlarmSettingRow
-import vn.io.litever.remind.features.alarms.ui.components.AutoSilenceBottomSheet
+import vn.io.litever.remind.core.designsystem.components.AutoSilenceBottomSheet
 import vn.io.litever.remind.features.alarms.ui.components.GentleAlarmBottomSheet
 import vn.io.litever.remind.features.alarms.ui.components.NextAlarmHeader
 import vn.io.litever.remind.features.alarms.ui.components.SnoozeBottomSheet
@@ -908,9 +908,7 @@ fun AlarmEditScreen(
                     // Row 1: Ringtone Row
                     AlarmSettingRow(
                         title = uiState.ringtoneTitle,
-                        icon = if (uiState.isRingtonePlaying) ReMindIcons.Pause else ReMindIcons.PlayArrow,
-                        iconSelected = uiState.isRingtonePlaying,
-                        onIconClick = onTogglePreview,
+                        icon = ReMindIcons.MusicNote,
                         onClick = onRingtoneClick
                     )
 
@@ -935,7 +933,7 @@ fun AlarmEditScreen(
                         modifier = Modifier.padding(horizontal = LiteverTheme.spacing.extraLarge)
                     )
 
-                    // Row 3: Volume & Vibration
+                    // Row 3: Volume
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(vertical = LiteverTheme.spacing.medium),
                         verticalAlignment = Alignment.CenterVertically
@@ -943,7 +941,7 @@ fun AlarmEditScreen(
                         ReMindSettingIcon(
                             imageVector = if (uiState.volume == 0) ReMindIcons.VolumeOff else ReMindIcons.VolumeUp,
                             selected = false,
-                            modifier = modifier.padding(start = LiteverTheme.spacing.medium)
+                            modifier = Modifier.padding(start = LiteverTheme.spacing.medium)
                         )
 
                         Slider(
@@ -962,12 +960,31 @@ fun AlarmEditScreen(
                         )
 
                         ReMindSettingIcon(
-                            imageVector = ReMindIcons.Vibration,
-                            selected = uiState.vibrationEnabled,
-                            onClick = { onVibrationToggle(!uiState.vibrationEnabled) },
+                            imageVector = if (uiState.isRingtonePlaying) ReMindIcons.Pause else ReMindIcons.PlayArrow,
+                            selected = uiState.isRingtonePlaying,
+                            onClick = onTogglePreview,
                             modifier = Modifier.padding(end = LiteverTheme.spacing.medium)
                         )
                     }
+
+                    HorizontalDivider(
+                        color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.3F),
+                        modifier = Modifier.padding(horizontal = LiteverTheme.spacing.extraLarge)
+                    )
+
+                    // Row 4: Vibration
+                    AlarmSettingRow(
+                        title = stringResource(R.string.vibration),
+                        icon = ReMindIcons.Vibration,
+                        iconSelected = uiState.vibrationEnabled,
+                        onClick = { onVibrationToggle(!uiState.vibrationEnabled) },
+                        trailingContent = {
+                            Switch(
+                                checked = uiState.vibrationEnabled,
+                                onCheckedChange = onVibrationToggle
+                            )
+                        }
+                    )
 
                     HorizontalDivider(
                         color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.3F),

@@ -2,17 +2,16 @@ package vn.io.litever.remind.features.reminders.ui
 
 import android.content.res.Configuration
 import android.media.RingtoneManager
-import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.core.net.toUri
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -64,14 +63,12 @@ import java.time.LocalTime
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReminderEditRoute(
-    reminderId: Long,
     onBackClick: () -> Unit,
     onNavigateToRingtoneSelection: (String?) -> Unit,
-    onNavigateToSnoozeSettings: (Boolean, Int) -> Unit = { _, _ -> },
     onNavigateToPermissions: () -> Unit,
-    onNavigateToTriggerEdit: (Long) -> Unit = {},
     navController: NavController,
     modifier: Modifier = Modifier,
+    onNavigateToTriggerEdit: (Long) -> Unit = {},
     viewModel: ReminderEditViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -101,6 +98,7 @@ fun ReminderEditRoute(
         }
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose {
+            viewModel.stopRingtonePlayback()
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
@@ -130,27 +128,20 @@ fun ReminderEditRoute(
         onConfirmDiscard = { viewModel.confirmDiscard(onBackClick) },
         onTitleChange = viewModel::setTitle,
         onNotesChange = viewModel::setNotes,
-        onTriggerTypeSelected = viewModel::setTriggerType,
-        onTimeChange = viewModel::setTime,
-        onDateChange = viewModel::setDate,
-        onRepeatDaysChange = viewModel::setRepeatDays,
-        onRepeatDayToggle = viewModel::toggleRepeatDay,
-        onRepeatIntervalChange = viewModel::setRepeatInterval,
-        onMonthlyDayToggle = viewModel::toggleMonthlyDay,
-        onAddYearlyDate = viewModel::addYearlyDate,
-        onRemoveYearlyDate = viewModel::removeYearlyDate,
         onNotificationStyleChange = viewModel::setNotificationStyle,
         onAutoSilenceMinutesChange = viewModel::setAutoSilenceMinutes,
         onUseAlarmStreamChange = viewModel::setUseAlarmStream,
         onRingtoneClick = {
+            viewModel.stopRingtonePlayback()
             onNavigateToRingtoneSelection(uiState.ringtoneUri)
         },
         onVibrationChange = viewModel::setVibrationEnabled,
         onVolumeChange = viewModel::setVolume,
+        modifier = modifier,
+        onTogglePreview = viewModel::toggleRingtonePlayback,
         onSnoozeEnabledChange = viewModel::setSnoozeEnabled,
         onSnoozeIntervalChange = viewModel::setSnoozeIntervalMinutes,
-        onNavigateToTriggerEdit = { onNavigateToTriggerEdit(uiState.id) },
-        modifier = modifier
+        onNavigateToTriggerEdit = { onNavigateToTriggerEdit(uiState.id) }
     )
 }
 
@@ -167,40 +158,33 @@ fun ReminderEditScreen(
     onConfirmDiscard: () -> Unit,
     onTitleChange: (String) -> Unit,
     onNotesChange: (String) -> Unit,
-    onTriggerTypeSelected: (ReminderTriggerType) -> Unit = {},
-    onTimeChange: (LocalTime) -> Unit = {},
-    onDateChange: (LocalDate?) -> Unit = {},
-    onRepeatDaysChange: (List<DayOfWeek>) -> Unit = {},
-    onRepeatDayToggle: (DayOfWeek) -> Unit = {},
-    onRepeatIntervalChange: (ReminderRepeatInterval) -> Unit = {},
-    onMonthlyDayToggle: (Int) -> Unit = {},
-    onAddYearlyDate: (Int, Int) -> Unit = { _, _ -> },
-    onRemoveYearlyDate: (Int) -> Unit = {},
     onNotificationStyleChange: (NotificationStyle) -> Unit,
     onAutoSilenceMinutesChange: (Int) -> Unit,
     onUseAlarmStreamChange: (Boolean) -> Unit,
     onRingtoneClick: () -> Unit,
     onVibrationChange: (Boolean) -> Unit,
     onVolumeChange: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    onTogglePreview: () -> Unit = {},
     onSnoozeEnabledChange: (Boolean) -> Unit = {},
     onSnoozeIntervalChange: (Int) -> Unit = {},
-    onNavigateToTriggerEdit: () -> Unit = {},
-    modifier: Modifier = Modifier
+    onNavigateToTriggerEdit: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val lazyListState = rememberLazyListState()
     val titleFocusRequester = remember { FocusRequester() }
+    val defaultRingtone = stringResource(R.string.default_ringtone)
 
-    val ringtoneTitle = remember(uiState.ringtoneUri) {
+    val ringtoneTitle = remember(uiState.ringtoneUri, defaultRingtone) {
         if (uiState.ringtoneUri.isNullOrBlank()) {
-            context.getString(R.string.default_ringtone)
+            defaultRingtone
         } else {
             try {
-                val uri = Uri.parse(uiState.ringtoneUri)
+                val uri = uiState.ringtoneUri.toUri()
                 RingtoneManager.getRingtone(context, uri)?.getTitle(context)
-                    ?: context.getString(R.string.default_ringtone)
+                    ?: defaultRingtone
             } catch (_: Exception) {
-                context.getString(R.string.default_ringtone)
+                defaultRingtone
             }
         }
     }
@@ -278,6 +262,8 @@ fun ReminderEditScreen(
                     onVolumeChange = onVolumeChange,
                     vibrationEnabled = uiState.vibrationEnabled,
                     onVibrationChange = onVibrationChange,
+                    isPlaying = uiState.isRingtonePlaying,
+                    onTogglePlay = onTogglePreview,
                     autoSilenceMinutes = uiState.autoSilenceMinutes,
                     onAutoSilenceMinutesChange = onAutoSilenceMinutesChange,
                     useAlarmStream = uiState.useAlarmStream,
@@ -327,7 +313,6 @@ fun ReminderEditScreen(
             confirmButton = {
                 LvButton(
                     onClick = onConfirmDiscard,
-                    semantic = LvSemantic.Destructive
                 ) {
                     Text(stringResource(R.string.action_discard))
                 }
@@ -336,7 +321,6 @@ fun ReminderEditScreen(
                 LvButton(
                     onClick = onDismissDiscardDialog,
                     type = LvButtonType.Outlined,
-                    semantic = LvSemantic.Secondary
                 ) {
                     Text(stringResource(R.string.action_cancel))
                 }
@@ -375,15 +359,6 @@ private fun ReminderEditScreenPreview() {
             onConfirmDiscard = {},
             onTitleChange = {},
             onNotesChange = {},
-            onTriggerTypeSelected = {},
-            onTimeChange = {},
-            onDateChange = {},
-            onRepeatDaysChange = {},
-            onRepeatDayToggle = {},
-            onRepeatIntervalChange = {},
-            onMonthlyDayToggle = {},
-            onAddYearlyDate = { _, _ -> },
-            onRemoveYearlyDate = {},
             onNotificationStyleChange = {},
             onAutoSilenceMinutesChange = {},
             onUseAlarmStreamChange = {},
@@ -426,15 +401,6 @@ private fun ReminderEditScreenDarkPreview() {
             onConfirmDiscard = {},
             onTitleChange = {},
             onNotesChange = {},
-            onTriggerTypeSelected = {},
-            onTimeChange = {},
-            onDateChange = {},
-            onRepeatDaysChange = {},
-            onRepeatDayToggle = {},
-            onRepeatIntervalChange = {},
-            onMonthlyDayToggle = {},
-            onAddYearlyDate = { _, _ -> },
-            onRemoveYearlyDate = {},
             onNotificationStyleChange = {},
             onAutoSilenceMinutesChange = {},
             onUseAlarmStreamChange = {},

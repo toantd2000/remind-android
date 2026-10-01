@@ -8,18 +8,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Shared AutoSilenceBottomSheet:** Consolidated `AutoSilenceBottomSheet` and `AutoSilenceBottomSheetContent` into `:core:designsystem` with customizable duration options and standardized descriptive text.
 - **Flexible Reminder Snooze:** Added quick snooze chips (+5m, +10m, +15m) and custom minute entry dialog (`LvAlertDialog`) on the ringing screen.
 - **Notification Quick Actions:** Added 5-minute quick snooze action and completion action to heads-up reminder notifications.
 - **Inline Snooze Configuration:** Integrated snooze enable toggle and quick interval selector (5, 10, 15, 30 min) directly into the Add/Edit Reminder screen.
+- **Sound Preview Playback Control:** Added interactive Play/Stop audio preview button (`ReMindSettingIcon`) at the trailing end of the Volume slider row in both `AlarmEditScreen` and `ReminderEditScreen`.
 
 ### Changed
+- **Configuration-Aware Resource Queries:** Replaced `LocalContext.current.getString()` with `stringResource()` in `ReminderEditScreen.kt` for lifecycle- and configuration-aware string resolution, and replaced `Uri.parse()` with `toUri()`.
+- **Compose Parameter Guidelines Compliance:** Reordered parameters in `ReminderEditRoute` and `ReminderEditScreen` so `modifier: Modifier = Modifier` is the first optional parameter.
+- **Decoupled Volume & Vibration Rows:** Separated volume slider and vibration toggle into two distinct, dedicated UI rows in both `AlarmEditScreen` and `ReminderEditScreen` (`ReminderAlertConfigSection`), eliminating cramped layouts and offering clean, independent controls.
 - **Dual Notification Modes:** Streamlined alert modes into "Ringing" (`NotificationStyle.FULL_SCREEN`, default) and "Normal Notification" (`NotificationStyle.STANDARD`) with clear descriptive subtitles.
-- **Unified Sound & Vibration:** Sound, ringtone, volume slider, and vibration toggle are now supported and configurable for both alert styles, with dynamic ringtone title resolution via `RingtoneManager`.
+- **Alert Sound & Vibration:** Ringtone selection is available for both modes. Volume slider is confined to Ringing mode (since Android system notification volume governs standard notifications), while Normal Notification provides a dedicated vibration switch.
 - **Ringing-Specific Configurations:** Confined Auto-silence and STREAM_ALARM switch exclusively to "Ringing" mode.
+- **Standardized Navigation & Title Label:** Standardized bottom navigation tab label and top bar title to "Nhắc nhở" (Reminders).
 
 ### Removed
+- **Duplicate AutoSilence Implementations:** Removed duplicated `AutoSilenceBottomSheet.kt` in `:features:alarms` and `ReminderAutoSilenceBottomSheetContent` in `:features:reminders`.
+- **Dead Parameters & Callbacks:** Removed 9 legacy trigger callbacks, unused `reminderId`, and `onNavigateToSnoozeSettings` from `ReminderEditRoute`, `ReminderEditScreen`, and `remindersGraph`.
 - **Snooze Repeat Limits:** Completely excised `snoozeRepeatCount` and `currentSnoozeCount` across domain model, database mapper, receivers, and UI.
 - **Urgency Selector in UI:** Removed cluttered `UrgencyLevel` selector from the Add/Edit reminder configuration section.
+- **Reminder List Filters:** Completely excised filter chips (`ReminderFilterChips`) and filter logic from the reminder list screen, presenting an uncluttered direct list with automatic sorting.
 
 ## [2.2.0] - 2026-09-30
 

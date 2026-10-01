@@ -30,6 +30,10 @@ import vn.io.litever.remind.core.model.ReminderAction
 import vn.io.litever.remind.core.model.TimeTrigger
 import vn.io.litever.remind.core.common.util.PermissionChecker
 import vn.io.litever.remind.core.common.util.ReminderPermissionType
+import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
+import vn.io.litever.remind.core.common.audio.AudioPlayer
+import vn.io.litever.remind.core.common.util.getAccessibleRingtoneUri
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.DayOfWeek
@@ -67,6 +71,7 @@ data class ReminderEditUiState(
     val ringtoneUri: String? = null,
     val vibrationEnabled: Boolean = true,
     val volume: Int = 100,
+    val isRingtonePlaying: Boolean = false,
     val snoozeEnabled: Boolean = true,
     val snoozeIntervalMinutes: Int = 5,
     val showPermissionDialog: Boolean = false,
@@ -83,6 +88,7 @@ data class ReminderEditUiState(
 
 @HiltViewModel
 class ReminderEditViewModel @Inject constructor(
+    @ApplicationContext private val context: Context? = null,
     savedStateHandle: SavedStateHandle = SavedStateHandle(),
     private val reminderRepository: ReminderRepository,
     private val preferencesDataSource: AlarmPreferencesDataSource,
@@ -90,7 +96,8 @@ class ReminderEditViewModel @Inject constructor(
     private val reminderAlertManager: ReminderAlertManager? = null,
     private val reminderNotificationManager: ReminderNotificationManager? = null,
     private val permissionChecker: PermissionChecker,
-    private val reminderSyncManager: ReminderSyncManager
+    private val reminderSyncManager: ReminderSyncManager,
+    private val audioPlayer: AudioPlayer? = null,
 ) : ViewModel() {
 
     private val reminderId: Long = savedStateHandle.get<Long>("reminderId") ?: 0L
@@ -231,6 +238,7 @@ class ReminderEditViewModel @Inject constructor(
     }
 
     private fun performSave(reminderToSave: Reminder, onSuccess: () -> Unit) {
+        stopRingtonePlayback()
         viewModelScope.launch {
             if (reminderToSave.id == 0L) {
                 val newId = reminderRepository.insertReminder(reminderToSave)
@@ -250,6 +258,7 @@ class ReminderEditViewModel @Inject constructor(
     }
 
     fun deleteReminder(onSuccess: () -> Unit = {}) {
+        stopRingtonePlayback()
         viewModelScope.launch {
             if (reminderId > 0L) {
                 val existing = reminderRepository.getReminderById(reminderId)
@@ -267,11 +276,16 @@ class ReminderEditViewModel @Inject constructor(
     }
 
     fun onBackClick(onNavigateBack: () -> Unit) {
-        if (hasUnsavedChanges()) _uiState.update { it.copy(showDiscardDialog = true) }
-        else onNavigateBack()
+        if (hasUnsavedChanges()) {
+            _uiState.update { it.copy(showDiscardDialog = true) }
+        } else {
+            stopRingtonePlayback()
+            onNavigateBack()
+        }
     }
 
     fun confirmDiscard(onNavigateBack: () -> Unit) {
+        stopRingtonePlayback()
         _uiState.update { it.copy(showDiscardDialog = false) }
         onNavigateBack()
     }
@@ -329,7 +343,10 @@ class ReminderEditViewModel @Inject constructor(
     fun setSnoozeIntervalMinutes(interval: Int) {
         _uiState.update { it.copy(snoozeIntervalMinutes = interval) }
     }
-    fun updateRingtone(uri: String?) { _uiState.update { it.copy(ringtoneUri = uri) } }
+    fun updateRingtone(uri: String?) {
+        stopRingtonePlayback()
+        _uiState.update { it.copy(ringtoneUri = uri) }
+    }
     fun setTitle(title: String) { _uiState.update { it.copy(title = title, showTitleError = false) } }
     fun setNotes(notes: String) { _uiState.update { it.copy(notes = notes) } }
     fun setTriggerType(type: ReminderTriggerType) { _uiState.update { it.copy(triggerType = type) } }
@@ -474,6 +491,7 @@ class ReminderEditViewModel @Inject constructor(
     fun setUrgencyLevel(level: UrgencyLevel) { _uiState.update { it.copy(urgencyLevel = level) } }
     
     fun setNotificationStyle(style: NotificationStyle) {
+        stopRingtonePlayback()
         _uiState.update {
             it.copy(
                 notificationStyle = style,
@@ -483,8 +501,49 @@ class ReminderEditViewModel @Inject constructor(
     }
     fun setAutoSilenceMinutes(m: Int) { _uiState.update { it.copy(autoSilenceMinutes = m) } }
     fun setUseAlarmStream(use: Boolean) { _uiState.update { it.copy(useAlarmStream = use) } }
-    fun setVibrationEnabled(enabled: Boolean) { _uiState.update { it.copy(vibrationEnabled = enabled) } }
-    fun setVolume(v: Int) { _uiState.update { it.copy(volume = v) } }
+    fun setVibrationEnabled(enabled: Boolean) {
+        stopRingtonePlayback()
+        _uiState.update { it.copy(vibrationEnabled = enabled) }
+    }
+    fun setVolume(v: Int) {
+        _uiState.update { it.copy(volume = v) }
+        audioPlayer?.setVolume(
+            if (_uiState.value.useAlarmStream) android.media.AudioAttributes.USAGE_ALARM else android.media.AudioAttributes.USAGE_MEDIA,
+            v
+        )
+    }
     fun setIsEnabled(enabled: Boolean) { _uiState.update { it.copy(isEnabled = enabled) } }
     fun setPersistentAlert(persistent: Boolean) { _uiState.update { it.copy(isPersistentAlert = persistent) } }
+
+    fun toggleRingtonePlayback() {
+        if (_uiState.value.isRingtonePlaying) {
+            stopRingtonePlayback()
+        } else {
+            startRingtonePlayback()
+        }
+    }
+
+    fun startRingtonePlayback() {
+        val ctx = context ?: return
+        val player = audioPlayer ?: return
+        _uiState.update { it.copy(isRingtonePlaying = true) }
+        val uri = getAccessibleRingtoneUri(ctx, _uiState.value.ringtoneUri)
+        player.play(
+            uri = uri,
+            useAlarmStream = _uiState.value.useAlarmStream,
+            loop = true,
+            volume = _uiState.value.volume,
+            vibrationEnabled = _uiState.value.vibrationEnabled
+        )
+    }
+
+    fun stopRingtonePlayback() {
+        _uiState.update { it.copy(isRingtonePlaying = false) }
+        audioPlayer?.stop()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        stopRingtonePlayback()
+    }
 }

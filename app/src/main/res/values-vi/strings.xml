@@ -2,7 +2,7 @@
     <string name="app_name" translatable="false">ReMind</string>
     <string name="navigation_alarms">Báo thức</string>
     <string name="navigation_today">Hôm nay</string>
-    <string name="navigation_reminders">Lời nhắc</string>
+    <string name="navigation_reminders">Nhắc nhở</string>
     <string name="navigation_settings">Cài đặt</string>
     <string name="notification_alarm_title">Báo thức đang đổ chuông</string>
     <string name="notification_alarm_text">Nhấn vào đây để xem và tắt</string>

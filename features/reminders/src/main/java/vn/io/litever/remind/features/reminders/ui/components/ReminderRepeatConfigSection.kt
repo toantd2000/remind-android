@@ -194,7 +194,7 @@ fun ReminderRepeatConfigSection(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    DayOfWeek.values().forEach { day ->
+                    DayOfWeek.entries.forEach { day ->
                         val isSelected = repeatDays.contains(day)
                         val dayLabelRes = when (day) {
                             DayOfWeek.MONDAY -> R.string.day_mon

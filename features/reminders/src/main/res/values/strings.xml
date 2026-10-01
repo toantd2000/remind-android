@@ -5,24 +5,9 @@
     <string name="edit_reminder_title">Edit Reminder</string>
     <string name="navigation_reminders">Reminders</string>
 
-    <!-- Filters -->
-    <string name="filter_all">All</string>
-    <string name="filter_active">Active</string>
-    <string name="filter_completed">Completed</string>
-    <string name="filter_time">Time</string>
-    <string name="filter_location">Location</string>
-    <string name="filter_wifi">Wi-Fi</string>
-
     <!-- Empty States -->
     <string name="no_reminders">No Reminders Available</string>
     <string name="empty_reminders_description">Tap + to create a new reminder</string>
-    <string name="no_active_reminders">No Active Reminders</string>
-    <string name="empty_active_description">All your reminders are currently completed or disabled</string>
-    <string name="no_completed_reminders">No Completed Reminders</string>
-    <string name="empty_completed_description">Check off items or dismiss reminders to see them here</string>
-    <string name="no_time_reminders">No Time Reminders</string>
-    <string name="no_location_reminders">No Location Reminders</string>
-    <string name="no_wifi_reminders">No Wi-Fi Reminders</string>
 
     <!-- List Item Card & Actions -->
     <string name="action_more">More options</string>
@@ -136,6 +121,7 @@
     <string name="ringtone_title">Ringtone</string>
     <string name="default_ringtone">Default Notification Sound</string>
     <string name="vibration_label">Vibration</string>
+    <string name="vibration_enabled_desc">Vibrate when notification appears</string>
     <string name="volume_label">Volume: %d%%</string>
     <string name="snooze_settings_title">Snooze Settings</string>
     <string name="snooze_enabled_label">Enable Snooze</string>

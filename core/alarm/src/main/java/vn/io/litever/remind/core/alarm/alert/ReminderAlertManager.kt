@@ -6,7 +6,6 @@ import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.RingtoneManager
-import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
@@ -25,17 +24,17 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import vn.io.litever.remind.core.alarm.notification.ReminderNotificationManager
 import vn.io.litever.remind.core.common.util.getAccessibleRingtoneUri
+import vn.io.litever.remind.core.domain.repository.ReminderRepository
+import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.UrgencyLevel
-import vn.io.litever.remind.core.alarm.notification.ReminderNotificationManager
-import vn.io.litever.remind.core.domain.repository.ReminderRepository
-import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
+import kotlin.time.Duration.Companion.milliseconds
 
 sealed interface AlertPlaybackState {
     object Idle : AlertPlaybackState
@@ -269,13 +268,7 @@ class ReminderAlertManagerImpl @Inject constructor(
     }
 
     private fun startVibration(isPersistent: Boolean, audioAttributes: AudioAttributes? = null) {
-        vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val manager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
-            manager?.defaultVibrator
-        } else {
-            @Suppress("DEPRECATION")
-            context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
-        }
+        vibrator = (context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager)?.defaultVibrator
 
         if (vibrator?.hasVibrator() != true) return
 
@@ -287,7 +280,7 @@ class ReminderAlertManagerImpl @Inject constructor(
         val repeatIndex = if (isPersistent) 0 else -1
 
         val effect = VibrationEffect.createWaveform(pattern, repeatIndex)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && audioAttributes != null) {
+        if (audioAttributes != null) {
             vibrator?.vibrate(effect, audioAttributes)
         } else {
             vibrator?.vibrate(effect)
@@ -303,7 +296,7 @@ class ReminderAlertManagerImpl @Inject constructor(
                 var remaining = totalSeconds
                 while (remaining > 0) {
                     _autoSilenceCountdown.value = remaining
-                    delay(1000L)
+                    delay(1000L.milliseconds)
                     remaining--
                 }
                 _autoSilenceCountdown.value = null

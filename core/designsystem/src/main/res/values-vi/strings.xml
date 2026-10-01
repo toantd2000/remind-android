@@ -94,6 +94,9 @@
     <string name="forever">Mãi mãi</string>
     <string name="one_time">1 lần</string>
     <string name="off">Tắt</string>
+    <string name="auto_silence_title">Tự động tắt tiếng</string>
+    <string name="auto_silence_description">Chuông báo sẽ tự động tắt nếu bạn không tương tác sau một khoảng thời gian.</string>
+    <string name="auto_silence_never">Không bao giờ</string>
 </resources>
 
 

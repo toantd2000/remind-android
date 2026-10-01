@@ -2,7 +2,6 @@ package vn.io.litever.remind.features.reminders.ui.components
 
 import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -22,7 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -35,7 +32,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import vn.io.litever.designsystem.components.LiteverCard
 import vn.io.litever.designsystem.components.LiteverIconButton
 import vn.io.litever.designsystem.components.LiteverSwitch
 import vn.io.litever.designsystem.theme.LiteverTheme
@@ -90,15 +86,10 @@ fun ReminderCard(
         LiteverTheme.colors.onPrimaryContainer
     }
 
-    LiteverCard(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .clip(LiteverTheme.shapes.large)
-            .clickable { onClick() },
-        colors = CardDefaults.cardColors(
-            containerColor = containerColor
-        ),
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        onClick = onClick,
+        color = containerColor,
         shape = LiteverTheme.shapes.large,
         border = BorderStroke(1.dp, LiteverTheme.colors.outlineVariant.copy(alpha = 0.3f))
     ) {
@@ -270,13 +261,13 @@ private fun TriggerBadge(
                 "${TimeFormatUtils.formatTime(times[0], is24HourFormat)}, ${TimeFormatUtils.formatTime(times[1], is24HourFormat)} +${times.size - 2}"
             }
 
-            val repeatSuffix = when {
-                timeTrigger?.repeatMode == RepeatMode.DAILY -> " • Daily"
-                timeTrigger?.repeatMode == RepeatMode.WEEKLY && timeTrigger.repeatValues.isNotEmpty() -> " • Weekly"
-                timeTrigger?.repeatMode == RepeatMode.MONTHLY && timeTrigger.monthlyDays.isNotEmpty() -> {
+            val repeatSuffix = when (timeTrigger?.repeatMode) {
+                RepeatMode.DAILY -> " • Daily"
+                RepeatMode.WEEKLY if timeTrigger.repeatValues.isNotEmpty() -> " • Weekly"
+                RepeatMode.MONTHLY if timeTrigger.monthlyDays.isNotEmpty() -> {
                     " • Days: ${timeTrigger.monthlyDays.take(3).joinToString(",")}${if (timeTrigger.monthlyDays.size > 3) "…" else ""}"
                 }
-                timeTrigger?.repeatMode == RepeatMode.YEARLY && timeTrigger.yearlyDates.isNotEmpty() -> {
+                RepeatMode.YEARLY if timeTrigger.yearlyDates.isNotEmpty() -> {
                     " • Yearly"
                 }
                 else -> ""

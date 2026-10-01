@@ -26,6 +26,58 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
 
 ## 🧠 Nhật Ký Quyết Định Kỹ Thuật (TDR)
 
+### [TDR-086] - Thống nhất AutoSilenceBottomSheet vào :core:designsystem và Dọn dẹp Code Smells / Linter Warnings tại ReminderEditScreen & Navigation
+- **Ngày thực hiện:** 2026-10-01
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - `AutoSilenceBottomSheet` bên Báo thức (`:features:alarms`) và `ReminderAutoSilenceBottomSheetContent` bên Nhắc nhở (`:features:reminders`) phục vụ cùng một mục đích chọn thời gian tự động ngắt chuông khi người dùng không tương tác. Việc duplicate component này vi phạm nguyên tắc DRY và Single Source of Truth của `:core:designsystem`.
+  - Chuỗi mô tả hành vi cần giải thích rõ ràng cho cả báo thức và nhắc nhở: "Chuông báo sẽ tự động tắt nếu bạn không tương tác sau một khoảng thời gian."
+  - Màn hình `ReminderEditScreen` và file điều hướng `RemindersNavigation.kt` tồn tại nhiều code smell và cảnh báo linter:
+    + Cảnh báo `Querying resource values using LocalContext.current is not configuration-aware and may return stale values if the Configuration changes` (3 vị trí).
+    + Sử dụng `Uri.parse(string)` thay vì extension `toUri()`.
+    + Vị trí `modifier: Modifier = Modifier` không phải là tham số tùy chọn đầu tiên (vi phạm Compose API guidelines).
+    + 9 tham số callback trigger thừa trong `ReminderEditScreen` do việc cấu hình trigger đã tách sang `ReminderTriggerEditScreen`.
+    + Tham số `reminderId` và `onNavigateToSnoozeSettings` không còn được sử dụng trong `ReminderEditRoute` và `remindersGraph`.
+- **Quyết định:**
+  1. **Đưa `AutoSilenceBottomSheet` và `AutoSilenceBottomSheetContent` vào `:core:designsystem`:**
+     - Tạo `vn.io.litever.remind.core.designsystem.components.AutoSilenceBottomSheet.kt`.
+     - Hỗ trợ linh hoạt danh sách tùy chọn (hỗ trợ `0` tương ứng "Không bao giờ" qua `auto_silence_never`).
+     - Bổ sung resource strings chuẩn hóa trong cả `values/strings.xml` và `values-vi/strings.xml`.
+     - Xóa bỏ hoàn toàn implementation trùng lặp bên `:features:alarms` và `ReminderAutoSilenceBottomSheetContent` trong `ReminderAlertConfigSection.kt`.
+  2. **Dọn dẹp triệt để Code Smells & Linter trong `:features:reminders`:**
+     - Sử dụng `stringResource(R.string.default_ringtone)` thay cho `context.getString(...)` đảm bảo configuration-aware khi đổi locale / theme.
+     - Sử dụng `uiState.ringtoneUri.toUri()`.
+     - Chuẩn hóa vị trí `modifier: Modifier = Modifier` thành tham số tùy chọn đầu tiên theo Compose API Guidelines.
+     - Loại bỏ hoàn toàn 9 callbacks thừa (`onTriggerTypeSelected`, `onTimeChange`, `onDateChange`, `onRepeatDaysChange`, `onRepeatDayToggle`, `onRepeatIntervalChange`, `onMonthlyDayToggle`, `onAddYearlyDate`, `onRemoveYearlyDate`) khỏi `ReminderEditScreen`, `ReminderEditRoute` và các previews.
+     - Loại bỏ `reminderId` và `onNavigateToSnoozeSettings` thừa trong `ReminderEditRoute` và `remindersGraph`.
+     - Xóa các unused imports.
+  3. **Kiểm thử tự động:**
+     - 473/473 unit test tasks toàn bộ hệ thống passed 100%.
+
+### [TDR-070] - Tách biệt thanh Âm lượng và Rung thành 2 thành phần độc lập kèm nút phát thử âm thanh (Play/Stop Preview) cho Alarm và Reminder
+- **Ngày thực hiện:** 2026-10-01
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Trước đây, ở cả `AlarmEditScreen` và `ReminderEditScreen` (`ReminderAlertConfigSection`), thanh trượt âm lượng và icon rung bị gộp chung vào một hàng (`[VolumeIcon] [Slider] [VibrationIcon]`). Bố cục này gây chật chội, khó thao tác và không tạo sự trực quan cho người dùng khi muốn bật/tắt rung độc lập.
+  - Đồng thời, người dùng cần có khả năng nghe thử trực tiếp âm thanh chuông ở mức âm lượng vừa chọn ngay tại thanh âm lượng.
+- **Quyết định:**
+  1. **Tách riêng 2 hàng cài đặt:**
+     - **Hàng Âm lượng:** Gồm icon âm lượng (`VolumeOff`/`VolumeUp`), thanh trượt `Slider`, và ở cuối hàng là nút phát thử âm thanh dạng icon button (`ReMindSettingIcon`) với icon `PlayArrow` (khi dừng) và `Pause`/`Stop` (khi đang phát có highlight màu container).
+     - **Hàng Rung:** Trở thành một hàng cài đặt riêng biệt, có tiêu đề, mô tả trạng thái, và công tắc `Switch`/`LiteverSwitch` rõ ràng, tiện lợi.
+  2. **Áp dụng đồng bộ cho cả 2 module `:features:alarms` và `:features:reminders`:**
+     - Trong `AlarmEditScreen`: Tách Row 3 thành Volume Slider + Play button ở đuôi, Row 4 thành `AlarmSettingRow` cho Rung.
+     - Trong `ReminderAlertConfigSection`: Chế độ đổ chuông hiển thị hàng Volume Slider + Play button riêng, và cả 2 chế độ (Đổ chuông & Thông báo thường) đều hiển thị hàng Rung riêng biệt, nhất quán.
+  3. **Tích hợp `AudioPlayer` vào `ReminderEditViewModel`:**
+     - Inject `AudioPlayer` từ `:core:common` vào `ReminderEditViewModel`.
+     - Cung cấp `toggleRingtonePlayback()`, `startRingtonePlayback()`, `stopRingtonePlayback()`.
+     - Tự động ngắt phát âm thanh khi đổi chuông, đổi rung, đổi kiểu thông báo, lưu, hủy, hoặc rời khỏi màn hình (`onCleared`, `onDispose`).
+  4. **Kiểm thử tự động:**
+     - Viết đầy đủ unit tests cho `ReminderEditViewModelTest` đảm bảo logic bật/tắt phát chuông và ngắt chuông an toàn.
+     - Toàn bộ 473/473 tasks unit tests của project pass 100%.
+- **Hệ quả:**
+  - Giao diện biên tập báo thức và nhắc nhở trở nên thoáng đãng, dễ kiểm soát âm lượng và rung độc lập.
+  - Người dùng dễ dàng nghe thử âm thanh chuông trực tiếp ngay tại vị trí điều chỉnh âm lượng.
+
 ### [TDR-069] - Tái cấu trúc CSDL nhắc nhở (Reminders): Tách bạch FIXED_TIME & INTERVAL, hỗ trợ Multi-day Recurrence và đồng bộ Room Architecture
 - **Ngày thực hiện:** 2026-09-29
 - **Trạng thái:** Accepted
@@ -495,4 +547,42 @@ otificationStyle sang NotificationStyle.FULL_SCREEN.
     - Thêm `setSnoozeEnabled` và `setSnoozeIntervalMinutes`.
 - **Kết quả kiểm thử:**
   - `./gradlew testDebugUnitTest`: Vượt qua 100% toàn bộ 473 task của dự án không một lỗi nào.
+
+### [2026-10-01] Đổi text tab sang "Nhắc nhở" và loại bỏ bộ lọc ở màn hình danh sách nhắc nhở
+- **Mục tiêu:**
+  - Đổi nhãn tab điều hướng và tiêu đề từ "Lời nhắc" thành "Nhắc nhở".
+  - Loại bỏ hoàn toàn hàng filter chips (`ReminderFilterChips`) cùng toàn bộ logic lọc không cần thiết (ALL, ACTIVE, COMPLETED, TIME, LOCATION, WIFI) khỏi màn hình danh sách nhắc nhở.
+  - Tinh giản `ReminderListViewModel`, `ReminderListUiState`, `ReminderListScreen`, `ReminderEmptyState` và cập nhật tương ứng các unit test.
+- **Thực hiện:**
+  - **Tài nguyên chuỗi:**
+    - `app/src/main/res/values-vi/strings.xml`: Cập nhật `navigation_reminders` thành "Nhắc nhở".
+    - `features/reminders/src/main/res/values-vi/strings.xml`: Cập nhật `navigation_reminders`, `reminders_title`, `add_reminder_title`, `edit_reminder_title`, `no_reminders`, `empty_reminders_description`, `delete_completed_reminders`, `delete_disabled_reminders`, `reminder_deleted`.
+    - Dọn dẹp các chuỗi lọc (`filter_*`, `no_*_reminders`) khỏi `values/strings.xml` và `values-vi/strings.xml`.
+  - **Giao diện & Thành phần (`features/reminders`):**
+    - `ReminderListScreen.kt`: Xóa hoàn toàn component `ReminderFilterChips` và tham số `onFilterSelected`. Hiển thị trực tiếp danh sách `reminders` đã được sắp xếp hoặc `ReminderEmptyState` đơn giản hóa.
+    - `ReminderEmptyState.kt`: Loại bỏ tham số `selectedFilter`, luôn hiển thị trạng thái rỗng chuẩn (`no_reminders`, `empty_reminders_description`).
+    - Xóa file `ReminderFilterChips.kt`.
+  - **ViewModel & State:**
+    - `ReminderListViewModel.kt`: Loại bỏ `_selectedFilter`, `setFilter`, `filterCounts`. Sắp xếp trực tiếp luồng nhắc nhở (ưu tiên nhắc nhở đang snooze lên đầu, sau đó theo `createdAt` giảm dần).
+    - `ReminderListUiState`: Tinh giản state chỉ còn `reminders`, `is24HourFormat`, `hasPermissionWarning`, `missingPermissions`.
+  - **Kiểm thử đơn vị:**
+    - `ReminderListViewModelTest.kt`: Xóa các test chuyển filter, thêm test xác minh quy tắc sắp xếp tự động.
+    - `ReminderR1R2EmpiricalChallengerTest.kt`: Cập nhật các test case để kiểm tra quy tắc sắp xếp danh sách trực tiếp không phụ thuộc filter.
+- **Kết quả kiểm thử:**
+  - `./gradlew testDebugUnitTest`: Vượt qua 100% toàn bộ 473 task thành công.
+
+### [2026-10-01] Loại bỏ thanh chỉnh âm lượng ở chế độ Thông báo thường (NotificationStyle.STANDARD)
+- **Bối cảnh & Xác nhận kỹ thuật:**
+  - Trong Android (API 26+), thông báo tiêu chuẩn (Notification/NotificationCompat) phát âm thanh thông qua Kênh thông báo hệ thống (`STREAM_NOTIFICATION`).
+  - Hệ điều hành Android KHÔNG cung cấp API để đặt âm lượng chuông riêng biệt cho từng thông báo độc lập (chỉ có thể chọn file nhạc chuông và bật/tắt rung). Âm lượng phát luôn tuân theo mức âm lượng thông báo tổng của thiết bị.
+  - Do đó, việc hiển thị thanh trượt âm lượng ở chế độ "Thông báo thường" là không có tác dụng thực tế.
+- **Thực hiện:**
+  - `ReminderAlertConfigSection.kt`:
+    - Thanh trượt âm lượng (Volume Slider) chỉ hiển thị ở chế độ "Đổ chuông" (`NotificationStyle.FULL_SCREEN` - nơi có foreground service phát âm thanh liên tục qua `MediaPlayer.setVolume()`).
+    - Ở chế độ "Thông báo thường" (`NotificationStyle.STANDARD`), loại bỏ thanh trượt âm lượng và hiển thị một hàng công tắc "Rung" (`LiteverSwitch`) độc lập, kèm mô tả "Rung khi thông báo xuất hiện" / "Tắt".
+  - Bổ sung chuỗi tài nguyên `vibration_enabled_desc` trong `values/strings.xml` và `values-vi/strings.xml`.
+- **Kết quả kiểm thử:**
+  - `./gradlew testDebugUnitTest`: Vượt qua 100% toàn bộ 473 task thành công.
+
+
 

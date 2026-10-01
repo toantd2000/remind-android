@@ -1,10 +1,13 @@
 package vn.io.litever.remind.features.reminders
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
+import vn.io.litever.remind.core.common.audio.AudioPlayer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -790,6 +793,69 @@ class ReminderEditViewModelTest {
 
         assertEquals(existingTimes, viewModel.uiState.value.fixedTimes)
         assertEquals(existingTimes.first(), viewModel.uiState.value.time)
+    }
+
+    @Test
+    fun toggleRingtonePlayback_togglesPlaybackStateAndCallsAudioPlayer() = runTest {
+        io.mockk.mockkStatic("vn.io.litever.remind.core.common.util.SoundUtilsKt")
+        val mockUri = io.mockk.mockk<android.net.Uri>(relaxed = true)
+        io.mockk.every { vn.io.litever.remind.core.common.util.getAccessibleRingtoneUri(any(), any()) } returns mockUri
+        try {
+            val mockContext = mockk<Context>(relaxed = true)
+            val mockAudioPlayer = mockk<AudioPlayer>(relaxed = true)
+            val viewModel = ReminderEditViewModel(
+                context = mockContext,
+                reminderRepository = repository,
+                reminderScheduler = scheduler,
+                reminderSyncManager = reminderSyncManager,
+                permissionChecker = permissionChecker,
+                preferencesDataSource = preferencesDataSource,
+                audioPlayer = mockAudioPlayer
+            )
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            assertFalse(viewModel.uiState.value.isRingtonePlaying)
+
+            viewModel.toggleRingtonePlayback()
+            assertTrue(viewModel.uiState.value.isRingtonePlaying)
+            verify(exactly = 1) { mockAudioPlayer.play(any(), any(), any(), any(), any(), any(), any()) }
+
+            viewModel.toggleRingtonePlayback()
+            assertFalse(viewModel.uiState.value.isRingtonePlaying)
+            verify(atLeast = 1) { mockAudioPlayer.stop() }
+        } finally {
+            io.mockk.unmockkStatic("vn.io.litever.remind.core.common.util.SoundUtilsKt")
+        }
+    }
+
+    @Test
+    fun updateRingtone_stopsPlayback() = runTest {
+        io.mockk.mockkStatic("vn.io.litever.remind.core.common.util.SoundUtilsKt")
+        val mockUri = io.mockk.mockk<android.net.Uri>(relaxed = true)
+        io.mockk.every { vn.io.litever.remind.core.common.util.getAccessibleRingtoneUri(any(), any()) } returns mockUri
+        try {
+            val mockContext = mockk<Context>(relaxed = true)
+            val mockAudioPlayer = mockk<AudioPlayer>(relaxed = true)
+            val viewModel = ReminderEditViewModel(
+                context = mockContext,
+                reminderRepository = repository,
+                reminderScheduler = scheduler,
+                reminderSyncManager = reminderSyncManager,
+                permissionChecker = permissionChecker,
+                preferencesDataSource = preferencesDataSource,
+                audioPlayer = mockAudioPlayer
+            )
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            viewModel.toggleRingtonePlayback()
+            assertTrue(viewModel.uiState.value.isRingtonePlaying)
+
+            viewModel.updateRingtone("content://settings/system/alarm_alert")
+            assertFalse(viewModel.uiState.value.isRingtonePlaying)
+            verify(atLeast = 1) { mockAudioPlayer.stop() }
+        } finally {
+            io.mockk.unmockkStatic("vn.io.litever.remind.core.common.util.SoundUtilsKt")
+        }
     }
 }
 

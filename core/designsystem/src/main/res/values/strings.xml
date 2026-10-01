@@ -93,6 +93,9 @@
     <string name="forever">Forever</string>
     <string name="one_time">1 time</string>
     <string name="off">Off</string>
+    <string name="auto_silence_title">Auto-Silence</string>
+    <string name="auto_silence_description">Alarm and reminder ringing will automatically stop if you don\'t interact after a period of time.</string>
+    <string name="auto_silence_never">Never</string>
 </resources>
 
 

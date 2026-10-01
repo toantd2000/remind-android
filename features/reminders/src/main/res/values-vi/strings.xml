@@ -1,28 +1,13 @@
 <resources>
     <!-- App & Navigation -->
-    <string name="reminders_title">Lời nhắc</string>
-    <string name="add_reminder_title">Thêm lời nhắc</string>
-    <string name="edit_reminder_title">Sửa lời nhắc</string>
-    <string name="navigation_reminders">Lời nhắc</string>
-
-    <!-- Filters -->
-    <string name="filter_all">Tất cả</string>
-    <string name="filter_active">Đang bật</string>
-    <string name="filter_completed">Đã xong</string>
-    <string name="filter_time">Thời gian</string>
-    <string name="filter_location">Vị trí</string>
-    <string name="filter_wifi">Wi-Fi</string>
+    <string name="reminders_title">Nhắc nhở</string>
+    <string name="add_reminder_title">Thêm nhắc nhở</string>
+    <string name="edit_reminder_title">Sửa nhắc nhở</string>
+    <string name="navigation_reminders">Nhắc nhở</string>
 
     <!-- Empty States -->
-    <string name="no_reminders">Chưa có lời nhắc nào</string>
-    <string name="empty_reminders_description">Nhấn + để tạo lời nhắc mới</string>
-    <string name="no_active_reminders">Không có lời nhắc đang hoạt động</string>
-    <string name="empty_active_description">Tất cả lời nhắc đã hoàn thành hoặc đang tắt</string>
-    <string name="no_completed_reminders">Chưa có lời nhắc hoàn thành</string>
-    <string name="empty_completed_description">Đánh dấu xong các mục để xem tại đây</string>
-    <string name="no_time_reminders">Không có lời nhắc thời gian</string>
-    <string name="no_location_reminders">Không có lời nhắc vị trí</string>
-    <string name="no_wifi_reminders">Không có lời nhắc Wi-Fi</string>
+    <string name="no_reminders">Chưa có nhắc nhở nào</string>
+    <string name="empty_reminders_description">Nhấn + để tạo nhắc nhở mới</string>
 
     <!-- List Item Card & Actions -->
     <string name="action_more">Tùy chọn khác</string>
@@ -31,9 +16,9 @@
     <string name="action_delete">Xóa</string>
     <string name="action_mark_completed">Đánh dấu đã xong</string>
     <string name="action_mark_active">Đánh dấu đang bật</string>
-    <string name="delete_completed_reminders">Xóa các lời nhắc đã xong</string>
-    <string name="delete_disabled_reminders">Xóa các lời nhắc đã tắt</string>
-    <string name="reminder_deleted">Đã xóa lời nhắc</string>
+    <string name="delete_completed_reminders">Xóa các nhắc nhở đã xong</string>
+    <string name="delete_disabled_reminders">Xóa các nhắc nhở đã tắt</string>
+    <string name="reminder_deleted">Đã xóa nhắc nhở</string>
     <string name="undo">Hoàn tác</string>
     <string name="snoozing_badge_format">Đang hoãn (%s)</string>
     <string name="defined_time_window_badge">Khung giờ: %1$s - %2$s</string>
@@ -136,6 +121,7 @@
     <string name="ringtone_title">Nhạc chuông</string>
     <string name="default_ringtone">Âm thanh thông báo mặc định</string>
     <string name="vibration_label">Rung</string>
+    <string name="vibration_enabled_desc">Rung khi thông báo xuất hiện</string>
     <string name="volume_label">Âm lượng: %d%%</string>
     <string name="snooze_settings_title">Cài đặt báo lại (Hoãn)</string>
     <string name="snooze_enabled_label">Bật báo lại</string>

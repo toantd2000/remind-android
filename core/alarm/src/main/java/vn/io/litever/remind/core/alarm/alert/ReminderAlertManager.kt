@@ -67,7 +67,8 @@ class ReminderAlertManagerImpl @Inject constructor(
     @ApplicationContext private val context: Context,
     private val reminderRepositoryProvider: Provider<ReminderRepository>? = null,
     private val reminderSchedulerProvider: Provider<ReminderScheduler>? = null,
-    private val reminderNotificationManagerProvider: Provider<ReminderNotificationManager>? = null
+    private val reminderNotificationManagerProvider: Provider<ReminderNotificationManager>? = null,
+    private val reminderActionHandlerProvider: Provider<vn.io.litever.remind.core.domain.handler.ReminderActionHandler>? = null
 ) : ReminderAlertManager {
 
     private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
@@ -312,18 +313,12 @@ class ReminderAlertManagerImpl @Inject constructor(
                 val repository = reminderRepositoryProvider?.get()
                 val scheduler = reminderSchedulerProvider?.get()
                 val notificationManager = reminderNotificationManagerProvider?.get()
-                if (repository != null) {
+                val actionHandler = reminderActionHandlerProvider?.get()
+                if (repository != null && actionHandler != null) {
                     val reminder = repository.getReminderById(reminderId)
                     if (reminder != null && reminder.isEnabled) {
                         if (reminder.canSnooze()) {
-                            
-                            val snoozeIntervalMillis = reminder.action.snoozeIntervalMinutes * 60 * 1000L
-                            val nextTriggerTime = System.currentTimeMillis() + snoozeIntervalMillis
-                            val snoozedReminder = reminder.copy(
-                                snoozeNextTriggerTime = nextTriggerTime
-                            )
-                            repository.updateReminder(snoozedReminder)
-                            scheduler?.scheduleSnooze(snoozedReminder, nextTriggerTime)
+                            actionHandler.handleSnooze(reminder, reminder.action.snoozeIntervalMinutes)
                             notificationManager?.cancelNotification(reminderId)
                         } else {
                             val isRecurring = reminder.isRecurring
@@ -331,8 +326,7 @@ class ReminderAlertManagerImpl @Inject constructor(
                                 isEnabled = isRecurring,
                                 snoozeNextTriggerTime = null
                             )
-                            repository.updateReminder(updatedReminder)
-                            scheduler?.cancelSnooze(reminder)
+                            actionHandler.handleDismiss(updatedReminder)
                             notificationManager?.cancelNotification(reminderId)
                         }
                     }

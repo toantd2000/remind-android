@@ -58,28 +58,17 @@ fun ReminderCard(
     val isSnoozed = reminder.snoozeNextTriggerTime != null
     val isCardActive = reminder.isEnabled
     val alpha = if (isCardActive) 1f else 0.6f
+    
     val containerColor = if (isCardActive) {
         LiteverTheme.colors.surfaceContainer
     } else {
         LiteverTheme.colors.surfaceContainerLow
     }
 
-    val accentColor = if (isSnoozed) {
+    val indicatorColor = if (isSnoozed) {
         LiteverTheme.colors.secondary
     } else {
         LiteverTheme.colors.primary
-    }
-
-    val accentContainerColor = if (isSnoozed) {
-        LiteverTheme.colors.secondaryContainer
-    } else {
-        LiteverTheme.colors.primaryContainer
-    }
-
-    val onAccentContainerColor = if (isSnoozed) {
-        LiteverTheme.colors.onSecondaryContainer
-    } else {
-        LiteverTheme.colors.onPrimaryContainer
     }
 
     Surface(
@@ -94,7 +83,7 @@ fun ReminderCard(
                 .drawBehind {
                     if (isCardActive) {
                         drawRect(
-                            color = accentColor.copy(alpha = 0.8f),
+                            color = indicatorColor.copy(alpha = 0.8f),
                             size = Size(3.dp.toPx(), size.height)
                         )
                     }
@@ -122,8 +111,8 @@ fun ReminderCard(
                     TimeBadge(
                         reminder = reminder,
                         is24HourFormat = is24HourFormat,
-                        containerColor = accentContainerColor.copy(alpha = 0.7f),
-                        contentColor = onAccentContainerColor
+                        containerColor = if (isSnoozed) LiteverTheme.colors.secondaryContainer.copy(alpha = 0.7f) else LiteverTheme.colors.primaryContainer.copy(alpha = 0.7f),
+                        contentColor = if (isSnoozed) LiteverTheme.colors.onSecondaryContainer else LiteverTheme.colors.onPrimaryContainer
                     )
 
                     // 2. Separate Recurrence / Repeat Schedule badge

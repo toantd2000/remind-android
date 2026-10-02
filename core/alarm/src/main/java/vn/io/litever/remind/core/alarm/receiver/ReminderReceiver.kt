@@ -33,6 +33,9 @@ class ReminderReceiver : BroadcastReceiver() {
     @Inject
     lateinit var reminderAlertManager: ReminderAlertManager
 
+    @Inject
+    lateinit var reminderActionHandler: vn.io.litever.remind.core.domain.handler.ReminderActionHandler
+
     override fun onReceive(context: Context, intent: Intent) {
         val action = intent.action ?: return
         val reminderId = intent.getLongExtra(EXTRA_REMINDER_ID, -1L)
@@ -106,15 +109,7 @@ class ReminderReceiver : BroadcastReceiver() {
         if (!reminder.canSnooze()) return
 
         val minutes = snoozeMinutes ?: reminder.action.snoozeIntervalMinutes
-        val snoozeIntervalMillis = minutes * 60 * 1000L
-        val nextTriggerTime = System.currentTimeMillis() + snoozeIntervalMillis
-
-        val snoozedReminder = reminder.copy(
-            snoozeNextTriggerTime = nextTriggerTime
-        )
-
-        reminderRepository.updateReminder(snoozedReminder)
-        reminderScheduler.scheduleSnooze(snoozedReminder, nextTriggerTime)
+        reminderActionHandler.handleSnooze(reminder, minutes)
     }
 
     private suspend fun handleDismissAction(reminder: Reminder) {
@@ -125,24 +120,14 @@ class ReminderReceiver : BroadcastReceiver() {
         if (isInterval) {
             // Acknowledging an INTERVAL reminder shifts the cycle:
             // next cycle = actual acknowledge time + intervalMinutes
-            val nowMillis = System.currentTimeMillis()
-            val shiftedReminder = reminder.copy(
-                snoozeNextTriggerTime = null,
-                lastTriggeredTime = nowMillis
-            )
-            reminderRepository.updateReminder(shiftedReminder)
-            reminderScheduler.cancelSnooze(reminder)
-            if (shiftedReminder.isEnabled) {
-                reminderScheduler.schedule(shiftedReminder)
-            }
+            reminderActionHandler.handleComplete(reminder)
         } else {
             val isRecurring = reminder.isRecurring
             val updatedReminder = reminder.copy(
                 isEnabled = if (isRecurring) reminder.isEnabled else false,
                 snoozeNextTriggerTime = null
             )
-            reminderRepository.updateReminder(updatedReminder)
-            reminderScheduler.cancelSnooze(reminder)
+            reminderActionHandler.handleDismiss(updatedReminder)
         }
     }
 

@@ -48,6 +48,8 @@ import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import java.time.DayOfWeek
 import vn.io.litever.remind.core.model.NotificationStyle
+import vn.io.litever.remind.core.model.ReminderMonthDay
+import vn.io.litever.remind.core.model.ReminderTimeWindow
 import vn.io.litever.remind.core.model.ReminderTriggerType
 import vn.io.litever.remind.features.reminders.R
 import vn.io.litever.remind.features.reminders.ui.components.ReminderAlertConfigSection
@@ -128,6 +130,23 @@ fun ReminderEditRoute(
         onConfirmDiscard = { viewModel.confirmDiscard(onBackClick) },
         onTitleChange = viewModel::setTitle,
         onNotesChange = viewModel::setNotes,
+        onTriggerTypeSelected = viewModel::setTriggerType,
+        onTimeChange = viewModel::setTime,
+        fixedTimes = uiState.fixedTimes,
+        onAddFixedTime = viewModel::addFixedTime,
+        onRemoveFixedTime = viewModel::removeFixedTime,
+        onUpdateFixedTime = viewModel::updateFixedTime,
+        onDateChange = viewModel::setDate,
+        onRepeatDaysChange = viewModel::setRepeatDays,
+        onRepeatDayToggle = viewModel::toggleRepeatDay,
+        onRepeatIntervalChange = viewModel::setRepeatInterval,
+        onMonthlyDayToggle = viewModel::toggleMonthlyDay,
+        onAddYearlyDate = viewModel::addYearlyDate,
+        onRemoveYearlyDate = viewModel::removeYearlyDate,
+        onIntervalMinutesChange = { str -> viewModel.setIntervalMinutes(str.toIntOrNull()) },
+        onTimeWindowsChange = viewModel::setTimeWindows,
+        onAddTimeWindow = viewModel::addTimeWindow,
+        onRemoveTimeWindow = viewModel::removeTimeWindow,
         onNotificationStyleChange = viewModel::setNotificationStyle,
         onAutoSilenceMinutesChange = viewModel::setAutoSilenceMinutes,
         onUseAlarmStreamChange = viewModel::setUseAlarmStream,
@@ -166,6 +185,23 @@ fun ReminderEditScreen(
     onVibrationChange: (Boolean) -> Unit,
     onVolumeChange: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    onTriggerTypeSelected: (ReminderTriggerType) -> Unit = {},
+    onTimeChange: (LocalTime) -> Unit = {},
+    fixedTimes: List<LocalTime> = listOf(uiState.time),
+    onAddFixedTime: (LocalTime) -> Unit = {},
+    onRemoveFixedTime: (Int) -> Unit = {},
+    onUpdateFixedTime: (Int, LocalTime) -> Unit = { _, t -> onTimeChange(t) },
+    onDateChange: (LocalDate?) -> Unit = {},
+    onRepeatDaysChange: (List<DayOfWeek>) -> Unit = {},
+    onRepeatDayToggle: (DayOfWeek) -> Unit = {},
+    onRepeatIntervalChange: (ReminderRepeatInterval) -> Unit = {},
+    onMonthlyDayToggle: (Int) -> Unit = {},
+    onAddYearlyDate: (Int, Int) -> Unit = { _, _ -> },
+    onRemoveYearlyDate: (Int) -> Unit = {},
+    onIntervalMinutesChange: (String) -> Unit = {},
+    onTimeWindowsChange: (List<ReminderTimeWindow>) -> Unit = {},
+    onAddTimeWindow: (ReminderTimeWindow) -> Unit = {},
+    onRemoveTimeWindow: (Int) -> Unit = {},
     onTogglePreview: () -> Unit = {},
     onSnoozeEnabledChange: (Boolean) -> Unit = {},
     onSnoozeIntervalChange: (Int) -> Unit = {},
@@ -244,11 +280,28 @@ fun ReminderEditScreen(
                 )
             }
 
-            // 2. Trigger Summary Section (Click to navigate to Trigger Edit Screen)
+            // 2. Trigger Configuration Section (Direct inline editing)
             item {
                 ReminderTriggerSection(
                     uiState = uiState,
-                    onClick = onNavigateToTriggerEdit,
+                    onTriggerTypeSelected = onTriggerTypeSelected,
+                    onTimeChange = onTimeChange,
+                    fixedTimes = fixedTimes,
+                    onAddFixedTime = onAddFixedTime,
+                    onRemoveFixedTime = onRemoveFixedTime,
+                    onUpdateFixedTime = onUpdateFixedTime,
+                    onDateChange = onDateChange,
+                    onRepeatDaysChange = onRepeatDaysChange,
+                    onRepeatDayToggle = onRepeatDayToggle,
+                    onRepeatIntervalChange = onRepeatIntervalChange,
+                    onMonthlyDayToggle = onMonthlyDayToggle,
+                    onAddYearlyDate = onAddYearlyDate,
+                    onRemoveYearlyDate = onRemoveYearlyDate,
+                    onIntervalMinutesChange = onIntervalMinutesChange,
+                    onTimeWindowsChange = onTimeWindowsChange,
+                    onAddTimeWindow = onAddTimeWindow,
+                    onRemoveTimeWindow = onRemoveTimeWindow,
+                    is24HourFormat = true,
                     modifier = Modifier.fillMaxWidth()
                 )
             }

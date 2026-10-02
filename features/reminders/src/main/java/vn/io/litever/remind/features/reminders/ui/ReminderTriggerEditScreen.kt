@@ -5,55 +5,38 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import vn.io.litever.designsystem.components.LiteverButton
 import vn.io.litever.designsystem.components.LiteverScaffold
 import vn.io.litever.designsystem.components.LiteverTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
-import java.time.DayOfWeek
-import vn.io.litever.remind.core.model.GeofenceTransitionType
 import vn.io.litever.remind.core.model.ReminderTimeWindow
 import vn.io.litever.remind.core.model.ReminderTriggerType
 import vn.io.litever.remind.features.reminders.R
-
-import vn.io.litever.remind.features.reminders.ui.components.ReminderTimeConfigSection
-import vn.io.litever.remind.features.reminders.ui.components.ReminderTriggerTypeSelector
-
+import vn.io.litever.remind.features.reminders.ui.components.ReminderTriggerSection
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderEditUiState
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderEditViewModel
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
-
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.ui.text.input.KeyboardType
-import vn.io.litever.designsystem.components.LiteverFilterChip
-import vn.io.litever.remind.features.reminders.ui.components.ReminderTimeWindowConfigSection
 
 @Composable
 fun ReminderTriggerEditRoute(
@@ -92,7 +75,7 @@ fun ReminderTriggerEditRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReminderTriggerEditScreen(
     uiState: ReminderEditUiState,
@@ -116,31 +99,21 @@ fun ReminderTriggerEditScreen(
     onRemoveTimeWindow: (Int) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val locationFocusRequester = remember { FocusRequester() }
-    val wifiFocusRequester = remember { FocusRequester() }
     val lazyListState = rememberLazyListState()
 
     LiteverScaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                LiteverTopAppBar(
-                    title = stringResource(R.string.edit_trigger_title),
-                    onBackClick = onBackClick,
-                    navigationIcon = {
-                        Icon(
-                            imageVector = ReMindIcons.Close,
-                            contentDescription = "Back"
-                        )
-                    }
-                )
-                ReminderTriggerTypeSelector(
-                    selectedTriggerType = uiState.triggerType,
-                    onTriggerTypeSelected = onTriggerTypeSelected
-                )
-            }
+            LiteverTopAppBar(
+                title = stringResource(R.string.edit_trigger_title),
+                onBackClick = onBackClick,
+                navigationIcon = {
+                    Icon(
+                        imageVector = ReMindIcons.Close,
+                        contentDescription = "Back"
+                    )
+                }
+            )
         },
         bottomBar = {
             ReMindBottomBar {
@@ -161,115 +134,29 @@ fun ReminderTriggerEditScreen(
             contentPadding = PaddingValues(LiteverTheme.spacing.medium),
             verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
         ) {
-
-            // 2. Active Trigger Configuration
             item {
-                when (uiState.triggerType) {
-                    ReminderTriggerType.FIXED_TIME -> {
-                        ReminderTimeConfigSection(
-                            time = uiState.time,
-                            onTimeChange = onTimeChange,
-                            fixedTimes = fixedTimes,
-                            onAddFixedTime = onAddFixedTime,
-                            onRemoveFixedTime = onRemoveFixedTime,
-                            onUpdateFixedTime = onUpdateFixedTime,
-                            date = uiState.date,
-                            onDateChange = onDateChange,
-                            repeatDays = uiState.repeatDays,
-                            onRepeatDaysChange = onRepeatDaysChange,
-                            onRepeatDayToggle = onRepeatDayToggle,
-                            repeatInterval = uiState.repeatInterval,
-                            onRepeatIntervalChange = onRepeatIntervalChange,
-                            monthlyDays = uiState.monthlyDays,
-                            onMonthlyDayToggle = onMonthlyDayToggle,
-                            yearlyDates = uiState.yearlyDates,
-                            onAddYearlyDate = onAddYearlyDate,
-                            onRemoveYearlyDate = onRemoveYearlyDate,
-                            is24HourFormat = true
-                        )
-                    }
-                    ReminderTriggerType.INTERVAL -> {
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
-                        ) {
-                            androidx.compose.material3.Surface(
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = LiteverTheme.shapes.large,
-                                color = LiteverTheme.colors.surfaceContainerLow
-                            ) {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(LiteverTheme.spacing.medium)
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.interval_section_title),
-                                        style = LiteverTheme.typography.titleMedium,
-                                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                                        color = LiteverTheme.colors.onSurface
-                                    )
-
-                                    Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
-
-                                    androidx.compose.material3.OutlinedTextField(
-                                        value = uiState.intervalMinutes?.toString() ?: "",
-                                        onValueChange = { onIntervalMinutesChange(it.filter { char -> char.isDigit() }) },
-                                        label = { Text(stringResource(R.string.interval_minutes_label)) },
-                                        placeholder = { Text(stringResource(R.string.interval_minutes_hint)) },
-                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                        modifier = Modifier.fillMaxWidth()
-                                    )
-
-                                    Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
-
-                                    // Quick interval presets
-                                    val presets = listOf(
-                                        15 to stringResource(R.string.interval_preset_15m),
-                                        30 to stringResource(R.string.interval_preset_30m),
-                                        60 to stringResource(R.string.interval_preset_1h),
-                                        120 to stringResource(R.string.interval_preset_2h),
-                                        180 to stringResource(R.string.interval_preset_3h),
-                                        240 to stringResource(R.string.interval_preset_4h)
-                                    )
-
-                                    FlowRow(
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                        verticalArrangement = Arrangement.spacedBy(4.dp)
-                                    ) {
-                                        presets.forEach { (minutes, label) ->
-                                            LiteverFilterChip(
-                                                selected = uiState.intervalMinutes == minutes,
-                                                onClick = { onIntervalMinutesChange(minutes.toString()) },
-                                                label = { Text(label, style = LiteverTheme.typography.labelSmall) }
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-
-                            // Multi-TimeWindow Configuration
-                            ReminderTimeWindowConfigSection(
-                                timeWindows = uiState.timeWindows,
-                                onTimeWindowsChange = onTimeWindowsChange,
-                                onAddTimeWindow = onAddTimeWindow,
-                                onRemoveTimeWindow = onRemoveTimeWindow,
-                                onSetAllDayPreset = {
-                                    onTimeWindowsChange(
-                                        listOf(
-                                            ReminderTimeWindow(
-                                                startTime = LocalTime.of(0, 0),
-                                                endTime = LocalTime.of(23, 59),
-                                                activeDays = emptyList()
-                                            )
-                                        )
-                                    )
-                                },
-                                is24HourFormat = true
-                            )
-                        }
-                    }
-                }
+                ReminderTriggerSection(
+                    uiState = uiState,
+                    onTriggerTypeSelected = onTriggerTypeSelected,
+                    onTimeChange = onTimeChange,
+                    fixedTimes = fixedTimes,
+                    onAddFixedTime = onAddFixedTime,
+                    onRemoveFixedTime = onRemoveFixedTime,
+                    onUpdateFixedTime = onUpdateFixedTime,
+                    onDateChange = onDateChange,
+                    onRepeatDaysChange = onRepeatDaysChange,
+                    onRepeatDayToggle = onRepeatDayToggle,
+                    onRepeatIntervalChange = onRepeatIntervalChange,
+                    onMonthlyDayToggle = onMonthlyDayToggle,
+                    onAddYearlyDate = onAddYearlyDate,
+                    onRemoveYearlyDate = onRemoveYearlyDate,
+                    onIntervalMinutesChange = onIntervalMinutesChange,
+                    onTimeWindowsChange = onTimeWindowsChange,
+                    onAddTimeWindow = onAddTimeWindow,
+                    onRemoveTimeWindow = onRemoveTimeWindow,
+                    is24HourFormat = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         }
     }
@@ -290,8 +177,7 @@ private fun ReminderTriggerEditScreenPreview() {
             onRepeatIntervalChange = {},
             onMonthlyDayToggle = {},
             onAddYearlyDate = { _, _ -> },
-            onRemoveYearlyDate = {},
-            
+            onRemoveYearlyDate = {}
         )
     }
 }
@@ -311,8 +197,7 @@ private fun ReminderTriggerEditScreenDarkPreview() {
             onRepeatIntervalChange = {},
             onMonthlyDayToggle = {},
             onAddYearlyDate = { _, _ -> },
-            onRemoveYearlyDate = {},
-            
+            onRemoveYearlyDate = {}
         )
     }
 }

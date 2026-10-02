@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Rich Reminder Card Presentation:** Upgraded `ReminderCard` with comprehensive and compact metadata: integrated recurrence summary directly into trigger badges, added formatted active time windows for interval reminders, and introduced a dedicated `NextTriggerFooter` calculating dynamic relative countdowns (e.g., "Lần tới: Hôm nay 14:00 (sau 2 giờ 15 phút)", "Báo lại: 10:35 (còn 12 phút)", "Đã tắt").
+- **Interval Recurrence Schedules:** Expanded `INTERVAL` (Lặp định kỳ) triggers to support the full spectrum of recurrence modes (`RepeatMode.NONE` with exact date picker, `RepeatMode.WEEKLY` with day-of-week selection, `RepeatMode.MONTHLY` with specific days of the month, and `RepeatMode.YEARLY` with specific month-day dates), in addition to interval minutes and active time windows.
+- **Inline Trigger Condition Configuration:** Moved the complete trigger condition configuration block directly into `ReminderEditScreen`, allowing users to configure fixed time targets, recurrence patterns, or interval minutes and active time windows without navigating to a separate screen.
+- **Distinct Trigger Tab Titles & Icons:** Updated `ReminderTriggerTypeSelector` with distinct titles ("Mốc thời gian" / `trigger_fixed_time` and "Lặp định kỳ" / `trigger_interval`) and distinct icons (`AccessTime` vs `Timer`).
 - **Reminder Toggle Action on Edit Screen:** Added dedicated action button ("Tắt nhắc nhở" / "Bật nhắc nhở") at the bottom of `ReminderEditScreen` for existing reminders.
 - **Shared AutoSilenceBottomSheet:** Consolidated `AutoSilenceBottomSheet` and `AutoSilenceBottomSheetContent` into `:core:designsystem` with customizable duration options and standardized descriptive text.
 - **Flexible Reminder Snooze:** Added quick snooze chips (+5m, +10m, +15m) and custom minute entry dialog (`LvAlertDialog`) on the ringing screen.

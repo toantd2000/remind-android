@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -26,18 +25,17 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import vn.io.litever.designsystem.components.LiteverIconButton
-import vn.io.litever.designsystem.components.LiteverSwitch
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.Reminder
+import vn.io.litever.remind.core.model.ReminderTimeWindow
 import vn.io.litever.remind.core.model.ReminderTriggerType
 import vn.io.litever.remind.core.model.RepeatMode
 import vn.io.litever.remind.core.model.TimeTrigger
@@ -61,9 +59,9 @@ fun ReminderCard(
     val isCardActive = reminder.isEnabled
     val alpha = if (isCardActive) 1f else 0.6f
     val containerColor = if (isCardActive) {
-        LiteverTheme.colors.surface
+        LiteverTheme.colors.surfaceContainer
     } else {
-        LiteverTheme.colors.surface.copy(alpha = 0.6f)
+        LiteverTheme.colors.surfaceContainerLow
     }
 
     val accentColor = if (isSnoozed) {
@@ -102,42 +100,49 @@ fun ReminderCard(
                     }
                 }
                 .padding(
-                    start = 16.dp,
-                    end = 8.dp,
-                    top = 12.dp,
-                    bottom = 12.dp
+                    start = LiteverTheme.spacing.medium,
+                    end = LiteverTheme.spacing.small,
+                    top = LiteverTheme.spacing.smallMedium,
+                    bottom = LiteverTheme.spacing.smallMedium
                 ),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.Top
         ) {
             Column(
                 modifier = Modifier
                     .weight(1f)
                     .graphicsLayer { this.alpha = alpha }
             ) {
-                // Top Row: Trigger badge & badges
+                // Top Row: Separated Time badge, Recurrence badge, Time Windows, Snooze, Urgency badges
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                     modifier = Modifier.padding(bottom = 6.dp)
                 ) {
-                    TriggerBadge(
+                    // 1. Time / Interval frequency badge
+                    TimeBadge(
                         reminder = reminder,
                         is24HourFormat = is24HourFormat,
                         containerColor = accentContainerColor.copy(alpha = 0.7f),
                         contentColor = onAccentContainerColor
                     )
 
+                    // 2. Separate Recurrence / Repeat Schedule badge
+                    RecurrenceBadge(
+                        timeTrigger = reminder.timeTrigger
+                    )
+
+                    // 3. Time Window Badge (for Interval)
                     if (reminder.triggerType == ReminderTriggerType.INTERVAL) {
                         val activeWindows = reminder.timeTrigger?.timeWindows ?: emptyList()
                         if (activeWindows.isNotEmpty()) {
-                            val firstWindow = activeWindows.first()
                             TimeWindowBadge(
-                                startTime = firstWindow.startTime.toString(),
-                                endTime = firstWindow.endTime.toString()
+                                timeWindows = activeWindows,
+                                is24HourFormat = is24HourFormat
                             )
                         }
                     }
 
+                    // 4. Snoozing Badge (if snoozed)
                     if (isSnoozed) {
                         SnoozingBadge(
                             snoozeTimeMillis = reminder.snoozeNextTriggerTime!!,
@@ -145,6 +150,7 @@ fun ReminderCard(
                         )
                     }
 
+                    // 5. Hard Urgency Badge
                     if (reminder.action.urgencyLevel == UrgencyLevel.HARD) {
                         BadgeContainer(
                             icon = ReMindIcons.NotificationImportant,
@@ -154,6 +160,7 @@ fun ReminderCard(
                         )
                     }
 
+                    // 6. Persistent Alert Badge
                     if (reminder.action.isPersistentAlert) {
                         BadgeContainer(
                             icon = ReMindIcons.Alarm,
@@ -181,18 +188,25 @@ fun ReminderCard(
 
                 // Notes snippet
                 if (reminder.notes.isNotBlank()) {
-                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = reminder.notes,
                         style = LiteverTheme.typography.bodySmall,
                         color = LiteverTheme.colors.onSurfaceVariant,
                         maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.padding(top = LiteverTheme.spacing.tiny)
                     )
                 }
+
+                // Footer: Next Trigger / Relative Countdown / Inactive status
+                NextTriggerFooter(
+                    reminder = reminder,
+                    is24HourFormat = is24HourFormat,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
             }
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(4.dp))
 
             // Options menu button (3-dots)
             LiteverIconButton(
@@ -211,47 +225,24 @@ fun ReminderCard(
 }
 
 @Composable
-private fun TriggerBadge(
+private fun TimeBadge(
     reminder: Reminder,
     is24HourFormat: Boolean,
     containerColor: Color,
     contentColor: Color
 ) {
     val timeTrigger = reminder.timeTrigger
-    val pair: Pair<ImageVector, String> = when (reminder.triggerType) {
+    val (icon, text) = when (reminder.triggerType) {
         ReminderTriggerType.INTERVAL -> {
-            val interval = timeTrigger?.intervalMinutes ?: 60
-            Pair(ReMindIcons.Schedule, stringResource(R.string.badge_interval_format, interval))
+            val freq = ReminderCardFormatter.formatIntervalFrequency(timeTrigger?.intervalMinutes)
+            Pair(ReMindIcons.Timer, freq)
         }
         ReminderTriggerType.FIXED_TIME -> {
-            val times = timeTrigger?.time ?: emptyList()
-            val timesText = if (times.isEmpty()) {
-                stringResource(R.string.trigger_time)
-            } else if (times.size == 1) {
-                TimeFormatUtils.formatTime(times.first(), is24HourFormat)
-            } else if (times.size <= 2) {
-                times.joinToString(", ") { TimeFormatUtils.formatTime(it, is24HourFormat) }
-            } else {
-                "${TimeFormatUtils.formatTime(times[0], is24HourFormat)}, ${TimeFormatUtils.formatTime(times[1], is24HourFormat)} +${times.size - 2}"
-            }
-
-            val repeatSuffix = when (timeTrigger?.repeatMode) {
-                RepeatMode.DAILY -> " • Daily"
-                RepeatMode.WEEKLY if timeTrigger.repeatValues.isNotEmpty() -> " • Weekly"
-                RepeatMode.MONTHLY if timeTrigger.monthlyDays.isNotEmpty() -> {
-                    " • Days: ${timeTrigger.monthlyDays.take(3).joinToString(",")}${if (timeTrigger.monthlyDays.size > 3) "…" else ""}"
-                }
-                RepeatMode.YEARLY if timeTrigger.yearlyDates.isNotEmpty() -> {
-                    " • Yearly"
-                }
-                else -> ""
-            }
-
-            Pair(ReMindIcons.AccessTime, timesText + repeatSuffix)
+            val timesText = ReminderCardFormatter.formatFixedTimes(timeTrigger?.time ?: emptyList(), is24HourFormat)
+                .ifEmpty { stringResource(R.string.trigger_time) }
+            Pair(ReMindIcons.AccessTime, timesText)
         }
     }
-    val icon = pair.first
-    val text = pair.second
 
     BadgeContainer(
         icon = icon,
@@ -259,6 +250,54 @@ private fun TriggerBadge(
         containerColor = containerColor,
         contentColor = contentColor
     )
+}
+
+@Composable
+private fun RecurrenceBadge(
+    timeTrigger: TimeTrigger?
+) {
+    val text = ReminderCardFormatter.formatRecurrenceSchedule(timeTrigger)
+    if (text.isBlank()) return
+
+    BadgeContainer(
+        icon = ReMindIcons.CalendarMonth,
+        text = text,
+        containerColor = LiteverTheme.colors.surfaceContainerHighest.copy(alpha = 0.8f),
+        contentColor = LiteverTheme.colors.onSurfaceVariant
+    )
+}
+
+@Composable
+private fun TimeWindowBadge(
+    timeWindows: List<ReminderTimeWindow>,
+    is24HourFormat: Boolean
+) {
+    val text = ReminderCardFormatter.formatTimeWindows(timeWindows, is24HourFormat)
+    if (text.isBlank()) return
+
+    Surface(
+        color = LiteverTheme.colors.secondaryContainer.copy(alpha = 0.6f),
+        shape = MaterialTheme.shapes.extraSmall
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+        ) {
+            Icon(
+                imageVector = ReMindIcons.DateRange,
+                contentDescription = null,
+                tint = LiteverTheme.colors.onSecondaryContainer,
+                modifier = Modifier.size(12.dp)
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = text,
+                style = LiteverTheme.typography.labelSmall.copy(fontSize = 11.sp),
+                color = LiteverTheme.colors.onSecondaryContainer,
+                fontWeight = FontWeight.Medium
+            )
+        }
+    }
 }
 
 @Composable
@@ -298,29 +337,40 @@ private fun SnoozingBadge(
 }
 
 @Composable
-private fun TimeWindowBadge(startTime: String, endTime: String) {
-    Surface(
-        color = LiteverTheme.colors.secondaryContainer,
-        shape = MaterialTheme.shapes.extraSmall
+private fun NextTriggerFooter(
+    reminder: Reminder,
+    is24HourFormat: Boolean,
+    modifier: Modifier = Modifier
+) {
+    val displayInfo = ReminderCardFormatter.getNextTriggerDisplayInfo(reminder, is24HourFormat)
+
+    val contentColor = when {
+        displayInfo.isInactive -> LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.6f)
+        displayInfo.isSnoozed -> LiteverTheme.colors.secondary
+        else -> LiteverTheme.colors.primary
+    }
+
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-        ) {
-            Icon(
-                imageVector = ReMindIcons.DateRange,
-                contentDescription = null,
-                tint = LiteverTheme.colors.onSecondaryContainer,
-                modifier = Modifier.size(12.dp)
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                text = "$startTime - $endTime",
-                style = LiteverTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                color = LiteverTheme.colors.onSecondaryContainer,
-                fontWeight = FontWeight.Medium
-            )
-        }
+        Icon(
+            imageVector = displayInfo.icon,
+            contentDescription = null,
+            tint = contentColor,
+            modifier = Modifier.size(13.dp)
+        )
+        Spacer(modifier = Modifier.width(5.dp))
+        Text(
+            text = displayInfo.text,
+            style = LiteverTheme.typography.labelSmall.copy(
+                fontSize = 11.5.sp,
+                fontWeight = if (displayInfo.isInactive) FontWeight.Normal else FontWeight.Medium
+            ),
+            color = contentColor,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }
 
@@ -360,7 +410,7 @@ private fun BadgeContainer(
 
 @Preview(showBackground = true)
 @Composable
-private fun ReminderCardPreview() {
+private fun ReminderCardFixedTimePreview() {
     ReMindTheme {
         ReminderCard(
             reminder = Reminder(
@@ -371,10 +421,37 @@ private fun ReminderCardPreview() {
                 triggerType = ReminderTriggerType.FIXED_TIME,
                 timeTrigger = TimeTrigger(
                     time = listOf(LocalTime.of(9, 0), LocalTime.of(14, 0)),
-                    repeatMode = RepeatMode.DAILY
+                    repeatMode = RepeatMode.WEEKLY,
+                    repeatValues = listOf(1, 2, 3, 4, 5)
                 )
             ),
             is24HourFormat = false,
+            onClick = {},
+            onMoreClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ReminderCardIntervalPreview() {
+    ReMindTheme {
+        ReminderCard(
+            reminder = Reminder(
+                id = 2L,
+                title = "Hydration Break",
+                notes = "Drink 250ml of water.",
+                isEnabled = true,
+                triggerType = ReminderTriggerType.INTERVAL,
+                timeTrigger = TimeTrigger(
+                    intervalMinutes = 120,
+                    repeatMode = RepeatMode.DAILY,
+                    timeWindows = listOf(
+                        ReminderTimeWindow(startTime = LocalTime.of(8, 0), endTime = LocalTime.of(17, 30))
+                    )
+                )
+            ),
+            is24HourFormat = true,
             onClick = {},
             onMoreClick = {}
         )
@@ -403,4 +480,3 @@ private fun ReminderCardDarkPreview() {
         )
     }
 }
-

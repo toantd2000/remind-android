@@ -39,6 +39,8 @@
     <string name="no_location_selected">No location set</string>
     <string name="no_wifi_selected">No Wi-Fi network specified</string>
     <string name="trigger_time">Time</string>
+    <string name="trigger_fixed_time">Fixed Time</string>
+    <string name="trigger_interval">Interval</string>
     <string name="trigger_location">Location</string>
     <string name="trigger_wifi">Wi-Fi</string>
     <string name="all_day">All day</string>
@@ -232,4 +234,27 @@
     <string name="badge_urgency_critical">CRITICAL</string>
     <string name="badge_urgency_high">HIGH</string>
     <string name="badge_persistent_alert">Continuous Alarm</string>
+
+    <!-- Reminder Card Rich Info & Next Trigger -->
+    <string name="reminder_status_disabled">Disabled</string>
+    <string name="reminder_status_completed">All reminders completed</string>
+    <string name="next_trigger_today">Next: Today %1$s (%2$s)</string>
+    <string name="next_trigger_tomorrow">Next: Tomorrow %1$s (%2$s)</string>
+    <string name="next_trigger_upcoming_day">Next: %1$s, %2$s at %3$s (%4$s)</string>
+    <string name="next_trigger_far">Next: %1$s at %2$s</string>
+    <string name="next_trigger_snoozed">Snoozed: %1$s (%2$s)</string>
+    <string name="remaining_minutes">in %d min</string>
+    <string name="remaining_hours_minutes">in %1$dh %2$dm</string>
+    <string name="remaining_hours">in %dh</string>
+    <string name="remaining_days">in %d days</string>
+    <string name="remaining_soon">due now</string>
+    <string name="snooze_remaining_minutes">in %d min</string>
+    <string name="snooze_remaining_hours_minutes">in %1$dh %2$dm</string>
+    <string name="snooze_remaining_hours">in %dh</string>
+    <string name="snooze_remaining_soon">ringing soon</string>
+    <string name="interval_hours_format">Every %d hrs</string>
+    <string name="interval_hours_minutes_format">Every %1$dh %2$dm</string>
+    <string name="interval_minutes_format">Every %d min</string>
+    <string name="time_window_all_day_badge">All day</string>
+    <string name="time_window_badge_format">Window: %s</string>
 </resources>

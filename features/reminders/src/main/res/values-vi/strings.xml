@@ -39,6 +39,8 @@
     <string name="no_location_selected">Chưa thiết lập vị trí</string>
     <string name="no_wifi_selected">Chưa nhập tên Wi-Fi</string>
     <string name="trigger_time">Thời gian</string>
+    <string name="trigger_fixed_time">Mốc thời gian</string>
+    <string name="trigger_interval">Lặp định kỳ</string>
     <string name="trigger_location">Vị trí</string>
     <string name="trigger_wifi">Wi-Fi</string>
     <string name="all_day">Cả ngày</string>
@@ -232,4 +234,27 @@
     <string name="badge_urgency_critical">KHẨN CẤP</string>
     <string name="badge_urgency_high">ƯU TIÊN</string>
     <string name="badge_persistent_alert">Chuông liên tục</string>
+
+    <!-- Reminder Card Rich Info & Next Trigger -->
+    <string name="reminder_status_disabled">Đã tắt</string>
+    <string name="reminder_status_completed">Đã hoàn thành các lượt nhắc</string>
+    <string name="next_trigger_today">Lần tới: Hôm nay %1$s (%2$s)</string>
+    <string name="next_trigger_tomorrow">Lần tới: Ngày mai %1$s (%2$s)</string>
+    <string name="next_trigger_upcoming_day">Lần tới: %1$s, %2$s lúc %3$s (%4$s)</string>
+    <string name="next_trigger_far">Lần tới: %1$s lúc %2$s</string>
+    <string name="next_trigger_snoozed">Báo lại: %1$s (%2$s)</string>
+    <string name="remaining_minutes">sau %d phút</string>
+    <string name="remaining_hours_minutes">sau %1$d giờ %2$d phút</string>
+    <string name="remaining_hours">sau %d giờ</string>
+    <string name="remaining_days">sau %d ngày</string>
+    <string name="remaining_soon">sắp đến</string>
+    <string name="snooze_remaining_minutes">còn %d phút</string>
+    <string name="snooze_remaining_hours_minutes">còn %1$d giờ %2$d phút</string>
+    <string name="snooze_remaining_hours">còn %d giờ</string>
+    <string name="snooze_remaining_soon">sắp reo</string>
+    <string name="interval_hours_format">Mỗi %d giờ</string>
+    <string name="interval_hours_minutes_format">Mỗi %1$dh%2$dp</string>
+    <string name="interval_minutes_format">Mỗi %d phút</string>
+    <string name="time_window_all_day_badge">Cả ngày</string>
+    <string name="time_window_badge_format">Khung giờ: %s</string>
 </resources>

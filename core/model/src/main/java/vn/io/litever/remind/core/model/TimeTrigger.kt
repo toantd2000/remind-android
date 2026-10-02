@@ -43,7 +43,81 @@ data class TimeTrigger(
         get() = timeWindows.firstOrNull()
 
     val isRecurring: Boolean
-        get() = repeatMode != RepeatMode.NONE || intervalMinutes != null || monthlyDays.isNotEmpty() || yearlyDates.isNotEmpty() || repeatValues.isNotEmpty()
+        get() = repeatMode != RepeatMode.NONE || (repeatMode == RepeatMode.NONE && exactDate == null && intervalMinutes != null)
+
+    /**
+     * Checks whether a specific date satisfies the recurrence condition.
+     */
+    fun isDateValid(date: LocalDate): Boolean {
+        return when (repeatMode) {
+            RepeatMode.NONE -> {
+                val target = exactDate
+                if (target != null) {
+                    date == target
+                } else {
+                    true
+                }
+            }
+            RepeatMode.DAILY -> true
+            RepeatMode.WEEKLY -> {
+                if (repeatValues.isEmpty()) true
+                else repeatValues.contains(date.dayOfWeek.value)
+            }
+            RepeatMode.MONTHLY -> {
+                val days = if (monthlyDays.isNotEmpty()) monthlyDays else repeatValues
+                if (days.isEmpty()) true
+                else {
+                    val maxDays = date.lengthOfMonth()
+                    days.any { day ->
+                        val validDay = day.coerceIn(1, maxDays)
+                        date.dayOfMonth == validDay
+                    }
+                }
+            }
+            RepeatMode.YEARLY -> {
+                if (yearlyDates.isEmpty()) true
+                else yearlyDates.any { it.month == date.monthValue && it.day == date.dayOfMonth }
+            }
+        }
+    }
+
+    /**
+     * Finds the next valid date on or after [from] that satisfies the recurrence condition.
+     */
+    fun getNextValidDate(from: LocalDate): LocalDate? {
+        return when (repeatMode) {
+            RepeatMode.NONE -> {
+                val target = exactDate
+                if (target != null) {
+                    if (!from.isAfter(target)) target else null
+                } else {
+                    from
+                }
+            }
+            RepeatMode.DAILY -> from
+            RepeatMode.WEEKLY -> {
+                for (offset in 0..7) {
+                    val candidate = from.plusDays(offset.toLong())
+                    if (isDateValid(candidate)) return candidate
+                }
+                null
+            }
+            RepeatMode.MONTHLY -> {
+                for (offset in 0..366) {
+                    val candidate = from.plusDays(offset.toLong())
+                    if (isDateValid(candidate)) return candidate
+                }
+                null
+            }
+            RepeatMode.YEARLY -> {
+                for (offset in 0..730) {
+                    val candidate = from.plusDays(offset.toLong())
+                    if (isDateValid(candidate)) return candidate
+                }
+                null
+            }
+        }
+    }
 
     /**
      * @param now Current time evaluation point
@@ -61,72 +135,76 @@ data class TimeTrigger(
         return getNextFixedTimeOccurrence(now)
     }
 
-    private fun getNextIntervalOccurrence(now: LocalDateTime, lastTriggeredTime: LocalDateTime?): LocalDateTime {
+    private fun getNextIntervalOccurrence(now: LocalDateTime, lastTriggeredTime: LocalDateTime?): LocalDateTime? {
         val interval = (intervalMinutes ?: 1).coerceAtLeast(1)
-        val baseTime = lastTriggeredTime ?: now
-        var nextTime = baseTime.plusMinutes(interval.toLong())
-
-        // If it's in the past relative to now, fast forward it to the next valid interval after now
-        if (nextTime.isBefore(now)) {
-            val minutesBetween = ChronoUnit.MINUTES.between(baseTime, now)
-            val intervalsToAdd = (minutesBetween / interval) + 1
-            nextTime = baseTime.plusMinutes(intervalsToAdd * interval)
+        val sortedWindows = if (timeWindows.isNotEmpty()) {
+            timeWindows.sortedBy { it.startTime }
+        } else {
+            listOf(ReminderTimeWindow(startTime = LocalTime.of(0, 0), endTime = LocalTime.of(23, 59)))
         }
 
-        // Apply Multi-TimeWindow constraints if defined
-        if (timeWindows.isNotEmpty()) {
-            nextTime = adjustForTimeWindows(nextTime, now)
+        val today = now.toLocalDate()
+
+        // 1. If exactDate is in the future for NONE mode
+        if (repeatMode == RepeatMode.NONE && exactDate != null && exactDate.isAfter(today)) {
+            val earliestWindow = sortedWindows.first()
+            return exactDate.atTime(earliestWindow.startTime).withSecond(0).withNano(0)
         }
 
-        return nextTime.withSecond(0).withNano(0)
-    }
-
-    private fun adjustForTimeWindows(candidateTime: LocalDateTime, now: LocalDateTime): LocalDateTime {
-        // If candidate already falls within any active window, it's valid
-        if (timeWindows.any { it.isWithinWindow(candidateTime) }) {
-            return candidateTime
-        }
-
-        val sortedWindows = timeWindows.sortedBy { it.startTime }
-        val candidateDate = candidateTime.toLocalDate()
-        val candidateLocalTime = candidateTime.toLocalTime()
-
-        // 1. Check later windows on candidateDate
-        for (w in sortedWindows) {
-            val isDayActive = w.activeDays.isEmpty() || w.activeDays.contains(candidateDate.dayOfWeek)
-            if (isDayActive && w.startTime.isAfter(candidateLocalTime)) {
-                val shifted = candidateDate.atTime(w.startTime)
-                if (!shifted.isBefore(now)) {
-                    return shifted
-                }
+        // 2. Check if today is a valid date
+        if (isDateValid(today)) {
+            val baseTime = lastTriggeredTime ?: now
+            var nextTime = if (lastTriggeredTime != null) {
+                lastTriggeredTime.plusMinutes(interval.toLong())
+            } else {
+                now.plusMinutes(interval.toLong())
             }
-        }
 
-        // 2. Scan upcoming days (up to 7 days ahead) for the next active window
-        for (dayOffset in 1..7) {
-            val nextDate = candidateDate.plusDays(dayOffset.toLong())
-            for (w in sortedWindows) {
-                val isDayActive = w.activeDays.isEmpty() || w.activeDays.contains(nextDate.dayOfWeek)
-                if (isDayActive) {
-                    val shifted = nextDate.atTime(w.startTime)
-                    if (!shifted.isBefore(now)) {
-                        return shifted
+            if (nextTime.isBefore(now)) {
+                val minutesBetween = ChronoUnit.MINUTES.between(baseTime, now)
+                val intervalsToAdd = (minutesBetween / interval) + 1
+                nextTime = baseTime.plusMinutes(intervalsToAdd * interval)
+            }
+
+            val candidateDate = nextTime.toLocalDate()
+            val candidateLocalTime = nextTime.toLocalTime()
+
+            if (candidateDate == today) {
+                for (w in sortedWindows) {
+                    val isDayActive = w.activeDays.isEmpty() || w.activeDays.contains(today.dayOfWeek)
+                    if (isDayActive) {
+                        if (candidateLocalTime in w.startTime..w.endTime) {
+                            return nextTime.withSecond(0).withNano(0)
+                        } else if (candidateLocalTime.isBefore(w.startTime)) {
+                            return today.atTime(w.startTime).withSecond(0).withNano(0)
+                        }
                     }
                 }
             }
         }
 
-        // Fallback: next day at earliest window startTime
-        val fallbackDate = if (candidateLocalTime.isAfter(sortedWindows.last().endTime)) {
-            candidateDate.plusDays(1)
-        } else {
-            candidateDate
+        // 3. Today has no more intervals/windows or is not valid. Find next valid date.
+        if (repeatMode == RepeatMode.NONE && exactDate != null) {
+            return null
         }
-        var fallbackTime = fallbackDate.atTime(sortedWindows.first().startTime)
-        if (fallbackTime.isBefore(now)) {
-            fallbackTime = fallbackTime.plusDays(1)
+
+        val startNextDate = today.plusDays(1)
+        val nextValidDate = getNextValidDate(startNextDate) ?: return null
+
+        for (dayOffset in 0..7) {
+            val candidateDate = nextValidDate.plusDays(dayOffset.toLong())
+            if (isDateValid(candidateDate)) {
+                for (w in sortedWindows) {
+                    val isDayActive = w.activeDays.isEmpty() || w.activeDays.contains(candidateDate.dayOfWeek)
+                    if (isDayActive) {
+                        return candidateDate.atTime(w.startTime).withSecond(0).withNano(0)
+                    }
+                }
+            }
         }
-        return fallbackTime
+
+        val earliestWindow = sortedWindows.first()
+        return nextValidDate.atTime(earliestWindow.startTime).withSecond(0).withNano(0)
     }
 
     private fun getNextFixedTimeOccurrence(now: LocalDateTime): LocalDateTime? {

@@ -37,8 +37,8 @@ fun ReminderTriggerTypeSelector(
     ) {
         ReminderTriggerType.entries.forEach { triggerType ->
             val (labelRes: Int, icon: ImageVector) = when (triggerType) {
-                ReminderTriggerType.FIXED_TIME -> Pair(R.string.trigger_time, ReMindIcons.AccessTime)
-                ReminderTriggerType.INTERVAL -> Pair(R.string.trigger_time, ReMindIcons.AccessTime)
+                ReminderTriggerType.FIXED_TIME -> Pair(R.string.trigger_fixed_time, ReMindIcons.AccessTime)
+                ReminderTriggerType.INTERVAL -> Pair(R.string.trigger_interval, ReMindIcons.Timer)
             }
 
             Tab(

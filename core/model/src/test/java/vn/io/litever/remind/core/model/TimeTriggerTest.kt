@@ -146,4 +146,97 @@ class TimeTriggerTest {
         val next2 = trigger.getNextOccurrence(now2)
         assertEquals(LocalDateTime.of(2027, 3, 8, 9, 0, 0, 0), next2)
     }
+
+    @Test
+    fun getNextOccurrence_interval_oneTimeExactDate_futureDate_startsOnExactDate() {
+        val window = ReminderTimeWindow(startTime = LocalTime.of(8, 0), endTime = LocalTime.of(17, 0))
+        val trigger = TimeTrigger(
+            intervalMinutes = 60,
+            repeatMode = RepeatMode.NONE,
+            exactDate = LocalDate.of(2026, 8, 25),
+            timeWindows = listOf(window)
+        )
+
+        // Today is 2026-08-19. Exact date is 2026-08-25.
+        val now = LocalDateTime.of(2026, 8, 19, 10, 0)
+        val next = trigger.getNextOccurrence(now, lastTriggeredTime = null, isInterval = true)
+
+        assertEquals(LocalDateTime.of(2026, 8, 25, 8, 0, 0, 0), next)
+    }
+
+    @Test
+    fun getNextOccurrence_interval_oneTimeExactDate_afterLastWindow_returnsNull() {
+        val window = ReminderTimeWindow(startTime = LocalTime.of(8, 0), endTime = LocalTime.of(17, 0))
+        val trigger = TimeTrigger(
+            intervalMinutes = 60,
+            repeatMode = RepeatMode.NONE,
+            exactDate = LocalDate.of(2026, 8, 25),
+            timeWindows = listOf(window)
+        )
+
+        // Today is 2026-08-25 16:30, lastTriggered is 16:30 -> next calculated is 17:30 (past window end 17:00).
+        // Since RepeatMode.NONE, it should return null because no next valid date exists.
+        val now = LocalDateTime.of(2026, 8, 25, 16, 30)
+        val next = trigger.getNextOccurrence(now, lastTriggeredTime = now, isInterval = true)
+
+        assertEquals(null, next)
+    }
+
+    @Test
+    fun getNextOccurrence_interval_weekly_skipsNonSelectedDays() {
+        val window = ReminderTimeWindow(startTime = LocalTime.of(9, 0), endTime = LocalTime.of(17, 0))
+        val trigger = TimeTrigger(
+            intervalMinutes = 60,
+            repeatMode = RepeatMode.WEEKLY,
+            repeatValues = listOf(1, 3, 5), // Mon (1), Wed (3), Fri (5)
+            timeWindows = listOf(window)
+        )
+
+        // Wednesday 2026-08-19 at 16:30. Next interval is 17:30 (past 17:00).
+        // Thursday 2026-08-20 is not selected (Thu = 4).
+        // Friday 2026-08-21 is selected (Fri = 5).
+        val now = LocalDateTime.of(2026, 8, 19, 16, 30)
+        val next = trigger.getNextOccurrence(now, lastTriggeredTime = now, isInterval = true)
+
+        assertEquals(LocalDateTime.of(2026, 8, 21, 9, 0, 0, 0), next)
+    }
+
+    @Test
+    fun getNextOccurrence_interval_monthly_skipsNonSelectedDays() {
+        val window = ReminderTimeWindow(startTime = LocalTime.of(8, 0), endTime = LocalTime.of(12, 0))
+        val trigger = TimeTrigger(
+            intervalMinutes = 60,
+            repeatMode = RepeatMode.MONTHLY,
+            monthlyDays = listOf(1, 15, 30),
+            timeWindows = listOf(window)
+        )
+
+        // 2026-08-15 at 11:30. Next interval is 12:30 (past 12:00).
+        // Next valid day of month is 30th -> 2026-08-30 08:00
+        val now = LocalDateTime.of(2026, 8, 15, 11, 30)
+        val next = trigger.getNextOccurrence(now, lastTriggeredTime = now, isInterval = true)
+
+        assertEquals(LocalDateTime.of(2026, 8, 30, 8, 0, 0, 0), next)
+    }
+
+    @Test
+    fun getNextOccurrence_interval_yearly_skipsNonSelectedDates() {
+        val window = ReminderTimeWindow(startTime = LocalTime.of(9, 0), endTime = LocalTime.of(12, 0))
+        val trigger = TimeTrigger(
+            intervalMinutes = 60,
+            repeatMode = RepeatMode.YEARLY,
+            yearlyDates = listOf(
+                ReminderMonthDay(month = 3, day = 8),
+                ReminderMonthDay(month = 10, day = 20)
+            ),
+            timeWindows = listOf(window)
+        )
+
+        // 2026-03-08 at 11:30. Next interval 12:30 is past window. Next date is 2026-10-20 09:00.
+        val now = LocalDateTime.of(2026, 3, 8, 11, 30)
+        val next = trigger.getNextOccurrence(now, lastTriggeredTime = now, isInterval = true)
+
+        assertEquals(LocalDateTime.of(2026, 10, 20, 9, 0, 0, 0), next)
+    }
 }
+

@@ -28,6 +28,61 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
 
 ## 🧠 Nhật Ký Quyết Định Kỹ Thuật (TDR)
 
+### [TDR-090] - Nâng Cấp UX Thẻ Nhắc Nhở (ReminderCard): Trực Quan Hóa Đầy Đủ Thông Tin Lặp Lại, Khung Giờ Hoạt Động & Đếm Ngược Lần Nhắc Tiếp Theo
+- **Ngày thực hiện:** 2026-10-02
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - `ReminderCard` trên danh sách nhắc nhở trước đây chỉ hiển thị mốc giờ/phút lặp cơ bản và tiêu đề.
+  - Người dùng khó nắm bắt nhanh:
+    + Chu kỳ ngày lặp lại cụ thể (Hàng ngày, T2-T6, T7-CN, ngày trong tháng, hay ngày cụ thể trong năm).
+    + Khung thời gian hoạt động áp dụng (`timeWindows`) đối với các nhắc nhở lặp định kỳ (Interval).
+    + Thời điểm và khoảng thời gian còn lại đến lượt kích hoạt tiếp theo ("Lần tới sau bao lâu", "Đang hoãn đến mấy giờ", "Đã tắt").
+  - Cần nâng cấp giao diện `ReminderCard` theo tiêu chí "Đầy đủ thông tin nhưng gọn gàng, thoáng đãng và có trật tự thị giác cao".
+- **Quyết định:**
+  1. **Tách biệt và cấu trúc lại các lớp thông tin trên `ReminderCard`:**
+     - **Hàng Header / Meta Badges (`FlowRow`):**
+       - Badge chính: Kết hợp icon + mốc giờ/tần suất interval + chu kỳ lặp lại (ví dụ: `08:00, 14:00 • T2 - T6` hoặc `Mỗi 2 giờ • Hàng ngày`).
+       - Time Window Badge: Hiển thị khung giờ áp dụng nếu có (ví dụ: `08:00 - 17:30`, `08:00 - 11:30, 13:30 - 17:30`).
+       - Snoozing Badge: Hiển thị nổi bật khi đang ở trạng thái hoãn (`Đang hoãn (10:35)`).
+       - Badge mức độ khẩn cấp (`Khẩn cấp`) và chuông liên tục (`Chuông liên tục`) khi được cấu hình.
+     - **Thân thẻ (Body):** Tiêu đề (SemiBold) và tóm tắt ghi chú (nếu có, tối đa 2 dòng).
+     - **Hàng Footer đếm ngược lần nhắc kế tiếp (`NextTriggerFooter`):**
+       - Tự động tính toán mốc kích hoạt kế tiếp từ `TimeTrigger.getNextOccurrence` hoặc `snoozeNextTriggerTime`.
+       - Hiển thị trực quan:
+         + Hôm nay: `Lần tới: Hôm nay 14:00 (sau 2 giờ 15 phút)`
+         + Ngày mai: `Lần tới: Ngày mai 08:00 (sau 14 giờ)`
+         + Ngày trong tuần tới: `Lần tới: T6, 24/10 lúc 09:00 (sau 3 ngày)`
+         + Đang hoãn: `Báo lại: 10:35 (còn 12 phút)`
+         + Đã tắt: `Đã tắt` (với icon `NotificationsPaused` và màu muted)
+         + Đã hoàn tất các lượt: `Đã hoàn thành các lượt nhắc`
+  2. **Tạo bộ công cụ định dạng chuyên dụng `ReminderCardFormatter`:**
+     - Độc lập, thuần khiết (pure functions) hỗ trợ đa ngôn ngữ (Tiếng Việt & Tiếng Anh).
+     - Viết bộ Unit Test toàn diện `ReminderCardFormatterTest` bao phủ 100% các kịch bản định dạng thời gian, chu kỳ và đếm ngược.
+
+### [TDR-089] - Tối Ưu UX Biên Tập Nhắc Nhở: Đưa Cụm Điều Kiện Kích Hoạt Ra Trực Tiếp Màn Hình Biên Tập, Chuẩn Hóa Nhãn Tab Selector & Hỗ Trợ Đầy Đủ Chu Kỳ Lặp Cho Interval
+- **Ngày thực hiện:** 2026-10-01
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Trước đây, `ReminderEditScreen` chỉ hiển thị tóm tắt điều kiện kích hoạt và người dùng phải nhấn "Chỉnh sửa" để mở một màn hình phụ riêng biệt (`ReminderTriggerEditScreen`).
+  - Trong `ReminderTriggerTypeSelector`, cả 2 tab `FIXED_TIME` và `INTERVAL` đều hiển thị chung tiêu đề "Thời gian" (`R.string.trigger_time`) và cùng một icon `ReMindIcons.AccessTime`, gây nhầm lẫn thị giác.
+  - Bên cạnh đó, tab `INTERVAL` (Lặp định kỳ) trước đây chưa có thiết lập chu kỳ lặp lại đa dạng như bên `FIXED_TIME` (Một lần, Hàng tuần, Hàng tháng, Hàng năm), khiến người dùng không thể cấu hình các thói quen lặp lại theo chu kỳ ngày cụ thể (ví dụ: uống nước định kỳ chỉ vào các ngày đi làm thứ 2, 4, 6 hoặc chỉ vào ngày cụ thể trong tháng).
+  - Hiện tại hệ thống hỗ trợ 2 loại điều kiện kích hoạt thời gian (`FIXED_TIME` và `INTERVAL`), phạm vi cấu hình chưa quá phức tạp (chưa có điều kiện ngoại vi phức tạp như Geofence/Wi-Fi).
+  - Việc tách ra màn hình phụ tạo thêm một bước điều hướng dư thừa, làm gián đoạn trải nghiệm người dùng khi tạo hoặc sửa nhắc nhở.
+- **Quyết định:**
+  1. **Chuẩn hóa nhãn & icon của bộ chọn Tab (`ReminderTriggerTypeSelector`):**
+     - `FIXED_TIME` -> Tiêu đề "Mốc thời gian" (`R.string.trigger_fixed_time` / "Fixed Time"), icon `ReMindIcons.AccessTime`.
+     - `INTERVAL` -> Tiêu đề "Lặp định kỳ" (`R.string.trigger_interval` / "Interval"), icon `ReMindIcons.Timer`.
+  2. **Đồng bộ toàn diện cấu hình chu kỳ lặp (`RepeatMode`) cho Interval:**
+     - Tích hợp đầy đủ `ReminderRepeatConfigSection` vào tab `INTERVAL` (hỗ trợ `RepeatMode.NONE` với chọn ngày cụ thể `exactDate`, `RepeatMode.DAILY`, `RepeatMode.WEEKLY` với chọn thứ trong tuần, `RepeatMode.MONTHLY` với lưới ngày 1..31, và `RepeatMode.YEARLY` với danh sách ngày tháng).
+     - Nâng cấp `TimeTrigger.kt`: Bổ sung `isDateValid(date: LocalDate)` và `getNextValidDate(from: LocalDate): LocalDate?` để hỗ trợ tính toán ngày hợp lệ theo chu kỳ cho cả Fixed Time và Interval.
+     - Thuật toán `getNextIntervalOccurrence()` kiểm tra ngày hợp lệ theo `repeatMode` trước khi tính toán các mốc khoảng cách (interval) và khung giờ hoạt động (timeWindows).
+  3. **Đưa toàn bộ cụm điều khiển kích hoạt (`ReminderTriggerSection`) ra ngoài màn hình `ReminderEditScreen`:**
+     - Tích hợp trực tiếp `ReminderTriggerSection` vào danh sách cuộn của `ReminderEditScreen`, cho phép người dùng thay đổi tab, chọn giờ/ngày lặp lại, hoặc cài đặt phút lặp/khung giờ áp dụng ngay trong một màn hình duy nhất.
+     - Giữ nguyên kiến trúc module và luồng dữ liệu chuẩn `ReminderEditViewModel` với đầy đủ các tương tác thời gian thực.
+  4. **Tối ưu hóa và tái sử dụng:**
+     - `ReminderTriggerEditScreen` tái sử dụng trực tiếp component `ReminderTriggerSection`, đảm bảo không trùng lặp code giao diện.
+     - Khi tương lai cần mở rộng thêm các điều kiện kích hoạt phức tạp (như vị trí địa lý, mạng Wi-Fi, Bluetooth), hệ thống có thể linh hoạt đưa lại màn hình chuyên biệt mà không ảnh hưởng tới kiến trúc hiện tại.
+
 ### [TDR-088] - Tái Cấu Trúc Vòng Đời Reminder: Loại Bỏ `isCompleted`, Thống Nhất Trạng Thái Qua `isEnabled` và Tinh Gọn UX Danh Sách
 - **Ngày thực hiện:** 2026-10-01
 - **Trạng thái:** Accepted

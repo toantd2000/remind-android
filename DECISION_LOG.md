@@ -55,12 +55,22 @@ This document records the solidified technical decisions and behavioral scenario
     - **Conditional Ad-Free Layout**: Wrap the AdMob `NativeAdView` inside a conditional Compose block checking `!isAdFreeActive`, and conditionally set the body description string dynamically based on the ad-free active status.
     - **Context Unwrapping**: Use a helper extension `Context.findActivity()` to safely unwrap `baseContext` until `Activity` is resolved for finishing.
 
-### Scenario: Alarm Permission Warning vs Error Display
-- **Expected Behavior**: When critical permissions (Notification, Exact Alarm) are missing, the alarm cannot ring reliably, so the app displays a prominent error banner (`isCritical = true`, `errorContainer`, `ReMindIcons.ErrorOutline`, `LvSemantic.Destructive`). When critical permissions are granted but secondary permissions (Overlay, Battery Optimization, DND policy) are missing, the app displays a warning banner (`isCritical = false`, `warningContainer`, `ReMindIcons.Warning`, `LvSemantic.Warning`) and continues showing the Next Alarm counter.
+### Scenario: Inline Reminder Trigger Condition Configuration & Interval Recurrence Support
+- **Expected Behavior**: When creating or editing a reminder, the trigger conditions (Fixed Time vs Interval, recurrence schedule, time window) are configured directly on `ReminderEditScreen` without navigating to a separate screen. The Tab Selector clearly distinguishes "Mốc thời gian" (`FIXED_TIME`) and "Lặp định kỳ" (`INTERVAL`) with distinct visual icons (`AccessTime` vs `Timer`). Both trigger types support rich recurrence scheduling (One-time with date picker, Weekly with day-of-week pills, Monthly with 1..31 day selector, Yearly with month-day dates).
 - **Technical Decision**:
-    - Renamed component from `PermissionWarningBanner` to `AlarmPermissionWarningBanner`.
-    - Added `hasNonCriticalPermissions()` to `PermissionChecker` and exposed `hasNonCriticalPermissions` StateFlow on `AlarmListViewModel`.
-    - `AlarmPermissionWarningBanner` handles both error and warning themes dynamically using Design System tokens.
+    - **Single Screen Editing**: Embedded `ReminderTriggerSection` directly into `ReminderEditScreen`'s LazyColumn, passing all state and callbacks from `ReminderEditViewModel`.
+    - **Tab Differentiation**: Updated `ReminderTriggerTypeSelector` to use `R.string.trigger_fixed_time` and `R.string.trigger_interval` with respective semantic icons.
+    - **Interval Recurrence Parity**: Integrated `ReminderRepeatConfigSection` for both `FIXED_TIME` and `INTERVAL`. Updated `TimeTrigger.getNextIntervalOccurrence()` with `isDateValid` and `getNextValidDate` to evaluate recurrence days before calculating interval steps and bounded time windows.
+    - **Extensibility**: Kept component modularized so future complex triggers (Geofence, Wi-Fi) can easily be accommodated with a dedicated sub-screen when needed.
+
+### Scenario: Reminder Card Rich Information & Next Trigger Countdown Display
+- **Expected Behavior**: Each card on the Reminder list displays comprehensive metadata (target times/interval frequency, recurrence schedule like weekdays or month days, active time windows, snooze status, urgency, and a dynamic relative countdown indicating when the next reminder will trigger or if disabled). The layout must remain compact, structured, and visually clean.
+- **Technical Decision**:
+    - **Visual Hierarchy (3-zone layout)**:
+        - *Top Meta Badges (`FlowRow`)*: Combines `TriggerBadge` (times/frequency + recurrence pattern), `TimeWindowBadge` (active operating hours), `SnoozingBadge` (snooze target time), and priority badges.
+        - *Body*: Clean title with 2-line max ellipsis and optional notes snippet.
+        - *Footer (`NextTriggerFooter`)*: Shows dynamic next occurrence and relative time (e.g., `Lần tới: Hôm nay 14:00 (sau 2 giờ 15 phút)`, `Lần tới: Ngày mai 08:00 (sau 14 giờ)`, `Báo lại: 10:35 (còn 12 phút)`, `Đã tắt`).
+    - **Pure Utility Separation**: Extracted `ReminderCardFormatter` to handle all recurrence, frequency, time window, and relative countdown string formatting deterministically, with 100% unit test coverage in `ReminderCardFormatterTest`.
 
 ## 6. Ad System & Supporter Mechanisms
 
@@ -323,6 +333,3 @@ This document records the solidified technical decisions and behavioral scenario
   - Removed obsolete actions in `ReminderListViewModel`: `deleteCompletedReminders()`, `toggleCompleted()`.
   - Updated `ReminderActionBottomSheet.kt` with `onToggleEnabledClick` replacing `onToggleCompletedClick`.
   - Updated `ReminderCard.kt` removing `LiteverSwitch` and `onToggle` parameter.
-
-
-

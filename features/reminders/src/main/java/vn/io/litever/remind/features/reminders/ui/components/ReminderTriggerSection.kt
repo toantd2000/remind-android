@@ -1,9 +1,7 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,17 +21,12 @@ import androidx.compose.ui.unit.dp
 import vn.io.litever.designsystem.components.LiteverFilterChip
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
-import vn.io.litever.remind.core.model.ReminderMonthDay
 import vn.io.litever.remind.core.model.ReminderTimeWindow
 import vn.io.litever.remind.core.model.ReminderTriggerType
 import vn.io.litever.remind.features.reminders.R
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderEditUiState
-import vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval
-import java.time.DayOfWeek
-import java.time.LocalDate
 import java.time.LocalTime
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ReminderTriggerSection(
     uiState: ReminderEditUiState,
@@ -43,13 +36,6 @@ fun ReminderTriggerSection(
     onAddFixedTime: (LocalTime) -> Unit = {},
     onRemoveFixedTime: (Int) -> Unit = {},
     onUpdateFixedTime: (Int, LocalTime) -> Unit = { _, t -> onTimeChange(t) },
-    onDateChange: (LocalDate?) -> Unit,
-    onRepeatDaysChange: (List<DayOfWeek>) -> Unit,
-    onRepeatDayToggle: (DayOfWeek) -> Unit,
-    onRepeatIntervalChange: (ReminderRepeatInterval) -> Unit,
-    onMonthlyDayToggle: (Int) -> Unit,
-    onAddYearlyDate: (Int, Int) -> Unit,
-    onRemoveYearlyDate: (Int) -> Unit,
     onIntervalMinutesChange: (String) -> Unit = {},
     onTimeWindowsChange: (List<ReminderTimeWindow>) -> Unit = {},
     onAddTimeWindow: (ReminderTimeWindow) -> Unit = {},
@@ -75,49 +61,32 @@ fun ReminderTriggerSection(
                 color = LiteverTheme.colors.onSurface
             )
 
-            // Tab selector for trigger types
+            // Tab selector for trigger types (Fixed Time vs Interval)
             ReminderTriggerTypeSelector(
-            selectedTriggerType = uiState.triggerType,
-            onTriggerTypeSelected = onTriggerTypeSelected
-        )
+                selectedTriggerType = uiState.triggerType,
+                onTriggerTypeSelected = onTriggerTypeSelected
+            )
 
-        // Trigger Configuration Content
-        when (uiState.triggerType) {
-            ReminderTriggerType.FIXED_TIME -> {
-                ReminderTimeConfigSection(
-                    time = uiState.time,
-                    onTimeChange = onTimeChange,
-                    fixedTimes = fixedTimes,
-                    onAddFixedTime = onAddFixedTime,
-                    onRemoveFixedTime = onRemoveFixedTime,
-                    onUpdateFixedTime = onUpdateFixedTime,
-                    date = uiState.date,
-                    onDateChange = onDateChange,
-                    repeatDays = uiState.repeatDays,
-                    onRepeatDaysChange = onRepeatDaysChange,
-                    onRepeatDayToggle = onRepeatDayToggle,
-                    repeatInterval = uiState.repeatInterval,
-                    onRepeatIntervalChange = onRepeatIntervalChange,
-                    monthlyDays = uiState.monthlyDays,
-                    onMonthlyDayToggle = onMonthlyDayToggle,
-                    yearlyDates = uiState.yearlyDates,
-                    onAddYearlyDate = onAddYearlyDate,
-                    onRemoveYearlyDate = onRemoveYearlyDate,
-                    is24HourFormat = is24HourFormat
-                )
-            }
-            ReminderTriggerType.INTERVAL -> {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
-                ) {
+            // Trigger Configuration Content
+            when (uiState.triggerType) {
+                ReminderTriggerType.FIXED_TIME -> {
+                    ReminderTimeConfigSection(
+                        time = uiState.time,
+                        onTimeChange = onTimeChange,
+                        fixedTimes = fixedTimes,
+                        onAddFixedTime = onAddFixedTime,
+                        onRemoveFixedTime = onRemoveFixedTime,
+                        onUpdateFixedTime = onUpdateFixedTime,
+                        is24HourFormat = is24HourFormat
+                    )
+                }
+                ReminderTriggerType.INTERVAL -> {
                     Column(
                         modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
                     ) {
                         Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(LiteverTheme.spacing.medium)
+                            modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(
                                 text = stringResource(R.string.interval_section_title),
@@ -161,48 +130,29 @@ fun ReminderTriggerSection(
                                     )
                                 }
                             }
-
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            // 2. Unified Repeat Configuration (One-time, Weekly, Monthly, Yearly)
-                            ReminderRepeatConfigSection(
-                                repeatInterval = uiState.repeatInterval,
-                                onRepeatIntervalChange = onRepeatIntervalChange,
-                                date = uiState.date,
-                                onDateChange = onDateChange,
-                                repeatDays = uiState.repeatDays,
-                                onRepeatDaysChange = onRepeatDaysChange,
-                                onRepeatDayToggle = onRepeatDayToggle,
-                                monthlyDays = uiState.monthlyDays,
-                                onMonthlyDayToggle = onMonthlyDayToggle,
-                                yearlyDates = uiState.yearlyDates,
-                                onAddYearlyDate = onAddYearlyDate,
-                                onRemoveYearlyDate = onRemoveYearlyDate
-                            )
                         }
-                    }
 
-                    // Multi-TimeWindow Configuration
-                    ReminderTimeWindowConfigSection(
-                        timeWindows = uiState.timeWindows,
-                        onTimeWindowsChange = onTimeWindowsChange,
-                        onAddTimeWindow = onAddTimeWindow,
-                        onRemoveTimeWindow = onRemoveTimeWindow,
-                        onSetAllDayPreset = {
-                            onTimeWindowsChange(
-                                listOf(
-                                    ReminderTimeWindow(
-                                        startTime = LocalTime.of(0, 0),
-                                        endTime = LocalTime.of(23, 59),
-                                        activeDays = emptyList()
+                        // Multi-TimeWindow Configuration (Active daily time windows)
+                        ReminderTimeWindowConfigSection(
+                            timeWindows = uiState.timeWindows,
+                            onTimeWindowsChange = onTimeWindowsChange,
+                            onAddTimeWindow = onAddTimeWindow,
+                            onRemoveTimeWindow = onRemoveTimeWindow,
+                            onSetAllDayPreset = {
+                                onTimeWindowsChange(
+                                    listOf(
+                                        ReminderTimeWindow(
+                                            startTime = LocalTime.of(0, 0),
+                                            endTime = LocalTime.of(23, 59),
+                                            activeDays = emptyList()
+                                        )
                                     )
                                 )
-                            )
-                        },
-                        is24HourFormat = is24HourFormat
-                    )
+                            },
+                            is24HourFormat = is24HourFormat
+                        )
+                    }
                 }
-            }
             }
         }
     }
@@ -214,19 +164,10 @@ private fun ReminderTriggerSectionFixedTimePreview() {
     ReMindTheme {
         ReminderTriggerSection(
             uiState = ReminderEditUiState(
-                triggerType = ReminderTriggerType.FIXED_TIME,
-                repeatInterval = ReminderRepeatInterval.WEEKLY,
-                repeatDays = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
+                triggerType = ReminderTriggerType.FIXED_TIME
             ),
             onTriggerTypeSelected = {},
-            onTimeChange = {},
-            onDateChange = {},
-            onRepeatDaysChange = {},
-            onRepeatDayToggle = {},
-            onRepeatIntervalChange = {},
-            onMonthlyDayToggle = {},
-            onAddYearlyDate = { _, _ -> },
-            onRemoveYearlyDate = {}
+            onTimeChange = {}
         )
     }
 }
@@ -241,14 +182,7 @@ private fun ReminderTriggerSectionIntervalPreview() {
                 intervalMinutes = 60
             ),
             onTriggerTypeSelected = {},
-            onTimeChange = {},
-            onDateChange = {},
-            onRepeatDaysChange = {},
-            onRepeatDayToggle = {},
-            onRepeatIntervalChange = {},
-            onMonthlyDayToggle = {},
-            onAddYearlyDate = { _, _ -> },
-            onRemoveYearlyDate = {}
+            onTimeChange = {}
         )
     }
 }

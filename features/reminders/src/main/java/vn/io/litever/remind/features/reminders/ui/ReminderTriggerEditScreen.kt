@@ -3,7 +3,6 @@ package vn.io.litever.remind.features.reminders.ui
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,9 +32,6 @@ import vn.io.litever.remind.features.reminders.R
 import vn.io.litever.remind.features.reminders.ui.components.ReminderTriggerSection
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderEditUiState
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderEditViewModel
-import vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval
-import java.time.DayOfWeek
-import java.time.LocalDate
 import java.time.LocalTime
 
 @Composable
@@ -60,13 +56,6 @@ fun ReminderTriggerEditRoute(
         onAddFixedTime = viewModel::addFixedTime,
         onRemoveFixedTime = viewModel::removeFixedTime,
         onUpdateFixedTime = viewModel::updateFixedTime,
-        onDateChange = viewModel::setDate,
-        onRepeatDaysChange = viewModel::setRepeatDays,
-        onRepeatDayToggle = viewModel::toggleRepeatDay,
-        onRepeatIntervalChange = viewModel::setRepeatInterval,
-        onMonthlyDayToggle = viewModel::toggleMonthlyDay,
-        onAddYearlyDate = viewModel::addYearlyDate,
-        onRemoveYearlyDate = viewModel::removeYearlyDate,
         onIntervalMinutesChange = { str -> viewModel.setIntervalMinutes(str.toIntOrNull()) },
         onTimeWindowsChange = viewModel::setTimeWindows,
         onAddTimeWindow = viewModel::addTimeWindow,
@@ -86,13 +75,6 @@ fun ReminderTriggerEditScreen(
     onAddFixedTime: (LocalTime) -> Unit = {},
     onRemoveFixedTime: (Int) -> Unit = {},
     onUpdateFixedTime: (Int, LocalTime) -> Unit = { _, t -> onTimeChange(t) },
-    onDateChange: (LocalDate?) -> Unit,
-    onRepeatDaysChange: (List<DayOfWeek>) -> Unit,
-    onRepeatDayToggle: (DayOfWeek) -> Unit,
-    onRepeatIntervalChange: (ReminderRepeatInterval) -> Unit,
-    onMonthlyDayToggle: (Int) -> Unit,
-    onAddYearlyDate: (Int, Int) -> Unit,
-    onRemoveYearlyDate: (Int) -> Unit,
     onIntervalMinutesChange: (String) -> Unit = {},
     onTimeWindowsChange: (List<ReminderTimeWindow>) -> Unit = {},
     onAddTimeWindow: (ReminderTimeWindow) -> Unit = {},
@@ -143,13 +125,6 @@ fun ReminderTriggerEditScreen(
                     onAddFixedTime = onAddFixedTime,
                     onRemoveFixedTime = onRemoveFixedTime,
                     onUpdateFixedTime = onUpdateFixedTime,
-                    onDateChange = onDateChange,
-                    onRepeatDaysChange = onRepeatDaysChange,
-                    onRepeatDayToggle = onRepeatDayToggle,
-                    onRepeatIntervalChange = onRepeatIntervalChange,
-                    onMonthlyDayToggle = onMonthlyDayToggle,
-                    onAddYearlyDate = onAddYearlyDate,
-                    onRemoveYearlyDate = onRemoveYearlyDate,
                     onIntervalMinutesChange = onIntervalMinutesChange,
                     onTimeWindowsChange = onTimeWindowsChange,
                     onAddTimeWindow = onAddTimeWindow,
@@ -170,14 +145,7 @@ private fun ReminderTriggerEditScreenPreview() {
             uiState = ReminderEditUiState(),
             onBackClick = {},
             onTriggerTypeSelected = {},
-            onTimeChange = {},
-            onDateChange = {},
-            onRepeatDaysChange = {},
-            onRepeatDayToggle = {},
-            onRepeatIntervalChange = {},
-            onMonthlyDayToggle = {},
-            onAddYearlyDate = { _, _ -> },
-            onRemoveYearlyDate = {}
+            onTimeChange = {}
         )
     }
 }
@@ -190,14 +158,7 @@ private fun ReminderTriggerEditScreenDarkPreview() {
             uiState = ReminderEditUiState(triggerType = ReminderTriggerType.FIXED_TIME),
             onBackClick = {},
             onTriggerTypeSelected = {},
-            onTimeChange = {},
-            onDateChange = {},
-            onRepeatDaysChange = {},
-            onRepeatDayToggle = {},
-            onRepeatIntervalChange = {},
-            onMonthlyDayToggle = {},
-            onAddYearlyDate = { _, _ -> },
-            onRemoveYearlyDate = {}
+            onTimeChange = {}
         )
     }
 }

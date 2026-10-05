@@ -104,9 +104,6 @@
     <string name="time_window_enabled">Đã bật</string>
     <string name="time_window_start_time">Giờ bắt đầu</string>
     <string name="time_window_end_time">Giờ kết thúc</string>
-    <string name="time_window_active_days">Ngày áp dụng</string>
-    <string name="configure_time_window">Thiết lập khung giờ</string>
-    <string name="clear_time_window">Xóa khung giờ</string>
 
     <!-- Alert & Notification Settings Section -->
     <string name="section_alert_settings">Cảnh báo &amp; Thông báo</string>
@@ -165,8 +162,6 @@
     <string name="alert_behavior_snooze_title">Hành vi cảnh báo &amp; Báo lại</string>
     <string name="use_connected_wifi">Dùng Wi-Fi đang kết nối</string>
     <string name="no_connected_wifi_msg">Không tìm thấy Wi-Fi đang kết nối. Vui lòng đảm bảo Wi-Fi và Vị trí đã được bật.</string>
-    <string name="time_window_all_days">Hàng ngày / Một lần</string>
-    <string name="time_window_selected_days">Ngày đã chọn</string>
     <string name="weekdays">Ngày trong tuần</string>
     <string name="weekends">Cuối tuần</string>
     <string name="reorder_handle">Kéo để sắp xếp lại</string>

@@ -10,15 +10,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.InputChip
-import androidx.compose.material3.InputChipDefaults
-import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
+import androidx.compose.material3.InputChip
+import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberTimePickerState
@@ -38,13 +35,9 @@ import vn.io.litever.designsystem.components.LiteverOutlinedButton
 import vn.io.litever.designsystem.components.LiteverTimePickerDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
-import vn.io.litever.remind.core.designsystem.components.ReMindSettingIcon
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
-import java.time.DayOfWeek
-import vn.io.litever.remind.core.model.ReminderMonthDay
 import vn.io.litever.remind.features.reminders.R
-import vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval
-import java.time.LocalDate
 import java.time.LocalTime
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -56,19 +49,7 @@ fun ReminderTimeConfigSection(
     onAddFixedTime: (LocalTime) -> Unit = {},
     onRemoveFixedTime: (Int) -> Unit = {},
     onUpdateFixedTime: (Int, LocalTime) -> Unit = { _, t -> onTimeChange(t) },
-    date: LocalDate?,
-    onDateChange: (LocalDate?) -> Unit,
-    repeatDays: List<DayOfWeek>,
-    onRepeatDaysChange: (List<DayOfWeek>) -> Unit,
-    onRepeatDayToggle: (DayOfWeek) -> Unit,
-    repeatInterval: ReminderRepeatInterval,
-    onRepeatIntervalChange: (ReminderRepeatInterval) -> Unit,
-    monthlyDays: List<Int>,
-    onMonthlyDayToggle: (Int) -> Unit,
-    yearlyDates: List<ReminderMonthDay>,
-    onAddYearlyDate: (Int, Int) -> Unit,
-    onRemoveYearlyDate: (Int) -> Unit,
-    is24HourFormat: Boolean,
+    is24HourFormat: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     var showAddTimePicker by remember { mutableStateOf(false) }
@@ -80,9 +61,7 @@ fun ReminderTimeConfigSection(
         modifier = modifier.fillMaxWidth(),
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                // .padding(LiteverTheme.spacing.medium) // padding will be handled by parent
+            modifier = Modifier.fillMaxWidth()
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -123,7 +102,7 @@ fun ReminderTimeConfigSection(
                 verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 timesList.forEachIndexed { index, targetTime ->
-                    androidx.compose.material3.InputChip(
+                    InputChip(
                         selected = true,
                         onClick = {
                             editingTimeIndex = index
@@ -154,7 +133,7 @@ fun ReminderTimeConfigSection(
                                 )
                             }
                         } else null,
-                        colors = androidx.compose.material3.InputChipDefaults.inputChipColors(
+                        colors = InputChipDefaults.inputChipColors(
                             selectedContainerColor = LiteverTheme.colors.primaryContainer,
                             selectedLabelColor = LiteverTheme.colors.onPrimaryContainer,
                             selectedLeadingIconColor = LiteverTheme.colors.onPrimaryContainer
@@ -162,24 +141,6 @@ fun ReminderTimeConfigSection(
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // 2. Unified Repeat Configuration
-            ReminderRepeatConfigSection(
-                repeatInterval = repeatInterval,
-                onRepeatIntervalChange = onRepeatIntervalChange,
-                date = date,
-                onDateChange = onDateChange,
-                repeatDays = repeatDays,
-                onRepeatDaysChange = onRepeatDaysChange,
-                onRepeatDayToggle = onRepeatDayToggle,
-                monthlyDays = monthlyDays,
-                onMonthlyDayToggle = onMonthlyDayToggle,
-                yearlyDates = yearlyDates,
-                onAddYearlyDate = onAddYearlyDate,
-                onRemoveYearlyDate = onRemoveYearlyDate
-            )
         }
     }
 
@@ -237,18 +198,6 @@ private fun ReminderTimeConfigSectionPreview() {
         ReminderTimeConfigSection(
             time = LocalTime.of(9, 0),
             onTimeChange = {},
-            date = LocalDate.now(),
-            onDateChange = {},
-            repeatDays = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY),
-            onRepeatDaysChange = {},
-            onRepeatDayToggle = {},
-            repeatInterval = ReminderRepeatInterval.WEEKLY,
-            onRepeatIntervalChange = {},
-            monthlyDays = emptyList(),
-            onMonthlyDayToggle = {},
-            yearlyDates = emptyList(),
-            onAddYearlyDate = { _, _ -> },
-            onRemoveYearlyDate = {},
             is24HourFormat = true
         )
     }
@@ -261,21 +210,7 @@ private fun ReminderTimeConfigSectionDarkPreview() {
         ReminderTimeConfigSection(
             time = LocalTime.of(9, 0),
             onTimeChange = {},
-            date = LocalDate.now(),
-            onDateChange = {},
-            repeatDays = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY),
-            onRepeatDaysChange = {},
-            onRepeatDayToggle = {},
-            repeatInterval = ReminderRepeatInterval.WEEKLY,
-            onRepeatIntervalChange = {},
-            monthlyDays = emptyList(),
-            onMonthlyDayToggle = {},
-            yearlyDates = emptyList(),
-            onAddYearlyDate = { _, _ -> },
-            onRemoveYearlyDate = {},
             is24HourFormat = true
         )
     }
 }
-
-

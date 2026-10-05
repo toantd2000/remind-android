@@ -28,6 +28,30 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
 
 ## 🧠 Nhật Ký Quyết Định Kỹ Thuật (TDR)
 
+### [TDR-091] - Tái Cấu Trúc Toàn Diện ReminderTriggerSection & ReminderEditScreen: Đưa Cấu Hình Lặp Lịch (Repeat) Ra Ngoài Cấp Độ Nhắc Nhở & Làm Sạch TimeWindow
+- **Ngày thực hiện:** 2026-10-05
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Trước đây, `ReminderRepeatConfigSection` (lặp 1 lần, hàng tuần, hàng tháng, hàng năm) bị nhúng trùng lặp ở cả hai nhánh con: bên trong `ReminderTimeConfigSection` (cho Fixed Time) và bên trong nhánh `INTERVAL` của `ReminderTriggerSection`.
+  - Cấu trúc này làm rò rỉ trách nhiệm (props drilling hơn 12 tham số repeat qua lại), vi phạm Single Responsibility Principle và gây rối rắm trải nghiệm người dùng.
+  - Về bản chất, **mọi nhắc nhở đều có chu kỳ ngày lặp lại** (Một lần vào ngày cụ thể, hàng tuần theo thứ, hàng tháng, hàng năm). Sự khác biệt giữa `FIXED_TIME` và `INTERVAL` chỉ nằm ở cách kích hoạt trong ngày: reo vào các mốc giờ cố định hay lặp lại theo chu kỳ phút trong các khung giờ hoạt động (`TimeWindow`).
+  - Ngoài ra, trong `ReminderTimeWindowConfigSection`, từng khung giờ lại có lựa chọn "Tất cả các ngày" / "Ngày đã chọn" với danh sách chọn thứ trong tuần (`activeDays`), gây dư thừa và xung đột với lịch lặp ngày ở cấp độ nhắc nhở. File `ReminderTimeWindowDialog.kt` bị bỏ quên không sử dụng (dead code).
+- **Quyết định:**
+  1. **Đưa `ReminderRepeatConfigSection` ra ngoài `ReminderEditScreen`:**
+     - Đặt làm Section độc lập ngay dưới `ReminderBasicInfoSection`, định nghĩa chu kỳ lặp lại cấp cao cho toàn bộ nhắc nhở.
+     - Loại bỏ hoàn toàn việc nhúng `ReminderRepeatConfigSection` bên trong `ReminderTimeConfigSection` và bên trong `ReminderTriggerSection`.
+  2. **Refactor `ReminderTriggerSection` & `ReminderTimeConfigSection`:**
+     - Loại bỏ toàn bộ các tham số repeat thừa khỏi `ReminderTriggerSection` và `ReminderTimeConfigSection`.
+     - `ReminderTimeConfigSection` chỉ còn nhiệm vụ quản lý danh sách mốc giờ cố định trong ngày (`fixedTimes`).
+     - `ReminderTriggerSection` chỉ còn quản lý chuyển đổi giữa Fixed Time và Interval (chu kỳ phút + khung giờ hoạt động `TimeWindow`).
+  3. **Làm sạch `ReminderTimeWindowConfigSection`:**
+     - Loại bỏ hoàn toàn UI chọn thứ/ngày (`activeDays`), Segmented Button "Tất cả các ngày / Ngày đã chọn" và FlowRow thứ trong tuần.
+     - Mỗi khung giờ chỉ đơn giản quản lý khoảng thời gian trong ngày: Giờ bắt đầu (`startTime`) và Giờ kết thúc (`endTime`).
+  4. **Dọn dẹp code rác:**
+     - Xóa bỏ file dead code `ReminderTimeWindowDialog.kt`.
+     - Dọn dẹp các chuỗi tài nguyên không còn sử dụng (`time_window_all_days`, `time_window_selected_days`, `time_window_active_days`, `clear_time_window`, `configure_time_window`) trong `strings.xml` và `values-vi/strings.xml`.
+     - Đồng bộ lại `ReminderTriggerEditScreen.kt`.
+
 ### [TDR-090] - Nâng Cấp UX Thẻ Nhắc Nhở (ReminderCard): Trực Quan Hóa Đầy Đủ Thông Tin Lặp Lại, Khung Giờ Hoạt Động & Đếm Ngược Lần Nhắc Tiếp Theo
 - **Ngày thực hiện:** 2026-10-02
 - **Trạng thái:** Accepted

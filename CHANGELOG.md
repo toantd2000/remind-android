@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Sound Preview Playback Control:** Added interactive Play/Stop audio preview button (`ReMindSettingIcon`) at the trailing end of the Volume slider row in both `AlarmEditScreen` and `ReminderEditScreen`.
 
 ### Changed
+- **Decoupled Reminder Repeat Schedule to Reminder Level:** Moved `ReminderRepeatConfigSection` directly into `ReminderEditScreen` as an independent, top-level section above the trigger condition. Removed duplicated repeat sections and 12+ redundant repeat callbacks from `ReminderTimeConfigSection` and `ReminderTriggerSection`.
+- **Streamlined Reminder Time Windows:** Simplified `ReminderTimeWindowConfigSection` to exclusively configure within-day active time intervals (`startTime` to `endTime`). Removed redundant weekday chips and all-day/selected-days segmented buttons from time windows since day schedules are governed by the parent reminder's recurrence settings.
 - **Unified Reminder Lifecycle Management (`isEnabled` as Single Source of Truth):** Removed redundant `isCompleted` column across database (Room Migration 7->8), domain model, data mapper, and schedulers. One-time reminders naturally complete by disabling themselves (`isEnabled = false`), while recurring reminders advance their trigger timestamp while maintaining `isEnabled = true`.
 - **Streamlined Reminder Card UI:** Removed inline `LiteverSwitch` from `ReminderCard`, preventing accidental toggles. Toggling reminders is now available via the 3-dot overflow menu bottom sheet ("Tắt nhắc nhở" / "Bật nhắc nhở") and the bottom of the edit screen.
 - **Shared Permission Warning Banner:** Consolidated `PermissionWarningBanner` into `:core:designsystem` for shared use across both `:features:alarms` and `:features:reminders`. Added semantic severity handling: displays an error surface (`errorContainer`, `LvSemantic.Destructive`) when critical permissions are missing, and a warning surface (`warningContainer`, `ReMindIcons.Warning`, `LvSemantic.Warning`) with a "Remind me later" (`permission_warning_banner_remind_later`) dismissal action button when only non-critical permissions are missing. Tailored copy independently: Alarms reference alarm reliability, while Reminders specifically reference reminder precision and background stability ("Nhắc nhở" semantics).
@@ -32,6 +34,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Standardized Navigation & Title Label:** Standardized bottom navigation tab label and top bar title to "Nhắc nhở" (Reminders).
 
 ### Removed
+- **Dead Code `ReminderTimeWindowDialog`:** Deleted unused `ReminderTimeWindowDialog.kt` composable file.
+- **Obsolete Time Window Day-Selection Resources:** Removed obsolete strings (`time_window_all_days`, `time_window_selected_days`, `time_window_active_days`, `clear_time_window`, `configure_time_window`) across English and Vietnamese string resources.
 - **Redundant `isCompleted` Field:** Dropped `isCompleted` column from Room database table `reminders` via `MIGRATION_7_8`, domain model `Reminder`, DAOs, repositories, and schedulers.
 - **Completed Reminders Filter & Bulk Actions:** Excised obsolete completed reminders filter and batch delete completed actions from ViewModel and screens.
 - **Duplicate AutoSilence Implementations:** Removed duplicated `AutoSilenceBottomSheet.kt` in `:features:alarms` and `ReminderAutoSilenceBottomSheetContent` in `:features:reminders`.

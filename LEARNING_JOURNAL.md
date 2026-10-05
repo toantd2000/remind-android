@@ -1,3 +1,15 @@
+## [2026-10-05] Separation of Concerns: Recurrence Schedule vs Within-Day Trigger Invariants
+### Key Lessons
+- **Hierarchy of Scheduling Concerns**: In reminder systems, calendar recurrence (which days/dates to trigger: One-time, Weekly, Monthly, Yearly) is fundamentally an orthogonal concern to intra-day triggers (how and when to ring during an active day: fixed times vs interval cycles with time windows). Embedding recurrence selection into specific trigger branches results in duplicate UI, state fragmentation, and excessive props drilling. Lifting recurrence to the top level of the reminder editor restores clean Single Responsibility and simplifies child composables.
+- **Micro-scope vs Macro-scope Filters**: `TimeWindow` represents an intra-day active window (e.g. 08:00 to 18:00) during which periodic interval alarms can ring. Giving `TimeWindow` its own day-of-week selection creates semantic conflicts and user confusion with the reminder's top-level calendar recurrence. Eliminating day selection from `TimeWindow` keeps it simple, focused, and free of redundant state.
+- **Dead Composable Hygiene**: During rapid prototyping or iterative UI changes, dialogs or legacy composables (e.g., `ReminderTimeWindowDialog`) often become orphaned while inline replacements are developed. Periodic static scans and git search for zero-reference UI components prevent codebase bloat.
+
+### Corrective Actions
+- Lifted `ReminderRepeatConfigSection` to the top-level `ReminderEditScreen`.
+- Stripped 12+ repeat callback props from `ReminderTriggerSection` and `ReminderTimeConfigSection`.
+- Removed weekday selection controls from `ReminderTimeWindowConfigSection`.
+- Deleted orphaned `ReminderTimeWindowDialog.kt` and associated unused string resources.
+
 ## [2026-09-29] Multi-module Test Dependency Hygiene & Schema Separation
 ### Key Lessons
 - **Multi-module Test Scope Visibility**: In Gradle multi-module projects, `testImplementation` dependencies declared in `:features:reminders` or `:core:testing` do not automatically propagate to other sibling feature modules (`:features:today`, `:features:mission`). Running module-specific test tasks might give a false sense of security while a root `./gradlew test` will fail due to unresolved references in siblings. Always run `./gradlew test` to ensure cross-module health.

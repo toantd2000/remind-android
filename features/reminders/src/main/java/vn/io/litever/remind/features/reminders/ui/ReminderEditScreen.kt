@@ -54,6 +54,7 @@ import vn.io.litever.remind.core.model.ReminderTriggerType
 import vn.io.litever.remind.features.reminders.R
 import vn.io.litever.remind.features.reminders.ui.components.ReminderAlertConfigSection
 import vn.io.litever.remind.features.reminders.ui.components.ReminderBasicInfoSection
+import vn.io.litever.remind.features.reminders.ui.components.ReminderRepeatConfigSection
 import vn.io.litever.remind.features.reminders.ui.components.ReminderTriggerSection
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderEditUiState
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderEditViewModel
@@ -280,7 +281,26 @@ fun ReminderEditScreen(
                 )
             }
 
-            // 2. Trigger Configuration Section (Direct inline editing)
+            // 2. Repeat Configuration Section (Day schedule: One-time, Weekly, Monthly, Yearly)
+            item {
+                ReminderRepeatConfigSection(
+                    repeatInterval = uiState.repeatInterval,
+                    onRepeatIntervalChange = onRepeatIntervalChange,
+                    date = uiState.date,
+                    onDateChange = onDateChange,
+                    repeatDays = uiState.repeatDays,
+                    onRepeatDaysChange = onRepeatDaysChange,
+                    onRepeatDayToggle = onRepeatDayToggle,
+                    monthlyDays = uiState.monthlyDays,
+                    onMonthlyDayToggle = onMonthlyDayToggle,
+                    yearlyDates = uiState.yearlyDates,
+                    onAddYearlyDate = onAddYearlyDate,
+                    onRemoveYearlyDate = onRemoveYearlyDate,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            // 3. Trigger Configuration Section (Within-day trigger: Fixed time vs Interval)
             item {
                 ReminderTriggerSection(
                     uiState = uiState,
@@ -290,13 +310,6 @@ fun ReminderEditScreen(
                     onAddFixedTime = onAddFixedTime,
                     onRemoveFixedTime = onRemoveFixedTime,
                     onUpdateFixedTime = onUpdateFixedTime,
-                    onDateChange = onDateChange,
-                    onRepeatDaysChange = onRepeatDaysChange,
-                    onRepeatDayToggle = onRepeatDayToggle,
-                    onRepeatIntervalChange = onRepeatIntervalChange,
-                    onMonthlyDayToggle = onMonthlyDayToggle,
-                    onAddYearlyDate = onAddYearlyDate,
-                    onRemoveYearlyDate = onRemoveYearlyDate,
                     onIntervalMinutesChange = onIntervalMinutesChange,
                     onTimeWindowsChange = onTimeWindowsChange,
                     onAddTimeWindow = onAddTimeWindow,

@@ -8,8 +8,6 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,9 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -37,22 +33,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import vn.io.litever.designsystem.components.LiteverButton
-import vn.io.litever.designsystem.components.LiteverFilterChip
 import vn.io.litever.designsystem.components.LiteverIconButton
 import vn.io.litever.designsystem.components.LiteverOutlinedButton
-import vn.io.litever.designsystem.components.LiteverSegmentedButton
-import vn.io.litever.designsystem.components.LiteverSingleChoiceSegmentedButtonRow
 import vn.io.litever.designsystem.components.LiteverSwitch
 import vn.io.litever.designsystem.components.LiteverTimePickerDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingIcon
-import java.time.DayOfWeek
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.model.ReminderTimeWindow
 import vn.io.litever.remind.features.reminders.R
 import java.time.LocalTime
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReminderTimeWindowConfigSection(
     timeWindows: List<ReminderTimeWindow>,
@@ -60,7 +53,7 @@ fun ReminderTimeWindowConfigSection(
     onAddTimeWindow: (ReminderTimeWindow) -> Unit,
     onRemoveTimeWindow: (Int) -> Unit,
     onSetAllDayPreset: () -> Unit,
-    is24HourFormat: Boolean,
+    is24HourFormat: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     val isEnabled = timeWindows.isNotEmpty()
@@ -299,77 +292,6 @@ fun ReminderTimeWindowConfigSection(
                                                 style = LiteverTheme.typography.bodyLarge,
                                                 fontWeight = FontWeight.Bold,
                                                 color = LiteverTheme.colors.onSurface
-                                            )
-                                        }
-                                    }
-                                }
-
-                                Spacer(modifier = Modifier.height(8.dp))
-
-                                // Active Days Filter for this window
-                                val isRepeatingDays = window.activeDays.isNotEmpty()
-                                LiteverSingleChoiceSegmentedButtonRow(
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    LiteverSegmentedButton(
-                                        onClick = {
-                                            val updated = timeWindows.toMutableList()
-                                            updated[index] = window.copy(activeDays = emptyList())
-                                            onTimeWindowsChange(updated)
-                                        },
-                                        selected = !isRepeatingDays,
-                                        label = { Text(stringResource(R.string.time_window_all_days), style = LiteverTheme.typography.labelSmall) }
-                                    )
-                                    LiteverSegmentedButton(
-                                        onClick = {
-                                            if (!isRepeatingDays) {
-                                                val updated = timeWindows.toMutableList()
-                                                updated[index] = window.copy(activeDays = DayOfWeek.entries)
-                                                onTimeWindowsChange(updated)
-                                            }
-                                        },
-                                        selected = isRepeatingDays,
-                                        label = { Text(stringResource(R.string.time_window_selected_days), style = LiteverTheme.typography.labelSmall) }
-                                    )
-                                }
-
-                                if (isRepeatingDays) {
-                                    Spacer(modifier = Modifier.height(6.dp))
-
-                                    FlowRow(
-                                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                        verticalArrangement = Arrangement.spacedBy(4.dp),
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        DayOfWeek.entries.forEach { day ->
-                                            val isSelected = window.activeDays.contains(day)
-                                            val labelRes = when (day) {
-                                                DayOfWeek.MONDAY -> R.string.day_mon
-                                                DayOfWeek.TUESDAY -> R.string.day_tue
-                                                DayOfWeek.WEDNESDAY -> R.string.day_wed
-                                                DayOfWeek.THURSDAY -> R.string.day_thu
-                                                DayOfWeek.FRIDAY -> R.string.day_fri
-                                                DayOfWeek.SATURDAY -> R.string.day_sat
-                                                DayOfWeek.SUNDAY -> R.string.day_sun
-                                            }
-
-                                            LiteverFilterChip(
-                                                selected = isSelected,
-                                                onClick = {
-                                                    val newDays = if (isSelected) {
-                                                        window.activeDays - day
-                                                    } else {
-                                                        (window.activeDays + day).sortedBy { it.value }
-                                                    }
-                                                    val updated = timeWindows.toMutableList()
-                                                    updated[index] = window.copy(activeDays = newDays)
-                                                    onTimeWindowsChange(updated)
-                                                },
-                                                label = { Text(stringResource(labelRes)) },
-                                                colors = FilterChipDefaults.filterChipColors(
-                                                    selectedContainerColor = LiteverTheme.colors.primary,
-                                                    selectedLabelColor = LiteverTheme.colors.onPrimary
-                                                )
                                             )
                                         }
                                     }

@@ -76,15 +76,13 @@ fun ReminderTimeConfigSection(
     var editingTimeIndex by remember { mutableStateOf(0) }
     var editingInitialTime by remember { mutableStateOf(time) }
 
-    Surface(
+    Column(
         modifier = modifier.fillMaxWidth(),
-        color = LiteverTheme.colors.surfaceContainerLow,
-        shape = LiteverTheme.shapes.large
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(LiteverTheme.spacing.medium)
+                // .padding(LiteverTheme.spacing.medium) // padding will be handled by parent
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),

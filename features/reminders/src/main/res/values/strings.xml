@@ -50,6 +50,7 @@
     <string name="section_time_trigger">Schedule</string>
     <string name="select_time">Select Time</string>
     <string name="select_date">Select Date (Optional)</string>
+    <string name="tap_to_select_date">Tap to select date</string>
     <string name="repeat_days_label">Repeat Days</string>
     <string name="once_only">One-time</string>
     <string name="daily">Daily</string>
@@ -66,11 +67,7 @@
     <string name="repeat_interval_weekly">Weekly</string>
     <string name="repeat_interval_monthly">Monthly</string>
     <string name="repeat_interval_yearly">Yearly</string>
-    <string name="repeat_monthly_day_summary">Monthly (Day %d)</string>
-    <string name="repeat_yearly_summary">Yearly (%1$s %2$d)</string>
-    <string name="select_repeat_interval">Select Repeat Interval</string>
     <string name="select_day_of_month">Select Day of Month</string>
-    <string name="day_of_month_format">Day %d of every month</string>
     <string name="select_month_label">Month</string>
     <string name="select_day_label">Day</string>
     <string name="day_format">Day %d</string>
@@ -199,11 +196,9 @@
     <string name="puzzle_confirm_button">Confirm &amp; Turn Off</string>
     <string name="puzzle_incorrect">Code does not match. Please try again.</string>
     <string name="monthly_days_selected_format">Days: %s</string>
-    <string name="yearly_dates_selected_format">Dates: %s</string>
     <string name="selected_dates">Selected Dates</string>
     <string name="add_date">Add Date</string>
-    <string name="select_day">Select Day</string>
-    <string name="day_number_format">%d</string>
+    <string name="edit_date">Edit Date</string>
 
     <!-- Urgency Level -->
     <string name="urgency_level_title">Urgency Level</string>

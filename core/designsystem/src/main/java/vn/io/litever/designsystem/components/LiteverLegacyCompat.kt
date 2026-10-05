@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -18,7 +17,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SnackbarHostState
@@ -32,7 +30,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import vn.io.litever.designsystem.components.button.LvButton
 import vn.io.litever.designsystem.components.button.LvButtonType
 import vn.io.litever.designsystem.components.button.LvIconButton
@@ -40,6 +37,7 @@ import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.components.snackbar.LvSnackbarHost
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 
 @Composable
 fun LiteverScaffold(

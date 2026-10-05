@@ -50,6 +50,7 @@
     <string name="section_time_trigger">Lịch nhắc</string>
     <string name="select_time">Chọn giờ</string>
     <string name="select_date">Chọn ngày (Tùy chọn)</string>
+    <string name="tap_to_select_date">Nhấn để chọn ngày</string>
     <string name="repeat_days_label">Lặp lại các ngày</string>
     <string name="once_only">Một lần</string>
     <string name="daily">Hàng ngày</string>
@@ -66,11 +67,7 @@
     <string name="repeat_interval_weekly">Hàng tuần</string>
     <string name="repeat_interval_monthly">Hàng tháng</string>
     <string name="repeat_interval_yearly">Hàng năm</string>
-    <string name="repeat_monthly_day_summary">Hàng tháng (Ngày %d)</string>
-    <string name="repeat_yearly_summary">Hàng năm (%1$s, ngày %2$d)</string>
-    <string name="select_repeat_interval">Chọn chu kỳ lặp lại</string>
     <string name="select_day_of_month">Chọn ngày trong tháng</string>
-    <string name="day_of_month_format">Ngày %d hàng tháng</string>
     <string name="select_month_label">Tháng</string>
     <string name="select_day_label">Ngày</string>
     <string name="day_format">Ngày %d</string>
@@ -199,11 +196,9 @@
     <string name="puzzle_confirm_button">Xác nhận &amp; Tắt</string>
     <string name="puzzle_incorrect">Dãy số không khớp. Vui lòng thử lại.</string>
     <string name="monthly_days_selected_format">Ngày: %s</string>
-    <string name="yearly_dates_selected_format">Ngày: %s</string>
     <string name="selected_dates">Các ngày đã chọn</string>
     <string name="add_date">Thêm ngày</string>
-    <string name="select_day">Chọn ngày</string>
-    <string name="day_number_format">%d</string>
+    <string name="edit_date">Sửa ngày</string>
 
     <!-- Urgency Level -->
     <string name="urgency_level_title">Mức độ khẩn cấp</string>

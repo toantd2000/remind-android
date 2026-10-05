@@ -38,7 +38,7 @@ import vn.io.litever.designsystem.theme.LiteverThemeColor
 fun ReMindTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false,
-    colorPalette: String = "BLACK",
+    colorPalette: String = "RED",
     colorScheme: ColorScheme? = null,
     colors: LiteverColors? = null,
     typography: LiteverTypography = defaultLiteverTypography,

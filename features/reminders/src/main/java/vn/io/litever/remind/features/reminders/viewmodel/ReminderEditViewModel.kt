@@ -427,7 +427,11 @@ class ReminderEditViewModel @Inject constructor(
                 )
                 ReminderRepeatInterval.YEARLY -> state.copy(
                     repeatInterval = interval,
-                    date = null
+                    date = null,
+                    yearlyDates = if (state.yearlyDates.isEmpty()) {
+                        val today = LocalDate.now()
+                        listOf(ReminderMonthDay(month = today.monthValue, day = today.dayOfMonth))
+                    } else state.yearlyDates
                 )
                 ReminderRepeatInterval.CUSTOM -> state.copy(
                     repeatInterval = interval

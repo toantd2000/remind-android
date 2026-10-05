@@ -1,7 +1,6 @@
 package vn.io.litever.remind.core.model
 
 import java.io.Serializable
-import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -43,7 +42,7 @@ data class TimeTrigger(
         get() = timeWindows.firstOrNull()
 
     val isRecurring: Boolean
-        get() = repeatMode != RepeatMode.NONE || (repeatMode == RepeatMode.NONE && exactDate == null && intervalMinutes != null)
+        get() = repeatMode != RepeatMode.NONE || (exactDate == null && intervalMinutes != null)
 
     /**
      * Checks whether a specific date satisfies the recurrence condition.

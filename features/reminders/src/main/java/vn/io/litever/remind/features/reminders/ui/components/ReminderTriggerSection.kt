@@ -57,12 +57,26 @@ fun ReminderTriggerSection(
     is24HourFormat: Boolean = true,
     modifier: Modifier = Modifier
 ) {
-    Column(
+    Surface(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+        shape = LiteverTheme.shapes.large,
+        color = LiteverTheme.colors.surfaceContainerLow
     ) {
-        // Tab selector for trigger types
-        ReminderTriggerTypeSelector(
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(LiteverTheme.spacing.medium),
+            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
+        ) {
+            Text(
+                text = stringResource(R.string.section_time_trigger),
+                style = LiteverTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = LiteverTheme.colors.onSurface
+            )
+
+            // Tab selector for trigger types
+            ReminderTriggerTypeSelector(
             selectedTriggerType = uiState.triggerType,
             onTriggerTypeSelected = onTriggerTypeSelected
         )
@@ -97,10 +111,8 @@ fun ReminderTriggerSection(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
                 ) {
-                    Surface(
+                    Column(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = LiteverTheme.shapes.large,
-                        color = LiteverTheme.colors.surfaceContainerLow
                     ) {
                         Column(
                             modifier = Modifier
@@ -190,6 +202,7 @@ fun ReminderTriggerSection(
                         is24HourFormat = is24HourFormat
                     )
                 }
+            }
             }
         }
     }

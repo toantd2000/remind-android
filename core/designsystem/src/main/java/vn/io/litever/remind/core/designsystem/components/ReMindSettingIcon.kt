@@ -26,7 +26,7 @@ fun ReMindSettingIcon(
     val containerColor = if (selected) {
         MaterialTheme.colorScheme.primaryContainer
     } else {
-        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        MaterialTheme.colorScheme.surfaceVariant
     }
 
     val contentColor = if (selected) {

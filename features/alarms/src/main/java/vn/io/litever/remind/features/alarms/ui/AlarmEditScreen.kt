@@ -673,7 +673,7 @@ fun AlarmEditScreen(
             modifier = modifier
                 .fillMaxSize()
                 .padding(padding),
-            contentPadding = PaddingValues(vertical = LiteverTheme.spacing.medium),
+            contentPadding = PaddingValues(all = LiteverTheme.spacing.medium),
             verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
         ) {
 

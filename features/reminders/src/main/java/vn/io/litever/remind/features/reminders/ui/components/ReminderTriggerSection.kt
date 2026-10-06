@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import vn.io.litever.designsystem.components.LiteverFilterChip
 import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.ReminderTimeWindow
 import vn.io.litever.remind.core.model.ReminderTriggerType
@@ -29,6 +29,7 @@ import java.time.LocalTime
 
 @Composable
 fun ReminderTriggerSection(
+    modifier: Modifier = Modifier,
     uiState: ReminderEditUiState,
     onTriggerTypeSelected: (ReminderTriggerType) -> Unit,
     onTimeChange: (LocalTime) -> Unit,
@@ -40,120 +41,116 @@ fun ReminderTriggerSection(
     onTimeWindowsChange: (List<ReminderTimeWindow>) -> Unit = {},
     onAddTimeWindow: (ReminderTimeWindow) -> Unit = {},
     onRemoveTimeWindow: (Int) -> Unit = {},
-    is24HourFormat: Boolean = true,
-    modifier: Modifier = Modifier
+    is24HourFormat: Boolean = true
 ) {
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = LiteverTheme.shapes.large,
-        color = LiteverTheme.colors.surfaceContainerLow
+    ReMindSettingsGroup(
+        title = stringResource(R.string.section_time_trigger),
+        modifier = modifier
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(LiteverTheme.spacing.medium),
-            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
-        ) {
-            Text(
-                text = stringResource(R.string.section_time_trigger),
-                style = LiteverTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = LiteverTheme.colors.onSurface
-            )
+        // Tab selector for trigger types (Fixed Time vs Interval)
+        ReminderTriggerTypeSelector(
+            selectedTriggerType = uiState.triggerType,
+            onTriggerTypeSelected = onTriggerTypeSelected
+        )
 
-            // Tab selector for trigger types (Fixed Time vs Interval)
-            ReminderTriggerTypeSelector(
-                selectedTriggerType = uiState.triggerType,
-                onTriggerTypeSelected = onTriggerTypeSelected
-            )
+        // Trigger Configuration Content
+        when (uiState.triggerType) {
+            ReminderTriggerType.FIXED_TIME -> {
+                ReminderTimeConfigSection(
+                    time = uiState.time,
+                    onTimeChange = onTimeChange,
+                    fixedTimes = fixedTimes,
+                    onAddFixedTime = onAddFixedTime,
+                    onRemoveFixedTime = onRemoveFixedTime,
+                    onUpdateFixedTime = onUpdateFixedTime,
+                    is24HourFormat = is24HourFormat,
+                    modifier = Modifier
+                        .padding(bottom = LiteverTheme.spacing.medium)
+                        .padding(horizontal = LiteverTheme.spacing.medium)
+                )
+            }
 
-            // Trigger Configuration Content
-            when (uiState.triggerType) {
-                ReminderTriggerType.FIXED_TIME -> {
-                    ReminderTimeConfigSection(
-                        time = uiState.time,
-                        onTimeChange = onTimeChange,
-                        fixedTimes = fixedTimes,
-                        onAddFixedTime = onAddFixedTime,
-                        onRemoveFixedTime = onRemoveFixedTime,
-                        onUpdateFixedTime = onUpdateFixedTime,
-                        is24HourFormat = is24HourFormat
-                    )
-                }
-                ReminderTriggerType.INTERVAL -> {
+            ReminderTriggerType.INTERVAL -> {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
+                ) {
                     Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Column(
+                        Text(
+                            text = stringResource(R.string.interval_section_title),
+                            style = LiteverTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = LiteverTheme.colors.onSurface
+                        )
+
+                        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+
+                        OutlinedTextField(
+                            value = uiState.intervalMinutes?.toString() ?: "",
+                            onValueChange = { onIntervalMinutesChange(it.filter { char -> char.isDigit() }) },
+                            label = { Text(stringResource(R.string.interval_minutes_label)) },
+                            placeholder = { Text(stringResource(R.string.interval_minutes_hint)) },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+
+                        // Quick interval presets
+                        val presets = listOf(
+                            15 to stringResource(R.string.interval_preset_15m),
+                            30 to stringResource(R.string.interval_preset_30m),
+                            60 to stringResource(R.string.interval_preset_1h),
+                            120 to stringResource(R.string.interval_preset_2h),
+                            180 to stringResource(R.string.interval_preset_3h),
+                            240 to stringResource(R.string.interval_preset_4h)
+                        )
+
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
-                            Text(
-                                text = stringResource(R.string.interval_section_title),
-                                style = LiteverTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = LiteverTheme.colors.onSurface
-                            )
-
-                            Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
-
-                            OutlinedTextField(
-                                value = uiState.intervalMinutes?.toString() ?: "",
-                                onValueChange = { onIntervalMinutesChange(it.filter { char -> char.isDigit() }) },
-                                label = { Text(stringResource(R.string.interval_minutes_label)) },
-                                placeholder = { Text(stringResource(R.string.interval_minutes_hint)) },
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                modifier = Modifier.fillMaxWidth()
-                            )
-
-                            Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
-
-                            // Quick interval presets
-                            val presets = listOf(
-                                15 to stringResource(R.string.interval_preset_15m),
-                                30 to stringResource(R.string.interval_preset_30m),
-                                60 to stringResource(R.string.interval_preset_1h),
-                                120 to stringResource(R.string.interval_preset_2h),
-                                180 to stringResource(R.string.interval_preset_3h),
-                                240 to stringResource(R.string.interval_preset_4h)
-                            )
-
-                            FlowRow(
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                presets.forEach { (minutes, label) ->
-                                    LiteverFilterChip(
-                                        selected = uiState.intervalMinutes == minutes,
-                                        onClick = { onIntervalMinutesChange(minutes.toString()) },
-                                        label = { Text(label, style = LiteverTheme.typography.labelSmall) }
-                                    )
-                                }
+                            presets.forEach { (minutes, label) ->
+                                LiteverFilterChip(
+                                    selected = uiState.intervalMinutes == minutes,
+                                    onClick = { onIntervalMinutesChange(minutes.toString()) },
+                                    label = {
+                                        Text(
+                                            label,
+                                            style = LiteverTheme.typography.labelSmall
+                                        )
+                                    }
+                                )
                             }
                         }
+                    }
 
-                        // Multi-TimeWindow Configuration (Active daily time windows)
-                        ReminderTimeWindowConfigSection(
-                            timeWindows = uiState.timeWindows,
-                            onTimeWindowsChange = onTimeWindowsChange,
-                            onAddTimeWindow = onAddTimeWindow,
-                            onRemoveTimeWindow = onRemoveTimeWindow,
-                            onSetAllDayPreset = {
-                                onTimeWindowsChange(
-                                    listOf(
-                                        ReminderTimeWindow(
-                                            startTime = LocalTime.of(0, 0),
-                                            endTime = LocalTime.of(23, 59),
-                                            activeDays = emptyList()
-                                        )
+                    // Multi-TimeWindow Configuration (Active daily time windows)
+                    ReminderTimeWindowConfigSection(
+                        timeWindows = uiState.timeWindows,
+                        onTimeWindowsChange = onTimeWindowsChange,
+                        onAddTimeWindow = onAddTimeWindow,
+                        onRemoveTimeWindow = onRemoveTimeWindow,
+                        onSetAllDayPreset = {
+                            onTimeWindowsChange(
+                                listOf(
+                                    ReminderTimeWindow(
+                                        startTime = LocalTime.of(0, 0),
+                                        endTime = LocalTime.of(23, 59),
+                                        activeDays = emptyList()
                                     )
                                 )
-                            },
-                            is24HourFormat = is24HourFormat
-                        )
-                    }
+                            )
+                        },
+                        is24HourFormat = is24HourFormat,
+                        modifier = Modifier.padding(horizontal = LiteverTheme.spacing.medium)
+                            .padding(bottom = LiteverTheme.spacing.medium)
+                    )
                 }
             }
+
         }
     }
 }

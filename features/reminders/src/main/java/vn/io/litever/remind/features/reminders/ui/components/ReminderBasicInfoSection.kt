@@ -1,22 +1,36 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Surface
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
-import vn.io.litever.designsystem.components.LiteverTextField
+import androidx.compose.ui.unit.dp
+import vn.io.litever.designsystem.components.button.LvIconButton
 import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.features.reminders.R
 
@@ -30,56 +44,161 @@ fun ReminderBasicInfoSection(
     modifier: Modifier = Modifier,
     titleFocusRequester: FocusRequester? = null
 ) {
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        color = LiteverTheme.colors.surfaceContainerLow,
-        shape = LiteverTheme.shapes.large
+    ReMindSettingsGroup(
+        title = stringResource(R.string.section_basic_info),
+        modifier = modifier
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(LiteverTheme.spacing.medium)
+                .padding(horizontal = 16.dp)
+                .padding(top = 8.dp, bottom = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(
-                text = stringResource(R.string.section_basic_info),
-                style = LiteverTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = LiteverTheme.colors.onSurface
-            )
+            // Title Field
+            Column {
+                Text(
+                    text = stringResource(R.string.reminder_title_label),
+                    style = LiteverTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                    color = if (showTitleError) LiteverTheme.colors.error else LiteverTheme.colors.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    val textFieldModifier = if (titleFocusRequester != null) {
+                        Modifier.weight(1f).focusRequester(titleFocusRequester)
+                    } else {
+                        Modifier.weight(1f)
+                    }
 
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
+                    BasicTextField(
+                        value = title,
+                        onValueChange = onTitleChange,
+                        modifier = textFieldModifier,
+                        textStyle = LiteverTheme.typography.bodyLarge.copy(
+                            color = LiteverTheme.colors.onSurface
+                        ),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Next
+                        ),
+                        singleLine = true,
+                        cursorBrush = SolidColor(LiteverTheme.colors.primary),
+                        decorationBox = { innerTextField ->
+                            Box(contentAlignment = Alignment.CenterStart) {
+                                if (title.isEmpty()) {
+                                    Text(
+                                        text = stringResource(R.string.reminder_title_placeholder),
+                                        style = LiteverTheme.typography.bodyLarge.copy(
+                                            color = LiteverTheme.colors.outlineVariant
+                                        )
+                                    )
+                                }
+                                innerTextField()
+                            }
+                        }
+                    )
 
-            val titleFieldModifier = if (titleFocusRequester != null) {
-                Modifier.fillMaxWidth().focusRequester(titleFocusRequester)
-            } else {
-                Modifier.fillMaxWidth()
-            }
-
-            LiteverTextField(
-                value = title,
-                onValueChange = onTitleChange,
-                modifier = titleFieldModifier,
-                label = stringResource(R.string.reminder_title_placeholder),
-                singleLine = true,
-                isError = showTitleError,
-                supportingText = {
-                    if (showTitleError) {
-                        Text(text = stringResource(R.string.reminder_title_required))
+                    if (title.isNotEmpty()) {
+                        LvIconButton(
+                            onClick = { onTitleChange("") },
+                            modifier = Modifier.size(28.dp)
+                        ) {
+                            Icon(
+                                imageVector = ReMindIcons.Close,
+                                contentDescription = stringResource(R.string.action_clear_title),
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    } else {
+                        Icon(
+                            imageVector = ReMindIcons.NewLabel,
+                            contentDescription = null,
+                            tint = LiteverTheme.colors.outlineVariant
+                        )
                     }
                 }
+
+                if (showTitleError) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = stringResource(R.string.reminder_title_required),
+                        style = LiteverTheme.typography.bodySmall,
+                        color = LiteverTheme.colors.error
+                    )
+                }
+            }
+
+            HorizontalDivider(
+                color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.3f)
             )
 
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+            // Notes Field
+            Column {
+                Text(
+                    text = stringResource(R.string.reminder_notes_label),
+                    style = LiteverTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                    color = LiteverTheme.colors.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.Top
+                ) {
+                    BasicTextField(
+                        value = notes,
+                        onValueChange = onNotesChange,
+                        modifier = Modifier.weight(1f),
+                        textStyle = LiteverTheme.typography.bodyLarge.copy(
+                            color = LiteverTheme.colors.onSurface
+                        ),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Default
+                        ),
+                        singleLine = false,
+                        maxLines = 4,
+                        cursorBrush = SolidColor(LiteverTheme.colors.primary),
+                        decorationBox = { innerTextField ->
+                            Box(contentAlignment = Alignment.TopStart) {
+                                if (notes.isEmpty()) {
+                                    Text(
+                                        text = stringResource(R.string.reminder_notes_placeholder),
+                                        style = LiteverTheme.typography.bodyLarge.copy(
+                                            color = LiteverTheme.colors.outlineVariant
+                                        )
+                                    )
+                                }
+                                innerTextField()
+                            }
+                        }
+                    )
 
-            LiteverTextField(
-                value = notes,
-                onValueChange = onNotesChange,
-                modifier = Modifier.fillMaxWidth(),
-                label = stringResource(R.string.reminder_notes_placeholder),
-                minLines = 3,
-                maxLines = 5,
-                singleLine = false
-            )
+                    if (notes.isNotEmpty()) {
+                        LvIconButton(
+                            onClick = { onNotesChange("") },
+                            modifier = Modifier.size(28.dp)
+                        ) {
+                            Icon(
+                                imageVector = ReMindIcons.Close,
+                                contentDescription = stringResource(R.string.action_clear_notes),
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    } else {
+                        Icon(
+                            imageVector = ReMindIcons.EditNote,
+                            contentDescription = null,
+                            tint = LiteverTheme.colors.outlineVariant,
+                            modifier = Modifier
+                                .size(24.dp)
+                                .padding(top = 2.dp)
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -125,4 +244,3 @@ private fun ReminderBasicInfoSectionDarkPreview() {
         )
     }
 }
-

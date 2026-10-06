@@ -20,6 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Sound Preview Playback Control:** Added interactive Play/Stop audio preview button (`ReMindSettingIcon`) at the trailing end of the Volume slider row in both `AlarmEditScreen` and `ReminderEditScreen`.
 
 ### Changed
+- **Modernized Reminder Basic Info Section:** Refactored `ReminderBasicInfoSection` to adopt the minimalist Content pattern from `AlarmEditScreen` wrapped inside `ReMindSettingsGroup` (title "Thông tin chung"). Replaced `LiteverTextField` with clean `BasicTextField` rows, uppercase labels, contextual icons (`NewLabel`, `EditNote`), quick-clear icon buttons (`LvIconButton` with `Close`), and subtle `HorizontalDivider`.
+- **Harmonized Card Padding in Design System:** Standardized `ReMindGroupCard` by removing internal horizontal padding, delegating outer spacing to parent lazy layouts (`PaddingValues(all = LiteverTheme.spacing.medium)`) across `AlarmEditScreen`, `SnoozeBottomSheet`, `PhraseSelectionScreen`, and reminder edit sections.
+- **Modernized Trigger Type & Notification Style Selectors:** Upgraded `ReminderTriggerTypeSelector` and `ReminderAlertConfigSection` notification style controls to use modern, evenly-weighted `LiteverFilterChip` rows instead of tab rows.
 - **Decoupled Reminder Repeat Schedule to Reminder Level:** Moved `ReminderRepeatConfigSection` directly into `ReminderEditScreen` as an independent, top-level section above the trigger condition. Removed duplicated repeat sections and 12+ redundant repeat callbacks from `ReminderTimeConfigSection` and `ReminderTriggerSection`.
 - **Streamlined Reminder Time Windows:** Simplified `ReminderTimeWindowConfigSection` to exclusively configure within-day active time intervals (`startTime` to `endTime`). Removed redundant weekday chips and all-day/selected-days segmented buttons from time windows since day schedules are governed by the parent reminder's recurrence settings.
 - **Unified Reminder Lifecycle Management (`isEnabled` as Single Source of Truth):** Removed redundant `isCompleted` column across database (Room Migration 7->8), domain model, data mapper, and schedulers. One-time reminders naturally complete by disabling themselves (`isEnabled = false`), while recurring reminders advance their trigger timestamp while maintaining `isEnabled = true`.
@@ -34,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Standardized Navigation & Title Label:** Standardized bottom navigation tab label and top bar title to "Nhắc nhở" (Reminders).
 
 ### Removed
+- **Unused `onNavigateToTriggerEdit` Parameter:** Excised dead navigation parameter `onNavigateToTriggerEdit` from `ReminderEditRoute`, `ReminderEditScreen`, and `remindersGraph`.
 - **Dead Code `ReminderTimeWindowDialog`:** Deleted unused `ReminderTimeWindowDialog.kt` composable file.
 - **Obsolete Time Window Day-Selection Resources:** Removed obsolete strings (`time_window_all_days`, `time_window_selected_days`, `time_window_active_days`, `clear_time_window`, `configure_time_window`) across English and Vietnamese string resources.
 - **Redundant `isCompleted` Field:** Dropped `isCompleted` column from Room database table `reminders` via `MIGRATION_7_8`, domain model `Reminder`, DAOs, repositories, and schedulers.

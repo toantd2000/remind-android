@@ -513,7 +513,7 @@ fun AddCustomPhraseContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = LiteverTheme.spacing.medium),
+            .padding(LiteverTheme.spacing.medium),
         verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
     ) {
         ReMindGroupCard {
@@ -595,7 +595,6 @@ fun AddCustomPhraseContent(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = LiteverTheme.spacing.medium)
                 .clip(LiteverTheme.shapes.large)
                 .background(color = LiteverTheme.colors.tertiaryContainer)
                 .padding(LiteverTheme.spacing.smallMedium),
@@ -619,7 +618,6 @@ fun AddCustomPhraseContent(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = LiteverTheme.spacing.medium)
                 .clip(LiteverTheme.shapes.large)
                 .background(color = LiteverTheme.colors.secondaryContainer)
                 .padding(vertical = LiteverTheme.spacing.small)
@@ -647,9 +645,7 @@ fun AddCustomPhraseContent(
         }
 
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = LiteverTheme.spacing.medium),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.smallMedium)
         ) {
             LvButton(

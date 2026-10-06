@@ -11,10 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.core.net.toUri
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -30,6 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -46,9 +45,7 @@ import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
-import java.time.DayOfWeek
 import vn.io.litever.remind.core.model.NotificationStyle
-import vn.io.litever.remind.core.model.ReminderMonthDay
 import vn.io.litever.remind.core.model.ReminderTimeWindow
 import vn.io.litever.remind.core.model.ReminderTriggerType
 import vn.io.litever.remind.features.reminders.R
@@ -60,10 +57,10 @@ import vn.io.litever.remind.features.reminders.viewmodel.ReminderEditUiState
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderEditViewModel
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderValidationErrorField
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReminderEditRoute(
     onBackClick: () -> Unit,
@@ -71,7 +68,6 @@ fun ReminderEditRoute(
     onNavigateToPermissions: () -> Unit,
     navController: NavController,
     modifier: Modifier = Modifier,
-    onNavigateToTriggerEdit: (Long) -> Unit = {},
     viewModel: ReminderEditViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -161,12 +157,10 @@ fun ReminderEditRoute(
         onTogglePreview = viewModel::toggleRingtonePlayback,
         onSnoozeEnabledChange = viewModel::setSnoozeEnabled,
         onSnoozeIntervalChange = viewModel::setSnoozeIntervalMinutes,
-        onToggleEnabled = viewModel::setIsEnabled,
-        onNavigateToTriggerEdit = { onNavigateToTriggerEdit(uiState.id) }
+        onToggleEnabled = viewModel::setIsEnabled
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReminderEditScreen(
     uiState: ReminderEditUiState,
@@ -206,8 +200,7 @@ fun ReminderEditScreen(
     onTogglePreview: () -> Unit = {},
     onSnoozeEnabledChange: (Boolean) -> Unit = {},
     onSnoozeIntervalChange: (Int) -> Unit = {},
-    onToggleEnabled: (Boolean) -> Unit = {},
-    onNavigateToTriggerEdit: () -> Unit = {}
+    onToggleEnabled: (Boolean) -> Unit = {}
 ) {
     val context = LocalContext.current
     val lazyListState = rememberLazyListState()

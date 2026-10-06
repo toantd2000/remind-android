@@ -15,9 +15,7 @@ fun ReMindGroupCard(
     Surface(
         shape = LiteverTheme.shapes.large,
         color = LiteverTheme.colors.surfaceContainerLow,
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = LiteverTheme.spacing.medium)
+        modifier = modifier.fillMaxWidth()
     ) {
         content()
     }

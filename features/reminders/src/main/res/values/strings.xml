@@ -31,6 +31,8 @@
     <string name="reminder_title_required">Title cannot be empty</string>
     <string name="reminder_notes_label">Notes &amp; Details</string>
     <string name="reminder_notes_placeholder">Additional notes, links, or instructions (optional)</string>
+    <string name="action_clear_title">Clear title</string>
+    <string name="action_clear_notes">Clear notes</string>
 
     <!-- Trigger Type Selector -->
     <string name="section_trigger_type">Trigger Condition</string>
@@ -109,9 +111,9 @@
     <string name="section_alert_settings">Alert &amp; Notification</string>
     <string name="notification_style_label">Alert Mode</string>
     <string name="style_standard">Normal</string>
-    <string name="style_standard_desc">Displays standard full-screen alert without continuous background audio service</string>
+    <string name="style_standard_desc">Displays a simple notification and plays sound once when triggered</string>
     <string name="style_full_screen">Ringing</string>
-    <string name="style_full_screen_desc">Displays full-screen alert and plays sound continuously until turned off or snoozed</string>
+    <string name="style_full_screen_desc">Displays full-screen alarm and plays ringtone continuously until turned off or snoozed</string>
     <string name="persistent_alert_title">Persistent Alert Loop</string>
     <string name="persistent_alert_desc">Continuous sound/vibration until dismissed</string>
     <string name="sound_settings_title">Sound &amp; Vibration</string>

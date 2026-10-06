@@ -82,7 +82,7 @@ fun SnoozeBottomSheetContent(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = LiteverTheme.spacing.small)
+            .padding(vertical = LiteverTheme.spacing.small, horizontal = LiteverTheme.spacing.medium)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
     ) {

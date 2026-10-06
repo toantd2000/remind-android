@@ -1,3 +1,12 @@
+## [2026-10-06] Compose Preview Out-of-Sync R Class Field Discrepancies
+### Key Lessons
+- **AAPT & Bytecode Desynchronization in Compose Previews**: When adding new string resources (e.g. `action_clear_title` in `strings.xml`) during feature development, Android Studio Preview renders composables by loading compiled bytecode `.class` files (such as `R$string.class`) from the build output directory. If the module is not recompiled after adding resources, `stringResource(R.string.action_clear_title)` throws a `java.lang.NoSuchFieldError` at preview layout time.
+- **Gradle Task Remediation for Preview Render Errors**: Rebuilding the target module's assemble task (e.g. `./gradlew :features:reminders:assembleDebug`) forces AAPT2 and the Kotlin compiler to regenerate `R.java`, `R.class`, and updated composable bytecode, resolving preview render failures without altering source code.
+
+### Corrective Actions
+- Executed `:features:reminders:assembleDebug` build task to sync AAPT-generated `R$string` field IDs.
+- Verified Compose Preview rendering (`ReminderEditScreenDarkPreview`, `ReminderBasicInfoSectionPreview`) via `render_compose_preview`.
+
 ## [2026-10-05] Separation of Concerns: Recurrence Schedule vs Within-Day Trigger Invariants
 ### Key Lessons
 - **Hierarchy of Scheduling Concerns**: In reminder systems, calendar recurrence (which days/dates to trigger: One-time, Weekly, Monthly, Yearly) is fundamentally an orthogonal concern to intra-day triggers (how and when to ring during an active day: fixed times vs interval cycles with time windows). Embedding recurrence selection into specific trigger branches results in duplicate UI, state fragmentation, and excessive props drilling. Lifting recurrence to the top level of the reminder editor restores clean Single Responsibility and simplifies child composables.

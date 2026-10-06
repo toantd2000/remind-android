@@ -48,6 +48,7 @@ import vn.io.litever.designsystem.components.LiteverIconButton
 import vn.io.litever.designsystem.components.LiteverOutlinedButton
 import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.ReminderMonthDay
@@ -84,16 +85,12 @@ fun ReminderRepeatConfigSection(
     var editingDateIndex by remember { mutableIntStateOf(-1) }
     var dateToEdit by remember { mutableStateOf<ReminderMonthDay?>(null) }
 
-    Column(modifier = modifier.fillMaxWidth()) {
-        Text(
-            text = stringResource(R.string.repeat_title),
-            style = LiteverTheme.typography.labelLarge,
-            fontWeight = FontWeight.SemiBold,
-            color = LiteverTheme.colors.onSurface
-        )
-
+    ReMindSettingsGroup(
+        title = stringResource(R.string.repeat_title),
+        modifier = modifier
+    ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = LiteverTheme.spacing.medium),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             val intervals = listOf(
@@ -141,7 +138,10 @@ fun ReminderRepeatConfigSection(
 
         // Connected Detail Panel
         Surface(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
+                .padding(horizontal = LiteverTheme.spacing.medium)
+                .padding(bottom = LiteverTheme.spacing.medium)
+            ,
             shape = LiteverTheme.shapes.large,
             color = LiteverTheme.colors.surfaceContainer,
             border = BorderStroke(1.dp, LiteverTheme.colors.outlineVariant)

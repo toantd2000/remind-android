@@ -1,22 +1,20 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
+import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.InputChip
+import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimePicker
@@ -28,19 +26,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import vn.io.litever.designsystem.components.LiteverButton
-import vn.io.litever.designsystem.components.LiteverIconButton
 import vn.io.litever.designsystem.components.LiteverOutlinedButton
-import vn.io.litever.designsystem.components.LiteverSwitch
 import vn.io.litever.designsystem.components.LiteverTimePickerDialog
+import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
-import vn.io.litever.remind.core.designsystem.components.ReMindSettingIcon
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
+import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.ReminderTimeWindow
 import vn.io.litever.remind.features.reminders.R
 import java.time.LocalTime
@@ -52,302 +49,323 @@ fun ReminderTimeWindowConfigSection(
     onTimeWindowsChange: (List<ReminderTimeWindow>) -> Unit,
     onAddTimeWindow: (ReminderTimeWindow) -> Unit,
     onRemoveTimeWindow: (Int) -> Unit,
-    onSetAllDayPreset: () -> Unit,
-    is24HourFormat: Boolean = true,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    @Suppress("UNUSED_PARAMETER") onSetAllDayPreset: () -> Unit = {},
+    is24HourFormat: Boolean = true
 ) {
-    val isEnabled = timeWindows.isNotEmpty()
+    var showWindowDialog by remember { mutableStateOf(false) }
     var editingWindowIndex by remember { mutableStateOf<Int?>(null) }
-    var editingStartOrEnd by remember { mutableStateOf<Boolean?>(null) } // true: start, false: end
+    var editingStartTime by remember { mutableStateOf(LocalTime.of(8, 0)) }
+    var editingEndTime by remember { mutableStateOf(LocalTime.of(18, 0)) }
 
-    Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(LiteverTheme.shapes.medium),
-        color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.4f),
-        shape = LiteverTheme.shapes.medium
+    var showStartTimePicker by remember { mutableStateOf(false) }
+    var showEndTimePicker by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(14.dp)
-        ) {
-            // Header with Switch
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    ReMindSettingIcon(
-                        imageVector = ReMindIcons.DateRange,
-                        selected = isEnabled
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column {
-                        Text(
-                            text = stringResource(R.string.time_window_section_title),
-                            style = LiteverTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.SemiBold,
-                            color = LiteverTheme.colors.onSurface
-                        )
-                        val summary = if (isEnabled) {
-                            timeWindows.joinToString("; ") { win ->
-                                val s = TimeFormatUtils.formatTime(win.startTime, is24HourFormat)
-                                val e = TimeFormatUtils.formatTime(win.endTime, is24HourFormat)
-                                "$s - $e"
-                            }
-                        } else {
-                            stringResource(R.string.time_window_24_7_desc)
-                        }
-                        Text(
-                            text = summary,
-                            style = LiteverTheme.typography.bodySmall,
-                            color = if (isEnabled) LiteverTheme.colors.primary else LiteverTheme.colors.onSurfaceVariant
-                        )
-                    }
-                }
+        Text(
+            text = stringResource(R.string.time_window_section_title),
+            style = LiteverTheme.typography.labelMedium,
+            color = LiteverTheme.colors.onSurfaceVariant,
+            fontWeight = FontWeight.SemiBold,
+        )
 
-                LiteverSwitch(
-                    checked = isEnabled,
-                    onCheckedChange = { checked ->
-                        if (checked) {
-                            onTimeWindowsChange(
-                                listOf(
-                                    ReminderTimeWindow(
-                                        startTime = LocalTime.of(8, 0),
-                                        endTime = LocalTime.of(18, 0),
-                                        activeDays = emptyList()
-                                    )
-                                )
+        FlowRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.extraSmall),
+            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.extraSmall)
+        ) {
+            val displayWindows = timeWindows.ifEmpty { listOf(ReminderTimeWindow.ALL_DAY) }
+
+            displayWindows.forEachIndexed { index, window ->
+                val startFormatted = TimeFormatUtils.formatTime(window.startTime, is24HourFormat)
+                val endFormatted = TimeFormatUtils.formatTime(window.endTime, is24HourFormat)
+                val label = "$startFormatted - $endFormatted"
+
+                InputChip(
+                    selected = true,
+                    onClick = {
+                        editingWindowIndex = if (timeWindows.isNotEmpty()) index else null
+                        editingStartTime = window.startTime
+                        editingEndTime = window.endTime
+                        showWindowDialog = true
+                    },
+                    label = { Text(label, style = LiteverTheme.typography.labelMedium) },
+                    trailingIcon = if (displayWindows.size > 1 && timeWindows.isNotEmpty()) {
+                        {
+                            Icon(
+                                imageVector = ReMindIcons.Close,
+                                contentDescription = "Remove Time Window",
+                                modifier = Modifier
+                                    .size(16.dp)
+                                    .clickable { onRemoveTimeWindow(index) }
                             )
-                        } else {
-                            onTimeWindowsChange(emptyList())
                         }
-                    }
+                    } else null,
+                    colors = InputChipDefaults.inputChipColors(
+                        selectedContainerColor = LiteverTheme.colors.secondary,
+                        selectedLabelColor = LiteverTheme.colors.onSecondary,
+                        selectedTrailingIconColor = LiteverTheme.colors.onSecondary,
+                        containerColor = LiteverTheme.colors.surfaceVariant,
+                        labelColor = LiteverTheme.colors.onSurfaceVariant,
+                        leadingIconColor = LiteverTheme.colors.onSurfaceVariant
+                    ),
+                    modifier = Modifier.height(32.dp)
                 )
             }
 
-            AnimatedVisibility(
-                visible = isEnabled,
-                enter = fadeIn() + expandVertically(),
-                exit = fadeOut() + shrinkVertically()
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 12.dp)
-                ) {
-                    // Quick Preset & Add Buttons
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        LiteverOutlinedButton(
-                            onClick = onSetAllDayPreset,
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(36.dp)
-                        ) {
-                            Icon(
-                                imageVector = ReMindIcons.WbSunny,
-                                contentDescription = null,
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = stringResource(R.string.preset_all_day),
-                                style = LiteverTheme.typography.labelSmall
-                            )
-                        }
-
-                        LiteverOutlinedButton(
-                            onClick = {
-                                onAddTimeWindow(
-                                    ReminderTimeWindow(
-                                        startTime = LocalTime.of(13, 0),
-                                        endTime = LocalTime.of(17, 0),
-                                        activeDays = emptyList()
-                                    )
-                                )
-                            },
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(36.dp)
-                        ) {
-                            Icon(
-                                imageVector = ReMindIcons.Add,
-                                contentDescription = null,
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = stringResource(R.string.add_time_window),
-                                style = LiteverTheme.typography.labelSmall
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    // Windows list
-                    timeWindows.forEachIndexed { index, window ->
-                        Surface(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp)
-                                .clip(LiteverTheme.shapes.medium),
-                            color = LiteverTheme.colors.surface.copy(alpha = 0.7f),
-                            shape = LiteverTheme.shapes.medium
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(12.dp)
-                            ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(
-                                        text = "${stringResource(R.string.time_window_section_title)} ${index + 1}",
-                                        style = LiteverTheme.typography.labelMedium,
-                                        fontWeight = FontWeight.Bold,
-                                        color = LiteverTheme.colors.primary
-                                    )
-
-                                    if (timeWindows.size > 1) {
-                                        LiteverIconButton(
-                                            onClick = { onRemoveTimeWindow(index) },
-                                            modifier = Modifier.size(24.dp)
-                                        ) {
-                                            Icon(
-                                                imageVector = ReMindIcons.DeleteOutline,
-                                                contentDescription = "Remove Time Window",
-                                                tint = LiteverTheme.colors.error
-                                            )
-                                        }
-                                    }
-                                }
-
-                                Spacer(modifier = Modifier.height(8.dp))
-
-                                // Start & End Times Row
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    // Start Time
-                                    Surface(
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .clip(LiteverTheme.shapes.small)
-                                            .clickable {
-                                                editingWindowIndex = index
-                                                editingStartOrEnd = true
-                                            },
-                                        color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.5f),
-                                        shape = LiteverTheme.shapes.small
-                                    ) {
-                                        Column(modifier = Modifier.padding(8.dp)) {
-                                            Text(
-                                                text = stringResource(R.string.time_window_start_time),
-                                                style = LiteverTheme.typography.labelSmall,
-                                                color = LiteverTheme.colors.onSurfaceVariant
-                                            )
-                                            Text(
-                                                text = TimeFormatUtils.formatTime(window.startTime, is24HourFormat),
-                                                style = LiteverTheme.typography.bodyLarge,
-                                                fontWeight = FontWeight.Bold,
-                                                color = LiteverTheme.colors.onSurface
-                                            )
-                                        }
-                                    }
-
-                                    // End Time
-                                    Surface(
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .clip(LiteverTheme.shapes.small)
-                                            .clickable {
-                                                editingWindowIndex = index
-                                                editingStartOrEnd = false
-                                            },
-                                        color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.5f),
-                                        shape = LiteverTheme.shapes.small
-                                    ) {
-                                        Column(modifier = Modifier.padding(8.dp)) {
-                                            Text(
-                                                text = stringResource(R.string.time_window_end_time),
-                                                style = LiteverTheme.typography.labelSmall,
-                                                color = LiteverTheme.colors.onSurfaceVariant
-                                            )
-                                            Text(
-                                                text = TimeFormatUtils.formatTime(window.endTime, is24HourFormat),
-                                                style = LiteverTheme.typography.bodyLarge,
-                                                fontWeight = FontWeight.Bold,
-                                                color = LiteverTheme.colors.onSurface
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            InputChip(
+                selected = false,
+                onClick = {
+                    editingWindowIndex = null
+                    editingStartTime = LocalTime.of(8, 0)
+                    editingEndTime = LocalTime.of(18, 0)
+                    showWindowDialog = true
+                },
+                label = {
+                    Text(
+                        stringResource(R.string.add_time_window),
+                        style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
+                    )
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = ReMindIcons.Add,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                },
+                colors = InputChipDefaults.inputChipColors(
+                    containerColor = LiteverTheme.colors.surfaceVariant,
+                    labelColor = LiteverTheme.colors.onSurfaceVariant
+                ),
+                modifier = Modifier.height(32.dp)
+            )
         }
     }
 
-    // TimePicker for Start or End Time
-    val activeIdx = editingWindowIndex
-    val isStart = editingStartOrEnd
-    if (activeIdx != null && isStart != null && activeIdx in timeWindows.indices) {
-        val targetWindow = timeWindows[activeIdx]
-        val initialTime = if (isStart) targetWindow.startTime else targetWindow.endTime
+    // Time Window Config Dialog (Start & End Time)
+    if (showWindowDialog) {
+        LvAlertDialog(
+            onDismissRequest = { showWindowDialog = false },
+            title = {
+                Text(
+                    text = if (editingWindowIndex != null) stringResource(R.string.time_window_section_title)
+                    else stringResource(R.string.add_time_window)
+                )
+            },
+            text = {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                ) {
+                    // Start Time Selector
+                    Surface(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { showStartTimePicker = true },
+                        color = LiteverTheme.colors.surfaceVariant,
+                        shape = LiteverTheme.shapes.medium
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(12.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = stringResource(R.string.time_window_start_time),
+                                style = LiteverTheme.typography.labelSmall,
+                                color = LiteverTheme.colors.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = TimeFormatUtils.formatTime(editingStartTime, is24HourFormat),
+                                style = LiteverTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = LiteverTheme.colors.primary
+                            )
+                        }
+                    }
 
-        val pickerState = rememberTimePickerState(
-            initialHour = initialTime.hour,
-            initialMinute = initialTime.minute,
-            is24Hour = is24HourFormat
-        )
-
-        LiteverTimePickerDialog(
-            onDismissRequest = {
-                editingWindowIndex = null
-                editingStartOrEnd = null
+                    // End Time Selector
+                    Surface(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { showEndTimePicker = true },
+                        color = LiteverTheme.colors.surfaceVariant,
+                        shape = LiteverTheme.shapes.medium
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(12.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = stringResource(R.string.time_window_end_time),
+                                style = LiteverTheme.typography.labelSmall,
+                                color = LiteverTheme.colors.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = TimeFormatUtils.formatTime(editingEndTime, is24HourFormat),
+                                style = LiteverTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = LiteverTheme.colors.primary
+                            )
+                        }
+                    }
+                }
             },
             confirmButton = {
-                LiteverButton(onClick = {
-                    val newTime = LocalTime.of(pickerState.hour, pickerState.minute)
-                    val updated = timeWindows.toMutableList()
-                    updated[activeIdx] = if (isStart) {
-                        targetWindow.copy(startTime = newTime)
-                    } else {
-                        targetWindow.copy(endTime = newTime)
+                LiteverButton(
+                    onClick = {
+                        val newWindow = ReminderTimeWindow(
+                            startTime = editingStartTime,
+                            endTime = editingEndTime,
+                            activeDays = emptyList()
+                        )
+                        val activeIdx = editingWindowIndex
+                        if (activeIdx != null && (activeIdx in timeWindows.indices)) {
+                            val updated = timeWindows.toMutableList()
+                            updated[activeIdx] = newWindow
+                            onTimeWindowsChange(updated)
+                        } else {
+                            if (timeWindows.isEmpty()) {
+                                onTimeWindowsChange(listOf(newWindow))
+                            } else {
+                                onAddTimeWindow(newWindow)
+                            }
+                        }
+                        showWindowDialog = false
                     }
-                    onTimeWindowsChange(updated)
-                    editingWindowIndex = null
-                    editingStartOrEnd = null
+                ) {
+                    Text(stringResource(R.string.action_save))
+                }
+            },
+            dismissButton = {
+                LiteverOutlinedButton(onClick = { showWindowDialog = false }) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            }
+        )
+    }
+
+    // Start TimePicker Dialog
+    if (showStartTimePicker) {
+        val startPickerState = rememberTimePickerState(
+            initialHour = editingStartTime.hour,
+            initialMinute = editingStartTime.minute,
+            is24Hour = is24HourFormat
+        )
+        LiteverTimePickerDialog(
+            onDismissRequest = { showStartTimePicker = false },
+            confirmButton = {
+                LiteverButton(onClick = {
+                    editingStartTime = LocalTime.of(startPickerState.hour, startPickerState.minute)
+                    showStartTimePicker = false
                 }) {
                     Text(stringResource(R.string.action_save))
                 }
             },
             dismissButton = {
-                LiteverOutlinedButton(onClick = {
-                    editingWindowIndex = null
-                    editingStartOrEnd = null
-                }) {
+                LiteverOutlinedButton(onClick = { showStartTimePicker = false }) {
                     Text(stringResource(R.string.action_cancel))
                 }
             }
         ) {
-            TimePicker(state = pickerState)
+            TimePicker(state = startPickerState)
+        }
+    }
+
+    // End TimePicker Dialog
+    if (showEndTimePicker) {
+        val endPickerState = rememberTimePickerState(
+            initialHour = editingEndTime.hour,
+            initialMinute = editingEndTime.minute,
+            is24Hour = is24HourFormat
+        )
+        LiteverTimePickerDialog(
+            onDismissRequest = { showEndTimePicker = false },
+            confirmButton = {
+                LiteverButton(onClick = {
+                    editingEndTime = LocalTime.of(endPickerState.hour, endPickerState.minute)
+                    showEndTimePicker = false
+                }) {
+                    Text(stringResource(R.string.action_save))
+                }
+            },
+            dismissButton = {
+                LiteverOutlinedButton(onClick = { showEndTimePicker = false }) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            }
+        ) {
+            TimePicker(state = endPickerState)
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun ReminderTimeWindowConfigSectionPreview() {
+    ReMindTheme {
+        ReminderTimeWindowConfigSection(
+            timeWindows = listOf(
+                ReminderTimeWindow(
+                    startTime = LocalTime.of(8, 0),
+                    endTime = LocalTime.of(12, 0),
+                    activeDays = emptyList()
+                ),
+                ReminderTimeWindow(
+                    startTime = LocalTime.of(13, 0),
+                    endTime = LocalTime.of(17, 0),
+                    activeDays = emptyList()
+                )
+            ),
+            onTimeWindowsChange = {},
+            onAddTimeWindow = {},
+            onRemoveTimeWindow = {},
+            is24HourFormat = true
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ReminderTimeWindowConfigSectionEmptyPreview() {
+    ReMindTheme {
+        ReminderTimeWindowConfigSection(
+            timeWindows = emptyList(),
+            onTimeWindowsChange = {},
+            onAddTimeWindow = {},
+            onRemoveTimeWindow = {},
+            is24HourFormat = true
+        )
+    }
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun ReminderTimeWindowConfigSectionDarkPreview() {
+    ReMindTheme(darkTheme = true) {
+        ReminderTimeWindowConfigSection(
+            timeWindows = listOf(
+                ReminderTimeWindow(
+                    startTime = LocalTime.of(8, 0),
+                    endTime = LocalTime.of(12, 0),
+                    activeDays = emptyList()
+                ),
+                ReminderTimeWindow(
+                    startTime = LocalTime.of(13, 0),
+                    endTime = LocalTime.of(17, 0),
+                    activeDays = emptyList()
+                )
+            ),
+            onTimeWindowsChange = {},
+            onAddTimeWindow = {},
+            onRemoveTimeWindow = {},
+            is24HourFormat = true
+        )
+    }
+}
+

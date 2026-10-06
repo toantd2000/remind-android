@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
@@ -29,12 +30,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import vn.io.litever.designsystem.components.LiteverFilterChip
 import vn.io.litever.designsystem.components.LiteverSegmentedButton
 import vn.io.litever.designsystem.components.LiteverSingleChoiceSegmentedButtonRow
 import vn.io.litever.designsystem.components.LiteverSwitch
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.AutoSilenceBottomSheet
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingIcon
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsCategory
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.NotificationStyle
@@ -88,42 +91,46 @@ fun ReminderAlertConfigSection(
                 .fillMaxWidth()
                 .padding(LiteverTheme.spacing.medium)
         ) {
-            Text(
-                text = stringResource(R.string.section_alert_settings),
-                style = LiteverTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = LiteverTheme.colors.onSurface
-            )
 
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+            ReMindSettingsCategory(
+                title = stringResource(R.string.section_alert_settings)
+            )
 
             // 1. Notification Style Selector (Đổ chuông vs Thông báo thường)
-            Text(
-                text = stringResource(R.string.notification_style_label),
-                style = LiteverTheme.typography.labelLarge,
-                fontWeight = FontWeight.SemiBold,
-                color = LiteverTheme.colors.onSurface
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            LiteverSingleChoiceSegmentedButtonRow(
-                modifier = Modifier.fillMaxWidth()
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 NotificationStyle.entries.forEach { style ->
                     val labelRes = when (style) {
                         NotificationStyle.FULL_SCREEN -> R.string.style_full_screen
                         NotificationStyle.STANDARD -> R.string.style_standard
                     }
-                    LiteverSegmentedButton(
+                    val isSelected = notificationStyle == style
+                    LiteverFilterChip(
+                        selected = isSelected,
                         onClick = { onNotificationStyleChange(style) },
-                        selected = style == notificationStyle,
                         label = {
                             Text(
                                 text = stringResource(labelRes),
-                                style = LiteverTheme.typography.labelMedium
+                                style = LiteverTheme.typography.labelSmall,
+                                fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.SemiBold
                             )
-                        }
+                        },
+                        colors = FilterChipDefaults.filterChipColors(
+                            containerColor = LiteverTheme.colors.surfaceVariant,
+                            labelColor = LiteverTheme.colors.onSurfaceVariant,
+                            selectedContainerColor = LiteverTheme.colors.primary,
+                            selectedLabelColor = LiteverTheme.colors.onPrimary
+                        ),
+                        border = FilterChipDefaults.filterChipBorder(
+                            enabled = true,
+                            selected = isSelected,
+                            borderColor = LiteverTheme.colors.outlineVariant,
+                            selectedBorderColor = LiteverTheme.colors.outline
+                        ),
+                        shape = LiteverTheme.shapes.medium,
+                        modifier = Modifier.weight(1f)
                     )
                 }
             }

@@ -25,6 +25,7 @@ import vn.io.litever.remind.core.alarm.alert.ReminderAlertManager
 import vn.io.litever.remind.core.alarm.notification.ReminderNotificationManager
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
+import vn.io.litever.remind.core.domain.handler.ReminderActionHandler
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderAction
@@ -43,16 +44,19 @@ class ReminderReceiverTest {
     private val scheduler = mockk<ReminderScheduler>(relaxed = true)
     private val notificationManager = mockk<ReminderNotificationManager>(relaxed = true)
     private val alertManager = mockk<ReminderAlertManager>(relaxed = true)
+    private lateinit var actionHandler: ReminderActionHandler
 
     private lateinit var receiver: ReminderReceiver
 
     @Before
     fun setup() {
+        actionHandler = ReminderActionHandler(repository, scheduler)
         receiver = ReminderReceiver().apply {
             reminderRepository = repository
             reminderScheduler = scheduler
             reminderNotificationManager = notificationManager
             reminderAlertManager = alertManager
+            reminderActionHandler = actionHandler
         }
         try {
             val field = receiver.javaClass.superclass?.getDeclaredField("injected")
@@ -191,7 +195,7 @@ class ReminderReceiverTest {
 
         assertFalse(updatedSlot.captured.isEnabled)
         assertNull(updatedSlot.captured.snoozeNextTriggerTime)
-        verify(atLeast = 1) { scheduler.cancelSnooze(reminder) }
+        verify(atLeast = 1) { scheduler.cancelSnooze(match { it.id == 40L }) }
     }
 
     @Test

@@ -85,9 +85,6 @@ fun NavGraphBuilder.remindersGraph(
             onBackClick = onNavigateBack,
             onNavigateToRingtoneSelection = onNavigateToRingtoneSelection,
             onNavigateToPermissions = onNavigateToPermissions,
-            onNavigateToTriggerEdit = { id ->
-                navController.navigateToReminderTriggerEdit(id)
-            },
             navController = navController
         )
     }

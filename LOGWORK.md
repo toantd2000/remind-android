@@ -28,6 +28,22 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
 
 ## 🧠 Nhật Ký Quyết Định Kỹ Thuật (TDR)
 
+### [TDR-092] - Đồng Bộ Thiết Kế ReminderBasicInfoSection Theo Pattern Content Trong AlarmEditScreen & Đóng Gói Với ReMindSettingsGroup
+- **Ngày thực hiện:** 2026-10-06
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Cụm thông tin cơ bản trong `ReminderBasicInfoSection` trước đây sử dụng `Surface` độc lập với `LiteverTextField`, không đồng nhất với cấu trúc thẻ cài đặt của toàn bộ ứng dụng (`ReMindSettingsGroup`).
+  - Trong `AlarmEditScreen`, Group 3 (Label & Message) được thiết kế tối giản, hiện đại với `BasicTextField`, phân tách bằng `HorizontalDivider`, có nút xóa nội dung nhanh (`LvIconButton` với `Close` icon) và icon ngữ cảnh (`NewLabel`, `EditNote`).
+- **Quyết định:**
+  1. **Bọc ngoài bằng `ReMindSettingsGroup`:**
+     - Thiết lập tiêu đề nhóm là `"Thông tin chung"` (`R.string.section_basic_info`), đồng bộ phong cách với các cụm cài đặt khác như `ReminderRepeatConfigSection`.
+  2. **Áp dụng pattern Content của `AlarmEditScreen`:**
+     - Sử dụng `BasicTextField` với nhãn `labelSmall` in đậm bên trên cho cả Tiêu đề (Title) và Ghi chú chi tiết (Notes).
+     - Phân cách giữa Title và Notes bằng `HorizontalDivider(color = outlineVariant.copy(alpha = 0.3f))`.
+     - Thêm nút xóa (`LvIconButton`) khi trường có nội dung và icon chỉ dẫn ngữ cảnh (`ReMindIcons.NewLabel` cho Title, `ReMindIcons.EditNote` cho Notes) khi trường trống.
+     - Bảo toàn khả năng focus và thông báo lỗi validation (`titleFocusRequester`, `showTitleError`, `R.string.reminder_title_required`).
+     - Bổ sung chuỗi tài nguyên trợ năng `action_clear_title` và `action_clear_notes` trong cả tiếng Anh và tiếng Việt.
+
 ### [TDR-091] - Tái Cấu Trúc Toàn Diện ReminderTriggerSection & ReminderEditScreen: Đưa Cấu Hình Lặp Lịch (Repeat) Ra Ngoài Cấp Độ Nhắc Nhở & Làm Sạch TimeWindow
 - **Ngày thực hiện:** 2026-10-05
 - **Trạng thái:** Accepted

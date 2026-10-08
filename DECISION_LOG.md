@@ -45,6 +45,16 @@ This document records the solidified technical decisions and behavioral scenario
     - **Unique Actions**: Use `ACTION_TRIGGER_ALARM` for main occurrences and `ACTION_TRIGGER_SNOOZE` for snoozes.
     - **Unique Request Codes**: Use `alarm.id.hashCode()` for main and `alarm.id.hashCode() + 1,000,000,000` for snooze.
 
+### Scenario: Quick Alarm Lifecycle & Deletion Rules
+- **Expected Behavior**:
+    - Khi click vào item Quick Alarm trên danh sách, không mở màn hình chỉnh sửa báo thức thông thường (`AlarmEditScreen`).
+    - Khi tắt báo thức nhanh bằng nút switch trên danh sách, hệ thống tự động xóa vĩnh viễn báo thức khỏi CSDL và hủy lịch trong `AlarmScheduler`.
+    - Khi hoàn thành rung chuông (người dùng bấm Tắt chuông / hoàn thành nhiệm vụ - `dismissAlarm`), báo thức nhanh tự động bị xóa vĩnh viễn khỏi CSDL và hủy lịch.
+- **Technical Decision**:
+    - Trong `AlarmCard.kt`: Kiểm tra `isQuickAlarm`, nếu đúng thì gắn badge tia sét nhận diện và trong `AlarmListScreen` chặn điều hướng `onAlarmClick`.
+    - Trong `AlarmListViewModel.toggleAlarm`: Khi `alarm.isQuickAlarm == true`, điều hướng trực tiếp gọi `deleteAlarm(alarm)` thay vì chỉ cập nhật trạng thái `isEnabled`.
+    - Trong `AlarmControllerImpl.dismissAlarm`: Khi `alarm.isQuickAlarm == true`, thực hiện `alarmScheduler.cancel(alarm)` và `alarmRepository.deleteAlarm(alarm)`.
+
 ## 5. UI & Navigation
 
 ### Scenario: Exiting the App from Home Screen

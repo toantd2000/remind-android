@@ -28,6 +28,34 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
 
 ## 🧠 Nhật Ký Quyết Định Kỹ Thuật (TDR)
 
+### [TDR-093] - Triển Khai Tính Năng Báo Thức Nhanh (Quick Alarm) Với Material 3 FAB Menu, Bottom Sheet & Vòng Đời Tự Động Xóa
+- **Ngày thực hiện:** 2026-10-06 / 2026-10-07
+- **Trạng thái:** Accepted
+- **Bối cảnh:**
+  - Người dùng có nhu cầu đặt nhanh các mốc báo thức ngắn (nghỉ trưa, đun nước, hẹn giờ nhanh 5-30 phút) mà không cần trải qua toàn bộ quy trình cấu hình phức tạp của báo thức thông thường (chọn ngày lặp, nhiệm vụ, auto-silence, v.v.).
+  - Báo thức nhanh là loại báo thức dùng 1 lần tức thời, không cần chỉnh sửa lại sau khi tạo và cần tự động dọn dẹp để không làm bừa bộn danh sách báo thức.
+- **Quyết định:**
+  1. **Tầng Dữ Liệu & Kiến Trúc (Domain & Data Layer):**
+     - Bổ sung cờ `isQuickAlarm: Boolean = false` vào Domain Entity `Alarm` và CSDL Room `AlarmEntity`.
+     - Nâng cấp Room Database lên phiên bản 9, tạo `MIGRATION_8_9` (`ALTER TABLE alarms ADD COLUMN isQuickAlarm INTEGER NOT NULL DEFAULT 0`).
+     - Ánh xạ trường `isQuickAlarm` trong `AlarmMapper` giữa Entity và Domain Model.
+  2. **Vòng Đời Tự Động Xóa (Lifecycle & Auto-Cleanup):**
+     - Khi tắt bằng Switch trên danh sách (`AlarmListViewModel.toggleAlarm`): Nếu `alarm.isQuickAlarm == true`, lập tức xóa báo thức khỏi CSDL (`repository.deleteAlarm`) và hủy lịch trong `AlarmScheduler`.
+     - Khi hoàn thành reo chuông (`AlarmControllerImpl.dismissAlarm`): Nếu là báo thức nhanh, hủy lịch và xóa vĩnh viễn khỏi CSDL thay vì chỉ cập nhật trạng thái snooze.
+     - Trên danh sách báo thức (`AlarmListScreen`): Click vào card báo thức nhanh sẽ không mở màn hình `AlarmEditScreen`.
+  3. **Giao Diện & Trải Nghiệm Người Dùng (UI/UX - M3 & Litever Design System):**
+     - **Material 3 FAB Menu (Tối giản & Không sinh file dư thừa):** Thay vì custom speed dial phức tạp bọc Scaffold trong Box và vẽ Scrim thủ công, tận dụng trực tiếp thành phần chuẩn có sẵn của Material 3: `FloatingActionButton` gắn với `DropdownMenu` và `DropdownMenuItem` trong `Scaffold(floatingActionButton = { ... })`. Menu cung cấp các lựa chọn: *Alarm*, *Quick alarm*.
+     - **Quick Alarm Bottom Sheet (`QuickAlarmBottomSheet.kt`):** 
+       - Bộ hiển thị cộng dồn thời gian `+ 0m` và nút reset `↺`.
+       - Lưới 6 nút preset (+1m, +5m, +10m, +15m, +30m, +1h).
+       - Hiển thị trực quan thời gian reo dự kiến `Ring at ...` hỗ trợ cả định dạng 12h và 24h.
+       - Ô nhập mô tả ngắn gọn (Label) tùy chọn.
+       - Cài đặt chuông báo, thanh trượt âm lượng và nút gạt rung.
+       - Nút Lưu (Save) dạng Primary Button (`LvButton`).
+     - **Nhận Diện Trực Quan (`AlarmCard.kt`):** Thêm icon tia sét `FlashOn` và nhãn `Quick alarm` / `Báo thức nhanh` ở hàng tiêu đề thẻ để phân biệt rõ rệt.
+  4. **Kiểm Thử:**
+     - Viết Unit Tests đầy đủ cho `AlarmListViewModelTest` và `AlarmControllerImplTest`, đảm bảo tỷ lệ vượt qua 100%.
+
 ### [TDR-092] - Đồng Bộ Thiết Kế ReminderBasicInfoSection Theo Pattern Content Trong AlarmEditScreen & Đóng Gói Với ReMindSettingsGroup
 - **Ngày thực hiện:** 2026-10-06
 - **Trạng thái:** Accepted
@@ -732,6 +760,19 @@ otificationStyle sang NotificationStyle.FULL_SCREEN.
   - Bổ sung chuỗi tài nguyên `vibration_enabled_desc` trong `values/strings.xml` và `values-vi/strings.xml`.
 - **Kết quả kiểm thử:**
   - `./gradlew testDebugUnitTest`: Vượt qua 100% toàn bộ 473 task thành công.
+
+### [2026-10-01] Refactor PaletteColorOption & Loại bỏ callback navigate thừa trong SettingsScreen
+- **Mục tiêu:**
+  - Cập nhật `PaletteColorOption` trong `GeneralSettingsScreen` sử dụng cặp màu `primary` và `onPrimary` (thay thế cho `primaryContainer`).
+  - Dọn dẹp các callback điều hướng không sử dụng (`onNavigateToQA`, `onNavigateToAlarmSettings`, `onNavigateToLicenses`) khỏi `SettingsRoute`, `SettingsScreen`, `settingsGraph` và `MainActivity`.
+- **Thực hiện:**
+  - `GeneralSettingsScreen.kt`:
+    - Đổi trường `primaryContainerLight` / `primaryContainerDark` của `PaletteColorOption` sang `onPrimaryLight` / `onPrimaryDark`.
+    - Cập nhật dải màu mẫu `ColorCircleSwatch` để hiển thị Icon Check có màu tint tương phản `onPrimaryColor` trên nền tròn `primaryColor`.
+  - `SettingsScreen.kt`, `SettingsNavigation.kt`, `MainActivity.kt`:
+    - Loại bỏ tham số điều hướng không dùng (`onNavigateToQA`, `onNavigateToAlarmSettings`, `onNavigateToLicenses`) khỏi `SettingsRoute` & `SettingsScreen`.
+    - Tinh giản `settingsGraph` và loại bỏ các import/call thừa ở `MainActivity`.
+
 
 
 

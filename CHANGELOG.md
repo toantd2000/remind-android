@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Quick Alarm (Báo thức nhanh):** Triển khai tính năng báo thức nhanh theo thiết kế Material 3 FAB Menu và Bottom Sheet hiện đại:
+  - **Material 3 FAB Menu:** Nhấn nút FAB mở menu xổ lên với các tùy chọn chuẩn Material 3 (Alarm, Quick alarm) với icon trực quan, tận dụng các component chuẩn M3 mà không cần file cấu hình phức tạp.
+  - **Quick Alarm Bottom Sheet:** Cho phép thiết lập báo thức nhanh qua bộ cộng dồn thời gian (+1m, +5m, +10m, +15m, +30m, +1h) kèm nút Reset về 0, hiển thị trực quan mốc giờ reo dự kiến `Ring at ...`, nhập mô tả ngắn gọn (nhãn), điều chỉnh âm thanh chuông, thanh trượt âm lượng và nút bật/tắt rung.
+  - **Vòng đời đặc thù của Báo thức nhanh:**
+    - Không mở màn hình chỉnh sửa khi nhấn vào card báo thức nhanh trên danh sách báo thức.
+    - Tự động xóa vĩnh viễn khỏi CSDL khi người dùng gạt tắt nút Switch trên danh sách.
+    - Tự động xóa vĩnh viễn khỏi CSDL khi người dùng hoàn thành/tắt chuông lúc báo thức reo (`dismissAlarm`).
+  - **Database Migration:** Nâng cấp CSDL Room lên phiên bản 9 với `MIGRATION_8_9` bổ sung cột `isQuickAlarm INTEGER NOT NULL DEFAULT 0` trong bảng `alarms`.
 - **Rich Reminder Card Presentation:** Upgraded `ReminderCard` with comprehensive and compact metadata: integrated recurrence summary directly into trigger badges, added formatted active time windows for interval reminders, and introduced a dedicated `NextTriggerFooter` calculating dynamic relative countdowns (e.g., "Lần tới: Hôm nay 14:00 (sau 2 giờ 15 phút)", "Báo lại: 10:35 (còn 12 phút)", "Đã tắt").
 - **Interval Recurrence Schedules:** Expanded `INTERVAL` (Lặp định kỳ) triggers to support the full spectrum of recurrence modes (`RepeatMode.NONE` with exact date picker, `RepeatMode.WEEKLY` with day-of-week selection, `RepeatMode.MONTHLY` with specific days of the month, and `RepeatMode.YEARLY` with specific month-day dates), in addition to interval minutes and active time windows.
 - **Inline Trigger Condition Configuration:** Moved the complete trigger condition configuration block directly into `ReminderEditScreen`, allowing users to configure fixed time targets, recurrence patterns, or interval minutes and active time windows without navigating to a separate screen.

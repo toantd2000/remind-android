@@ -1,3 +1,16 @@
+## [2026-10-07] Material 3 Native Components Over Custom Wrappers & Material 3 Expressive Lifecycle
+### Key Lessons
+- **Scaffold Hygiene & Native Component Reuse**: Wrapping `Scaffold` in an outer `Box` with custom full-screen Scrim overlays and custom Speed Dial components creates unnecessary layout nesting and maintenance overhead. Instead, anchoring Material 3's native `DropdownMenu` inside `Scaffold(floatingActionButton = { Box { FloatingActionButton(...) DropdownMenu(...) } })` leverages standard M3 dismissal, animation, and scrim behavior without producing orphaned files or polluting the root UI tree.
+- **Material 3 Expressive API Availability**: While Material 3 Expressive introduces official components like `FloatingActionButtonMenu`, `ToggleFloatingActionButton`, and `FloatingActionButtonMenuItem` to replace Speed Dials, these APIs reside strictly in the `1.5.0-alpha` track and remain `internal` in `1.4.0` stable. Projects on stable Compose BOMs must avoid forcing experimental alpha APIs that cause compilation failures (`Cannot access internal annotation class ExperimentalMaterial3ExpressiveApi`).
+- **Transient Entity Lifecycle Pattern**: For one-off, short-duration alerts (Quick Alarms), persisting them with a regular editing lifecycle introduces UX friction. Treating them as transient tasks that automatically purge on dismissal (`dismissAlarm`) and on manual disablement (`toggleAlarm`), while restricting edit screen access, keeps the main alarm list decluttered.
+- **Feature Scope Hygiene**: Unimplemented placeholders (like habit alarm options) should not be leaked into UI menus and localization strings. Pruning them keeps the UX focused and codebase clean.
+
+### Corrective Actions
+- Removed custom `AlarmSpeedDialFab` and outer Box wrapper; restored `Scaffold` as the root container in `AlarmListScreen`.
+- Implemented M3 FAB menu using `FloatingActionButton` + `DropdownMenu` with options for normal alarm and quick alarm, pruning unimplemented habit alarm references.
+- Automated deletion of quick alarms upon switch deactivation and ringing dismissal in `AlarmListViewModel` and `AlarmControllerImpl`.
+- Documented technical investigation of Material 3 Expressive 1.5.0 vs 1.4.0 in TDR and changelog.
+
 ## [2026-10-06] Compose Preview Out-of-Sync R Class Field Discrepancies
 ### Key Lessons
 - **AAPT & Bytecode Desynchronization in Compose Previews**: When adding new string resources (e.g. `action_clear_title` in `strings.xml`) during feature development, Android Studio Preview renders composables by loading compiled bytecode `.class` files (such as `R$string.class`) from the build output directory. If the module is not recompiled after adding resources, `stringResource(R.string.action_clear_title)` throws a `java.lang.NoSuchFieldError` at preview layout time.

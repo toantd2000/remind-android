@@ -8,6 +8,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -117,73 +118,73 @@ fun GeneralSettingsScreen(
                 key = "BLACK",
                 titleRes = R.string.color_black,
                 primaryLight = blackLightColorScheme.primary,
-                primaryContainerLight = blackLightColorScheme.primaryContainer,
+                onPrimaryLight = blackLightColorScheme.onPrimary,
                 primaryDark = blackDarkColorScheme.primary,
-                primaryContainerDark = blackDarkColorScheme.primaryContainer
+                onPrimaryDark = blackDarkColorScheme.onPrimary
             ),
             PaletteColorOption(
                 key = "RED",
                 titleRes = R.string.color_red,
                 primaryLight = redLightColorScheme.primary,
-                primaryContainerLight = redLightColorScheme.primaryContainer,
+                onPrimaryLight = redLightColorScheme.onPrimary,
                 primaryDark = redDarkColorScheme.primary,
-                primaryContainerDark = redDarkColorScheme.primaryContainer
+                onPrimaryDark = redDarkColorScheme.onPrimary
             ),
             PaletteColorOption(
                 key = "ORANGE",
                 titleRes = R.string.color_orange,
                 primaryLight = orangeLightColorScheme.primary,
-                primaryContainerLight = orangeLightColorScheme.primaryContainer,
+                onPrimaryLight = orangeLightColorScheme.onPrimary,
                 primaryDark = orangeDarkColorScheme.primary,
-                primaryContainerDark = orangeDarkColorScheme.primaryContainer
+                onPrimaryDark = orangeDarkColorScheme.onPrimary
             ),
             PaletteColorOption(
                 key = "YELLOW",
                 titleRes = R.string.color_yellow,
                 primaryLight = yellowLightColorScheme.primary,
-                primaryContainerLight = yellowLightColorScheme.primaryContainer,
+                onPrimaryLight = yellowLightColorScheme.onPrimary,
                 primaryDark = yellowDarkColorScheme.primary,
-                primaryContainerDark = yellowDarkColorScheme.primaryContainer
+                onPrimaryDark = yellowDarkColorScheme.onPrimary
             ),
             PaletteColorOption(
                 key = "GREEN",
                 titleRes = R.string.color_green,
                 primaryLight = greenLightColorScheme.primary,
-                primaryContainerLight = greenLightColorScheme.primaryContainer,
+                onPrimaryLight = greenLightColorScheme.onPrimary,
                 primaryDark = greenDarkColorScheme.primary,
-                primaryContainerDark = greenDarkColorScheme.primaryContainer
+                onPrimaryDark = greenDarkColorScheme.onPrimary
             ),
             PaletteColorOption(
                 key = "BLUE",
                 titleRes = R.string.color_blue,
                 primaryLight = blueLightColorScheme.primary,
-                primaryContainerLight = blueLightColorScheme.primaryContainer,
+                onPrimaryLight = blueLightColorScheme.onPrimary,
                 primaryDark = blueDarkColorScheme.primary,
-                primaryContainerDark = blueDarkColorScheme.primaryContainer
+                onPrimaryDark = blueDarkColorScheme.onPrimary
             ),
             PaletteColorOption(
                 key = "INDIGO",
                 titleRes = R.string.color_indigo,
                 primaryLight = indigoLightColorScheme.primary,
-                primaryContainerLight = indigoLightColorScheme.primaryContainer,
+                onPrimaryLight = indigoLightColorScheme.onPrimary,
                 primaryDark = indigoDarkColorScheme.primary,
-                primaryContainerDark = indigoDarkColorScheme.primaryContainer
+                onPrimaryDark = indigoDarkColorScheme.onPrimary
             ),
             PaletteColorOption(
                 key = "VIOLET",
                 titleRes = R.string.color_violet,
                 primaryLight = violetLightColorScheme.primary,
-                primaryContainerLight = violetLightColorScheme.primaryContainer,
+                onPrimaryLight = violetLightColorScheme.onPrimary,
                 primaryDark = violetDarkColorScheme.primary,
-                primaryContainerDark = violetDarkColorScheme.primaryContainer
+                onPrimaryDark = violetDarkColorScheme.onPrimary
             ),
             PaletteColorOption(
                 key = "DYNAMIC",
                 titleRes = R.string.color_screen,
                 primaryLight = dynamicLight.primary,
-                primaryContainerLight = dynamicLight.primaryContainer,
+                onPrimaryLight = dynamicLight.onPrimary,
                 primaryDark = dynamicDark.primary,
-                primaryContainerDark = dynamicDark.primaryContainer
+                onPrimaryDark = dynamicDark.onPrimary
             )
         )
     }
@@ -235,6 +236,7 @@ fun GeneralSettingsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
+            contentPadding = PaddingValues(LiteverTheme.spacing.medium),
             verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
         ) {
             // Display Group
@@ -429,9 +431,9 @@ private data class PaletteColorOption(
     val key: String,
     val titleRes: Int,
     val primaryLight: Color,
-    val primaryContainerLight: Color,
+    val onPrimaryLight: Color,
     val primaryDark: Color,
-    val primaryContainerDark: Color
+    val onPrimaryDark: Color
 )
 
 @Composable
@@ -492,7 +494,7 @@ private fun ColorCircleSwatch(
     modifier: Modifier = Modifier
 ) {
     val primaryColor = if (isDark) item.primaryDark else item.primaryLight
-    val containerColor = if (isDark) item.primaryContainerDark else item.primaryContainerLight
+    val onPrimaryColor = if (isDark) item.onPrimaryDark else item.onPrimaryLight
 
     Column(
         modifier = modifier
@@ -523,7 +525,7 @@ private fun ColorCircleSwatch(
                 Icon(
                     imageVector = ReMindIcons.Check,
                     contentDescription = null,
-                    tint = containerColor,
+                    tint = onPrimaryColor,
                     modifier = Modifier.size(20.dp)
                 )
             }

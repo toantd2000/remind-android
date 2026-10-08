@@ -64,12 +64,10 @@ import vn.io.litever.remind.features.mission.ui.navigateToMemoryGameConfig
 import vn.io.litever.remind.features.mission.ui.navigateToMissionRinging
 import vn.io.litever.remind.features.mission.ui.navigateToPhraseSelection
 import vn.io.litever.remind.features.mission.ui.navigateToTypingMissionConfig
-import vn.io.litever.remind.features.settings.ui.navigateToAlarmSettings
 import vn.io.litever.remind.features.settings.ui.navigateToAttributions
 import vn.io.litever.remind.features.settings.ui.navigateToGeneralSettings
 import vn.io.litever.remind.features.settings.ui.navigateToLicenses
 import vn.io.litever.remind.features.settings.ui.navigateToPermissions
-import vn.io.litever.remind.features.settings.ui.navigateToQA
 import vn.io.litever.remind.features.settings.ui.settingsGraph
 import vn.io.litever.remind.features.settings.ui.settingsRoute
 import vn.io.litever.remind.features.today.ui.locationSearchRoute
@@ -486,11 +484,9 @@ class MainActivity : ComponentActivity() {
                                             )
                                             settingsGraph(
                                                 onNavigateToGeneralSettings = { navController.navigateToGeneralSettings() },
-                                                onNavigateToQA = { navController.navigateToQA() },
                                                 onNavigateToPermissions = { navController.navigateToPermissions() },
-                                                onNavigateToAlarmSettings = { navController.navigateToAlarmSettings() },
-                                                onNavigateToLicenses = { navController.navigateToLicenses() },
                                                 onNavigateToAttributions = { navController.navigateToAttributions() },
+                                                onNavigateToLicenses = { navController.navigateToLicenses() },
                                                 onNavigateBack = { navController.popBackStack() }
                                             )
                                         }

@@ -45,21 +45,16 @@ fun NavController.navigateToAttributions() {
 
 fun NavGraphBuilder.settingsGraph(
     onNavigateToGeneralSettings: () -> Unit,
-    onNavigateToQA: () -> Unit,
     onNavigateToPermissions: () -> Unit,
-    onNavigateToAlarmSettings: () -> Unit,
-    onNavigateToLicenses: () -> Unit,
     onNavigateToAttributions: () -> Unit,
+    onNavigateToLicenses: () -> Unit,
     onNavigateBack: () -> Unit
 ) {
 
     composable(settingsRoute) {
         SettingsRoute(
             onNavigateToGeneralSettings = onNavigateToGeneralSettings,
-            onNavigateToQA = onNavigateToQA,
             onNavigateToPermissions = onNavigateToPermissions,
-            onNavigateToAlarmSettings = onNavigateToAlarmSettings,
-            onNavigateToLicenses = onNavigateToLicenses,
             onNavigateToAttributions = onNavigateToAttributions
         )
     }
@@ -70,20 +65,9 @@ fun NavGraphBuilder.settingsGraph(
             onNavigateBack = onNavigateBack
         )
     }
-    
-    // Placeholder for Phase 2 & 3
-    composable(qaRoute) {
-        // Placeholder QAScreen
-    }
-    
+
     composable(permissionsRoute) {
         PermissionSettingsRoute(
-            onNavigateBack = onNavigateBack
-        )
-    }
-    
-    composable(alarmSettingsRoute) {
-        AlarmSettingsRoute(
             onNavigateBack = onNavigateBack
         )
     }

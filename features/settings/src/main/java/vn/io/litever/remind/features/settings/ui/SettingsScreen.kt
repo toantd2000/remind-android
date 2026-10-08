@@ -9,14 +9,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -51,6 +50,7 @@ import vn.io.litever.remind.core.ads.api.LocalAdManager
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsItem
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.features.settings.BuildConfig
 import vn.io.litever.remind.features.settings.R
@@ -58,10 +58,7 @@ import vn.io.litever.remind.features.settings.R
 @Composable
 fun SettingsRoute(
     onNavigateToGeneralSettings: () -> Unit,
-    onNavigateToQA: () -> Unit,
     onNavigateToPermissions: () -> Unit,
-    onNavigateToAlarmSettings: () -> Unit,
-    onNavigateToLicenses: () -> Unit,
     onNavigateToAttributions: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
@@ -70,10 +67,7 @@ fun SettingsRoute(
     SettingsScreen(
         uiState = uiState,
         onNavigateToGeneralSettings = onNavigateToGeneralSettings,
-        onNavigateToQA = onNavigateToQA,
         onNavigateToPermissions = onNavigateToPermissions,
-        onNavigateToAlarmSettings = onNavigateToAlarmSettings,
-        onNavigateToLicenses = onNavigateToLicenses,
         onNavigateToAttributions = onNavigateToAttributions,
         onRewardGranted = { viewModel.disableAdsFor24Hours(context) }
     )
@@ -84,10 +78,7 @@ fun SettingsRoute(
 fun SettingsScreen(
     uiState: SettingsUiState,
     onNavigateToGeneralSettings: () -> Unit,
-    onNavigateToQA: () -> Unit,
     onNavigateToPermissions: () -> Unit,
-    onNavigateToAlarmSettings: () -> Unit,
-    onNavigateToLicenses: () -> Unit,
     onNavigateToAttributions: () -> Unit,
     onRewardGranted: () -> Unit
 ) {
@@ -142,7 +133,8 @@ fun SettingsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small),
+            contentPadding = PaddingValues(LiteverTheme.spacing.medium)
         ) {
             // Group 1: App Settings
             item {
@@ -236,12 +228,7 @@ fun SettingsScreen(
                 val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
                 val versionName = packageInfo.versionName ?: "1.0"
                 val versionCode =
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-                        packageInfo.longVersionCode
-                    } else {
-                        @Suppress("DEPRECATION")
-                        packageInfo.versionCode.toLong()
-                    }
+                    packageInfo.longVersionCode
 
                 ReMindSettingsGroup {
                     ReMindSettingsItem(
@@ -256,7 +243,6 @@ fun SettingsScreen(
                 }
             }
 
-            item { Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium)) }
         }
     }
 
@@ -439,10 +425,7 @@ fun SettingsScreenPreview() {
             SettingsScreen(
                 uiState = SettingsUiState(),
                 onNavigateToGeneralSettings = {},
-                onNavigateToQA = {},
                 onNavigateToPermissions = {},
-                onNavigateToAlarmSettings = {},
-                onNavigateToLicenses = {},
                 onNavigateToAttributions = {},
                 onRewardGranted = {}
             )
@@ -458,10 +441,7 @@ fun SettingsScreenDarkPreview() {
             SettingsScreen(
                 uiState = SettingsUiState(),
                 onNavigateToGeneralSettings = {},
-                onNavigateToQA = {},
                 onNavigateToPermissions = {},
-                onNavigateToAlarmSettings = {},
-                onNavigateToLicenses = {},
                 onNavigateToAttributions = {},
                 onRewardGranted = {}
             )

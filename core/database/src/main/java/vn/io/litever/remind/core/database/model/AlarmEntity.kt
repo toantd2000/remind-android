@@ -27,7 +27,8 @@ data class AlarmEntity(
     val gradualVolumeDurationSeconds: Int,
     val lastTriggeredTime: Long?,
     val useAlarmStream: Boolean = true,
-    val overrideDndEnabled: Boolean = false
+    val overrideDndEnabled: Boolean = false,
+    val isQuickAlarm: Boolean = false
 )
 
 

@@ -46,11 +46,16 @@ class AlarmControllerImpl @Inject constructor(
                         "alarm_id" to alarm.id
                     ))
 
-                    val updatedAlarm = alarm.copy(
-                        currentSnoozeCount = 0,
-                        snoozeNextTriggerTime = null
-                    )
-                    alarmRepository.updateAlarm(updatedAlarm)
+                    if (alarm.isQuickAlarm) {
+                        alarmScheduler.cancel(alarm)
+                        alarmRepository.deleteAlarm(alarm)
+                    } else {
+                        val updatedAlarm = alarm.copy(
+                            currentSnoozeCount = 0,
+                            snoozeNextTriggerTime = null
+                        )
+                        alarmRepository.updateAlarm(updatedAlarm)
+                    }
                 }
             }
         }

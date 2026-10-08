@@ -31,7 +31,8 @@ fun AlarmEntity.toModel(): Alarm {
         gradualVolumeDurationSeconds = gradualVolumeDurationSeconds,
         lastTriggeredTime = lastTriggeredTime,
         useAlarmStream = useAlarmStream,
-        overrideDndEnabled = overrideDndEnabled
+        overrideDndEnabled = overrideDndEnabled,
+        isQuickAlarm = isQuickAlarm
     )
 }
 
@@ -64,6 +65,7 @@ fun Alarm.toEntity(): AlarmEntity {
         gradualVolumeDurationSeconds = gradualVolumeDurationSeconds,
         lastTriggeredTime = lastTriggeredTime,
         useAlarmStream = useAlarmStream,
-        overrideDndEnabled = overrideDndEnabled
+        overrideDndEnabled = overrideDndEnabled,
+        isQuickAlarm = isQuickAlarm
     )
 }

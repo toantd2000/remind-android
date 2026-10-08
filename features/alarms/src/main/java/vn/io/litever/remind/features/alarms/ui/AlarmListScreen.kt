@@ -2,6 +2,7 @@ package vn.io.litever.remind.features.alarms.ui
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
+import vn.io.litever.remind.features.alarms.ui.components.QuickAlarmBottomSheet
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -162,6 +164,7 @@ fun AlarmListRoute(
         onNavigateToPermissions = onNavigateToPermissions,
         onRewardGranted = viewModel::disableAdsFor24Hours,
         isAdFreeActive = isAdFreeActive,
+        onCreateQuickAlarm = viewModel::createQuickAlarm,
         modifier = modifier
     )
 }
@@ -189,16 +192,20 @@ fun AlarmListScreen(
     onNavigateToPermissions: () -> Unit,
     onRewardGranted: () -> Unit,
     isAdFreeActive: Boolean,
+    onCreateQuickAlarm: (minutes: Int, label: String, ringtoneUri: String?, volume: Int, vibrationEnabled: Boolean) -> Unit = { _, _, _, _, _ -> },
     modifier: Modifier = Modifier
 ) {
     var showTopMenu by remember { mutableStateOf(false) }
     var selectedAlarmForMenu by remember { mutableStateOf<Alarm?>(null) }
+    var showFabMenu by remember { mutableStateOf(false) }
+    var showQuickAlarmSheet by remember { mutableStateOf(false) }
     val actionMoreDescription = stringResource(R.string.action_more)
     val deleteDisabledAlarmsText = stringResource(R.string.delete_disabled_alarms)
     val actionAddDescription = stringResource(R.string.action_add)
     val hasAlarms = !alarms.isNullOrEmpty()
 
     Scaffold(
+        modifier = modifier,
         topBar = {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -275,15 +282,40 @@ fun AlarmListScreen(
         },
         floatingActionButton = {
             if (hasAlarms) {
-                FloatingActionButton(onClick = onAddAlarmClick) {
-                    Icon(ReMindIcons.Add, contentDescription = actionAddDescription)
+                Box {
+                    FloatingActionButton(
+                        onClick = { showFabMenu = !showFabMenu }
+                    ) {
+                        Icon(ReMindIcons.Add, contentDescription = actionAddDescription)
+                    }
+                    DropdownMenu(
+                        expanded = showFabMenu,
+                        onDismissRequest = { showFabMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.alarm_option)) },
+                            leadingIcon = { Icon(ReMindIcons.Alarm, contentDescription = null) },
+                            onClick = {
+                                showFabMenu = false
+                                onAddAlarmClick()
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.quick_alarm)) },
+                            leadingIcon = { Icon(ReMindIcons.FlashOn, contentDescription = null) },
+                            onClick = {
+                                showFabMenu = false
+                                showQuickAlarmSheet = true
+                            }
+                        )
+                    }
                 }
             }
         },
         snackbarHost = { LvSnackbarHost(snackbarHostState) }
     ) { padding ->
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
             verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small),
@@ -318,7 +350,11 @@ fun AlarmListScreen(
                                 alarm = alarm,
                                 is24HourFormat = is24HourFormat,
                                 onToggle = { onToggleAlarm(alarm) },
-                                onClick = { onAlarmClick(alarm) },
+                                onClick = {
+                                    if (!alarm.isQuickAlarm) {
+                                        onAlarmClick(alarm)
+                                    }
+                                },
                                 onMoreClick = { selectedAlarmForMenu = alarm },
                                 modifier = Modifier.animateItem()
                             )
@@ -365,6 +401,18 @@ fun AlarmListScreen(
                 onPreviewClick(selectedAlarmForMenu!!)
                 if (selectedAlarmForMenu != null) selectedAlarmForMenu = null
             }
+        )
+    }
+
+    // Quick Alarm Bottom Sheet
+    if (showQuickAlarmSheet) {
+        QuickAlarmBottomSheet(
+            onDismissRequest = { showQuickAlarmSheet = false },
+            onSave = { minutes, label, ringtoneUri, volume, vibrationEnabled ->
+                onCreateQuickAlarm(minutes, label, ringtoneUri, volume, vibrationEnabled)
+                showQuickAlarmSheet = false
+            },
+            is24HourFormat = is24HourFormat
         )
     }
 }
@@ -668,6 +716,13 @@ private val sampleAlarmsForPreview = listOf(
             DayOfWeek.SATURDAY,
             DayOfWeek.SUNDAY
         )
+    ),
+    Alarm(
+        id = 3L,
+        time = LocalTime.of(15, 45),
+        label = "Power nap",
+        isEnabled = true,
+        isQuickAlarm = true
     )
 )
 

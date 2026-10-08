@@ -135,6 +135,20 @@
     <string name="watch_ad_dialog_message">Cảm ơn bạn đã ủng hộ chúng tôi!</string>
     <string name="ads_disabled_reward_message">Chân thành cảm ơn bạn! Quảng cáo đã được tạm tắt trong vòng 24 giờ tới.</string>
     <string name="close_text">Đóng</string>
+    <string name="quick_alarm">Báo thức nhanh</string>
+    <string name="alarm_option">Báo thức</string>
+    <string name="quick_alarm_ring_at">Đổ chuông lúc %s</string>
+    <string name="quick_alarm_1_min">1 phút</string>
+    <string name="quick_alarm_5_min">5 phút</string>
+    <string name="quick_alarm_10_min">10 phút</string>
+    <string name="quick_alarm_15_min">15 phút</string>
+    <string name="quick_alarm_30_min">30 phút</string>
+    <string name="quick_alarm_1_hour">1 giờ</string>
+    <string name="alarm_sound">Âm thanh báo thức</string>
+    <string name="quick_alarm_created">Đã đặt báo thức nhanh lúc %s</string>
+    <string name="quick_alarm_tag">Báo thức nhanh</string>
+    <string name="quick_alarm_desc_placeholder">Mô tả ngắn gọn (tùy chọn)</string>
+    <string name="reset">Đặt lại</string>
 </resources>
 
 

@@ -135,6 +135,20 @@
     <string name="watch_ad_dialog_message">Thank you so much for supporting us!</string>
     <string name="ads_disabled_reward_message">Thank you for watching! Ads have been temporarily disabled for the next 24 hours.</string>
     <string name="close_text">Close</string>
+    <string name="quick_alarm">Quick alarm</string>
+    <string name="alarm_option">Alarm</string>
+    <string name="quick_alarm_ring_at">Ring at %s</string>
+    <string name="quick_alarm_1_min">1 min</string>
+    <string name="quick_alarm_5_min">5 min</string>
+    <string name="quick_alarm_10_min">10 min</string>
+    <string name="quick_alarm_15_min">15 min</string>
+    <string name="quick_alarm_30_min">30 min</string>
+    <string name="quick_alarm_1_hour">1 hours</string>
+    <string name="alarm_sound">Alarm sound</string>
+    <string name="quick_alarm_created">Quick alarm set for %s</string>
+    <string name="quick_alarm_tag">Quick alarm</string>
+    <string name="quick_alarm_desc_placeholder">Brief description (optional)</string>
+    <string name="reset">Reset</string>
 </resources>
 
 

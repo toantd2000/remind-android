@@ -267,4 +267,51 @@ class AlarmListViewModelTest {
         viewModel.dismissPermissionWarning()
         assertTrue(viewModel.isPermissionWarningDismissed.value)
     }
+
+    @Test
+    fun toggleAlarm_whenQuickAlarm_deletesAlarmImmediately() = runTest(testDispatcher) {
+        val quickAlarm = Alarm(
+            id = 99L,
+            time = LocalTime.of(12, 0),
+            isEnabled = true,
+            isQuickAlarm = true
+        )
+
+        viewModel.toggleAlarm(quickAlarm)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { repository.deleteAlarm(quickAlarm) }
+        coVerify { alarmScheduler.cancel(quickAlarm) }
+        coVerify(exactly = 0) { repository.updateAlarm(any()) }
+    }
+
+    @Test
+    fun createQuickAlarm_schedulesAndInsertsQuickAlarm() = runTest(testDispatcher) {
+        coEvery { repository.insertAlarm(any()) } returns 101L
+
+        viewModel.createQuickAlarm(
+            minutes = 15,
+            label = "Nap time",
+            ringtoneUri = "content://media/1",
+            volume = 80,
+            vibrationEnabled = false
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            repository.insertAlarm(match {
+                it.label == "Nap time" &&
+                it.isQuickAlarm &&
+                it.isEnabled &&
+                it.volume == 80 &&
+                !it.vibrationEnabled &&
+                it.ringtoneUri == "content://media/1"
+            })
+        }
+        coVerify {
+            alarmScheduler.schedule(match {
+                it.id == 101L && it.isQuickAlarm && it.label == "Nap time"
+            })
+        }
+    }
 }

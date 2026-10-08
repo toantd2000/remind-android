@@ -82,21 +82,40 @@ fun AlarmCard(
                     bottom = LiteverTheme.spacing.smallMedium
                 ),
         ) {
-            // Top Row: Repeat Info
+            // Top Row: Repeat Info or Quick Alarm Tag
             val skippedAt = alarm.skippedAt
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = getRepeatText(alarm),
-                    style = LiteverTheme.typography.labelSmall,
-                    color = if (alarm.isEnabled && !isSkipped)
-                        LiteverTheme.colors.primary
-                    else
-                        LiteverTheme.colors.secondary,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.weight(1f, fill = false),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                if (alarm.isQuickAlarm) {
+                    Icon(
+                        imageVector = ReMindIcons.FlashOn,
+                        contentDescription = null,
+                        tint = if (alarm.isEnabled && !isSkipped) LiteverTheme.colors.primary else LiteverTheme.colors.secondary,
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
+                    Text(
+                        text = stringResource(R.string.quick_alarm_tag),
+                        style = LiteverTheme.typography.labelSmall,
+                        color = if (alarm.isEnabled && !isSkipped) LiteverTheme.colors.primary else LiteverTheme.colors.secondary,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.weight(1f, fill = false),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                } else {
+                    Text(
+                        text = getRepeatText(alarm),
+                        style = LiteverTheme.typography.labelSmall,
+                        color = if (alarm.isEnabled && !isSkipped)
+                            LiteverTheme.colors.primary
+                        else
+                            LiteverTheme.colors.secondary,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.weight(1f, fill = false),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
 
                 if (isSkipped && skippedAt != null) {
                     Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))

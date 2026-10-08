@@ -111,6 +111,12 @@ class AlarmListViewModel @Inject constructor(
 
     fun toggleAlarm(alarm: Alarm) {
         viewModelScope.launch {
+            if (alarm.isQuickAlarm) {
+                // When toggling off quick alarm from list, delete it immediately
+                deleteAlarm(alarm)
+                return@launch
+            }
+
             val isEnabling = !alarm.isEnabled
             
             // Block enabling if permissions are missing
@@ -130,6 +136,40 @@ class AlarmListViewModel @Inject constructor(
             } else {
                 alarmScheduler.cancel(updatedAlarm)
             }
+        }
+    }
+
+    fun createQuickAlarm(
+        minutes: Int,
+        label: String = "",
+        ringtoneUri: String? = null,
+        volume: Int = 100,
+        vibrationEnabled: Boolean = true
+    ) {
+        viewModelScope.launch {
+            if (!permissionChecker.hasCriticalPermissions()) {
+                _hasCriticalPermissions.value = false
+                _uiMessage.emit(vn.io.litever.remind.features.alarms.R.string.error_missing_permissions)
+                return@launch
+            }
+
+            val triggerDateTime = LocalDateTime.now().plusMinutes(minutes.toLong())
+            val alarm = Alarm(
+                id = 0L,
+                time = triggerDateTime.toLocalTime().withSecond(0).withNano(0),
+                date = triggerDateTime.toLocalDate(),
+                label = label.trim(),
+                isEnabled = true,
+                repeatDays = emptyList(),
+                vibrationEnabled = vibrationEnabled,
+                volume = volume,
+                ringtoneUri = ringtoneUri,
+                isQuickAlarm = true,
+                snoozeEnabled = false
+            )
+            val newId = repository.insertAlarm(alarm)
+            val scheduledAlarm = alarm.copy(id = newId)
+            alarmScheduler.schedule(scheduledAlarm)
         }
     }
 

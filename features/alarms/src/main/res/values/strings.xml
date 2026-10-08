@@ -149,6 +149,7 @@
     <string name="quick_alarm_tag">Quick alarm</string>
     <string name="quick_alarm_desc_placeholder">Brief description (optional)</string>
     <string name="reset">Reset</string>
+    <string name="set_alarm">Set alarm</string>
 </resources>
 
 

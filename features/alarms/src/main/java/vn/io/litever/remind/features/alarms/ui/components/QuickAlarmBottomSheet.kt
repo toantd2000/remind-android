@@ -3,7 +3,6 @@ package vn.io.litever.remind.features.alarms.ui.components
 import android.content.Context
 import android.media.AudioManager
 import android.media.RingtoneManager
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,7 +25,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -44,16 +42,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import vn.io.litever.designsystem.components.button.LvButton
+import vn.io.litever.designsystem.components.button.LvButtonType
 import vn.io.litever.designsystem.components.button.LvIconButton
 import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.components.ReMindBottomSheetContent
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.features.alarms.R
@@ -77,11 +77,15 @@ fun QuickAlarmBottomSheet(
         containerColor = LiteverTheme.colors.surface,
         modifier = modifier
     ) {
-        QuickAlarmBottomSheetContent(
-            onDismiss = onDismissRequest,
-            onSave = onSave,
-            is24HourFormat = is24HourFormat
-        )
+        ReMindBottomSheetContent(
+            title = stringResource(R.string.quick_alarm),
+        ) {
+            QuickAlarmBottomSheetContent(
+                onDismiss = onDismissRequest,
+                onSave = onSave,
+                is24HourFormat = is24HourFormat
+            )
+        }
     }
 }
 
@@ -101,7 +105,9 @@ fun QuickAlarmBottomSheetContent(
     var vibrationEnabled by remember { mutableStateOf(true) }
     var volume by remember { mutableIntStateOf(maxVolume.coerceAtLeast(1)) }
     var ringtoneUri by remember { mutableStateOf<String?>(null) }
-    var ringtoneTitle by remember { mutableStateOf(context.getString(R.string.default_ringtone)) }
+    var ringtoneTitle by remember { mutableStateOf<String?>(null) }
+    val defaultRingtoneTitle = stringResource(R.string.default_ringtone)
+    val displayRingtoneTitle = ringtoneTitle ?: defaultRingtoneTitle
     var showRingtoneDialog by remember { mutableStateOf(false) }
 
     val ringAtTime = remember(totalMinutes) {
@@ -119,37 +125,8 @@ fun QuickAlarmBottomSheetContent(
             .navigationBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // 1. Header: Title + Close Button
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = LiteverTheme.spacing.small)
-        ) {
-            Text(
-                text = stringResource(R.string.quick_alarm),
-                style = LiteverTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = LiteverTheme.colors.onSurface,
-                modifier = Modifier.align(Alignment.Center)
-            )
 
-            LvIconButton(
-                onClick = onDismiss,
-                modifier = Modifier
-                    .size(36.dp)
-                    .align(Alignment.CenterEnd)
-            ) {
-                Icon(
-                    imageVector = ReMindIcons.Close,
-                    contentDescription = stringResource(R.string.close_text),
-                    tint = LiteverTheme.colors.onSurfaceVariant
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
-
-        // 2. Increment Display (+ 0m / + 15m) and Reset button
+        // 1. Increment Display (+ 0h / + 0m) and Reset button
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
@@ -167,7 +144,7 @@ fun QuickAlarmBottomSheetContent(
                 text = displayText,
                 style = LiteverTheme.typography.displayMedium.copy(
                     fontSize = 44.sp,
-                    fontWeight = FontWeight.Normal,
+                    fontWeight = FontWeight.ExtraBold,
                     letterSpacing = (-1).sp
                 ),
                 color = LiteverTheme.colors.onSurface
@@ -187,55 +164,60 @@ fun QuickAlarmBottomSheetContent(
             }
         }
 
-        // Subtitle: Ring at ...
+        // Subtitle: Target ring time calculation
         Text(
             text = stringResource(R.string.quick_alarm_ring_at, formattedRingTime),
-            style = LiteverTheme.typography.bodyLarge,
+            style = LiteverTheme.typography.labelMedium,
             color = LiteverTheme.colors.onSurfaceVariant,
             modifier = Modifier.padding(bottom = LiteverTheme.spacing.mediumLarge)
         )
 
-        // 3. Preset Time Grid (2 rows x 3 buttons)
+        // 2. Preset Time Grid (2 rows x 3 buttons)
         val presetsRow1 = listOf(1 to R.string.quick_alarm_1_min, 5 to R.string.quick_alarm_5_min, 10 to R.string.quick_alarm_10_min)
         val presetsRow2 = listOf(15 to R.string.quick_alarm_15_min, 30 to R.string.quick_alarm_30_min, 60 to R.string.quick_alarm_1_hour)
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.smallMedium)
+            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
         ) {
             presetsRow1.forEach { (mins, resId) ->
-                PresetButton(
-                    text = stringResource(resId),
+                LvButton(
                     onClick = { totalMinutes += mins },
+                    semantic = LvSemantic.Secondary,
                     modifier = Modifier.weight(1f)
-                )
+                ) {
+                    Text(stringResource(resId))
+                }
             }
         }
-
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.smallMedium)
+            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
         ) {
             presetsRow2.forEach { (mins, resId) ->
-                PresetButton(
-                    text = stringResource(resId),
+                LvButton(
                     onClick = { totalMinutes += mins },
+                    semantic = LvSemantic.Secondary,
                     modifier = Modifier.weight(1f)
-                )
+                ) {
+                    Text(stringResource(resId))
+                }
             }
         }
 
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.mediumLarge))
+        Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
 
-        // 4. Brief description (Label) input
+        // 3. Optional Label (description) input field
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
                 .background(LiteverTheme.colors.surfaceContainer)
-                .padding(horizontal = LiteverTheme.spacing.medium, vertical = LiteverTheme.spacing.smallMedium)
+                .padding(
+                    horizontal = LiteverTheme.spacing.medium,
+                    vertical = LiteverTheme.spacing.smallMedium
+                )
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -288,116 +270,131 @@ fun QuickAlarmBottomSheetContent(
             }
         }
 
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.mediumLarge))
-
-        // 5. Sound & Vibration settings
-        // Row: Alarm Sound
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { showRingtoneDialog = true }
-                .padding(vertical = LiteverTheme.spacing.smallMedium),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.alarm_sound),
-                style = LiteverTheme.typography.bodyLarge,
-                color = LiteverTheme.colors.onSurface,
-                modifier = Modifier.weight(1f)
-            )
-
-            Text(
-                text = ringtoneTitle,
-                style = LiteverTheme.typography.bodyMedium,
-                color = LiteverTheme.colors.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
-
-            Icon(
-                imageVector = ReMindIcons.ChevronRight,
-                contentDescription = null,
-                tint = LiteverTheme.colors.onSurfaceVariant,
-                modifier = Modifier.size(20.dp)
-            )
-        }
-
-        // Row: Volume slider & Vibrate Switch (as shown in reference image)
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = LiteverTheme.spacing.small),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = if (volume == 0) ReMindIcons.VolumeOff else ReMindIcons.VolumeUp,
-                contentDescription = stringResource(R.string.volume),
-                tint = LiteverTheme.colors.onSurfaceVariant,
-                modifier = Modifier.size(24.dp)
-            )
-
-            Slider(
-                value = volume.toFloat(),
-                onValueChange = { volume = it.roundToInt() },
-                valueRange = 0f..maxVolume.toFloat(),
-                steps = if (maxVolume > 1) maxVolume - 1 else 0,
+        // 4. Sound & Vibration settings group
+        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+        ReMindSettingsGroup {
+            Row(
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = LiteverTheme.spacing.small),
-                colors = SliderDefaults.colors(
-                    thumbColor = LiteverTheme.colors.onSurface,
-                    activeTrackColor = LiteverTheme.colors.onSurface,
-                    inactiveTrackColor = LiteverTheme.colors.surfaceContainerHighest
+                    .fillMaxWidth()
+                    .clickable { showRingtoneDialog = true }
+                    .padding(top = LiteverTheme.spacing.medium)
+                    .padding(horizontal = LiteverTheme.spacing.medium),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.alarm_sound),
+                    style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = LiteverTheme.colors.onSurface,
+                    modifier = Modifier.weight(1f)
                 )
-            )
 
-            // Small vertical separator
-            Box(
+                Text(
+                    text = displayRingtoneTitle,
+                    style = LiteverTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                    color = LiteverTheme.colors.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
+
+                Icon(
+                    imageVector = ReMindIcons.ChevronRight,
+                    contentDescription = null,
+                    tint = LiteverTheme.colors.onSurfaceVariant,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+
+            // Row: Volume slider & Vibration toggle switch
+            Row(
                 modifier = Modifier
-                    .height(20.dp)
-                    .width(1.dp)
-                    .background(LiteverTheme.colors.outlineVariant.copy(alpha = 0.5f))
-            )
+                    .fillMaxWidth()
+                    .padding(horizontal = LiteverTheme.spacing.medium)
+                    .padding(top = LiteverTheme.spacing.small, bottom = LiteverTheme.spacing.medium),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = if (volume == 0) ReMindIcons.VolumeOff else ReMindIcons.VolumeUp,
+                    contentDescription = stringResource(R.string.volume),
+                    tint = LiteverTheme.colors.onSurfaceVariant,
+                    modifier = Modifier.size(24.dp)
+                )
 
-            Spacer(modifier = Modifier.width(LiteverTheme.spacing.smallMedium))
+                Slider(
+                    value = volume.toFloat(),
+                    onValueChange = { volume = it.roundToInt() },
+                    valueRange = 0f..maxVolume.toFloat(),
+                    steps = if (maxVolume > 1) maxVolume - 1 else 0,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = LiteverTheme.spacing.small),
+                    colors = SliderDefaults.colors(
+                        thumbColor = LiteverTheme.colors.onSurface,
+                        activeTrackColor = LiteverTheme.colors.onSurface,
+                        inactiveTrackColor = LiteverTheme.colors.surfaceContainerHighest
+                    )
+                )
 
-            Icon(
-                imageVector = ReMindIcons.Vibration,
-                contentDescription = stringResource(R.string.vibration),
-                tint = if (vibrationEnabled) LiteverTheme.colors.primary else LiteverTheme.colors.onSurfaceVariant,
-                modifier = Modifier.size(24.dp)
-            )
+                // Small vertical separator
+                Box(
+                    modifier = Modifier
+                        .height(20.dp)
+                        .width(1.dp)
+                        .background(LiteverTheme.colors.outlineVariant.copy(alpha = 0.5f))
+                )
 
-            Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
+                Spacer(modifier = Modifier.width(LiteverTheme.spacing.smallMedium))
 
-            Switch(
-                checked = vibrationEnabled,
-                onCheckedChange = { vibrationEnabled = it }
-            )
+                Icon(
+                    imageVector = ReMindIcons.Vibration,
+                    contentDescription = stringResource(R.string.vibration),
+                    tint = if (vibrationEnabled) LiteverTheme.colors.primary else LiteverTheme.colors.onSurfaceVariant,
+                    modifier = Modifier.size(24.dp)
+                )
+
+                Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
+
+                Switch(
+                    checked = vibrationEnabled,
+                    onCheckedChange = { vibrationEnabled = it }
+                )
+            }
         }
 
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.large))
 
-        // 6. Save Button (Full width primary button)
-        LvButton(
-            onClick = {
-                if (totalMinutes > 0) {
-                    onSave(totalMinutes, label, ringtoneUri, volume, vibrationEnabled)
-                }
-            },
-            enabled = totalMinutes > 0,
-            semantic = LvSemantic.Primary,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(52.dp)
+
+        Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+
+        // 5. Action Buttons (Cancel & Set Alarm)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
         ) {
-            Text(
-                text = stringResource(R.string.save),
-                style = LiteverTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
+            LvButton(
+                onClick = onDismiss,
+                type = LvButtonType.Outlined,
+                semantic = LvSemantic.Secondary
+            ) {
+                Text(
+                    text = stringResource(R.string.action_cancel),
+                )
+            }
+
+            LvButton(
+                onClick = {
+                    if (totalMinutes > 0) {
+                        onSave(totalMinutes, label, ringtoneUri, volume, vibrationEnabled)
+                    }
+                },
+                enabled = totalMinutes > 0,
+                semantic = LvSemantic.Primary,
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = stringResource(R.string.set_alarm),
+                )
+            }
         }
     }
 
@@ -416,41 +413,16 @@ fun QuickAlarmBottomSheetContent(
 }
 
 @Composable
-private fun PresetButton(
-    text: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Surface(
-        onClick = onClick,
-        shape = RoundedCornerShape(12.dp),
-        color = LiteverTheme.colors.surfaceContainerHigh,
-        modifier = modifier.height(48.dp)
-    ) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.padding(horizontal = 4.dp)
-        ) {
-            Text(
-                text = text,
-                style = LiteverTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
-                color = LiteverTheme.colors.onSurface,
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-}
-
-@Composable
 private fun QuickRingtoneDialog(
     currentUri: String?,
     onDismiss: () -> Unit,
     onSelect: (uri: String?, title: String) -> Unit
 ) {
     val context = LocalContext.current
-    val ringtones = remember {
+    val defaultRingtoneTitle = stringResource(R.string.default_ringtone)
+    val ringtones = remember(defaultRingtoneTitle) {
         val list = mutableListOf<Pair<String?, String>>()
-        list.add(null to context.getString(R.string.default_ringtone))
+        list.add(null to defaultRingtoneTitle)
         try {
             val manager = RingtoneManager(context)
             manager.setType(RingtoneManager.TYPE_ALARM or RingtoneManager.TYPE_RINGTONE)
@@ -480,7 +452,7 @@ private fun QuickRingtoneDialog(
                 androidx.compose.foundation.lazy.LazyColumn {
                     items(ringtones.size) { index ->
                         val (uri, title) = ringtones[index]
-                        val isSelected = (uri == currentUri) || (uri == null && currentUri == null)
+                        val isSelected = (uri == currentUri)
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()

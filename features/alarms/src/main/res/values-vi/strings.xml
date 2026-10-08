@@ -149,6 +149,7 @@
     <string name="quick_alarm_tag">Báo thức nhanh</string>
     <string name="quick_alarm_desc_placeholder">Mô tả ngắn gọn (tùy chọn)</string>
     <string name="reset">Đặt lại</string>
+    <string name="set_alarm">Đặt báo thức</string>
 </resources>
 
 

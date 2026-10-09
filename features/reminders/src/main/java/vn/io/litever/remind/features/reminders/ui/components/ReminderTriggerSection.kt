@@ -1,9 +1,9 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,20 +11,20 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.components.LiteverFilterChip
 import vn.io.litever.designsystem.components.button.LvButton
 import vn.io.litever.designsystem.components.button.LvButtonType
 import vn.io.litever.designsystem.components.button.LvIconButton
@@ -83,110 +83,64 @@ fun ReminderTriggerSection(
             }
 
             ReminderTriggerType.INTERVAL -> {
+                var showIntervalBottomSheet by remember { mutableStateOf(false) }
+                val totalMins = uiState.intervalMinutes ?: 0
+                val hours = totalMins / 60
+                val minutes = totalMins % 60
+                val displayDuration = when {
+                    totalMins <= 0 -> stringResource(R.string.off)
+                    hours > 0 && minutes > 0 -> "${hours}h ${minutes}m"
+                    hours > 0 -> "${hours}h"
+                    else -> "${minutes}m"
+                }
+
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = LiteverTheme.spacing.medium),
                     verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                    // Simple settings row (clickable card) opening IntervalBottomSheet
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(LiteverTheme.colors.surfaceContainer)
+                            .clickable { showIntervalBottomSheet = true }
+                            .padding(LiteverTheme.spacing.medium),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = stringResource(R.string.interval_section_title),
-                            style = LiteverTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = LiteverTheme.colors.onSurface
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = stringResource(R.string.interval_section_title),
+                                style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                color = LiteverTheme.colors.onSurface
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = if (totalMins > 0) displayDuration else stringResource(R.string.off),
+                                style = LiteverTheme.typography.bodyMedium,
+                                color = if (totalMins > 0) LiteverTheme.colors.primary else LiteverTheme.colors.onSurfaceVariant
+                            )
+                        }
+
+                        Icon(
+                            imageVector = ReMindIcons.ChevronRight,
+                            contentDescription = null,
+                            tint = LiteverTheme.colors.onSurfaceVariant,
+                            modifier = Modifier.size(20.dp)
                         )
+                    }
 
-                        // Inspired by QuickAlarmBottomSheet: Prominent interval display & Reset button
-                        val totalMins = uiState.intervalMinutes ?: 0
-                        val hours = totalMins / 60
-                        val minutes = totalMins % 60
-                        val displayDuration = when {
-                            totalMins <= 0 -> "0m"
-                            hours > 0 && minutes > 0 -> "${hours}h ${minutes}m"
-                            hours > 0 -> "${hours}h"
-                            else -> "${minutes}m"
-                        }
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(LiteverTheme.colors.surfaceContainer)
-                                .padding(
-                                    horizontal = LiteverTheme.spacing.medium,
-                                    vertical = LiteverTheme.spacing.smallMedium
-                                )
-                        ) {
-                            Column {
-                                Text(
-                                    text = stringResource(R.string.interval_minutes_label),
-                                    style = LiteverTheme.typography.bodySmall,
-                                    color = LiteverTheme.colors.onSurfaceVariant
-                                )
-                                Text(
-                                    text = displayDuration,
-                                    style = LiteverTheme.typography.headlineMedium.copy(
-                                        fontWeight = FontWeight.ExtraBold
-                                    ),
-                                    color = LiteverTheme.colors.primary
-                                )
+                    if (showIntervalBottomSheet) {
+                        IntervalBottomSheet(
+                            currentIntervalMinutes = totalMins,
+                            onDismissRequest = { showIntervalBottomSheet = false },
+                            onConfirm = { mins ->
+                                onIntervalMinutesChange(if (mins > 0) mins.toString() else "")
+                                showIntervalBottomSheet = false
                             }
-
-                            if (totalMins > 0) {
-                                LvIconButton(
-                                    onClick = { onIntervalMinutesChange("") },
-                                    modifier = Modifier.size(36.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = ReMindIcons.Refresh,
-                                        contentDescription = stringResource(R.string.reset),
-                                        tint = LiteverTheme.colors.onSurfaceVariant
-                                    )
-                                }
-                            }
-                        }
-
-                        // Quick interval presets arranged in structured grid cells for easy tapping
-                        val presets = listOf(
-                            15 to stringResource(R.string.interval_preset_15m),
-                            30 to stringResource(R.string.interval_preset_30m),
-                            60 to stringResource(R.string.interval_preset_1h),
-                            120 to stringResource(R.string.interval_preset_2h),
-                            180 to stringResource(R.string.interval_preset_3h),
-                            240 to stringResource(R.string.interval_preset_4h)
                         )
-
-                        val chunkedPresets = presets.chunked(3)
-                        chunkedPresets.forEach { rowPresets ->
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
-                            ) {
-                                rowPresets.forEach { (minutes, label) ->
-                                    val isSelected = uiState.intervalMinutes == minutes
-                                    LvButton(
-                                        onClick = { onIntervalMinutesChange(minutes.toString()) },
-                                        modifier = Modifier.weight(1f),
-                                        type = if (isSelected) LvButtonType.Tonal else LvButtonType.Outlined,
-                                        semantic = if (isSelected) LvSemantic.Primary else LvSemantic.Secondary
-                                    ) {
-                                        Text(
-                                            text = label,
-                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
-                                        )
-                                    }
-                                }
-                                repeat(3 - rowPresets.size) {
-                                    Spacer(modifier = Modifier.weight(1f))
-                                }
-                            }
-                        }
                     }
 
                     // Multi-TimeWindow Configuration (Active daily time windows)
@@ -207,8 +161,7 @@ fun ReminderTriggerSection(
                             )
                         },
                         is24HourFormat = is24HourFormat,
-                        modifier = Modifier.padding(horizontal = LiteverTheme.spacing.medium)
-                            .padding(bottom = LiteverTheme.spacing.medium)
+                        modifier = Modifier.padding(bottom = LiteverTheme.spacing.medium)
                     )
                 }
             }

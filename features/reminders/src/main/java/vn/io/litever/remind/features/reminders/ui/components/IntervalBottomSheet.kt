@@ -9,10 +9,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -23,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import vn.io.litever.designsystem.components.button.LvButton
 import vn.io.litever.designsystem.components.button.LvButtonType
 import vn.io.litever.designsystem.components.button.LvIconButton
@@ -40,8 +43,11 @@ fun IntervalBottomSheet(
     onConfirm: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
+        sheetState = sheetState,
         containerColor = LiteverTheme.colors.surface,
         modifier = modifier
     ) {
@@ -64,7 +70,7 @@ fun IntervalBottomSheetContent(
     onConfirm: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var selectedMinutes by remember { mutableIntStateOf(currentIntervalMinutes) }
+    var totalMinutes by remember { mutableIntStateOf(currentIntervalMinutes) }
 
     Column(
         modifier = modifier
@@ -74,87 +80,85 @@ fun IntervalBottomSheetContent(
             .navigationBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Display selected time (similar to QuickAlarmBottomSheet)
-        val hours = selectedMinutes / 60
-        val minutes = selectedMinutes % 60
-        val displayDuration = when {
-            selectedMinutes <= 0 -> "0m"
-            hours > 0 && minutes > 0 -> "${hours}h ${minutes}m"
-            hours > 0 -> "${hours}h"
-            else -> "${minutes}m"
-        }
-
+        // 1. Increment Display (+ 0h / + 0m) and Reset button (Exactly like QuickAlarmBottomSheet)
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
+            val hours = totalMinutes / 60
+            val minutes = totalMinutes % 60
+            val displayText = when {
+                hours > 0 && minutes > 0 -> "+ ${hours}h ${minutes}m"
+                hours > 0 -> "+ ${hours}h"
+                else -> "+ ${totalMinutes}m"
+            }
+
             Text(
-                text = displayDuration,
+                text = displayText,
                 style = LiteverTheme.typography.displayMedium.copy(
-                    fontWeight = FontWeight.ExtraBold
+                    fontSize = 44.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    letterSpacing = (-1).sp
                 ),
                 color = LiteverTheme.colors.onSurface
             )
 
-            if (selectedMinutes > 0) {
-                Spacer(modifier = Modifier.padding(start = LiteverTheme.spacing.small))
-                LvIconButton(
-                    onClick = { selectedMinutes = 0 },
-                    modifier = Modifier.size(36.dp)
+            Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
+
+            LvIconButton(
+                onClick = { totalMinutes = 0 },
+                modifier = Modifier.size(36.dp)
+            ) {
+                Icon(
+                    imageVector = ReMindIcons.Refresh,
+                    contentDescription = stringResource(R.string.reset),
+                    tint = LiteverTheme.colors.onSurfaceVariant
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(LiteverTheme.spacing.mediumLarge))
+
+        // 2. Preset Time Grid (2 rows x 3 buttons) - Exactly like QuickAlarmBottomSheet
+        val presetsRow1 = listOf(15 to R.string.interval_preset_15m, 30 to R.string.interval_preset_30m, 60 to R.string.interval_preset_1h)
+        val presetsRow2 = listOf(120 to R.string.interval_preset_2h, 180 to R.string.interval_preset_3h, 240 to R.string.interval_preset_4h)
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+        ) {
+            presetsRow1.forEach { (mins, resId) ->
+                LvButton(
+                    onClick = { totalMinutes += mins },
+                    semantic = LvSemantic.Secondary,
+                    modifier = Modifier.weight(1f)
                 ) {
-                    Icon(
-                        imageVector = ReMindIcons.Refresh,
-                        contentDescription = stringResource(R.string.reset),
-                        tint = LiteverTheme.colors.onSurfaceVariant
-                    )
+                    Text(stringResource(resId))
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+        ) {
+            presetsRow2.forEach { (mins, resId) ->
+                LvButton(
+                    onClick = { totalMinutes += mins },
+                    semantic = LvSemantic.Secondary,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(stringResource(resId))
                 }
             }
         }
 
         Spacer(modifier = Modifier.height(LiteverTheme.spacing.mediumLarge))
 
-        // Preset grid (chunked by 3)
-        val presets = listOf(
-            15 to stringResource(R.string.interval_preset_15m),
-            30 to stringResource(R.string.interval_preset_30m),
-            60 to stringResource(R.string.interval_preset_1h),
-            120 to stringResource(R.string.interval_preset_2h),
-            180 to stringResource(R.string.interval_preset_3h),
-            240 to stringResource(R.string.interval_preset_4h)
-        )
-
-        val chunkedPresets = presets.chunked(3)
-        chunkedPresets.forEach { rowPresets ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = LiteverTheme.spacing.extraSmall),
-                horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
-            ) {
-                rowPresets.forEach { (mins, label) ->
-                    val isSelected = selectedMinutes == mins
-                    LvButton(
-                        onClick = { selectedMinutes = mins },
-                        modifier = Modifier.weight(1f),
-                        type = if (isSelected) LvButtonType.Tonal else LvButtonType.Outlined,
-                        semantic = if (isSelected) LvSemantic.Primary else LvSemantic.Secondary
-                    ) {
-                        Text(
-                            text = label,
-                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
-                        )
-                    }
-                }
-                repeat(3 - rowPresets.size) {
-                    Spacer(modifier = Modifier.weight(1f))
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.large))
-
-        // Action Buttons (Cancel & Save / Set Interval)
+        // 3. Action Buttons (Cancel & Save) - Exactly like QuickAlarmBottomSheet
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
@@ -164,15 +168,24 @@ fun IntervalBottomSheetContent(
                 type = LvButtonType.Outlined,
                 semantic = LvSemantic.Secondary
             ) {
-                Text(text = stringResource(R.string.action_cancel))
+                Text(
+                    text = stringResource(R.string.action_cancel),
+                )
             }
 
             LvButton(
-                onClick = { onConfirm(selectedMinutes) },
+                onClick = {
+                    if (totalMinutes > 0) {
+                        onConfirm(totalMinutes)
+                    }
+                },
+                enabled = totalMinutes > 0,
                 semantic = LvSemantic.Primary,
                 modifier = Modifier.weight(1f)
             ) {
-                Text(text = stringResource(R.string.action_save))
+                Text(
+                    text = stringResource(R.string.action_save),
+                )
             }
         }
     }

@@ -25,7 +25,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import vn.io.litever.designsystem.components.LiteverFilterChip
+import vn.io.litever.designsystem.components.button.LvButton
+import vn.io.litever.designsystem.components.button.LvButtonType
 import vn.io.litever.designsystem.components.button.LvIconButton
+import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
@@ -149,7 +152,7 @@ fun ReminderTriggerSection(
                             }
                         }
 
-                        // Quick interval presets
+                        // Quick interval presets arranged in structured grid cells for easy tapping
                         val presets = listOf(
                             15 to stringResource(R.string.interval_preset_15m),
                             30 to stringResource(R.string.interval_preset_30m),
@@ -159,36 +162,31 @@ fun ReminderTriggerSection(
                             240 to stringResource(R.string.interval_preset_4h)
                         )
 
-                        FlowRow(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            presets.forEach { (minutes, label) ->
-                                val isSelected = uiState.intervalMinutes == minutes
-                                LiteverFilterChip(
-                                    selected = isSelected,
-                                    onClick = { onIntervalMinutesChange(minutes.toString()) },
-                                    label = {
+                        val chunkedPresets = presets.chunked(3)
+                        chunkedPresets.forEach { rowPresets ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                            ) {
+                                rowPresets.forEach { (minutes, label) ->
+                                    val isSelected = uiState.intervalMinutes == minutes
+                                    LvButton(
+                                        onClick = { onIntervalMinutesChange(minutes.toString()) },
+                                        modifier = Modifier.weight(1f),
+                                        type = if (isSelected) LvButtonType.Tonal else LvButtonType.Outlined,
+                                        semantic = if (isSelected) LvSemantic.Primary else LvSemantic.Secondary
+                                    ) {
                                         Text(
-                                            label,
-                                            style = LiteverTheme.typography.labelSmall,
-                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                            text = label,
+                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
                                         )
                                     }
-                                )
+                                }
+                                repeat(3 - rowPresets.size) {
+                                    Spacer(modifier = Modifier.weight(1f))
+                                }
                             }
                         }
-
-                        Spacer(modifier = Modifier.height(LiteverTheme.spacing.extraSmall))
-
-                        OutlinedTextField(
-                            value = uiState.intervalMinutes?.toString() ?: "",
-                            onValueChange = { onIntervalMinutesChange(it.filter { char -> char.isDigit() }) },
-                            label = { Text(stringResource(R.string.interval_minutes_label)) },
-                            placeholder = { Text(stringResource(R.string.interval_minutes_hint)) },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            modifier = Modifier.fillMaxWidth()
-                        )
                     }
 
                     // Multi-TimeWindow Configuration (Active daily time windows)

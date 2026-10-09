@@ -1,25 +1,34 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import vn.io.litever.designsystem.components.LiteverFilterChip
+import vn.io.litever.designsystem.components.button.LvIconButton
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.ReminderTimeWindow
 import vn.io.litever.remind.core.model.ReminderTriggerType
@@ -72,11 +81,14 @@ fun ReminderTriggerSection(
 
             ReminderTriggerType.INTERVAL -> {
                 Column(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = LiteverTheme.spacing.medium),
                     verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
                 ) {
                     Column(
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
                     ) {
                         Text(
                             text = stringResource(R.string.interval_section_title),
@@ -85,18 +97,57 @@ fun ReminderTriggerSection(
                             color = LiteverTheme.colors.onSurface
                         )
 
-                        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+                        // Inspired by QuickAlarmBottomSheet: Prominent interval display & Reset button
+                        val totalMins = uiState.intervalMinutes ?: 0
+                        val hours = totalMins / 60
+                        val minutes = totalMins % 60
+                        val displayDuration = when {
+                            totalMins <= 0 -> "0m"
+                            hours > 0 && minutes > 0 -> "${hours}h ${minutes}m"
+                            hours > 0 -> "${hours}h"
+                            else -> "${minutes}m"
+                        }
 
-                        OutlinedTextField(
-                            value = uiState.intervalMinutes?.toString() ?: "",
-                            onValueChange = { onIntervalMinutesChange(it.filter { char -> char.isDigit() }) },
-                            label = { Text(stringResource(R.string.interval_minutes_label)) },
-                            placeholder = { Text(stringResource(R.string.interval_minutes_hint)) },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(LiteverTheme.colors.surfaceContainer)
+                                .padding(
+                                    horizontal = LiteverTheme.spacing.medium,
+                                    vertical = LiteverTheme.spacing.smallMedium
+                                )
+                        ) {
+                            Column {
+                                Text(
+                                    text = stringResource(R.string.interval_minutes_label),
+                                    style = LiteverTheme.typography.bodySmall,
+                                    color = LiteverTheme.colors.onSurfaceVariant
+                                )
+                                Text(
+                                    text = displayDuration,
+                                    style = LiteverTheme.typography.headlineMedium.copy(
+                                        fontWeight = FontWeight.ExtraBold
+                                    ),
+                                    color = LiteverTheme.colors.primary
+                                )
+                            }
 
-                        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+                            if (totalMins > 0) {
+                                LvIconButton(
+                                    onClick = { onIntervalMinutesChange("") },
+                                    modifier = Modifier.size(36.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = ReMindIcons.Refresh,
+                                        contentDescription = stringResource(R.string.reset),
+                                        tint = LiteverTheme.colors.onSurfaceVariant
+                                    )
+                                }
+                            }
+                        }
 
                         // Quick interval presets
                         val presets = listOf(
@@ -113,18 +164,31 @@ fun ReminderTriggerSection(
                             verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             presets.forEach { (minutes, label) ->
+                                val isSelected = uiState.intervalMinutes == minutes
                                 LiteverFilterChip(
-                                    selected = uiState.intervalMinutes == minutes,
+                                    selected = isSelected,
                                     onClick = { onIntervalMinutesChange(minutes.toString()) },
                                     label = {
                                         Text(
                                             label,
-                                            style = LiteverTheme.typography.labelSmall
+                                            style = LiteverTheme.typography.labelSmall,
+                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                                         )
                                     }
                                 )
                             }
                         }
+
+                        Spacer(modifier = Modifier.height(LiteverTheme.spacing.extraSmall))
+
+                        OutlinedTextField(
+                            value = uiState.intervalMinutes?.toString() ?: "",
+                            onValueChange = { onIntervalMinutesChange(it.filter { char -> char.isDigit() }) },
+                            label = { Text(stringResource(R.string.interval_minutes_label)) },
+                            placeholder = { Text(stringResource(R.string.interval_minutes_hint)) },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            modifier = Modifier.fillMaxWidth()
+                        )
                     }
 
                     // Multi-TimeWindow Configuration (Active daily time windows)

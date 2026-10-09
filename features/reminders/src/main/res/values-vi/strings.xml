@@ -249,4 +249,5 @@
     <string name="interval_minutes_format">Mỗi %d phút</string>
     <string name="time_window_all_day_badge">Cả ngày</string>
     <string name="time_window_badge_format">Khung giờ: %s</string>
+    <string name="reset">Đặt lại</string>
 </resources>

@@ -249,4 +249,5 @@
     <string name="interval_minutes_format">Every %d min</string>
     <string name="time_window_all_day_badge">All day</string>
     <string name="time_window_badge_format">Window: %s</string>
+    <string name="reset">Reset</string>
 </resources>

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +17,8 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -89,17 +92,18 @@ fun ReminderRepeatConfigSection(
         title = stringResource(R.string.repeat_title),
         modifier = modifier
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = LiteverTheme.spacing.medium),
+        val intervals = listOf(
+            ReminderRepeatInterval.NONE,
+            ReminderRepeatInterval.WEEKLY,
+            ReminderRepeatInterval.MONTHLY,
+            ReminderRepeatInterval.YEARLY
+        )
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(horizontal = LiteverTheme.spacing.medium),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            val intervals = listOf(
-                ReminderRepeatInterval.NONE,
-                ReminderRepeatInterval.WEEKLY,
-                ReminderRepeatInterval.MONTHLY,
-                ReminderRepeatInterval.YEARLY
-            )
-            intervals.forEach { interval ->
+            items(intervals) { interval ->
                 val labelRes = when (interval) {
                     ReminderRepeatInterval.NONE -> R.string.repeat_interval_once
                     ReminderRepeatInterval.WEEKLY -> R.string.repeat_interval_weekly
@@ -130,8 +134,7 @@ fun ReminderRepeatConfigSection(
                         borderColor = LiteverTheme.colors.outlineVariant,
                         selectedBorderColor = LiteverTheme.colors.outline
                     ),
-                    shape = LiteverTheme.shapes.medium,
-                    modifier = Modifier.weight(1f)
+                    shape = LiteverTheme.shapes.medium
                 )
             }
         }

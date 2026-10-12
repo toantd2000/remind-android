@@ -31,13 +31,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import vn.io.litever.designsystem.components.LiteverFilterChip
-import vn.io.litever.designsystem.components.LiteverSegmentedButton
-import vn.io.litever.designsystem.components.LiteverSingleChoiceSegmentedButtonRow
 import vn.io.litever.designsystem.components.LiteverSwitch
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.AutoSilenceBottomSheet
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingIcon
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsCategory
+import vn.io.litever.remind.core.designsystem.components.SnoozeBottomSheet
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.NotificationStyle
@@ -68,6 +67,7 @@ fun ReminderAlertConfigSection(
     onTogglePlay: () -> Unit = {}
 ) {
     var showAutoSilenceSheet by remember { mutableStateOf(false) }
+    var showSnoozeSheet by remember { mutableStateOf(false) }
 
     if (showAutoSilenceSheet) {
         AutoSilenceBottomSheet(
@@ -78,6 +78,16 @@ fun ReminderAlertConfigSection(
             },
             onDismissRequest = { showAutoSilenceSheet = false },
             options = listOf(1, 3, 5, 10, 15, 30, 0)
+        )
+    }
+
+    if (showSnoozeSheet) {
+        SnoozeBottomSheet(
+            enabled = snoozeEnabled,
+            interval = snoozeIntervalMinutes,
+            onEnabledChange = onSnoozeEnabledChange,
+            onIntervalChange = onSnoozeIntervalChange,
+            onDismissRequest = { showSnoozeSheet = false }
         )
     }
 
@@ -413,106 +423,58 @@ fun ReminderAlertConfigSection(
                 }
             }
 
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            // 4. Alert Behavior & Snooze (Inline Snooze Configuration)
-            Text(
-                text = stringResource(R.string.alert_behavior_snooze_title),
-                style = LiteverTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold,
-                color = LiteverTheme.colors.primary
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
+            // 4. Snooze Row
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(LiteverTheme.shapes.medium),
+                    .clip(LiteverTheme.shapes.medium)
+                    .clickable { showSnoozeSheet = true },
                 color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.4f),
                 shape = LiteverTheme.shapes.medium
             ) {
-                Column(
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 12.dp)
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    // Snooze Enable Switch Row
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onSnoozeEnabledChange(!snoozeEnabled) }
-                            .padding(horizontal = 14.dp),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        modifier = Modifier.weight(1f)
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            ReMindSettingIcon(
-                                imageVector = ReMindIcons.Snooze,
-                                selected = snoozeEnabled
+                        ReMindSettingIcon(
+                            imageVector = ReMindIcons.Snooze,
+                            selected = snoozeEnabled
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            Text(
+                                text = stringResource(R.string.snooze_action),
+                                style = LiteverTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = LiteverTheme.colors.onSurface
                             )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column {
-                                Text(
-                                    text = stringResource(R.string.snooze_enabled_label),
-                                    style = LiteverTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = LiteverTheme.colors.onSurface
-                                )
-                                val summary = if (snoozeEnabled) {
-                                    stringResource(R.string.minutes_format, snoozeIntervalMinutes)
-                                } else {
-                                    stringResource(R.string.off)
-                                }
-                                Text(
-                                    text = summary,
-                                    style = LiteverTheme.typography.bodySmall,
-                                    color = LiteverTheme.colors.onSurfaceVariant
-                                )
+                            val snoozeSummary = if (snoozeEnabled) {
+                                stringResource(R.string.minutes_format, snoozeIntervalMinutes)
+                            } else {
+                                stringResource(R.string.off)
                             }
-                        }
-
-                        LiteverSwitch(
-                            checked = snoozeEnabled,
-                            onCheckedChange = onSnoozeEnabledChange
-                        )
-                    }
-
-                    // Snooze Default Interval Selector (Visible when snooze is enabled)
-                    if (snoozeEnabled) {
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Text(
-                            text = stringResource(R.string.snooze_interval_label),
-                            style = LiteverTheme.typography.labelMedium,
-                            fontWeight = FontWeight.Medium,
-                            color = LiteverTheme.colors.onSurfaceVariant,
-                            modifier = Modifier.padding(horizontal = 14.dp)
-                        )
-                        Spacer(modifier = Modifier.height(6.dp))
-
-                        val intervalOptions = listOf(5, 10, 15, 30)
-                        LiteverSingleChoiceSegmentedButtonRow(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 14.dp)
-                        ) {
-                            intervalOptions.forEach { interval ->
-                                LiteverSegmentedButton(
-                                    selected = snoozeIntervalMinutes == interval,
-                                    onClick = { onSnoozeIntervalChange(interval) },
-                                    label = {
-                                        Text(
-                                            text = stringResource(R.string.minutes_format, interval),
-                                            style = LiteverTheme.typography.labelMedium
-                                        )
-                                    }
-                                )
-                            }
+                            Text(
+                                text = snoozeSummary,
+                                style = LiteverTheme.typography.bodySmall,
+                                color = LiteverTheme.colors.onSurfaceVariant
+                            )
                         }
                     }
+
+                    Icon(
+                        imageVector = ReMindIcons.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.5f)
+                    )
                 }
             }
         }

@@ -51,6 +51,10 @@
     <!-- Time Trigger Section -->
     <string name="section_time_trigger">Schedule</string>
     <string name="select_time">Select Time</string>
+    <string name="set_reminder_time">Set Reminder Time</string>
+    <string name="set_reminder_date">Set Reminder Date</string>
+    <string name="set_start_time">Set Start Time</string>
+    <string name="set_end_time">Set End Time</string>
     <string name="select_date">Select Date (Optional)</string>
     <string name="tap_to_select_date">Tap to select date</string>
     <string name="repeat_days_label">Repeat Days</string>
@@ -208,6 +212,9 @@
 
     <!-- Interval Trigger -->
     <string name="interval_section_title">Repeat Interval</string>
+    <string name="interval_not_set">Not set</string>
+    <string name="interval_set_format">Set: %s</string>
+    <string name="tap_to_set_interval">Tap to set interval time</string>
     <string name="interval_minutes_label">Repeat Every (Minutes)</string>
     <string name="interval_minutes_hint">e.g. 60 (every 1 hour)</string>
     <string name="interval_preset_15m">15m</string>

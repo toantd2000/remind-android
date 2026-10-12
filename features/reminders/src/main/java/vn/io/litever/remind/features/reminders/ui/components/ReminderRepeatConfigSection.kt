@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChipDefaults
@@ -44,11 +45,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.components.LiteverButton
-import vn.io.litever.designsystem.components.LiteverDatePickerDialog
 import vn.io.litever.designsystem.components.LiteverFilterChip
 import vn.io.litever.designsystem.components.LiteverIconButton
-import vn.io.litever.designsystem.components.LiteverOutlinedButton
+import vn.io.litever.designsystem.components.button.LvButton
+import vn.io.litever.designsystem.components.button.LvButtonType
+import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
@@ -193,10 +194,10 @@ fun ReminderRepeatConfigSection(
             }
         )
 
-        LiteverDatePickerDialog(
+        DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
             confirmButton = {
-                LiteverButton(
+                LvButton(
                     onClick = {
                         val selectedMillis = datePickerState.selectedDateMillis
                         if (selectedMillis != null) {
@@ -207,18 +208,37 @@ fun ReminderRepeatConfigSection(
                             onRepeatDaysChange(emptyList())
                         }
                         showDatePicker = false
-                    }
+                    },
+                    semantic = LvSemantic.Primary
                 ) {
                     Text(stringResource(R.string.action_save))
                 }
             },
             dismissButton = {
-                LiteverOutlinedButton(onClick = { showDatePicker = false }) {
+                LvButton(
+                    onClick = { showDatePicker = false },
+                    type = LvButtonType.Outlined,
+                    semantic = LvSemantic.Secondary
+                ) {
                     Text(stringResource(R.string.action_cancel))
                 }
             }
         ) {
-            DatePicker(state = datePickerState)
+            DatePicker(
+                state = datePickerState,
+                title = {
+                    Text(
+                        stringResource(R.string.set_reminder_date),
+                        style = LiteverTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                        modifier = Modifier.padding(
+                            top = LiteverTheme.spacing.medium,
+                            bottom = LiteverTheme.spacing.small,
+                            start = LiteverTheme.spacing.medium,
+                            end = LiteverTheme.spacing.medium
+                        )
+                    )
+                }
+            )
         }
     }
 
@@ -366,17 +386,22 @@ fun ReminderRepeatConfigSection(
                 }
             },
             confirmButton = {
-                LiteverButton(
+                LvButton(
                     onClick = {
                         onAddYearlyDate(selectedMonth, selectedDay)
                         showAddYearlyDateDialog = false
-                    }
+                    },
+                    semantic = LvSemantic.Primary
                 ) {
                     Text(stringResource(R.string.action_save))
                 }
             },
             dismissButton = {
-                LiteverOutlinedButton(onClick = { showAddYearlyDateDialog = false }) {
+                LvButton(
+                    onClick = { showAddYearlyDateDialog = false },
+                    type = LvButtonType.Outlined,
+                    semantic = LvSemantic.Secondary
+                ) {
                     Text(stringResource(R.string.action_cancel))
                 }
             }
@@ -532,7 +557,7 @@ fun ReminderRepeatConfigSection(
                 }
             },
             confirmButton = {
-                LiteverButton(
+                LvButton(
                     onClick = {
                         if (editingDateIndex in yearlyDates.indices) {
                             onRemoveYearlyDate(editingDateIndex)
@@ -541,18 +566,21 @@ fun ReminderRepeatConfigSection(
                         showEditYearlyDateDialog = false
                         dateToEdit = null
                         editingDateIndex = -1
-                    }
+                    },
+                    semantic = LvSemantic.Primary
                 ) {
                     Text(stringResource(R.string.action_save))
                 }
             },
             dismissButton = {
-                LiteverOutlinedButton(
+                LvButton(
                     onClick = {
                         showEditYearlyDateDialog = false
                         dateToEdit = null
                         editingDateIndex = -1
-                    }
+                    },
+                    type = LvButtonType.Outlined,
+                    semantic = LvSemantic.Secondary
                 ) {
                     Text(stringResource(R.string.action_cancel))
                 }

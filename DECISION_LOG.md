@@ -268,7 +268,7 @@ This document records the solidified technical decisions and behavioral scenario
     - Ringtone selection applies to both modes (dynamically resolved via `RingtoneManager`).
     - Volume Slider, Auto-silence, and STREAM_ALARM switch are exclusively shown under "Đổ chuông".
     - "Thông báo thường" displays a clean standalone Vibration switch (without volume slider, as notification sound volume is governed by Android system notification volume).
-    - Snooze configuration is embedded directly inline (Switch to enable/disable + quick interval choices of 5, 10, 15, 30 minutes) without navigating away to a separate screen.
+    - Snooze configuration is displayed as a setting row (leading `ReMindIcons.Snooze`, "Báo lại" title, summary subtitle showing interval or "Tắt", and trailing chevron) matching the "Tự động tắt chuông" row inside `ReminderAlertConfigSection`. Tapping the row opens the shared `SnoozeBottomSheet` (in `:core:designsystem`) to configure Enable/Disable and Interval (1, 3, 5, 10, 30 minutes), while omitting the Repeat Count section since reminders have no snooze count limit.
 
 ## 16. Reminder List Screen Simplification & Tab Labeling
 
@@ -343,3 +343,16 @@ This document records the solidified technical decisions and behavioral scenario
   - Removed obsolete actions in `ReminderListViewModel`: `deleteCompletedReminders()`, `toggleCompleted()`.
   - Updated `ReminderActionBottomSheet.kt` with `onToggleEnabledClick` replacing `onToggleCompletedClick`.
   - Updated `ReminderCard.kt` removing `LiteverSwitch` and `onToggle` parameter.
+
+## 20. Unified Snooze Bottom Sheet & Date/Time Picker Dialogs Across Alarms and Reminders
+
+### Scenario: Snooze Bottom Sheet & Date/Time Picker Consistency
+- **Expected Behavior**:
+  - **Snooze Configuration**: Both `AlarmEditScreen` and `ReminderEditScreen` (`ReminderAlertConfigSection`) display Snooze ("Báo lại") as a compact setting row opening the shared `SnoozeBottomSheet` from `:core:designsystem`. For Reminders, the Repeat Count section is hidden (`repeatCount = null`), displaying only Enable toggle and Interval options (`1, 3, 5, 10, 30` min).
+  - **Date & Time Picker Dialogs**: All Date and Time Picker dialogs in `:features:reminders` (`ReminderRepeatConfigSection`, `ReminderTimeConfigSection`, `ReminderTimeWindowConfigSection`) match `AlarmEditScreen` visually and structurally:
+    - Material 3 `DatePickerDialog` and `TimePickerDialog` with bold `titleLarge` header titles (`"Đặt ngày nhắc nhở"` / `"Set Reminder Date"`, `"Đặt giờ nhắc nhở"` / `"Set Reminder Time"`, `"Đặt giờ bắt đầu"` / `"Set Start Time"`, `"Đặt giờ kết thúc"` / `"Set End Time"`).
+    - `LvButton` (`LvSemantic.Primary`) for confirm ("Lưu" / "Save") and `LvButton` (`LvButtonType.Outlined`, `LvSemantic.Secondary`) for dismiss ("Hủy" / "Cancel").
+- **Technical Decision**:
+  - Consolidated `SnoozeBottomSheet.kt` into `:core:designsystem`.
+  - Replaced legacy `LiteverDatePickerDialog`, `LiteverTimePickerDialog`, `LiteverButton`, and `LiteverOutlinedButton` in `ReminderRepeatConfigSection.kt`, `ReminderTimeConfigSection.kt`, and `ReminderTimeWindowConfigSection.kt` with `DatePickerDialog`, `TimePickerDialog`, and `LvButton`.
+

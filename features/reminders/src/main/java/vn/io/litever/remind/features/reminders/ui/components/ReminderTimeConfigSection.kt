@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -14,6 +15,7 @@ import androidx.compose.material3.InputChip
 import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerDialog
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,9 +28,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.components.LiteverButton
-import vn.io.litever.designsystem.components.LiteverOutlinedButton
-import vn.io.litever.designsystem.components.LiteverTimePickerDialog
+import vn.io.litever.designsystem.components.button.LvButton
+import vn.io.litever.designsystem.components.button.LvButtonType
+import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
@@ -136,17 +138,38 @@ fun ReminderTimeConfigSection(
             initialMinute = 0,
             is24Hour = is24HourFormat
         )
-        LiteverTimePickerDialog(
+        TimePickerDialog(
+            title = {
+                Text(
+                    stringResource(R.string.set_reminder_time),
+                    style = LiteverTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    modifier = Modifier.padding(
+                        bottom = LiteverTheme.spacing.medium,
+                    )
+                )
+            },
             onDismissRequest = { showAddTimePicker = false },
             confirmButton = {
-                LiteverButton(onClick = {
-                    onAddFixedTime(LocalTime.of(addTimeState.hour, addTimeState.minute))
-                    showAddTimePicker = false
-                }) { Text(stringResource(R.string.action_save)) }
+                LvButton(
+                    onClick = {
+                        onAddFixedTime(LocalTime.of(addTimeState.hour, addTimeState.minute))
+                        showAddTimePicker = false
+                    },
+                    semantic = LvSemantic.Primary
+                ) {
+                    Text(stringResource(R.string.action_save))
+                }
             },
             dismissButton = {
-                LiteverOutlinedButton(onClick = { showAddTimePicker = false }) { Text(stringResource(R.string.action_cancel)) }
-            }
+                LvButton(
+                    onClick = { showAddTimePicker = false },
+                    type = LvButtonType.Outlined,
+                    semantic = LvSemantic.Secondary,
+                    modifier = Modifier.padding(end = LiteverTheme.spacing.medium)
+                ) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            },
         ) {
             TimePicker(state = addTimeState)
         }
@@ -159,17 +182,38 @@ fun ReminderTimeConfigSection(
             initialMinute = editingInitialTime.minute,
             is24Hour = is24HourFormat
         )
-        LiteverTimePickerDialog(
+        TimePickerDialog(
+            title = {
+                Text(
+                    stringResource(R.string.set_reminder_time),
+                    style = LiteverTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    modifier = Modifier.padding(
+                        bottom = LiteverTheme.spacing.medium,
+                    )
+                )
+            },
             onDismissRequest = { showEditTimePicker = false },
             confirmButton = {
-                LiteverButton(onClick = {
-                    onUpdateFixedTime(editingTimeIndex, LocalTime.of(editTimeState.hour, editTimeState.minute))
-                    showEditTimePicker = false
-                }) { Text(stringResource(R.string.action_save)) }
+                LvButton(
+                    onClick = {
+                        onUpdateFixedTime(editingTimeIndex, LocalTime.of(editTimeState.hour, editTimeState.minute))
+                        showEditTimePicker = false
+                    },
+                    semantic = LvSemantic.Primary
+                ) {
+                    Text(stringResource(R.string.action_save))
+                }
             },
             dismissButton = {
-                LiteverOutlinedButton(onClick = { showEditTimePicker = false }) { Text(stringResource(R.string.action_cancel)) }
-            }
+                LvButton(
+                    onClick = { showEditTimePicker = false },
+                    type = LvButtonType.Outlined,
+                    semantic = LvSemantic.Secondary,
+                    modifier = Modifier.padding(end = LiteverTheme.spacing.medium)
+                ) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            },
         ) {
             TimePicker(state = editTimeState)
         }

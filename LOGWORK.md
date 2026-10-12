@@ -28,6 +28,16 @@ Tài liệu này dùng để ghi vết (tracking) quá trình thực thi các t�
 
 ## 🧠 Nhật Ký Quyết Định Kỹ Thuật (TDR)
 
+### [TDR-095] - Đồng Bộ Dialog Chọn Ngày Và Giờ Của Nhắc Nhở Theo Chuẩn Báo Thức
+- **Context:** Các dialog chọn ngày và giờ trong `:features:reminders` (`ReminderRepeatConfigSection`, `ReminderTimeConfigSection`, `ReminderTimeWindowConfigSection`) đang dùng wrapper cũ (`LiteverDatePickerDialog`, `LiteverTimePickerDialog`, `LiteverButton`, `LiteverOutlinedButton`) thiếu tiêu đề rõ ràng và chưa đồng bộ kiểu dáng nút bấm với `AlarmEditScreen`.
+- **Decision:** Chuyển sang sử dụng trực tiếp Material 3 `DatePickerDialog` và `TimePickerDialog` kèm tiêu đề in đậm `titleLarge` với lời văn phù hợp ngữ cảnh Nhắc nhở (`"Đặt ngày nhắc nhở"`, `"Đặt giờ nhắc nhở"`, `"Đặt giờ bắt đầu"`, `"Đặt giờ kết thúc"`) và bộ nút `LvButton` (`Primary` / `Outlined Secondary`).
+- **Consequences:** Toàn bộ dialog chọn ngày và giờ giữa Báo thức và Nhắc nhở đồng nhất 100% về thị giác, bố cục và trải nghiệm tương tác.
+
+### [TDR-094] - Đồng Bộ SnoozeBottomSheet Vào :core:designsystem Cho Alarm & Reminder
+- **Context:** Màn hình biên tập Nhắc nhở (`ReminderAlertConfigSection`) trước đây dùng Switch và SegmentedButton inline cho mục Báo lại, không đồng nhất với trải nghiệm Bottom Sheet bên Báo thức (`AlarmEditScreen`).
+- **Decision:** Chuyển `SnoozeBottomSheet` từ `:features:alarms` sang `:core:designsystem` với tham số `repeatCount` tùy chọn (`null` ở Nhắc nhở để ẩn mục Số lần lặp lại), và thay khối inline trong `ReminderAlertConfigSection` bằng dòng cài đặt "Báo lại" mở `SnoozeBottomSheet`.
+- **Consequences:** Tái sử dụng 100% component `SnoozeBottomSheet` giữa `:features:alarms` và `:features:reminders` đúng chuẩn Single Source of Truth, giao diện gọn gàng và đồng nhất.
+
 ### [TDR-093] - Triển Khai Tính Năng Báo Thức Nhanh (Quick Alarm) Với Material 3 FAB Menu, Bottom Sheet & Vòng Đời Tự Động Xóa
 - **Ngày thực hiện:** 2026-10-06 / 2026-10-07
 - **Trạng thái:** Accepted
@@ -772,6 +782,18 @@ otificationStyle sang NotificationStyle.FULL_SCREEN.
   - `SettingsScreen.kt`, `SettingsNavigation.kt`, `MainActivity.kt`:
     - Loại bỏ tham số điều hướng không dùng (`onNavigateToQA`, `onNavigateToAlarmSettings`, `onNavigateToLicenses`) khỏi `SettingsRoute` & `SettingsScreen`.
     - Tinh giản `settingsGraph` và loại bỏ các import/call thừa ở `MainActivity`.
+
+### [2026-10-01] Refactor UI ReminderTriggerSection - Đưa cụm nút chọn khoảng thời gian lặp vào cùng surface container
+- **Mục tiêu:**
+  - Gom cụm các nút bấm chọn nhanh khoảng thời gian lặp (`15m`, `30m`, `1h`, `2h`, `3h`, `4h`) vào cùng khối card container `surfaceContainer` với hiển thị số thời gian lặp (`Repeat Every`).
+- **Thực hiện:**
+  - `ReminderTriggerSection.kt`:
+    - Chuyển container từ dạng `Row` sang `Column` với định dạng `.clip(RoundedCornerShape(12.dp)).background(LiteverTheme.colors.surfaceContainer).padding(LiteverTheme.spacing.medium)`.
+    - Đưa tiêu đề + hiển thị thời gian + nút bấm Đặt lại (`Reset`) vào thanh `Row` phía trên, đồng thời đặt danh sách nút preset bên trong container này để chia sẻ chung màu nền surface.
+- **Kết quả kiểm thử:**
+  - `ReminderTriggerSectionIntervalPreview` hiển thị đúng giao diện thiết kế mới.
+  - Build Gradle `:features:reminders:assembleDebug` thành công.
+
 
 
 

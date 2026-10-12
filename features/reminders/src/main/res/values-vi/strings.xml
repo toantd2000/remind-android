@@ -51,6 +51,10 @@
     <!-- Time Trigger Section -->
     <string name="section_time_trigger">Lịch nhắc</string>
     <string name="select_time">Chọn giờ</string>
+    <string name="set_reminder_time">Đặt giờ nhắc nhở</string>
+    <string name="set_reminder_date">Đặt ngày nhắc nhở</string>
+    <string name="set_start_time">Đặt giờ bắt đầu</string>
+    <string name="set_end_time">Đặt giờ kết thúc</string>
     <string name="select_date">Chọn ngày (Tùy chọn)</string>
     <string name="tap_to_select_date">Nhấn để chọn ngày</string>
     <string name="repeat_days_label">Lặp lại các ngày</string>
@@ -208,6 +212,9 @@
 
     <!-- Interval Trigger -->
     <string name="interval_section_title">Chu kỳ lặp lại</string>
+    <string name="interval_not_set">Chưa đặt giờ</string>
+    <string name="interval_set_format">Đã đặt: %s</string>
+    <string name="tap_to_set_interval">Chạm để đặt thời gian</string>
     <string name="interval_minutes_label">Lặp lại mỗi (Phút)</string>
     <string name="interval_minutes_hint">Ví dụ: 60 (mỗi 1 tiếng)</string>
     <string name="interval_preset_15m">15p</string>

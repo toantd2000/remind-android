@@ -73,7 +73,6 @@ fun ReminderTriggerTypeSelector(
                     selectedBorderColor = LiteverTheme.colors.outline
                 ),
                 shape = LiteverTheme.shapes.medium,
-                modifier = Modifier.weight(1f)
             )
         }
     }

@@ -18,6 +18,7 @@ import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerDialog
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,9 +31,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.components.LiteverButton
-import vn.io.litever.designsystem.components.LiteverOutlinedButton
-import vn.io.litever.designsystem.components.LiteverTimePickerDialog
+import vn.io.litever.designsystem.components.button.LvButton
+import vn.io.litever.designsystem.components.button.LvButtonType
+import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
@@ -217,7 +218,7 @@ fun ReminderTimeWindowConfigSection(
                 }
             },
             confirmButton = {
-                LiteverButton(
+                LvButton(
                     onClick = {
                         val newWindow = ReminderTimeWindow(
                             startTime = editingStartTime,
@@ -237,13 +238,18 @@ fun ReminderTimeWindowConfigSection(
                             }
                         }
                         showWindowDialog = false
-                    }
+                    },
+                    semantic = LvSemantic.Primary
                 ) {
                     Text(stringResource(R.string.action_save))
                 }
             },
             dismissButton = {
-                LiteverOutlinedButton(onClick = { showWindowDialog = false }) {
+                LvButton(
+                    onClick = { showWindowDialog = false },
+                    type = LvButtonType.Outlined,
+                    semantic = LvSemantic.Secondary
+                ) {
                     Text(stringResource(R.string.action_cancel))
                 }
             }
@@ -257,21 +263,38 @@ fun ReminderTimeWindowConfigSection(
             initialMinute = editingStartTime.minute,
             is24Hour = is24HourFormat
         )
-        LiteverTimePickerDialog(
+        TimePickerDialog(
+            title = {
+                Text(
+                    stringResource(R.string.set_start_time),
+                    style = LiteverTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    modifier = Modifier.padding(
+                        bottom = LiteverTheme.spacing.medium,
+                    )
+                )
+            },
             onDismissRequest = { showStartTimePicker = false },
             confirmButton = {
-                LiteverButton(onClick = {
-                    editingStartTime = LocalTime.of(startPickerState.hour, startPickerState.minute)
-                    showStartTimePicker = false
-                }) {
+                LvButton(
+                    onClick = {
+                        editingStartTime = LocalTime.of(startPickerState.hour, startPickerState.minute)
+                        showStartTimePicker = false
+                    },
+                    semantic = LvSemantic.Primary
+                ) {
                     Text(stringResource(R.string.action_save))
                 }
             },
             dismissButton = {
-                LiteverOutlinedButton(onClick = { showStartTimePicker = false }) {
+                LvButton(
+                    onClick = { showStartTimePicker = false },
+                    type = LvButtonType.Outlined,
+                    semantic = LvSemantic.Secondary,
+                    modifier = Modifier.padding(end = LiteverTheme.spacing.medium)
+                ) {
                     Text(stringResource(R.string.action_cancel))
                 }
-            }
+            },
         ) {
             TimePicker(state = startPickerState)
         }
@@ -284,21 +307,38 @@ fun ReminderTimeWindowConfigSection(
             initialMinute = editingEndTime.minute,
             is24Hour = is24HourFormat
         )
-        LiteverTimePickerDialog(
+        TimePickerDialog(
+            title = {
+                Text(
+                    stringResource(R.string.set_end_time),
+                    style = LiteverTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    modifier = Modifier.padding(
+                        bottom = LiteverTheme.spacing.medium,
+                    )
+                )
+            },
             onDismissRequest = { showEndTimePicker = false },
             confirmButton = {
-                LiteverButton(onClick = {
-                    editingEndTime = LocalTime.of(endPickerState.hour, endPickerState.minute)
-                    showEndTimePicker = false
-                }) {
+                LvButton(
+                    onClick = {
+                        editingEndTime = LocalTime.of(endPickerState.hour, endPickerState.minute)
+                        showEndTimePicker = false
+                    },
+                    semantic = LvSemantic.Primary
+                ) {
                     Text(stringResource(R.string.action_save))
                 }
             },
             dismissButton = {
-                LiteverOutlinedButton(onClick = { showEndTimePicker = false }) {
+                LvButton(
+                    onClick = { showEndTimePicker = false },
+                    type = LvButtonType.Outlined,
+                    semantic = LvSemantic.Secondary,
+                    modifier = Modifier.padding(end = LiteverTheme.spacing.medium)
+                ) {
                     Text(stringResource(R.string.action_cancel))
                 }
-            }
+            },
         ) {
             TimePicker(state = endPickerState)
         }

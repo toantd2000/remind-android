@@ -22,7 +22,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import android.content.res.Configuration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,6 +35,7 @@ import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomSheetContent
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
+import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.features.reminders.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -96,9 +99,8 @@ fun IntervalBottomSheetContent(
 
             Text(
                 text = displayText,
-                style = LiteverTheme.typography.displayMedium.copy(
-                    fontSize = 44.sp,
-                    fontWeight = FontWeight.ExtraBold,
+                style = LiteverTheme.typography.headlineMedium.copy(
+                    fontWeight = FontWeight.Bold,
                     letterSpacing = (-1).sp
                 ),
                 color = LiteverTheme.colors.onSurface
@@ -118,7 +120,7 @@ fun IntervalBottomSheetContent(
             }
         }
 
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.mediumLarge))
+        Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
 
         // 2. Preset Time Grid (2 rows x 3 buttons) - Exactly like QuickAlarmBottomSheet
         val presetsRow1 = listOf(15 to R.string.interval_preset_15m, 30 to R.string.interval_preset_30m, 60 to R.string.interval_preset_1h)
@@ -138,8 +140,6 @@ fun IntervalBottomSheetContent(
                 }
             }
         }
-
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -188,5 +188,29 @@ fun IntervalBottomSheetContent(
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun IntervalBottomSheetContentPreview() {
+    ReMindTheme {
+        IntervalBottomSheetContent(
+            currentIntervalMinutes = 30,
+            onDismiss = {},
+            onConfirm = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun IntervalBottomSheetContentDarkPreview() {
+    ReMindTheme(darkTheme = true) {
+        IntervalBottomSheetContent(
+            currentIntervalMinutes = 30,
+            onDismiss = {},
+            onConfirm = {}
+        )
     }
 }

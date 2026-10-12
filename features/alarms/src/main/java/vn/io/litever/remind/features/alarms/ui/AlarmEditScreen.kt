@@ -84,9 +84,9 @@ import vn.io.litever.remind.core.model.MissionType
 import vn.io.litever.remind.features.alarms.R
 import vn.io.litever.remind.features.alarms.ui.components.AlarmSettingRow
 import vn.io.litever.remind.core.designsystem.components.AutoSilenceBottomSheet
+import vn.io.litever.remind.core.designsystem.components.SnoozeBottomSheet
 import vn.io.litever.remind.features.alarms.ui.components.GentleAlarmBottomSheet
 import vn.io.litever.remind.features.alarms.ui.components.NextAlarmHeader
-import vn.io.litever.remind.features.alarms.ui.components.SnoozeBottomSheet
 import vn.io.litever.remind.features.alarms.ui.components.getRepeatSummaryText
 import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState
 import vn.io.litever.remind.features.alarms.viewmodel.AlarmEditUiState

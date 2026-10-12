@@ -1,4 +1,4 @@
-package vn.io.litever.remind.features.alarms.ui.components
+package vn.io.litever.remind.core.designsystem.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,9 +27,7 @@ import vn.io.litever.designsystem.components.button.LvButton
 import vn.io.litever.designsystem.components.button.LvButtonType
 import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
-import vn.io.litever.remind.core.designsystem.components.ReMindBottomSheetContent
-import vn.io.litever.remind.core.designsystem.components.ReMindGroupCard
-import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
+import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,12 +35,12 @@ import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 fun SnoozeBottomSheet(
     enabled: Boolean,
     interval: Int,
-    repeatCount: Int,
     onEnabledChange: (Boolean) -> Unit,
     onIntervalChange: (Int) -> Unit,
-    onRepeatCountChange: (Int) -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
+    repeatCount: Int? = null,
+    onRepeatCountChange: ((Int) -> Unit)? = null,
     sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 ) {
     ModalBottomSheet(
@@ -52,14 +50,14 @@ fun SnoozeBottomSheet(
         modifier = modifier
     ) {
         ReMindBottomSheetContent(
-            title = stringResource(vn.io.litever.remind.core.designsystem.R.string.snooze_settings)
+            title = stringResource(R.string.snooze_settings)
         ) {
             SnoozeBottomSheetContent(
                 enabled = enabled,
                 interval = interval,
-                repeatCount = repeatCount,
                 onEnabledChange = onEnabledChange,
                 onIntervalChange = onIntervalChange,
+                repeatCount = repeatCount,
                 onRepeatCountChange = onRepeatCountChange
             )
         }
@@ -70,11 +68,11 @@ fun SnoozeBottomSheet(
 fun SnoozeBottomSheetContent(
     enabled: Boolean,
     interval: Int,
-    repeatCount: Int,
     onEnabledChange: (Boolean) -> Unit,
     onIntervalChange: (Int) -> Unit,
-    onRepeatCountChange: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    repeatCount: Int? = null,
+    onRepeatCountChange: ((Int) -> Unit)? = null
 ) {
     val intervalOptions = listOf(1, 3, 5, 10, 30)
     val repeatOptions = listOf(-1, 1, 3, 5, 10)
@@ -98,7 +96,7 @@ fun SnoozeBottomSheetContent(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = stringResource(vn.io.litever.remind.core.designsystem.R.string.enable_snooze),
+                    text = stringResource(R.string.enable_snooze),
                     style = LiteverTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold
                 )
@@ -110,7 +108,7 @@ fun SnoozeBottomSheetContent(
         }
 
         ReMindSettingsGroup(
-            title = stringResource(vn.io.litever.remind.core.designsystem.R.string.snooze_interval)
+            title = stringResource(R.string.snooze_interval)
         ) {
             val chunkedIntervals = intervalOptions.chunked(3)
             chunkedIntervals.forEach { rowOptions ->
@@ -130,7 +128,7 @@ fun SnoozeBottomSheetContent(
                         ) {
                             Text(
                                 stringResource(
-                                    vn.io.litever.remind.core.designsystem.R.string.minutes_unit,
+                                    R.string.minutes_unit,
                                     option
                                 ),
                             )
@@ -144,53 +142,55 @@ fun SnoozeBottomSheetContent(
             Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
         }
 
-        ReMindSettingsGroup(
-            title = stringResource(vn.io.litever.remind.core.designsystem.R.string.snooze_repeat)
-        ) {
-            val chunkedRepeats = repeatOptions.chunked(3)
-            chunkedRepeats.forEach { rowOptions ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = LiteverTheme.spacing.medium),
-                    horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
-                ) {
-                    rowOptions.forEach { option ->
-                        val isSelected = repeatCount == option
-                        val label = when (option) {
-                            -1 -> stringResource(vn.io.litever.remind.core.designsystem.R.string.forever)
-                            1 -> stringResource(vn.io.litever.remind.core.designsystem.R.string.one_time)
-                            else -> stringResource(
-                                vn.io.litever.remind.core.designsystem.R.string.times_unit,
-                                option
-                            )
+        if (repeatCount != null && onRepeatCountChange != null) {
+            ReMindSettingsGroup(
+                title = stringResource(R.string.snooze_repeat)
+            ) {
+                val chunkedRepeats = repeatOptions.chunked(3)
+                chunkedRepeats.forEach { rowOptions ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = LiteverTheme.spacing.medium),
+                        horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                    ) {
+                        rowOptions.forEach { option ->
+                            val isSelected = repeatCount == option
+                            val label = when (option) {
+                                -1 -> stringResource(R.string.forever)
+                                1 -> stringResource(R.string.one_time)
+                                else -> stringResource(
+                                    R.string.times_unit,
+                                    option
+                                )
+                            }
+                            LvButton(
+                                onClick = { if (enabled) onRepeatCountChange(option) },
+                                modifier = Modifier.weight(1f),
+                                contentPadding = ButtonDefaults.TextButtonContentPadding,
+                                type = if (isSelected) LvButtonType.Tonal else LvButtonType.Outlined,
+                                semantic = if (isSelected) LvSemantic.Primary else LvSemantic.Text,
+                            ) {
+                                Text(
+                                    text = label,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold
+                                )
+                            }
                         }
-                        LvButton(
-                            onClick = { if (enabled) onRepeatCountChange(option) },
-                            modifier = Modifier.weight(1f),
-                            contentPadding = ButtonDefaults.TextButtonContentPadding,
-                            type = if (isSelected) LvButtonType.Tonal else LvButtonType.Outlined,
-                            semantic = if (isSelected) LvSemantic.Primary else LvSemantic.Text,
-                        ) {
-                            Text(
-                                text = label,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold
-                            )
+                        repeat(3 - rowOptions.size) {
+                            Spacer(modifier = Modifier.weight(1f))
                         }
-                    }
-                    repeat(3 - rowOptions.size) {
-                        Spacer(modifier = Modifier.weight(1f))
                     }
                 }
+                Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
             }
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
         }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun SnoozeBottomSheetPreview() {
+private fun SnoozeBottomSheetAlarmPreview() {
     ReMindTheme {
         SnoozeBottomSheetContent(
             enabled = true,
@@ -199,6 +199,19 @@ fun SnoozeBottomSheetPreview() {
             onEnabledChange = {},
             onIntervalChange = {},
             onRepeatCountChange = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SnoozeBottomSheetReminderPreview() {
+    ReMindTheme {
+        SnoozeBottomSheetContent(
+            enabled = true,
+            interval = 5,
+            onEnabledChange = {},
+            onIntervalChange = {}
         )
     }
 }

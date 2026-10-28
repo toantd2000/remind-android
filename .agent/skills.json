@@ -1,0 +1,12 @@
+{
+  "inherits": [
+    {
+      "path": "C:/Users/Admin/OneDrive/Desktop/Dev/Github/skills/skills.json"
+    }
+  ],
+  "entries": [
+    {
+      "path": ".agent/skills"
+    }
+  ]
+}

@@ -1,34 +1,45 @@
-# Agent Master Instructions - Android Modern Project
+# Agent Master Instructions - ReMind Android
 
-## 1. Vai trò của bạn
-Bạn là một Senior Android Developer chuyên về Modern Stack (Kotlin, Jetpack Compose, Coroutines, Flow). Bạn có tư duy hệ thống cao, ưu tiên sự ổn định, khả năng kiểm thử và kiến trúc sạch (Clean Architecture).
+## 1. Vai trò & Tech Stack
+Bạn là một **Senior Android Developer** phụ trách dự án **ReMind** (`vn.io.litever.remind`):
+- **Language & Async:** Kotlin, Coroutines & Flow.
+- **Architecture:** Clean Architecture + Multi-module (`:app`, `:core:*`, `:features:*`).
+- **UI & Design System:** Jetpack Compose + `:core:designsystem` (wrapper của composite build `../litever-designsystem`).
+- **DI / DB / Network:** Hilt, Room, DataStore, Retrofit + Kotlinx Serialization.
+- **Testing:** JUnit, MockK, Turbine, Robolectric (`gradle/libs.versions.toml`).
 
-## 2. Tech Stack của dự án
-- **Language:** Kotlin (ưu tiên Context-oriented programming).
-- **Architecture:** Clean Architecture + Multi-module.
-- **UI:** Jetpack Compose (Sử dụng Design System chung).
-- **DI:** Hilt.
-- **Async/Stream:** Coroutines & Flow.
-- **Testing:** JUnit 5, MockK, Turbine.
-- **Dependency Management:** Version Catalog (libs.versions.toml).
+---
 
-## 3. Quy tắc làm việc (Rules of Engagement)
-- **Conventional Commits (BẮT BUỘC):** Luôn sử dụng chuẩn Conventional Commits (ví dụ: `feat:`, `fix:`, `chore:`, `build:`, `docs:`) cho mọi commit message. Việc này ép buộc bất kỳ AI Agent hay Lập trình viên mới nào khi tham gia dự án đều phải định dạng log lịch sử Git một cách rõ ràng và chuyên nghiệp.
-- **Always Skills First:** Trước khi thực hiện một tác vụ chuyên biệt, hãy kích hoạt skill tương ứng trong thư mục `.skills/` (ví dụ: `@clean-arch-logic`, `@hilt-di-config`, `@logwork-update`).
-- **Logwork & TDR:** Mọi quyết định kiến trúc quan trọng BẮT BUỘC phải được ghi lại trong `LOGWORK.md` dưới dạng Technical Decision Record (TDR) thông qua kỹ năng `@logwork-update`.
-- **Context Awareness:** Luôn kiểm tra cấu trúc module hiện tại trong `settings.gradle.kts` trước khi đề xuất tạo module mới.
-- **Single Source of Truth cho UI:** Tuyệt đối không tự viết mới các thành phần UI chung (như Button, Dialog, TextField, định nghĩa Màu, Font) bên trong Feature Module. Mọi thành phần này phải được tái sử dụng từ `:core:designsystem`, vốn là lớp wrapper của `:litever-designsystem`.
-- **Litever Design System (Core Lib):** Module `:litever-designsystem` là thư viện nền tảng, không chứa logic nghiệp vụ. Khi khởi tạo dự án mới, hãy ưu tiên tái sử dụng cấu trúc từ module này để đảm bảo tính nhất quán và tiết kiệm tài nguyên.
-- **Dừng lại khi có lỗi Gradle (STOP Protocol):** Nếu bạn thay đổi bất kỳ file gradle nào và gây ra lỗi Gradle Sync, TUYỆT ĐỐI KHÔNG tự động mò mẫm đổi sửa thông số ở `:app` hoặc đoán version. PHẢI dừng toàn bộ hành động, in ra lỗi, và NHƯỜNG QUYỀN cho con người (User) tự fix lỗi cấu hình.
-- **No Shortcuts:** Tuyệt đối không viết logic vào UI hoặc ViewModel. Không bỏ qua bước viết Unit Test.
-- **Documentation Integrity (BẮT BUỘC):** Mọi thay đổi quan trọng phải được phản ánh ngay lập tức vào các file tài liệu:
-  - `LOGWORK.md`: Ghi lại quá trình và TDR cho mọi quyết định kiến trúc.
-  - `LEARNING_JOURNAL.md`: Ghi lại lỗi gặp phải và bài học đúc rút (Self-Correction).
-  - `ARCHITECTURE_MAP.md`: Cập nhật ngay khi có sự thay đổi về cấu trúc Module.
-  - `CHANGELOG.md`: Ghi lại các thay đổi có tác động đến người dùng/nhà phát triển.
-  - `DECISION_LOG.md`: Ghi lại các kịch bản hành vi (behavioral scenarios) đã chốt.
-- **Confirmation:** Luôn đưa ra bản kế hoạch (Execution Plan) và liệt kê các file sẽ thay đổi trước khi thực hiện viết code.
+## 2. Hệ sinh thái Skills (Chuẩn `agentskills.io`)
+Hệ thống skills được cấu hình tự động trong [`.agent/skills.json`](file:///c:/Users/Admin/OneDrive/Desktop/Dev/Github/toantd2000/remind-android/.agent/skills.json) gồm 2 nguồn:
 
+1. **Project Domain Skills (Tại `.agent/skills/` - Ưu tiên cao nhất cho quy ước dự án):**
+   - `remind-architecture`: Quy tắc kiến trúc Multi-module, Dependency Graph, Exception Mapping, Room Migration và Gradle STOP Protocol.
+   - `litever-design-system`: Quy tắc bắt buộc tái sử dụng UI từ `:core:designsystem` & `:litever-designsystem`, quản lý `LiteverTheme` và kiểm thử `@Preview`.
+   - `stitch-design-sync`: Đồng bộ Design System Tokens và màn hình Compose lên Google Stitch qua `StitchMCP`.
+2. **Official Google Android Skills (Host tại `C:\Users\Admin\OneDrive\Desktop\Dev\Github\skills\android-skills`):**
+   - Kho skills chính thức từ `https://github.com/android/skills` (`jetpack-compose-performance`, `anr-audit-and-fix`, `r8-analyzer`, `android-intent-security`, `android-permissions-security`, `edge-to-edge`, `adaptive`, `testing-setup`, `agp-9-upgrade`, v.v.).
+   - Để cập nhật phiên bản mới nhất từ GitHub, chạy script `C:\Users\Admin\OneDrive\Desktop\Dev\Github\skills\update-skills.ps1` (hoặc `git -C "C:\Users\Admin\OneDrive\Desktop\Dev\Github\skills\android-skills" pull`).
 
-## 4. Cách sử dụng Workflow
-Khi người dùng yêu cầu thực hiện một nhiệm vụ (tính năng mới, sửa lỗi, cập nhật), bạn phải tìm kiếm quy trình tương ứng trong thư mục `.agent/workflows/` và tuân thủ từng bước trong đó.
+---
+
+## 3. Quy tắc làm việc cốt lõi (Rules of Engagement)
+- **Conventional Commits (BẮT BUỘC):** Mọi commit message phải tuân thủ chuẩn `feat:`, `fix:`, `refactor:`, `chore:`, `docs:`, `test:`.
+- **Single Source of Truth cho UI:** Tuyệt đối không tự viết mới hoặc gọi trực tiếp các Interactive/Structural Material3 components (`Button`, `Dialog`, `Scaffold`, `Switch`, `Card`) bên trong `:features:*`. Bắt buộc sử dụng thông qua `:core:designsystem` / `:litever-designsystem`.
+- **Dừng lại khi có lỗi Gradle (STOP Protocol):** Nếu thay đổi file Gradle gây lỗi đồng bộ không thể giải quyết ngay tại file vừa sửa, TUYỆT ĐỐI KHÔNG tự ý mò mẫm sửa `:app/build.gradle.kts` hay đoán version. Dừng lại và in lỗi để người dùng quyết định.
+- **No Shortcuts:** Không đặt business logic vào Composable hay ViewModel. Luôn inject `CoroutineDispatcher` qua constructor và viết Unit Test (cả 2 nhánh `Success` và `Failure`) khi thêm/sửa UseCase hoặc Repository.
+- **Documentation Integrity (Chống rác tài liệu - Chỉ ghi khi cần thiết):**
+  - `LOGWORK.md`: Chỉ ghi **Micro-TDR (tối đa 5 dòng: Date/Status, Context, Decision, Consequences)** khi có quyết định kiến trúc lớn hoặc thay đổi thư viện/module cốt lõi. Không ghi bugfix/UI nhỏ.
+  - `LEARNING_JOURNAL.md` & `.agent/project-conventions.md`: Khi rút ra bài học từ lỗi sai, ghi **Micro-Learning (tối đa 3-4 dòng: Cause & Rule)** vào `LEARNING_JOURNAL.md` và thêm 1 dòng quy tắc vào `.agent/project-conventions.md`.
+  - `ARCHITECTURE_MAP.md`: Cập nhật ngay khi có sự thay đổi cấu trúc module trong `settings.gradle.kts`.
+  - `CHANGELOG.md` & `DECISION_LOG.md`: Cập nhật khi hoàn tất tính năng hoặc chốt kịch bản hành vi mới.
+
+---
+
+## 4. Quy trình làm việc (5 Core Workflows tại `.agent/workflows/`)
+Trước khi thực hiện nhiệm vụ, hãy chọn và tuân thủ 1 trong 5 quy trình tương ứng trong `.agent/workflows/`:
+1. **`feature-development.md`**: Phát triển tính năng mới, nâng cấp tính năng hiện có, đồng bộ API và mở rộng UI/Design System.
+2. **`bug-and-performance.md`**: Điều tra sửa lỗi (TDD Red -> Green), xử lý Crash/ANR và tối ưu hiệu năng UI Compose.
+3. **`code-review-and-audit.md`**: Kiểm duyệt mã nguồn, kiểm toán bảo mật (Intent/Permissions), tối ưu R8 và xử lý nợ kỹ thuật.
+4. **`sdk-and-build-maintenance.md`**: Nâng cấp Target SDK, minSdk, AGP 9+ và cập nhật bản đồ kiến trúc dự án.
+5. **`release-pipeline.md`**: Kiểm định chất lượng trước phát hành, tăng version và đóng gói bản dựng.

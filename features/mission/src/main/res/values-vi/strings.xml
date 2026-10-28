@@ -54,6 +54,10 @@
     <string name="mission_requirement_prefix">Yêu cầu:</string>
     <string name="mission_typing_requirement">Gõ lại chính xác đoạn văn bản bên dưới để tắt chuông báo thức.</string>
     <string name="mission_math_requirement">Tính toán và nhập kết quả chính xác để tắt chuông báo thức.</string>
+    <string name="mission_math_delete">Xóa chữ số</string>
+    <string name="mission_math_clear">Xóa hết</string>
+    <string name="mission_math_wrong">Kết quả chưa đúng, hãy thử lại</string>
+    <string name="mission_math_submit">Kiểm tra kết quả</string>
     <string name="mission_memory_requirement">Ghi nhớ các ô màu và chọn lại chính xác để tắt chuông báo thức.</string>
     <string name="mission_memory_tiles_progress">%1$d / %2$d ô</string>
     <string name="mission_typing_board_header">Văn bản cần gõ</string>

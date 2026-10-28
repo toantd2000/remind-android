@@ -36,6 +36,7 @@ class MissionRingingViewModel @Inject constructor(
     private val _userInput = MutableStateFlow("")
     val userInput = _userInput.asStateFlow()
 
+    private val mathGenerator = MathProblemGenerator()
     private var timeoutJob: kotlinx.coroutines.Job? = null
 
     init {
@@ -107,7 +108,7 @@ class MissionRingingViewModel @Inject constructor(
             }
             MissionType.MATH -> {
                 val config = mission.config as? MathMissionConfig
-                List(mission.repeatCount) { generateMathProblem(config?.difficulty ?: MathDifficulty.NORMAL) }
+                List(mission.repeatCount) { mathGenerator.next(config?.difficulty ?: MathDifficulty.NORMAL) }
             }
             MissionType.MEMORY_FIND_COLOR_TILES -> {
                 val config = mission.config as? MemoryTilesMissionConfig

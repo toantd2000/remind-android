@@ -3,6 +3,7 @@ package vn.io.litever.remind.core.designsystem.icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
+import androidx.compose.material.icons.automirrored.rounded.Backspace
 import androidx.compose.material.icons.automirrored.rounded.DirectionsWalk
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
@@ -109,6 +110,7 @@ object ReMindIcons {
     val ArrowBack: ImageVector = Icons.AutoMirrored.Rounded.ArrowBack
     val ArrowDropDown: ImageVector = Icons.Rounded.ArrowDropDown
     val ArrowForward: ImageVector = Icons.AutoMirrored.Rounded.ArrowForward
+    val Backspace: ImageVector = Icons.AutoMirrored.Rounded.Backspace
     val BatteryChargingFull: ImageVector = Icons.Rounded.BatteryChargingFull
     val BrightnessMedium: ImageVector = Icons.Rounded.BrightnessMedium
     val Calculate: ImageVector = Icons.Rounded.Calculate

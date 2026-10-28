@@ -271,6 +271,7 @@ fun MissionRingingScreen(
                                 totalRepetitions = currentMission.repeatCount,
                                 userInput = userInput,
                                 onUserInputChange = onUserInputChange,
+                                onSubmit = onFinish,
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .verticalScroll(rememberScrollState())

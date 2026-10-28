@@ -2,10 +2,12 @@ package vn.io.litever.remind.features.mission
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import vn.io.litever.remind.core.model.MathDifficulty
 import vn.io.litever.remind.core.model.MathProblem
+import vn.io.litever.remind.core.model.MathProblemGenerator
 import java.util.Random
 
 class MathMissionLogicTest {
@@ -38,48 +40,49 @@ class MathMissionLogicTest {
     }
 
     @Test
-    fun mathProblemGeneration_easyDifficulty_respectsRangeConstraints() {
-        val random = Random(42)
+    fun mathProblemGenerator_easyDifficulty_generatesPositiveAnswersAndValidOperands() {
+        val generator = MathProblemGenerator(Random(42))
         repeat(50) {
-            val a = random.nextInt(9) + 1
-            val b = random.nextInt(9) + 1
-            val problem = MathProblem("$a + $b", a + b)
-
-            assertTrue(a in 1..9)
-            assertTrue(b in 1..9)
-            assertEquals(a + b, problem.answer)
-            assertTrue(problem.answer in 2..18)
+            val problem = generator.next(MathDifficulty.EASY)
+            assertTrue("Answer must be >= 2: ${problem.answer}", problem.answer >= 2)
+            assertTrue("Expression must contain valid operator", problem.expression.contains("+") || problem.expression.contains("−"))
         }
     }
 
     @Test
-    fun mathProblemGeneration_normalDifficulty_respectsRangeConstraints() {
-        val random = Random(123)
+    fun mathProblemGenerator_normalDifficulty_generatesPositiveAnswersAndValidOperands() {
+        val generator = MathProblemGenerator(Random(123))
         repeat(50) {
-            val a = random.nextInt(90) + 10
-            val b = random.nextInt(90) + 10
-            val problem = MathProblem("$a + $b", a + b)
-
-            assertTrue(a in 10..99)
-            assertTrue(b in 10..99)
-            assertEquals(a + b, problem.answer)
-            assertTrue(problem.answer in 20..198)
+            val problem = generator.next(MathDifficulty.NORMAL)
+            assertTrue("Answer must be >= 4: ${problem.answer}", problem.answer >= 4)
+            assertTrue(
+                "Expression must contain +, −, or ×: ${problem.expression}",
+                problem.expression.contains("+") || problem.expression.contains("−") || problem.expression.contains("×")
+            )
         }
     }
 
     @Test
-    fun mathProblemGeneration_hardDifficulty_respectsPrecedenceAndConstraints() {
-        val random = Random(999)
+    fun mathProblemGenerator_hardDifficulty_generatesChallengingMath() {
+        val generator = MathProblemGenerator(Random(999))
         repeat(50) {
-            val a = random.nextInt(20) + 5
-            val b = random.nextInt(20) + 5
-            val c = random.nextInt(10) + 2
-            val problem = MathProblem("$a + $b * $c", a + b * c)
-
-            assertTrue(a in 5..24)
-            assertTrue(b in 5..24)
-            assertTrue(c in 2..11)
-            assertEquals(a + b * c, problem.answer)
+            val problem = generator.next(MathDifficulty.HARD)
+            assertTrue("Answer must be >= 10: ${problem.answer}", problem.answer >= 10)
         }
+    }
+
+    @Test
+    fun mathProblemGenerator_antiRepeat_avoidsDirectConsecutiveDuplicates() {
+        val generator = MathProblemGenerator(Random(777))
+        var prev = generator.next(MathDifficulty.EASY)
+        var repeats = 0
+        repeat(30) {
+            val current = generator.next(MathDifficulty.EASY)
+            if (current.expression == prev.expression) {
+                repeats++
+            }
+            prev = current
+        }
+        assertEquals("Consecutive repeats should be avoided", 0, repeats)
     }
 }

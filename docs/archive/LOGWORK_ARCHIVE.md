@@ -1177,3 +1177,773 @@
 - **Hệ quả:**
   - Cấu trúc Composable tối giản tuyệt đối: Không còn bất kỳ container bọc ngoài dư thừa nào.
   - Giảm tối đa độ sâu của UI Node Hierarchy, tối ưu hiệu năng recomposition và render.
+### [TDR-095] - Äá»“ng Bá»™ Dialog Chá»n NgÃ y VÃ  Giá» Cá»§a Nháº¯c Nhá»Ÿ Theo Chuáº©n BÃ¡o Thá»©c
+- **Context:** CÃ¡c dialog chá»n ngÃ y vÃ  giá» trong `:features:reminders` (`ReminderRepeatConfigSection`, `ReminderTimeConfigSection`, `ReminderTimeWindowConfigSection`) Ä‘ang dÃ¹ng wrapper cÅ© (`LiteverDatePickerDialog`, `LiteverTimePickerDialog`, `LiteverButton`, `LiteverOutlinedButton`) thiáº¿u tiÃªu Ä‘á» rÃµ rÃ ng vÃ  chÆ°a Ä‘á»“ng bá»™ kiá»ƒu dÃ¡ng nÃºt báº¥m vá»›i `AlarmEditScreen`.
+- **Decision:** Chuyá»ƒn sang sá»­ dá»¥ng trá»±c tiáº¿p Material 3 `DatePickerDialog` vÃ  `TimePickerDialog` kÃ¨m tiÃªu Ä‘á» in Ä‘áº­m `titleLarge` vá»›i lá»i vÄƒn phÃ¹ há»£p ngá»¯ cáº£nh Nháº¯c nhá»Ÿ (`"Äáº·t ngÃ y nháº¯c nhá»Ÿ"`, `"Äáº·t giá» nháº¯c nhá»Ÿ"`, `"Äáº·t giá» báº¯t Ä‘áº§u"`, `"Äáº·t giá» káº¿t thÃºc"`) vÃ  bá»™ nÃºt `LvButton` (`Primary` / `Outlined Secondary`).
+- **Consequences:** ToÃ n bá»™ dialog chá»n ngÃ y vÃ  giá» giá»¯a BÃ¡o thá»©c vÃ  Nháº¯c nhá»Ÿ Ä‘á»“ng nháº¥t 100% vá» thá»‹ giÃ¡c, bá»‘ cá»¥c vÃ  tráº£i nghiá»‡m tÆ°Æ¡ng tÃ¡c.
+
+### [TDR-094] - Äá»“ng Bá»™ SnoozeBottomSheet VÃ o :core:designsystem Cho Alarm & Reminder
+- **Context:** MÃ n hÃ¬nh biÃªn táº­p Nháº¯c nhá»Ÿ (`ReminderAlertConfigSection`) trÆ°á»›c Ä‘Ã¢y dÃ¹ng Switch vÃ  SegmentedButton inline cho má»¥c BÃ¡o láº¡i, khÃ´ng Ä‘á»“ng nháº¥t vá»›i tráº£i nghiá»‡m Bottom Sheet bÃªn BÃ¡o thá»©c (`AlarmEditScreen`).
+- **Decision:** Chuyá»ƒn `SnoozeBottomSheet` tá»« `:features:alarms` sang `:core:designsystem` vá»›i tham sá»‘ `repeatCount` tÃ¹y chá»n (`null` á»Ÿ Nháº¯c nhá»Ÿ Ä‘á»ƒ áº©n má»¥c Sá»‘ láº§n láº·p láº¡i), vÃ  thay khá»‘i inline trong `ReminderAlertConfigSection` báº±ng dÃ²ng cÃ i Ä‘áº·t "BÃ¡o láº¡i" má»Ÿ `SnoozeBottomSheet`.
+- **Consequences:** TÃ¡i sá»­ dá»¥ng 100% component `SnoozeBottomSheet` giá»¯a `:features:alarms` vÃ  `:features:reminders` Ä‘Ãºng chuáº©n Single Source of Truth, giao diá»‡n gá»n gÃ ng vÃ  Ä‘á»“ng nháº¥t.
+
+### [TDR-093] - Triá»ƒn Khai TÃ­nh NÄƒng BÃ¡o Thá»©c Nhanh (Quick Alarm) Vá»›i Material 3 FAB Menu, Bottom Sheet & VÃ²ng Äá»i Tá»± Äá»™ng XÃ³a
+- **NgÃ y thá»±c hiá»‡n:** 2026-10-06 / 2026-10-07
+- **Tráº¡ng thÃ¡i:** Accepted
+- **Bá»‘i cáº£nh:**
+  - NgÆ°á»i dÃ¹ng cÃ³ nhu cáº§u Ä‘áº·t nhanh cÃ¡c má»‘c bÃ¡o thá»©c ngáº¯n (nghá»‰ trÆ°a, Ä‘un nÆ°á»›c, háº¹n giá» nhanh 5-30 phÃºt) mÃ  khÃ´ng cáº§n tráº£i qua toÃ n bá»™ quy trÃ¬nh cáº¥u hÃ¬nh phá»©c táº¡p cá»§a bÃ¡o thá»©c thÃ´ng thÆ°á»ng (chá»n ngÃ y láº·p, nhiá»‡m vá»¥, auto-silence, v.v.).
+  - BÃ¡o thá»©c nhanh lÃ  loáº¡i bÃ¡o thá»©c dÃ¹ng 1 láº§n tá»©c thá»i, khÃ´ng cáº§n chá»‰nh sá»­a láº¡i sau khi táº¡o vÃ  cáº§n tá»± Ä‘á»™ng dá»n dáº¹p Ä‘á»ƒ khÃ´ng lÃ m bá»«a bá»™n danh sÃ¡ch bÃ¡o thá»©c.
+- **Quyáº¿t Ä‘á»‹nh:**
+  1. **Táº§ng Dá»¯ Liá»‡u & Kiáº¿n TrÃºc (Domain & Data Layer):**
+     - Bá»• sung cá» `isQuickAlarm: Boolean = false` vÃ o Domain Entity `Alarm` vÃ  CSDL Room `AlarmEntity`.
+     - NÃ¢ng cáº¥p Room Database lÃªn phiÃªn báº£n 9, táº¡o `MIGRATION_8_9` (`ALTER TABLE alarms ADD COLUMN isQuickAlarm INTEGER NOT NULL DEFAULT 0`).
+     - Ãnh xáº¡ trÆ°á»ng `isQuickAlarm` trong `AlarmMapper` giá»¯a Entity vÃ  Domain Model.
+  2. **VÃ²ng Äá»i Tá»± Äá»™ng XÃ³a (Lifecycle & Auto-Cleanup):**
+     - Khi táº¯t báº±ng Switch trÃªn danh sÃ¡ch (`AlarmListViewModel.toggleAlarm`): Náº¿u `alarm.isQuickAlarm == true`, láº­p tá»©c xÃ³a bÃ¡o thá»©c khá»i CSDL (`repository.deleteAlarm`) vÃ  há»§y lá»‹ch trong `AlarmScheduler`.
+     - Khi hoÃ n thÃ nh reo chuÃ´ng (`AlarmControllerImpl.dismissAlarm`): Náº¿u lÃ  bÃ¡o thá»©c nhanh, há»§y lá»‹ch vÃ  xÃ³a vÄ©nh viá»…n khá»i CSDL thay vÃ¬ chá»‰ cáº­p nháº­t tráº¡ng thÃ¡i snooze.
+     - TrÃªn danh sÃ¡ch bÃ¡o thá»©c (`AlarmListScreen`): Click vÃ o card bÃ¡o thá»©c nhanh sáº½ khÃ´ng má»Ÿ mÃ n hÃ¬nh `AlarmEditScreen`.
+  3. **Giao Diá»‡n & Tráº£i Nghiá»‡m NgÆ°á»i DÃ¹ng (UI/UX - M3 & Litever Design System):**
+     - **Material 3 FAB Menu (Tá»‘i giáº£n & KhÃ´ng sinh file dÆ° thá»«a):** Thay vÃ¬ custom speed dial phá»©c táº¡p bá»c Scaffold trong Box vÃ  váº½ Scrim thá»§ cÃ´ng, táº­n dá»¥ng trá»±c tiáº¿p thÃ nh pháº§n chuáº©n cÃ³ sáºµn cá»§a Material 3: `FloatingActionButton` gáº¯n vá»›i `DropdownMenu` vÃ  `DropdownMenuItem` trong `Scaffold(floatingActionButton = { ... })`. Menu cung cáº¥p cÃ¡c lá»±a chá»n: *Alarm*, *Quick alarm*.
+     - **Quick Alarm Bottom Sheet (`QuickAlarmBottomSheet.kt`):** 
+       - Bá»™ hiá»ƒn thá»‹ cá»™ng dá»“n thá»i gian `+ 0m` vÃ  nÃºt reset `â†º`.
+       - LÆ°á»›i 6 nÃºt preset (+1m, +5m, +10m, +15m, +30m, +1h).
+       - Hiá»ƒn thá»‹ trá»±c quan thá»i gian reo dá»± kiáº¿n `Ring at ...` há»— trá»£ cáº£ Ä‘á»‹nh dáº¡ng 12h vÃ  24h.
+       - Ã” nháº­p mÃ´ táº£ ngáº¯n gá»n (Label) tÃ¹y chá»n.
+       - CÃ i Ä‘áº·t chuÃ´ng bÃ¡o, thanh trÆ°á»£t Ã¢m lÆ°á»£ng vÃ  nÃºt gáº¡t rung.
+       - NÃºt LÆ°u (Save) dáº¡ng Primary Button (`LvButton`).
+     - **Nháº­n Diá»‡n Trá»±c Quan (`AlarmCard.kt`):** ThÃªm icon tia sÃ©t `FlashOn` vÃ  nhÃ£n `Quick alarm` / `BÃ¡o thá»©c nhanh` á»Ÿ hÃ ng tiÃªu Ä‘á» tháº» Ä‘á»ƒ phÃ¢n biá»‡t rÃµ rá»‡t.
+  4. **Kiá»ƒm Thá»­:**
+     - Viáº¿t Unit Tests Ä‘áº§y Ä‘á»§ cho `AlarmListViewModelTest` vÃ  `AlarmControllerImplTest`, Ä‘áº£m báº£o tá»· lá»‡ vÆ°á»£t qua 100%.
+
+### [TDR-092] - Äá»“ng Bá»™ Thiáº¿t Káº¿ ReminderBasicInfoSection Theo Pattern Content Trong AlarmEditScreen & ÄÃ³ng GÃ³i Vá»›i ReMindSettingsGroup
+- **NgÃ y thá»±c hiá»‡n:** 2026-10-06
+- **Tráº¡ng thÃ¡i:** Accepted
+- **Bá»‘i cáº£nh:**
+  - Cá»¥m thÃ´ng tin cÆ¡ báº£n trong `ReminderBasicInfoSection` trÆ°á»›c Ä‘Ã¢y sá»­ dá»¥ng `Surface` Ä‘á»™c láº­p vá»›i `LiteverTextField`, khÃ´ng Ä‘á»“ng nháº¥t vá»›i cáº¥u trÃºc tháº» cÃ i Ä‘áº·t cá»§a toÃ n bá»™ á»©ng dá»¥ng (`ReMindSettingsGroup`).
+  - Trong `AlarmEditScreen`, Group 3 (Label & Message) Ä‘Æ°á»£c thiáº¿t káº¿ tá»‘i giáº£n, hiá»‡n Ä‘áº¡i vá»›i `BasicTextField`, phÃ¢n tÃ¡ch báº±ng `HorizontalDivider`, cÃ³ nÃºt xÃ³a ná»™i dung nhanh (`LvIconButton` vá»›i `Close` icon) vÃ  icon ngá»¯ cáº£nh (`NewLabel`, `EditNote`).
+- **Quyáº¿t Ä‘á»‹nh:**
+  1. **Bá»c ngoÃ i báº±ng `ReMindSettingsGroup`:**
+     - Thiáº¿t láº­p tiÃªu Ä‘á» nhÃ³m lÃ  `"ThÃ´ng tin chung"` (`R.string.section_basic_info`), Ä‘á»“ng bá»™ phong cÃ¡ch vá»›i cÃ¡c cá»¥m cÃ i Ä‘áº·t khÃ¡c nhÆ° `ReminderRepeatConfigSection`.
+  2. **Ãp dá»¥ng pattern Content cá»§a `AlarmEditScreen`:**
+     - Sá»­ dá»¥ng `BasicTextField` vá»›i nhÃ£n `labelSmall` in Ä‘áº­m bÃªn trÃªn cho cáº£ TiÃªu Ä‘á» (Title) vÃ  Ghi chÃº chi tiáº¿t (Notes).
+     - PhÃ¢n cÃ¡ch giá»¯a Title vÃ  Notes báº±ng `HorizontalDivider(color = outlineVariant.copy(alpha = 0.3f))`.
+     - ThÃªm nÃºt xÃ³a (`LvIconButton`) khi trÆ°á»ng cÃ³ ná»™i dung vÃ  icon chá»‰ dáº«n ngá»¯ cáº£nh (`ReMindIcons.NewLabel` cho Title, `ReMindIcons.EditNote` cho Notes) khi trÆ°á»ng trá»‘ng.
+     - Báº£o toÃ n kháº£ nÄƒng focus vÃ  thÃ´ng bÃ¡o lá»—i validation (`titleFocusRequester`, `showTitleError`, `R.string.reminder_title_required`).
+     - Bá»• sung chuá»—i tÃ i nguyÃªn trá»£ nÄƒng `action_clear_title` vÃ  `action_clear_notes` trong cáº£ tiáº¿ng Anh vÃ  tiáº¿ng Viá»‡t.
+
+### [TDR-091] - TÃ¡i Cáº¥u TrÃºc ToÃ n Diá»‡n ReminderTriggerSection & ReminderEditScreen: ÄÆ°a Cáº¥u HÃ¬nh Láº·p Lá»‹ch (Repeat) Ra NgoÃ i Cáº¥p Äá»™ Nháº¯c Nhá»Ÿ & LÃ m Sáº¡ch TimeWindow
+- **NgÃ y thá»±c hiá»‡n:** 2026-10-05
+- **Tráº¡ng thÃ¡i:** Accepted
+- **Bá»‘i cáº£nh:**
+  - TrÆ°á»›c Ä‘Ã¢y, `ReminderRepeatConfigSection` (láº·p 1 láº§n, hÃ ng tuáº§n, hÃ ng thÃ¡ng, hÃ ng nÄƒm) bá»‹ nhÃºng trÃ¹ng láº·p á»Ÿ cáº£ hai nhÃ¡nh con: bÃªn trong `ReminderTimeConfigSection` (cho Fixed Time) vÃ  bÃªn trong nhÃ¡nh `INTERVAL` cá»§a `ReminderTriggerSection`.
+  - Cáº¥u trÃºc nÃ y lÃ m rÃ² rá»‰ trÃ¡ch nhiá»‡m (props drilling hÆ¡n 12 tham sá»‘ repeat qua láº¡i), vi pháº¡m Single Responsibility Principle vÃ  gÃ¢y rá»‘i ráº¯m tráº£i nghiá»‡m ngÆ°á»i dÃ¹ng.
+  - Vá» báº£n cháº¥t, **má»i nháº¯c nhá»Ÿ Ä‘á»u cÃ³ chu ká»³ ngÃ y láº·p láº¡i** (Má»™t láº§n vÃ o ngÃ y cá»¥ thá»ƒ, hÃ ng tuáº§n theo thá»©, hÃ ng thÃ¡ng, hÃ ng nÄƒm). Sá»± khÃ¡c biá»‡t giá»¯a `FIXED_TIME` vÃ  `INTERVAL` chá»‰ náº±m á»Ÿ cÃ¡ch kÃ­ch hoáº¡t trong ngÃ y: reo vÃ o cÃ¡c má»‘c giá» cá»‘ Ä‘á»‹nh hay láº·p láº¡i theo chu ká»³ phÃºt trong cÃ¡c khung giá» hoáº¡t Ä‘á»™ng (`TimeWindow`).
+  - NgoÃ i ra, trong `ReminderTimeWindowConfigSection`, tá»«ng khung giá» láº¡i cÃ³ lá»±a chá»n "Táº¥t cáº£ cÃ¡c ngÃ y" / "NgÃ y Ä‘Ã£ chá»n" vá»›i danh sÃ¡ch chá»n thá»© trong tuáº§n (`activeDays`), gÃ¢y dÆ° thá»«a vÃ  xung Ä‘á»™t vá»›i lá»‹ch láº·p ngÃ y á»Ÿ cáº¥p Ä‘á»™ nháº¯c nhá»Ÿ. File `ReminderTimeWindowDialog.kt` bá»‹ bá» quÃªn khÃ´ng sá»­ dá»¥ng (dead code).
+- **Quyáº¿t Ä‘á»‹nh:**
+  1. **ÄÆ°a `ReminderRepeatConfigSection` ra ngoÃ i `ReminderEditScreen`:**
+     - Äáº·t lÃ m Section Ä‘á»™c láº­p ngay dÆ°á»›i `ReminderBasicInfoSection`, Ä‘á»‹nh nghÄ©a chu ká»³ láº·p láº¡i cáº¥p cao cho toÃ n bá»™ nháº¯c nhá»Ÿ.
+     - Loáº¡i bá» hoÃ n toÃ n viá»‡c nhÃºng `ReminderRepeatConfigSection` bÃªn trong `ReminderTimeConfigSection` vÃ  bÃªn trong `ReminderTriggerSection`.
+  2. **Refactor `ReminderTriggerSection` & `ReminderTimeConfigSection`:**
+     - Loáº¡i bá» toÃ n bá»™ cÃ¡c tham sá»‘ repeat thá»«a khá»i `ReminderTriggerSection` vÃ  `ReminderTimeConfigSection`.
+     - `ReminderTimeConfigSection` chá»‰ cÃ²n nhiá»‡m vá»¥ quáº£n lÃ½ danh sÃ¡ch má»‘c giá» cá»‘ Ä‘á»‹nh trong ngÃ y (`fixedTimes`).
+     - `ReminderTriggerSection` chá»‰ cÃ²n quáº£n lÃ½ chuyá»ƒn Ä‘á»•i giá»¯a Fixed Time vÃ  Interval (chu ká»³ phÃºt + khung giá» hoáº¡t Ä‘á»™ng `TimeWindow`).
+  3. **LÃ m sáº¡ch `ReminderTimeWindowConfigSection`:**
+     - Loáº¡i bá» hoÃ n toÃ n UI chá»n thá»©/ngÃ y (`activeDays`), Segmented Button "Táº¥t cáº£ cÃ¡c ngÃ y / NgÃ y Ä‘Ã£ chá»n" vÃ  FlowRow thá»© trong tuáº§n.
+     - Má»—i khung giá» chá»‰ Ä‘Æ¡n giáº£n quáº£n lÃ½ khoáº£ng thá»i gian trong ngÃ y: Giá» báº¯t Ä‘áº§u (`startTime`) vÃ  Giá» káº¿t thÃºc (`endTime`).
+  4. **Dá»n dáº¹p code rÃ¡c:**
+     - XÃ³a bá» file dead code `ReminderTimeWindowDialog.kt`.
+     - Dá»n dáº¹p cÃ¡c chuá»—i tÃ i nguyÃªn khÃ´ng cÃ²n sá»­ dá»¥ng (`time_window_all_days`, `time_window_selected_days`, `time_window_active_days`, `clear_time_window`, `configure_time_window`) trong `strings.xml` vÃ  `values-vi/strings.xml`.
+     - Äá»“ng bá»™ láº¡i `ReminderTriggerEditScreen.kt`.
+
+### [TDR-090] - NÃ¢ng Cáº¥p UX Tháº» Nháº¯c Nhá»Ÿ (ReminderCard): Trá»±c Quan HÃ³a Äáº§y Äá»§ ThÃ´ng Tin Láº·p Láº¡i, Khung Giá» Hoáº¡t Äá»™ng & Äáº¿m NgÆ°á»£c Láº§n Nháº¯c Tiáº¿p Theo
+- **NgÃ y thá»±c hiá»‡n:** 2026-10-02
+- **Tráº¡ng thÃ¡i:** Accepted
+- **Bá»‘i cáº£nh:**
+  - `ReminderCard` trÃªn danh sÃ¡ch nháº¯c nhá»Ÿ trÆ°á»›c Ä‘Ã¢y chá»‰ hiá»ƒn thá»‹ má»‘c giá»/phÃºt láº·p cÆ¡ báº£n vÃ  tiÃªu Ä‘á».
+  - NgÆ°á»i dÃ¹ng khÃ³ náº¯m báº¯t nhanh:
+    + Chu ká»³ ngÃ y láº·p láº¡i cá»¥ thá»ƒ (HÃ ng ngÃ y, T2-T6, T7-CN, ngÃ y trong thÃ¡ng, hay ngÃ y cá»¥ thá»ƒ trong nÄƒm).
+    + Khung thá»i gian hoáº¡t Ä‘á»™ng Ã¡p dá»¥ng (`timeWindows`) Ä‘á»‘i vá»›i cÃ¡c nháº¯c nhá»Ÿ láº·p Ä‘á»‹nh ká»³ (Interval).
+    + Thá»i Ä‘iá»ƒm vÃ  khoáº£ng thá»i gian cÃ²n láº¡i Ä‘áº¿n lÆ°á»£t kÃ­ch hoáº¡t tiáº¿p theo ("Láº§n tá»›i sau bao lÃ¢u", "Äang hoÃ£n Ä‘áº¿n máº¥y giá»", "ÄÃ£ táº¯t").
+  - Cáº§n nÃ¢ng cáº¥p giao diá»‡n `ReminderCard` theo tiÃªu chÃ­ "Äáº§y Ä‘á»§ thÃ´ng tin nhÆ°ng gá»n gÃ ng, thoÃ¡ng Ä‘Ã£ng vÃ  cÃ³ tráº­t tá»± thá»‹ giÃ¡c cao".
+- **Quyáº¿t Ä‘á»‹nh:**
+  1. **TÃ¡ch biá»‡t vÃ  cáº¥u trÃºc láº¡i cÃ¡c lá»›p thÃ´ng tin trÃªn `ReminderCard`:**
+     - **HÃ ng Header / Meta Badges (`FlowRow`):**
+       - Badge chÃ­nh: Káº¿t há»£p icon + má»‘c giá»/táº§n suáº¥t interval + chu ká»³ láº·p láº¡i (vÃ­ dá»¥: `08:00, 14:00 â€¢ T2 - T6` hoáº·c `Má»—i 2 giá» â€¢ HÃ ng ngÃ y`).
+       - Time Window Badge: Hiá»ƒn thá»‹ khung giá» Ã¡p dá»¥ng náº¿u cÃ³ (vÃ­ dá»¥: `08:00 - 17:30`, `08:00 - 11:30, 13:30 - 17:30`).
+       - Snoozing Badge: Hiá»ƒn thá»‹ ná»•i báº­t khi Ä‘ang á»Ÿ tráº¡ng thÃ¡i hoÃ£n (`Äang hoÃ£n (10:35)`).
+       - Badge má»©c Ä‘á»™ kháº©n cáº¥p (`Kháº©n cáº¥p`) vÃ  chuÃ´ng liÃªn tá»¥c (`ChuÃ´ng liÃªn tá»¥c`) khi Ä‘Æ°á»£c cáº¥u hÃ¬nh.
+     - **ThÃ¢n tháº» (Body):** TiÃªu Ä‘á» (SemiBold) vÃ  tÃ³m táº¯t ghi chÃº (náº¿u cÃ³, tá»‘i Ä‘a 2 dÃ²ng).
+     - **HÃ ng Footer Ä‘áº¿m ngÆ°á»£c láº§n nháº¯c káº¿ tiáº¿p (`NextTriggerFooter`):**
+       - Tá»± Ä‘á»™ng tÃ­nh toÃ¡n má»‘c kÃ­ch hoáº¡t káº¿ tiáº¿p tá»« `TimeTrigger.getNextOccurrence` hoáº·c `snoozeNextTriggerTime`.
+       - Hiá»ƒn thá»‹ trá»±c quan:
+         + HÃ´m nay: `Láº§n tá»›i: HÃ´m nay 14:00 (sau 2 giá» 15 phÃºt)`
+         + NgÃ y mai: `Láº§n tá»›i: NgÃ y mai 08:00 (sau 14 giá»)`
+         + NgÃ y trong tuáº§n tá»›i: `Láº§n tá»›i: T6, 24/10 lÃºc 09:00 (sau 3 ngÃ y)`
+         + Äang hoÃ£n: `BÃ¡o láº¡i: 10:35 (cÃ²n 12 phÃºt)`
+         + ÄÃ£ táº¯t: `ÄÃ£ táº¯t` (vá»›i icon `NotificationsPaused` vÃ  mÃ u muted)
+         + ÄÃ£ hoÃ n táº¥t cÃ¡c lÆ°á»£t: `ÄÃ£ hoÃ n thÃ nh cÃ¡c lÆ°á»£t nháº¯c`
+  2. **Táº¡o bá»™ cÃ´ng cá»¥ Ä‘á»‹nh dáº¡ng chuyÃªn dá»¥ng `ReminderCardFormatter`:**
+     - Äá»™c láº­p, thuáº§n khiáº¿t (pure functions) há»— trá»£ Ä‘a ngÃ´n ngá»¯ (Tiáº¿ng Viá»‡t & Tiáº¿ng Anh).
+     - Viáº¿t bá»™ Unit Test toÃ n diá»‡n `ReminderCardFormatterTest` bao phá»§ 100% cÃ¡c ká»‹ch báº£n Ä‘á»‹nh dáº¡ng thá»i gian, chu ká»³ vÃ  Ä‘áº¿m ngÆ°á»£c.
+
+### [TDR-089] - Tá»‘i Æ¯u UX BiÃªn Táº­p Nháº¯c Nhá»Ÿ: ÄÆ°a Cá»¥m Äiá»u Kiá»‡n KÃ­ch Hoáº¡t Ra Trá»±c Tiáº¿p MÃ n HÃ¬nh BiÃªn Táº­p, Chuáº©n HÃ³a NhÃ£n Tab Selector & Há»— Trá»£ Äáº§y Äá»§ Chu Ká»³ Láº·p Cho Interval
+- **NgÃ y thá»±c hiá»‡n:** 2026-10-01
+- **Tráº¡ng thÃ¡i:** Accepted
+- **Bá»‘i cáº£nh:**
+  - TrÆ°á»›c Ä‘Ã¢y, `ReminderEditScreen` chá»‰ hiá»ƒn thá»‹ tÃ³m táº¯t Ä‘iá»u kiá»‡n kÃ­ch hoáº¡t vÃ  ngÆ°á»i dÃ¹ng pháº£i nháº¥n "Chá»‰nh sá»­a" Ä‘á»ƒ má»Ÿ má»™t mÃ n hÃ¬nh phá»¥ riÃªng biá»‡t (`ReminderTriggerEditScreen`).
+  - Trong `ReminderTriggerTypeSelector`, cáº£ 2 tab `FIXED_TIME` vÃ  `INTERVAL` Ä‘á»u hiá»ƒn thá»‹ chung tiÃªu Ä‘á» "Thá»i gian" (`R.string.trigger_time`) vÃ  cÃ¹ng má»™t icon `ReMindIcons.AccessTime`, gÃ¢y nháº§m láº«n thá»‹ giÃ¡c.
+  - BÃªn cáº¡nh Ä‘Ã³, tab `INTERVAL` (Láº·p Ä‘á»‹nh ká»³) trÆ°á»›c Ä‘Ã¢y chÆ°a cÃ³ thiáº¿t láº­p chu ká»³ láº·p láº¡i Ä‘a dáº¡ng nhÆ° bÃªn `FIXED_TIME` (Má»™t láº§n, HÃ ng tuáº§n, HÃ ng thÃ¡ng, HÃ ng nÄƒm), khiáº¿n ngÆ°á»i dÃ¹ng khÃ´ng thá»ƒ cáº¥u hÃ¬nh cÃ¡c thÃ³i quen láº·p láº¡i theo chu ká»³ ngÃ y cá»¥ thá»ƒ (vÃ­ dá»¥: uá»‘ng nÆ°á»›c Ä‘á»‹nh ká»³ chá»‰ vÃ o cÃ¡c ngÃ y Ä‘i lÃ m thá»© 2, 4, 6 hoáº·c chá»‰ vÃ o ngÃ y cá»¥ thá»ƒ trong thÃ¡ng).
+  - Hiá»‡n táº¡i há»‡ thá»‘ng há»— trá»£ 2 loáº¡i Ä‘iá»u kiá»‡n kÃ­ch hoáº¡t thá»i gian (`FIXED_TIME` vÃ  `INTERVAL`), pháº¡m vi cáº¥u hÃ¬nh chÆ°a quÃ¡ phá»©c táº¡p (chÆ°a cÃ³ Ä‘iá»u kiá»‡n ngoáº¡i vi phá»©c táº¡p nhÆ° Geofence/Wi-Fi).
+  - Viá»‡c tÃ¡ch ra mÃ n hÃ¬nh phá»¥ táº¡o thÃªm má»™t bÆ°á»›c Ä‘iá»u hÆ°á»›ng dÆ° thá»«a, lÃ m giÃ¡n Ä‘oáº¡n tráº£i nghiá»‡m ngÆ°á»i dÃ¹ng khi táº¡o hoáº·c sá»­a nháº¯c nhá»Ÿ.
+- **Quyáº¿t Ä‘á»‹nh:**
+  1. **Chuáº©n hÃ³a nhÃ£n & icon cá»§a bá»™ chá»n Tab (`ReminderTriggerTypeSelector`):**
+     - `FIXED_TIME` -> TiÃªu Ä‘á» "Má»‘c thá»i gian" (`R.string.trigger_fixed_time` / "Fixed Time"), icon `ReMindIcons.AccessTime`.
+     - `INTERVAL` -> TiÃªu Ä‘á» "Láº·p Ä‘á»‹nh ká»³" (`R.string.trigger_interval` / "Interval"), icon `ReMindIcons.Timer`.
+  2. **Äá»“ng bá»™ toÃ n diá»‡n cáº¥u hÃ¬nh chu ká»³ láº·p (`RepeatMode`) cho Interval:**
+     - TÃ­ch há»£p Ä‘áº§y Ä‘á»§ `ReminderRepeatConfigSection` vÃ o tab `INTERVAL` (há»— trá»£ `RepeatMode.NONE` vá»›i chá»n ngÃ y cá»¥ thá»ƒ `exactDate`, `RepeatMode.DAILY`, `RepeatMode.WEEKLY` vá»›i chá»n thá»© trong tuáº§n, `RepeatMode.MONTHLY` vá»›i lÆ°á»›i ngÃ y 1..31, vÃ  `RepeatMode.YEARLY` vá»›i danh sÃ¡ch ngÃ y thÃ¡ng).
+     - NÃ¢ng cáº¥p `TimeTrigger.kt`: Bá»• sung `isDateValid(date: LocalDate)` vÃ  `getNextValidDate(from: LocalDate): LocalDate?` Ä‘á»ƒ há»— trá»£ tÃ­nh toÃ¡n ngÃ y há»£p lá»‡ theo chu ká»³ cho cáº£ Fixed Time vÃ  Interval.
+     - Thuáº­t toÃ¡n `getNextIntervalOccurrence()` kiá»ƒm tra ngÃ y há»£p lá»‡ theo `repeatMode` trÆ°á»›c khi tÃ­nh toÃ¡n cÃ¡c má»‘c khoáº£ng cÃ¡ch (interval) vÃ  khung giá» hoáº¡t Ä‘á»™ng (timeWindows).
+  3. **ÄÆ°a toÃ n bá»™ cá»¥m Ä‘iá»u khiá»ƒn kÃ­ch hoáº¡t (`ReminderTriggerSection`) ra ngoÃ i mÃ n hÃ¬nh `ReminderEditScreen`:**
+     - TÃ­ch há»£p trá»±c tiáº¿p `ReminderTriggerSection` vÃ o danh sÃ¡ch cuá»™n cá»§a `ReminderEditScreen`, cho phÃ©p ngÆ°á»i dÃ¹ng thay Ä‘á»•i tab, chá»n giá»/ngÃ y láº·p láº¡i, hoáº·c cÃ i Ä‘áº·t phÃºt láº·p/khung giá» Ã¡p dá»¥ng ngay trong má»™t mÃ n hÃ¬nh duy nháº¥t.
+     - Giá»¯ nguyÃªn kiáº¿n trÃºc module vÃ  luá»“ng dá»¯ liá»‡u chuáº©n `ReminderEditViewModel` vá»›i Ä‘áº§y Ä‘á»§ cÃ¡c tÆ°Æ¡ng tÃ¡c thá»i gian thá»±c.
+  4. **Tá»‘i Æ°u hÃ³a vÃ  tÃ¡i sá»­ dá»¥ng:**
+     - `ReminderTriggerEditScreen` tÃ¡i sá»­ dá»¥ng trá»±c tiáº¿p component `ReminderTriggerSection`, Ä‘áº£m báº£o khÃ´ng trÃ¹ng láº·p code giao diá»‡n.
+     - Khi tÆ°Æ¡ng lai cáº§n má»Ÿ rá»™ng thÃªm cÃ¡c Ä‘iá»u kiá»‡n kÃ­ch hoáº¡t phá»©c táº¡p (nhÆ° vá»‹ trÃ­ Ä‘á»‹a lÃ½, máº¡ng Wi-Fi, Bluetooth), há»‡ thá»‘ng cÃ³ thá»ƒ linh hoáº¡t Ä‘Æ°a láº¡i mÃ n hÃ¬nh chuyÃªn biá»‡t mÃ  khÃ´ng áº£nh hÆ°á»Ÿng tá»›i kiáº¿n trÃºc hiá»‡n táº¡i.
+
+### [TDR-088] - TÃ¡i Cáº¥u TrÃºc VÃ²ng Äá»i Reminder: Loáº¡i Bá» `isCompleted`, Thá»‘ng Nháº¥t Tráº¡ng ThÃ¡i Qua `isEnabled` vÃ  Tinh Gá»n UX Danh SÃ¡ch
+- **NgÃ y thá»±c hiá»‡n:** 2026-10-01
+- **Tráº¡ng thÃ¡i:** Accepted
+- **Bá»‘i cáº£nh:**
+  - TrÆ°á»›c Ä‘Ã¢y, `Reminder` tá»“n táº¡i Ä‘á»“ng thá»i 2 trÆ°á»ng tráº¡ng thÃ¡i: `isEnabled: Boolean` vÃ  `isCompleted: Boolean`.
+  - PhÃ¢n tÃ­ch nghiá»‡p vá»¥ chá»‰ ra sá»± dÆ° thá»«a vÃ  xung Ä‘á»™t logic:
+    + Vá»›i nháº¯c nhá»Ÿ 1 láº§n (`!isRecurring`): Khi chuÃ´ng kÃªu xong hoáº·c ngÆ°á»i dÃ¹ng dismiss, nháº¯c nhá»Ÿ coi nhÆ° xong viá»‡c. Cáº£ `isCompleted = true` vÃ  `isEnabled = false` Ä‘á»u biá»ƒu diá»…n cÃ¹ng má»™t tráº¡ng thÃ¡i ngá»«ng kÃ­ch hoáº¡t.
+    + Vá»›i nháº¯c nhá»Ÿ láº·p láº¡i (`isRecurring` / `INTERVAL`): Viá»‡c Ä‘Ã¡nh dáº¥u `isCompleted = true` trÆ°á»›c Ä‘Ã¢y khiáº¿n bá»™ láº­p lá»‹ch (`ReminderSchedulerImpl`) bá» qua khÃ´ng láº­p lá»‹ch cho chu ká»³ tiáº¿p theo (`if (!reminder.isEnabled || reminder.isCompleted) return`).
+    + Sá»± nháº­p nháº±ng nÃ y dáº«n Ä‘áº¿n viá»‡c pháº£i duy trÃ¬ logic reset chu ká»³ phá»©c táº¡p, táº¡o bug tiá»m áº©n.
+  - Vá» máº·t UI/UX:
+    + KhÃ¡c vá»›i BÃ¡o thá»©c (ngÆ°á»i dÃ¹ng báº­t/táº¯t liÃªn tá»¥c hÃ ng ngÃ y/cuá»‘i tuáº§n), Nháº¯c nhá»Ÿ lÃ  nhiá»‡m vá»¥/thÃ³i quen cÃ³ táº§n suáº¥t táº¯t ráº¥t tháº¥p.
+    + Viá»‡c Ä‘áº·t `LiteverSwitch` ngay trÃªn tá»«ng item danh sÃ¡ch (`ReminderCard`) dá»… gÃ¢y cháº¡m nháº§m (accidental click) vÃ  lÃ m giao diá»‡n bá»‹ rá»‘i máº¯t.
+- **Quyáº¿t Ä‘á»‹nh:**
+  1. **Loáº¡i bá» hoÃ n toÃ n trÆ°á»ng `isCompleted` khá»i toÃ n bá»™ há»‡ thá»‘ng:**
+     - Domain Model: XÃ³a `isCompleted` trong `Reminder.kt`.
+     - Database & Migration: XÃ³a `isCompleted` trong `ReminderEntity.kt`, `ReminderDao.kt`. TÄƒng Room database version tá»« 7 lÃªn 8 vá»›i `MIGRATION_7_8` (tÃ¡i táº¡o báº£ng an toÃ n báº±ng SQLite table recreation theo Ä‘Ãºng chuáº©n Room).
+     - Data Mapping: XÃ³a bá» `isCompleted` trong `ReminderMapper.kt`.
+     - Logic & Scheduler: Cáº­p nháº­t `ReminderSchedulerImpl.kt`, `ReminderTriggerEvaluator.kt`, `ReminderSyncManager.kt`, `ReminderReceiver.kt`, `ReminderAlertManager.kt`, `ReminderRingingViewModel.kt`.
+       * Nháº¯c nhá»Ÿ 1 láº§n: Khi káº¿t thÃºc -> cáº­p nháº­t `isEnabled = false`.
+       * Nháº¯c nhá»Ÿ láº·p láº¡i: Giá»¯ nguyÃªn `isEnabled = true`, chá»‰ tá»‹nh tiáº¿n/cáº­p nháº­t `lastTriggeredTime` hoáº·c `snoozeNextTriggerTime`.
+  2. **Tinh gá»n giao diá»‡n vÃ  hÃ nh vi UI:**
+     - `ReminderCard.kt`: Gá»¡ bá» `LiteverSwitch`, loáº¡i bá» `onToggle`. Hiá»ƒn thá»‹ lÃ m má» mÃ u (alpha 0.6f / onSurface) khi `!isEnabled`. NÃºt menu 3 cháº¥m Ä‘Æ°á»£c cÄƒn pháº£i gá»n gÃ ng, thoÃ¡ng Ä‘Ã£ng.
+     - `ReminderActionBottomSheet.kt`: Thay tháº¿ tÃ¹y chá»n "ÄÃ¡nh dáº¥u hoÃ n thÃ nh" báº±ng "Táº¯t nháº¯c nhá»Ÿ" / "Báº­t nháº¯c nhá»Ÿ" (`onToggleEnabledClick`).
+     - `ReminderEditScreen.kt`: Bá»• sung nÃºt báº¥m dáº¡ng Outlined/Primary á»Ÿ cuá»‘i mÃ n hÃ¬nh chá»‰nh sá»­a ("Táº¯t nháº¯c nhá»Ÿ" / "Báº­t nháº¯c nhá»Ÿ") cho cÃ¡c nháº¯c nhá»Ÿ Ä‘Ã£ tá»“n táº¡i (`uiState.id != 0L`).
+     - `ReminderListViewModel.kt`: XÃ³a bá» logic lá»c theo `isCompleted`, xÃ³a `deleteCompletedReminders()`, `toggleCompleted()`.
+  3. **Kiá»ƒm thá»­ & Äáº£m báº£o cháº¥t lÆ°á»£ng:**
+     - Cáº­p nháº­t 100% test suites: `ReminderTest`, `ReminderSnoozeChallengerTest`, `ReminderDaoTest`, `ReminderDatabaseChallengerTest`, `ReminderRepositoryImplTest`, `AlarmReminderConcurrencyTest`, `ReminderSyncManagerTest`, `ReminderReceiverTest`, `ReminderSchedulerAndServiceTest`, `ReminderSchedulerImplTest`, `ReminderTriggerEvaluatorTest`, `ReminderListViewModelTest`, `ReminderAdversarialReviewTest`, `ReminderPermissionChallengerTest`, `ReminderR1R2EmpiricalChallengerTest`, `ReminderRingingViewModelTest`, `ScreenshotsTest`.
+     - Cháº¡y `./gradlew testDebugUnitTest` vÆ°á»£t qua 100% tests.
+
+### [TDR-087] - Thá»‘ng nháº¥t PermissionWarningBanner vÃ o :core:designsystem vÃ  Cáº­p nháº­t TÃ­nh nÄƒng Reminders vá»›i Lá»i vÄƒn ChuyÃªn biá»‡t
+- **NgÃ y thá»±c hiá»‡n:** 2026-10-01
+- **Tráº¡ng thÃ¡i:** Accepted
+- **Bá»‘i cáº£nh:**
+  - Cáº£ hai tÃ­nh nÄƒng BÃ¡o thá»©c (`:features:alarms`) vÃ  Nháº¯c nhá»Ÿ (`:features:reminders`) Ä‘á»u cáº§n cáº£nh bÃ¡o quyá»n há»‡ thá»‘ng bá»‹ thiáº¿u cho ngÆ°á»i dÃ¹ng, nhÆ°ng trÆ°á»›c Ä‘Ã³ má»—i module láº¡i cÃ³ banner riÃªng (`AlarmPermissionWarningBanner` vÃ  `ReminderPermissionWarningBanner`), gÃ¢y phÃ¢n máº£nh vÃ  khÃ´ng Ä‘á»“ng bá»™ vá» giao diá»‡n Design System.
+  - Cáº§n phÃ¢n cáº¥p má»©c Ä‘á»™ cáº£nh bÃ¡o rÃµ rÃ ng:
+    + **Critical (Lá»—i cá»‘t lÃµi)**: Thiáº¿u quyá»n thÃ´ng bÃ¡o hoáº·c quyá»n bÃ¡o thá»©c chÃ­nh xÃ¡c cho tÃ¡c vá»¥ Ä‘ang kÃ­ch hoáº¡t -> Hiá»ƒn thá»‹ cáº£nh bÃ¡o lá»—i (Ä‘á»/errorContainer) vÃ  báº¯t buá»™c ngÆ°á»i dÃ¹ng sá»­a Ä‘á»ƒ hoáº¡t Ä‘á»™ng, khÃ´ng cho áº©n.
+    + **Non-critical (Cáº£nh bÃ¡o khuyáº¿n nghá»‹)**: Thiáº¿u cÃ¡c quyá»n tá»‘i Æ°u nhÆ° Tá»‘i Æ°u hÃ³a pin, Váº½ trÃªn á»©ng dá»¥ng khÃ¡c -> Hiá»ƒn thá»‹ dáº¡ng cáº£nh bÃ¡o (vÃ ng/warningContainer) kÃ¨m nÃºt "Nháº¯c tÃ´i sau" Ä‘á»ƒ áº©n táº¡m thá»i.
+  - Lá»i vÄƒn trong tÃ­nh nÄƒng Nháº¯c nhá»Ÿ pháº£i phÃ¹ há»£p vá»›i bá»‘i cáº£nh nháº¯c viá»‡c/thÃ´ng bÃ¡o ("Nháº¯c nhá»Ÿ"), khÃ´ng Ä‘Æ°á»£c dÃ¹ng ngÃ´n tá»« cá»§a "BÃ¡o thá»©c".
+- **Quyáº¿t Ä‘á»‹nh:**
+  1. **Chuyá»ƒn `PermissionWarningBanner` vÃ o `:core:designsystem`:**
+     - Táº¡o `vn.io.litever.remind.core.designsystem.components.PermissionWarningBanner.kt`.
+     - Nháº­n cÃ¡c thuá»™c tÃ­nh ngá»¯ nghÄ©a (`isCritical`, `title`, `message`, `actionLabel`, `dismissLabel`, `onDismiss`).
+     - TuÃ¢n thá»§ nghiÃªm ngáº·t quy chuáº©n cá»§a Litever Design System (`LvButton`, `LvSemantic`, `LiteverTheme`).
+     - XÃ³a bá» hoÃ n toÃ n cÃ¡c file banner cÅ© trong `:features:alarms` vÃ  `:features:reminders`.
+  2. **Cáº­p nháº­t `:features:reminders`:**
+     - Bá»• sung chuá»—i tÃ i nguyÃªn tiáº¿ng Viá»‡t vÃ  tiáº¿ng Anh dÃ nh riÃªng cho tÃ­nh nÄƒng Nháº¯c nhá»Ÿ (`reminder_permission_warning_banner_non_critical_title`, `reminder_permission_warning_banner_non_critical_desc`).
+     - Má»Ÿ rá»™ng `ReminderListUiState` vá»›i `isCriticalPermissionWarning` vÃ  `isPermissionWarningDismissed`.
+     - Cung cáº¥p hÃ m `dismissPermissionWarning()` trong `ReminderListViewModel` vÃ  liÃªn káº¿t vá»›i nÃºt "Nháº¯c tÃ´i sau".
+  3. **Kiá»ƒm thá»­ toÃ n diá»‡n:**
+     - Cáº­p nháº­t test suite `ReminderListViewModelTest`, `ReminderPermissionChallengerTest`, `ReminderR1R2EmpiricalChallengerTest`.
+     - Build vÃ  cháº¡y thÃ nh cÃ´ng toÃ n bá»™ test suite vÃ  `assembleDebug`.
+
+### [TDR-086] - Thá»‘ng nháº¥t AutoSilenceBottomSheet vÃ o :core:designsystem vÃ  Dá»n dáº¹p Code Smells / Linter Warnings táº¡i ReminderEditScreen & Navigation
+- **NgÃ y thá»±c hiá»‡n:** 2026-10-01
+- **Tráº¡ng thÃ¡i:** Accepted
+- **Bá»‘i cáº£nh:**
+  - `AutoSilenceBottomSheet` bÃªn BÃ¡o thá»©c (`:features:alarms`) vÃ  `ReminderAutoSilenceBottomSheetContent` bÃªn Nháº¯c nhá»Ÿ (`:features:reminders`) phá»¥c vá»¥ cÃ¹ng má»™t má»¥c Ä‘Ã­ch chá»n thá»i gian tá»± Ä‘á»™ng ngáº¯t chuÃ´ng khi ngÆ°á»i dÃ¹ng khÃ´ng tÆ°Æ¡ng tÃ¡c. Viá»‡c duplicate component nÃ y vi pháº¡m nguyÃªn táº¯c DRY vÃ  Single Source of Truth cá»§a `:core:designsystem`.
+  - Chuá»—i mÃ´ táº£ hÃ nh vi cáº§n giáº£i thÃ­ch rÃµ rÃ ng cho cáº£ bÃ¡o thá»©c vÃ  nháº¯c nhá»Ÿ: "ChuÃ´ng bÃ¡o sáº½ tá»± Ä‘á»™ng táº¯t náº¿u báº¡n khÃ´ng tÆ°Æ¡ng tÃ¡c sau má»™t khoáº£ng thá»i gian."
+  - MÃ n hÃ¬nh `ReminderEditScreen` vÃ  file Ä‘iá»u hÆ°á»›ng `RemindersNavigation.kt` tá»“n táº¡i nhiá»u code smell vÃ  cáº£nh bÃ¡o linter:
+    + Cáº£nh bÃ¡o `Querying resource values using LocalContext.current is not configuration-aware and may return stale values if the Configuration changes` (3 vá»‹ trÃ­).
+    + Sá»­ dá»¥ng `Uri.parse(string)` thay vÃ¬ extension `toUri()`.
+    + Vá»‹ trÃ­ `modifier: Modifier = Modifier` khÃ´ng pháº£i lÃ  tham sá»‘ tÃ¹y chá»n Ä‘áº§u tiÃªn (vi pháº¡m Compose API guidelines).
+    + 9 tham sá»‘ callback trigger thá»«a trong `ReminderEditScreen` do viá»‡c cáº¥u hÃ¬nh trigger Ä‘Ã£ tÃ¡ch sang `ReminderTriggerEditScreen`.
+    + Tham sá»‘ `reminderId` vÃ  `onNavigateToSnoozeSettings` khÃ´ng cÃ²n Ä‘Æ°á»£c sá»­ dá»¥ng trong `ReminderEditRoute` vÃ  `remindersGraph`.
+- **Quyáº¿t Ä‘á»‹nh:**
+  1. **ÄÆ°a `AutoSilenceBottomSheet` vÃ  `AutoSilenceBottomSheetContent` vÃ o `:core:designsystem`:**
+     - Táº¡o `vn.io.litever.remind.core.designsystem.components.AutoSilenceBottomSheet.kt`.
+     - Há»— trá»£ linh hoáº¡t danh sÃ¡ch tÃ¹y chá»n (há»— trá»£ `0` tÆ°Æ¡ng á»©ng "KhÃ´ng bao giá»" qua `auto_silence_never`).
+     - Bá»• sung resource strings chuáº©n hÃ³a trong cáº£ `values/strings.xml` vÃ  `values-vi/strings.xml`.
+     - XÃ³a bá» hoÃ n toÃ n implementation trÃ¹ng láº·p bÃªn `:features:alarms` vÃ  `ReminderAutoSilenceBottomSheetContent` trong `ReminderAlertConfigSection.kt`.
+  2. **Dá»n dáº¹p triá»‡t Ä‘á»ƒ Code Smells & Linter trong `:features:reminders`:**
+     - Sá»­ dá»¥ng `stringResource(R.string.default_ringtone)` thay cho `context.getString(...)` Ä‘áº£m báº£o configuration-aware khi Ä‘á»•i locale / theme.
+     - Sá»­ dá»¥ng `uiState.ringtoneUri.toUri()`.
+     - Chuáº©n hÃ³a vá»‹ trÃ­ `modifier: Modifier = Modifier` thÃ nh tham sá»‘ tÃ¹y chá»n Ä‘áº§u tiÃªn theo Compose API Guidelines.
+     - Loáº¡i bá» hoÃ n toÃ n 9 callbacks thá»«a (`onTriggerTypeSelected`, `onTimeChange`, `onDateChange`, `onRepeatDaysChange`, `onRepeatDayToggle`, `onRepeatIntervalChange`, `onMonthlyDayToggle`, `onAddYearlyDate`, `onRemoveYearlyDate`) khá»i `ReminderEditScreen`, `ReminderEditRoute` vÃ  cÃ¡c previews.
+     - Loáº¡i bá» `reminderId` vÃ  `onNavigateToSnoozeSettings` thá»«a trong `ReminderEditRoute` vÃ  `remindersGraph`.
+     - XÃ³a cÃ¡c unused imports.
+  3. **Kiá»ƒm thá»­ tá»± Ä‘á»™ng:**
+     - 473/473 unit test tasks toÃ n bá»™ há»‡ thá»‘ng passed 100%.
+
+### [TDR-070] - TÃ¡ch biá»‡t thanh Ã‚m lÆ°á»£ng vÃ  Rung thÃ nh 2 thÃ nh pháº§n Ä‘á»™c láº­p kÃ¨m nÃºt phÃ¡t thá»­ Ã¢m thanh (Play/Stop Preview) cho Alarm vÃ  Reminder
+- **NgÃ y thá»±c hiá»‡n:** 2026-10-01
+- **Tráº¡ng thÃ¡i:** Accepted
+- **Bá»‘i cáº£nh:**
+  - TrÆ°á»›c Ä‘Ã¢y, á»Ÿ cáº£ `AlarmEditScreen` vÃ  `ReminderEditScreen` (`ReminderAlertConfigSection`), thanh trÆ°á»£t Ã¢m lÆ°á»£ng vÃ  icon rung bá»‹ gá»™p chung vÃ o má»™t hÃ ng (`[VolumeIcon] [Slider] [VibrationIcon]`). Bá»‘ cá»¥c nÃ y gÃ¢y cháº­t chá»™i, khÃ³ thao tÃ¡c vÃ  khÃ´ng táº¡o sá»± trá»±c quan cho ngÆ°á»i dÃ¹ng khi muá»‘n báº­t/táº¯t rung Ä‘á»™c láº­p.
+  - Äá»“ng thá»i, ngÆ°á»i dÃ¹ng cáº§n cÃ³ kháº£ nÄƒng nghe thá»­ trá»±c tiáº¿p Ã¢m thanh chuÃ´ng á»Ÿ má»©c Ã¢m lÆ°á»£ng vá»«a chá»n ngay táº¡i thanh Ã¢m lÆ°á»£ng.
+- **Quyáº¿t Ä‘á»‹nh:**
+  1. **TÃ¡ch riÃªng 2 hÃ ng cÃ i Ä‘áº·t:**
+     - **HÃ ng Ã‚m lÆ°á»£ng:** Gá»“m icon Ã¢m lÆ°á»£ng (`VolumeOff`/`VolumeUp`), thanh trÆ°á»£t `Slider`, vÃ  á»Ÿ cuá»‘i hÃ ng lÃ  nÃºt phÃ¡t thá»­ Ã¢m thanh dáº¡ng icon button (`ReMindSettingIcon`) vá»›i icon `PlayArrow` (khi dá»«ng) vÃ  `Pause`/`Stop` (khi Ä‘ang phÃ¡t cÃ³ highlight mÃ u container).
+     - **HÃ ng Rung:** Trá»Ÿ thÃ nh má»™t hÃ ng cÃ i Ä‘áº·t riÃªng biá»‡t, cÃ³ tiÃªu Ä‘á», mÃ´ táº£ tráº¡ng thÃ¡i, vÃ  cÃ´ng táº¯c `Switch`/`LiteverSwitch` rÃµ rÃ ng, tiá»‡n lá»£i.
+  2. **Ãp dá»¥ng Ä‘á»“ng bá»™ cho cáº£ 2 module `:features:alarms` vÃ  `:features:reminders`:**
+     - Trong `AlarmEditScreen`: TÃ¡ch Row 3 thÃ nh Volume Slider + Play button á»Ÿ Ä‘uÃ´i, Row 4 thÃ nh `AlarmSettingRow` cho Rung.
+     - Trong `ReminderAlertConfigSection`: Cháº¿ Ä‘á»™ Ä‘á»• chuÃ´ng hiá»ƒn thá»‹ hÃ ng Volume Slider + Play button riÃªng, vÃ  cáº£ 2 cháº¿ Ä‘á»™ (Äá»• chuÃ´ng & ThÃ´ng bÃ¡o thÆ°á»ng) Ä‘á»u hiá»ƒn thá»‹ hÃ ng Rung riÃªng biá»‡t, nháº¥t quÃ¡n.
+  3. **TÃ­ch há»£p `AudioPlayer` vÃ o `ReminderEditViewModel`:**
+     - Inject `AudioPlayer` tá»« `:core:common` vÃ o `ReminderEditViewModel`.
+     - Cung cáº¥p `toggleRingtonePlayback()`, `startRingtonePlayback()`, `stopRingtonePlayback()`.
+     - Tá»± Ä‘á»™ng ngáº¯t phÃ¡t Ã¢m thanh khi Ä‘á»•i chuÃ´ng, Ä‘á»•i rung, Ä‘á»•i kiá»ƒu thÃ´ng bÃ¡o, lÆ°u, há»§y, hoáº·c rá»i khá»i mÃ n hÃ¬nh (`onCleared`, `onDispose`).
+  4. **Kiá»ƒm thá»­ tá»± Ä‘á»™ng:**
+     - Viáº¿t Ä‘áº§y Ä‘á»§ unit tests cho `ReminderEditViewModelTest` Ä‘áº£m báº£o logic báº­t/táº¯t phÃ¡t chuÃ´ng vÃ  ngáº¯t chuÃ´ng an toÃ n.
+     - ToÃ n bá»™ 473/473 tasks unit tests cá»§a project pass 100%.
+- **Há»‡ quáº£:**
+  - Giao diá»‡n biÃªn táº­p bÃ¡o thá»©c vÃ  nháº¯c nhá»Ÿ trá»Ÿ nÃªn thoÃ¡ng Ä‘Ã£ng, dá»… kiá»ƒm soÃ¡t Ã¢m lÆ°á»£ng vÃ  rung Ä‘á»™c láº­p.
+  - NgÆ°á»i dÃ¹ng dá»… dÃ ng nghe thá»­ Ã¢m thanh chuÃ´ng trá»±c tiáº¿p ngay táº¡i vá»‹ trÃ­ Ä‘iá»u chá»‰nh Ã¢m lÆ°á»£ng.
+
+### [TDR-069] - TÃ¡i cáº¥u trÃºc CSDL nháº¯c nhá»Ÿ (Reminders): TÃ¡ch báº¡ch FIXED_TIME & INTERVAL, há»— trá»£ Multi-day Recurrence vÃ  Ä‘á»“ng bá»™ Room Architecture
+- **NgÃ y thá»±c hiá»‡n:** 2026-09-29
+- **Tráº¡ng thÃ¡i:** Accepted
+- **Bá»‘i cáº£nh:**
+  - Sau commit `82167122df0a9b3c4864400cfde2142852b981e2`, cáº¥u trÃºc dá»¯ liá»‡u reminder Ä‘Ã£ loáº¡i bá» cÃ¡c trigger Location/Wifi Ä‘á»ƒ táº­p trung vÃ o TimeTrigger.
+  - Tuy nhiÃªn, viá»‡c gá»™p chung cÃ¡c loáº¡i kÃ­ch hoáº¡t vÃ  thiáº¿u sá»± phÃ¢n tÃ¡ch giá»¯a má»‘c giá» tÄ©nh (`FIXED_TIME`) vÃ  khoáº£ng láº·p Ä‘á»™ng (`INTERVAL`) gÃ¢y xung Ä‘á»™t logic nghiá»‡p vá»¥: `FIXED_TIME` lÃ  má»‘c giá» cá»‘ Ä‘á»‹nh (khÃ´ng bá»‹ trÃ´i giá» náº¿u lá»¡ háº¹n), trong khi `INTERVAL` tÃ­nh khoáº£ng thá»i gian trÃ´i qua giá»¯a cÃ¡c láº§n thá»±c hiá»‡n vÃ  chá»‰ kÃ­ch hoáº¡t trong cÃ¡c khung giá» giá»›i háº¡n (`time_windows`).
+  - Nhu cáº§u láº·p láº¡i Ä‘á»‹nh ká»³ phá»©c táº¡p: Láº·p theo thÃ¡ng (cho phÃ©p chá»n nhiá»u ngÃ y trong thÃ¡ng `monthlyDays: List<Int>`), láº·p theo nÄƒm (cho phÃ©p chá»n nhiá»u ngÃ y trong nÄƒm `yearlyDates: List<ReminderMonthDay>`), láº·p theo tuáº§n (`repeatDays: List<DayOfWeek>`).
+- **Quyáº¿t Ä‘á»‹nh:**
+  1. **Chuáº©n hoÃ¡ Schema Room Database & Entity (`reminders` table):**
+     - Bá»• sung `trigger_type` (`FIXED_TIME` | `INTERVAL`).
+     - TÃ¡ch trÆ°á»ng `fixed_times: List<String>?` (lÆ°u cÃ¡c má»‘c giá» cá»‘ Ä‘á»‹nh dáº¡ng HH:mm) vÃ  `interval_minutes: Int?` (chu ká»³ láº·p láº¡i theo phÃºt).
+     - Bá»• sung `time_windows: List<TimeWindow>?` quy Ä‘á»‹nh khung giá» hiá»‡u lá»±c (`startTime`, `endTime`, `activeDays`) cho `INTERVAL`.
+     - Há»— trá»£ Ä‘a ngÃ y láº·p láº¡i: `repeat_values: List<String>?` lÆ°u trá»¯ `monthlyDays` (vÃ­ dá»¥ `["1", "15", "30"]`) vÃ  `yearlyDates` (vÃ­ dá»¥ `["MM-dd", ...]`), káº¿t há»£p `repeat_days` cho WEEKLY.
+     - Äá»“ng bá»™ cÃ¡c thuá»™c tÃ­nh rÃ ng buá»™c vÃ  hÃ nh vi: `urgency_level` (`LOW`, `MEDIUM`, `HIGH`, `CRITICAL`), `checklist` (danh sÃ¡ch cÃ´ng viá»‡c con), `snooze_config` (`intervalMinutes`, `maxCount`), `is_persistent_alert`.
+  2. **NÃ¢ng cáº¥p Migration Room DB (`MIGRATION_4_5`):**
+     - Äáº£m báº£o migration an toÃ n, tá»± Ä‘á»™ng migrate dá»¯ liá»‡u cÅ© tá»« `time_trigger_times` vÃ  `time_trigger_repeat_interval` sang `fixed_times` / `repeat_values` mÃ  khÃ´ng lÃ m máº¥t mÃ¡t dá»¯ liá»‡u ngÆ°á»i dÃ¹ng.
+  3. **Äá»“ng bá»™ Domain & UI/ViewModel Layer:**
+     - Tá»‘i Æ°u `TimeTrigger` vá»›i cÃ¡c helper `isRecurring`, há»— trá»£ Ä‘áº§y Ä‘á»§ `monthlyDays`, `yearlyDates`.
+     - Cáº­p nháº­t `ReminderEditViewModel` vÃ  `ReminderTriggerEditScreen`: Há»— trá»£ giao diá»‡n chá»n nhiá»u ngÃ y trong thÃ¡ng vÃ  nhiá»u ngÃ y trong nÄƒm linh hoáº¡t.
+     - **UI Multi-Time Targets cho `FIXED_TIME`**: Bá»• sung bá»™ chá»n nhiá»u má»‘c giá» tÄ©nh trong ngÃ y (`fixedTimes: List<LocalTime>`), há»— trá»£ thÃªm/xÃ³a/sá»­a tá»«ng má»‘c giá» dáº¡ng chip trá»±c quan, Ä‘á»“ng bá»™ lÆ°u trá»¯ vÃ o `TimeTrigger.time`.
+     - **NÃ¢ng cáº¥p `ReminderCard`**: TÃ¡ch báº¡ch hiá»ƒn thá»‹ `FIXED_TIME` (tÃ³m táº¯t cÃ¡c má»‘c giá» vÃ  chu ká»³) vÃ  `INTERVAL` (chu ká»³ láº·p + khung giá» hiá»‡u lá»±c), bá»• sung Urgency badge (`HARD`) vÃ  Persistent Alert badge ("ChuÃ´ng liÃªn tá»¥c").
+     - Cáº­p nháº­t `ReminderSyncManager` vÃ  `ReminderAlertManager`: Xá»­ lÃ½ mÆ°á»£t mÃ  khi app má»Ÿ hoáº·c alarm kÃ­ch hoáº¡t.
+  4. **Báº£o trÃ¬ & Tinh giáº£n Test Suite:**
+     - XoÃ¡ bá» cÃ¡c unit test má»“ cÃ´i phá»¥ thuá»™c Location/Wifi cÅ© trong `:app` vÃ  `:core:alarm`.
+     - Cáº­p nháº­t dependency `libs.junit` cho `:features:today` vÃ  `:features:mission`.
+     - ÄÆ°a toÃ n bá»™ 475 test task cá»§a project vÆ°á»£t qua 100% khÃ´ng cÃ³ cáº£nh bÃ¡o hay lá»—i tiá»m áº©n.
+- **Há»‡ quáº£:**
+  - Há»‡ thá»‘ng dá»¯ liá»‡u nháº¯c nhá»Ÿ Ä‘áº¡t chuáº©n kiáº¿n trÃºc sáº¡ch (Clean Architecture), tÃ¡ch báº¡ch rÃµ rÃ ng giá»¯a thá»i gian tÄ©nh vÃ  chu ká»³ Ä‘á»™ng.
+  - Há»— trá»£ toÃ n diá»‡n cÃ¡c ca sá»­ dá»¥ng phá»©c táº¡p cá»§a ngÆ°á»i dÃ¹ng (uá»‘ng nÆ°á»›c má»—i 2 tiáº¿ng trong giá» lÃ m viá»‡c, nháº¯c Ä‘Ã³ng tiá»n nhÃ  ngÃ y 5 vÃ  20 hÃ ng thÃ¡ng, nháº¯c sinh nháº­t nhiá»u ngÆ°á»i thÃ¢n trong nÄƒm).
+  - ToÃ n bá»™ test suite xanh 100%, sáºµn sÃ ng cho release.
+
+### [TDR-067] - TÃ¡i cáº¥u trÃºc GeneralSettingsScreen: Thay tháº¿ SegmentedButton báº±ng ReMindSettingsItem & Selection Dialog
+- **NgÃ y thá»±c hiá»‡n:** 2026-09-17
+- **Tráº¡ng thÃ¡i:** Accepted
+- **Bá»‘i cáº£nh:**
+  - Trong `GeneralSettingsScreen`, viá»‡c láº·p láº¡i 3 hÃ ng `SingleChoiceSegmentedButtonRow` liÃªn tiáº¿p (Äá»‹nh dáº¡ng giá», Cháº¿ Ä‘á»™ hiá»ƒn thá»‹, NgÃ´n ngá»¯) lÃ m giao diá»‡n bá»‹ dÃ y Ä‘áº·c, chiáº¿m diá»‡n tÃ­ch ngang vÃ  kÃ©m tÃ­nh phÃ¢n cáº¥p thá»‹ giÃ¡c.
+  - Cáº§n chuyá»ƒn Ä‘á»•i sang phong cÃ¡ch danh sÃ¡ch cÃ i Ä‘áº·t chuáº©n Android / Material 3 (dÃ¹ng row hiá»ƒn thá»‹ tÃ³m táº¯t lá»±a chá»n hiá»‡n táº¡i vÃ  má»Ÿ Dialog lá»±a chá»n khi tÆ°Æ¡ng tÃ¡c).
+- **Quyáº¿t Ä‘á»‹nh:**
+  1. **Chuyá»ƒn Ä‘á»•i sang `ReMindSettingsItem` & Tá»‘i Æ°u gom nhÃ³m:**
+     - Gá»™p má»¥c NgÃ´n ngá»¯ vÃ  Äá»‹nh dáº¡ng giá» vÃ o chung má»™t tháº» nhÃ³m **"NgÃ´n ngá»¯ & VÃ¹ng" / "Language & Region"** (`language_and_region_headline`).
+     - Má»¥c Time format: Hiá»ƒn thá»‹ title "Time format", subtitle lÃ  Ä‘á»‹nh dáº¡ng Ä‘ang chá»n ("System", "12h", "24h"), icon `Schedule` vÃ  chevron trailing icon.
+     - Má»¥c Display mode: Náº±m trong nhÃ³m "Display", hiá»ƒn thá»‹ title "Display mode", subtitle lÃ  theme Ä‘ang chá»n ("System", "Light", "Dark"), icon tá»± Ä‘á»™ng Ä‘á»•i theo theme hiá»‡n táº¡i (`LightMode`, `DarkMode`, `BrightnessMedium`).
+     - Má»¥c Language: Náº±m trong nhÃ³m "Language & Region", hiá»ƒn thá»‹ title "Language", subtitle lÃ  ngÃ´n ngá»¯ Ä‘ang chá»n ("English", "Tiáº¿ng Viá»‡t"), icon `Language`.
+     - Má»¥c Color Palette (MÃ u chá»§ Ä‘áº¡o): Chuyá»ƒn Ä‘á»•i tá»« cá»¥m 8 Ã´ nÃºt chá»¯ nháº­t cá»“ng ká»nh sang dÃ²ng `ReMindSettingsItem` chuáº©n, hiá»ƒn thá»‹ tÃªn mÃ u Ä‘ang chá»n vÃ  Preview cháº¥m trÃ²n mÃ u sáº¯c (Color dot) á»Ÿ Ä‘uÃ´i dÃ²ng, nháº¥p vÃ o Ä‘á»ƒ má»Ÿ `ColorPaletteSelectionDialog`.
+  2. **Táº¡o `SingleChoiceDialog` & `ColorPaletteSelectionDialog` dÃ¹ng `LvAlertDialog`:**
+     - Hiá»ƒn thá»‹ danh sÃ¡ch tÃ¹y chá»n vá»›i `RadioButton` vÃ  text cÃ³ thá»ƒ báº¥m trá»±c tiáº¿p vÃ o toÃ n hÃ ng.
+     - `ColorPaletteSelectionDialog`: Thiáº¿t káº¿ dáº¡ng lÆ°á»›i trÃ²n **3 cá»™t x 3 hÃ ng** (Pixel/Material 3 style) cá»±c ká»³ nhá» gá»n, gá»“m cháº¥m mÃ u trÃ²n 48dp, viá»n ná»•i báº­t (2.5dp) & dáº¥u tÃ­ch `Check` khi Ä‘Æ°á»£c chá»n, cÃ¹ng tÃªn mÃ u ngáº¯n gá»n phÃ­a dÆ°á»›i. Giáº£m 60% chiá»u cao so vá»›i danh sÃ¡ch dá»c, khÃ´ng cÃ²n chiáº¿m diá»‡n tÃ­ch mÃ n hÃ¬nh.
+     - Há»— trá»£ nÃºt Cancel (Huá»·) chuáº©n thiáº¿t káº¿ qua `LvButton`.
+- **Há»‡ quáº£:**
+  - Giao diá»‡n cÃ i Ä‘áº·t chung Ä‘á»“ng bá»™ 100%, thanh thoÃ¡t vÃ  tinh táº¿ vá»›i 2 nhÃ³m rÃµ rÃ ng: **Display** (Giao diá»‡n & MÃ u sáº¯c) vÃ  **Language & Region** (NgÃ´n ngá»¯ & Äá»‹nh dáº¡ng vÃ¹ng miá»n).
+  - Dialog chá»n mÃ u nhá» gá»n, trá»±c quan, tháº©m má»¹ cao vÃ  thao tÃ¡c cháº¡m nhanh chÃ³ng.
+  - Äá»“ng bá»™ 100% vá»›i phong cÃ¡ch toÃ n bá»™ á»©ng dá»¥ng (`SettingsScreen`, `AlarmSettingsScreen`).
+
+### [TDR-068] - Äá»“ng bá»™ LocalConfiguration uiMode & PhÃ¢n giáº£i áº£nh minh hoáº¡ EmptyState theo Theme
+- **NgÃ y thá»±c hiá»‡n:** 2026-09-17
+- **Tráº¡ng thÃ¡i:** Accepted
+- **Bá»‘i cáº£nh:**
+  - `EmptyState` (`AlarmListScreen`) sá»­ dá»¥ng tÃ i nguyÃªn áº£nh minh hoáº¡ (`no_alarm_illustration.png`).
+  - Khi ngÆ°á»i dÃ¹ng thay Ä‘á»•i cháº¿ Ä‘á»™ hiá»ƒn thá»‹ (SÃ¡ng / Tá»‘i) trong cÃ i Ä‘áº·t á»©ng dá»¥ng hoáº·c xem trong Preview Dark Mode, `painterResource` khÃ´ng tá»± Ä‘á»™ng Ä‘á»•i sang báº£n Dark náº¿u OS váº«n Ä‘ang á»Ÿ cháº¿ Ä‘á»™ Light, vÃ¬ Android `ResourcesImpl` cache vÃ  gáº¯n cháº·t vá»›i Context/Configuration cá»§a Activity há»‡ thá»‘ng.
+  - Viá»‡c can thiá»‡p override `LocalContext provides themedContext` báº±ng non-Activity `createConfigurationContext(...)` gÃ¢y crash runtime layout (`ScaffoldLayout`) do Jetpack Compose yÃªu cáº§u Context cá»§a Activity.
+- **Quyáº¿t Ä‘á»‹nh:**
+  1. **Tuyá»‡t Ä‘á»‘i khÃ´ng override `LocalContext`:** Chá»‰ Ä‘á»“ng bá»™ `LocalConfiguration provides themedConfiguration` vá»›i cá» `uiMode` (`UI_MODE_NIGHT_YES` / `UI_MODE_NIGHT_NO`) bÃªn trong `ReMindTheme`. Giá»¯ nguyÃªn Activity Context Ä‘á»ƒ trÃ¡nh crash layout.
+  2. **TÃ¡ch biá»‡t tÃ i nguyÃªn & Chá»n áº£nh theo Theme state:** Khai bÃ¡o tÃ i nguyÃªn `no_alarm_illustration_dark.png` vÃ  Ä‘iá»u hÆ°á»›ng trá»±c tiáº¿p trong `EmptyState`: náº¿u `!LiteverTheme.colors.isLight` thÃ¬ hiá»ƒn thá»‹ `no_alarm_illustration_dark`, ngÆ°á»£c láº¡i hiá»ƒn thá»‹ `no_alarm_illustration`.
+  3. **Bá»• sung Preview Dark Mode:** Äáº£m báº£o `EmptyStateDarkPreview` hiá»ƒn thá»‹ chuáº©n xÃ¡c cáº£ 2 cháº¿ Ä‘á»™ SÃ¡ng/Tá»‘i.
+- **Há»‡ quáº£:**
+  - á»¨ng dá»¥ng hoáº¡t Ä‘á»™ng á»•n Ä‘á»‹nh 100%, khÃ´ng bá»‹ crash runtime táº¡i `MainActivity`.
+  - áº¢nh minh hoáº¡ `EmptyState` chuyá»ƒn Ä‘á»•i mÆ°á»£t mÃ , láº­p tá»©c tÆ°Æ¡ng á»©ng vá»›i Dark Mode hay Light Mode khi ngÆ°á»i dÃ¹ng Ä‘á»•i cÃ i Ä‘áº·t trong á»©ng dá»¥ng.
+
+### [TDR-069] - Chuáº©n hÃ³a Ná»™i dung Bottom Sheet: ReMindBottomSheetContent & M3 ModalBottomSheet
+- **NgÃ y thá»±c hiá»‡n:** 2026-09-18
+- **Tráº¡ng thÃ¡i:** Accepted
+- **Bá»‘i cáº£nh:**
+  - CÃ¡c mÃ n hÃ¬nh vÃ  thÃ nh pháº§n (`SnoozeBottomSheet`, `GentleAlarmBottomSheet`, `AutoSilenceBottomSheet`, `MissionSelectionBottomSheet`, `AlarmActionBottomSheet`, `AddCustomPhraseContent`) Ä‘ang tá»± cáº¥u hÃ¬nh header vÃ  title thá»§ cÃ´ng, dáº«n Ä‘áº¿n láº·p láº¡i logic padding, kiá»ƒu chá»¯ title vÃ  khoáº£ng cÃ¡ch thá»«a khi khÃ´ng cÃ³ title.
+  - Viá»‡c bá»c toÃ n bá»™ `ModalBottomSheet` thÃ nh wrapper trung gian gÃ¢y cá»“ng ká»nh, che giáº¥u cÃ¡c tÃ­nh nÄƒng gá»‘c cá»§a M3 vÃ  trÃ¡i vá»›i triáº¿t lÃ½ V2 Lean Architecture cá»§a Litever Design System.
+- **Quyáº¿t Ä‘á»‹nh:**
+  1. **KhÃ´ng táº¡o wrapper cho `ModalBottomSheet`:** Sá»­ dá»¥ng trá»±c tiáº¿p `ModalBottomSheet` gá»‘c cá»§a Material 3 kÃ¨m `containerColor = LiteverTheme.colors.surface` nháº±m giá»¯ trá»n váº¹n kháº£ nÄƒng tÃ¹y biáº¿n cá»§a Material 3.
+  2. **Táº¡o `ReMindBottomSheetContent` táº¡i `:core:designsystem`:**
+     - ÄÃ³ng gÃ³i logic hiá»ƒn thá»‹ `title` (vá»›i typography chuáº©n `titleLarge`, in Ä‘áº­m vÃ  padding há»£p lÃ½) vÃ  lá»“ng `content` bÃªn dÆ°á»›i.
+     - Khi `title == null`, `content` báº¯t Ä‘áº§u ngay sÃ¡t pháº§n trÃªn, khÃ´ng sinh padding/spacing thá»«a.
+     - Há»— trá»£ cáº£ slot composable `title: (@Composable () -> Unit)?` vÃ  overload chuá»—i `title: String?`.
+  3. **Chuyá»ƒn Ä‘á»•i toÃ n bá»™ Bottom Sheet hiá»‡n cÃ³ trong á»©ng dá»¥ng:**
+     - `SnoozeBottomSheet.kt`
+     - `GentleAlarmBottomSheet.kt`
+     - `AutoSilenceBottomSheet.kt`
+     - `MissionSelectionBottomSheet.kt`
+     - `AlarmActionBottomSheet` trong `AlarmListScreen.kt`
+     - Bottom sheet thÃªm cá»¥m tá»« trong `PhraseSelectionScreen.kt`
+- **Há»‡ quáº£:**
+  - Äá»“ng bá»™ 100% tráº£i nghiá»‡m vÃ  kiá»ƒu dÃ¡ng Header Bottom Sheet trÃªn toÃ n bá»™ á»©ng dá»¥ng.
+  - Tá»‘i giáº£n mÃ£ nguá»“n, khÃ´ng sinh lá»›p wrapper thá»«a, tuÃ¢n thá»§ nguyÃªn táº¯c Lean Architecture.
+
+### [TDR-070] - Bá»• sung mÃ´ táº£ AutoSilence & Tháº» tÃ³m táº¯t bÃ¡o thá»©c táº¡i AlarmActionBottomSheet
+- **NgÃ y thá»±c hiá»‡n:** 2026-09-18
+- **Tráº¡ng thÃ¡i:** Accepted
+- **Bá»‘i cáº£nh:**
+  - Bottom sheet `AutoSilenceBottomSheet` cáº§n cÃ³ má»™t dÃ²ng mÃ´ táº£ ngáº¯n giáº£i thÃ­ch hÃ nh vi táº¯t tiáº¿ng/bÃ¡o láº¡i tá»± Ä‘á»™ng tÆ°Æ¡ng tá»± `GentleAlarmBottomSheet` Ä‘á»ƒ ngÆ°á»i dÃ¹ng hiá»ƒu rÃµ tÃ¡c dá»¥ng.
+  - `AlarmActionBottomSheet` má»Ÿ lÃªn tá»« danh sÃ¡ch bÃ¡o thá»©c hiá»‡n chá»‰ hiá»ƒn thá»‹ cÃ¡c hÃ nh Ä‘á»™ng (Bá» qua láº§n nÃ y, Xem trÆ°á»›c, NhÃ¢n báº£n, XoÃ¡) mÃ  khÃ´ng hiá»ƒn thá»‹ thÃ´ng tin bÃ¡o thá»©c Ä‘ang Ä‘Æ°á»£c tÃ¡c vá»¥, gÃ¢y thiáº¿u ngá»¯ cáº£nh nháº­n biáº¿t cho ngÆ°á»i dÃ¹ng.
+- **Quyáº¿t Ä‘á»‹nh:**
+  1. **Bá»• sung mÃ´ táº£ cho AutoSilence:**
+     - ThÃªm chuá»—i `auto_silence_description` Ä‘a ngÃ´n ngá»¯ (Tiáº¿ng Anh & Tiáº¿ng Viá»‡t).
+     - Äáº·t dÃ²ng mÃ´ táº£ ngáº¯n phÃ­a dÆ°á»›i tiÃªu Ä‘á» cá»§a `AutoSilenceBottomSheetContent`.
+  2. **Hiá»ƒn thá»‹ tháº» tÃ³m táº¯t bÃ¡o thá»©c trong `AlarmActionBottomSheet`:**
+     - Truyá»n `is24HourFormat` tá»« `AlarmListScreen` vÃ o `AlarmActionBottomSheet` vÃ  `AlarmActionBottomSheetContent`.
+     - Äáº·t má»™t `ReMindGroupCard` á»Ÿ Ä‘áº§u danh sÃ¡ch thao tÃ¡c: hiá»ƒn thá»‹ chu ká»³ láº·p (`getRepeatSummaryText`), giá» bÃ¡o thá»©c + AM/PM (`TimeFormatUtils.formatTimeParts`), biá»ƒu tÆ°á»£ng nhiá»‡m vá»¥ (`MissionIcons`) vÃ  nhÃ£n bÃ¡o thá»©c (`alarm.label`).
+     - TÃ¡i sá»­ dá»¥ng hÃ m ná»™i bá»™ `MissionIcons` vÃ  `getMissionIcon` tá»« `AlarmCard.kt`.
+- **Há»‡ quáº£:**
+  - Tráº£i nghiá»‡m ngÆ°á»i dÃ¹ng Ä‘á»“ng nháº¥t, trá»±c quan vÃ  rÃµ rÃ ng hÆ¡n khi thá»±c hiá»‡n thao tÃ¡c nhanh trÃªn tá»«ng bÃ¡o thá»©c.
+  - Táº­n dá»¥ng tá»‘i Ä‘a cÃ¡c thÃ nh pháº§n vÃ  quy chuáº©n cÃ³ sáºµn trong `:core:designsystem`.
+
+### [TDR-071] - Tinh chá»‰nh giao diá»‡n AlarmCard & Tháº» NextAlarmHeader
+- **NgÃ y thá»±c hiá»‡n:** 2026-09-18
+- **Tráº¡ng thÃ¡i:** Accepted
+- **Bá»‘i cáº£nh:**
+  - `AlarmCard`: Card bÃ¡o thá»©c cáº§n tÄƒng tÃ­nh tháº©m má»¹ vÃ  Ä‘á»™ tÆ°Æ¡ng pháº£n vá»›i ná»n theo Ä‘Ãºng cÃ¡c token phÃ¢n cáº¥p mÃ u (`surfaceContainer` / `surfaceContainerLow`), dÃ¹ng `Surface` Ä‘á»“ng bá»™ vÃ  cÄƒn chá»‰nh font chá»¯ giá», AM/PM sáº¯c nÃ©t hÆ¡n.
+  - `NextAlarmHeader`: Pháº§n hiá»ƒn thá»‹ bÃ¡o thá»©c sáº¯p tá»›i Ä‘ang lÃ  má»™t Row Ä‘Æ¡n giáº£n, chÆ°a ná»•i báº­t so vá»›i danh sÃ¡ch bÃªn dÆ°á»›i.
+- **Quyáº¿t Ä‘á»‹nh:**
+  1. **NÃ¢ng cáº¥p `AlarmCard`:**
+     - Sá»­ dá»¥ng `Surface` vá»›i `shape = LiteverTheme.shapes.large` thay cho `Card`.
+     - MÃ u ná»n phÃ¢n cáº¥p: BÃ¡o thá»©c báº­t dÃ¹ng `LiteverTheme.colors.surfaceContainer`, bÃ¡o thá»©c táº¯t dÃ¹ng `LiteverTheme.colors.surfaceContainerLow`.
+     - Chá»¯ giá» Ä‘á»‹nh dáº¡ng `FontWeight.Bold`, AM/PM in hoa vá»›i `FontWeight.Bold` vÃ  mÃ u `onSurface`.
+     - NhÃ£n bÃ¡o thá»©c bá»• sung mÃ u `onSurfaceVariant`.
+  2. **NÃ¢ng cáº¥p `NextAlarmHeader` & `ReMindBottomBar`:**
+     - `NextAlarmHeader`: Bá»c toÃ n bá»™ ná»™i dung trong má»™t `Surface` bo gÃ³c `LiteverTheme.shapes.large`, mÃ u ná»n `tertiaryContainer`, `contentColor = onTertiaryContainer` vÃ  padding `LiteverTheme.spacing.medium`. GiÃºp khá»‘i thÃ´ng bÃ¡o thá»i gian chuÃ´ng sáº¯p reo trá»Ÿ nÃªn ná»•i báº­t, thanh lá»‹ch vÃ  táº¡o Ä‘iá»ƒm nháº¥n trá»±c quan á»Ÿ Ä‘áº§u mÃ n hÃ¬nh.
+     - `ReMindBottomBar`: NÃ¢ng cáº¥p mÃ u ná»n sang `LiteverTheme.colors.surfaceContainerHigh` nháº±m tÄƒng Ä‘á»™ tÃ¡ch biá»‡t vÃ  tÆ°Æ¡ng pháº£n rÃµ nÃ©t so vá»›i ná»™i dung cuá»™n bÃªn dÆ°á»›i.
+- **Há»‡ quáº£:**
+  - Giao diá»‡n danh sÃ¡ch bÃ¡o thá»©c vÃ  bottom bar hiá»‡n Ä‘áº¡i, rÃµ rÃ ng, Ä‘á»™ tÆ°Æ¡ng pháº£n vÃ  tráº­t tá»± thá»‹ giÃ¡c (visual hierarchy) tá»‘t hÆ¡n.
+
+### [TDR-072] - Tá»± Ä‘á»™ng xuá»‘ng dÃ²ng (FlowRow) cho Button trong LvAlertDialog khi Text dÃ i
+- **NgÃ y thá»±c hiá»‡n:** 2026-09-18
+- **Tráº¡ng thÃ¡i:** Accepted
+- **Bá»‘i cáº£nh:**
+  - Trong `LvAlertDialog`, cÃ¡c nÃºt tÃ¡c vá»¥ (dismissButton vÃ  confirmButton) trÆ°á»›c Ä‘Ã¢y Ä‘Æ°á»£c Ä‘áº·t trong má»™t `Row` vá»›i `Alignment.End`. Khi tiÃªu Ä‘á» cá»§a cÃ¡c button quÃ¡ dÃ i hoáº·c khÃ´ng Ä‘á»§ diá»‡n tÃ­ch hiá»ƒn thá»‹ trÃªn cÃ¹ng má»™t hÃ ng ngang, text cÃ³ thá»ƒ bá»‹ Ã©p nhá» hoáº·c gÃ¢y trÃ n khung, vá»¡ bá»‘ cá»¥c dialog.
+- **Quyáº¿t Ä‘á»‹nh:**
+  - Chuyá»ƒn Ä‘á»•i vÃ¹ng chá»©a action buttons tá»« `Row` sang `FlowRow` vá»›i khoáº£ng cÃ¡ch `horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small, Alignment.End)` vÃ  `verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)`.
+  - Giá»¯ thá»© tá»± hiá»ƒn thá»‹: dismissButton Ä‘i trÆ°á»›c, confirmButton Ä‘i sau. Khi khÃ´ng Ä‘á»§ khÃ´ng gian ngang, confirmButton hoáº·c cÃ¡c nÃºt sáº½ tá»± Ä‘á»™ng ngáº¯t vÃ  nháº£y xuá»‘ng dÃ²ng káº¿ tiáº¿p má»™t cÃ¡ch mÆ°á»£t mÃ  vÃ  tá»± nhiÃªn.
+  - Bá»• sung Preview `LvAlertDialogLongButtonsPreview` Ä‘á»ƒ kiá»ƒm thá»­ trÆ°á»ng há»£p text button dÃ i.
+- **Há»‡ quáº£:**
+  - Äáº£m báº£o Dialog luÃ´n hiá»ƒn thá»‹ trá»n váº¹n nhÃ£n nÃºt báº¥m mÃ  khÃ´ng bá»‹ trÃ n khung hay cáº¯t bá»›t chá»¯ trÃªn má»i kÃ­ch cá»¡ mÃ n hÃ¬nh.
+  - TÆ°Æ¡ng thÃ­ch hoÃ n toÃ n vá»›i cÃ¡c dialog hiá»‡n cÃ³ trong toÃ n bá»™ á»©ng dá»¥ng mÃ  khÃ´ng cáº§n thay Ä‘á»•i code á»Ÿ caller side.
+
+### [TDR-073] - Äá»“ng bá»™ MissionCompleteContent sá»­ dá»¥ng thÃ nh pháº§n dÃ¹ng chung FeedbackStateView
+- **NgÃ y thá»±c hiá»‡n:** 2026-09-18
+- **Tráº¡ng thÃ¡i:** Accepted
+- **Bá»‘i cáº£nh:**
+  - MÃ n hÃ¬nh thÃ´ng bÃ¡o hoÃ n thÃ nh nhiá»‡m vá»¥ (`MissionCompleteContent`) trÆ°á»›c Ä‘Ã¢y tá»± triá»ƒn khai má»™t bá»‘ cá»¥c Column riÃªng láº» vá»›i Icon CheckCircle vÃ  Text tÃ¹y biáº¿n, chÆ°a táº­n dá»¥ng component `FeedbackStateView` cá»§a LiteVer Design System.
+- **Quyáº¿t Ä‘á»‹nh:**
+  - TÃ¡i cáº¥u trÃºc `MissionCompleteContent` sang sá»­ dá»¥ng trá»±c tiáº¿p `FeedbackStateView` vá»›i `type = FeedbackStateType.SUCCESS`.
+  - Táº­n dá»¥ng huy hiá»‡u (badge trÃ²n), kiá»ƒu mÃ u ngá»¯ nghÄ©a Success (`successContainer`, `onSuccessContainer`) vÃ  spacing chuáº©n hÃ³a cá»§a Design System.
+  - TÃ¹y chá»‰nh kiá»ƒu chá»¯ `displayMedium` in Ä‘áº­m vÃ  khoáº£ng cÃ¡ch kÃ½ tá»± `letterSpacing = 4.sp` cÃ¹ng subtitle `titleMedium` Ä‘á»ƒ duy trÃ¬ sá»± ná»•i báº­t vÃ  táº¡o cáº£m giÃ¡c thÃ nh tá»±u khi táº¯t chuÃ´ng thÃ nh cÃ´ng.
+- **Há»‡ quáº£:**
+  - TuÃ¢n thá»§ nghiÃªm ngáº·t nguyÃªn táº¯c Single Source of Truth cho UI components giá»¯a cÃ¡c module.
+  - Giáº£m thiá»ƒu code trÃ¹ng láº·p, Ä‘á»“ng bá»™ hoÃ¡ nháº­n diá»‡n thÆ°Æ¡ng hiá»‡u vÃ  tráº¡ng thÃ¡i pháº£n há»“i xuyÃªn suá»‘t á»©ng dá»¥ng.
+### [TDR-074] - TÃ¡i Cáº¥u TrÃºc Khung MÃ n HÃ¬nh LÃ m Nhiá»‡m Vá»¥ (Mission Ringing & Content Screens) Chuáº©n Stitch Design
+- **NgÃ y thá»±c hiá»‡n:** 2026-09-21
+- **Tráº¡ng thÃ¡i:** Accepted
+- **Bá»‘i cáº£nh:**
+  - MÃ n hÃ¬nh lÃ m nhiá»‡m vá»¥ giáº£i chuÃ´ng bÃ¡o thá»©c cáº§n Ä‘Æ°á»£c nÃ¢ng cáº¥p visual hierarchy theo thiáº¿t káº¿ Stitch Design: hiá»ƒn thá»‹ rÃµ rÃ ng thÃ´ng tin chuÃ´ng, thanh Ä‘áº¿m ngÆ°á»£c, tiáº¿n Ä‘á»™ cÃ¡c vÃ²ng nhiá»‡m vá»¥ (segmented progress bar), vÃ  khÃ´ng gian thao tÃ¡c sÃ¡t bÃ n phÃ­m (bottom docked bar).
+  - CÃ¡c mÃ n hÃ¬nh thÃ nh pháº§n lÃ m nhiá»‡m vá»¥ (`TypingMissionContent`, `MathMissionContent`, `MemoryTilesMissionContent`) trÆ°á»›c Ä‘Ã¢y cÃ³ nhiá»u chi tiáº¿t vá»¥n váº·t (tháº» máº¹o thá»«a thÃ£i, Ä‘áº¿m vÃ²ng láº·p bá»‹ láº·p láº¡i á»Ÿ cáº£ trÃªn vÃ  dÆ°á»›i).
+- **Quyáº¿t Ä‘á»‹nh:**
+  - Khung chÃ­nh `MissionRingingScreen`:
+    - Top App Bar hiá»ƒn thá»‹ tiÃªu Ä‘á» thá»­ thÃ¡ch, giá» bÃ¡o thá»©c, nÃºt bá» cuá»™c vÃ  badge Ä‘áº¿m ngÆ°á»£c `mm:ss` ná»•i báº­t (chuyá»ƒn Ä‘á» khi < 10 giÃ¢y).
+    - `MissionProgressScaffold`: Hiá»ƒn thá»‹ tÃªn nhiá»‡m vá»¥, sá»‘ vÃ²ng vÃ  thanh tiáº¿n Ä‘á»™ phÃ¢n Ä‘oáº¡n `Row` (segmented progress).
+    - `MissionBottomDockedBar`: Äáº·t cá»‘ Ä‘á»‹nh sÃ¡t Ä‘Ã¡y / trÃªn bÃ n phÃ­m áº£o (IME padding), chá»©a thÃ´ng tin kÃ½ tá»±/sá»‘ Ã´ vÃ  nÃºt "Tiáº¿p tá»¥c" chuyá»ƒn bÆ°á»›c.
+  - CÃ¡c mÃ n hÃ¬nh nhiá»‡m vá»¥ (`TypingMissionContent`, `MathMissionContent`, `MemoryTilesMissionContent`):
+    - ÄÆ°a `MissionInstructionBanner` lÃªn trÃªn cÃ¹ng: gá»“m icon ngá»¯ cáº£nh (`EditNote`, `Calculate`, `GridView`) vÃ  dÃ²ng yÃªu cáº§u ngáº¯n gá»n rÃµ rÃ ng.
+    - `TypingMissionContent`: Báº£ng gÃµ chá»¯ tÆ°Æ¡ng tÃ¡c há»— trá»£ tÃ´ mÃ u tá»«ng kÃ½ tá»± Ä‘Ãºng/sai/gá»£i Ã½, Ã´ nháº­p liá»‡u giá»›i háº¡n chiá»u cao tá»‘i Ä‘a vÃ  há»— trá»£ cuá»™n Ä‘á»™c láº­p (`verticalScroll`) khi vÄƒn báº£n dÃ i.
+    - `MathMissionContent`: Tháº» phÃ©p toÃ¡n lá»›n, sáº¯c nÃ©t á»Ÿ giá»¯a kÃ¨m Ã´ nháº­p sá»‘ á»Ÿ dÆ°á»›i, loáº¡i bá» cÃ¡c thÃ nh pháº§n rÆ°á»m rÃ .
+    - `MemoryTilesMissionContent`: Hiá»ƒn thá»‹ rÃµ rÃ ng giai Ä‘oáº¡n Ä‘áº¿m ngÆ°á»£c ghi nhá»› hoáº·c tÃ¬m Ã´ kÃ¨m lÆ°á»›i Ã´ cá» bo trÃ²n trong `Card`, loáº¡i bá» badge tiáº¿n Ä‘á»™ trÃ¹ng láº·p. Äá»“ng thá»i cáº­p nháº­t callback `onProgressChange` Ä‘á»ƒ truyá»n sá»‘ Ã´ Ä‘Ã£ chá»n Ä‘Ãºng / tá»•ng sá»‘ Ã´ cáº§n tÃ¬m xuá»‘ng `MissionBottomDockedBar` hiá»ƒn thá»‹ trá»±c tiáº¿p á»Ÿ chÃ¢n trang (vÃ­ dá»¥: `2 / 4 Ã´`).
+- **Há»‡ quáº£:**
+  - Tráº£i nghiá»‡m lÃ m nhiá»‡m vá»¥ trá»Ÿ nÃªn máº¡ch láº¡c, hiá»‡n Ä‘áº¡i, nháº¥t quÃ¡n thá»‹ giÃ¡c 100% giá»¯a 3 loáº¡i nhiá»‡m vá»¥.
+  - TÆ°Æ¡ng thÃ­ch tá»‘t vá»›i mÃ n hÃ¬nh nhá» vÃ  khi bÃ n phÃ­m áº£o báº­t lÃªn nhá» cÆ¡ cháº¿ cuá»™n Ä‘á»™c láº­p vÃ  bottom bar docked.
+
+### [TDR-075] - Hiá»ƒn Thá»‹ Tráº¡ng ThÃ¡i BÃ¡o Thá»©c Tiáº¿p Theo Táº¡i TodayScreen (Non-interactive & Rich Details)
+- **NgÃ y thá»±c hiá»‡n:** 2026-09-21
+- **Tráº¡ng thÃ¡i:** Accepted
+- **Bá»‘i cáº£nh:**
+  - `TodayScreen` cáº§n bá»• sung má»™t khá»‘i thÃ´ng tin bÃ¡o thá»©c tiáº¿p theo tÆ°Æ¡ng tá»± nhÆ° `TodayQuoteView` hoáº·c banner quáº£ng cÃ¡o Ä‘á»ƒ ngÆ°á»i dÃ¹ng náº¯m báº¯t nhanh tráº¡ng thÃ¡i bÃ¡o thá»©c trong ngÃ y.
+  - YÃªu cáº§u Ä‘áº·c thÃ¹: VÃ¹ng nÃ y hoÃ n toÃ n tÄ©nh (non-interactive, khÃ´ng cÃ³ nÃºt báº¥m, khÃ´ng click handler). Khi cÃ³ bÃ¡o thá»©c káº¿ tiáº¿p thÃ¬ hiá»ƒn thá»‹ Ä‘áº§y Ä‘á»§ thÃ´ng tin bÃ¡o thá»©c (giá», AM/PM, nhÃ£n, láº·p láº¡i, icon nhiá»‡m vá»¥, badge Ä‘áº¿m ngÆ°á»£c cÃ²n láº¡i) gáº§n giá»‘ng nhÆ° `AlarmCard` á»Ÿ danh sÃ¡ch bÃ¡o thá»©c. Khi khÃ´ng cÃ³ bÃ¡o thá»©c káº¿ tiáº¿p hoáº·c táº¥t cáº£ táº¯t thÃ¬ hiá»ƒn thá»‹ thÃ´ng Ä‘iá»‡p truyá»n cáº£m há»©ng Ã½ nghÄ©a ("Thá»i gian nghá»‰ ngÆ¡i") kÃ¨m áº£nh minh hoáº¡ rá»—ng.
+- **Quyáº¿t Ä‘á»‹nh:**
+  - TÃ¡ch vÃ  chuyá»ƒn `NextAlarmUiState` cÃ¹ng hÃ m `calculateNextAlarm` vÃ o `:core:model` Ä‘á»ƒ chia sáº» giá»¯a `:features:alarms` vÃ  `:features:today` (tuÃ¢n thá»§ Clean Architecture vÃ  Single Source of Truth), Ä‘á»“ng thá»i bá»• sung trÆ°á»ng `val alarm: Alarm` vÃ o `NextAlarmUiState.Remaining`.
+  - Di chuyá»ƒn cÃ¡c file áº£nh minh há»a `no_alarm_illustration.png` vÃ  `no_alarm_illustration_dark.png` vÃ o `:core:designsystem/src/main/res/drawable/` Ä‘á»ƒ tÃ¡i sá»­ dá»¥ng thá»‘ng nháº¥t giá»¯a cÃ¡c feature.
+  - NÃ¢ng cáº¥p `TodayNextAlarmView` trong `:features:today:ui:components`:
+    - Äá»“ng bá»™ Ä‘á»‹nh dáº¡ng giá» (12h/24h) theo cÃ i Ä‘áº·t há»‡ thá»‘ng ngÆ°á»i dÃ¹ng thÃ´ng qua `AlarmPreferencesDataSource` Ä‘Æ°á»£c inject vÃ o `TodayViewModel` vÃ  truyá»n xuá»‘ng UI.
+    - Khi cÃ³ bÃ¡o thá»©c sáº¯p tá»›i (`NextAlarmUiState.Remaining`): thiáº¿t káº¿ bá»‘ cá»¥c 2 cá»™t cÃ¢n Ä‘á»‘i:
+      - **Cá»™t 1**: Icon bÃ¡o thá»©c dáº¡ng Ã´ vuÃ´ng bo gÃ³c (76.dp vá»›i ná»n `primaryContainer` vÃ  icon chuÃ´ng).
+      - **Cá»™t 2**:
+        - HÃ ng 1: Text "BÃ¡o thá»©c tiáº¿p theo" vÃ  badge ná»•i báº­t Ä‘áº¿m ngÆ°á»£c thá»i gian cÃ²n láº¡i (rÃºt gá»n: vÃ­ dá»¥ "6h 45m").
+        - HÃ ng 2: Giá» bÃ¡o thá»©c to Ä‘áº­m (`titleLarge` bold + AM/PM tuá»³ cháº¿ Ä‘á»™ 12h/24h) -> cá»¥m icon nhiá»‡m vá»¥ -> ngÃ y láº·p láº¡i.
+        - HÃ ng 3: NhÃ£n bÃ¡o thá»©c theo font nghiÃªng.
+      - ToÃ n bá»™ lÃ  view tÄ©nh (khÃ´ng Switch, khÃ´ng More menu).
+    - Khi khÃ´ng cÃ³ bÃ¡o thá»©c (`NextAlarmUiState.AllOff`): hiá»ƒn thá»‹ áº£nh minh hoáº¡ theo Light/Dark theme kÃ¨m tiÃªu Ä‘á» áº¥m Ã¡p "Thá»i gian nghá»‰ ngÆ¡i" vÃ  thÃ´ng Ä‘iá»‡p truyá»n cáº£m há»©ng "KhÃ´ng cÃ³ lá»‹ch thá»©c dáº­y nÃ o sáº¯p diá»…n ra. HÃ£y táº­n hÆ°á»Ÿng trá»n váº¹n nhá»¯ng phÃºt giÃ¢y nghá»‰ ngÆ¡i vÃ  náº¡p láº¡i nÄƒng lÆ°á»£ng nhÃ©!".
+  - TÃ­ch há»£p vÃ o `TodayViewModel` thÃ´ng qua viá»‡c quan sÃ¡t `AlarmRepository.getAllAlarms()` cÃ¹ng `AlarmPreferencesDataSource.is24HourFormat` vÃ  sáº¯p xáº¿p thá»© tá»± hiá»ƒn thá»‹ táº¡i `TodayScreen`: Thá»i tiáº¿t $\rightarrow$ BÃ¡o thá»©c tiáº¿p theo (`TodayNextAlarmView`) $\rightarrow$ Quáº£ng cÃ¡o (`NativeAdView`) $\rightarrow$ TrÃ­ch dáº«n truyá»n cáº£m há»©ng (`TodayQuoteView`) á»Ÿ dÆ°á»›i cÃ¹ng.
+- **Há»‡ quáº£:**
+  - Cung cáº¥p Ä‘áº§y Ä‘á»§ thÃ´ng tin bÃ¡o thá»©c má»™t cÃ¡ch trá»±c quan, Ä‘á»“ng bá»™ nháº­n diá»‡n vÃ  Ä‘á»‹nh dáº¡ng giá» cÃ i Ä‘áº·t (12h/24h) vá»›i danh sÃ¡ch bÃ¡o thá»©c mÃ  váº«n duy trÃ¬ tÃ­nh cháº¥t thuáº§n hiá»ƒn thá»‹.
+  - Biáº¿n tráº¡ng thÃ¡i rá»—ng thÃ nh thÃ´ng Ä‘iá»‡p tÃ­ch cá»±c, áº¥m Ã¡p, phÃ¹ há»£p triáº¿t lÃ½ ReMind.
+### [TDR-076] - Tá»‘i Æ¯u HÃ³a Táº£i Dá»¯ Liá»‡u Cache-First, Tá»± Äá»™ng LÃ m Má»›i Khi Háº¿t Háº¡n & Sá»­a Lá»—i Loading VÃ´ Táº­n Táº¡i TodayScreen
+- **NgÃ y thá»±c hiá»‡n:** 2026-09-21
+- **Tráº¡ng thÃ¡i:** Accepted
+- **Bá»‘i cáº£nh:**
+  - `TodayViewModel` trong hÃ m `init` gá»i `refresh()`, vá»‘n bá»‹ gÃ¡n cá»©ng cá» `force = true` cho cáº£ `weatherRepository.refreshWeather(force = true)` vÃ  `todayRepository.refreshTodayBriefing(force = true)`. Háº­u quáº£ lÃ  cÆ¡ cháº¿ cache 1 giá» vÃ  cache theo ngÃ y bá»‹ vÃ´ hiá»‡u hoÃ¡ má»—i láº§n má»Ÿ mÃ n hÃ¬nh hoáº·c ViewModel tÃ¡i táº¡o láº¡i, gÃ¢y gá»i máº¡ng dÆ° thá»«a.
+  - Ban Ä‘áº§u khi giá»›i thiá»‡u `isBusy = isRefreshing || isProcessing`, xáº£y ra lá»—i káº¹t loading vÃ´ táº­n (Infinite Loading Deadlock): náº¿u server tráº£ vá» `aiStatus == "processing"`, `isProcessing` thÃ nh `true` khiáº¿n nÃºt refresh TopAppBar xoay liÃªn tá»¥c vÃ  bá»‹ vÃ´ hiá»‡u hÃ³a (`enabled = !isBusy = false`). Äá»“ng thá»i `WeatherRepositoryImpl` vÃ  `TodayRepositoryImpl` do kiá»ƒm tra cache < 1 giá» nÃªn return sá»›m mÃ  khÃ´ng gá»i API, khiáº¿n dá»¯ liá»‡u káº¹t vÄ©nh viá»…n á»Ÿ tráº¡ng thÃ¡i `processing`.
+  - Khi ngÆ°á»i dÃ¹ng quay láº¡i app sau hÆ¡n 1 giá», mÃ n hÃ¬nh khÃ´ng cÃ³ cÆ¡ cháº¿ tá»± Ä‘á»™ng gá»i lÃ m má»›i dá»¯ liá»‡u thá»i tiáº¿t Ä‘Ã£ háº¿t háº¡n náº¿u trÆ°á»›c Ä‘Ã³ tráº¡ng thÃ¡i Ä‘Ã£ lÃ  `completed`.
+- **Quyáº¿t Ä‘á»‹nh:**
+  - **Ãp dá»¥ng Cache-First & Bá» qua cache khi Ä‘ang `processing`**:
+    - Trong `WeatherRepositoryImpl` vÃ  `TodayRepositoryImpl`: Kiá»ƒm tra náº¿u dá»¯ liá»‡u trong DataStore Ä‘ang chá»©a `aiStatus == "processing"`, há»‡ thá»‘ng khÃ´ng Ä‘Æ°á»£c coi lÃ  cache hoÃ n chá»‰nh vÃ  khÃ´ng return sá»›m, cho phÃ©p tiáº¿p tá»¥c gá»i API Ä‘á»ƒ láº¥y káº¿t quáº£ hoÃ n táº¥t.
+    - Sá»­a Ä‘á»•i `TodayViewModel.refresh(force: Boolean = false)`: Trong khá»‘i `init`, gá»i `refresh(force = false)` Ä‘á»ƒ kiá»ƒm tra vÃ  tÃ¡i sá»­ dá»¥ng dá»¯ liá»‡u há»£p lá»‡ trong DataStore cache, chá»‰ gá»i network khi cache háº¿t háº¡n (> 1 giá» vá»›i thá»i tiáº¿t, sang ngÃ y má»›i vá»›i briefing), ngÃ´n ngá»¯ thay Ä‘á»•i hoáº·c dá»¯ liá»‡u Ä‘ang á»Ÿ tráº¡ng thÃ¡i `processing`.
+  - **TÃ¡ch biá»‡t `isRefreshing` (máº¡ng) vÃ  `isProcessing` (ná»™i dung AI)**:
+    - `ReMindLoadingIconButton`: GÃ¡n `loading = isRefreshing` vÃ  `enabled = !isRefreshing`. NgÆ°á»i dÃ¹ng luÃ´n cÃ³ thá»ƒ chá»§ Ä‘á»™ng báº¥m lÃ m má»›i khi khÃ´ng cÃ³ tiáº¿n trÃ¬nh máº¡ng Ä‘ang cháº¡y, ngay cáº£ khi AI backend Ä‘ang trong tráº¡ng thÃ¡i processing.
+    - `WeatherInfoView`: Truyá»n `isLocationClickEnabled = !isRefreshing`.
+  - **Tá»± Ä‘á»™ng lÃ m má»›i khi háº¿t háº¡n vÃ  Polling ná»n khi Processing**:
+    - Trong `TodayViewModel.onResume()` (gáº¯n vá»›i `Lifecycle.Event.ON_RESUME` táº¡i `TodayScreen`): Tá»± Ä‘á»™ng gá»i `refresh(force = false)`. Náº¿u dá»¯ liá»‡u thá»i tiáº¿t Ä‘Ã£ háº¿t háº¡n (> 1 giá») hoáº·c sang ngÃ y má»›i, há»‡ thá»‘ng tá»± Ä‘á»™ng lÃ m má»›i trong suá»‘t mÃ  khÃ´ng tá»‘n cÃ´ng ngÆ°á»i dÃ¹ng thao tÃ¡c. Náº¿u Ä‘ang trong tráº¡ng thÃ¡i processing, Ã©p `refresh(force = true)` sau 15 giÃ¢y.
+    - ThÃªm cÆ¡ cháº¿ tá»± Ä‘á»™ng thÄƒm dÃ² (Auto Polling): Khi `isProcessing` lÃ  `true`, ViewModel tá»± Ä‘á»™ng khá»Ÿi cháº¡y coroutine Ä‘á»‹nh ká»³ thÄƒm dÃ² sau má»—i 10 giÃ¢y (tá»‘i Ä‘a 6 láº§n) Ä‘á»ƒ cáº­p nháº­t káº¿t quáº£ AI Ä‘Ã£ hoÃ n thÃ nh.
+- **Há»‡ quáº£:**
+  - Giáº£i quyáº¿t dá»©t Ä‘iá»ƒm lá»—i káº¹t loading vÃ´ táº­n táº¡i mÃ n hÃ¬nh Today.
+  - Äáº£m báº£o thá»i tiáº¿t luÃ´n Ä‘Æ°á»£c tá»± Ä‘á»™ng lÃ m má»›i khi háº¿t háº¡n (TTL 1 giá») má»—i khi ngÆ°á»i dÃ¹ng má»Ÿ láº¡i á»©ng dá»¥ng.
+  - Tiáº¿t kiá»‡m bÄƒng thÃ´ng tá»‘i Ä‘a vÃ  tÄƒng tÃ­nh tÆ°Æ¡ng tÃ¡c, khÃ´ng khÃ³a cá»©ng giao diá»‡n cá»§a ngÆ°á»i dÃ¹ng.
+
+### [TDR-077] - Äáº·t MÃ u Äen (Black) LÃ m MÃ u Chá»§ Äáº¡o Máº·c Äá»‹nh
+- **NgÃ y thá»±c hiá»‡n:** 2026-09-24
+- **Tráº¡ng thÃ¡i:** Accepted
+- **Bá»‘i cáº£nh:**
+  - MÃ u Black (Äen) vá»«a Ä‘Æ°á»£c thÃªm vÃ o há»‡ thá»‘ng `litever-designsystem`. NgÆ°á»i dÃ¹ng yÃªu cáº§u thiáº¿t láº­p mÃ u nÃ y thÃ nh lá»±a chá»n mÃ u chá»§ Ä‘áº¡o Ä‘áº§u tiÃªn trong cÃ i Ä‘áº·t Theme cÅ©ng nhÆ° lÃ m mÃ u máº·c Ä‘á»‹nh cho toÃ n bá»™ á»©ng dá»¥ng khi khá»Ÿi táº¡o thay cho mÃ u Äá» (RED) trÆ°á»›c Ä‘Ã¢y.
+- **Quyáº¿t Ä‘á»‹nh:**
+  - Cáº­p nháº­t giÃ¡ trá»‹ khá»Ÿi táº¡o `colorPalette` thÃ nh `"BLACK"` trong `SettingsUiState` vÃ  `AlarmPreferencesDataSource`.
+  - Thiáº¿t láº­p `"BLACK"` lÃ m giÃ¡ trá»‹ máº·c Ä‘á»‹nh cho `colorPalette` trong composable `ReMindTheme` (táº¡i `Theme.kt`).
+  - Cáº­p nháº­t `resolvedThemeColor` Ä‘á»ƒ map `"BLACK"` sang `LiteverThemeColor.BLACK` vÃ  dÃ¹ng `"BLACK"` lÃ m fallback (`else`).
+  - Kiá»ƒm tra thá»© tá»± trong `GeneralSettingsScreen`, tÃ¹y chá»n mÃ u "BLACK" Ä‘Ã£ náº±m á»Ÿ vá»‹ trÃ­ Ä‘áº§u tiÃªn cá»§a danh sÃ¡ch `colorPaletteOptions`.
+  - Cáº­p nháº­t cáº¥u hÃ¬nh Preview `GeneralSettingsScreenPreview` Ä‘á»ƒ pháº£n Ã¡nh Ä‘Ãºng máº·c Ä‘á»‹nh má»›i.
+- **Há»‡ quáº£:**
+  - ToÃ n bá»™ á»©ng dá»¥ng sáº½ sá»­ dá»¥ng bá»™ mÃ u Äen lÃ m mÃ u nháº­n diá»‡n thÆ°Æ¡ng hiá»‡u máº·c Ä‘á»‹nh ban Ä‘áº§u.
+  - TÄƒng Ä‘á»™ tÃ¹y biáº¿n vÃ  mang láº¡i cáº£m giÃ¡c hiá»‡n Ä‘áº¡i hÆ¡n khi cÃ i Ä‘áº·t máº·c Ä‘á»‹nh lÃ  mÃ u trung tÃ­nh.
+
+### [TDR-078] - TÃ­ch Há»£p NhÃ¡nh Nháº¯c Nhá»Ÿ (Reminders) & ÄÃ¡nh GiÃ¡ Xung Äá»™t Há»‡ Thá»‘ng Giá»¯a Alarms vÃ  Reminders
+- **NgÃ y thá»±c hiá»‡n:** 2026-09-28
+- **Tráº¡ng thÃ¡i:** Accepted
+- **Bá»‘i cáº£nh:**
+  - Cáº§n Ä‘Æ°a toÃ n bá»™ tÃ­nh nÄƒng Nháº¯c nhá»Ÿ (`features:reminders`) tá»« nhÃ¡nh `feature/reminders1` tÃ­ch há»£p vÃ o nhÃ¡nh má»›i `feature/reminders` dá»±a trÃªn ná»n `main` má»›i nháº¥t (Ä‘Ã£ nÃ¢ng cáº¥p Litever 2.1.0 vÃ  mÃ u Black máº·c Ä‘á»‹nh).
+  - YÃªu cáº§u cá»‘t lÃµi: báº£o toÃ n 100% logic bÃ¡o thá»©c (`AlarmService`, `AlarmControllerImpl`, `AlarmReceiver`), khÃ´ng Ä‘á»ƒ logic cá»§a Nháº¯c nhá»Ÿ xÃ¢m láº¥n hay lÃ m giÃ¡n Ä‘oáº¡n chuÃ´ng bÃ¡o thá»©c.
+- **Quyáº¿t Ä‘á»‹nh:**
+  1. **TÃ¡ch biá»‡t hoÃ n toÃ n táº§ng Thá»±c thi Ná»n & Ã‚m thanh (Service & Audio Isolation):**
+     - Giá»¯ nguyÃªn `AlarmService` vÃ  `AlarmRingManager` phá»¥c vá»¥ Ä‘á»™c quyá»n cho BÃ¡o thá»©c (`features:alarms`).
+     - ToÃ n bá»™ cáº£nh bÃ¡o nháº¯c nhá»Ÿ dáº¡ng chuÃ´ng (Persistent Alert / Alarm Stream) sá»­ dá»¥ng riÃªng `ReminderAlertManager`, `ReminderNotificationManager`, vÃ  `ReminderMonitorService` (Ä‘á»‘i vá»›i Location & Wi-Fi Geofence).
+     - Äá»‹nh tuyáº¿n rung/chuÃ´ng qua `AudioPlayer` vá»›i thiáº¿t láº­p usage phÃ¹ há»£p (`USAGE_ALARM` hoáº·c `USAGE_NOTIFICATION`).
+  2. **TÆ°Æ¡ng thÃ­ch UI vá»›i Litever Design System 2.1:**
+     - Bá»• sung bá»™ adapter thÃ nh pháº§n `LiteverLegacyCompat.kt` (gá»“m `LiteverTextField`, `LiteverCircularProgressIndicator`, `LiteverLinearProgressIndicator`, `LiteverModalBottomSheet`, `LiteverDatePickerDialog`, `LiteverSegmentedButton`, `LiteverFilterChip`, `LiteverDialog`).
+     - Loáº¡i bá» hoÃ n toÃ n cÃ¡c thay Ä‘á»•i xÃ¢m láº¥n ngÆ°á»£c vÃ o `features/alarms` (Æ°u tiÃªn tuyá»‡t Ä‘á»‘i code tá»« `main`).
+  3. **Khá»­ trÃ¹ng láº·p Ä‘iá»u hÆ°á»›ng chuÃ´ng (Deduplicate Ringing Navigation):**
+     - Trong `MainActivity.kt`, tÃ¡ch báº¡ch thá»© tá»± Æ°u tiÃªn Ä‘iá»u hÆ°á»›ng: Priority 1 (Alarm Ringing), Priority 2 (Alarm Snoozing), Priority 3 (Reminder Ringing vá»›i cÆ¡ cháº¿ chá»‘ng loop `lastNavigatedRingingReminderId`), báº£o Ä‘áº£m `startDestinationId` Ä‘iá»u hÆ°á»›ng mÆ°á»£t mÃ  khÃ´ng crash.
+- **ÄÃ¡nh giÃ¡ Xung Ä‘á»™t Há»‡ thá»‘ng (Conflict Risk Assessment):**
+  - **Audio Focus:** Cáº£ 2 module Ä‘á»u cÃ³ kháº£ nÄƒng chiáº¿m `AUDIOFOCUS_GAIN_TRANSIENT`. Khi cáº£ 2 kÃ­ch hoáº¡t cÃ¹ng lÃºc, `AudioPlayer` sáº½ táº¡m dá»«ng Ã¢m thanh trÆ°á»›c Ä‘Ã³. Khuyáº¿n nghá»‹: Cáº§n bá»• sung cÆ¡ cháº¿ Æ°u tiÃªn Alarm cao hÆ¡n Reminder (náº¿u Alarm kÃ­ch hoáº¡t, Reminder tá»± Ä‘á»™ng mute hoáº·c chuyá»ƒn sang notification im láº·ng).
+  - **Notification Channels & Full-screen Intent:** Alarm vÃ  Reminder dÃ¹ng channel riÃªng biá»‡t (`reminders_persistent`, `reminders_standard`, `remind_alarm_channel`). Äáº£m báº£o khÃ´ng xung Ä‘á»™t channel priority.
+  - **Exact Alarm Quota:** Android 12+ giá»›i háº¡n sá»‘ lÆ°á»£ng exact alarm Ä‘Æ°á»£c Ä‘áº·t trÆ°á»›c (`SCHEDULE_EXACT_ALARM`). Cáº£ 2 cÃ¹ng sá»­ dá»¥ng `AlarmManager.setExactAndAllowWhileIdle`.
+  - **Database Migration:** ÄÃ£ nÃ¢ng cáº¥p an toÃ n Room DB tá»« version 5 lÃªn version 6 (`MIGRATION_5_6`), báº£o toÃ n cÃ¡c báº£ng `alarms`, `missions`, `reminders`, `checklist_items`.
+- **Há»‡ quáº£:**
+  - ToÃ n bá»™ 12 commits Ä‘Ã£ Ä‘Æ°á»£c cherry-pick sáº¡ch sáº½.
+  - ToÃ n bá»™ unit tests cá»§a `:features:alarms`, `:features:reminders`, `:core:alarm`, vÃ  `:app` Ä‘á»u pass 100%.
+  - XÃ¢y dá»±ng ná»n táº£ng vá»¯ng cháº¯c Ä‘á»ƒ chuyá»ƒn sang bÆ°á»›c tá»‘i Æ°u tráº£i nghiá»‡m vÃ  kiá»ƒm thá»­ Ä‘á»“ng thá»i (concurrency testing) giá»¯a 2 module.
+
+### [TDR-079] - TÃ¡ch Biá»‡t Cáº¥u HÃ¬nh Äiá»u Kiá»‡n KÃ­ch Hoáº¡t Sang MÃ n HÃ¬nh ChuyÃªn Biá»‡t & NÃ¢ng Cáº¥p Tháº» TÃ³m Táº¯t (Trigger Summary Card)
+- **NgÃ y thá»±c hiá»‡n:** 2026-09-28
+- **Tráº¡ng thÃ¡i:** Accepted
+- **Bá»‘i cáº£nh:**
+  - Trong `ReminderEditScreen`, cÃ¡c má»¥c cáº¥u hÃ¬nh Ä‘iá»u kiá»‡n kÃ­ch hoáº¡t (Giá» & Láº·p láº¡i, Vá»‹ trÃ­ Ä‘á»‹a lÃ½ & BÃ¡n kÃ­nh, Káº¿t ná»‘i Wi-Fi) trÆ°á»›c Ä‘Ã¢y Ä‘Æ°á»£c render trá»±c tiáº¿p dáº¡ng inline cuá»™n dÃ i trong cÃ¹ng má»™t mÃ n hÃ¬nh chá»‰nh sá»­a nháº¯c nhá»Ÿ.
+  - Viá»‡c nÃ y khiáº¿n mÃ n hÃ¬nh `ReminderEditScreen` quÃ¡ dÃ i, lÃ m loÃ£ng cÃ¡c thÃ´ng tin cá»‘t lÃµi (TiÃªu Ä‘á», Ghi chÃº, Danh sÃ¡ch cÃ´ng viá»‡c Checklist, Ã‚m thanh & BÃ¡o thá»©c) vÃ  gÃ¢y rá»‘i máº¯t khi ngÆ°á»i dÃ¹ng pháº£i cuá»™n qua láº¡i giá»¯a cÃ¡c tÃ¹y chá»n kÃ­ch hoáº¡t phá»©c táº¡p.
+- **Quyáº¿t Ä‘á»‹nh:**
+  1. **NÃ¢ng cáº¥p `ReminderTriggerSection` thÃ nh Tháº» TÃ³m Táº¯t (Summary Card):**
+     - Thay tháº¿ toÃ n bá»™ khá»‘i form inline táº¡i `ReminderEditScreen` báº±ng má»™t tháº» Card tÃ³m táº¯t trá»±c quan, phÃ¢n cáº¥p thá»‹ giÃ¡c rÃµ rÃ ng:
+       - **Badge Icon & Label:** Hiá»ƒn thá»‹ biá»ƒu tÆ°á»£ng tÆ°Æ¡ng á»©ng vá»›i Ä‘iá»u kiá»‡n kÃ­ch hoáº¡t hiá»‡n táº¡i (`AccessTime` cho Thá»i gian, `LocationOn` cho Vá»‹ trÃ­, `Wifi` cho Wi-Fi) vá»›i mÃ u sáº¯c ná»•i báº­t.
+       - **Headline ná»•i báº­t:** Hiá»ƒn thá»‹ giá» kÃ­ch hoáº¡t (vd: `08:30` Ä‘á»‹nh dáº¡ng theo cÃ i Ä‘áº·t 12h/24h), tÃªn Ä‘á»‹a Ä‘iá»ƒm (hoáº·c toáº¡ Ä‘á»™), hoáº·c tÃªn máº¡ng Wi-Fi (SSID).
+       - **Subtitle chi tiáº¿t:** TÃ³m táº¯t lá»‹ch láº·p láº¡i (Má»™t láº§n, HÃ ng ngÃ y, HÃ ng tuáº§n kÃ¨m cÃ¡c thá»© T2..CN, HÃ ng thÃ¡ng ngÃ y X, HÃ ng nÄƒm), loáº¡i sá»± kiá»‡n Ä‘á»‹a lÃ½ (Khi Ä‘áº¿n nÆ¡i / Khi rá»i Ä‘i) hoáº·c sá»± kiá»‡n Wi-Fi (Khi káº¿t ná»‘i / Khi ngáº¯t káº¿t ná»‘i / Duy trÃ¬ káº¿t ná»‘i) kÃ¨m cÃ¡c khung giá» hiá»‡u lá»±c (Active time windows).
+       - **Tráº¡ng thÃ¡i há»£p lá»‡ / Lá»—i:** Äá»•i mÃ u viá»n vÃ  hiá»ƒn thá»‹ thÃ´ng Ä‘iá»‡p Ä‘á» náº¿u thiáº¿u dá»¯ liá»‡u báº¯t buá»™c (chÆ°a chá»n vá»‹ trÃ­ hoáº·c chÆ°a nháº­p Wi-Fi).
+       - **Affordance & TÆ°Æ¡ng tÃ¡c:** Bo gÃ³c squircle chuáº©n, há»— trá»£ `clickable` toÃ n vÃ¹ng, icon mÅ©i tÃªn Ä‘iá»u hÆ°á»›ng (`KeyboardArrowRight`) vÃ  dÃ²ng chá»¯ gá»£i Ã½ "Nháº¥n Ä‘á»ƒ chá»‰nh sá»­a".
+  2. **Táº¡o MÃ n HÃ¬nh Cáº¥u HÃ¬nh ChuyÃªn Biá»‡t `ReminderTriggerEditScreen`:**
+     - Thiáº¿t káº¿ giao diá»‡n chuyÃªn biá»‡t cho Ä‘iá»u kiá»‡n kÃ­ch hoáº¡t vá»›i `LiteverTopAppBar` mang tiÃªu Ä‘á» "Chá»‰nh sá»­a Ä‘iá»u kiá»‡n kÃ­ch hoáº¡t", nÃºt Back vÃ  nÃºt CTA "Xong" (`R.string.action_done`).
+     - Thanh tab chá»n loáº¡i kÃ­ch hoáº¡t Ä‘á»™c láº­p `ReminderTriggerTypeSelector` (Thá»i gian, Vá»‹ trÃ­, Wi-Fi) á»Ÿ Ä‘áº§u mÃ n hÃ¬nh.
+     - Hiá»ƒn thá»‹ pháº§n cáº¥u hÃ¬nh chuyÃªn sÃ¢u tÆ°Æ¡ng á»©ng (`ReminderTimeConfigSection`, `ReminderLocationConfigSection`, `ReminderWifiConfigSection`).
+     - `ReMindBottomBar` á»Ÿ chÃ¢n mÃ n hÃ¬nh vá»›i nÃºt "Xong" giÃºp hoÃ n táº¥t chá»‰nh sá»­a nhanh chÃ³ng báº±ng thao tÃ¡c má»™t tay.
+  3. **Äá»“ng bá»™ Dá»¯ liá»‡u Hai Chiá»u qua Scoped ViewModel (`RemindersNavigation.kt`):**
+     - ÄÄƒng kÃ½ route Ä‘iá»u hÆ°á»›ng má»›i `ReminderTriggerEditRoute = "reminder_trigger_edit_route/{reminderId}"`.
+     - Táº¡i `remindersGraph`, `ReminderTriggerEditRoute` trá» tá»›i ViewModel cá»§a mÃ n hÃ¬nh chá»‰nh sá»­a cha thÃ´ng qua `navController.getBackStackEntry(createReminderEditRoute(reminderId))` (fallback `previousBackStackEntry`).
+     - Nhá» chia sáº» chung thá»ƒ hiá»‡n `ReminderEditViewModel`, má»i thay Ä‘á»•i cáº¥u hÃ¬nh trÃªn mÃ n hÃ¬nh kÃ­ch hoáº¡t Ä‘Æ°á»£c pháº£n Ã¡nh tá»©c thÃ¬ vÃ o `ReminderEditUiState` theo thá»i gian thá»±c (Zero Desync, State Hoisting). Khi ngÆ°á»i dÃ¹ng nháº¥n "Xong" hoáº·c Back, dá»¯ liá»‡u Ä‘Ã£ Ä‘Æ°á»£c Ä‘á»“ng bá»™ 100% vá» tháº» tÃ³m táº¯t trÃªn `ReminderEditScreen`.
+  4. **Chuáº©n hÃ³a ThÃ nh pháº§n Giao diá»‡n & ThÆ° viá»‡n:**
+     - Chuyá»ƒn Ä‘á»•i toÃ n bá»™ dialog cáº£nh bÃ¡o quyá»n vÃ  huá»· thay Ä‘á»•i trong `ReminderEditScreen` sang `LvAlertDialog` vÃ  `LvButton` chuáº©n `litever-designsystem`.
+- **Há»‡ quáº£:**
+  - `ReminderEditScreen` trá»Ÿ nÃªn gá»n gÃ ng, sÃºc tÃ­ch vÃ  dá»… theo dÃµi.
+  - NgÆ°á»i dÃ¹ng cÃ³ khÃ´ng gian táº­p trung tá»‘i Ä‘a khi tinh chá»‰nh cÃ¡c Ä‘iá»u kiá»‡n kÃ­ch hoáº¡t phá»©c táº¡p (Geofence, Wi-Fi, Time Windows).
+  - Tráº£i nghiá»‡m chuyá»ƒn mÃ n hÃ¬nh mÆ°á»£t mÃ , nháº¥t quÃ¡n, khÃ´ng xáº£y ra xung Ä‘á»™t dá»¯ liá»‡u hay delay khi lÆ°u.
+  - ToÃ n bá»™ unit tests cá»§a cÃ¡c module liÃªn quan tiáº¿p tá»¥c Ä‘áº¡t 100% kiá»ƒm thá»­ thÃ nh cÃ´ng.
+
+
+
+### [TDR-080] - Tá»± Äá»™ng Chá»¥p áº¢nh MÃ n HÃ¬nh Play Store Báº±ng Fastlane Screengrab & CÃ´ Láº­p Dá»¯ Liá»‡u Mock Äa NgÃ´n Ngá»¯
+- **NgÃ y thá»±c hiá»‡n:** 2026-09-29
+- **Tráº¡ng thÃ¡i:** Accepted
+- **Bá»‘i cáº£nh:**
+  - Äá»ƒ chuáº©n bá»‹ phÃ¡t hÃ nh lÃªn Google Play Store, á»©ng dá»¥ng cáº§n bá»™ áº£nh chá»¥p mÃ n hÃ¬nh hoÃ n chá»‰nh, sáº¯c nÃ©t trÃªn cÃ¡c tá»· lá»‡ mÃ n hÃ¬nh (Äiá»‡n thoáº¡i vÃ  MÃ¡y tÃ­nh báº£ng) theo 2 ngÃ´n ngá»¯ chÃ­nh (Tiáº¿ng Anh vÃ  Tiáº¿ng Viá»‡t).
+  - Viá»‡c chá»¥p thá»§ cÃ´ng tá»‘n nhiá»u cÃ´ng sá»©c, dá»… sai lá»‡ch kÃ­ch thÆ°á»›c vÃ  khÃ³ duy trÃ¬ khi cáº­p nháº­t UI. Náº¿u Ä‘Æ°a dá»¯ liá»‡u test vÃ o Room DB tháº­t sáº½ gÃ¢y Ã´ nhiá»…m cÆ¡ sá»Ÿ dá»¯ liá»‡u, phá»©c táº¡p hÃ³a viá»‡c dá»n dáº¹p mÃ´i trÆ°á»ng vÃ  dá»… gÃ¢y flaky test.
+- **Quyáº¿t Ä‘á»‹nh:**
+  1. **TÃ­ch há»£p Fastlane Screengrab & UiAutomator:**
+     - Khai bÃ¡o `tools.fastlane:screengrab:2.1.1` vÃ  `androidx.test.uiautomator:uiautomator:2.3.0` trong `libs.versions.toml` vÃ  `app/build.gradle.kts`.
+     - Ãp dá»¥ng `UiAutomatorScreenshotStrategy` chá»¥p toÃ n mÃ n hÃ¬nh Jetpack Compose sáº¯c nÃ©t, á»•n Ä‘á»‹nh tá»« Android 10 Ä‘áº¿n cÃ¡c API hiá»‡n Ä‘áº¡i nháº¥t.
+     - Cáº¥p cÃ¡c quyá»n kiá»ƒm thá»­ cáº§n thiáº¿t trong `app/src/debug/AndroidManifest.xml` (`WRITE_EXTERNAL_STORAGE`, `CHANGE_CONFIGURATION`, `DUMP`).
+  2. **CÃ´ Láº­p HoÃ n ToÃ n Khá»i Room Database (Zero DB Contamination):**
+     - Tuyá»‡t Ä‘á»‘i khÃ´ng chÃ¨n báº£n ghi hay gá»i DAO/Room DB trong quÃ¡ trÃ¬nh chá»¥p áº£nh.
+     - DÃ¹ng `createAndroidComposeRule<ComponentActivity>()` Ä‘á»ƒ setContent trá»±c tiáº¿p cÃ¡c Stateless Screen Composables (`AlarmListScreen`, `ReminderListScreen`, `AlarmRingingScreen`, `MissionRingingScreen`, `AlarmMessageScreen`).
+     - ToÃ n bá»™ dá»¯ liá»‡u máº«u (Mock Data) khá»Ÿi táº¡o thuáº§n tÃºy trong bá»™ nhá»› (In-memory) vÃ  bá»c trong `ReMindTheme(darkTheme = false)` (Light Mode theo chuáº©n thiáº¿t káº¿ Store).
+  3. **Quáº£n LÃ½ Chuá»—i Mock Äa NgÃ´n Ngá»¯ Qua AndroidTest Resources:**
+     - Thiáº¿t láº­p tÃ i nguyÃªn chuá»—i chuyÃªn biá»‡t trong `app/src/androidTest/res/values/strings.xml` (Tiáº¿ng Anh) vÃ  `values-vi/strings.xml` (Tiáº¿ng Viá»‡t).
+     - Káº¿t há»£p cÃ¹ng `@ClassRule LocaleTestRule()` cá»§a Screengrab Ä‘á»ƒ tá»± Ä‘á»™ng hoÃ¡n Ä‘á»•i ngÃ´n ngá»¯ (`vi`, `en-US`) trong má»™t láº§n cháº¡y kiá»ƒm thá»­ duy nháº¥t.
+  4. **Giáº£i Quyáº¿t Triá»‡t Äá»ƒ Xung Äá»™t Scoped Storage & ADB Pull trÃªn Windows:**
+     - PhÃ¡t triá»ƒn `ExternalStorageScreenshotCallback` káº¿ thá»«a `ScreenshotCallback`, Ä‘iá»u hÆ°á»›ng ghi toÃ n bá»™ áº£nh chá»¥p vÃ o thÆ° má»¥c ngoÃ i cá»§a á»©ng dá»¥ng: `context.getExternalFilesDir("screengrab")` (`/sdcard/Android/data/<package>/files/screengrab/<locale>/images/screenshots/`).
+     - Cho phÃ©p lá»‡nh `adb pull` trÃªn mÃ¡y host kÃ©o áº£nh trá»±c tiáº¿p 100% khÃ´ng bá»‹ `Permission denied` (loáº¡i bá» hoÃ n toÃ n fallback pipe Unix `tar` bá»‹ treo/corrupted trÃªn Windows PowerShell vÃ  CMD).
+  5. **Táº¡o Cáº¥u HÃ¬nh Screengrabfile & Lane Fastlane:**
+     - Táº¡o `fastlane/Screengrabfile` vá»›i cáº¥u hÃ¬nh package name (`vn.io.litever.remind.debug` / `.test`), locales `['vi', 'en-US']` (chuáº©n ISO thÆ° má»¥c metadata Play Store), `use_timestamp_suffix(false)` vÃ  output `fastlane/metadata/android`.
+     - Bá»• sung lane `:screenshots` trong `fastlane/Fastfile` tá»± Ä‘á»™ng build `assembleDebug assembleAndroidTest` vÃ  kÃ©o áº£nh vá» Ä‘Ãºng thÆ° má»¥c Play Store metadata.
+- **Há»‡ quáº£:**
+  - Quy trÃ¬nh chá»¥p áº£nh tá»± Ä‘á»™ng hÃ³a 100% chá»‰ báº±ng má»™t lá»‡nh duy nháº¥t: `bundle exec fastlane screenshots`.
+  - Sinh vÃ  cáº­p nháº­t thÃ nh cÃ´ng 12 áº£nh mÃ n hÃ¬nh Play Store chuáº©n Light Mode (6 áº£nh Tiáº¿ng Viá»‡t trong `fastlane/metadata/android/vi/images/phoneScreenshots/` vÃ  6 áº£nh Tiáº¿ng Anh trong `fastlane/metadata/android/en-US/images/phoneScreenshots/`).
+  - Tá»± Ä‘á»™ng sinh bÃ¡o cÃ¡o HTML trá»±c quan `fastlane/metadata/android/screenshots.html`.
+  - TÃ¡ch biá»‡t tuyá»‡t Ä‘á»‘i khá»i cÆ¡ sá»Ÿ dá»¯ liá»‡u Room, Ä‘áº£m báº£o tÃ­nh báº¥t biáº¿n, tá»‘c Ä‘á»™ chá»¥p cá»±c nhanh (~25s/locale) vÃ  khÃ´ng sinh rÃ¡c dá»¯ liá»‡u trÃªn thiáº¿t bá»‹.
+
+### [TDR-081] - Táº­p Trung HÃ³a Icons VÃ o ReMindIcons & CÃ´ Láº­p Dependency Material Icons
+- **Date:** 2026-09-29 | **Status:** Accepted
+- **Context:** CÃ¡c mÃ n hÃ¬nh ráº£i rÃ¡c import trá»±c tiáº¿p `androidx.compose.material.icons.*` vÃ  phá»¥ thuá»™c `libs.material.icons.extended` á»Ÿ má»i feature module gÃ¢y phÃ¬nh classpath vÃ  thiáº¿u kiá»ƒm soÃ¡t.
+- **Decision:** Táº¡o object `ReMindIcons` táº­p trung toÃ n bá»™ icons sá»­ dá»¥ng trong `:core:designsystem`, xÃ³a hoÃ n toÃ n `material.icons.extended` khá»i `:app` vÃ  táº¥t cáº£ `:features:*`.
+- **Consequences:** ToÃ n bá»™ modules chá»‰ sá»­ dá»¥ng icons qua `ReMindIcons`, cÃ´ láº­p triá»‡t Ä‘á»ƒ dependency vÃ  báº£o Ä‘áº£m Single Source of Truth cho icon UI.
+
+### [TDR-082] - Chuáº©n HÃ³a Ã‚m LÆ°á»£ng & Rung Nháº¯c Nhá»Ÿ, LÆ°u Bá»n Vá»¯ng Checklist VÃ  Tá»± Äá»™ng Reset Theo Chu Ká»³
+- **NgÃ y thá»±c hiá»‡n:** 2026-09-29
+- **Tráº¡ng thÃ¡i:** Accepted
+- **Bá»‘i cáº£nh:**
+  - Nháº¯c nhá»Ÿ (Reminders) gáº·p pháº£i cÃ¡c váº¥n Ä‘á»:
+    1. KhÃ´ng phÃ¡t chuÃ´ng hoáº·c rung Ä‘Ãºng má»©c Ã¢m lÆ°á»£ng Ä‘Ã£ cáº¥u hÃ¬nh (`reminder.action.volume`), kÃªnh stream bá»‹ lá»‡ch giá»¯a standard notification vÃ  persistent alert.
+    2. Danh sÃ¡ch checklist khÃ´ng Ä‘Æ°á»£c lÆ°u bá»n vá»¯ng khi táº¡o/sá»­a; ngÆ°á»i dÃ¹ng nháº­p dá»Ÿ checklist item nhÆ°ng báº¥m tháº³ng nÃºt LÆ°u (Save) thÃ¬ bá»‹ máº¥t text.
+    3. Tráº¡ng thÃ¡i hoÃ n thÃ nh checklist (`isCompleted`) chÆ°a thá»ƒ tÆ°Æ¡ng tÃ¡c trá»±c tiáº¿p ngoÃ i danh sÃ¡ch nháº¯c nhá»Ÿ.
+    4. Thiáº¿u cÆ¡ cháº¿ tá»± Ä‘á»™ng reset checklist khi bÆ°á»›c sang chu ká»³ má»›i (ngÃ y/thÃ¡ng/nÄƒm hoáº·c sau khoáº£ng thá»i gian láº·p `INTERVAL`).
+- **Quyáº¿t Ä‘á»‹nh:**
+  1. **Chuáº©n HÃ³a Ã‚m LÆ°á»£ng & Rung (`ReminderAlertManager`, `ReminderNotificationManager`):**
+     - Quy Ä‘á»•i tá»· lá»‡ Ã¢m lÆ°á»£ng `(volume.coerceIn(0, 100)).toFloat() / 100f` cho cáº£ `STANDARD` notification sound láº«n `FULL_SCREEN` alert.
+     - Sá»­ dá»¥ng `AudioAttributes.USAGE_ALARM` káº¿t há»£p `USAGE_NOTIFICATION` Ä‘Ãºng ngá»¯ cáº£nh khi `useAlarmStream || isAlarmStyle`. PhÃ¡t Ä‘Ãºng chuÃ´ng tÃ¹y chá»‰nh `reminder.action.ringtoneUri` thay vÃ¬ gÃ¡n cá»©ng nháº¡c chuÃ´ng máº·c Ä‘á»‹nh.
+     - Gáº¯n `AudioAttributes` vÃ o `Vibrator` Ä‘á»ƒ Ä‘áº£m báº£o xung rung Ä‘á»“ng bá»™ vá»›i má»©c Ä‘á»™ Æ°u tiÃªn cá»§a cáº£nh bÃ¡o.
+  2. **Quáº£n LÃ½ Bá»n Vá»¯ng ID & Auto-flush Draft Checklist:**
+     - Táº¡i `ReminderRepositoryImpl`: Äáº£m báº£o khi táº¡o má»›i Reminder, cÃ¡c checklist item luÃ´n Ä‘Æ°á»£c gÃ¡n `id = 0L` Ä‘á»ƒ Room SQLite tá»± Ä‘á»™ng sinh khÃ³a chÃ­nh (Primary Key Auto-generate), trÃ¡nh tÃ¬nh tráº¡ng trÃ¹ng ID dáº«n Ä‘áº¿n ghi Ä‘Ã¨ báº£n ghi (`OnConflictStrategy.REPLACE`). Khi cáº­p nháº­t, chá»‰ cÃ¡c item má»›i táº¡o táº¡m thá»i (id Ã¢m hoáº·c nanoTime) má»›i Ä‘Æ°á»£c reset vá» 0L Ä‘á»ƒ chÃ¨n má»›i.
+     - Táº¡i `ReminderEditViewModel`: ThÃªm cÆ¡ cháº¿ tá»± Ä‘á»™ng náº¡p text Ä‘ang gÃµ dá»Ÿ (`draftChecklistText`) vÃ o danh sÃ¡ch checklist trÆ°á»›c khi lÆ°u náº¿u ngÆ°á»i dÃ¹ng báº¥m nÃºt LÆ°u trÃªn TopBar mÃ  quÃªn báº¥m nÃºt ThÃªm (+).
+  3. **TÆ°Æ¡ng TÃ¡c Checklist Trá»±c Tiáº¿p Táº¡i ReminderCard:**
+     - NÃ¢ng cáº¥p `ReminderCard`: NgÆ°á»i dÃ¹ng cÃ³ thá»ƒ nháº¥n vÃ o hÃ ng tiáº¿n Ä‘á»™ checklist Ä‘á»ƒ má»Ÿ rá»™ng (Expand) toÃ n bá»™ danh sÃ¡ch cÃ¡c Ä‘áº§u viá»‡c vÃ  tÆ°Æ¡ng tÃ¡c check/uncheck trá»±c tiáº¿p.
+     - `ReminderListViewModel` vÃ  `ReminderListScreen`: ThÃªm callback `toggleChecklistItem` ghi nháº­n tráº¡ng thÃ¡i tá»©c thá»i xuá»‘ng SQLite DB mÃ  khÃ´ng lÃ m reload toÃ n bá»™ giao diá»‡n hay ngáº¯t quÃ£ng tráº£i nghiá»‡m.
+  4. **Tá»± Äá»™ng Reset Checklist Theo Chu Ká»³ (Cycle Auto-Reset):**
+     - Bá»• sung trÆ°á»ng `lastChecklistResetTime: Long?` vÃ o `Reminder` vÃ  `ReminderEntity`.
+     - Táº¡o `MIGRATION_6_7` nÃ¢ng database lÃªn version 7 (`ALTER TABLE reminders ADD COLUMN lastChecklistResetTime INTEGER`).
+     - PhÃ¡t triá»ƒn `ChecklistCycleUtil`: TÃ­nh toÃ¡n chu ká»³ reset dá»±a trÃªn `repeatMode` (`DAILY`, `WEEKLY`, `MONTHLY`, `YEARLY`) hoáº·c `INTERVAL` (theo khoáº£ng thá»i gian) so vá»›i `lastChecklistResetTime` hoáº·c `lastTriggeredTime`.
+     - TÃ­ch há»£p tá»± Ä‘á»™ng quÃ©t vÃ  reset checklist:
+       - Trong `ReminderReceiver`: Khi chu ká»³ reo má»›i Ä‘Æ°á»£c kÃ­ch hoáº¡t, tá»± Ä‘á»™ng reset checklist vá» chÆ°a hoÃ n thÃ nh (`isCompleted = 0`) trÆ°á»›c khi phÃ¡t chuÃ´ng/thÃ´ng bÃ¡o.
+       - Trong `ReminderSyncManager` vÃ  `ReminderListViewModel`: Äá»‹nh ká»³ kiá»ƒm tra vÃ  reset khi Ä‘á»“ng bá»™ hoáº·c má»Ÿ mÃ n hÃ¬nh danh sÃ¡ch nháº¯c nhá»Ÿ.
+- **Há»‡ quáº£:**
+  - Nháº¯c nhá»Ÿ Ä‘á»• chuÃ´ng vÃ  rung chÃ­nh xÃ¡c vá»›i Ã¢m lÆ°á»£ng ngÆ°á»i dÃ¹ng lá»±a chá»n.
+  - Checklist Ä‘Æ°á»£c lÆ°u trá»¯ bá»n vá»¯ng 100%, khÃ´ng bá»‹ máº¥t ná»™i dung khi gÃµ nhanh.
+  - CÃ¡c cÃ´ng viá»‡c Ä‘á»‹nh ká»³ hÃ ng ngÃ y/tuáº§n/thÃ¡ng/nÄƒm tá»± Ä‘á»™ng sáºµn sÃ ng cho ngÃ y má»›i mÃ  khÃ´ng cáº§n thao tÃ¡c dá»n dáº¹p thá»§ cÃ´ng.
+  - ToÃ n bá»™ unit tests bao gá»“m `ChecklistCycleUtilTest` vÃ  `ReminderAlertManagerTest` pass 100%.
+
+### [TDR-083] - Loáº¡i Bá» HoÃ n ToÃ n Checklist Trong TÃ­nh NÄƒng Nháº¯c Nhá»Ÿ (Reminder)
+- **NgÃ y thá»±c hiá»‡n:** 2026-09-30
+- **Tráº¡ng thÃ¡i:** Accepted
+- **Bá»‘i cáº£nh:**
+  - Nháº¯c nhá»Ÿ (Reminders) ban Ä‘áº§u tÃ­ch há»£p subtask/checklist nháº±m phá»¥c vá»¥ viá»‡c theo dÃµi danh sÃ¡ch viá»‡c cáº§n lÃ m kÃ¨m theo thÃ´ng bÃ¡o.
+  - Tuy nhiÃªn, trong thá»±c táº¿ sá»­ dá»¥ng vÃ  Ä‘á»‹nh hÆ°á»›ng sáº£n pháº©m, Reminder cáº§n táº­p trung tá»‘i Ä‘a vÃ o Ä‘á»™ tin cáº­y cá»§a viá»‡c cáº£nh bÃ¡o thá»i gian (`FIXED_TIME` & `INTERVAL`), trÃ¡nh lÃ m rá»‘i tráº£i nghiá»‡m ngÆ°á»i dÃ¹ng vá»›i viá»‡c quáº£n lÃ½ danh sÃ¡ch cÃ´ng viá»‡c phá»©c táº¡p vá»‘n thuá»™c vá» app Todo chuyÃªn biá»‡t.
+  - Sá»± tá»“n táº¡i cá»§a Checklist lÃ m phÃ¡t sinh nhiá»u phá»©c táº¡p: báº£ng quan há»‡ `checklist_items`, `PopulatedReminder`, cÃ¡c vÃ²ng láº·p reset chu ká»³, thao tÃ¡c inline checklist toggle trÃªn notification, kÃ©o dÃ i mÃ n hÃ¬nh sá»­a nháº¯c nhá»Ÿ vÃ  gia tÄƒng rá»§i ro race condition khi Ä‘á»“ng bá»™ Room.
+- **Quyáº¿t Ä‘á»‹nh:**
+  1. **Táº§ng Model (`:core:model`):**
+     - XÃ³a hoÃ n toÃ n model `ChecklistItem.kt`.
+     - Loáº¡i bá» trÆ°á»ng `checklist` cÃ¹ng toÃ n bá»™ helper tÃ­nh tiáº¿n Ä‘á»™ (`checklistProgress`, `totalChecklistCount`, `completedChecklistCount`, `isAllChecklistCompleted`) khá»i model `Reminder.kt`.
+  2. **Táº§ng CÆ¡ Sá»Ÿ Dá»¯ Liá»‡u (`:core:database`):**
+     - XÃ³a `ChecklistItemEntity.kt`, `ChecklistItemDao.kt`, vÃ  model quan há»‡ `PopulatedReminder.kt`.
+     - `ReminderDao`: Trá»±c tiáº¿p tráº£ vá» `ReminderEntity` thay vÃ¬ bá»c trong `PopulatedReminder`, bá» `updateReminderWithChecklist`.
+     - `RemindDatabase`: Loáº¡i bá» `ChecklistItemEntity` khá»i danh sÃ¡ch `@Database.entities`, xÃ³a DAO getter `checklistItemDao()`.
+     - `DatabaseModule`: Loáº¡i bá» `provideChecklistItemDao`.
+  3. **Táº§ng Domain & Data (`:core:domain`, `:core:data`):**
+     - XÃ³a tiá»‡n Ã­ch `ChecklistCycleUtil.kt`.
+     - `ReminderRepository`: Loáº¡i bá» cÃ¡c phÆ°Æ¡ng thá»©c `updateChecklistItemCompletion`, `resetChecklist`, `checkAndResetRecurringChecklists`.
+     - XÃ³a mapper `ChecklistItemMapper.kt` vÃ  mapper test tÆ°Æ¡ng á»©ng.
+     - `ReminderMapper`: Tinh gá»n chá»‰ map trá»±c tiáº¿p giá»¯a `ReminderEntity` vÃ  `Reminder`.
+  4. **Táº§ng Cáº£nh BÃ¡o & ThÃ´ng BÃ¡o (`:core:alarm`):**
+     - Loáº¡i bá» action `ACTION_REMINDER_CHECKLIST_TOGGLE` khá»i `ReminderReceiver` vÃ  `AndroidManifest.xml`.
+     - `ReminderNotificationManager`: Bá» viá»‡c render checklist tÃ³m táº¯t vÃ  pending intent toggle checklist item inline.
+     - `ReminderSyncManager`: Bá» lá»‡nh tá»± Ä‘á»™ng kiá»ƒm tra vÃ  reset recurring checklists.
+  5. **Táº§ng Giao Diá»‡n & ViewModel (`:features:reminders`):**
+     - XÃ³a cÃ¡c composable component: `ReminderChecklistBuilderSection.kt` vÃ  `ReminderRingingChecklist.kt`.
+     - `ReminderCard.kt`: Loáº¡i bá» thanh tiáº¿n Ä‘á»™ checklist vÃ  danh sÃ¡ch checklist con má»Ÿ rá»™ng.
+     - `ReminderListViewModel.kt` & `ReminderListScreen.kt`: Bá» callback `toggleChecklistItem` vÃ  logic duplicate checklist.
+     - `ReminderEditViewModel.kt` & `ReminderEditScreen.kt`: XÃ³a `checklist`, `draftChecklistText`, vÃ  toÃ n bá»™ hÃ m CRUD checklist (`addChecklistItem`, `moveChecklistItem`, v.v.).
+     - `ReminderRingingViewModel.kt` & `ReminderRingingScreen.kt`: XÃ³a pháº§n render checklist khi Ä‘ang reo chuÃ´ng vÃ  action `toggleChecklistItem`.
+     - XÃ³a toÃ n bá»™ chuá»—i kÃ½ tá»± i18n liÃªn quan Ä‘áº¿n checklist trong `values/strings.xml` vÃ  `values-vi/strings.xml`.
+  6. **Äá»“ng Bá»™ & Dá»n Sáº¡ch Test Suite:**
+     - TÃ¡i cáº¥u trÃºc cÃ¡c challenger test (`ReminderDatabaseChallengerTest`, `ReminderSnoozeChallengerTest`, `ReminderPermissionChallengerTest`) Ä‘á»ƒ táº­p trung vÃ o Snooze, State Isolation vÃ  Permission UX.
+     - Dá»n sáº¡ch `ReminderEditViewModelTest`, `ReminderListViewModelTest`, `ReminderRingingViewModelTest`, vÃ  `ScreenshotsTest`.
+- **Há»‡ quáº£:**
+  - Kiáº¿n trÃºc Reminder trá»Ÿ nÃªn tinh gá»n, hiá»‡u nÄƒng truy váº¥n Room DB tÄƒng Ä‘Ã¡ng ká»ƒ (khÃ´ng cáº§n JOIN hay Transaction Ä‘a báº£ng).
+  - Giao diá»‡n ngÆ°á»i dÃ¹ng thanh thoÃ¡t, táº­p trung Ä‘Ãºng vÃ o trá»ng tÃ¢m thiáº¿t láº­p nháº¯c nhá»Ÿ vÃ  bÃ¡o thá»©c.
+  - ToÃ n bá»™ 473 task build vÃ  unit tests cá»§a dá»± Ã¡n vÆ°á»£t qua 100% khÃ´ng lá»—i.
+
+### [TDR-084] - Loáº¡i Bá» CÆ¡ Cháº¿ Tá»± Äá»™ng ThÃªm Dá»¯ Liá»‡u Máº«u Cho Database (Debug Seeding)
+- **NgÃ y thá»±c hiá»‡n:** 2026-09-30
+- **Tráº¡ng thÃ¡i:** Accepted
+- **Bá»‘i cáº£nh:**
+  - TrÆ°á»›c Ä‘Ã¢y, á»©ng dá»¥ng cÃ³ callback `RemindDatabaseCallback` trong source set `debug` tá»± Ä‘á»™ng chÃ¨n 5 bÃ¡o thá»©c vÃ  3 nhiá»‡m vá»¥ máº«u (`MATH`, `SHAKE`, `TYPING`) vÃ o SQLite Room DB khi má»Ÿ CSDL láº§n Ä‘áº§u náº¿u báº£ng `alarms` trá»‘ng.
+  - Viá»‡c tá»± Ä‘á»™ng sinh dá»¯ liá»‡u máº«u nÃ y gÃ¢y phiá»n toÃ¡i khi test thá»±c táº¿ hoáº·c kiá»ƒm thá»­ luá»“ng trá»‘ng (Empty State UI), khÃ´ng pháº£n Ã¡nh Ä‘Ãºng tráº¡ng thÃ¡i dá»¯ liá»‡u ngÆ°á»i dÃ¹ng thá»±c thá»¥ khi cÃ i má»›i app.
+- **Quyáº¿t Ä‘á»‹nh:**
+  - XÃ³a bá» file `RemindDatabaseCallback.kt` á»Ÿ cáº£ hai source set `core/database/src/debug` vÃ  `core/database/src/release`.
+  - Trong `DatabaseModule.kt`: Loáº¡i bá» `.addCallback(RemindDatabaseCallback())` khá»i builder cá»§a Room Database.
+- **Há»‡ quáº£:**
+  - CÆ¡ sá»Ÿ dá»¯ liá»‡u luÃ´n báº¯t Ä‘áº§u á»Ÿ tráº¡ng thÃ¡i trá»‘ng hoÃ n toÃ n (clean state), giÃºp kiá»ƒm thá»­ chÃ­nh xÃ¡c cÃ¡c mÃ n hÃ¬nh vÃ  tráº¡ng thÃ¡i empty state.
+  - ToÃ n bá»™ 473 task build vÃ  test cá»§a dá»± Ã¡n hoÃ n thÃ nh 100% khÃ´ng lá»—i.
+
+
+
+### [TDR-085] - TÃ¡i Cáº¥u TrÃºc Logic BÃ¡o Láº¡i (Flexible Snooze) vÃ  PhÃ¢n Loáº¡i Cáº£nh BÃ¡o Nháº¯c Nhá»Ÿ
+- **NgÃ y thá»±c hiá»‡n:** 2026-10-01
+- **Tráº¡ng thÃ¡i:** Accepted
+- **Bá»‘i cáº£nh:**
+  - NgÆ°á»i dÃ¹ng yÃªu cáº§u hiá»‡n Ä‘áº¡i hÃ³a vÃ  lÃ m sáº¡ch logic nháº¯c nhá»Ÿ:
+    1. CÆ¡ cháº¿ hoÃ£n/bÃ¡o láº¡i linh hoáº¡t (Flexible Snooze): Cho phÃ©p chá»n nhanh thá»i gian bÃ¡o láº¡i (+5m, +10m, +15m) hoáº·c nháº­p sá»‘ phÃºt tÃ¹y chá»‰nh ngay trÃªn mÃ n hÃ¬nh reo chuÃ´ng, loáº¡i bá» hoÃ n toÃ n giá»›i háº¡n sá»‘ láº§n láº·p láº¡i (snoozeRepeatCount).
+    2. PhÃ¢n loáº¡i kiá»ƒu thÃ´ng bÃ¡o thÃ nh "ThÃ´ng bÃ¡o thÆ°á»ng" (STANDARD) vÃ  "Äá»• chuÃ´ng" (FULL_SCREEN). Máº·c Ä‘á»‹nh khi táº¡o má»›i lÃ  "Äá»• chuÃ´ng". Cáº£ hai Ä‘á»u hiá»ƒn thá»‹ giao diá»‡n toÃ n mÃ n hÃ¬nh, nhÆ°ng dáº¡ng "Äá»• chuÃ´ng" cÃ³ Foreground Service (ReminderAlertService) phÃ¡t nháº¡c chuÃ´ng liÃªn tá»¥c vÃ  há»— trá»£ tá»± Ä‘á»™ng táº¯t tiáº¿ng / phÃ¡t qua kÃªnh bÃ¡o thá»©c (STREAM_ALARM).
+    3. Cáº£ hai kiá»ƒu thÃ´ng bÃ¡o Ä‘á»u há»— trá»£ tÃ¹y chá»‰nh nháº¡c chuÃ´ng, Ã¢m lÆ°á»£ng vÃ  rung.
+    4. TrÃªn thÃ´ng bÃ¡o thu nhá» (heads-up / banner), cung cáº¥p nÃºt "BÃ¡o láº¡i 5 phÃºt" vÃ  nÃºt xÃ¡c nháº­n hoÃ n thÃ nh ("HoÃ n thÃ nh").
+    5. Dá»n dáº¹p sáº¡ch mÃ£ nguá»“n, loáº¡i bá» snoozeRepeatCount vÃ  currentSnoozeCount.
+- **Quyáº¿t Ä‘á»‹nh:**
+  1. **Domain Model (:core:model):**
+     - Loáº¡i bá» snoozeRepeatCount khá»i ReminderAction vÃ  currentSnoozeCount khá»i Reminder.
+     - Chuyá»ƒn giÃ¡ trá»‹ máº·c Ä‘á»‹nh cá»§a 
+otificationStyle sang NotificationStyle.FULL_SCREEN.
+     - Tinh giáº£n canSnooze(): chá»‰ kiá»ƒm tra snoozeEnabled && urgencyLevel != UrgencyLevel.SOFT.
+  2. **Data Mapper (:core:data):**
+     - Cáº­p nháº­t ReminderMapper.kt bá» mapping 2 trÆ°á»ng Ä‘Ã£ xÃ³a sang domain model, gÃ¡n giÃ¡ trá»‹ máº·c Ä‘á»‹nh á»•n Ä‘á»‹nh khi ghi xuá»‘ng Room Entity.
+  3. **Alarm & Notification Subsystem (:core:alarm):**
+     - ReminderNotificationManager.kt: Heads-up notification hiá»ƒn thá»‹ nÃºt "BÃ¡o láº¡i 5 phÃºt" (kÃ¨m EXTRA_SNOOZE_MINUTES = 5) vÃ  nÃºt "HoÃ n thÃ nh".
+     - ReminderReceiver.kt: Há»— trá»£ EXTRA_SNOOZE_MINUTES Ä‘á»ƒ láº­p lá»‹ch snooze theo sá»‘ phÃºt ngÆ°á»i dÃ¹ng chá»n.
+  4. **Giao diá»‡n & ViewModel (:features:reminders):**
+     - ReminderAlertConfigSection.kt: Äá»•i nhÃ£n thÃ nh "ThÃ´ng bÃ¡o thÆ°á»ng" vÃ  "Äá»• chuÃ´ng". Cáº¥u hÃ¬nh Ã¢m thanh (nháº¡c chuÃ´ng, Ã¢m lÆ°á»£ng, rung) Ã¡p dá»¥ng cho cáº£ hai cháº¿ Ä‘á»™. Tá»± Ä‘á»™ng táº¯t tiáº¿ng vÃ  KÃªnh bÃ¡o thá»©c chá»‰ hiá»ƒn thá»‹ á»Ÿ cháº¿ Ä‘á»™ "Äá»• chuÃ´ng". Loáº¡i bá» má»¥c chá»n sá»‘ láº§n láº·p láº¡i snooze.
+     - ReminderRingingScreen.kt: Bá»• sung hÃ ng nÃºt chá»n nhanh (+5m, +10m, +15m) vÃ  nÃºt "TÃ¹y chá»‰nh" má»Ÿ LvAlertDialog vá»›i LiteverTextField Ä‘á»ƒ nháº­p sá»‘ phÃºt tÃ¹y thÃ­ch.
+     - ReminderRingingViewModel.kt: NÃ¢ng cáº¥p hÃ m snooze(minutes: Int, onFinish: () -> Unit) nháº­n sá»‘ phÃºt linh hoáº¡t.
+     - ReminderEditViewModel.kt & ReminderEditScreen.kt: Loáº¡i bá» toÃ n bá»™ references Ä‘áº¿n snoozeRepeatCount.
+  5. **Äá»“ng bá»™ Unit Tests:**
+     - Cáº­p nháº­t toÃ n bá»™ cÃ¡c bÃ i test liÃªn quan trong :core:alarm, :core:model, :core:data, :features:reminders. ToÃ n bá»™ 473 task build vÃ  unit tests cá»§a dá»± Ã¡n vÆ°á»£t qua 100%.
+- **Há»‡ quáº£:**
+  - Tráº£i nghiá»‡m ngÆ°á»i dÃ¹ng khi nháº¯c nhá»Ÿ Ä‘áº¿n háº¡n trá»±c quan, linh hoáº¡t vÃ  thuáº­n tiá»‡n.
+  - Codebase sáº¡ch, tuÃ¢n thá»§ Clean Architecture vÃ  Design System chung.
+
+### [2026-10-01] HoÃ n thiá»‡n vÃ  lÃ m sáº¡ch giao diá»‡n ThÃªm/Sá»­a Lá»i nháº¯c (ReminderEditScreen & ReminderAlertConfigSection)
+- **Má»¥c tiÃªu:**
+  - LÃ m sáº¡ch má»¥c "Cáº£nh bÃ¡o & ThÃ´ng bÃ¡o" trong mÃ n hÃ¬nh ThÃªm/Sá»­a lá»i nháº¯c:
+    - Loáº¡i bá» hoÃ n toÃ n bá»™ chá»n UrgencyLevel (SOFT/MEDIUM/HARD) gÃ¢y rÆ°á»m rÃ .
+    - ÄÆ°a 2 cháº¿ Ä‘á»™ thÃ´ng bÃ¡o lÃªn Ä‘áº§u: "Äá»• chuÃ´ng" (máº·c Ä‘á»‹nh) vÃ  "ThÃ´ng bÃ¡o thÆ°á»ng" vá»›i mÃ´ táº£ chi tiáº¿t trá»±c quan.
+    - Cáº¥u hÃ¬nh Nháº¡c chuÃ´ng, Ã‚m lÆ°á»£ng vÃ  Rung hiá»ƒn thá»‹ vÃ  Ã¡p dá»¥ng cho cáº£ 2 kiá»ƒu thÃ´ng bÃ¡o; TÃªn nháº¡c chuÃ´ng Ä‘Æ°á»£c trÃ­ch xuáº¥t Ä‘á»™ng qua RingtoneManager thay vÃ¬ chuá»—i cá»©ng.
+    - Tá»± Ä‘á»™ng táº¯t tiáº¿ng vÃ  KÃªnh Ã¢m thanh bÃ¡o thá»©c hiá»ƒn thá»‹ duy nháº¥t khi chá»n "Äá»• chuÃ´ng".
+    - Cáº¥u hÃ¬nh BÃ¡o láº¡i (Snooze) Ä‘Æ°á»£c nhÃºng trá»±c tiáº¿p ngay trong section (cÃ´ng táº¯c báº­t/táº¯t + chá»n nhanh khoáº£ng thá»i gian 5p, 10p, 15p, 30p), loáº¡i bá» viá»‡c Ä‘iá»u hÆ°á»›ng sang mÃ n hÃ¬nh riÃªng vÃ  loáº¡i bá» giá»›i háº¡n sá»‘ láº§n láº·p láº¡i.
+- **Thá»±c hiá»‡n:**
+  - `features/reminders/src/main/java/vn/io/litever/remind/features/reminders/ui/components/ReminderAlertConfigSection.kt`:
+    - Loáº¡i bá» tham sá»‘ vÃ  UI cá»§a `UrgencyLevel`.
+    - ThÃªm mÃ´ táº£ trá»±c quan dÆ°á»›i bá»™ chá»n cháº¿ Ä‘á»™: `style_full_screen_desc` vÃ  `style_standard_desc`.
+    - TÃ­ch há»£p inline Snooze: Switch báº­t/táº¯t vÃ  `LiteverSingleChoiceSegmentedButtonRow` chá»n khoáº£ng thá»i gian (5, 10, 15, 30 phÃºt).
+    - Cáº­p nháº­t cÃ¡c hÃ m Preview (chuáº©n, thÆ°á»ng, cháº¿ Ä‘á»™ tá»‘i).
+  - `features/reminders/src/main/java/vn/io/litever/remind/features/reminders/ui/ReminderEditScreen.kt`:
+    - TrÃ­ch xuáº¥t tÃªn nháº¡c chuÃ´ng tá»« `RingtoneManager.getRingtone()` dá»±a trÃªn `uiState.ringtoneUri`.
+    - Káº¿t ná»‘i `onSnoozeEnabledChange` vÃ  `onSnoozeIntervalChange` trá»±c tiáº¿p vá»›i ViewModel.
+    - Loáº¡i bá» cÃ¡c param dÆ° thá»«a vÃ  listener khÃ´ng dÃ¹ng Ä‘áº¿n.
+  - `features/reminders/src/main/java/vn/io/litever/remind/features/reminders/viewmodel/ReminderEditViewModel.kt`:
+    - ThÃªm `setSnoozeEnabled` vÃ  `setSnoozeIntervalMinutes`.
+- **Káº¿t quáº£ kiá»ƒm thá»­:**
+  - `./gradlew testDebugUnitTest`: VÆ°á»£t qua 100% toÃ n bá»™ 473 task cá»§a dá»± Ã¡n khÃ´ng má»™t lá»—i nÃ o.
+
+### [2026-10-01] Äá»•i text tab sang "Nháº¯c nhá»Ÿ" vÃ  loáº¡i bá» bá»™ lá»c á»Ÿ mÃ n hÃ¬nh danh sÃ¡ch nháº¯c nhá»Ÿ
+- **Má»¥c tiÃªu:**
+  - Äá»•i nhÃ£n tab Ä‘iá»u hÆ°á»›ng vÃ  tiÃªu Ä‘á» tá»« "Lá»i nháº¯c" thÃ nh "Nháº¯c nhá»Ÿ".
+  - Loáº¡i bá» hoÃ n toÃ n hÃ ng filter chips (`ReminderFilterChips`) cÃ¹ng toÃ n bá»™ logic lá»c khÃ´ng cáº§n thiáº¿t (ALL, ACTIVE, COMPLETED, TIME, LOCATION, WIFI) khá»i mÃ n hÃ¬nh danh sÃ¡ch nháº¯c nhá»Ÿ.
+  - Tinh giáº£n `ReminderListViewModel`, `ReminderListUiState`, `ReminderListScreen`, `ReminderEmptyState` vÃ  cáº­p nháº­t tÆ°Æ¡ng á»©ng cÃ¡c unit test.
+- **Thá»±c hiá»‡n:**
+  - **TÃ i nguyÃªn chuá»—i:**
+    - `app/src/main/res/values-vi/strings.xml`: Cáº­p nháº­t `navigation_reminders` thÃ nh "Nháº¯c nhá»Ÿ".
+    - `features/reminders/src/main/res/values-vi/strings.xml`: Cáº­p nháº­t `navigation_reminders`, `reminders_title`, `add_reminder_title`, `edit_reminder_title`, `no_reminders`, `empty_reminders_description`, `delete_completed_reminders`, `delete_disabled_reminders`, `reminder_deleted`.
+    - Dá»n dáº¹p cÃ¡c chuá»—i lá»c (`filter_*`, `no_*_reminders`) khá»i `values/strings.xml` vÃ  `values-vi/strings.xml`.
+  - **Giao diá»‡n & ThÃ nh pháº§n (`features/reminders`):**
+    - `ReminderListScreen.kt`: XÃ³a hoÃ n toÃ n component `ReminderFilterChips` vÃ  tham sá»‘ `onFilterSelected`. Hiá»ƒn thá»‹ trá»±c tiáº¿p danh sÃ¡ch `reminders` Ä‘Ã£ Ä‘Æ°á»£c sáº¯p xáº¿p hoáº·c `ReminderEmptyState` Ä‘Æ¡n giáº£n hÃ³a.
+    - `ReminderEmptyState.kt`: Loáº¡i bá» tham sá»‘ `selectedFilter`, luÃ´n hiá»ƒn thá»‹ tráº¡ng thÃ¡i rá»—ng chuáº©n (`no_reminders`, `empty_reminders_description`).
+    - XÃ³a file `ReminderFilterChips.kt`.
+  - **ViewModel & State:**
+    - `ReminderListViewModel.kt`: Loáº¡i bá» `_selectedFilter`, `setFilter`, `filterCounts`. Sáº¯p xáº¿p trá»±c tiáº¿p luá»“ng nháº¯c nhá»Ÿ (Æ°u tiÃªn nháº¯c nhá»Ÿ Ä‘ang snooze lÃªn Ä‘áº§u, sau Ä‘Ã³ theo `createdAt` giáº£m dáº§n).
+    - `ReminderListUiState`: Tinh giáº£n state chá»‰ cÃ²n `reminders`, `is24HourFormat`, `hasPermissionWarning`, `missingPermissions`.
+  - **Kiá»ƒm thá»­ Ä‘Æ¡n vá»‹:**
+    - `ReminderListViewModelTest.kt`: XÃ³a cÃ¡c test chuyá»ƒn filter, thÃªm test xÃ¡c minh quy táº¯c sáº¯p xáº¿p tá»± Ä‘á»™ng.
+    - `ReminderR1R2EmpiricalChallengerTest.kt`: Cáº­p nháº­t cÃ¡c test case Ä‘á»ƒ kiá»ƒm tra quy táº¯c sáº¯p xáº¿p danh sÃ¡ch trá»±c tiáº¿p khÃ´ng phá»¥ thuá»™c filter.
+- **Káº¿t quáº£ kiá»ƒm thá»­:**
+  - `./gradlew testDebugUnitTest`: VÆ°á»£t qua 100% toÃ n bá»™ 473 task thÃ nh cÃ´ng.
+
+### [2026-10-01] Loáº¡i bá» thanh chá»‰nh Ã¢m lÆ°á»£ng á»Ÿ cháº¿ Ä‘á»™ ThÃ´ng bÃ¡o thÆ°á»ng (NotificationStyle.STANDARD)
+- **Bá»‘i cáº£nh & XÃ¡c nháº­n ká»¹ thuáº­t:**
+  - Trong Android (API 26+), thÃ´ng bÃ¡o tiÃªu chuáº©n (Notification/NotificationCompat) phÃ¡t Ã¢m thanh thÃ´ng qua KÃªnh thÃ´ng bÃ¡o há»‡ thá»‘ng (`STREAM_NOTIFICATION`).
+  - Há»‡ Ä‘iá»u hÃ nh Android KHÃ”NG cung cáº¥p API Ä‘á»ƒ Ä‘áº·t Ã¢m lÆ°á»£ng chuÃ´ng riÃªng biá»‡t cho tá»«ng thÃ´ng bÃ¡o Ä‘á»™c láº­p (chá»‰ cÃ³ thá»ƒ chá»n file nháº¡c chuÃ´ng vÃ  báº­t/táº¯t rung). Ã‚m lÆ°á»£ng phÃ¡t luÃ´n tuÃ¢n theo má»©c Ã¢m lÆ°á»£ng thÃ´ng bÃ¡o tá»•ng cá»§a thiáº¿t bá»‹.
+  - Do Ä‘Ã³, viá»‡c hiá»ƒn thá»‹ thanh trÆ°á»£t Ã¢m lÆ°á»£ng á»Ÿ cháº¿ Ä‘á»™ "ThÃ´ng bÃ¡o thÆ°á»ng" lÃ  khÃ´ng cÃ³ tÃ¡c dá»¥ng thá»±c táº¿.
+- **Thá»±c hiá»‡n:**
+  - `ReminderAlertConfigSection.kt`:
+    - Thanh trÆ°á»£t Ã¢m lÆ°á»£ng (Volume Slider) chá»‰ hiá»ƒn thá»‹ á»Ÿ cháº¿ Ä‘á»™ "Äá»• chuÃ´ng" (`NotificationStyle.FULL_SCREEN` - nÆ¡i cÃ³ foreground service phÃ¡t Ã¢m thanh liÃªn tá»¥c qua `MediaPlayer.setVolume()`).
+    - á»ž cháº¿ Ä‘á»™ "ThÃ´ng bÃ¡o thÆ°á»ng" (`NotificationStyle.STANDARD`), loáº¡i bá» thanh trÆ°á»£t Ã¢m lÆ°á»£ng vÃ  hiá»ƒn thá»‹ má»™t hÃ ng cÃ´ng táº¯c "Rung" (`LiteverSwitch`) Ä‘á»™c láº­p, kÃ¨m mÃ´ táº£ "Rung khi thÃ´ng bÃ¡o xuáº¥t hiá»‡n" / "Táº¯t".
+  - Bá»• sung chuá»—i tÃ i nguyÃªn `vibration_enabled_desc` trong `values/strings.xml` vÃ  `values-vi/strings.xml`.
+- **Káº¿t quáº£ kiá»ƒm thá»­:**
+  - `./gradlew testDebugUnitTest`: VÆ°á»£t qua 100% toÃ n bá»™ 473 task thÃ nh cÃ´ng.
+
+### [2026-10-01] Refactor PaletteColorOption & Loáº¡i bá» callback navigate thá»«a trong SettingsScreen
+- **Má»¥c tiÃªu:**
+  - Cáº­p nháº­t `PaletteColorOption` trong `GeneralSettingsScreen` sá»­ dá»¥ng cáº·p mÃ u `primary` vÃ  `onPrimary` (thay tháº¿ cho `primaryContainer`).
+  - Dá»n dáº¹p cÃ¡c callback Ä‘iá»u hÆ°á»›ng khÃ´ng sá»­ dá»¥ng (`onNavigateToQA`, `onNavigateToAlarmSettings`, `onNavigateToLicenses`) khá»i `SettingsRoute`, `SettingsScreen`, `settingsGraph` vÃ  `MainActivity`.
+- **Thá»±c hiá»‡n:**
+  - `GeneralSettingsScreen.kt`:
+    - Äá»•i trÆ°á»ng `primaryContainerLight` / `primaryContainerDark` cá»§a `PaletteColorOption` sang `onPrimaryLight` / `onPrimaryDark`.
+    - Cáº­p nháº­t dáº£i mÃ u máº«u `ColorCircleSwatch` Ä‘á»ƒ hiá»ƒn thá»‹ Icon Check cÃ³ mÃ u tint tÆ°Æ¡ng pháº£n `onPrimaryColor` trÃªn ná»n trÃ²n `primaryColor`.
+  - `SettingsScreen.kt`, `SettingsNavigation.kt`, `MainActivity.kt`:
+    - Loáº¡i bá» tham sá»‘ Ä‘iá»u hÆ°á»›ng khÃ´ng dÃ¹ng (`onNavigateToQA`, `onNavigateToAlarmSettings`, `onNavigateToLicenses`) khá»i `SettingsRoute` & `SettingsScreen`.
+    - Tinh giáº£n `settingsGraph` vÃ  loáº¡i bá» cÃ¡c import/call thá»«a á»Ÿ `MainActivity`.
+
+### [2026-10-01] Refactor UI ReminderTriggerSection - ÄÆ°a cá»¥m nÃºt chá»n khoáº£ng thá»i gian láº·p vÃ o cÃ¹ng surface container
+- **Má»¥c tiÃªu:**
+  - Gom cá»¥m cÃ¡c nÃºt báº¥m chá»n nhanh khoáº£ng thá»i gian láº·p (`15m`, `30m`, `1h`, `2h`, `3h`, `4h`) vÃ o cÃ¹ng khá»‘i card container `surfaceContainer` vá»›i hiá»ƒn thá»‹ sá»‘ thá»i gian láº·p (`Repeat Every`).
+- **Thá»±c hiá»‡n:**
+  - `ReminderTriggerSection.kt`:
+    - Chuyá»ƒn container tá»« dáº¡ng `Row` sang `Column` vá»›i Ä‘á»‹nh dáº¡ng `.clip(RoundedCornerShape(12.dp)).background(LiteverTheme.colors.surfaceContainer).padding(LiteverTheme.spacing.medium)`.
+    - ÄÆ°a tiÃªu Ä‘á» + hiá»ƒn thá»‹ thá»i gian + nÃºt báº¥m Äáº·t láº¡i (`Reset`) vÃ o thanh `Row` phÃ­a trÃªn, Ä‘á»“ng thá»i Ä‘áº·t danh sÃ¡ch nÃºt preset bÃªn trong container nÃ y Ä‘á»ƒ chia sáº» chung mÃ u ná»n surface.
+- **Káº¿t quáº£ kiá»ƒm thá»­:**
+  - `ReminderTriggerSectionIntervalPreview` hiá»ƒn thá»‹ Ä‘Ãºng giao diá»‡n thiáº¿t káº¿ má»›i.
+  - Build Gradle `:features:reminders:assembleDebug` thÃ nh cÃ´ng.
+
+
+
+
+

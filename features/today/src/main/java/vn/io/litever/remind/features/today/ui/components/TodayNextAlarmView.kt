@@ -67,130 +67,132 @@ fun TodayNextAlarmView(
                 shape = LiteverTheme.shapes.large,
                 color = LiteverTheme.colors.surfaceContainer,
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(all = LiteverTheme.spacing.medium),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
+                Column(
+                    modifier = Modifier.padding(all = LiteverTheme.spacing.medium),
+                    verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.tiny)
                 ) {
-                    // CỘT 1: ICON/ẢNH BÁO THỨC Ô VUÔNG
-                    Card(
-                        modifier = Modifier.size(76.dp),
-                        shape = LiteverTheme.shapes.large
+                    // Hàng 1: Text báo thức tiếp theo trên cùng (kèm badge đếm ngược còn lại)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(76.dp)
-                                .background(LiteverTheme.colors.surfaceContainerHigh),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = ReMindIcons.Alarm,
-                                contentDescription = null,
-                                modifier = Modifier.size(38.dp),
-                                tint = LiteverTheme.colors.onSurface
-                            )
-                        }
-                    }
-
-                    // CỘT 2: THÔNG TIN BÁO THỨC
-                    Column(
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        // Hàng 1: Text báo thức tiếp theo trên cùng (kèm badge đếm ngược còn lại)
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = stringResource(R.string.next_alarm_title),
-                                style = LiteverTheme.typography.labelSmall,
-                                color = LiteverTheme.colors.primary,
-                                fontWeight = FontWeight.Bold,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.weight(1f).padding(end = LiteverTheme.spacing.small)
-                            )
-
-                            Surface(
-                                shape = LiteverTheme.shapes.small,
-                                color = LiteverTheme.colors.tertiaryContainer,
-                                contentColor = LiteverTheme.colors.onTertiaryContainer
-                            ) {
-                                Text(
-                                    text = formatNextAlarmRemainingText(state),
-                                    style = LiteverTheme.typography.labelSmall.copy(fontSize = 11.sp),
-                                    fontWeight = FontWeight.SemiBold,
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(2.dp))
-
-                        // Hàng 2: Giờ báo thức -> Cột icon nhiệm vụ | Cột ngày lặp lại
-                        val (timeStr, amPm) = TimeFormatUtils.formatTimeParts(alarm.time, is24HourFormat)
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            // Giờ báo thức
-                            Text(
-                                text = timeStr,
-                                style = LiteverTheme.typography.titleLarge.copy(
-                                    fontWeight = FontWeight.ExtraBold,
-                                    letterSpacing = (-0.5).sp
-                                ),
-                                color = LiteverTheme.colors.onSurface
-                            )
-                            if (amPm != null) {
-                                Text(
-                                    text = amPm.uppercase(),
-                                    style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                                    color = LiteverTheme.colors.onSurface,
-                                    modifier = Modifier
-                                        .padding(start = 2.dp, bottom = 2.dp)
-                                        .align(Alignment.Bottom)
-                                )
-                            }
-
-                            // Cột icon nhiệm vụ (nếu có)
-                            if (alarm.missions.isNotEmpty()) {
-                                Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
-                                TodayMissionIcons(
-                                    missions = alarm.missions
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.weight(1f))
-
-                            // Cột ngày lặp lại
-                            Text(
-                                text = getRepeatSummaryText(alarm.repeatDays, alarm.time, alarm.date),
-                                style = LiteverTheme.typography.labelSmall,
-                                color = LiteverTheme.colors.onSurfaceVariant,
-                                fontWeight = FontWeight.Medium,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(2.dp))
-
-                        // Hàng 3: Nhãn báo thức
-                        val labelText = alarm.label.ifEmpty { stringResource(R.string.no_label) }
                         Text(
-                            text = labelText,
-                            color = LiteverTheme.colors.onSurfaceVariant,
-                            style = LiteverTheme.typography.bodySmall.copy(
-                                fontStyle = if (alarm.label.isEmpty()) FontStyle.Italic else FontStyle.Normal,
-                            ),
+                            text = stringResource(R.string.next_alarm_title),
+                            style = LiteverTheme.typography.labelSmall,
+                            color = LiteverTheme.colors.primary,
+                            fontWeight = FontWeight.Bold,
                             maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f).padding(end = LiteverTheme.spacing.small)
                         )
+
+                        Surface(
+                            shape = LiteverTheme.shapes.small,
+                            color = LiteverTheme.colors.tertiaryContainer,
+                            contentColor = LiteverTheme.colors.onTertiaryContainer
+                        ) {
+                            Text(
+                                text = formatNextAlarmRemainingText(state),
+                                style = LiteverTheme.typography.labelSmall.copy(fontSize = 11.sp),
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                            )
+                        }
                     }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                    ) {
+                        // CỘT 1: ICON/ẢNH BÁO THỨC Ô VUÔNG
+                        Card(
+                            modifier = Modifier.size(36.dp),
+                            shape = LiteverTheme.shapes.large
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .background(LiteverTheme.colors.surfaceContainerHigh),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = ReMindIcons.Alarm,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp),
+                                    tint = LiteverTheme.colors.onSurface
+                                )
+                            }
+                        }
+
+                        // CỘT 2: THÔNG TIN BÁO THỨC
+                        Column(
+                            modifier = Modifier.weight(1f)
+                        ) {
+
+                            Spacer(modifier = Modifier.height(2.dp))
+
+                            // Hàng 2: Giờ báo thức -> Cột icon nhiệm vụ | Cột ngày lặp lại
+                            val (timeStr, amPm) = TimeFormatUtils.formatTimeParts(alarm.time, is24HourFormat)
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                // Giờ báo thức
+                                Text(
+                                    text = timeStr,
+                                    style = LiteverTheme.typography.titleLarge.copy(
+                                        fontWeight = FontWeight.ExtraBold,
+                                        letterSpacing = (-0.5).sp
+                                    ),
+                                    color = LiteverTheme.colors.onSurface
+                                )
+                                if (amPm != null) {
+                                    Text(
+                                        text = amPm.uppercase(),
+                                        style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                        color = LiteverTheme.colors.onSurface,
+                                        modifier = Modifier
+                                            .padding(start = 2.dp, bottom = 2.dp)
+                                            .align(Alignment.Bottom)
+                                    )
+                                }
+
+                                // Cột icon nhiệm vụ (nếu có)
+                                if (alarm.missions.isNotEmpty()) {
+                                    Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
+                                    TodayMissionIcons(
+                                        missions = alarm.missions
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.weight(1f))
+
+                                // Cột ngày lặp lại
+                                Text(
+                                    text = getRepeatSummaryText(alarm.repeatDays, alarm.time, alarm.date),
+                                    style = LiteverTheme.typography.labelSmall,
+                                    color = LiteverTheme.colors.onSurfaceVariant,
+                                    fontWeight = FontWeight.Medium,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(2.dp))
+
+                    // Hàng 3: Nhãn báo thức
+                    val labelText = alarm.label.ifEmpty { stringResource(R.string.no_label) }
+                    Text(
+                        text = labelText,
+                        color = LiteverTheme.colors.onSurfaceVariant,
+                        style = LiteverTheme.typography.bodySmall.copy(
+                            fontStyle = if (alarm.label.isEmpty()) FontStyle.Italic else FontStyle.Normal,
+                        ),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
                 }
             }
         }
@@ -212,10 +214,10 @@ fun TodayNextAlarmView(
                         .fillMaxWidth()
                         .padding(all = LiteverTheme.spacing.medium),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
+                    horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
                 ) {
                     Card(
-                        modifier = Modifier.size(76.dp),
+                        modifier = Modifier.size(48.dp),
                         shape = LiteverTheme.shapes.medium
                     ) {
                         Image(
@@ -239,10 +241,10 @@ fun TodayNextAlarmView(
                             text = stringResource(R.string.no_upcoming_alarm_desc),
                             style = LiteverTheme.typography.bodySmall,
                             color = LiteverTheme.colors.onSurfaceVariant,
-                            lineHeight = 18.sp
                         )
                     }
                 }
+
             }
         }
     }

@@ -14,6 +14,7 @@ class TodayViewModel @Inject constructor(
     private val weatherRepository: vn.io.litever.remind.core.domain.repository.WeatherRepository,
     private val todayRepository: vn.io.litever.remind.core.domain.repository.TodayRepository,
     private val alarmRepository: vn.io.litever.remind.core.domain.repository.AlarmRepository,
+    private val reminderRepository: vn.io.litever.remind.core.domain.repository.ReminderRepository,
     private val preferencesDataSource: vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 ) : ViewModel() {
     private var lastProcessingRefreshMillis = 0L
@@ -45,6 +46,14 @@ class TodayViewModel @Inject constructor(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = vn.io.litever.remind.core.model.NextAlarmUiState.AllOff
+        )
+
+    val activeReminderCount: StateFlow<Int> = reminderRepository.getAllReminders()
+        .map { reminders -> countActiveReminders(reminders) }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = 0
         )
 
     val weather: StateFlow<vn.io.litever.remind.core.model.WeatherResponse?> = weatherRepository.getRemindWeather()
@@ -127,3 +136,7 @@ class TodayViewModel @Inject constructor(
         }
     }
 }
+
+internal fun countActiveReminders(reminders: List<vn.io.litever.remind.core.model.Reminder>): Int =
+    reminders.count { it.isEnabled }
+

@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.reminders.ui
 
+import android.content.res.Configuration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -51,6 +53,11 @@ import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import vn.io.litever.remind.features.reminders.R
+import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.model.Reminder
+import vn.io.litever.remind.core.model.ReminderAction
+import vn.io.litever.remind.core.model.ReminderTriggerType
+import vn.io.litever.remind.features.reminders.viewmodel.ReminderRingingUiState
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderRingingViewModel
 import java.time.LocalDate
 import java.time.LocalTime
@@ -315,5 +322,57 @@ fun ReminderRingingScreen(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ReminderRingingScreenPreview() {
+    ReMindTheme {
+        ReminderRingingScreen(
+            uiState = ReminderRingingUiState(
+                reminder = Reminder(
+                    id = 1L,
+                    title = "Drink Water & Stretch",
+                    notes = "Take a short break, stand up and walk around.",
+                    triggerType = ReminderTriggerType.FIXED_TIME,
+                    action = ReminderAction(
+                        snoozeEnabled = true,
+                        snoozeIntervalMinutes = 10
+                    )
+                ),
+                is24HourFormat = true,
+                autoSilenceCountdown = 300,
+                isRinging = true
+            ),
+            onSnoozeClick = {},
+            onDismissClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun ReminderRingingScreenDarkPreview() {
+    ReMindTheme(darkTheme = true) {
+        ReminderRingingScreen(
+            uiState = ReminderRingingUiState(
+                reminder = Reminder(
+                    id = 1L,
+                    title = "Drink Water & Stretch",
+                    notes = "Take a short break, stand up and walk around.",
+                    triggerType = ReminderTriggerType.FIXED_TIME,
+                    action = ReminderAction(
+                        snoozeEnabled = true,
+                        snoozeIntervalMinutes = 10
+                    )
+                ),
+                is24HourFormat = false,
+                autoSilenceCountdown = null,
+                isRinging = true
+            ),
+            onSnoozeClick = {},
+            onDismissClick = {}
+        )
     }
 }

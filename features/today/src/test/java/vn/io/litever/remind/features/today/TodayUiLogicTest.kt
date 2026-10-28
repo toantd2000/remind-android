@@ -270,4 +270,72 @@ class TodayUiLogicTest {
         )
         assertFalse("Cache check must return false when language changed", isValid)
     }
+
+    // ------------------------------------------------------------------------
+    // 5. Active Reminder Count Logic Tests
+    // ------------------------------------------------------------------------
+
+    @Test
+    fun countActiveReminders_whenEmpty_returnsZero() {
+        assertEquals(
+            0,
+            vn.io.litever.remind.features.today.ui.countActiveReminders(emptyList())
+        )
+    }
+
+    @Test
+    fun countActiveReminders_whenAllDisabled_returnsZero() {
+        val reminders = listOf(
+            vn.io.litever.remind.core.model.Reminder(
+                id = 1L,
+                title = "R1",
+                triggerType = vn.io.litever.remind.core.model.ReminderTriggerType.FIXED_TIME,
+                isEnabled = false
+            ),
+            vn.io.litever.remind.core.model.Reminder(
+                id = 2L,
+                title = "R2",
+                triggerType = vn.io.litever.remind.core.model.ReminderTriggerType.FIXED_TIME,
+                isEnabled = false
+            )
+        )
+        assertEquals(
+            0,
+            vn.io.litever.remind.features.today.ui.countActiveReminders(reminders)
+        )
+    }
+
+    @Test
+    fun countActiveReminders_whenMixedEnabledAndDisabled_returnsOnlyEnabledCount() {
+        val reminders = listOf(
+            vn.io.litever.remind.core.model.Reminder(
+                id = 1L,
+                title = "R1",
+                triggerType = vn.io.litever.remind.core.model.ReminderTriggerType.FIXED_TIME,
+                isEnabled = true
+            ),
+            vn.io.litever.remind.core.model.Reminder(
+                id = 2L,
+                title = "R2",
+                triggerType = vn.io.litever.remind.core.model.ReminderTriggerType.FIXED_TIME,
+                isEnabled = false
+            ),
+            vn.io.litever.remind.core.model.Reminder(
+                id = 3L,
+                title = "R3",
+                triggerType = vn.io.litever.remind.core.model.ReminderTriggerType.FIXED_TIME,
+                isEnabled = true
+            ),
+            vn.io.litever.remind.core.model.Reminder(
+                id = 4L,
+                title = "R4",
+                triggerType = vn.io.litever.remind.core.model.ReminderTriggerType.FIXED_TIME,
+                isEnabled = true
+            )
+        )
+        assertEquals(
+            3,
+            vn.io.litever.remind.features.today.ui.countActiveReminders(reminders)
+        )
+    }
 }

@@ -55,6 +55,7 @@ import vn.io.litever.remind.core.model.TodayMetadata
 import vn.io.litever.remind.core.model.WeatherResponse
 import vn.io.litever.remind.features.today.R
 import vn.io.litever.remind.features.today.ui.components.TodayNextAlarmView
+import vn.io.litever.remind.features.today.ui.components.TodayReminderStatusView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,6 +67,7 @@ fun TodayRoute(
     val weather by viewModel.weather.collectAsState()
     val todayBriefing by viewModel.todayBriefing.collectAsState()
     val nextAlarmState by viewModel.nextAlarmState.collectAsState()
+    val activeReminderCount by viewModel.activeReminderCount.collectAsState()
     val is24HourFormat by viewModel.is24HourFormat.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val isProcessing by viewModel.isProcessing.collectAsState()
@@ -89,6 +91,7 @@ fun TodayRoute(
         weather = weather,
         todayBriefing = todayBriefing,
         nextAlarmState = nextAlarmState,
+        activeReminderCount = activeReminderCount,
         is24HourFormat = is24HourFormat,
         isRefreshing = isRefreshing,
         isProcessing = isProcessing,
@@ -108,6 +111,7 @@ fun TodayScreen(
     is24HourFormat: Boolean,
     isRefreshing: Boolean,
     isProcessing: Boolean,
+    activeReminderCount: Int = 0,
     isAdFreeActive: Boolean = false,
     onRefresh: () -> Unit,
     onLocationClick: () -> Unit = {},
@@ -181,6 +185,10 @@ fun TodayScreen(
             TodayNextAlarmView(
                 state = nextAlarmState,
                 is24HourFormat = is24HourFormat
+            )
+
+            TodayReminderStatusView(
+                activeReminderCount = activeReminderCount
             )
 
             if (!isAdFreeActive) {
@@ -257,6 +265,7 @@ fun TodayScreenPreview() {
                     minutes = 15,
                     alarm = mockAlarm
                 ),
+                activeReminderCount = 3,
                 is24HourFormat = false,
                 isRefreshing = false,
                 isProcessing = false,

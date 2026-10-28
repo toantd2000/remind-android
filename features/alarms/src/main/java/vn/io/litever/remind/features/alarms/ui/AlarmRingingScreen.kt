@@ -66,6 +66,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun AlarmRingingRoute(
@@ -178,7 +179,7 @@ fun AlarmRingingContent(
     LaunchedEffect(Unit) {
         while (true) {
             currentTime = LocalDateTime.now()
-            kotlinx.coroutines.delay(1000L)
+            kotlinx.coroutines.delay(1000L.milliseconds)
         }
     }
 
@@ -198,7 +199,7 @@ fun AlarmRingingContent(
                 } else {
                     remainingSnoozeSeconds = 0
                 }
-                kotlinx.coroutines.delay(1000L)
+                kotlinx.coroutines.delay(1000L.milliseconds)
             }
         }
     }

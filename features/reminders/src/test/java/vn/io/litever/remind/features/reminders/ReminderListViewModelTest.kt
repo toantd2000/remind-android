@@ -75,11 +75,14 @@ class ReminderListViewModelTest {
 
     @Test
     fun initialState_hasDefaultValues() = runTest(testDispatcher) {
+        assertTrue(viewModel.uiState.value.isLoading)
+
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
         testDispatcher.scheduler.advanceUntilIdle()
 
         val state = viewModel.uiState.value
         assertEquals(emptyList<Reminder>(), state.reminders)
+        assertFalse(state.isLoading)
         assertFalse(state.hasPermissionWarning)
     }
 

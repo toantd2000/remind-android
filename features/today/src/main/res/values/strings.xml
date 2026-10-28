@@ -36,6 +36,16 @@
     <string name="day_sat">Sa</string>
     <string name="day_sun">Su</string>
     <string name="no_label">No label</string>
+
+    <!-- Reminder Status -->
+    <string name="reminder_status_title">Reminders</string>
+    <string name="active_reminders_badge">%d active</string>
+    <string name="active_reminder_single_status_text">1 active reminder</string>
+    <string name="active_reminders_status_text">%d active reminders</string>
+    <string name="active_reminders_status_desc">Your reminders are being tracked on schedule.</string>
+    <string name="no_active_reminders_title">No Active Reminders</string>
+    <string name="no_active_reminders_desc">There are no active reminders right now. Enjoy your free and peaceful time!</string>
+
     <string name="exit_dialog_title">Exit App</string>
     <string name="exit_dialog_message">Are you sure you want to leave? Thank you so much for choosing ReMind today. We wish you a beautiful day filled with joy and positive energy! ❤️ Please interact with the ad below to support us.</string>
     <string name="exit_dialog_message_ad_free">Are you sure you want to leave? Thank you so much for choosing ReMind today. We wish you a beautiful day filled with joy and positive energy! ❤️</string>

@@ -28,6 +28,7 @@ import javax.inject.Inject
 
 data class ReminderListUiState(
     val reminders: List<Reminder> = emptyList(),
+    val isLoading: Boolean = false,
     val is24HourFormat: Boolean = true,
     val hasPermissionWarning: Boolean = false,
     val isCriticalPermissionWarning: Boolean = true,
@@ -76,6 +77,7 @@ class ReminderListViewModel @Inject constructor(
 
         ReminderListUiState(
             reminders = sortedReminders,
+            isLoading = false,
             is24HourFormat = is24Hour,
             hasPermissionWarning = hasWarning,
             isCriticalPermissionWarning = isCritical,
@@ -84,7 +86,7 @@ class ReminderListViewModel @Inject constructor(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
-        initialValue = ReminderListUiState()
+        initialValue = ReminderListUiState(isLoading = true)
     )
 
     fun dismissPermissionWarning() {

@@ -1,56 +1,108 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
-import androidx.compose.foundation.layout.Arrangement
+import android.content.res.Configuration
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import vn.io.litever.designsystem.components.FeedbackStateType
+import vn.io.litever.designsystem.components.FeedbackStateView
+import vn.io.litever.designsystem.components.button.LvButton
+import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
-import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
+import vn.io.litever.remind.core.designsystem.R as DesignSystemR
+import vn.io.litever.remind.core.designsystem.components.ReMindLogo
+import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.features.reminders.R
 
 @Composable
 fun ReminderEmptyState(
+    onAddReminderClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Icon(
-            imageVector = ReMindIcons.NotificationsNone,
-            contentDescription = null,
-            tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.5f),
-            modifier = Modifier.size(72.dp)
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = stringResource(R.string.no_reminders),
-            style = LiteverTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-            color = LiteverTheme.colors.onSurface,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = stringResource(R.string.empty_reminders_description),
-            style = LiteverTheme.typography.bodyMedium,
-            color = LiteverTheme.colors.onSurfaceVariant,
-            textAlign = TextAlign.Center
-        )
+    val descriptionPrefix = stringResource(R.string.empty_reminders_description)
+
+    FeedbackStateView(
+        title = stringResource(R.string.no_reminders),
+        type = FeedbackStateType.EMPTY,
+        modifier = modifier,
+        illustration = {
+            val isDark = !LiteverTheme.colors.isLight
+            val illustrationRes = if (isDark) {
+                DesignSystemR.drawable.no_alarm_illustration_dark
+            } else {
+                DesignSystemR.drawable.no_alarm_illustration
+            }
+            Card(
+                modifier = Modifier.size(200.dp),
+                shape = LiteverTheme.shapes.extraLarge
+            ) {
+                Image(
+                    painter = painterResource(illustrationRes),
+                    contentDescription = null,
+                )
+            }
+        },
+        descriptionSlot = {
+            Column(
+                modifier = Modifier.wrapContentHeight(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = descriptionPrefix,
+                    style = LiteverTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center
+                )
+                ReMindLogo(fontSize = LiteverTheme.typography.bodyMedium.fontSize)
+            }
+        },
+        action = {
+            LvButton(
+                onClick = onAddReminderClick,
+                semantic = LvSemantic.Primary
+            ) {
+                Text(
+                    text = stringResource(R.string.action_add_new_reminder)
+                )
+            }
+        }
+    )
+}
+
+@Preview(
+    name = "Reminder Empty State - Light",
+    showBackground = true,
+    device = Devices.PIXEL_7
+)
+@Composable
+private fun ReminderEmptyStatePreview() {
+    ReMindTheme {
+        ReminderEmptyState(onAddReminderClick = {})
     }
 }
+
+@Preview(
+    name = "Reminder Empty State - Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    device = Devices.PIXEL_7,
+    backgroundColor = 0xFF121212L
+)
+@Composable
+private fun ReminderEmptyStateDarkPreview() {
+    ReMindTheme(darkTheme = true) {
+        ReminderEmptyState(onAddReminderClick = {})
+    }
+}
+

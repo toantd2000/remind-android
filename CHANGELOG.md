@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Today Screen Reminder Status View (`TodayReminderStatusView`):** Added a non-interactive reminder status card on `TodayScreen` (below `TodayNextAlarmView`) displaying how many reminders are currently active, with a 2-state layout (active count card when `activeReminderCount > 0` and a restful empty state card when `activeReminderCount == 0`) matching `TodayNextAlarmView`.
 - **Quick Alarm (Báo thức nhanh):** Triển khai tính năng báo thức nhanh theo thiết kế Material 3 FAB Menu và Bottom Sheet hiện đại:
   - **Material 3 FAB Menu:** Nhấn nút FAB mở menu xổ lên với các tùy chọn chuẩn Material 3 (Alarm, Quick alarm) với icon trực quan, tận dụng các component chuẩn M3 mà không cần file cấu hình phức tạp.
   - **Quick Alarm Bottom Sheet:** Cho phép thiết lập báo thức nhanh qua bộ cộng dồn thời gian (+1m, +5m, +10m, +15m, +30m, +1h) kèm nút Reset về 0, hiển thị trực quan mốc giờ reo dự kiến `Ring at ...`, nhập mô tả ngắn gọn (nhãn), điều chỉnh âm thanh chuông, thanh trượt âm lượng và nút bật/tắt rung.
@@ -29,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Sound Preview Playback Control:** Added interactive Play/Stop audio preview button (`ReMindSettingIcon`) at the trailing end of the Volume slider row in both `AlarmEditScreen` and `ReminderEditScreen`.
 
 ### Changed
+- **Unified Reminder Empty State (`ReminderEmptyState`):** Upgraded `ReminderEmptyState` on `ReminderListScreen` to match `AlarmListScreen`'s `EmptyState` using `FeedbackStateView`, theme-aware illustration (`no_alarm_illustration` / `no_alarm_illustration_dark`), `ReMindLogo`, and a primary `+ Thêm nhắc nhở mới` (`LvButton`) CTA, while hiding the top overflow menu and FAB when the reminder list is empty and preventing empty-state flash during initial loading.
 - **Unified Reminder Date & Time Picker Dialogs:** Standardized all Date Picker and Time Picker dialogs in `:features:reminders` (`ReminderRepeatConfigSection`, `ReminderTimeConfigSection`, `ReminderTimeWindowConfigSection`) to match `AlarmEditScreen` using Material 3 `DatePickerDialog` and `TimePickerDialog`, bold `titleLarge` headers with reminder-appropriate wording ("Đặt ngày nhắc nhở", "Đặt giờ nhắc nhở", "Đặt giờ bắt đầu", "Đặt giờ kết thúc"), and `LvButton` confirm/dismiss actions.
 - **Modernized Reminder Basic Info Section:** Refactored `ReminderBasicInfoSection` to adopt the minimalist Content pattern from `AlarmEditScreen` wrapped inside `ReMindSettingsGroup` (title "Thông tin chung"). Replaced `LiteverTextField` with clean `BasicTextField` rows, uppercase labels, contextual icons (`NewLabel`, `EditNote`), quick-clear icon buttons (`LvIconButton` with `Close`), and subtle `HorizontalDivider`.
 - **Harmonized Card Padding in Design System:** Standardized `ReMindGroupCard` by removing internal horizontal padding, delegating outer spacing to parent lazy layouts (`PaddingValues(all = LiteverTheme.spacing.medium)`) across `AlarmEditScreen`, `SnoozeBottomSheet`, `PhraseSelectionScreen`, and reminder edit sections.

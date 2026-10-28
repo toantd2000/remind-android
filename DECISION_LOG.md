@@ -82,6 +82,14 @@ This document records the solidified technical decisions and behavioral scenario
         - *Footer (`NextTriggerFooter`)*: Shows dynamic next occurrence and relative time (e.g., `Lần tới: Hôm nay 14:00 (sau 2 giờ 15 phút)`, `Lần tới: Ngày mai 08:00 (sau 14 giờ)`, `Báo lại: 10:35 (còn 12 phút)`, `Đã tắt`).
     - **Pure Utility Separation**: Extracted `ReminderCardFormatter` to handle all recurrence, frequency, time window, and relative countdown string formatting deterministically, with 100% unit test coverage in `ReminderCardFormatterTest`.
 
+### Scenario: Unified Reminder Empty State & Today Reminder Status View
+- **Expected Behavior**:
+    - On `ReminderListScreen`, when there are no reminders, display a rich empty state matching `AlarmListScreen` (using `FeedbackStateView`, theme-aware illustration, `ReMindLogo`, and a primary CTA button `+ Thêm nhắc nhở mới`), while hiding the top overflow menu and floating action button.
+    - On `TodayScreen`, display a non-interactive status card (`TodayReminderStatusView`) right below `TodayNextAlarmView` that shows only how many reminders are currently active (or a peaceful empty state card when 0 reminders are active).
+- **Technical Decision**:
+    - **Empty State Alignment**: Updated `ReminderEmptyState` to use `FeedbackStateView(type = FeedbackStateType.EMPTY)` with `no_alarm_illustration` / `no_alarm_illustration_dark` from `:core:designsystem`, `ReMindLogo`, and `LvButton(semantic = LvSemantic.Primary)`. Added `isLoading` to `ReminderListUiState` to prevent flashing the empty state before Room emits initial data.
+    - **Today Reminder Status View**: Injected `ReminderRepository` into `TodayViewModel` to expose `activeReminderCount: StateFlow<Int>` via `countActiveReminders`. Created `TodayReminderStatusView` matching `TodayNextAlarmView`'s 2-state visual hierarchy (`surfaceContainer` with active count badge and `NotificationsActive` icon when `activeReminderCount > 0`, and `surfaceContainerLow` with illustration when `activeReminderCount == 0`).
+
 ## 6. Ad System & Supporter Mechanisms
 
 ### Scenario: Supporter Ad-Free Status

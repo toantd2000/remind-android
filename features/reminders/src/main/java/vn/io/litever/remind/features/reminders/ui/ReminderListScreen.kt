@@ -132,6 +132,7 @@ fun ReminderListScreen(
     var showTopMenu by remember { mutableStateOf(false) }
     var selectedReminderForAction by remember { mutableStateOf<Reminder?>(null) }
     var reminderForSnoozePuzzle by remember { mutableStateOf<Reminder?>(null) }
+    val hasReminders = uiState.reminders.isNotEmpty()
 
     LiteverScaffold(
         modifier = modifier.fillMaxSize(),
@@ -139,38 +140,42 @@ fun ReminderListScreen(
             LiteverTopAppBar(
                 title = stringResource(R.string.reminders_title),
                 actions = {
-                    Box {
-                        LiteverIconButton(onClick = { showTopMenu = true }) {
-                            Icon(
-                                imageVector = ReMindIcons.MoreVert,
-                                contentDescription = stringResource(R.string.action_more),
-                                tint = LiteverTheme.colors.onSurface
-                            )
-                        }
-                        DropdownMenu(
-                            expanded = showTopMenu,
-                            onDismissRequest = { showTopMenu = false }
-                        ) {
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.delete_disabled_reminders)) },
-                                onClick = {
-                                    showTopMenu = false
-                                    onDeleteDisabledReminders()
-                                }
-                            )
+                    if (hasReminders) {
+                        Box {
+                            LiteverIconButton(onClick = { showTopMenu = true }) {
+                                Icon(
+                                    imageVector = ReMindIcons.MoreVert,
+                                    contentDescription = stringResource(R.string.action_more),
+                                    tint = LiteverTheme.colors.onSurface
+                                )
+                            }
+                            DropdownMenu(
+                                expanded = showTopMenu,
+                                onDismissRequest = { showTopMenu = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.delete_disabled_reminders)) },
+                                    onClick = {
+                                        showTopMenu = false
+                                        onDeleteDisabledReminders()
+                                    }
+                                )
+                            }
                         }
                     }
                 }
             )
         },
         floatingActionButton = {
-            LiteverFloatingActionButton(
-                onClick = onAddReminderClick
-            ) {
-                Icon(
-                    imageVector = ReMindIcons.Add,
-                    contentDescription = stringResource(R.string.add_reminder_title)
-                )
+            if (hasReminders) {
+                LiteverFloatingActionButton(
+                    onClick = onAddReminderClick
+                ) {
+                    Icon(
+                        imageVector = ReMindIcons.Add,
+                        contentDescription = stringResource(R.string.add_reminder_title)
+                    )
+                }
             }
         },
         snackbarHost = {
@@ -212,8 +217,12 @@ fun ReminderListScreen(
             }
 
             // Content List or Empty State
-            if (uiState.reminders.isEmpty()) {
+            if (uiState.isLoading) {
+                // Show nothing while loading to avoid empty state flash
+                Box(modifier = Modifier.weight(1f))
+            } else if (uiState.reminders.isEmpty()) {
                 ReminderEmptyState(
+                    onAddReminderClick = onAddReminderClick,
                     modifier = Modifier.weight(1f)
                 )
             } else {

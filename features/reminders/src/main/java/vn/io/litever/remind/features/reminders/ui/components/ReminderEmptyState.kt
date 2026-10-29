@@ -17,6 +17,8 @@ import vn.io.litever.designsystem.components.FeedbackStateView
 import vn.io.litever.designsystem.components.button.LvButton
 import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.components.ReMindIllustration
+import vn.io.litever.remind.core.designsystem.components.ReMindIllustrationType
 import vn.io.litever.remind.core.designsystem.components.ReMindLogo
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.features.reminders.R
@@ -50,7 +52,9 @@ fun ReminderEmptyState(
                 ReMindLogo(fontSize = LiteverTheme.typography.bodyMedium.fontSize)
             }
         },
-        type = FeedbackStateType.NO_REMINDER,
+        illustration = {
+            ReMindIllustration(type = ReMindIllustrationType.NO_REMINDER)
+        },
         action = {
             LvButton(
                 onClick = onAddReminderClick,

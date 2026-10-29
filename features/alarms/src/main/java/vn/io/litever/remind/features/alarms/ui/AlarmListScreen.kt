@@ -19,6 +19,8 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
+import vn.io.litever.remind.core.designsystem.components.ReMindIllustration
+import vn.io.litever.remind.core.designsystem.components.ReMindIllustrationType
 import vn.io.litever.remind.features.alarms.ui.components.QuickAlarmBottomSheet
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
@@ -641,7 +643,9 @@ fun EmptyState(
                 ReMindLogo(fontSize = LiteverTheme.typography.bodyMedium.fontSize)
             }
         },
-        type = FeedbackStateType.NO_ALARM,
+        illustration = {
+            ReMindIllustration(type = ReMindIllustrationType.NO_ALARM)
+        },
         action = {
             LvButton(
                 onClick = onAddAlarmClick,

@@ -30,6 +30,8 @@ import vn.io.litever.designsystem.components.illustration.LvIllustration
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R as DesignSystemR
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
+import vn.io.litever.remind.core.designsystem.components.ReMindIllustration
+import vn.io.litever.remind.core.designsystem.components.ReMindIllustrationType
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.features.today.R
 
@@ -151,13 +153,14 @@ fun TodayReminderStatusView(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(all = LiteverTheme.spacing.medium),
+                    .padding(vertical = LiteverTheme.spacing.medium)
+                    .padding(start = LiteverTheme.spacing.small, end = LiteverTheme.spacing.medium),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
             ) {
-                LvIllustration(
-                    type = FeedbackStateType.NO_REMINDER,
-                    maxWidth = 48.dp,
+                ReMindIllustration(
+                    type = ReMindIllustrationType.NO_REMINDER,
+                    size = 48.dp,
                     modifier = Modifier.size(48.dp)
                 )
 

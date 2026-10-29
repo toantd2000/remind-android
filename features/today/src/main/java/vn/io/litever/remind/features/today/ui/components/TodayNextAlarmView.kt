@@ -31,6 +31,8 @@ import vn.io.litever.designsystem.components.FeedbackStateType
 import vn.io.litever.designsystem.components.illustration.LvIllustration
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
+import vn.io.litever.remind.core.designsystem.components.ReMindIllustration
+import vn.io.litever.remind.core.designsystem.components.ReMindIllustrationType
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.Alarm
@@ -83,7 +85,9 @@ fun TodayNextAlarmView(
                             fontWeight = FontWeight.Bold,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.weight(1f).padding(end = LiteverTheme.spacing.small)
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(end = LiteverTheme.spacing.small)
                         )
 
                         Surface(
@@ -205,13 +209,14 @@ fun TodayNextAlarmView(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(all = LiteverTheme.spacing.medium),
+                        .padding(vertical = LiteverTheme.spacing.medium)
+                        .padding(start = LiteverTheme.spacing.small, end = LiteverTheme.spacing.medium),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
                 ) {
-                    LvIllustration(
-                        type = FeedbackStateType.NO_ALARM,
-                        maxWidth = 48.dp,
+                    ReMindIllustration(
+                        type = ReMindIllustrationType.NO_ALARM,
+                        size = 48.dp,
                         modifier = Modifier.size(48.dp)
                     )
 

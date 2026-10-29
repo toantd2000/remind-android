@@ -5,17 +5,15 @@ import android.app.PendingIntent
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import dagger.hilt.android.qualifiers.ApplicationContext
 import vn.io.litever.remind.core.alarm.AlarmRingManager
-import vn.io.litever.remind.core.alarm.receiver.AlarmReceiver
 import vn.io.litever.remind.core.domain.scheduler.AlarmController
 import vn.io.litever.remind.core.domain.scheduler.AlarmScheduler
 import vn.io.litever.remind.core.domain.repository.AlarmRepository
 import vn.io.litever.remind.core.domain.repository.MissedAlarmRepository
 import vn.io.litever.remind.core.model.MissedAlarm
 import vn.io.litever.remind.core.model.MissedReason
-import android.net.Uri
+import androidx.core.net.toUri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import androidx.core.app.NotificationCompat
@@ -120,7 +118,7 @@ class AlarmControllerImpl @Inject constructor(
                     )
 
                     // Deep link to app (which will show the Missed Alarms dialog)
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("app://remind/home")).apply {
+                    val intent = Intent(Intent.ACTION_VIEW, "app://remind/home".toUri()).apply {
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     }
                     val pendingIntent = PendingIntent.getActivity(

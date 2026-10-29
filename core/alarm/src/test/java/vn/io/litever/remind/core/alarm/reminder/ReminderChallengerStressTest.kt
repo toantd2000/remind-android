@@ -5,9 +5,7 @@ import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import vn.io.litever.remind.core.model.ReminderTimeWindow
-import vn.io.litever.remind.core.model.RepeatMode
 import vn.io.litever.remind.core.model.TimeTrigger
-import java.time.DayOfWeek
 import java.time.LocalDateTime
 import java.time.LocalTime
 

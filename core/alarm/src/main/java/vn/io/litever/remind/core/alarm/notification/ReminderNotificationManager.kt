@@ -8,7 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.media.AudioAttributes
 import android.media.RingtoneManager
-import android.net.Uri
+import androidx.core.net.toUri
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -162,9 +162,10 @@ class ReminderNotificationManager @Inject constructor(
 
         // Sound configuration:
         // Respect custom ringtone if provided, otherwise fallback according to style/stream
-        if (!reminder.action.ringtoneUri.isNullOrBlank()) {
+        val ringtoneUri = reminder.action.ringtoneUri
+        if (!ringtoneUri.isNullOrBlank()) {
             try {
-                builder.setSound(Uri.parse(reminder.action.ringtoneUri))
+                builder.setSound(ringtoneUri.toUri())
             } catch (_: Exception) {}
         } else if (isAlarmRinging || reminder.action.useAlarmStream) {
             val defaultAlarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
@@ -234,7 +235,7 @@ class ReminderNotificationManager @Inject constructor(
 
     private fun createContentPendingIntent(reminderId: Long): PendingIntent {
         val uriString = "app://remind/ringing/$reminderId"
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uriString)).apply {
+        val intent = Intent(Intent.ACTION_VIEW, uriString.toUri()).apply {
             setPackage(context.packageName)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
@@ -247,7 +248,7 @@ class ReminderNotificationManager @Inject constructor(
     }
 
     private fun createFullScreenPendingIntent(reminderId: Long): PendingIntent {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("app://remind/ringing/$reminderId")).apply {
+        val intent = Intent(Intent.ACTION_VIEW, "app://remind/ringing/$reminderId".toUri()).apply {
             setPackage(context.packageName)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }

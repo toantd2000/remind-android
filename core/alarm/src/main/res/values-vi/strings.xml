@@ -1,4 +1,7 @@
 <resources>
+    <string name="navigation_alarms">B?o th?c</string>
+    <string name="navigation_today">H?m nay</string>
+    <string name="navigation_settings">C?i ??t</string>
     <string name="notification_alarm_title">Báo thức đang đổ chuông</string>
     <string name="notification_alarm_text">Nhấn vào đây để xem và tắt</string>
     <string name="alarm_channel_name">Kênh Báo thức</string>

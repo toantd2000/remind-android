@@ -18,7 +18,6 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import vn.io.litever.remind.core.alarm.R
 import vn.io.litever.remind.core.common.util.PermissionChecker
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder

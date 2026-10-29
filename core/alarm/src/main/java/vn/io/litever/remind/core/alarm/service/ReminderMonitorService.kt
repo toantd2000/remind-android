@@ -8,7 +8,7 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
-import android.net.Uri
+import androidx.core.net.toUri
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
@@ -24,7 +24,6 @@ import kotlinx.coroutines.withContext
 import vn.io.litever.remind.core.alarm.R
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.model.Reminder
-import vn.io.litever.remind.core.model.ReminderTriggerType
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -122,7 +121,7 @@ class ReminderMonitorService : Service() {
 
     private fun buildForegroundNotification(activeCount: Int): Notification {
         val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
-            ?: Intent(Intent.ACTION_VIEW, Uri.parse("app://remind"))
+            ?: Intent(Intent.ACTION_VIEW, "app://remind".toUri())
         val pendingIntent = PendingIntent.getActivity(
             this,
             0,

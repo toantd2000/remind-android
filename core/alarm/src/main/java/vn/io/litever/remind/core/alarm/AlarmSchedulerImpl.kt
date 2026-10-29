@@ -9,8 +9,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import vn.io.litever.remind.core.alarm.receiver.AlarmReceiver
 import vn.io.litever.remind.core.domain.scheduler.AlarmScheduler
 import vn.io.litever.remind.core.model.Alarm
-import android.net.Uri
-import java.time.LocalDateTime
+import androidx.core.net.toUri
 import java.time.ZoneId
 import javax.inject.Inject
 
@@ -62,7 +61,7 @@ class AlarmSchedulerImpl @Inject constructor(
     }
 
     private fun setAlarmClock(triggerTime: Long, pendingIntent: PendingIntent) {
-        val showIntent = Intent(Intent.ACTION_VIEW, Uri.parse("app://remind")).apply {
+        val showIntent = Intent(Intent.ACTION_VIEW, "app://remind".toUri()).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         val pendingShowIntent = PendingIntent.getActivity(

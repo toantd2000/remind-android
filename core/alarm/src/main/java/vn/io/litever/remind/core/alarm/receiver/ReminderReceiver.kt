@@ -12,7 +12,6 @@ import vn.io.litever.remind.core.alarm.alert.ReminderAlertManager
 import vn.io.litever.remind.core.alarm.notification.ReminderNotificationManager
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
-import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderTriggerType
 import vn.io.litever.remind.core.model.UrgencyLevel

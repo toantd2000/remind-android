@@ -3,7 +3,6 @@ package vn.io.litever.remind.core.alarm.reminder
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -12,7 +11,6 @@ import io.mockk.verify
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import vn.io.litever.remind.core.alarm.receiver.ReminderReceiver
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder

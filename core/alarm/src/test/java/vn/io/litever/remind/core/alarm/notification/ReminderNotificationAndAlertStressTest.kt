@@ -3,7 +3,6 @@ package vn.io.litever.remind.core.alarm.notification
 import org.robolectric.RobolectricTestRunner
 import org.junit.runner.RunWith
 
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.media.AudioManager

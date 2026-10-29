@@ -4,7 +4,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
+import androidx.core.net.toUri
 import android.os.Build
 import dagger.hilt.android.qualifiers.ApplicationContext
 import vn.io.litever.remind.core.alarm.receiver.ReminderReceiver
@@ -110,7 +110,7 @@ class ReminderSchedulerImpl @Inject constructor(
     }
 
     private fun setAlarmClock(reminderId: Long, triggerTime: Long, pendingIntent: PendingIntent) {
-        val showIntent = Intent(Intent.ACTION_VIEW, Uri.parse("app://remind/reminder/$reminderId")).apply {
+        val showIntent = Intent(Intent.ACTION_VIEW, "app://remind/reminder/$reminderId".toUri()).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         val pendingShowIntent = PendingIntent.getActivity(

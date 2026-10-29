@@ -10,7 +10,6 @@ import vn.io.litever.remind.core.datastore.WeatherPreferencesDataSource
 import vn.io.litever.remind.core.domain.repository.WeatherRepository
 import vn.io.litever.remind.core.model.WeatherResponse
 import vn.io.litever.remind.core.network.WeatherApi
-import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 

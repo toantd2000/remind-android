@@ -1,6 +1,5 @@
 package vn.io.litever.remind.core.ads.api
 
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable

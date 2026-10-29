@@ -620,27 +620,15 @@ fun EmptyState(
     val descriptionPrefix = stringResource(R.string.empty_description)
 
     FeedbackStateView(
-        title = stringResource(R.string.no_alarms),
-        type = FeedbackStateType.EMPTY,
         modifier = modifier,
-        illustration = {
-            val isDark = !LiteverTheme.colors.isLight
-            val illustrationRes = if (isDark) {
-                R.drawable.no_alarm_illustration_dark
-            } else {
-                R.drawable.no_alarm_illustration
-            }
-            Card(
-                modifier = Modifier.size(200.dp),
-                shape = LiteverTheme.shapes.extraLarge
-            ) {
-                Image(
-                    painter = painterResource(illustrationRes),
-                    contentDescription = null,
-                )
-            }
+        title = {
+            Text(
+                text = stringResource(R.string.no_alarms),
+                style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                textAlign = TextAlign.Center
+            )
         },
-        descriptionSlot = {
+        description = {
             Column(
                 modifier = Modifier.wrapContentHeight(),
                 horizontalAlignment = Alignment.CenterHorizontally

@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,27 +35,15 @@ fun ReminderEmptyState(
     val descriptionPrefix = stringResource(R.string.empty_reminders_description)
 
     FeedbackStateView(
-        title = stringResource(R.string.no_reminders),
-        type = FeedbackStateType.EMPTY,
         modifier = modifier,
-        illustration = {
-            val isDark = !LiteverTheme.colors.isLight
-            val illustrationRes = if (isDark) {
-                DesignSystemR.drawable.no_alarm_illustration_dark
-            } else {
-                DesignSystemR.drawable.no_alarm_illustration
-            }
-            Card(
-                modifier = Modifier.size(200.dp),
-                shape = LiteverTheme.shapes.extraLarge
-            ) {
-                Image(
-                    painter = painterResource(illustrationRes),
-                    contentDescription = null,
-                )
-            }
+        title = {
+            Text(
+                text = stringResource(R.string.no_reminders),
+                style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                textAlign = TextAlign.Center
+            )
         },
-        descriptionSlot = {
+        description = {
             Column(
                 modifier = Modifier.wrapContentHeight(),
                 horizontalAlignment = Alignment.CenterHorizontally

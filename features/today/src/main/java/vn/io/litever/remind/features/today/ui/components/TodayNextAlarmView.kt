@@ -30,6 +30,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import vn.io.litever.designsystem.components.FeedbackStateType
+import vn.io.litever.designsystem.components.illustration.LvIllustration
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -197,13 +199,6 @@ fun TodayNextAlarmView(
             }
         }
         NextAlarmUiState.AllOff -> {
-            val isDark = !LiteverTheme.colors.isLight
-            val illustrationRes = if (isDark) {
-                vn.io.litever.remind.core.designsystem.R.drawable.no_alarm_illustration_dark
-            } else {
-                vn.io.litever.remind.core.designsystem.R.drawable.no_alarm_illustration
-            }
-
             Surface(
                 modifier = modifier.fillMaxWidth(),
                 color = LiteverTheme.colors.surfaceContainerLow,
@@ -216,16 +211,11 @@ fun TodayNextAlarmView(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
                 ) {
-                    Card(
-                        modifier = Modifier.size(48.dp),
-                        shape = LiteverTheme.shapes.medium
-                    ) {
-                        Image(
-                            painter = painterResource(illustrationRes),
-                            contentDescription = null,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
+                    LvIllustration(
+                        type = FeedbackStateType.EMPTY,
+                        maxWidth = 48.dp,
+                        modifier = Modifier.size(48.dp)
+                    )
 
                     Column(
                         modifier = Modifier.weight(1f)
@@ -244,7 +234,6 @@ fun TodayNextAlarmView(
                         )
                     }
                 }
-
             }
         }
     }

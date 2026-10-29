@@ -3,7 +3,10 @@ package vn.io.litever.remind.features.mission.ui.components
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import vn.io.litever.designsystem.components.FeedbackStateType
@@ -19,14 +22,26 @@ fun MissionCompleteContent(
     subtitle: String = stringResource(R.string.mission_complete_subtitle)
 ) {
     FeedbackStateView(
-        title = title,
-        description = subtitle,
-        type = FeedbackStateType.SUCCESS,
         modifier = modifier.fillMaxSize(),
-        titleStyle = LiteverTheme.typography.titleLarge.copy(
-            fontWeight = FontWeight.Bold,
-        ),
-        descriptionStyle = LiteverTheme.typography.bodyLarge.copy()
+        title = {
+            Text(
+                text = title,
+                style = LiteverTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.Bold,
+                ),
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center
+            )
+        },
+        description = {
+            Text(
+                text = subtitle,
+                style = LiteverTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
+            )
+        },
+        type = FeedbackStateType.SUCCESS
     )
 }
 

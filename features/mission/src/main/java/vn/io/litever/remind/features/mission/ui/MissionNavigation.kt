@@ -7,15 +7,21 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import vn.io.litever.remind.core.model.MathDifficulty
 import vn.io.litever.remind.core.model.TypingMode
 
 const val typingMissionConfigRoute = "typing_mission_config_route/{alarmId}"
 const val memoryGameConfigRoute = "memory_game_config_route/{alarmId}"
+const val mathMissionConfigRoute = "math_mission_config_route/{alarmId}"
 const val phraseSelectionRoute = "phrase_selection_route/{alarmId}"
 const val missionRingingRoute = "mission_ringing_route/{alarmId}?isPreview={isPreview}"
 
 fun NavController.navigateToTypingMissionConfig(alarmId: Long) {
     this.navigate("typing_mission_config_route/$alarmId")
+}
+
+fun NavController.navigateToMathMissionConfig(alarmId: Long) {
+    this.navigate("math_mission_config_route/$alarmId")
 }
 
 fun NavController.navigateToMemoryGameConfig(alarmId: Long) {
@@ -58,6 +64,24 @@ fun NavGraphBuilder.missionGraph(
             initialMode = initialMode,
             onBackClick = onBackClick,
             onNavigateToPhraseSelection = { ids -> onNavigateToPhraseSelection(alarmId, ids) },
+            onSaveMission = onSaveMission
+        )
+    }
+
+    composable(
+        route = mathMissionConfigRoute,
+        arguments = listOf(navArgument("alarmId") { type = NavType.LongType })
+    ) { backStackEntry ->
+        val alarmId = backStackEntry.arguments?.getLong("alarmId") ?: 0L
+        val initialRepetitions = navController.previousBackStackEntry?.savedStateHandle?.get<Int>("repetitions") ?: 3
+        val initialDifficultyStr = navController.previousBackStackEntry?.savedStateHandle?.get<String>("mathDifficulty")
+        val initialDifficulty = initialDifficultyStr?.let { runCatching { MathDifficulty.valueOf(it) }.getOrNull() } ?: MathDifficulty.NORMAL
+
+        MathMissionConfigRoute(
+            alarmId = alarmId,
+            initialRepetitions = initialRepetitions,
+            initialDifficulty = initialDifficulty,
+            onBackClick = onBackClick,
             onSaveMission = onSaveMission
         )
     }

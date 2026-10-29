@@ -26,7 +26,7 @@ data class TypingMissionConfig(
     val mode: TypingMode = TypingMode.NORMAL
 ) : MissionConfig
 
-enum class MathDifficulty { EASY, NORMAL, HARD }
+enum class MathDifficulty { EASY, NORMAL, HARD, VERY_HARD }
 
 data class MathMissionConfig(
     val difficulty: MathDifficulty = MathDifficulty.NORMAL

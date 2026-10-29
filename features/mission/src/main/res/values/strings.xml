@@ -61,6 +61,14 @@
     <string name="mission_memory_requirement">Memorize the highlighted tiles and tap them correctly to dismiss the alarm.</string>
     <string name="mission_memory_tiles_progress">%1$d / %2$d tiles</string>
     <string name="mission_typing_board_header">Text to type</string>
+    <string name="math_config_title">Math Mission</string>
+    <string name="math_difficulty_settings">Difficulty</string>
+    <string name="math_difficulty_easy">Easy (e.g. 38 + 47, 73 − 38, 7 × 8)</string>
+    <string name="math_difficulty_normal">Normal (e.g. 17 × 6, 8 × 7 + 49)</string>
+    <string name="math_difficulty_hard">Hard (e.g. 28 × 7 + 56, 16 × 13)</string>
+    <string name="math_difficulty_very_hard">Very Hard (e.g. 12 × 8 + 9 × 7 − 34, 34 × 15 + 68)</string>
+    <string name="math_problems_count">Number of problems</string>
+    <string name="math_problems_helper">You need to solve correctly %d problems to dismiss the alarm.</string>
 </resources>
 
 

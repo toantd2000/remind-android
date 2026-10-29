@@ -60,6 +60,8 @@ import vn.io.litever.remind.features.alarms.ui.AlarmListRoute
 import vn.io.litever.remind.features.alarms.ui.alarmGraph
 import vn.io.litever.remind.features.alarms.ui.ringtoneSelectionRoute
 import vn.io.litever.remind.features.mission.ui.missionGraph
+import vn.io.litever.remind.core.model.MathMissionConfig
+import vn.io.litever.remind.features.mission.ui.navigateToMathMissionConfig
 import vn.io.litever.remind.features.mission.ui.navigateToMemoryGameConfig
 import vn.io.litever.remind.features.mission.ui.navigateToMissionRinging
 import vn.io.litever.remind.features.mission.ui.navigateToPhraseSelection
@@ -407,6 +409,19 @@ class MainActivity : ComponentActivity() {
                                                             config?.mode?.name ?: TypingMode.NORMAL.name
                                                         )
                                                         navController.navigateToTypingMissionConfig(
+                                                            mission.alarmId
+                                                        )
+                                                    } else if (mission.type == MissionType.MATH) {
+                                                        val config = mission.config as? MathMissionConfig
+                                                        navController.currentBackStackEntry?.savedStateHandle?.set(
+                                                            "repetitions",
+                                                            mission.repeatCount
+                                                        )
+                                                        navController.currentBackStackEntry?.savedStateHandle?.set(
+                                                            "mathDifficulty",
+                                                            config?.difficulty?.name ?: vn.io.litever.remind.core.model.MathDifficulty.NORMAL.name
+                                                        )
+                                                        navController.navigateToMathMissionConfig(
                                                             mission.alarmId
                                                         )
                                                     } else if (mission.type == MissionType.MEMORY_FIND_COLOR_TILES) {

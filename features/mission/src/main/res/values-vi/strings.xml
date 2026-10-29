@@ -61,4 +61,12 @@
     <string name="mission_memory_requirement">Ghi nhớ các ô màu và chọn lại chính xác để tắt chuông báo thức.</string>
     <string name="mission_memory_tiles_progress">%1$d / %2$d ô</string>
     <string name="mission_typing_board_header">Văn bản cần gõ</string>
+    <string name="math_config_title">Nhiệm vụ giải toán</string>
+    <string name="math_difficulty_settings">Độ khó</string>
+    <string name="math_difficulty_easy">Dễ (ví dụ: 38 + 47, 73 − 38, 7 × 8)</string>
+    <string name="math_difficulty_normal">Vừa (ví dụ: 17 × 6, 8 × 7 + 49)</string>
+    <string name="math_difficulty_hard">Khó (ví dụ: 28 × 7 + 56, 16 × 13)</string>
+    <string name="math_difficulty_very_hard">Rất khó (ví dụ: 12 × 8 + 9 × 7 − 34, 34 × 15 + 68)</string>
+    <string name="math_problems_count">Số lượng bài toán</string>
+    <string name="math_problems_helper">Bạn cần giải đúng %d bài toán để tắt báo thức.</string>
 </resources>

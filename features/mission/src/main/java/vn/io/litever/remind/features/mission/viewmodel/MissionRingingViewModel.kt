@@ -230,27 +230,7 @@ class MissionRingingViewModel @Inject constructor(
         _uiState.update { it.copy(isDismissed = true) }
     }
 
-    private fun generateMathProblem(difficulty: MathDifficulty): MathProblem {
-        val random = java.util.Random()
-        return when (difficulty) {
-            MathDifficulty.EASY -> {
-                val a = random.nextInt(9) + 1
-                val b = random.nextInt(9) + 1
-                MathProblem("$a + $b", a + b)
-            }
-            MathDifficulty.NORMAL -> {
-                val a = random.nextInt(90) + 10
-                val b = random.nextInt(90) + 10
-                MathProblem("$a + $b", a + b)
-            }
-            MathDifficulty.HARD -> {
-                val a = random.nextInt(20) + 5
-                val b = random.nextInt(20) + 5
-                val c = random.nextInt(10) + 2
-                MathProblem("$a + $b * $c", a + b * c)
-            }
-        }
-    }
+
 
     override fun onCleared() {
         super.onCleared()
@@ -260,7 +240,7 @@ class MissionRingingViewModel @Inject constructor(
 
 data class MissionRingingUiState(
     val isLoading: Boolean = true,
-    val alarm: vn.io.litever.remind.core.model.Alarm? = null,
+    val alarm: Alarm? = null,
     val missions: List<Mission> = emptyList(),
     val currentMissionIndex: Int = 0,
     val currentRepetition: Int = 1,

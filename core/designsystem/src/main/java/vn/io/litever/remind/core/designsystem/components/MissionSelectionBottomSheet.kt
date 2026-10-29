@@ -94,7 +94,7 @@ fun MissionSelectionBottomSheetContent(
                 title = stringResource(R.string.mission_math),
                 description = stringResource(R.string.mission_math_desc),
                 icon = ReMindIcons.Calculate,
-                isAvailable = false
+                isAvailable = true
             ),
             MissionItem(
                 type = MissionType.SHAKE,

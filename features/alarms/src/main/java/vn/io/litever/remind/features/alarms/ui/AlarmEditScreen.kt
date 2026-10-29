@@ -262,7 +262,7 @@ fun AlarmEditRoute(
             onDismissRequest = { if (showMissionSelection) showMissionSelection = false },
             onMissionTypeSelected = { type ->
                 if (showMissionSelection) showMissionSelection = false
-                if (type == MissionType.TYPING || type == MissionType.MEMORY_FIND_COLOR_TILES) {
+                if (type == MissionType.TYPING || type == MissionType.MEMORY_FIND_COLOR_TILES || type == MissionType.MATH) {
                     isNavigatingToConfig = true
                     onMissionClick(
                         vn.io.litever.remind.core.model.Mission(

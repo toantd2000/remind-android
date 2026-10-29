@@ -2,7 +2,6 @@ package vn.io.litever.remind.features.mission
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import vn.io.litever.remind.core.model.MathDifficulty
@@ -40,24 +39,28 @@ class MathMissionLogicTest {
     }
 
     @Test
-    fun mathProblemGenerator_easyDifficulty_generatesPositiveAnswersAndValidOperands() {
+    fun mathProblemGenerator_easyDifficulty_generatesChallenging2DigitOrMultiplication() {
         val generator = MathProblemGenerator(Random(42))
         repeat(50) {
             val problem = generator.next(MathDifficulty.EASY)
-            assertTrue("Answer must be >= 2: ${problem.answer}", problem.answer >= 2)
-            assertTrue("Expression must contain valid operator", problem.expression.contains("+") || problem.expression.contains("−"))
+            println("EASY: ${problem.expression} = ${problem.answer}")
+            assertTrue("Answer must be >= 10: ${problem.answer} for ${problem.expression}", problem.answer >= 10)
+            assertTrue(
+                "Expression must contain +, −, or ×: ${problem.expression}",
+                problem.expression.contains("+") || problem.expression.contains(MathProblemGenerator.MINUS) || problem.expression.contains(MathProblemGenerator.TIMES)
+            )
         }
     }
 
     @Test
-    fun mathProblemGenerator_normalDifficulty_generatesPositiveAnswersAndValidOperands() {
+    fun mathProblemGenerator_normalDifficulty_generatesMentalMathProblems() {
         val generator = MathProblemGenerator(Random(123))
         repeat(50) {
             val problem = generator.next(MathDifficulty.NORMAL)
-            assertTrue("Answer must be >= 4: ${problem.answer}", problem.answer >= 4)
+            assertTrue("Answer must be >= 40: ${problem.answer}", problem.answer >= 40)
             assertTrue(
-                "Expression must contain +, −, or ×: ${problem.expression}",
-                problem.expression.contains("+") || problem.expression.contains("−") || problem.expression.contains("×")
+                "Expression must contain +, or ×: ${problem.expression}",
+                problem.expression.contains("+") || problem.expression.contains("×")
             )
         }
     }
@@ -67,7 +70,20 @@ class MathMissionLogicTest {
         val generator = MathProblemGenerator(Random(999))
         repeat(50) {
             val problem = generator.next(MathDifficulty.HARD)
-            assertTrue("Answer must be >= 10: ${problem.answer}", problem.answer >= 10)
+            assertTrue("Answer must be >= 40: ${problem.answer}", problem.answer >= 40)
+        }
+    }
+
+    @Test
+    fun mathProblemGenerator_veryHardDifficulty_generatesComplexMath() {
+        val generator = MathProblemGenerator(Random(1001))
+        repeat(50) {
+            val problem = generator.next(MathDifficulty.VERY_HARD)
+            assertTrue("Answer must be > 0: ${problem.answer}", problem.answer > 0)
+            assertTrue(
+                "Expression must contain operators: ${problem.expression}",
+                problem.expression.contains("+") || problem.expression.contains("−") || problem.expression.contains("×")
+            )
         }
     }
 

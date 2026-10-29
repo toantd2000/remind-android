@@ -2,7 +2,6 @@ package vn.io.litever.remind.core.common.util
 
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 object TimeFormatUtils {
     private val format24h = DateTimeFormatter.ofPattern("HH:mm")

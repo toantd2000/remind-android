@@ -156,7 +156,7 @@ fun TodayReminderStatusView(
                 horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
             ) {
                 LvIllustration(
-                    type = FeedbackStateType.EMPTY,
+                    type = FeedbackStateType.NO_REMINDER,
                     maxWidth = 48.dp,
                     modifier = Modifier.size(48.dp)
                 )

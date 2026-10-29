@@ -1,6 +1,5 @@
 package vn.io.litever.remind.features.today.ui.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -22,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -34,13 +31,14 @@ import vn.io.litever.designsystem.components.FeedbackStateType
 import vn.io.litever.designsystem.components.illustration.LvIllustration
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.Alarm
-import java.time.DayOfWeek
 import vn.io.litever.remind.core.model.Mission
 import vn.io.litever.remind.core.model.MissionType
 import vn.io.litever.remind.core.model.NextAlarmUiState
 import vn.io.litever.remind.features.today.R
+import java.time.DayOfWeek
 import java.time.LocalTime as JavaLocalTime
 
 /**
@@ -212,7 +210,7 @@ fun TodayNextAlarmView(
                     horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
                 ) {
                     LvIllustration(
-                        type = FeedbackStateType.EMPTY,
+                        type = FeedbackStateType.NO_ALARM,
                         maxWidth = 48.dp,
                         modifier = Modifier.size(48.dp)
                     )

@@ -641,6 +641,7 @@ fun EmptyState(
                 ReMindLogo(fontSize = LiteverTheme.typography.bodyMedium.fontSize)
             }
         },
+        type = FeedbackStateType.NO_ALARM,
         action = {
             LvButton(
                 onClick = onAddAlarmClick,

@@ -37,7 +37,6 @@ import vn.io.litever.remind.core.common.util.getAccessibleRingtoneUri
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.DayOfWeek
-import java.util.Collections
 import javax.inject.Inject
 
 enum class ReminderRepeatInterval {

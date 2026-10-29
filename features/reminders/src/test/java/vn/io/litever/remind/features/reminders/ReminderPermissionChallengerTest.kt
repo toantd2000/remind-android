@@ -32,12 +32,10 @@ import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
 import vn.io.litever.remind.core.model.Reminder
-import vn.io.litever.remind.core.model.ReminderAction
 import vn.io.litever.remind.core.model.ReminderTriggerType
 import vn.io.litever.remind.core.model.TimeTrigger
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderEditViewModel
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderListViewModel
-import vn.io.litever.remind.features.reminders.viewmodel.ReminderRingingViewModel
 import java.time.LocalTime
 
 /**

@@ -13,7 +13,6 @@ import vn.io.litever.remind.core.model.RepeatMode
 import vn.io.litever.remind.core.model.TimeTrigger
 import vn.io.litever.remind.features.reminders.ui.components.ReminderCardFormatter
 import vn.io.litever.remind.features.reminders.ui.components.ReminderStringProvider
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId

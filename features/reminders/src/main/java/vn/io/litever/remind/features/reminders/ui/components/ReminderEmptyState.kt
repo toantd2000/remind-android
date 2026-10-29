@@ -12,7 +12,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import vn.io.litever.designsystem.components.FeedbackStateType
 import vn.io.litever.designsystem.components.FeedbackStateView
 import vn.io.litever.designsystem.components.button.LvButton
 import vn.io.litever.designsystem.components.core.LvSemantic

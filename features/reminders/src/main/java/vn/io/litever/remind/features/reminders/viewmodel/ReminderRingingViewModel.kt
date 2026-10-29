@@ -16,7 +16,6 @@ import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
 import vn.io.litever.remind.core.model.Reminder
-import vn.io.litever.remind.core.model.ReminderTriggerType
 import javax.inject.Inject
 
 data class ReminderRingingUiState(

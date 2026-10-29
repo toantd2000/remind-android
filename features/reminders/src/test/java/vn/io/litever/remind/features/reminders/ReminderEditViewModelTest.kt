@@ -19,7 +19,6 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -36,7 +35,6 @@ import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderTriggerType
 import vn.io.litever.remind.core.model.TimeTrigger
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderEditViewModel
-import vn.io.litever.remind.features.reminders.viewmodel.ReminderValidationErrorField
 import java.time.LocalDate
 import java.time.LocalTime
 import vn.io.litever.remind.core.model.ReminderTimeWindow

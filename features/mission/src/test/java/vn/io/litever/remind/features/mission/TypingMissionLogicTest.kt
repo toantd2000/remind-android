@@ -5,7 +5,6 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import vn.io.litever.remind.core.model.Phrase
-import vn.io.litever.remind.core.model.TypingMode
 
 class TypingMissionLogicTest {
 

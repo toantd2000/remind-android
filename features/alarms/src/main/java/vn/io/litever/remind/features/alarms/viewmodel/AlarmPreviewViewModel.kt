@@ -1,13 +1,11 @@
 package vn.io.litever.remind.features.alarms.viewmodel
 
-import android.os.Build
 import vn.io.litever.remind.core.common.audio.AudioPlayer
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,8 +15,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.isActive
 import vn.io.litever.remind.core.alarm.DraftAlarmStore
 import vn.io.litever.remind.core.common.util.getAccessibleRingtoneUri
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource

@@ -17,7 +17,6 @@ import vn.io.litever.remind.core.domain.repository.AlarmRepository
 import vn.io.litever.remind.core.domain.repository.MissionRepository
 import vn.io.litever.remind.core.domain.scheduler.AlarmScheduler
 import vn.io.litever.remind.core.model.Alarm
-import vn.io.litever.remind.core.model.Mission
 import vn.io.litever.remind.core.model.TypingMissionConfig
 import kotlinx.coroutines.flow.first
 import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState

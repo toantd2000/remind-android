@@ -1,7 +1,6 @@
 package vn.io.litever.remind.features.alarms.ui.components
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import java.time.DayOfWeek
 import vn.io.litever.remind.features.alarms.R

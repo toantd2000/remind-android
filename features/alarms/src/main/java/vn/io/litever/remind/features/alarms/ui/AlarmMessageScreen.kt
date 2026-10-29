@@ -1,7 +1,6 @@
 package vn.io.litever.remind.features.alarms.ui
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.verticalScroll
@@ -32,9 +31,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import android.app.Activity
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
-import androidx.compose.ui.draw.clip
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import vn.io.litever.designsystem.components.button.LvButton
 import vn.io.litever.remind.core.designsystem.components.TodayQuoteView

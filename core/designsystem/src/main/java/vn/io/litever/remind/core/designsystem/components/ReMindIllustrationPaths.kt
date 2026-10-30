@@ -11,7 +11,7 @@ import vn.io.litever.designsystem.components.illustration.IllustrationPath
  * Pre-parsed vector paths and dynamic theme token mappings for ReMind domain illustrations (Google M3 Sky theme).
  */
 internal object ReMindIllustrationPaths {
-    // 07 • NO ALARMS - Vầng trăng đội mũ ngủ
+    // 07 • NO ALARMS - Mặt trăng tròn khuất trong mây (Full Moon Nestled In Clouds)
     val NoAlarm: List<IllustrationPath> by lazy {
         listOf(
             IllustrationPath(
@@ -19,80 +19,108 @@ internal object ReMindIllustrationPaths {
                 fillGetter = { it.shadow }
             ),
             IllustrationPath(
-                pathData = addPathNodes("M46 164 C38 164 32 157 32 149 C32 142 37 136 44 135 C45 125 53 118 63 118 C67 118 71 119 74 122 C79 113 88 107 99 107 C112 107 123 115 126 126 C131 123 137 123 142 126 C150 130 155 138 153 147 C159 149 164 155 164 161 C164 168 158 174 150 174 H54 C50 174 46 170 46 164 Z"),
+                pathData = addPathNodes("M42 120 C36 120 30 114 30 106 C30 99 35 94 42 93 C44 84 52 77 62 77 C66 77 70 78 74 81 C79 73 89 68 100 68 C108 68 115 71 120 76 Z"),
+                fillGetter = { it.surfaceHighlight },
+                strokeGetter = { it.stroke },
+                strokeLineWidth = 1.8f,
+                strokeLineCap = StrokeCap.Round
+            ),
+            IllustrationPath(
+                pathData = addPathNodes("M -34,0 a 34,34 0 1,0 68,0 a 34,34 0 1,0 -68,0 Z"),
+                fillGetter = { it.warningContainer },
+                strokeGetter = { it.stroke },
+                strokeLineWidth = 2.4f,
+                translationX = 100f,
+                translationY = 92f
+            ),
+            IllustrationPath(
+                pathData = addPathNodes("M 9,-14 a 5,5 0 1,0 10,0 a 5,5 0 1,0 -10,0 Z"),
+                fillGetter = { it.warning },
+                fillAlpha = 0.4f,
+                translationX = 100f,
+                translationY = 92f
+            ),
+            IllustrationPath(
+                pathData = addPathNodes("M 16.5,-3 a 3.5,3.5 0 1,0 7,0 a 3.5,3.5 0 1,0 -7,0 Z"),
+                fillGetter = { it.warning },
+                fillAlpha = 0.3f,
+                translationX = 100f,
+                translationY = 92f
+            ),
+            IllustrationPath(
+                pathData = addPathNodes("M-8 -32 C-4 -42 14 -46 26 -38 C30 -35 34 -28 34 -22 C34 -16 26 -12 22 -16"),
+                fillGetter = { it.primaryContainer },
+                strokeGetter = { it.stroke },
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round,
+                translationX = 100f,
+                translationY = 92f
+            ),
+            IllustrationPath(
+                pathData = addPathNodes("M 19,-16 a 3,3 0 1,0 6,0 a 3,3 0 1,0 -6,0 Z"),
+                fillGetter = { it.primary },
+                strokeGetter = { it.stroke },
+                strokeLineWidth = 1.2f,
+                translationX = 100f,
+                translationY = 92f
+            ),
+            IllustrationPath(
+                pathData = addPathNodes("M-14 -4 Q-8 2 -2 -4"),
+                strokeGetter = { it.stroke },
+                strokeLineWidth = 2.2f,
+                strokeLineCap = StrokeCap.Round,
+                translationX = 100f,
+                translationY = 92f
+            ),
+            IllustrationPath(
+                pathData = addPathNodes("M6 -4 Q12 2 18 -4"),
+                strokeGetter = { it.stroke },
+                strokeLineWidth = 2.2f,
+                strokeLineCap = StrokeCap.Round,
+                translationX = 100f,
+                translationY = 92f
+            ),
+            IllustrationPath(
+                pathData = addPathNodes("M-4 7 Q2 12 8 7"),
+                strokeGetter = { it.stroke },
+                strokeLineWidth = 1.8f,
+                strokeLineCap = StrokeCap.Round,
+                translationX = 100f,
+                translationY = 92f
+            ),
+            IllustrationPath(
+                pathData = addPathNodes("M -19,3 a 3,1.8 0 1,0 6,0 a 3,1.8 0 1,0 -6,0 Z"),
+                fillGetter = { it.errorContainer },
+                translationX = 100f,
+                translationY = 92f
+            ),
+            IllustrationPath(
+                pathData = addPathNodes("M 17,3 a 3,1.8 0 1,0 6,0 a 3,1.8 0 1,0 -6,0 Z"),
+                fillGetter = { it.errorContainer },
+                translationX = 100f,
+                translationY = 92f
+            ),
+            IllustrationPath(
+                pathData = addPathNodes("M42 164 C34 164 28 157 28 149 C28 142 33 136 40 135 C41 125 50 117 61 117 C65 117 70 119 74 122 C79 111 90 104 104 104 C118 104 130 113 134 125 C139 123 145 123 150 126 C158 130 163 139 161 148 C167 150 172 156 172 162 C172 169 166 174 158 174 H50 C46 174 42 170 42 164 Z"),
                 fillGetter = { it.surface },
                 strokeGetter = { it.stroke },
                 strokeLineWidth = 2.2f,
                 strokeLineJoin = StrokeJoin.Round
             ),
             IllustrationPath(
-                pathData = addPathNodes("M14 -38 C-8 -32 -24 -12 -24 14 C-24 40 -6 58 16 62 C-2 56 -13 38 -13 14 C-13 -10 0 -29 14 -38 Z"),
-                fillGetter = { it.warningContainer },
-                strokeGetter = { it.stroke },
-                strokeLineWidth = 2.4f,
-                strokeLineJoin = StrokeJoin.Round,
-                translationX = 100f,
-                translationY = 102f,
-                rotation = -12f
-            ),
-            IllustrationPath(
-                pathData = addPathNodes("M-6 -34 C-4 -44 12 -48 24 -40 C28 -37 32 -30 32 -24 C32 -18 24 -14 20 -18"),
-                fillGetter = { it.primaryContainer },
-                strokeGetter = { it.stroke },
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round,
-                translationX = 100f,
-                translationY = 102f,
-                rotation = -12f
-            ),
-            IllustrationPath(
-                pathData = addPathNodes("M 17,-18 a 3,3 0 1,0 6,0 a 3,3 0 1,0 -6,0 Z"),
-                fillGetter = { it.primary },
-                strokeGetter = { it.stroke },
-                strokeLineWidth = 1.2f,
-                translationX = 100f,
-                translationY = 102f,
-                rotation = -12f
-            ),
-            IllustrationPath(
-                pathData = addPathNodes("M-19 12 Q-14 18 -9 12"),
-                strokeGetter = { it.stroke },
-                strokeLineWidth = 2.2f,
-                strokeLineCap = StrokeCap.Round,
-                translationX = 100f,
-                translationY = 102f,
-                rotation = -12f
-            ),
-            IllustrationPath(
-                pathData = addPathNodes("M-16 22 Q-12 26 -8 23"),
-                strokeGetter = { it.stroke },
-                strokeLineWidth = 1.8f,
-                strokeLineCap = StrokeCap.Round,
-                translationX = 100f,
-                translationY = 102f,
-                rotation = -12f
-            ),
-            IllustrationPath(
-                pathData = addPathNodes("M -8.5,18 a 2.5,1.6 0 1,0 5,0 a 2.5,1.6 0 1,0 -5,0 Z"),
-                fillGetter = { it.errorContainer },
-                translationX = 100f,
-                translationY = 102f,
-                rotation = -12f
-            ),
-            IllustrationPath(
-                pathData = addPathNodes("M 131,74 a 3,3 0 1,0 6,0 a 3,3 0 1,0 -6,0 Z"),
+                pathData = addPathNodes("M 138.8,74 a 3.2,3.2 0 1,0 6.4,0 a 3.2,3.2 0 1,0 -6.4,0 Z"),
                 fillGetter = { it.primaryContainer },
                 strokeGetter = { it.primary },
                 strokeLineWidth = 1.3f
             ),
             IllustrationPath(
-                pathData = addPathNodes("M 141.8,60 a 2.2,2.2 0 1,0 4.4,0 a 2.2,2.2 0 1,0 -4.4,0 Z"),
+                pathData = addPathNodes("M 149.8,58 a 2.2,2.2 0 1,0 4.4,0 a 2.2,2.2 0 1,0 -4.4,0 Z"),
                 fillGetter = { it.primaryContainer },
                 strokeGetter = { it.primary },
                 strokeLineWidth = 1.2f
             ),
             IllustrationPath(
-                pathData = addPathNodes("M 150.5,48 a 1.5,1.5 0 1,0 3,0 a 1.5,1.5 0 1,0 -3,0 Z"),
+                pathData = addPathNodes("M 157.5,45 a 1.5,1.5 0 1,0 3,0 a 1.5,1.5 0 1,0 -3,0 Z"),
                 fillGetter = { it.primary },
                 fillAlpha = 0.8f
             ),
@@ -102,8 +130,8 @@ internal object ReMindIllustrationPaths {
                 strokeGetter = { it.warning },
                 strokeLineWidth = 1.2f,
                 strokeLineJoin = StrokeJoin.Round,
-                translationX = 62f,
-                translationY = 78f
+                translationX = 56f,
+                translationY = 68f
             )
         )
     }

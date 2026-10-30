@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Sky & Celestial Spot Illustration (Google M3) - 200x200 -->
-<!-- 07 • NO ALARMS - Vầng trăng đội mũ ngủ -->
+<!-- 07 • NO ALARMS - Mặt trăng tròn khuất trong mây (Full Moon Nestled In Clouds) -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="200dp"
     android:height="200dp"
@@ -10,60 +10,82 @@
         android:pathData="M 45,172 a 55,8 0 1,0 110,0 a 55,8 0 1,0 -110,0 Z"
         android:fillColor="@color/il_shadow" />
     <path
-        android:pathData="M46 164 C38 164 32 157 32 149 C32 142 37 136 44 135 C45 125 53 118 63 118 C67 118 71 119 74 122 C79 113 88 107 99 107 C112 107 123 115 126 126 C131 123 137 123 142 126 C150 130 155 138 153 147 C159 149 164 155 164 161 C164 168 158 174 150 174 H54 C50 174 46 170 46 164 Z"
-        android:fillColor="@color/il_surface"
+        android:pathData="M42 120 C36 120 30 114 30 106 C30 99 35 94 42 93 C44 84 52 77 62 77 C66 77 70 78 74 81 C79 73 89 68 100 68 C108 68 115 71 120 76 Z"
+        android:fillColor="@color/il_surface_highlight"
         android:strokeColor="@color/il_stroke"
-        android:strokeWidth="2.2"
-        android:strokeLineJoin="round" />
-    <group android:translateX="100" android:translateY="102" android:rotation="-12" android:pivotX="0" android:pivotY="0">
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round" />
+    <group android:translateX="100" android:translateY="92" android:pivotX="0" android:pivotY="0">
         <path
-            android:pathData="M14 -38 C-8 -32 -24 -12 -24 14 C-24 40 -6 58 16 62 C-2 56 -13 38 -13 14 C-13 -10 0 -29 14 -38 Z"
+            android:pathData="M -34,0 a 34,34 0 1,0 68,0 a 34,34 0 1,0 -68,0 Z"
             android:fillColor="@color/il_warning_container"
             android:strokeColor="@color/il_stroke"
-            android:strokeWidth="2.4"
-            android:strokeLineJoin="round" />
+            android:strokeWidth="2.4" />
         <path
-            android:pathData="M-6 -34 C-4 -44 12 -48 24 -40 C28 -37 32 -30 32 -24 C32 -18 24 -14 20 -18"
+            android:pathData="M 9,-14 a 5,5 0 1,0 10,0 a 5,5 0 1,0 -10,0 Z"
+            android:fillColor="@color/il_warning"
+            android:fillAlpha="0.4" />
+        <path
+            android:pathData="M 16.5,-3 a 3.5,3.5 0 1,0 7,0 a 3.5,3.5 0 1,0 -7,0 Z"
+            android:fillColor="@color/il_warning"
+            android:fillAlpha="0.3" />
+        <path
+            android:pathData="M-8 -32 C-4 -42 14 -46 26 -38 C30 -35 34 -28 34 -22 C34 -16 26 -12 22 -16"
             android:fillColor="@color/il_primary_container"
             android:strokeColor="@color/il_stroke"
             android:strokeWidth="2"
             android:strokeLineCap="round" />
         <path
-            android:pathData="M 17,-18 a 3,3 0 1,0 6,0 a 3,3 0 1,0 -6,0 Z"
+            android:pathData="M 19,-16 a 3,3 0 1,0 6,0 a 3,3 0 1,0 -6,0 Z"
             android:fillColor="@color/il_primary"
             android:strokeColor="@color/il_stroke"
             android:strokeWidth="1.2" />
         <path
-            android:pathData="M-19 12 Q-14 18 -9 12"
+            android:pathData="M-14 -4 Q-8 2 -2 -4"
             android:fillColor="#00000000"
             android:strokeColor="@color/il_stroke"
             android:strokeWidth="2.2"
             android:strokeLineCap="round" />
         <path
-            android:pathData="M-16 22 Q-12 26 -8 23"
+            android:pathData="M6 -4 Q12 2 18 -4"
+            android:fillColor="#00000000"
+            android:strokeColor="@color/il_stroke"
+            android:strokeWidth="2.2"
+            android:strokeLineCap="round" />
+        <path
+            android:pathData="M-4 7 Q2 12 8 7"
             android:fillColor="#00000000"
             android:strokeColor="@color/il_stroke"
             android:strokeWidth="1.8"
             android:strokeLineCap="round" />
         <path
-            android:pathData="M -8.5,18 a 2.5,1.6 0 1,0 5,0 a 2.5,1.6 0 1,0 -5,0 Z"
+            android:pathData="M -19,3 a 3,1.8 0 1,0 6,0 a 3,1.8 0 1,0 -6,0 Z"
+            android:fillColor="@color/il_error_container" />
+        <path
+            android:pathData="M 17,3 a 3,1.8 0 1,0 6,0 a 3,1.8 0 1,0 -6,0 Z"
             android:fillColor="@color/il_error_container" />
     </group>
     <path
-        android:pathData="M 131,74 a 3,3 0 1,0 6,0 a 3,3 0 1,0 -6,0 Z"
+        android:pathData="M42 164 C34 164 28 157 28 149 C28 142 33 136 40 135 C41 125 50 117 61 117 C65 117 70 119 74 122 C79 111 90 104 104 104 C118 104 130 113 134 125 C139 123 145 123 150 126 C158 130 163 139 161 148 C167 150 172 156 172 162 C172 169 166 174 158 174 H50 C46 174 42 170 42 164 Z"
+        android:fillColor="@color/il_surface"
+        android:strokeColor="@color/il_stroke"
+        android:strokeWidth="2.2"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M 138.8,74 a 3.2,3.2 0 1,0 6.4,0 a 3.2,3.2 0 1,0 -6.4,0 Z"
         android:fillColor="@color/il_primary_container"
         android:strokeColor="@color/il_primary"
         android:strokeWidth="1.3" />
     <path
-        android:pathData="M 141.8,60 a 2.2,2.2 0 1,0 4.4,0 a 2.2,2.2 0 1,0 -4.4,0 Z"
+        android:pathData="M 149.8,58 a 2.2,2.2 0 1,0 4.4,0 a 2.2,2.2 0 1,0 -4.4,0 Z"
         android:fillColor="@color/il_primary_container"
         android:strokeColor="@color/il_primary"
         android:strokeWidth="1.2" />
     <path
-        android:pathData="M 150.5,48 a 1.5,1.5 0 1,0 3,0 a 1.5,1.5 0 1,0 -3,0 Z"
+        android:pathData="M 157.5,45 a 1.5,1.5 0 1,0 3,0 a 1.5,1.5 0 1,0 -3,0 Z"
         android:fillColor="@color/il_primary"
         android:fillAlpha="0.8" />
-    <group android:translateX="62" android:translateY="78" android:pivotX="0" android:pivotY="0">
+    <group android:translateX="56" android:translateY="68" android:pivotX="0" android:pivotY="0">
         <path
             android:pathData="M0 -4 C0 -1 1 0 4 0 C1 0 0 1 0 4 C0 1 -1 0 -4 0 C-1 0 0 -1 0 -4 Z"
             android:fillColor="@color/il_warning_container"

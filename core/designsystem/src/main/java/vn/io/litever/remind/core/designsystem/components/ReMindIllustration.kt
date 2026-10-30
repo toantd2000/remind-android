@@ -22,7 +22,7 @@ enum class ReMindIllustrationType {
 
 /**
  * Renders domain-specific M3 vector status illustrations for ReMind
- * (Vầng trăng đội mũ ngủ, Mặt trời mắt lấp lánh & Chuông rung, Đám mây thảnh thơi, Chuông thông báo mây).
+ * (Mặt trăng tròn khuất trong mây, Mặt trời mắt lấp lánh & Chuông rung, Đám mây thảnh thơi, Chuông thông báo mây).
  *
  * All illustration colors (stroke, surface, primary, warning, error) are dynamically mapped to
  * the active Material 3 and LiteVer design system tokens. Stroke color automatically matches the text color (`colorScheme.onSurface`).

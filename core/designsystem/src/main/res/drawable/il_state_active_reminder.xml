@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sky & Celestial Spot Illustration (Google M3) - 200x200 -->
+<!-- 10 • ACTIVE REMINDERS - Chuông thông báo mây -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+    <path
+        android:pathData="M 45,172 a 55,8 0 1,0 110,0 a 55,8 0 1,0 -110,0 Z"
+        android:fillColor="@color/il_shadow" />
+    <path
+        android:pathData="M52 164 C44 164 38 158 38 150 C38 143 43 138 49 137 C50 128 58 122 67 122 C71 122 75 123 78 125 C83 117 92 112 103 112 C115 112 125 119 128 129 C133 127 138 127 143 129 C149 133 154 140 152 148 C158 150 162 155 162 161 C162 167 157 172 150 172 H58 C55 172 52 168 52 164 Z"
+        android:fillColor="@color/il_surface"
+        android:strokeColor="@color/il_stroke"
+        android:strokeWidth="2.2"
+        android:strokeLineJoin="round" />
+    <group android:translateX="100" android:translateY="88" android:pivotX="0" android:pivotY="0">
+        <path
+            android:pathData="M-18 20 C-18 8 -14 -12 0 -16 C14 -12 18 8 18 20 Z"
+            android:fillColor="@color/il_warning_container"
+            android:strokeColor="@color/il_stroke"
+            android:strokeWidth="2.4"
+            android:strokeLineJoin="round" />
+        <path
+            android:pathData="M-22 20 H22 C22 24 18 26 14 26 H-14 C-18 26 -22 24 -22 20 Z"
+            android:fillColor="@color/il_warning"
+            android:strokeColor="@color/il_stroke"
+            android:strokeWidth="2"
+            android:strokeLineJoin="round" />
+        <path
+            android:pathData="M -4,30 a 4,4 0 1,0 8,0 a 4,4 0 1,0 -8,0 Z"
+            android:fillColor="@color/il_stroke" />
+        <path
+            android:pathData="M-4 -16 C-4 -22 4 -22 4 -16"
+            android:fillColor="#00000000"
+            android:strokeColor="@color/il_stroke"
+            android:strokeWidth="2.2"
+            android:strokeLineCap="round" />
+        <path
+            android:pathData="M -8.2,6 a 2.2,2.2 0 1,0 4.4,0 a 2.2,2.2 0 1,0 -4.4,0 Z"
+            android:fillColor="@color/il_stroke" />
+        <path
+            android:pathData="M 3.8,6 a 2.2,2.2 0 1,0 4.4,0 a 2.2,2.2 0 1,0 -4.4,0 Z"
+            android:fillColor="@color/il_stroke" />
+        <path
+            android:pathData="M-3 12 Q0 15 3 12"
+            android:fillColor="#00000000"
+            android:strokeColor="@color/il_stroke"
+            android:strokeWidth="1.8"
+            android:strokeLineCap="round" />
+    </group>
+    <group android:translateX="136" android:translateY="56" android:pivotX="0" android:pivotY="0">
+        <path
+            android:pathData="M0 -7 C0 -2 2 0 7 0 C2 0 0 2 0 7 C0 2 -2 0 -7 0 C-2 0 0 -2 0 -7 Z"
+            android:fillColor="@color/il_primary_container"
+            android:strokeColor="@color/il_primary"
+            android:strokeWidth="1.6"
+            android:strokeLineJoin="round" />
+        <path
+            android:pathData="M -1.8,0 a 1.8,1.8 0 1,0 3.6,0 a 1.8,1.8 0 1,0 -3.6,0 Z"
+            android:fillColor="@color/il_primary" />
+    </group>
+    <group android:translateX="68" android:translateY="62" android:pivotX="0" android:pivotY="0">
+        <path
+            android:pathData="M -10,0 a 10,10 0 1,0 20,0 a 10,10 0 1,0 -20,0 Z"
+            android:fillColor="@color/il_error"
+            android:strokeColor="@color/il_surface"
+            android:strokeWidth="1.8" />
+        <path
+            android:pathData="M -1.8,-1.2 L 0,-3.5 V 4"
+            android:fillColor="#00000000"
+            android:strokeColor="@color/il_surface"
+            android:strokeWidth="1.8"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+    </group>
+    <path
+        android:pathData="M66 94 C62 90 62 82 66 78"
+        android:fillColor="#00000000"
+        android:strokeColor="@color/il_warning"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M134 94 C138 90 138 82 134 78"
+        android:fillColor="#00000000"
+        android:strokeColor="@color/il_warning"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+</vector>

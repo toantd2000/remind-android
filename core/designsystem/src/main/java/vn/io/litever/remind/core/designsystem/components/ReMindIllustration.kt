@@ -10,15 +10,18 @@ import androidx.compose.ui.unit.dp
 import vn.io.litever.remind.core.designsystem.R
 
 /**
- * Domain-specific illustration types for ReMind application.
+ * Domain-specific illustration types for ReMind application (Sky & Celestial theme).
  */
 enum class ReMindIllustrationType {
     NO_ALARM,
-    NO_REMINDER
+    ACTIVE_ALARM,
+    NO_REMINDER,
+    ACTIVE_REMINDER
 }
 
 /**
- * Renders domain-specific M3 vector status illustrations for ReMind (Morning Glory, Dandelion, etc.).
+ * Renders domain-specific M3 vector status illustrations for ReMind
+ * (Vầng trăng đội mũ ngủ, Mặt trời mắt lấp lánh & Chuông rung, Đám mây thảnh thơi, Chuông thông báo mây).
  */
 @Composable
 fun ReMindIllustration(
@@ -29,7 +32,9 @@ fun ReMindIllustration(
 ) {
     val resId = when (type) {
         ReMindIllustrationType.NO_ALARM -> R.drawable.il_state_no_alarm
+        ReMindIllustrationType.ACTIVE_ALARM -> R.drawable.il_state_active_alarm
         ReMindIllustrationType.NO_REMINDER -> R.drawable.il_state_no_reminder
+        ReMindIllustrationType.ACTIVE_REMINDER -> R.drawable.il_state_active_reminder
     }
     Image(
         painter = painterResource(id = resId),

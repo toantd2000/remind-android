@@ -1,10 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Basic Colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="splash_background">#FFF8F6</color>
+
+    <!-- Splash Screen Background (Đồng bộ theo nền tổng thể tone Orange) -->
+    <color name="splash_background">#FFF1E7</color>
+
+    <!-- Logo / Brand Text Colors -->
     <color name="logo_re_mono">#666666</color>
     <color name="logo_mind_mono">#000000</color>
     <color name="logo_re">#53433F</color>
     <color name="logo_mind">#8F4C38</color>
+
+    <!-- Material 3 Color Roles cho App Icon (Bảng màu Cam - Orange Palette) -->
+    <color name="icon_surface_container_low">#FAEBE0</color>  <!-- Nền tổng thể (Orange surfaceContainer) -->
+    <color name="icon_surface_container_high">#50453A</color> <!-- Nền mặt đồng hồ (Orange onSurfaceVariant) -->
+    <color name="icon_rays">#FCB974</color>                   <!-- Các tia nắng (Orange inversePrimary) -->
+    <color name="icon_clock_border">#372F28</color>           <!-- Viền đồng hồ (Orange inverseSurface) -->
+    <color name="icon_hour_hand">#FEDCBE</color>              <!-- Kim giờ (Orange secondaryContainer) -->
+    <color name="icon_minute_hand">#DBE8B5</color>            <!-- Kim phút (Orange tertiaryContainer) -->
+    <color name="icon_center_dot">#855317</color>             <!-- Chấm tâm đồng hồ (Orange primary) -->
 </resources>

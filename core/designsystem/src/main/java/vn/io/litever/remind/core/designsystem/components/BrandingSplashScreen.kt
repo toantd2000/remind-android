@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import vn.io.litever.designsystem.theme.LiteverTheme
@@ -77,8 +78,13 @@ fun BrandingSplashScreen(
                     .fillMaxWidth()
                     .graphicsLayer(scaleX = scale, scaleY = scale)
             ) {
-                // App Logo
-                ReMindLogo(style = LiteverTheme.typography.displaySmall)
+                // App Logo (Fixed Brand Icon with Ray Burst & Hand Sweep Animation + Wordmark)
+                AppIcon(
+                    size = 240.dp,
+                    animated = true,
+                )
+
+                ReMindLogo(style = LiteverTheme.typography.titleLarge)
 
                 Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
 
@@ -118,9 +124,6 @@ fun BrandingSplashScreen(
         }
     }
 }
-
-
-
 
 @Preview(showBackground = true, device = Devices.PIXEL_7, showSystemUi = true)
 @Composable

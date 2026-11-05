@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="splash_background">#1A120D</color>
+    <!-- Splash Screen Background (Đổi theo theme hệ thống Tối) -->
+    <color name="splash_background">#211A14</color>
+
+    <!-- Logo / Brand Text Colors cho Dark Mode -->
     <color name="logo_re_mono">#BBBBBB</color>
     <color name="logo_mind_mono">#FFFFFF</color>
-    <color name="ic_launcher_background">#1A120D</color>
-    <color name="logo_re">#D8C2BC</color>D8C2BC
+    <color name="logo_re">#D8C2BC</color>
     <color name="logo_mind">#FFB5A0</color>
 </resources>
-
-
-
-

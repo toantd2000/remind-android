@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="512"
+    android:viewportHeight="512"
+    android:tint="#FFFFFF">
+
+    <!-- Scale 1.5x quanh tâm (256, 256) để biểu tượng đồng hồ vừa vặn vùng hiển thị 24dp của Notification Bar -->
+    <group
+        android:pivotX="256"
+        android:pivotY="256"
+        android:scaleX="1.5"
+        android:scaleY="1.5">
+
+        <!-- ======================================================= -->
+        <!-- 1. TIA NẮNG MẶT TRỜI                                    -->
+        <!-- 12 Tia nắng đồng đều (Góc 0°, 30°, 60°) - Dài 12px       -->
+        <!-- ======================================================= -->
+        <!-- 4 Tia (12h, 6h, 9h, 3h) - Dài 12px -->
+        <group>
+            <path
+                android:strokeColor="#FFFFFF"
+                android:strokeWidth="16"
+                android:strokeLineCap="round"
+                android:pathData="
+                    M256,118 L256,130
+                    M256,394 L256,382
+                    M118,256 L130,256
+                    M394,256 L382,256" />
+        </group>
+
+        <!-- 4 Tia góc 30 độ - Dài 12px -->
+        <group
+            android:pivotX="256"
+            android:pivotY="256"
+            android:rotation="30">
+            <path
+                android:strokeColor="#FFFFFF"
+                android:strokeWidth="16"
+                android:strokeLineCap="round"
+                android:pathData="
+                    M256,118 L256,130
+                    M256,394 L256,382
+                    M118,256 L130,256
+                    M394,256 L382,256" />
+        </group>
+
+        <!-- 4 Tia góc 60 độ - Dài 12px -->
+        <group
+            android:pivotX="256"
+            android:pivotY="256"
+            android:rotation="60">
+            <path
+                android:strokeColor="#FFFFFF"
+                android:strokeWidth="16"
+                android:strokeLineCap="round"
+                android:pathData="
+                    M256,118 L256,130
+                    M256,394 L256,382
+                    M118,256 L130,256
+                    M394,256 L382,256" />
+        </group>
+
+        <!-- ======================================================= -->
+        <!-- 2. MẶT & VIỀN ĐỒNG HỒ                                   -->
+        <!-- Nền mặt: Trong suốt | Viền: Trắng                       -->
+        <!-- Tâm (256,256), Bán kính R = 102                         -->
+        <!-- ======================================================= -->
+        <path
+            android:fillColor="#00000000"
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="18"
+            android:pathData="M256,256m-102,0a102,102 0,1 1,204 0a102,102 0,1 1,-204 0" />
+
+        <!-- ======================================================= -->
+        <!-- 3. KIM ĐỒNG HỒ & CHẤM TÂM                              -->
+        <!-- ======================================================= -->
+        <!-- Kim Giờ -->
+        <path
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="18"
+            android:strokeLineCap="round"
+            android:pathData="M256,256 L211,282" />
+
+        <!-- Kim Phút -->
+        <path
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="18"
+            android:strokeLineCap="round"
+            android:pathData="M256,256 L306,206" />
+
+        <!-- Chấm tâm đồng hồ (Đặc ruột) -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M256,256m-16,0a16,16 0,1 1,32 0a16,16 0,1 1,-32 0" />
+
+    </group>
+
+</vector>

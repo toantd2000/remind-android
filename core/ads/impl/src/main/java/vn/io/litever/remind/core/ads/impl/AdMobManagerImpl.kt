@@ -7,20 +7,20 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.nativead.NativeAd
-import com.google.android.gms.ads.nativead.NativeAdOptions
 import com.google.android.gms.ads.MobileAds
-import com.google.android.gms.ads.rewarded.RewardedAd
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.google.android.gms.ads.OnUserEarnedRewardListener
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
-import com.google.android.gms.ads.FullScreenContentCallback
-import com.google.android.gms.ads.AdError
+import com.google.android.gms.ads.nativead.NativeAd
+import com.google.android.gms.ads.nativead.NativeAdOptions
+import com.google.android.gms.ads.rewarded.RewardedAd
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import vn.io.litever.remind.core.ads.api.AdConfig
 import vn.io.litever.remind.core.ads.api.AdManager
 import vn.io.litever.remind.core.ads.api.AdPlacement
 import vn.io.litever.remind.core.ads.api.AdState
@@ -39,7 +40,6 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
 private const val TAG = "AdMobManagerImpl"
 
 @Singleton
@@ -73,7 +73,30 @@ class AdMobManagerImpl @Inject constructor(
         }
     }
 
-    
+    private fun resolvePlacementConfig(config: AdConfig, placement: AdPlacement): PlacementConfig {
+        return config.placements[placement] ?: when (placement) {
+            AdPlacement.SUPPORT_REWARDED -> PlacementConfig(
+                enabled = true,
+                adUnitId = "ca-app-pub-3940256099942544/5224354917",
+                frequencyCapping = 0,
+                intervalSeconds = 0
+            )
+            AdPlacement.REMIND_NATIVE,
+            AdPlacement.MESSAGE_NATIVE,
+            AdPlacement.EXIT_NATIVE,
+            AdPlacement.ALARM_LIST_NATIVE -> PlacementConfig(
+                enabled = true,
+                adUnitId = "ca-app-pub-3940256099942544/2247696110"
+            )
+            AdPlacement.SAVE_ALARM_INTERSTITIAL -> PlacementConfig(
+                enabled = true,
+                adUnitId = "ca-app-pub-3940256099942544/1033173712",
+                frequencyCapping = 1,
+                intervalSeconds = 1800 // Ethical cap: at most 1 interstitial per 30 minutes when saving alarms
+            )
+        }
+    }
+
     private fun isFrequencyCapped(placement: AdPlacement, config: PlacementConfig): Boolean {
         if (config.frequencyCapping <= 0 || config.intervalSeconds <= 0) return false
         val now = System.currentTimeMillis()
@@ -97,7 +120,6 @@ class AdMobManagerImpl @Inject constructor(
         }
     }
 
-    
     @android.annotation.SuppressLint("MissingPermission")
     override fun loadAd(placement: AdPlacement) {
         android.util.Log.d(TAG, "loadAd: requested for placement $placement")
@@ -108,7 +130,13 @@ class AdMobManagerImpl @Inject constructor(
         }
 
         val config = remoteAdConfigFetcher.getConfig()
-        val placementConfig = config.placements[placement] ?: return
+        if (placement != AdPlacement.SUPPORT_REWARDED && !config.isAdsEnabled) {
+            android.util.Log.d(TAG, "loadAd: skipped because global ads are disabled")
+            _adState.value = AdState.Failed("Global ads disabled in remote config")
+            return
+        }
+
+        val placementConfig = resolvePlacementConfig(config, placement)
 
         if (!placementConfig.enabled) {
             android.util.Log.d(TAG, "loadAd: skipped because placement is disabled in config")
@@ -132,7 +160,7 @@ class AdMobManagerImpl @Inject constructor(
         }
 
         if (isLoaded) {
-            if (!placementConfig.enableCache || (currentTime - lastTime) < cacheDurationMs) {
+            if (!placementConfig.enableCache || cacheDurationMs <= 0L || (currentTime - lastTime) < cacheDurationMs) {
                 android.util.Log.d(TAG, "loadAd: already loaded and valid cache, skipping")
                 _adState.value = AdState.Loaded
                 return
@@ -142,32 +170,21 @@ class AdMobManagerImpl @Inject constructor(
                 if (placement == AdPlacement.SAVE_ALARM_INTERSTITIAL) interstitialAd = null
             }
         }
-if (placement == AdPlacement.SUPPORT_REWARDED) {
+
+        if (placement == AdPlacement.SUPPORT_REWARDED) {
             if (DeviceUtils.isEmulator()) {
                 _adState.value = AdState.Failed("Rewarded ads are disabled on emulators")
                 return
             }
-            
-            if (placementConfig.enableCache) {
-                val cachedAd = rewardedAd
-                val lastTime = lastLoadTime[placement] ?: 0L
-                val currentTime = System.currentTimeMillis()
-                val cacheDurationMs = placementConfig.intervalSeconds * 1000L
-                
-                if (cachedAd != null && (currentTime - lastTime) < cacheDurationMs) {
-                    _adState.value = AdState.Loaded
-                    return
-                }
-            }
-            
+
             val isDebug = (context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
             val adId = if (isDebug) {
-                "ca-app-pub-3940256099942544/5224354917" // Always use official Google test rewarded ID in debug builds
+                "ca-app-pub-3940256099942544/5224354917" // Official Google test rewarded ID in debug builds
             } else {
                 placementConfig.adUnitId.ifBlank { "ca-app-pub-3940256099942544/5224354917" }
             }
             val adRequest = AdRequest.Builder().build()
-            
+
             RewardedAd.load(context, adId, adRequest, object : RewardedAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     android.util.Log.e(TAG, "loadAd(Rewarded): failed $adError")
@@ -187,7 +204,7 @@ if (placement == AdPlacement.SUPPORT_REWARDED) {
                 _adState.value = AdState.Failed("Interstitial ads are disabled on emulators")
                 return
             }
-            
+
             val isDebug = (context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
             val adId = if (isDebug) {
                 "ca-app-pub-3940256099942544/1033173712"
@@ -195,14 +212,14 @@ if (placement == AdPlacement.SUPPORT_REWARDED) {
                 placementConfig.adUnitId.ifBlank { "ca-app-pub-3940256099942544/1033173712" }
             }
             val adRequest = AdRequest.Builder().build()
-            
+
             InterstitialAd.load(context, adId, adRequest, object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     android.util.Log.e(TAG, "loadAd(Interstitial): failed $adError")
                     interstitialAd = null
                     _adState.value = AdState.Failed(adError.message)
                 }
-                
+
                 override fun onAdLoaded(ad: InterstitialAd) {
                     android.util.Log.d(TAG, "loadAd(Interstitial): loaded")
                     interstitialAd = ad
@@ -215,14 +232,18 @@ if (placement == AdPlacement.SUPPORT_REWARDED) {
         }
     }
 
-    
     override fun showAd(activity: Activity, placement: AdPlacement, onAdDismissed: () -> Unit) {
         android.util.Log.d(TAG, "showAd: requested for $placement")
-        
+
         val config = remoteAdConfigFetcher.getConfig()
-        val placementConfig = config.placements[placement]
-        if (placementConfig != null && isFrequencyCapped(placement, placementConfig)) {
-            android.util.Log.d(TAG, "showAd: skipped due to frequency capping")
+        if (placement != AdPlacement.SUPPORT_REWARDED && !config.isAdsEnabled) {
+            onAdDismissed()
+            return
+        }
+
+        val placementConfig = resolvePlacementConfig(config, placement)
+        if (!placementConfig.enabled || isFrequencyCapped(placement, placementConfig)) {
+            android.util.Log.d(TAG, "showAd: skipped due to disabled or frequency capping")
             onAdDismissed()
             return
         }
@@ -242,7 +263,7 @@ if (placement == AdPlacement.SUPPORT_REWARDED) {
             if (ad != null) {
                 recordShow()
                 android.util.Log.d(TAG, "showAd(Rewarded): showing")
-                ad.show(activity, OnUserEarnedRewardListener { rewardItem ->
+                ad.show(activity, OnUserEarnedRewardListener {
                     CoroutineScope(Dispatchers.IO).launch {
                         // Grant ad-free supporter status (1h on debug, 24h on release)
                         val isDebug = (context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
@@ -309,7 +330,6 @@ if (placement == AdPlacement.SUPPORT_REWARDED) {
     }
 
     // internal method for AdMobNativeAdView to load native ads
-    
     @android.annotation.SuppressLint("MissingPermission")
     internal fun loadNativeAd(placement: AdPlacement, onComplete: (NativeAd?) -> Unit) {
         android.util.Log.d(TAG, "loadNativeAd: requested for $placement")
@@ -325,23 +345,16 @@ if (placement == AdPlacement.SUPPORT_REWARDED) {
             onComplete(null)
             return
         }
-        
-        val placementConfig = config.placements[placement] ?: when (placement) {
-            AdPlacement.SUPPORT_REWARDED -> PlacementConfig(enabled = true, adUnitId = "ca-app-pub-3940256099942544/5224354917")
-            AdPlacement.REMIND_NATIVE -> PlacementConfig(enabled = true, adUnitId = "ca-app-pub-3940256099942544/2247696110")
-            AdPlacement.MESSAGE_NATIVE -> PlacementConfig(enabled = true, adUnitId = "ca-app-pub-3940256099942544/2247696110")
-            AdPlacement.EXIT_NATIVE -> PlacementConfig(enabled = true, adUnitId = "ca-app-pub-3940256099942544/2247696110")
-            AdPlacement.ALARM_LIST_NATIVE -> PlacementConfig(enabled = true, adUnitId = "ca-app-pub-3940256099942544/2247696110")
-            AdPlacement.SAVE_ALARM_INTERSTITIAL -> PlacementConfig(enabled = true, adUnitId = "ca-app-pub-3940256099942544/1033173712") // Interstitial test ID
-        }
+
+        val placementConfig = resolvePlacementConfig(config, placement)
         if (!placementConfig.enabled) {
             onComplete(null)
             return
         }
-        
+
         val isDebug = (context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
         val adId = if (isDebug) {
-            "ca-app-pub-3940256099942544/2247696110" // Always use official Google test native ID in debug builds
+            "ca-app-pub-3940256099942544/2247696110" // Official Google test native ID in debug builds
         } else {
             placementConfig.adUnitId
         }
@@ -381,7 +394,7 @@ if (placement == AdPlacement.SUPPORT_REWARDED) {
         if (loadingIds.contains(placement)) return
 
         loadingIds.add(placement)
-        
+
         val adLoader = AdLoader.Builder(context, adId)
             .forNativeAd { ad ->
                 if (placementConfig.enableCache) {

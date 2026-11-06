@@ -27,11 +27,6 @@ enum class TopLevelDestination(
     val icon: ImageVector,
     val labelResId: Int
 ) {
-    TODAY(
-        route = todayRoute,
-        icon = ReMindIcons.Lightbulb,
-        labelResId = R.string.navigation_today
-    ),
     ALARMS(
         route = AlarmListRoute,
         icon = ReMindIcons.Alarm,
@@ -41,6 +36,11 @@ enum class TopLevelDestination(
         route = RemindersListRoute,
         icon = ReMindIcons.Notifications,
         labelResId = R.string.navigation_reminders
+    ),
+    TODAY(
+        route = todayRoute,
+        icon = ReMindIcons.Lightbulb,
+        labelResId = R.string.navigation_today
     ),
     SETTINGS(
         route = settingsRoute,

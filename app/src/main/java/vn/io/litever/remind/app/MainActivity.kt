@@ -1,14 +1,17 @@
 package vn.io.litever.remind.app
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.WindowManager
 import android.app.LocaleManager
-import android.content.Context
 import android.os.LocaleList
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -31,7 +34,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalLocale
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -41,6 +46,7 @@ import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -48,38 +54,38 @@ import vn.io.litever.designsystem.components.snackbar.LvSnackbarHost
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.ads.api.AdManager
 import vn.io.litever.remind.core.ads.api.LocalAdManager
+import vn.io.litever.remind.core.alarm.ReminderSyncManager
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import vn.io.litever.remind.core.designsystem.components.BrandingSplashScreen
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.domain.repository.AlarmRepository
+import vn.io.litever.remind.core.model.MathMissionConfig
+import vn.io.litever.remind.core.model.MissionType
+import vn.io.litever.remind.core.model.TypingMissionConfig
+import vn.io.litever.remind.core.model.TypingMode
 import vn.io.litever.remind.features.alarms.ui.AlarmListRoute
 import vn.io.litever.remind.features.alarms.ui.alarmGraph
 import vn.io.litever.remind.features.alarms.ui.ringtoneSelectionRoute
 import vn.io.litever.remind.features.mission.ui.missionGraph
-import vn.io.litever.remind.core.model.MathMissionConfig
 import vn.io.litever.remind.features.mission.ui.navigateToMathMissionConfig
 import vn.io.litever.remind.features.mission.ui.navigateToMemoryGameConfig
 import vn.io.litever.remind.features.mission.ui.navigateToMissionRinging
 import vn.io.litever.remind.features.mission.ui.navigateToPhraseSelection
 import vn.io.litever.remind.features.mission.ui.navigateToTypingMissionConfig
+import vn.io.litever.remind.features.reminders.ui.RemindersListRoute
+import vn.io.litever.remind.features.reminders.ui.navigateToReminderEdit
+import vn.io.litever.remind.features.reminders.ui.remindersGraph
 import vn.io.litever.remind.features.settings.ui.navigateToAttributions
 import vn.io.litever.remind.features.settings.ui.navigateToGeneralSettings
 import vn.io.litever.remind.features.settings.ui.navigateToLicenses
 import vn.io.litever.remind.features.settings.ui.navigateToPermissions
 import vn.io.litever.remind.features.settings.ui.settingsGraph
 import vn.io.litever.remind.features.settings.ui.settingsRoute
+import vn.io.litever.remind.features.today.ui.components.ExitAppDialog
 import vn.io.litever.remind.features.today.ui.locationSearchRoute
 import vn.io.litever.remind.features.today.ui.todayGraph
 import vn.io.litever.remind.features.today.ui.todayRoute
-import vn.io.litever.remind.core.alarm.ReminderSyncManager
-import vn.io.litever.remind.features.reminders.ui.RemindersListRoute
-import vn.io.litever.remind.features.reminders.ui.navigateToReminderEdit
-import vn.io.litever.remind.features.reminders.ui.remindersGraph
 import javax.inject.Inject
-import androidx.compose.ui.platform.LocalLocale
-import vn.io.litever.remind.core.model.MissionType
-import vn.io.litever.remind.core.model.TypingMissionConfig
-import vn.io.litever.remind.core.model.TypingMode
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -102,6 +108,14 @@ class MainViewModel @Inject constructor(
     val colorPalette = preferencesDataSource.colorPalette
     val language = preferencesDataSource.language
     val acknowledgingAlarmId = alarmRingManager.acknowledgingAlarmId
+
+    val isAdFreeActive: StateFlow<Boolean> = preferencesDataSource.adsDisabledUntil
+        .map { it > System.currentTimeMillis() }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = false
+        )
 
     val ringingAlarmId = alarmRingManager.ringingAlarmId
     val ringingReminderId = reminderAlertManager.activeAlertReminderIds
@@ -326,6 +340,32 @@ class MainActivity : ComponentActivity() {
                                     currentRoute == RemindersListRoute ||
                                     currentRoute == settingsRoute
 
+                            val isAdFreeActive by viewModel.isAdFreeActive.collectAsState()
+                            val context = LocalContext.current
+                            var showExitDialog by remember { mutableStateOf(false) }
+
+                            BackHandler(enabled = currentRoute == AlarmListRoute) {
+                                showExitDialog = true
+                            }
+
+                            if (showExitDialog) {
+                                ExitAppDialog(
+                                    onDismissRequest = { showExitDialog = false },
+                                    onConfirmExit = {
+                                        showExitDialog = false
+                                        var currentContext = context
+                                        while (currentContext is ContextWrapper) {
+                                            if (currentContext is Activity) {
+                                                currentContext.finish()
+                                                return@ExitAppDialog
+                                            }
+                                            currentContext = currentContext.baseContext
+                                        }
+                                    },
+                                    isAdFreeActive = isAdFreeActive
+                                )
+                            }
+
                             Scaffold(
                                 snackbarHost = { LvSnackbarHost(hostState = snackbarHostState) },
                                 bottomBar = {
@@ -361,7 +401,7 @@ class MainActivity : ComponentActivity() {
                                     ) {
                                         NavHost(
                                             navController = navController,
-                                            startDestination = todayRoute
+                                            startDestination = AlarmListRoute
                                         ) {
                                             alarmGraph(
                                                 onNavigateToEdit = { id ->

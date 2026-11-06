@@ -22,8 +22,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -49,12 +47,10 @@ import vn.io.litever.remind.core.model.AdConfig
 import vn.io.litever.remind.core.model.AiAnalysis
 import vn.io.litever.remind.core.model.CurrentWeather
 import vn.io.litever.remind.core.model.DailySummary
-import vn.io.litever.remind.core.model.NextAlarmUiState
 import vn.io.litever.remind.core.model.TodayBriefing
 import vn.io.litever.remind.core.model.TodayMetadata
 import vn.io.litever.remind.core.model.WeatherResponse
 import vn.io.litever.remind.features.today.R
-import vn.io.litever.remind.features.today.ui.components.TodayNextAlarmView
 import vn.io.litever.remind.features.today.ui.components.TodayReminderStatusView
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,9 +62,7 @@ fun TodayRoute(
 ) {
     val weather by viewModel.weather.collectAsState()
     val todayBriefing by viewModel.todayBriefing.collectAsState()
-    val nextAlarmState by viewModel.nextAlarmState.collectAsState()
     val activeReminderCount by viewModel.activeReminderCount.collectAsState()
-    val is24HourFormat by viewModel.is24HourFormat.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val isProcessing by viewModel.isProcessing.collectAsState()
 
@@ -90,9 +84,7 @@ fun TodayRoute(
     TodayScreen(
         weather = weather,
         todayBriefing = todayBriefing,
-        nextAlarmState = nextAlarmState,
         activeReminderCount = activeReminderCount,
-        is24HourFormat = is24HourFormat,
         isRefreshing = isRefreshing,
         isProcessing = isProcessing,
         isAdFreeActive = isAdFreeActive,
@@ -107,8 +99,6 @@ fun TodayRoute(
 fun TodayScreen(
     weather: WeatherResponse?,
     todayBriefing: TodayBriefing?,
-    nextAlarmState: NextAlarmUiState,
-    is24HourFormat: Boolean,
     isRefreshing: Boolean,
     isProcessing: Boolean,
     activeReminderCount: Int = 0,
@@ -117,31 +107,6 @@ fun TodayScreen(
     onLocationClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val context = androidx.compose.ui.platform.LocalContext.current
-    var showExitDialog by remember { mutableStateOf(false) }
-
-    androidx.activity.compose.BackHandler {
-        showExitDialog = true
-    }
-
-    if (showExitDialog) {
-        vn.io.litever.remind.features.today.ui.components.ExitAppDialog(
-            onDismissRequest = { showExitDialog = false },
-            onConfirmExit = {
-                showExitDialog = false
-                var currentContext = context
-                while (currentContext is android.content.ContextWrapper) {
-                    if (currentContext is android.app.Activity) {
-                        currentContext.finish()
-                        return@ExitAppDialog
-                    }
-                    currentContext = currentContext.baseContext
-                }
-            },
-            isAdFreeActive = isAdFreeActive
-        )
-    }
-
     val hour = remember { java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY) }
     val greeting = stringResource(getGreetingStringRes(hour))
 
@@ -181,11 +146,6 @@ fun TodayScreen(
                     color = LiteverTheme.colors.primary
                 )
             }
-
-            TodayNextAlarmView(
-                state = nextAlarmState,
-                is24HourFormat = is24HourFormat
-            )
 
             TodayReminderStatusView(
                 activeReminderCount = activeReminderCount
@@ -244,29 +204,10 @@ fun TodayScreenPreview() {
 
     ReMindTheme {
         CompositionLocalProvider(LocalAdManager provides PreviewAdManager) {
-            val mockAlarm = vn.io.litever.remind.core.model.Alarm(
-                id = 1L,
-                time = java.time.LocalTime.of(7, 30),
-                isEnabled = true,
-                label = "Thức dậy đón bình minh",
-                repeatDays = listOf(
-                    java.time.DayOfWeek.MONDAY,
-                    java.time.DayOfWeek.WEDNESDAY,
-                    java.time.DayOfWeek.FRIDAY
-                )
-            )
-
             TodayScreen(
                 weather = mockWeather,
                 todayBriefing = mockTodayBriefing,
-                nextAlarmState = vn.io.litever.remind.core.model.NextAlarmUiState.Remaining(
-                    days = 0,
-                    hours = 7,
-                    minutes = 15,
-                    alarm = mockAlarm
-                ),
                 activeReminderCount = 3,
-                is24HourFormat = false,
                 isRefreshing = false,
                 isProcessing = false,
                 onRefresh = {}

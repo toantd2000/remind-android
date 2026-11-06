@@ -81,6 +81,7 @@ fun AlarmMessageScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(LiteverTheme.spacing.medium)
+                    .navigationBarsPadding()
                     .height(52.dp),
                 shape = LiteverTheme.shapes.large,
             ) {

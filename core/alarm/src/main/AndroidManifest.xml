@@ -8,15 +8,14 @@
 
     <!-- Foreground Services -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
 
-    <!-- Location & Wi-Fi Permissions -->
+    <!-- Network State -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!-- Audio, Notification & Power -->
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
@@ -43,9 +42,9 @@
         <service
             android:name=".service.AlarmService"
             android:exported="false"
-            android:foregroundServiceType="specialUse" />
+            android:foregroundServiceType="mediaPlayback" />
 
-        <!-- New Reminder Components -->
+        <!-- Reminder Components -->
         <receiver
             android:name=".receiver.ReminderReceiver"
             android:exported="false">
@@ -56,14 +55,5 @@
                 <action android:name="vn.io.litever.remind.core.alarm.ACTION_REMINDER_DISMISS" />
             </intent-filter>
         </receiver>
-
-        <service
-            android:name=".service.ReminderMonitorService"
-            android:exported="false"
-            android:foregroundServiceType="specialUse" />
     </application>
 </manifest>
-
-
-
-

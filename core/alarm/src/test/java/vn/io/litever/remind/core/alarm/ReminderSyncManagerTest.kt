@@ -2,9 +2,7 @@ package vn.io.litever.remind.core.alarm
 
 import android.content.Context
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkObject
 import io.mockk.unmockkAll
 import io.mockk.verify
 import kotlinx.coroutines.flow.flowOf
@@ -12,7 +10,6 @@ import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import vn.io.litever.remind.core.alarm.service.ReminderMonitorService
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
 import vn.io.litever.remind.core.model.Reminder
@@ -32,10 +29,6 @@ class ReminderSyncManagerTest {
 
     @Before
     fun setup() {
-        mockkObject(ReminderMonitorService.Companion)
-        every { ReminderMonitorService.sync(any()) } returns Unit
-        every { ReminderMonitorService.stop(any()) } returns Unit
-
         syncManager = ReminderSyncManager(context, repository, scheduler)
     }
 

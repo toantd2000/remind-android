@@ -140,7 +140,7 @@ class AlarmService : Service() {
         
         // Always start foreground immediately to prevent crash, even if ID is missing
         val notification = createNotification(if (alarmId != -1L) alarmId else 0L, isVisible = false)
-        startForeground(1, notification)
+        startForeground(1, notification, android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
         
         if (alarmId == -1L) {
             stopSelf()

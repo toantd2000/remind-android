@@ -5,7 +5,6 @@ import android.content.Intent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
 import vn.io.litever.remind.core.alarm.alert.ReminderAlertManager
-import vn.io.litever.remind.core.alarm.service.ReminderMonitorService
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
 import vn.io.litever.remind.core.model.ReminderTriggerType
@@ -85,12 +84,6 @@ class ReminderSyncManager @Inject constructor(
                     }
                 }
             }
-        }
-        
-        try {
-            ReminderMonitorService.stop(context)
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
     }
 }

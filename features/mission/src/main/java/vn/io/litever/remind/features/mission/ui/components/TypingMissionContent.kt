@@ -1,5 +1,8 @@
 package vn.io.litever.remind.features.mission.ui.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.keyframes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -9,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -20,15 +24,22 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -40,18 +51,20 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.Phrase
 import vn.io.litever.remind.features.mission.R
+import kotlin.math.roundToInt
 
 /**
- * Giao diện nhiệm vụ Gõ chữ (Typing Mission) được tối ưu hóa theo thiết kế Stitch:
- * - Phía trên: Banner hướng dẫn ngắn gọn (MissionInstructionBanner).
- * - Phía dưới: Bảng gõ chữ tương tác (Interactive Board) với tiêu đề "Văn bản cần gõ",
- *   hiển thị trực quan từng ký tự đúng (xanh) / sai (đỏ) / gợi ý (mờ), không có vùng mẹo thừa.
+ * Giao diện nhiệm vụ Gõ chữ (Typing Mission) chuẩn Gamification:
+ * - Khi gõ sai: Rung cảnh báo + Lắc nhẹ khung văn bản.
+ * - Khi gõ đúng 100%: Thẻ sáng xanh lá, hiện huy hiệu "Chính xác! ✓" chuẩn bị bấm Tiếp tục.
  */
 @Composable
 fun TypingMissionContent(
@@ -60,12 +73,48 @@ fun TypingMissionContent(
     onUserInputChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val haptic = LocalHapticFeedback.current
+    val coroutineScope = rememberCoroutineScope()
+    val shakeOffset = remember { Animatable(0f) }
+
     val focusRequester = remember { FocusRequester() }
     val interactionSource = remember { MutableInteractionSource() }
 
     val successColor = LiteverTheme.colors.success
     val errorColor = LiteverTheme.colors.error
     val hintColor = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.38f)
+
+    val targetContent = targetPhrase?.content ?: ""
+    val isMatched = userInput == targetContent && targetContent.isNotEmpty()
+    var prevLength by remember { mutableStateOf(0) }
+
+    // Rung và lắc khi gõ thêm ký tự sai
+    LaunchedEffect(userInput) {
+        if (userInput.length > prevLength) {
+            val lastIndex = userInput.length - 1
+            val isCurrentCharWrong = lastIndex >= targetContent.length || userInput[lastIndex] != targetContent[lastIndex]
+            if (isCurrentCharWrong) {
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                coroutineScope.launch {
+                    shakeOffset.animateTo(
+                        targetValue = 0f,
+                        animationSpec = keyframes {
+                            durationMillis = 250
+                            -8f at 40
+                            8f at 80
+                            -6f at 120
+                            6f at 160
+                            -3f at 200
+                            0f at 250
+                        }
+                    )
+                }
+            } else {
+                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+            }
+        }
+        prevLength = userInput.length
+    }
 
     val visualTransformation = remember(targetPhrase, userInput, successColor, errorColor, hintColor) {
         VisualTransformation { text ->
@@ -147,17 +196,23 @@ fun TypingMissionContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
     ) {
-        // 1. Phía trên: Banner hướng dẫn ngắn gọn
+        // 1. Phía trên: Banner hướng dẫn
         MissionInstructionBanner(
             icon = ReMindIcons.EditNote,
             requirementText = stringResource(R.string.mission_typing_requirement)
         )
 
-        // 2. Phía dưới: Vùng làm nhiệm vụ (Interactive Typing Board) chiếm trọn phần không gian còn lại
+        // 2. Phía dưới: Vùng làm nhiệm vụ (Interactive Typing Board)
+        val borderColor by animateColorAsState(
+            targetValue = if (isMatched) LiteverTheme.colors.success else LiteverTheme.colors.primary.copy(alpha = 0.25f),
+            label = "typingBorderColor"
+        )
+
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
+                .offset { IntOffset(shakeOffset.value.roundToInt(), 0) }
                 .clickable(
                     interactionSource = interactionSource,
                     indication = null,
@@ -167,10 +222,7 @@ fun TypingMissionContent(
             colors = CardDefaults.cardColors(
                 containerColor = LiteverTheme.colors.surfaceContainerLowest
             ),
-            border = BorderStroke(
-                1.5.dp,
-                LiteverTheme.colors.primary.copy(alpha = 0.25f)
-            )
+            border = BorderStroke(1.5.dp, borderColor)
         ) {
             Column(
                 modifier = Modifier
@@ -178,23 +230,53 @@ fun TypingMissionContent(
                     .padding(LiteverTheme.spacing.medium),
                 verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.smallMedium)
             ) {
-                // Header của bảng: [icon] Văn bản cần gõ
+                // Header của bảng
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.extraSmall)
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Icon(
-                        imageVector = ReMindIcons.Spellcheck,
-                        contentDescription = null,
-                        tint = LiteverTheme.colors.primary,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Text(
-                        text = stringResource(R.string.mission_typing_board_header),
-                        style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                        color = LiteverTheme.colors.onSurface
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.extraSmall)
+                    ) {
+                        Icon(
+                            imageVector = ReMindIcons.Spellcheck,
+                            contentDescription = null,
+                            tint = if (isMatched) LiteverTheme.colors.success else LiteverTheme.colors.primary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Text(
+                            text = stringResource(R.string.mission_typing_board_header),
+                            style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                            color = LiteverTheme.colors.onSurface
+                        )
+                    }
+
+                    if (isMatched) {
+                        Surface(
+                            shape = LiteverTheme.shapes.small,
+                            color = LiteverTheme.colors.successContainer
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Icon(
+                                    imageVector = ReMindIcons.CheckCircle,
+                                    contentDescription = null,
+                                    tint = LiteverTheme.colors.onSuccessContainer,
+                                    modifier = Modifier.size(12.dp)
+                                )
+                                Text(
+                                    text = stringResource(R.string.mission_typing_completed_badge),
+                                    style = LiteverTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                    color = LiteverTheme.colors.onSuccessContainer
+                                )
+                            }
+                        }
+                    }
                 }
 
                 HorizontalDivider(
@@ -202,7 +284,7 @@ fun TypingMissionContent(
                     thickness = 1.dp
                 )
 
-                // Vùng nhập văn bản chính lấp đầy Card và cuộn độc lập
+                // Vùng nhập văn bản
                 val scrollState = rememberScrollState()
                 Box(
                     modifier = Modifier
@@ -219,7 +301,7 @@ fun TypingMissionContent(
                             .fillMaxWidth()
                             .focusRequester(focusRequester),
                         textStyle = textStyle,
-                        cursorBrush = SolidColor(LiteverTheme.colors.primary),
+                        cursorBrush = SolidColor(if (isMatched) LiteverTheme.colors.success else LiteverTheme.colors.primary),
                         visualTransformation = visualTransformation,
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Done

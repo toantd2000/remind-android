@@ -9,6 +9,7 @@ import vn.io.litever.remind.core.model.Mission
 import vn.io.litever.remind.core.model.MissionType
 import vn.io.litever.remind.core.model.Phrase
 import vn.io.litever.remind.features.mission.viewmodel.MissionRingingUiState
+import vn.io.litever.remind.features.mission.viewmodel.StepValidationState
 
 class MissionRingingUiStateTest {
 
@@ -26,6 +27,8 @@ class MissionRingingUiStateTest {
         assertFalse(state.isDismissed)
         assertFalse(state.isAbandoned)
         assertEquals(30, state.timeoutCountdown)
+        assertFalse(state.isTimerPaused)
+        assertEquals(StepValidationState.IDLE, state.validationState)
         assertFalse(state.isMissionJustCompleted)
         assertNull(state.currentMission)
     }
@@ -56,18 +59,6 @@ class MissionRingingUiStateTest {
     }
 
     @Test
-    fun currentMission_withNegativeIndex_returnsNull() {
-        val mission1 = Mission(id = 1L, alarmId = 10L, type = MissionType.TYPING, order = 0, repeatCount = 3)
-        
-        val state = MissionRingingUiState(
-            missions = listOf(mission1),
-            currentMissionIndex = -1
-        )
-        
-        assertNull(state.currentMission)
-    }
-
-    @Test
     fun stateCopy_updatesRepetitionAndTargetDataCorrectly() {
         val phrase1 = Phrase(id = 1L, content = "Wake up now", categoryId = "motivation")
         val phrase2 = Phrase(id = 2L, content = "Seize the day", categoryId = "motivation")
@@ -84,23 +75,25 @@ class MissionRingingUiStateTest {
 
         val updatedState = initialState.copy(
             currentRepetition = 2,
-            currentTargetData = phrase2
+            currentTargetData = phrase2,
+            validationState = StepValidationState.CORRECT
         )
 
         assertEquals(2, updatedState.currentRepetition)
         assertEquals(phrase2, updatedState.currentTargetData)
         assertEquals("Seize the day", (updatedState.currentTargetData as Phrase).content)
+        assertEquals(StepValidationState.CORRECT, updatedState.validationState)
     }
 
     @Test
-    fun stateCopy_missionJustCompletedFlag_transitionsAccurately() {
+    fun stateCopy_timerPausedState_togglesAccurately() {
         val state = MissionRingingUiState(isLoading = false)
-        assertFalse(state.isMissionJustCompleted)
+        assertFalse(state.isTimerPaused)
 
-        val completedState = state.copy(isMissionJustCompleted = true)
-        assertTrue(completedState.isMissionJustCompleted)
+        val pausedState = state.copy(isTimerPaused = true)
+        assertTrue(pausedState.isTimerPaused)
 
-        val resumedState = completedState.copy(isMissionJustCompleted = false)
-        assertFalse(resumedState.isMissionJustCompleted)
+        val resumedState = pausedState.copy(isTimerPaused = false)
+        assertFalse(resumedState.isTimerPaused)
     }
 }

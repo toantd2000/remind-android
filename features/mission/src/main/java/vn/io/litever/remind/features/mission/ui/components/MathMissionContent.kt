@@ -1,13 +1,22 @@
 package vn.io.litever.remind.features.mission.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,9 +26,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -27,22 +41,25 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.MathProblem
 import vn.io.litever.remind.features.mission.R
+import vn.io.litever.remind.features.mission.viewmodel.StepValidationState
+import kotlin.math.roundToInt
 
 private const val MAX_INPUT_DIGITS = 6
 
 /**
- * Giao diện nhiệm vụ Giải toán (Math Mission) với Bàn phím số tích hợp (Built-in Keypad):
- * - Phía trên: Banner hướng dẫn ngắn gọn (MissionInstructionBanner).
- * - Ở giữa: Thẻ hiển thị phép toán lớn, sắc nét + Hàng hiển thị kết quả người dùng nhập.
- * - Phía dưới: Bàn phím số to, dễ thao tác ngay cả khi vừa tỉnh ngủ, có phản hồi rung (Haptic feedback)
- *   và các phím chức năng Xóa (Backspace) & Xác nhận (Check).
+ * Giao diện nhiệm vụ Giải toán (Math Mission) chuẩn Gamification:
+ * - Hiệu ứng rung và lắc ngang khi nhập kết quả sai + báo lỗi đỏ + tự xóa sau 600ms.
+ * - Hiệu ứng chuyển màu xanh lá + icon ✓ khi nhập kết quả đúng trước khi qua câu tiếp theo.
+ * - Phản hồi rung nhún phím bấm trên bàn phím số tích hợp.
  */
 @Composable
 fun MathMissionContent(
@@ -50,11 +67,37 @@ fun MathMissionContent(
     currentRepetition: Int,
     totalRepetitions: Int,
     userInput: String,
+    validationState: StepValidationState = StepValidationState.IDLE,
     onUserInputChange: (String) -> Unit,
     onSubmit: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val haptic = LocalHapticFeedback.current
+    val coroutineScope = rememberCoroutineScope()
+    val shakeOffset = remember { Animatable(0f) }
+
+    LaunchedEffect(validationState) {
+        if (validationState == StepValidationState.WRONG) {
+            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+            coroutineScope.launch {
+                shakeOffset.animateTo(
+                    targetValue = 0f,
+                    animationSpec = keyframes {
+                        durationMillis = 350
+                        -18f at 50
+                        18f at 100
+                        -12f at 150
+                        12f at 200
+                        -6f at 250
+                        6f at 300
+                        0f at 350
+                    }
+                )
+            }
+        } else if (validationState == StepValidationState.CORRECT) {
+            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+        }
+    }
 
     val onDigitClick: (Char) -> Unit = { digit ->
         haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
@@ -81,23 +124,31 @@ fun MathMissionContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
     ) {
-        // 1. Phía trên: Banner hướng dẫn ngắn gọn
+        // 1. Phía trên: Banner hướng dẫn
         MissionInstructionBanner(
             icon = ReMindIcons.Calculate,
             requirementText = stringResource(R.string.mission_math_requirement)
         )
 
         // 2. Thẻ hiển thị phép tính và kết quả nhập
+        val cardBorderColor by animateColorAsState(
+            targetValue = when (validationState) {
+                StepValidationState.CORRECT -> LiteverTheme.colors.success
+                StepValidationState.WRONG -> LiteverTheme.colors.error
+                else -> LiteverTheme.colors.primary.copy(alpha = 0.25f)
+            },
+            label = "cardBorderColor"
+        )
+
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .offset { IntOffset(shakeOffset.value.roundToInt(), 0) },
             colors = CardDefaults.cardColors(
                 containerColor = LiteverTheme.colors.surfaceContainerLowest
             ),
             shape = LiteverTheme.shapes.medium,
-            border = BorderStroke(
-                1.5.dp,
-                LiteverTheme.colors.primary.copy(alpha = 0.25f)
-            )
+            border = BorderStroke(1.5.dp, cardBorderColor)
         ) {
             Column(
                 modifier = Modifier
@@ -118,9 +169,27 @@ fun MathMissionContent(
                 )
 
                 // Hàng hiển thị kết quả người dùng nhập
+                val surfaceBgColor by animateColorAsState(
+                    targetValue = when (validationState) {
+                        StepValidationState.CORRECT -> LiteverTheme.colors.success.copy(alpha = 0.15f)
+                        StepValidationState.WRONG -> LiteverTheme.colors.error.copy(alpha = 0.15f)
+                        else -> LiteverTheme.colors.surfaceContainerHighest.copy(alpha = 0.6f)
+                    },
+                    label = "surfaceBgColor"
+                )
+
+                val resultTextColor by animateColorAsState(
+                    targetValue = when (validationState) {
+                        StepValidationState.CORRECT -> LiteverTheme.colors.success
+                        StepValidationState.WRONG -> LiteverTheme.colors.error
+                        else -> if (userInput.isEmpty()) LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.5f) else LiteverTheme.colors.primary
+                    },
+                    label = "resultTextColor"
+                )
+
                 Surface(
                     shape = RoundedCornerShape(16.dp),
-                    color = LiteverTheme.colors.surfaceContainerHighest.copy(alpha = 0.6f),
+                    color = surfaceBgColor,
                     modifier = Modifier.fillMaxWidth(0.75f)
                 ) {
                     Box(
@@ -129,17 +198,36 @@ fun MathMissionContent(
                             .padding(vertical = LiteverTheme.spacing.smallMedium, horizontal = LiteverTheme.spacing.medium),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = if (userInput.isEmpty()) stringResource(R.string.mission_math_placeholder) else userInput,
-                            style = LiteverTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
-                            color = if (userInput.isEmpty()) {
-                                LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.5f)
-                            } else {
-                                LiteverTheme.colors.primary
-                            },
-                            textAlign = TextAlign.Center
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                        ) {
+                            Text(
+                                text = if (userInput.isEmpty()) stringResource(R.string.mission_math_placeholder) else userInput,
+                                style = LiteverTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+                                color = resultTextColor,
+                                textAlign = TextAlign.Center
+                            )
+                            if (validationState == StepValidationState.CORRECT) {
+                                Icon(
+                                    imageVector = ReMindIcons.CheckCircle,
+                                    contentDescription = null,
+                                    tint = LiteverTheme.colors.success,
+                                    modifier = Modifier.size(28.dp)
+                                )
+                            }
+                        }
                     }
+                }
+
+                // Dòng cảnh báo khi nhập sai
+                AnimatedVisibility(visible = validationState == StepValidationState.WRONG) {
+                    Text(
+                        text = stringResource(R.string.mission_math_wrong),
+                        style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                        color = LiteverTheme.colors.error,
+                        textAlign = TextAlign.Center
+                    )
                 }
             }
         }
@@ -150,10 +238,9 @@ fun MathMissionContent(
             onDeleteClick = onDeleteClick,
             onClearClick = onClearClick,
             onSubmitClick = {
-                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 onSubmit()
             },
-            canSubmit = userInput.isNotBlank(),
+            canSubmit = userInput.isNotBlank() && validationState == StepValidationState.IDLE,
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -193,12 +280,11 @@ private fun MathKeypad(
             }
         }
 
-        // Hàng cuối: [Xóa / Xóa hết] - [0] - [Xác nhận]
+        // Hàng cuối: [Xóa] - [0] - [Xác nhận]
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
         ) {
-            // Nút xóa (Backspace)
             KeypadActionButton(
                 icon = ReMindIcons.Backspace,
                 contentDescription = stringResource(R.string.mission_math_delete),
@@ -208,14 +294,12 @@ private fun MathKeypad(
                 modifier = Modifier.weight(1f)
             )
 
-            // Nút 0
             KeypadNumberButton(
                 digit = '0',
                 onClick = { onDigitClick('0') },
                 modifier = Modifier.weight(1f)
             )
 
-            // Nút xác nhận kết quả
             KeypadActionButton(
                 icon = ReMindIcons.Check,
                 contentDescription = stringResource(R.string.mission_math_submit),
@@ -235,11 +319,23 @@ private fun KeypadNumberButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.94f else 1f,
+        label = "btnScale"
+    )
+
     Surface(
         modifier = modifier
             .height(58.dp)
+            .scale(scale)
             .clip(RoundedCornerShape(18.dp))
-            .clickable(onClick = onClick),
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClick
+            ),
         shape = RoundedCornerShape(18.dp),
         color = LiteverTheme.colors.surfaceContainerHigh
     ) {
@@ -263,11 +359,24 @@ private fun KeypadActionButton(
     enabled: Boolean = true,
     modifier: Modifier = Modifier
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed && enabled) 0.94f else 1f,
+        label = "actionBtnScale"
+    )
+
     Surface(
         modifier = modifier
             .height(58.dp)
+            .scale(scale)
             .clip(RoundedCornerShape(18.dp))
-            .clickable(enabled = enabled, onClick = onClick),
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                enabled = enabled,
+                onClick = onClick
+            ),
         shape = RoundedCornerShape(18.dp),
         color = containerColor
     ) {

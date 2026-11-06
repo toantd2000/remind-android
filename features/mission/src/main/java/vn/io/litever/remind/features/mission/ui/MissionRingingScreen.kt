@@ -1,7 +1,15 @@
 package vn.io.litever.remind.features.mission.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,6 +43,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -59,11 +68,13 @@ import vn.io.litever.remind.core.model.MissionType
 import vn.io.litever.remind.core.model.Phrase
 import vn.io.litever.remind.features.mission.R
 import vn.io.litever.remind.features.mission.ui.components.MathMissionContent
+import vn.io.litever.remind.features.mission.ui.components.MemoryGameState
 import vn.io.litever.remind.features.mission.ui.components.MemoryTilesMissionContent
 import vn.io.litever.remind.features.mission.ui.components.MissionCompleteContent
 import vn.io.litever.remind.features.mission.ui.components.TypingMissionContent
 import vn.io.litever.remind.features.mission.viewmodel.MissionRingingUiState
 import vn.io.litever.remind.features.mission.viewmodel.MissionRingingViewModel
+import vn.io.litever.remind.features.mission.viewmodel.StepValidationState
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -94,6 +105,8 @@ fun MissionRingingRoute(
         uiState = uiState,
         userInput = userInput,
         onUserInputChange = viewModel::onUserInputChange,
+        onUserInteraction = viewModel::onUserInteraction,
+        onTimerPauseChange = viewModel::setTimerPaused,
         onFinish = viewModel::validateCurrentStep,
         onAbandon = {
             viewModel.abandonMission()
@@ -107,6 +120,8 @@ fun MissionRingingScreen(
     uiState: MissionRingingUiState,
     userInput: String,
     onUserInputChange: (String) -> Unit,
+    onUserInteraction: () -> Unit,
+    onTimerPauseChange: (Boolean) -> Unit,
     onFinish: () -> Unit,
     onAbandon: () -> Unit
 ) {
@@ -128,10 +143,12 @@ fun MissionRingingScreen(
     )
 
     val alarmTimeString = uiState.alarm?.time?.format(DateTimeFormatter.ofPattern("HH:mm")) ?: ""
-    var memoryCorrectTiles by remember(uiState.currentTargetData) { mutableStateOf(0) }
+    var memoryCorrectTiles by remember(uiState.currentTargetData) { mutableIntStateOf(0) }
     var memoryTargetTiles by remember(uiState.currentTargetData) {
-        mutableStateOf((uiState.currentTargetData as? MemoryGameBoard)?.targetTiles ?: 0)
+        mutableIntStateOf((uiState.currentTargetData as? MemoryGameBoard)?.targetTiles ?: 0)
     }
+    var memoryGameState by remember(uiState.currentTargetData) { mutableStateOf(MemoryGameState.MEMORIZE) }
+    var memoryRetryTrigger by remember(uiState.currentTargetData) { mutableIntStateOf(0) }
 
     Scaffold(
         topBar = {
@@ -201,7 +218,7 @@ fun MissionRingingScreen(
                         }
                     )
 
-                    // Top Progress Scaffold (Tên nhiệm vụ + Số vòng + Segmented Progress Bar) ngay dưới LvTopAppBar
+                    // Top Progress Scaffold (Tên nhiệm vụ + Số vòng + Segmented Progress Bar)
                     val currentMission = uiState.currentMission
                     if (currentMission != null) {
                         MissionProgressScaffold(
@@ -227,9 +244,14 @@ fun MissionRingingScreen(
                     userInput = userInput,
                     targetPhrase = uiState.currentTargetData as? Phrase,
                     currentMissionType = uiState.currentMission?.type,
+                    memoryGameState = memoryGameState,
                     memoryCorrectTiles = memoryCorrectTiles,
                     memoryTargetTiles = memoryTargetTiles,
-                    onFinish = onFinish
+                    validationState = uiState.validationState,
+                    onFinish = onFinish,
+                    onRetryNow = {
+                        memoryRetryTrigger++
+                    }
                 )
             }
         }
@@ -245,7 +267,6 @@ fun MissionRingingScreen(
             )
         } else {
             val currentMission = uiState.currentMission
-            // Vùng chứa nội dung nhiệm vụ chiếm trọn không gian phía trên docked bar/IME, có khoảng đệm hai bên và đáy
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -255,44 +276,56 @@ fun MissionRingingScreen(
                 contentAlignment = Alignment.TopCenter
             ) {
                 if (currentMission != null) {
-                    when (currentMission.type) {
-                        MissionType.TYPING -> {
-                            TypingMissionContent(
-                                targetPhrase = uiState.currentTargetData as? Phrase,
-                                userInput = userInput,
-                                onUserInputChange = onUserInputChange,
-                                modifier = Modifier.fillMaxSize()
-                            )
-                        }
-                        MissionType.MATH -> {
-                            MathMissionContent(
-                                problem = uiState.currentTargetData as? MathProblem,
-                                currentRepetition = uiState.currentRepetition,
-                                totalRepetitions = currentMission.repeatCount,
-                                userInput = userInput,
-                                onUserInputChange = onUserInputChange,
-                                onSubmit = onFinish,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .verticalScroll(rememberScrollState())
-                            )
-                        }
-                        MissionType.MEMORY_FIND_COLOR_TILES -> {
-                            MemoryTilesMissionContent(
-                                board = uiState.currentTargetData as? MemoryGameBoard,
-                                onProgressChange = { correct, total ->
-                                    memoryCorrectTiles = correct
-                                    memoryTargetTiles = total
-                                },
-                                onSuccess = {
-                                    onUserInputChange("SUCCESS")
-                                    onFinish()
-                                },
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .verticalScroll(rememberScrollState())
-                            )
-                        }
+                    AnimatedContent(
+                        targetState = Triple(uiState.currentMissionIndex, uiState.currentRepetition, currentMission.type),
+                        transitionSpec = {
+                            (slideInHorizontally(animationSpec = tween(250)) { it / 2 } + fadeIn(animationSpec = tween(250)))
+                                .togetherWith(slideOutHorizontally(animationSpec = tween(250)) { -it / 2 } + fadeOut(animationSpec = tween(250)))
+                        },
+                        label = "missionContentTransition"
+                    ) { (_, _, type) ->
+                        when (type) {
+                            MissionType.TYPING -> {
+                                TypingMissionContent(
+                                    targetPhrase = uiState.currentTargetData as? Phrase,
+                                    userInput = userInput,
+                                    onUserInputChange = onUserInputChange,
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+                            MissionType.MATH -> {
+                                MathMissionContent(
+                                    problem = uiState.currentTargetData as? MathProblem,
+                                    currentRepetition = uiState.currentRepetition,
+                                    totalRepetitions = currentMission.repeatCount,
+                                    userInput = userInput,
+                                    validationState = uiState.validationState,
+                                    onUserInputChange = onUserInputChange,
+                                    onSubmit = onFinish,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .verticalScroll(rememberScrollState())
+                                )
+                            }
+                            MissionType.MEMORY_FIND_COLOR_TILES -> {
+                                MemoryTilesMissionContent(
+                                    board = uiState.currentTargetData as? MemoryGameBoard,
+                                    retryTrigger = memoryRetryTrigger,
+                                    onUserInteraction = onUserInteraction,
+                                    onTimerPauseChange = onTimerPauseChange,
+                                    onStateChange = { memoryGameState = it },
+                                    onProgressChange = { correct, total ->
+                                        memoryCorrectTiles = correct
+                                        memoryTargetTiles = total
+                                    },
+                                    onSuccess = {
+                                        onUserInputChange("SUCCESS")
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .verticalScroll(rememberScrollState())
+                                )
+                            }
                             else -> {
                                 Text(
                                     text = "Mission type ${currentMission.type} not implemented yet",
@@ -306,6 +339,7 @@ fun MissionRingingScreen(
             }
         }
     }
+}
 
 /**
  * Khối hiển thị tiến độ nhiệm vụ và phân đoạn vòng lặp theo thiết kế Stitch.
@@ -410,18 +444,23 @@ private fun MissionProgressScaffold(
                 for (i in 1..segmentsCount) {
                     val isFinished = i < currentRepetition
                     val isCurrent = i == currentRepetition
-                    val segmentColor = when {
-                        isFinished -> LiteverTheme.colors.primary
-                        isCurrent -> LiteverTheme.colors.primary.copy(alpha = 0.7f)
-                        else -> LiteverTheme.colors.surfaceContainerHighest
+                    val targetAlpha = when {
+                        isFinished -> 1f
+                        isCurrent -> 0.7f
+                        else -> 0.15f
                     }
+                    val animatedAlpha by animateFloatAsState(
+                        targetValue = targetAlpha,
+                        animationSpec = tween(300),
+                        label = "segmentAlpha"
+                    )
 
                     Box(
                         modifier = Modifier
                             .weight(1f)
                             .height(6.dp)
                             .clip(CircleShape)
-                            .background(segmentColor)
+                            .background(LiteverTheme.colors.primary.copy(alpha = animatedAlpha))
                     )
                 }
             }
@@ -430,22 +469,37 @@ private fun MissionProgressScaffold(
 }
 
 /**
- * Docked Action Bar nằm sát dưới cùng (hoặc sát trên bàn phím ảo IME).
+ * Docked Action Bar nằm sát dưới cùng.
  */
 @Composable
 private fun MissionBottomDockedBar(
     userInput: String,
     targetPhrase: Phrase?,
     currentMissionType: MissionType?,
+    memoryGameState: MemoryGameState = MemoryGameState.MEMORIZE,
     memoryCorrectTiles: Int = 0,
     memoryTargetTiles: Int = 0,
+    validationState: StepValidationState = StepValidationState.IDLE,
     onFinish: () -> Unit,
+    onRetryNow: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val isEnabled = when (currentMissionType) {
-        MissionType.TYPING -> userInput == targetPhrase?.content
-        MissionType.MEMORY_FIND_COLOR_TILES -> userInput == "SUCCESS"
+        MissionType.TYPING -> userInput == targetPhrase?.content && (targetPhrase?.content?.isNotEmpty() == true)
+        MissionType.MEMORY_FIND_COLOR_TILES -> memoryGameState == MemoryGameState.SUCCESS || memoryGameState == MemoryGameState.FAILURE
+        MissionType.MATH -> userInput.isNotBlank() && validationState == StepValidationState.IDLE
         else -> userInput.isNotBlank()
+    }
+
+    val actionButtonText = when {
+        currentMissionType == MissionType.MEMORY_FIND_COLOR_TILES && memoryGameState == MemoryGameState.FAILURE -> stringResource(R.string.action_retry_now)
+        currentMissionType == MissionType.MATH -> stringResource(R.string.action_check_answer)
+        else -> stringResource(R.string.action_continue)
+    }
+
+    val onActionClick = when {
+        currentMissionType == MissionType.MEMORY_FIND_COLOR_TILES && memoryGameState == MemoryGameState.FAILURE -> onRetryNow
+        else -> onFinish
     }
 
     Surface(
@@ -469,7 +523,6 @@ private fun MissionBottomDockedBar(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Khu vực thông tin phụ bên trái (số ký tự cho Typing hoặc số ô cho Memory Tiles)
             when (currentMissionType) {
                 MissionType.TYPING if targetPhrase != null -> {
                     val totalChars = targetPhrase.content.length
@@ -496,19 +549,18 @@ private fun MissionBottomDockedBar(
                 }
             }
 
-            // Nút hành động chính bên phải
             LvButton(
-                onClick = onFinish,
+                onClick = onActionClick,
                 enabled = isEnabled,
-                semantic = LvSemantic.Primary
+                semantic = if (currentMissionType == MissionType.MEMORY_FIND_COLOR_TILES && memoryGameState == MemoryGameState.FAILURE) LvSemantic.Destructive else LvSemantic.Primary
             ) {
                 Text(
-                    text = stringResource(R.string.action_continue),
+                    text = actionButtonText,
                     style = LiteverTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
                 )
                 Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
                 Icon(
-                    imageVector = ReMindIcons.ArrowForward,
+                    imageVector = if (currentMissionType == MissionType.MEMORY_FIND_COLOR_TILES && memoryGameState == MemoryGameState.FAILURE) ReMindIcons.Refresh else ReMindIcons.ArrowForward,
                     contentDescription = null,
                     modifier = Modifier.size(16.dp)
                 )
@@ -549,6 +601,8 @@ fun MissionRingingScreenPreview() {
             ),
             userInput = "Dậy sớm",
             onUserInputChange = {},
+            onUserInteraction = {},
+            onTimerPauseChange = {},
             onFinish = {},
             onAbandon = {}
         )

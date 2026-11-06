@@ -36,12 +36,10 @@ class MemoryGameBoardTest {
     fun memoryGameBoard_targetVerification_distinguishesTargetFromNonTarget() {
         val board = MemoryGameBoard(gridSize = 3, targetTiles = 3, targetIndices = listOf(1, 4, 7))
 
-        // Index 1, 4, 7 are targets
         assertTrue(board.targetIndices.contains(1))
         assertTrue(board.targetIndices.contains(4))
         assertTrue(board.targetIndices.contains(7))
 
-        // Others are non-targets
         assertFalse(board.targetIndices.contains(0))
         assertFalse(board.targetIndices.contains(2))
         assertFalse(board.targetIndices.contains(5))
@@ -52,29 +50,48 @@ class MemoryGameBoardTest {
         val board = MemoryGameBoard(gridSize = 3, targetTiles = 3, targetIndices = listOf(2, 5, 8))
         val selectedIndices = mutableSetOf<Int>()
 
-        // Select first target
         selectedIndices.add(2)
         val allFound1 = board.targetIndices.all { selectedIndices.contains(it) }
         assertFalse(allFound1)
 
-        // Select second target
         selectedIndices.add(5)
         val allFound2 = board.targetIndices.all { selectedIndices.contains(it) }
         assertFalse(allFound2)
 
-        // Select third target
         selectedIndices.add(8)
         val allFound3 = board.targetIndices.all { selectedIndices.contains(it) }
         assertTrue(allFound3)
     }
 
     @Test
-    fun memoryGameBoard_selectionSimulation_detectsMistake() {
+    fun memoryGameBoard_livesSimulation_detectsFailureAfterThreeMistakes() {
         val board = MemoryGameBoard(gridSize = 3, targetTiles = 3, targetIndices = listOf(0, 3, 6))
+        var lives = 3
+        val wrongTaps = listOf(1, 2, 4)
 
-        val pickedTile = 4
-        val isTarget = board.targetIndices.contains(pickedTile)
-        assertFalse(isTarget)
+        for (tap in wrongTaps) {
+            val isTarget = board.targetIndices.contains(tap)
+            if (!isTarget) {
+                lives--
+            }
+        }
+
+        assertEquals(0, lives)
+        assertTrue(lives <= 0) // Should trigger FAILURE gameState
+    }
+
+    @Test
+    fun memoryGameBoard_failureRevealAll_partitionsTilesAccurately() {
+        val board = MemoryGameBoard(gridSize = 3, targetTiles = 3, targetIndices = listOf(0, 4, 8))
+        val selectedIndices = setOf(0, 1, 2, 3) // 0 is correct target, 1, 2, 3 are wrong
+
+        val foundTargets = selectedIndices.filter { board.targetIndices.contains(it) }
+        val wrongPicks = selectedIndices.filter { !board.targetIndices.contains(it) }
+        val missedTargets = board.targetIndices.filter { !selectedIndices.contains(it) }
+
+        assertEquals(listOf(0), foundTargets)
+        assertEquals(listOf(1, 2, 3), wrongPicks)
+        assertEquals(listOf(4, 8), missedTargets)
     }
 
     @Test

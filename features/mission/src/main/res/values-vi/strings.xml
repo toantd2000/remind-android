@@ -69,4 +69,13 @@
     <string name="math_difficulty_very_hard">Rất khó (ví dụ: 12 × 8 + 9 × 7 − 34, 34 × 15 + 68)</string>
     <string name="math_problems_count">Số lượng bài toán</string>
     <string name="math_problems_helper">Bạn cần giải đúng %d bài toán để tắt báo thức.</string>
+    <string name="memory_game_round_success">Tuyệt vời! Bấm Tiếp tục để qua vòng</string>
+    <string name="memory_game_round_failed_overview">Hết lượt thử! Đã tìm %1$d/%2$d ô • Đang tạo bảng mới...</string>
+    <string name="memory_game_mistake_warning">Chọn nhầm! Còn %1$d lượt thử</string>
+    <string name="action_retry_now">Thử lại ngay</string>
+    <string name="action_check_answer">Kiểm tra</string>
+    <string name="mission_typing_completed_badge">Chính xác!</string>
+    <string name="memory_legend_correct">Đã tìm</string>
+    <string name="memory_legend_wrong">Chọn nhầm</string>
+    <string name="memory_legend_missed">Bỏ sót</string>
 </resources>

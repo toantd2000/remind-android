@@ -69,6 +69,15 @@
     <string name="math_difficulty_very_hard">Very Hard (e.g. 12 × 8 + 9 × 7 − 34, 34 × 15 + 68)</string>
     <string name="math_problems_count">Number of problems</string>
     <string name="math_problems_helper">You need to solve correctly %d problems to dismiss the alarm.</string>
+    <string name="memory_game_round_success">Great job! Tap Continue for next round</string>
+    <string name="memory_game_round_failed_overview">Out of lives! Found %1$d/%2$d tiles • Retrying...</string>
+    <string name="memory_game_mistake_warning">Wrong tile! %1$d lives left</string>
+    <string name="action_retry_now">Retry now</string>
+    <string name="action_check_answer">Check</string>
+    <string name="mission_typing_completed_badge">Matched!</string>
+    <string name="memory_legend_correct">Found</string>
+    <string name="memory_legend_wrong">Wrong</string>
+    <string name="memory_legend_missed">Missed</string>
 </resources>
 
 

@@ -128,7 +128,9 @@ class MissionRingingViewModel @Inject constructor(
                 currentMissionIndex = index,
                 currentRepetition = 1,
                 missionData = data,
-                currentTargetData = data.firstOrNull()
+                currentTargetData = data.firstOrNull(),
+                timeoutCountdown = MISSION_TIMEOUT_SECONDS,
+                validationState = StepValidationState.IDLE
             )
         }
         startTimeoutTimer()
@@ -137,14 +139,23 @@ class MissionRingingViewModel @Inject constructor(
     private fun startTimeoutTimer() {
         timeoutJob?.cancel()
         timeoutJob = viewModelScope.launch {
-            var remaining = MISSION_TIMEOUT_SECONDS
-            while (remaining > 0) {
-                _uiState.update { it.copy(timeoutCountdown = remaining) }
-                kotlinx.coroutines.delay(1000L)
-                remaining--
+            _uiState.update { it.copy(timeoutCountdown = MISSION_TIMEOUT_SECONDS) }
+            while (_uiState.value.timeoutCountdown > 0) {
+                delay(1000L)
+                if (!_uiState.value.isTimerPaused) {
+                    _uiState.update { it.copy(timeoutCountdown = (it.timeoutCountdown - 1).coerceAtLeast(0)) }
+                }
             }
             abandonMission()
         }
+    }
+
+    fun onUserInteraction() {
+        _uiState.update { it.copy(timeoutCountdown = MISSION_TIMEOUT_SECONDS) }
+    }
+
+    fun setTimerPaused(isPaused: Boolean) {
+        _uiState.update { it.copy(isTimerPaused = isPaused) }
     }
 
     fun abandonMission() {
@@ -156,7 +167,7 @@ class MissionRingingViewModel @Inject constructor(
 
     fun onUserInputChange(input: String) {
         _userInput.value = input
-        startTimeoutTimer() // Reset timer on every interaction
+        onUserInteraction()
     }
 
     fun validateCurrentStep() {
@@ -164,23 +175,39 @@ class MissionRingingViewModel @Inject constructor(
         val currentMission = state.currentMission ?: return
         val input = _userInput.value
 
-        val isCorrect = when (currentMission.type) {
+        when (currentMission.type) {
             MissionType.TYPING -> {
                 val target = (state.currentTargetData as? Phrase)?.content ?: return
-                input == target
+                if (input == target) {
+                    onRepetitionCompleted()
+                }
             }
             MissionType.MATH -> {
                 val target = (state.currentTargetData as? MathProblem)?.answer?.toString() ?: return
-                input.trim() == target
+                if (input.trim() == target) {
+                    viewModelScope.launch {
+                        _uiState.update { it.copy(validationState = StepValidationState.CORRECT) }
+                        setTimerPaused(true)
+                        delay(450L)
+                        _uiState.update { it.copy(validationState = StepValidationState.IDLE) }
+                        setTimerPaused(false)
+                        onRepetitionCompleted()
+                    }
+                } else {
+                    viewModelScope.launch {
+                        _uiState.update { it.copy(validationState = StepValidationState.WRONG) }
+                        delay(600L)
+                        _userInput.value = ""
+                        _uiState.update { it.copy(validationState = StepValidationState.IDLE) }
+                    }
+                }
             }
             MissionType.MEMORY_FIND_COLOR_TILES -> {
-                input == "SUCCESS"
+                if (input == "SUCCESS") {
+                    onRepetitionCompleted()
+                }
             }
-            else -> false
-        }
-
-        if (isCorrect) {
-            onRepetitionCompleted()
+            else -> {}
         }
     }
 
@@ -192,7 +219,9 @@ class MissionRingingViewModel @Inject constructor(
             _uiState.update { 
                 it.copy(
                     currentRepetition = it.currentRepetition + 1,
-                    currentTargetData = it.missionData.getOrNull(it.currentRepetition)
+                    currentTargetData = it.missionData.getOrNull(it.currentRepetition),
+                    timeoutCountdown = MISSION_TIMEOUT_SECONDS,
+                    validationState = StepValidationState.IDLE
                 )
             }
             _userInput.value = ""
@@ -212,11 +241,13 @@ class MissionRingingViewModel @Inject constructor(
             }
 
             // Show "Complete" for 1 second
+            setTimerPaused(true)
             _uiState.update { it.copy(isMissionJustCompleted = true) }
             delay(1000L)
             _uiState.update { it.copy(isMissionJustCompleted = false) }
 
             if (state.currentMissionIndex < state.missions.size - 1) {
+                setTimerPaused(false)
                 loadMissionData(state.currentMissionIndex + 1)
                 _userInput.value = ""
             } else {
@@ -226,16 +257,17 @@ class MissionRingingViewModel @Inject constructor(
     }
 
     fun finishAndDismiss() {
-        // Just signal the UI to navigate back, the alarm was already dismissed
         _uiState.update { it.copy(isDismissed = true) }
     }
-
-
 
     override fun onCleared() {
         super.onCleared()
         timeoutJob?.cancel()
     }
+}
+
+enum class StepValidationState {
+    IDLE, CORRECT, WRONG
 }
 
 data class MissionRingingUiState(
@@ -244,23 +276,15 @@ data class MissionRingingUiState(
     val missions: List<Mission> = emptyList(),
     val currentMissionIndex: Int = 0,
     val currentRepetition: Int = 1,
-    val missionData: List<Any> = emptyList(), // Can be Phrases, Math problems, etc.
+    val missionData: List<Any> = emptyList(),
     val currentTargetData: Any? = null,
     val isCompleted: Boolean = false,
     val isDismissed: Boolean = false,
     val isAbandoned: Boolean = false,
     val timeoutCountdown: Int = 30,
+    val isTimerPaused: Boolean = false,
+    val validationState: StepValidationState = StepValidationState.IDLE,
     val isMissionJustCompleted: Boolean = false
 ) {
     val currentMission: Mission? get() = missions.getOrNull(currentMissionIndex)
 }
-
-
-
-
-
-
-
-
-
-

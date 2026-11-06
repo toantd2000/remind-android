@@ -11,6 +11,7 @@ import javax.inject.Inject
 data class PermissionUiState(
     val isNotificationGranted: Boolean = false,
     val isExactAlarmGranted: Boolean = false,
+    val isFullScreenIntentGranted: Boolean = true,
     val isOverlayGranted: Boolean = false,
     val isBatteryOptIgnored: Boolean = false,
     val isDndPolicyGranted: Boolean = false
@@ -18,37 +19,22 @@ data class PermissionUiState(
 
 @HiltViewModel
 class PermissionViewModel @Inject constructor(
-    private val permissionChecker: vn.io.litever.remind.core.common.util.PermissionChecker
+    private val permissionChecker: PermissionChecker
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(
-        PermissionUiState(
-            isNotificationGranted = permissionChecker.hasNotificationPermission(),
-            isExactAlarmGranted = permissionChecker.hasExactAlarmPermission(),
-            isOverlayGranted = permissionChecker.hasOverlayPermission(),
-            isBatteryOptIgnored = permissionChecker.isIgnoringBatteryOptimizations(),
-            isDndPolicyGranted = permissionChecker.hasNotificationPolicyAccess()
-        )
-    )
+    private val _uiState = MutableStateFlow(readCurrentPermissions())
     val uiState: StateFlow<PermissionUiState> = _uiState.asStateFlow()
 
     fun refreshPermissions() {
-        _uiState.value = PermissionUiState(
-            isNotificationGranted = permissionChecker.hasNotificationPermission(),
-            isExactAlarmGranted = permissionChecker.hasExactAlarmPermission(),
-            isOverlayGranted = permissionChecker.hasOverlayPermission(),
-            isBatteryOptIgnored = permissionChecker.isIgnoringBatteryOptimizations(),
-            isDndPolicyGranted = permissionChecker.hasNotificationPolicyAccess()
-        )
+        _uiState.value = readCurrentPermissions()
     }
+
+    private fun readCurrentPermissions(): PermissionUiState = PermissionUiState(
+        isNotificationGranted = permissionChecker.hasNotificationPermission(),
+        isExactAlarmGranted = permissionChecker.hasExactAlarmPermission(),
+        isFullScreenIntentGranted = permissionChecker.hasFullScreenIntentPermission(),
+        isOverlayGranted = permissionChecker.hasOverlayPermission(),
+        isBatteryOptIgnored = permissionChecker.isIgnoringBatteryOptimizations(),
+        isDndPolicyGranted = permissionChecker.hasNotificationPolicyAccess()
+    )
 }
-
-
-
-
-
-
-
-
-
-

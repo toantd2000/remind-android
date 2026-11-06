@@ -41,11 +41,11 @@
     <string name="setting_permissions_subtitle">Quản lý trạng thái và liên kết cài đặt</string>
     <string name="setting_alarm_title">Cài đặt báo thức</string>
     <string name="setting_alarm_subtitle">Loa tích hợp, thông báo sắp đến...</string>
-    
+
     <string name="setting_qa">QA</string>
     <string name="setting_rate">Đánh giá ứng dụng</string>
     <string name="setting_share">Chia sẻ ứng dụng</string>
-    
+
     <string name="setting_story">Câu chuyện - Tác giả</string>
     <string name="setting_terms">Điều khoản</string>
     <string name="setting_privacy">Chính sách bảo mật</string>
@@ -59,47 +59,40 @@
     <string name="attribution_oss_title">Thư viện mã nguồn mở</string>
     <string name="attribution_oss_desc">Các phần mềm từ bên thứ ba được sử dụng trong dự án</string>
 
-
     <string name="setting_version_title">Phiên bản ứng dụng</string>
     <string name="app_version_format">%1$s (%2$d)</string>
 
     <string name="author_info_slogan">Lightweight Code. Solid Core.</string>
     <string name="author_info_meaning">Công nghệ hiện đại, nhẹ nhàng nhưng vững chắc, đáng tin cậy.</string>
     <string name="author_info_developed_by">Phát triển với ❤️ bởi LiteVer Team</string>
-    
+
     <!-- Permissions -->
     <string name="permission_granted">Đã cấp quyền</string>
     <string name="permission_denied">Chưa có quyền</string>
     <string name="permission_not_required">Không yêu cầu</string>
     <string name="permission_request_action">Thiết lập</string>
     <string name="permission_warning_critical">QUAN TRỌNG: App sẽ không thể báo thức nếu thiếu quyền này!</string>
-    
+
     <string name="permission_exact_alarm_title">Báo thức</string>
     <string name="permission_exact_alarm_desc">Cho phép ứng dụng đặt báo thức chính xác ngay cả khi thiết bị đang ở chế độ tiết kiệm pin.</string>
-    
+
     <string name="permission_notification_title">Thông báo</string>
     <string name="permission_notification_desc">Bắt buộc để hiển thị giao diện báo thức lên màn hình khi chuông reo.</string>
-    
+
+    <string name="permission_full_screen_intent_title">Cảnh báo toàn màn hình</string>
+    <string name="permission_full_screen_intent_desc">Cho phép nhắc nhở khẩn cấp và báo thức hiển thị ngay lập tức trên màn hình khóa.</string>
+
     <string name="permission_overlay_title">Hiển thị trên các ứng dụng khác</string>
     <string name="permission_overlay_desc">Giúp giao diện báo thức xuất hiện ngay lập tức khi bạn đang sử dụng ứng dụng khác.</string>
-    
+
     <string name="permission_battery_title">Tối ưu hóa pin</string>
     <string name="permission_battery_desc">Giúp ứng dụng chạy ngầm ổn định hơn để đảm bảo báo thức luôn hoạt động.</string>
 
     <string name="permission_dnd_title">Bỏ qua Không làm phiền</string>
     <string name="permission_dnd_desc">Cho phép ứng dụng phát chuông ngay cả khi thiết bị đang ở chế độ Không làm phiền.</string>
-    
+
     <string name="permission_manufacturer_title">Cài đặt riêng của nhà sản xuất</string>
     <string name="permission_manufacturer_desc">Quản lý Tự khởi chạy và hoạt động nền cho riêng dòng máy của bạn.</string>
-    
-    <string name="permission_location_title">Truy cập Vị trí</string>
-    <string name="permission_location_desc">Bắt buộc cho nhắc nhở theo Vị trí (Geofence) và nhận diện mạng Wi-Fi khi chạy nền.</string>
-    <string name="permission_background_location_title">Vị trí trong nền</string>
-    <string name="permission_background_location_desc">Cho phép ứng dụng theo dõi vị trí cả khi đóng ứng dụng để kích hoạt nhắc nhở vị trí kịp thời.</string>
-    <string name="permission_full_screen_intent_title">Cảnh báo toàn màn hình</string>
-    <string name="permission_full_screen_intent_desc">Cho phép nhắc nhở khẩn cấp và báo thức hiển thị ngay lập tức trên màn hình khóa.</string>
-    <string name="permission_wifi_title">Trạng thái Wi-Fi</string>
-    <string name="permission_wifi_desc">Cho phép theo dõi các sự kiện kết nối và ngắt kết nối Wi-Fi cho nhắc nhở.</string>
 
     <!-- Alarm Settings -->
     <string name="snooze_duration_title">Thời gian tạm dừng</string>
@@ -133,6 +126,3 @@
     <string name="rewarded_ad_not_ready">Quảng cáo chưa sẵn sàng. Vui lòng thử lại sau nhé!</string>
     <string name="loading_ad_message">Đang tải quảng cáo, vui lòng đợi...</string>
 </resources>
-
-
-

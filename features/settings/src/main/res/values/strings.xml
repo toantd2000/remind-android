@@ -41,11 +41,11 @@
     <string name="setting_permissions_subtitle">Manage status and system navigation</string>
     <string name="setting_alarm_title">Alarm Settings</string>
     <string name="setting_alarm_subtitle">Built-in speaker, pre-alarm notifications...</string>
-    
+
     <string name="setting_qa">QA</string>
     <string name="setting_rate">Rate App</string>
     <string name="setting_share">Share App</string>
-    
+
     <string name="setting_story">Story - Author</string>
     <string name="setting_terms">Terms of Service</string>
     <string name="setting_privacy">Privacy Policy</string>
@@ -58,7 +58,6 @@
     <string name="attribution_storyset_desc">Beautiful illustrations used throughout the app</string>
     <string name="attribution_oss_title">Open Source Libraries</string>
     <string name="attribution_oss_desc">Third-party software used in this project</string>
-
 
     <string name="setting_version_title">App Version</string>
     <string name="app_version_format">%1$s (%2$d)</string>
@@ -73,33 +72,27 @@
     <string name="permission_not_required">Not required</string>
     <string name="permission_request_action">Request</string>
     <string name="permission_warning_critical">CRITICAL: App cannot alert you if this is missing!</string>
-    
+
     <string name="permission_exact_alarm_title">Alarms</string>
     <string name="permission_exact_alarm_desc">Allow the app to set precise alarms even when the device is in power-saving mode.</string>
-    
+
     <string name="permission_notification_title">Notifications</string>
     <string name="permission_notification_desc">Required to show the alarm alert on the screen when it rings.</string>
-    
+
+    <string name="permission_full_screen_intent_title">Full-Screen Alerts</string>
+    <string name="permission_full_screen_intent_desc">Allows urgent reminders and alarms to display over the lock screen immediately.</string>
+
     <string name="permission_overlay_title">Display over other apps</string>
     <string name="permission_overlay_desc">Allows the alarm screen to appear immediately while you are using other apps.</string>
-    
+
     <string name="permission_battery_title">Battery Optimization</string>
     <string name="permission_battery_desc">Allows the app to run in the background more reliably to ensure alarms always fire.</string>
 
     <string name="permission_dnd_title">Do Not Disturb Access</string>
     <string name="permission_dnd_desc">Allows the app to bypass Do Not Disturb mode for specific alarms.</string>
-    
+
     <string name="permission_manufacturer_title">Manufacturer Settings</string>
     <string name="permission_manufacturer_desc">Manage Auto-start and background activity for your specific device model.</string>
-    
-    <string name="permission_location_title">Location Access</string>
-    <string name="permission_location_desc">Required for Geofenced location reminders and identifying Wi-Fi networks in the background.</string>
-    <string name="permission_background_location_title">Background Location</string>
-    <string name="permission_background_location_desc">Allow the app to monitor your location even when closed so geofence reminders trigger promptly.</string>
-    <string name="permission_full_screen_intent_title">Full-Screen Alerts</string>
-    <string name="permission_full_screen_intent_desc">Allows urgent reminders and alarms to display over the lock screen immediately.</string>
-    <string name="permission_wifi_title">Wi-Fi State</string>
-    <string name="permission_wifi_desc">Enables monitoring Wi-Fi connection and disconnection events for reminders.</string>
 
     <!-- Alarm Settings -->
     <string name="snooze_duration_title">Snooze duration</string>
@@ -133,7 +126,3 @@
     <string name="rewarded_ad_not_ready">Ad is not ready yet. Please try again later!</string>
     <string name="loading_ad_message">Loading ad, please wait...</string>
 </resources>
-
-
-
-

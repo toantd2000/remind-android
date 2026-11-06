@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,12 +23,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import vn.io.litever.designsystem.components.LiteverButton
-import vn.io.litever.designsystem.components.LiteverOutlinedButton
-import vn.io.litever.designsystem.components.LiteverTextField
+import vn.io.litever.designsystem.components.button.LvButton
+import vn.io.litever.designsystem.components.button.LvButtonType
+import vn.io.litever.designsystem.components.core.LvSemantic
+import vn.io.litever.designsystem.components.dialog.LvAlertDialog
+import vn.io.litever.designsystem.components.textfield.LvTextField
+import vn.io.litever.designsystem.components.textfield.LvTextFieldType
 import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.features.reminders.R
 import kotlin.random.Random
 
@@ -46,8 +49,9 @@ fun ReminderPuzzleDialog(
     var enteredCode by remember { mutableStateOf("") }
     var showError by remember { mutableStateOf(false) }
 
-    AlertDialog(
+    LvAlertDialog(
         onDismissRequest = onDismissRequest,
+        modifier = modifier,
         title = {
             Text(
                 text = stringResource(R.string.puzzle_dialog_title),
@@ -60,7 +64,7 @@ fun ReminderPuzzleDialog(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 4.dp),
+                    .padding(vertical = LiteverTheme.spacing.extraSmall),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -70,12 +74,11 @@ fun ReminderPuzzleDialog(
                     textAlign = TextAlign.Center
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
 
                 // Target code display box
                 Surface(
-                    modifier = Modifier
-                        .clip(LiteverTheme.shapes.medium),
+                    modifier = Modifier.clip(LiteverTheme.shapes.medium),
                     color = LiteverTheme.colors.primaryContainer.copy(alpha = 0.6f),
                     shape = LiteverTheme.shapes.medium
                 ) {
@@ -87,21 +90,26 @@ fun ReminderPuzzleDialog(
                             letterSpacing = 6.sp
                         ),
                         color = LiteverTheme.colors.primary,
-                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp)
+                        modifier = Modifier.padding(
+                            horizontal = LiteverTheme.spacing.large,
+                            vertical = LiteverTheme.spacing.smallMedium
+                        )
                     )
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
 
-                LiteverTextField(
+                LvTextField(
                     value = enteredCode,
                     onValueChange = {
                         enteredCode = it.filter { char -> char.isDigit() }.take(targetCode.length)
                         showError = false
                     },
                     modifier = Modifier.fillMaxWidth(),
+                    type = LvTextFieldType.Outlined,
                     label = stringResource(R.string.puzzle_input_hint),
                     placeholder = stringResource(R.string.puzzle_input_hint),
+                    errorMessage = if (showError) stringResource(R.string.puzzle_incorrect) else null,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.NumberPassword,
                         imeAction = ImeAction.Done
@@ -117,20 +125,10 @@ fun ReminderPuzzleDialog(
                     ),
                     singleLine = true
                 )
-
-                if (showError) {
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = stringResource(R.string.puzzle_incorrect),
-                        style = LiteverTheme.typography.bodySmall,
-                        color = LiteverTheme.colors.error,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
             }
         },
         confirmButton = {
-            LiteverButton(
+            LvButton(
                 onClick = {
                     if (enteredCode == targetCode) {
                         onConfirmed()
@@ -138,16 +136,42 @@ fun ReminderPuzzleDialog(
                         showError = true
                     }
                 },
-                enabled = enteredCode.isNotBlank()
+                enabled = enteredCode.isNotBlank(),
+                semantic = LvSemantic.Primary
             ) {
                 Text(stringResource(R.string.puzzle_confirm_button))
             }
         },
         dismissButton = {
-            LiteverOutlinedButton(onClick = onDismissRequest) {
+            LvButton(
+                onClick = onDismissRequest,
+                type = LvButtonType.Outlined,
+                semantic = LvSemantic.Secondary
+            ) {
                 Text(stringResource(R.string.action_cancel))
             }
-        },
-        modifier = modifier
+        }
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ReminderPuzzleDialogPreview() {
+    ReMindTheme {
+        ReminderPuzzleDialog(
+            onDismissRequest = {},
+            onConfirmed = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ReminderPuzzleDialogDarkPreview() {
+    ReMindTheme(darkTheme = true) {
+        ReminderPuzzleDialog(
+            onDismissRequest = {},
+            onConfirmed = {}
+        )
+    }
 }

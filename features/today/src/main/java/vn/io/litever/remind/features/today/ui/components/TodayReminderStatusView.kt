@@ -33,7 +33,7 @@ import vn.io.litever.remind.features.today.R
 /**
  * Hiển thị trạng thái số lượng nhắc nhở đang hoạt động trên TodayScreen.
  * Vùng này CHỈ để hiển thị trạng thái, KHÔNG THỂ tương tác (non-interactive),
- * đồng bộ thiết kế với [TodayNextAlarmView].
+ * Vùng này CHỈ để hiển thị trạng thái, KHÔNG THỂ tương tác (non-interactive).
  */
 @Composable
 fun TodayReminderStatusView(

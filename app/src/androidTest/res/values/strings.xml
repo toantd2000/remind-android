@@ -21,9 +21,4 @@
     <string name="mock_ringing_message">Wake up and shine! A wonderful day is waiting for you.</string>
     <string name="mock_mission_typing_phrase">Every morning brings new potential to conquer your dreams.</string>
     <string name="mock_mission_memory_name">Memory Match Challenge</string>
-
-    <!-- Morning Briefing & Weather -->
-    <string name="mock_weather_city">London</string>
-    <string name="mock_weather_condition">Partly Cloudy</string>
-    <string name="mock_briefing_greeting">Good morning! Ready for a productive day?</string>
 </resources>

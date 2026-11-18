@@ -69,7 +69,6 @@ fun AlarmRingingRoute(
     alarmId: Long,
     onFinish: () -> Unit,
     onStartMission: (Long) -> Unit,
-    onDismissSuccess: (Long) -> Unit,
     navController: androidx.navigation.NavController,
     modifier: Modifier = Modifier,
     viewModel: AlarmRingingViewModel = hiltViewModel()
@@ -91,7 +90,6 @@ fun AlarmRingingRoute(
             }
             "success" -> {
                 viewModel.dismissAlarm()
-                onDismissSuccess(alarmId)
                 navController.currentBackStackEntry?.savedStateHandle?.remove<String>("mission_result")
             }
         }
@@ -116,7 +114,6 @@ fun AlarmRingingRoute(
     AlarmRingingScreen(
         onDismiss = {
             viewModel.dismissAlarm()
-            onDismissSuccess(alarmId)
         },
         onSnooze = {
             viewModel.snoozeAlarm()

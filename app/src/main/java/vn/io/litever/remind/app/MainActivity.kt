@@ -104,7 +104,6 @@ class MainViewModel @Inject constructor(
     val themeMode = preferencesDataSource.themeMode
     val colorPalette = preferencesDataSource.colorPalette
     val language = preferencesDataSource.language
-    val acknowledgingAlarmId = alarmRingManager.acknowledgingAlarmId
 
     val isAdFreeActive: StateFlow<Boolean> = preferencesDataSource.adsDisabledUntil
         .map { it > System.currentTimeMillis() }
@@ -222,9 +221,6 @@ class MainActivity : ComponentActivity() {
                             val missedAlarms by viewModel.missedAlarms.collectAsState()
 
                             val navBackStackEntry by navController.currentBackStackEntryAsState()
-                            val acknowledgingAlarmId by viewModel.acknowledgingAlarmId.collectAsState(
-                                initial = null as Long?
-                            )
 
                             if (missedAlarms.isNotEmpty()) {
                                 vn.io.litever.remind.features.alarms.ui.components.MissedAlarmDialog(
@@ -239,7 +235,6 @@ class MainActivity : ComponentActivity() {
                             LaunchedEffect(
                                 ringingAlarmId,
                                 activeSnoozingalarmId,
-                                acknowledgingAlarmId,
                                 ringingReminderId,
                                 isNavReady
                             ) {
@@ -250,24 +245,11 @@ class MainActivity : ComponentActivity() {
                                 val currentAlarmId = currentEntry?.arguments?.getLong("alarmId")
                                 val currentReminderId = currentEntry?.arguments?.getLong("reminderId")
 
-                                val idMessage = acknowledgingAlarmId
                                 val idRingingAlarm = ringingAlarmId
                                 val idRingingReminder = ringingReminderId
                                 val idSnoozingAlarm = activeSnoozingalarmId
 
-                                if (idMessage != null) {
-                                    val isAlreadyMessageId =
-                                        currentDest == "alarm_message_route/{alarmId}" && currentAlarmId == idMessage
-
-                                    if (!isAlreadyMessageId) {
-                                        navController.navigate("alarm_message_route/$idMessage") {
-                                            popUpTo(navController.graph.startDestinationId) {
-                                                inclusive = false
-                                            }
-                                            launchSingleTop = true
-                                        }
-                                    }
-                                } else if (idRingingAlarm != null) {
+                                if (idRingingAlarm != null) {
                                     // PRIORITY 1: Actively ringing alarm
                                     val isUserInMission =
                                         currentDest?.startsWith("mission_ringing_route") == true
@@ -321,7 +303,6 @@ class MainActivity : ComponentActivity() {
                                 } else {
                                     lastNavigatedRingingReminderId = null
                                     if (currentDest == "alarm_ringing_route/{alarmId}" ||
-                                        currentDest == "alarm_message_route/{alarmId}" ||
                                         currentDest == "reminder_ringing_route/{reminderId}"
                                     ) {
                                         // Only pop if we were on a ringing screen and the state is now cleared
@@ -416,9 +397,6 @@ class MainActivity : ComponentActivity() {
                                                 },
                                                 onNavigateToMissionRinging = { alarmId ->
                                                     navController.navigateToMissionRinging(alarmId)
-                                                },
-                                                onNavigateToMessage = { alarmId ->
-                                                    // Navigation handled globally
                                                 },
                                                 onNavigateBack = {
                                                     navController.popBackStack()

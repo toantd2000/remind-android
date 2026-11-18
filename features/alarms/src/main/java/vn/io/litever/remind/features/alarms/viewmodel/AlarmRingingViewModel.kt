@@ -23,9 +23,7 @@ class AlarmRingingViewModel @Inject constructor(
     private val alarmRepository: AlarmRepository,
     private val alarmController: AlarmController,
     private val preferencesDataSource: AlarmPreferencesDataSource,
-    private val alarmRingManager: AlarmRingManager,
-    private val weatherRepository: vn.io.litever.remind.core.domain.repository.WeatherRepository,
-    private val TodayRepository: vn.io.litever.remind.core.domain.repository.TodayRepository
+    private val alarmRingManager: AlarmRingManager
 ) : ViewModel() {
 
     private val alarmId: Long = checkNotNull(savedStateHandle["alarmId"])
@@ -45,14 +43,6 @@ class AlarmRingingViewModel @Inject constructor(
             initialValue = true
         )
 
-    val isAdFreeActive: StateFlow<Boolean> = preferencesDataSource.adsDisabledUntil
-        .map { it > System.currentTimeMillis() }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = false
-        )
-
     val autoSilenceCountdown: StateFlow<Int?> = alarmRingManager.autoSilenceCountdown
         .stateIn(
             scope = viewModelScope,
@@ -60,37 +50,8 @@ class AlarmRingingViewModel @Inject constructor(
             initialValue = null
         )
 
-    val weather: StateFlow<vn.io.litever.remind.core.model.WeatherResponse?> = weatherRepository.getRemindWeather()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = null
-        )
-
-    val todayBriefing: StateFlow<vn.io.litever.remind.core.model.TodayBriefing?> = TodayRepository.getTodayBriefing()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = null
-        )
-
-    init {
-        viewModelScope.launch {
-            launch { weatherRepository.refreshWeather() }
-            launch { TodayRepository.refreshTodayBriefing() }
-        }
-    }
-
     fun dismissAlarm() {
         viewModelScope.launch {
-            alarmRingManager.setAcknowledgingAlarmId(alarmId)
-            alarmController.dismissAlarm(alarmId)
-        }
-    }
-
-    fun onFinishMessage() {
-        viewModelScope.launch {
-            alarmRingManager.setAcknowledgingAlarmId(null)
             alarmController.dismissAlarm(alarmId)
         }
     }

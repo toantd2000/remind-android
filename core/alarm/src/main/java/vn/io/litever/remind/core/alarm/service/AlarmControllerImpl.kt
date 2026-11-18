@@ -142,7 +142,6 @@ class AlarmControllerImpl @Inject constructor(
             }
         }
         currentAlarmId?.let { 
-            alarmRingManager.setAcknowledgingAlarmId(it)
             alarmRingManager.dequeueAlarm(it) 
         }
     }

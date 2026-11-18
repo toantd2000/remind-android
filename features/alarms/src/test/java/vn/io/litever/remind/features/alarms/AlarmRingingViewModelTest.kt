@@ -24,8 +24,6 @@ import org.junit.Test
 import vn.io.litever.remind.core.alarm.AlarmRingManager
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import vn.io.litever.remind.core.domain.repository.AlarmRepository
-import vn.io.litever.remind.core.domain.repository.TodayRepository
-import vn.io.litever.remind.core.domain.repository.WeatherRepository
 import vn.io.litever.remind.core.domain.scheduler.AlarmController
 import vn.io.litever.remind.core.model.Alarm
 import vn.io.litever.remind.features.alarms.viewmodel.AlarmRingingViewModel
@@ -39,8 +37,6 @@ class AlarmRingingViewModelTest {
     private val alarmController = mockk<AlarmController>(relaxed = true)
     private val preferencesDataSource = mockk<AlarmPreferencesDataSource>(relaxed = true)
     private val alarmRingManager = mockk<AlarmRingManager>(relaxed = true)
-    private val weatherRepository = mockk<WeatherRepository>(relaxed = true)
-    private val todayRepository = mockk<TodayRepository>(relaxed = true)
 
     private val allAlarmsFlow = MutableStateFlow<List<Alarm>>(emptyList())
     private val countdownFlow = MutableStateFlow<Int?>(null)
@@ -53,8 +49,6 @@ class AlarmRingingViewModelTest {
         every { alarmRepository.getAllAlarms() } returns allAlarmsFlow
         every { preferencesDataSource.is24HourFormat } returns flowOf(true)
         every { alarmRingManager.autoSilenceCountdown } returns countdownFlow
-        every { weatherRepository.getRemindWeather() } returns flowOf(null)
-        every { todayRepository.getTodayBriefing() } returns flowOf(null)
 
         val savedStateHandle = SavedStateHandle(mapOf("alarmId" to 42L))
         viewModel = AlarmRingingViewModel(
@@ -62,9 +56,7 @@ class AlarmRingingViewModelTest {
             alarmRepository = alarmRepository,
             alarmController = alarmController,
             preferencesDataSource = preferencesDataSource,
-            alarmRingManager = alarmRingManager,
-            weatherRepository = weatherRepository,
-            TodayRepository = todayRepository
+            alarmRingManager = alarmRingManager
         )
     }
 
@@ -92,20 +84,10 @@ class AlarmRingingViewModelTest {
     }
 
     @Test
-    fun dismissAlarm_setsAcknowledgingAlarmIdAndDismisses() = runTest(testDispatcher) {
+    fun dismissAlarm_delegatesToAlarmController() = runTest(testDispatcher) {
         viewModel.dismissAlarm()
         testDispatcher.scheduler.advanceUntilIdle()
 
-        coVerify { alarmRingManager.setAcknowledgingAlarmId(42L) }
-        coVerify { alarmController.dismissAlarm(42L) }
-    }
-
-    @Test
-    fun onFinishMessage_clearsAcknowledgingAlarmIdAndDismisses() = runTest(testDispatcher) {
-        viewModel.onFinishMessage()
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        coVerify { alarmRingManager.setAcknowledgingAlarmId(null) }
         coVerify { alarmController.dismissAlarm(42L) }
     }
 

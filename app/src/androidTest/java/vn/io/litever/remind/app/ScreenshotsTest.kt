@@ -18,10 +18,7 @@ import tools.fastlane.screengrab.UiAutomatorScreenshotStrategy
 import tools.fastlane.screengrab.locale.LocaleTestRule
 import vn.io.litever.remind.app.test.R
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
-import vn.io.litever.remind.core.model.AdConfig
 import vn.io.litever.remind.core.model.Alarm
-import vn.io.litever.remind.core.model.CurrentWeather
-import vn.io.litever.remind.core.model.DailySummary
 import java.time.DayOfWeek
 import vn.io.litever.remind.core.model.MemoryGameBoard
 import vn.io.litever.remind.core.model.MemoryTilesMissionConfig
@@ -31,12 +28,8 @@ import vn.io.litever.remind.core.model.Phrase
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderTriggerType
 import vn.io.litever.remind.core.model.TimeTrigger
-import vn.io.litever.remind.core.model.TodayBriefing
-import vn.io.litever.remind.core.model.TodayMetadata
 import vn.io.litever.remind.core.model.TypingMissionConfig
-import vn.io.litever.remind.core.model.WeatherResponse
 import vn.io.litever.remind.features.alarms.ui.AlarmListScreen
-import vn.io.litever.remind.features.alarms.ui.AlarmMessageScreen
 import vn.io.litever.remind.features.alarms.ui.AlarmRingingScreen
 import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState
 import vn.io.litever.remind.features.mission.ui.MissionRingingScreen
@@ -365,60 +358,5 @@ class ScreenshotsTest {
         composeTestRule.waitForIdle()
         Thread.sleep(600)
         captureScreenshot("5_mission_memory")
-    }
-
-    @Test
-    fun test06AlarmMessageScreen() {
-        val mockAlarm = Alarm(
-            id = 1L,
-            time = LocalTime.of(6, 30),
-            label = getTestString(R.string.mock_alarm_1_label),
-            message = getTestString(R.string.mock_ringing_message)
-        )
-
-        val mockWeather = WeatherResponse(
-            locationName = getTestString(R.string.mock_weather_city),
-            current = CurrentWeather(
-                lastUpdated = "2026-09-29 06:30",
-                tempC = 25.5,
-                feelsLikeC = 26.0,
-                isDay = 1,
-                conditionText = getTestString(R.string.mock_weather_condition),
-                conditionIcon = "//cdn.weatherapi.com/weather/64x64/day/116.png",
-                conditionCode = 1003,
-                aqiIndex = 2,
-                precipMm = 0.0
-            ),
-            dailySummary = DailySummary(
-                maxTemp = 30.0,
-                minTemp = 24.0,
-                chanceOfRain = 10
-            ),
-            hourlyForecast = emptyList(),
-            aiAnalysis = vn.io.litever.remind.core.model.AiAnalysis(hint = "A pleasant morning for outdoor exercise")
-        )
-
-        val mockBriefing = TodayBriefing(
-            messages = listOf(getTestString(R.string.mock_briefing_greeting)),
-            adConfig = AdConfig(enableAds = false),
-            metadata = TodayMetadata(date = "2026-09-29", isHoliday = false)
-        )
-
-        composeTestRule.setContent {
-            ReMindTheme(darkTheme = false) {
-                AlarmMessageScreen(
-                    alarm = mockAlarm,
-                    is24HourFormat = false,
-                    weather = mockWeather,
-                    todayBriefing = mockBriefing,
-                    isAdFreeActive = true,
-                    onFinish = {}
-                )
-            }
-        }
-
-        composeTestRule.waitForIdle()
-        Thread.sleep(600)
-        captureScreenshot("6_alarm_message")
     }
 }

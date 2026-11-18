@@ -13,14 +13,11 @@ const val AlarmRingingRoute = "alarm_ringing_route/{alarmId}"
 const val AlarmPreviewRoute = "alarm_preview_route/{alarmId}"
 const val ringtoneSelectionRoute = "ringtone_selection_route"
 
-const val AlarmMessageRoute = "alarm_message_route/{alarmId}"
-
 fun NavGraphBuilder.alarmGraph(
     onNavigateToEdit: (Long) -> Unit,
     onNavigateToRingtoneSelection: (String?) -> Unit,
     onNavigateToPermissions: () -> Unit,
     onNavigateToMissionRinging: (Long) -> Unit,
-    onNavigateToMessage: (Long) -> Unit,
     onNavigateBack: () -> Unit,
     onMissionClick: (vn.io.litever.remind.core.model.Mission) -> Unit,
     onNavigateToPreview: (Long) -> Unit,
@@ -73,19 +70,7 @@ fun NavGraphBuilder.alarmGraph(
             alarmId = alarmId,
             onFinish = onNavigateBack,
             onStartMission = onNavigateToMissionRinging,
-            onDismissSuccess = onNavigateToMessage,
             navController = navController
-        )
-    }
-    composable(
-        route = AlarmMessageRoute,
-        arguments = listOf(navArgument("alarmId") { type = NavType.LongType }),
-        deepLinks = listOf(navDeepLink { uriPattern = "app://remind/message/{alarmId}" })
-    ) { backStackEntry ->
-        val alarmId = backStackEntry.arguments?.getLong("alarmId") ?: -1L
-        AlarmMessageRoute(
-            alarmId = alarmId,
-            onFinish = onNavigateBack
         )
     }
     composable(

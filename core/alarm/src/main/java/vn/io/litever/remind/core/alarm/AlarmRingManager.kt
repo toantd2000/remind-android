@@ -57,13 +57,6 @@ class AlarmRingManager @Inject constructor() {
         _autoSilenceCountdown.value = seconds
     }
 
-    private val _acknowledgingAlarmId = MutableStateFlow<Long?>(null)
-    val acknowledgingAlarmId: StateFlow<Long?> = _acknowledgingAlarmId.asStateFlow()
-
-    fun setAcknowledgingAlarmId(alarmId: Long?) {
-        _acknowledgingAlarmId.value = alarmId
-    }
-
     private val _isRingingScreenVisible = MutableStateFlow(false)
     val isRingingScreenVisible: StateFlow<Boolean> = _isRingingScreenVisible.asStateFlow()
 

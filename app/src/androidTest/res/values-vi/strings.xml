@@ -21,9 +21,4 @@
     <string name="mock_ringing_message">Thức dậy thôi nào! Một ngày tuyệt vời đang chờ đón bạn.</string>
     <string name="mock_mission_typing_phrase">Mỗi sớm mai thức dậy là một cơ hội tuyệt vời để chinh phục ước mơ.</string>
     <string name="mock_mission_memory_name">Thử thách Trí nhớ Lật ô</string>
-
-    <!-- Morning Briefing & Weather -->
-    <string name="mock_weather_city">Hà Nội</string>
-    <string name="mock_weather_condition">Trời nắng nhẹ, mát mẻ</string>
-    <string name="mock_briefing_greeting">Chào buổi sáng! Hãy sẵn sàng cho một ngày thật năng động nhé.</string>
 </resources>

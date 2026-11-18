@@ -8,7 +8,7 @@
 
 - **Ngôn ngữ & Bất đồng bộ:** Kotlin 2.x, Coroutines & Reactive Flow.
 - **UI & Design System:** Jetpack Compose (Material 3), kết nối composite build với thư viện nền tảng `litever-designsystem` (`includeBuild("../litever-designsystem")`).
-- **Kiến trúc:** Clean Architecture + Multi-module (18 modules cô lập).
+- **Kiến trúc:** Clean Architecture + Multi-module (17 modules cô lập).
 - **Dependency Injection:** Dagger Hilt.
 - **Lưu trữ dữ liệu:** Room Database (SQLite với Migration tường minh) & DataStore Preferences.
 - **Background Engine:** AlarmManager (`setExactAndAllowWhileIdle`), Foreground Services, BroadcastReceivers.
@@ -30,7 +30,6 @@
  ├── :core:data            (Triển khai OfflineFirst repositories & mappers)
  ├── :core:database        (Room Database, Entities, DAOs, Migrations)
  ├── :core:datastore       (DataStore Preferences: 24h format, Ad-free token)
- ├── :core:network         (Retrofit, OkHttp, Kotlinx Serialization)
  ├── :core:common          (Dispatchers, AudioPlayer, Common utils)
  ├── :core:ads:api / :impl (Module hạ tầng AdMob & Remote Config)
  ├── :core:analytics       (Firebase Analytics & Crashlytics tracking)

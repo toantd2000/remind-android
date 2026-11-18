@@ -19,6 +19,12 @@ Tài liệu này ghi lại lộ trình phát triển và các Quyết Định Ki
 
 ## 🧠 Quyết Định Kiến Trúc Gần Nhất (Active Micro-TDRs)
 
+### [TDR-097] - Tối Giản Hoá Kiến Trúc Cốt Lõi: Loại Bỏ Thời Tiết, Quote & Lớp Mạng
+- **Date:** 2026-11-18 | **Status:** Accepted
+- **Context:** Các tính năng Thời tiết, Quote hằng ngày, màn hình đệm `AlarmMessageScreen` và các loại Mission chưa hoàn thiện làm phình to kiến trúc và đi ngược triết lý ứng dụng Báo thức & Nhắc nhở tối giản.
+- **Decision:** Xoá bỏ toàn bộ `:features:today`, `:core:network` (Retrofit/OkHttp/Coil), `WeatherRepository`, `TodayRepository`, `AlarmMessageScreen` và các `MissionType` "Sắp ra mắt"; giữ `@Deprecated` trên key Remote Config cũ trong `AdPlacement` để bảo toàn deserialization.
+- **Consequences:** Thu gọn hệ thống từ 19 xuống 17 modules, thanh điều hướng còn 3 tab cốt lõi (Alarms, Reminders, Settings) và đưa nghiệp vụ chính về 100% Offline-first.
+
 ### [TDR-096] - Quy Hoạch Hệ Sinh Thái Agent Skills & Chuẩn Hóa Tài Liệu
 - **Date:** 2026-10-28 | **Status:** Accepted
 - **Context:** Các file skills và tài liệu bị phân mảnh, trùng lặp nhiều nơi ("reinventing the wheel") gây loãng ngữ cảnh AI.

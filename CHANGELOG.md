@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Modernized Trigger Controls:** Tinh giản cấu hình điều kiện kích hoạt nhắc nhở ngay trên màn hình biên tập, loại bỏ điều hướng phụ.
 
 ### Removed
+- Xoá bỏ hoàn toàn module `:core:network`, các model `Weather`/`TodayBriefing` cùng thư viện `Retrofit`, `OkHttp`, `Coil` không còn sử dụng; đánh dấu `@Deprecated` cho các key Remote Config cũ trong `AdPlacement` để tương thích ngược.
 - Loại bỏ tầng Domain, Data và DataStore cho Thời tiết và Quote (`WeatherRepository`, `TodayRepository`, `WeatherPreferencesDataSource`) cùng binding DI tương ứng.
 - Loại bỏ các thành phần UI Thời tiết (`WeatherInfoView`), Quote hằng ngày (`TodayQuoteView`), 5 bộ minh hoạ `*_pana.xml` khỏi `:core:designsystem` cùng các loại Mission chưa hoàn thiện (`SHAKE`, `QR_CODE`, `STEP`, `COLOR_MATCH`, `TAP_CHALLENGE`, `FIND_ITEM`) và nhãn "Sắp ra mắt".
 - Loại bỏ màn hình trung gian sau khi tắt báo thức (`AlarmMessageScreen`) và luồng trạng thái `acknowledgingAlarmId` trong `:core:alarm`, `:features:alarms` và `:app`.

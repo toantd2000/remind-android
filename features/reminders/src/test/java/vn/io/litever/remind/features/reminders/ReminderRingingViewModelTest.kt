@@ -31,8 +31,11 @@ import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderAction
 import vn.io.litever.remind.core.model.ReminderTriggerType
+import vn.io.litever.remind.core.model.RepeatMode
 import vn.io.litever.remind.core.model.TimeTrigger
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderRingingViewModel
+import java.time.LocalDate
+import java.time.LocalTime
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ReminderRingingViewModelTest {
@@ -187,5 +190,39 @@ class ReminderRingingViewModelTest {
         }
         coVerify { scheduler.cancelSnooze(match { it.id == 1L }) }
         coVerify { scheduler.schedule(match { it.id == 1L }) }
+    }
+
+    @Test
+    fun dismissAction_dateModeWithFutureDates_keepsReminderEnabledAndSchedulesNext() = runTest(testDispatcher) {
+        val futureDate = LocalDate.now().plusDays(1)
+        val reminder = Reminder(
+            id = 1L,
+            title = "Multi-date Medicine",
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            timeTrigger = TimeTrigger(
+                time = listOf(LocalTime.of(9, 0)),
+                exactDates = listOf(LocalDate.now(), futureDate),
+                repeatMode = RepeatMode.NONE
+            ),
+            isEnabled = true
+        )
+        reminderFlow.value = reminder
+        coEvery { repository.getReminderById(1L) } returns reminder
+
+        val viewModel = createViewModel()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        var finishCalled = false
+        viewModel.dismiss(onFinished = { finishCalled = true })
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertTrue(finishCalled)
+        coVerify {
+            repository.updateReminder(match {
+                it.id == 1L && it.isEnabled && it.snoozeNextTriggerTime == null
+            })
+        }
+        coVerify { scheduler.schedule(match { it.id == 1L && it.isEnabled }) }
     }
 }

@@ -17,6 +17,8 @@ import vn.io.litever.remind.core.domain.handler.ReminderActionHandler
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderTriggerType
+import vn.io.litever.remind.core.model.RepeatMode
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 data class ReminderRingingUiState(
@@ -86,10 +88,17 @@ class ReminderRingingViewModel @Inject constructor(
                     // Acknowledging an INTERVAL reminder shifts the cycle and schedules the next trigger
                     reminderActionHandler.handleComplete(reminder)
                 } else {
-                    val isRecurring = reminder.isRecurring
+                    val now = LocalDateTime.now()
+                    val trigger = reminder.timeTrigger
+                    val hasNextExactOccurrence = trigger != null &&
+                        trigger.repeatMode == RepeatMode.NONE &&
+                        trigger.effectiveExactDates.isNotEmpty() &&
+                        trigger.getNextOccurrence(now = now, lastTriggeredTime = now, isInterval = false) != null
+                    val shouldStayEnabled = reminder.isRecurring || hasNextExactOccurrence
                     val updatedReminder = reminder.copy(
-                        isEnabled = if (isRecurring) reminder.isEnabled else false,
-                        snoozeNextTriggerTime = null
+                        isEnabled = if (shouldStayEnabled) reminder.isEnabled else false,
+                        snoozeNextTriggerTime = null,
+                        lastTriggeredTime = if (shouldStayEnabled) null else reminder.lastTriggeredTime
                     )
                     reminderActionHandler.handleDismiss(updatedReminder)
                 }

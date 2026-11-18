@@ -41,19 +41,30 @@ class ReminderActionHandler @Inject constructor(
     suspend fun handleComplete(reminder: Reminder) {
         val now = LocalDateTime.now()
         val nowMillis = now.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        val nextOccurrence = reminder.timeTrigger?.getNextOccurrence(
+            now = now,
+            lastTriggeredTime = now,
+            isInterval = reminder.triggerType == ReminderTriggerType.INTERVAL
+        )
+        val shouldStayEnabled = reminder.isRecurring || nextOccurrence != null
 
         val updatedReminder = reminder.copy(
+            isEnabled = if (shouldStayEnabled) reminder.isEnabled else false,
             lastTriggeredTime = nowMillis,
             snoozeNextTriggerTime = null // Clear snooze on complete
         )
 
         reminderRepository.updateReminder(updatedReminder)
-        
+
         // Cancel any existing snooze
         reminderScheduler.cancelSnooze(reminder)
-        
-        // Re-schedule based on the new lastTriggeredTime
-        reminderScheduler.schedule(updatedReminder)
+
+        if (updatedReminder.isEnabled) {
+            // Re-schedule based on the new lastTriggeredTime
+            reminderScheduler.schedule(updatedReminder)
+        } else {
+            reminderScheduler.cancel(updatedReminder)
+        }
     }
 
     suspend fun handleDismiss(reminder: Reminder) {

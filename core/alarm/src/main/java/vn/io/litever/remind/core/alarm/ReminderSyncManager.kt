@@ -57,9 +57,6 @@ class ReminderSyncManager @Inject constructor(
                                 val nextEpoch = nextOccurrence.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
                                 if (timeTrigger.isRecurring) {
                                     reminderScheduler.schedule(reminder)
-                                    if (reminder.lastTriggeredTime != null) {
-                                        reminderAlertManager?.startAlert(reminder)
-                                    }
                                 } else {
                                     if (nextEpoch > nowMillis) {
                                         reminderScheduler.schedule(reminder)

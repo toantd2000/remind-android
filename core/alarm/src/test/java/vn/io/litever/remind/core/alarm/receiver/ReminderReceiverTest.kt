@@ -32,6 +32,7 @@ import vn.io.litever.remind.core.model.RepeatMode
 import vn.io.litever.remind.core.model.TimeTrigger
 import vn.io.litever.remind.core.model.UrgencyLevel
 import java.time.DayOfWeek
+import java.time.LocalDate
 import java.time.LocalTime
 
 @RunWith(RobolectricTestRunner::class)
@@ -222,6 +223,38 @@ class ReminderReceiverTest {
         assertTrue(updatedSlot.captured.isEnabled)
         assertNotNull(updatedSlot.captured.lastTriggeredTime)
         verify(atLeast = 1) { scheduler.schedule(match { it.id == 45L }) }
+    }
+
+    @Test
+    fun onReceive_dismissAction_dateModeWithRemainingFutureDate_keepsEnabledAndSchedulesNext() = runBlocking {
+        val futureDate = LocalDate.now().plusDays(2)
+        val reminder = Reminder(
+            id = 46L,
+            title = "Multi-date Task",
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            timeTrigger = TimeTrigger(
+                time = listOf(LocalTime.of(9, 0)),
+                exactDates = listOf(LocalDate.now(), futureDate),
+                repeatMode = RepeatMode.NONE
+            ),
+            isEnabled = true
+        )
+
+        coEvery { repository.getReminderById(46L) } returns reminder
+
+        val intent = Intent(ReminderReceiver.ACTION_REMINDER_DISMISS).apply {
+            putExtra(ReminderReceiver.EXTRA_REMINDER_ID, 46L)
+        }
+
+        receiver.onReceive(context, intent)
+        Thread.sleep(100)
+
+        val updatedSlot = slot<Reminder>()
+        coVerify(atLeast = 1) { repository.updateReminder(capture(updatedSlot)) }
+
+        assertTrue(updatedSlot.captured.isEnabled)
+        assertNull(updatedSlot.captured.snoozeNextTriggerTime)
+        verify(atLeast = 1) { scheduler.schedule(match { it.id == 46L && it.isEnabled }) }
     }
 }
 

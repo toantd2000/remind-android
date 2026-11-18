@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name" translatable="false">ReMind</string>
     <string name="navigation_alarms">Alarms</string>
-    <string name="navigation_today">Today</string>
     <string name="navigation_reminders">Reminders</string>
     <string name="navigation_settings">Settings</string>
     <string name="notification_alarm_title">Alarm is ringing</string>
@@ -15,6 +14,11 @@
     <string name="missed_dnd_notification_content">Alarm %s was missed because Do Not Disturb is active.</string>
     <string name="missed_timeout_notification_content">Alarm %s was missed.</string>
     <string name="missed_permission_notification_content">Alarm %s was missed due to missing permissions.</string>
+    <string name="exit_dialog_title">Exit App</string>
+    <string name="exit_dialog_message">Are you sure you want to leave? Thank you so much for choosing ReMind today. We wish you a beautiful day filled with joy and positive energy! ❤️ Please interact with the ad below to support us.</string>
+    <string name="exit_dialog_message_ad_free">Are you sure you want to leave? Thank you so much for choosing ReMind today. We wish you a beautiful day filled with joy and positive energy! ❤️</string>
+    <string name="exit_dialog_confirm">Exit</string>
+    <string name="exit_dialog_cancel">Cancel</string>
 </resources>
 
 

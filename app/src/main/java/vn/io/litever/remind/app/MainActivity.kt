@@ -81,10 +81,7 @@ import vn.io.litever.remind.features.settings.ui.navigateToLicenses
 import vn.io.litever.remind.features.settings.ui.navigateToPermissions
 import vn.io.litever.remind.features.settings.ui.settingsGraph
 import vn.io.litever.remind.features.settings.ui.settingsRoute
-import vn.io.litever.remind.features.today.ui.components.ExitAppDialog
-import vn.io.litever.remind.features.today.ui.locationSearchRoute
-import vn.io.litever.remind.features.today.ui.todayGraph
-import vn.io.litever.remind.features.today.ui.todayRoute
+import vn.io.litever.remind.app.ui.components.ExitAppDialog
 import javax.inject.Inject
 
 @HiltViewModel
@@ -336,7 +333,6 @@ class MainActivity : ComponentActivity() {
                             val currentRoute = navBackStackEntry?.destination?.route
 
                             val isBottomBarVisible = currentRoute == AlarmListRoute ||
-                                    currentRoute == todayRoute ||
                                     currentRoute == RemindersListRoute ||
                                     currentRoute == settingsRoute
 
@@ -504,14 +500,6 @@ class MainActivity : ComponentActivity() {
                                                 },
                                                 onBackClick = { navController.popBackStack() },
                                                 navController = navController
-                                            )
-                                            todayGraph(
-                                                onNavigateToLocationSearch = {
-                                                    navController.navigate(locationSearchRoute)
-                                                },
-                                                onBackClick = {
-                                                    navController.popBackStack()
-                                                }
                                             )
                                             remindersGraph(
                                                 onNavigateToEdit = { reminderId ->

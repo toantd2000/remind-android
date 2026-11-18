@@ -17,7 +17,6 @@ import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.features.alarms.ui.AlarmListRoute
 import vn.io.litever.remind.features.reminders.ui.RemindersListRoute
 import vn.io.litever.remind.features.settings.ui.settingsRoute
-import vn.io.litever.remind.features.today.ui.todayRoute
 
 /**
  * Navigation destination items for bottom bar.
@@ -36,11 +35,6 @@ enum class TopLevelDestination(
         route = RemindersListRoute,
         icon = ReMindIcons.Notifications,
         labelResId = R.string.navigation_reminders
-    ),
-    TODAY(
-        route = todayRoute,
-        icon = ReMindIcons.Lightbulb,
-        labelResId = R.string.navigation_today
     ),
     SETTINGS(
         route = settingsRoute,

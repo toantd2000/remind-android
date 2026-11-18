@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name" translatable="false">ReMind</string>
     <string name="navigation_alarms">Báo thức</string>
-    <string name="navigation_today">Hôm nay</string>
     <string name="navigation_reminders">Nhắc nhở</string>
     <string name="navigation_settings">Cài đặt</string>
     <string name="notification_alarm_title">Báo thức đang đổ chuông</string>
@@ -15,6 +14,11 @@
     <string name="missed_dnd_notification_content">Báo thức %s bị lỡ do Không làm phiền.</string>
     <string name="missed_timeout_notification_content">Báo thức %s đã bị lỡ.</string>
     <string name="missed_permission_notification_content">Báo thức %s bị lỡ do thiếu quyền hệ thống.</string>
+    <string name="exit_dialog_title">Xác nhận thoát</string>
+    <string name="exit_dialog_message">Bạn có chắc chắn muốn rời đi? Cảm ơn bạn rất nhiều vì đã đồng hành cùng ReMind hôm nay. Chúc bạn có một ngày tràn ngập niềm vui và năng lượng tích cực! ❤️ Hãy tương tác với quảng cáo phía dưới để ủng hộ chúng tôi nhé.</string>
+    <string name="exit_dialog_message_ad_free">Bạn có chắc chắn muốn rời đi? Cảm ơn bạn rất nhiều vì đã đồng hành cùng ReMind hôm nay. Chúc bạn có một ngày tràn ngập niềm vui và năng lượng tích cực! ❤️</string>
+    <string name="exit_dialog_confirm">Thoát</string>
+    <string name="exit_dialog_cancel">Hủy</string>
 </resources>
 
 

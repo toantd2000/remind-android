@@ -17,6 +17,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SnackbarHostState
@@ -304,10 +305,10 @@ fun LiteverTextField(
 @Composable
 fun LiteverCircularProgressIndicator(
     modifier: Modifier = Modifier,
-    color: androidx.compose.ui.graphics.Color = androidx.compose.material3.ProgressIndicatorDefaults.circularColor,
-    strokeWidth: androidx.compose.ui.unit.Dp = androidx.compose.material3.ProgressIndicatorDefaults.CircularStrokeWidth,
-    trackColor: androidx.compose.ui.graphics.Color = androidx.compose.material3.ProgressIndicatorDefaults.circularTrackColor,
-    strokeCap: androidx.compose.ui.graphics.StrokeCap = androidx.compose.material3.ProgressIndicatorDefaults.CircularDeterminateStrokeCap
+    color: androidx.compose.ui.graphics.Color = ProgressIndicatorDefaults.circularColor,
+    strokeWidth: androidx.compose.ui.unit.Dp = ProgressIndicatorDefaults.CircularStrokeWidth,
+    trackColor: androidx.compose.ui.graphics.Color = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
+    strokeCap: androidx.compose.ui.graphics.StrokeCap = ProgressIndicatorDefaults.CircularDeterminateStrokeCap
 ) {
     androidx.compose.material3.CircularProgressIndicator(
         modifier = modifier,
@@ -322,9 +323,9 @@ fun LiteverCircularProgressIndicator(
 fun LiteverLinearProgressIndicator(
     progress: () -> Float,
     modifier: Modifier = Modifier,
-    color: androidx.compose.ui.graphics.Color = androidx.compose.material3.ProgressIndicatorDefaults.linearColor,
-    trackColor: androidx.compose.ui.graphics.Color = androidx.compose.material3.ProgressIndicatorDefaults.linearTrackColor,
-    strokeCap: androidx.compose.ui.graphics.StrokeCap = androidx.compose.material3.ProgressIndicatorDefaults.LinearStrokeCap
+    color: androidx.compose.ui.graphics.Color = ProgressIndicatorDefaults.linearColor,
+    trackColor: androidx.compose.ui.graphics.Color = ProgressIndicatorDefaults.linearTrackColor,
+    strokeCap: androidx.compose.ui.graphics.StrokeCap = ProgressIndicatorDefaults.LinearStrokeCap
 ) {
     androidx.compose.material3.LinearProgressIndicator(
         progress = progress,
@@ -339,9 +340,9 @@ fun LiteverLinearProgressIndicator(
 fun LiteverLinearProgressIndicator(
     progress: Float,
     modifier: Modifier = Modifier,
-    color: androidx.compose.ui.graphics.Color = androidx.compose.material3.ProgressIndicatorDefaults.linearColor,
-    trackColor: androidx.compose.ui.graphics.Color = androidx.compose.material3.ProgressIndicatorDefaults.linearTrackColor,
-    strokeCap: androidx.compose.ui.graphics.StrokeCap = androidx.compose.material3.ProgressIndicatorDefaults.LinearStrokeCap
+    color: androidx.compose.ui.graphics.Color = ProgressIndicatorDefaults.linearColor,
+    trackColor: androidx.compose.ui.graphics.Color = ProgressIndicatorDefaults.linearTrackColor,
+    strokeCap: androidx.compose.ui.graphics.StrokeCap = ProgressIndicatorDefaults.LinearStrokeCap
 ) {
     androidx.compose.material3.LinearProgressIndicator(
         progress = { progress },

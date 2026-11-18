@@ -30,6 +30,7 @@ import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.Reminder
+import vn.io.litever.remind.core.model.ReminderTriggerType
 import vn.io.litever.remind.core.model.UrgencyLevel
 import javax.inject.Inject
 import javax.inject.Provider
@@ -252,9 +253,7 @@ class ReminderAlertManagerImpl @Inject constructor(
 
             player.setOnCompletionListener {
                 if (!isPersistent) {
-                    stopAudiblePlayback()
-                    stopAutoSilenceTimer()
-                    _playbackState.value = AlertPlaybackState.Idle
+                    stopAlert(reminder.id)
                 }
             }
 
@@ -321,12 +320,16 @@ class ReminderAlertManagerImpl @Inject constructor(
                             actionHandler.handleSnooze(reminder, reminder.action.snoozeIntervalMinutes)
                             notificationManager?.cancelNotification(reminderId)
                         } else {
-                            val isRecurring = reminder.isRecurring
-                            val updatedReminder = reminder.copy(
-                                isEnabled = isRecurring,
-                                snoozeNextTriggerTime = null
-                            )
-                            actionHandler.handleDismiss(updatedReminder)
+                            if (reminder.triggerType == ReminderTriggerType.INTERVAL) {
+                                actionHandler.handleComplete(reminder)
+                            } else {
+                                val isRecurring = reminder.isRecurring
+                                val updatedReminder = reminder.copy(
+                                    isEnabled = isRecurring,
+                                    snoozeNextTriggerTime = null
+                                )
+                                actionHandler.handleDismiss(updatedReminder)
+                            }
                             notificationManager?.cancelNotification(reminderId)
                         }
                     }

@@ -114,8 +114,14 @@ class MainViewModel @Inject constructor(
         )
 
     val ringingAlarmId = alarmRingManager.ringingAlarmId
-    val ringingReminderId = reminderAlertManager.activeAlertReminderIds
-        .map { it.firstOrNull() }
+    val ringingReminderId = reminderAlertManager.playbackState
+        .map { state ->
+            if (state is vn.io.litever.remind.core.alarm.alert.AlertPlaybackState.Playing && state.isPersistent) {
+                state.reminderId
+            } else {
+                null
+            }
+        }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),

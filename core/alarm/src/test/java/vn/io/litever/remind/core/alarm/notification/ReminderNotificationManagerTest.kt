@@ -15,6 +15,7 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -230,6 +231,29 @@ class ReminderNotificationManagerTest {
         val notification = manager.buildNotification(reminder)
         assertNotNull(notification)
         assertEquals(1, notification.actions?.size ?: 0)
+    }
+
+    @Test
+    fun buildNotification_standardStyle_omitsFullScreenIntentAndAttachesDeleteIntent() {
+        every { permissionChecker.hasFullScreenIntentPermission() } returns true
+
+        val reminder = Reminder(
+            id = 102L,
+            title = "Standard Notification",
+            triggerType = ReminderTriggerType.INTERVAL,
+            action = ReminderAction(
+                notificationStyle = NotificationStyle.STANDARD,
+                isPersistentAlert = false,
+                snoozeEnabled = true,
+                snoozeIntervalMinutes = 15
+            )
+        )
+
+        val notification = manager.buildNotification(reminder)
+        assertNotNull(notification)
+        assertEquals(NotificationCompat.CATEGORY_REMINDER, notification.category)
+        assertNull(notification.fullScreenIntent)
+        assertNotNull(notification.deleteIntent)
     }
 }
 

@@ -6,8 +6,6 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.media.AudioAttributes
-import android.media.RingtoneManager
 import androidx.core.net.toUri
 import android.os.Build
 import androidx.core.app.NotificationCompat
@@ -37,14 +35,7 @@ class ReminderNotificationManager @Inject constructor(
      */
     fun createNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val audioAttributes = AudioAttributes.Builder()
-                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
-                .build()
-
-            val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-
-            // Standard Reminder Channel
+            // Standard Reminder Channel (sound handled by ReminderAlertManager to avoid double audio)
             val standardChannel = NotificationChannel(
                 CHANNEL_ID_STANDARD,
                 context.getString(R.string.reminder_channel_name_standard),
@@ -53,12 +44,12 @@ class ReminderNotificationManager @Inject constructor(
                 description = context.getString(R.string.reminder_channel_desc_standard)
                 enableVibration(true)
                 vibrationPattern = longArrayOf(0, 250, 250, 250)
-                setSound(defaultSoundUri, audioAttributes)
+                setSound(null, null)
                 setShowBadge(true)
                 enableLights(true)
             }
 
-            // Urgent / Alarm Style Channel
+            // Urgent / Alarm Style Channel (sound handled by ReminderAlertManager to avoid double audio)
             val urgentChannel = NotificationChannel(
                 CHANNEL_ID_URGENT,
                 context.getString(R.string.reminder_channel_name_urgent),
@@ -67,7 +58,7 @@ class ReminderNotificationManager @Inject constructor(
                 description = context.getString(R.string.reminder_channel_desc_urgent)
                 enableVibration(true)
                 vibrationPattern = longArrayOf(0, 500, 250, 500)
-                setSound(defaultSoundUri, audioAttributes)
+                setSound(null, null)
                 setShowBadge(true)
                 enableLights(true)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -158,49 +149,38 @@ class ReminderNotificationManager @Inject constructor(
             .setContentIntent(contentPendingIntent)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setOnlyAlertOnce(true)
+            .setSilent(true)
             .setAutoCancel(!isAlarmRinging && !reminder.action.isPersistentAlert)
-
-        // Sound configuration:
-        // Respect custom ringtone if provided, otherwise fallback according to style/stream
-        val ringtoneUri = reminder.action.ringtoneUri
-        if (!ringtoneUri.isNullOrBlank()) {
-            try {
-                builder.setSound(ringtoneUri.toUri())
-            } catch (_: Exception) {}
-        } else if (isAlarmRinging || reminder.action.useAlarmStream) {
-            val defaultAlarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-            builder.setSound(defaultAlarmUri)
-        } else {
-            val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-            builder.setSound(defaultSoundUri)
-        }
 
         if (!reminder.action.vibrationEnabled) {
             builder.setVibrate(longArrayOf(0))
         }
 
-        // Configure Full-Screen Intent or Heads-up for ALL Reminders
-        if (canUseFsi) {
+        // Configure Full-Screen Intent ONLY for FULL_SCREEN / Persistent alerts; STANDARD uses Heads-up with deleteIntent
+        val requiresFullScreen = isAlarmRinging || reminder.action.isPersistentAlert
+        if (requiresFullScreen && canUseFsi) {
             val fsiPendingIntent = createFullScreenPendingIntent(reminder.id)
             builder.setPriority(NotificationCompat.PRIORITY_MAX)
-            builder.setCategory(if (isAlarmRinging) NotificationCompat.CATEGORY_ALARM else NotificationCompat.CATEGORY_REMINDER)
+            builder.setCategory(NotificationCompat.CATEGORY_ALARM)
             builder.setFullScreenIntent(fsiPendingIntent, true)
-            if (isAlarmRinging && reminder.action.isPersistentAlert) {
+            builder.setOngoing(true)
+        } else {
+            // Standard notification or Android 14+ fallback without FSI
+            builder.setPriority(NotificationCompat.PRIORITY_HIGH)
+            builder.setCategory(if (requiresFullScreen) NotificationCompat.CATEGORY_ALARM else NotificationCompat.CATEGORY_REMINDER)
+            if (requiresFullScreen && reminder.action.isPersistentAlert) {
                 builder.setOngoing(true)
             }
-        } else {
-            // Android 14+ Fallback: High priority heads-up without FSI
-            builder.setPriority(NotificationCompat.PRIORITY_HIGH)
-            builder.setCategory(if (isAlarmRinging) NotificationCompat.CATEGORY_ALARM else NotificationCompat.CATEGORY_REMINDER)
-            if (isAlarmRinging && reminder.action.isPersistentAlert) {
-                builder.setOngoing(true)
+            if (!requiresFullScreen) {
+                builder.setDeleteIntent(createDismissPendingIntent(reminder.id))
             }
         }
 
-        // Action: Snooze 5 minutes (heads-up notification quick action)
+        // Action: Snooze (heads-up notification quick action using configured interval)
         if (reminder.action.snoozeEnabled && reminder.canSnooze()) {
-            val snoozePendingIntent = createSnoozePendingIntent(reminder.id, snoozeMinutes = 5)
-            val snoozeLabel = context.getString(R.string.reminder_action_snooze_5m)
+            val snoozeMins = reminder.action.snoozeIntervalMinutes
+            val snoozePendingIntent = createSnoozePendingIntent(reminder.id, snoozeMinutes = snoozeMins)
+            val snoozeLabel = context.getString(R.string.reminder_action_snooze_interval, snoozeMins)
             builder.addAction(0, snoozeLabel, snoozePendingIntent)
         }
 

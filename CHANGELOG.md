@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Modernized Trigger Controls:** Tinh giản cấu hình điều kiện kích hoạt nhắc nhở ngay trên màn hình biên tập, loại bỏ điều hướng phụ.
 
 ### Removed
+- Loại bỏ màn hình trung gian sau khi tắt báo thức (`AlarmMessageScreen`) và luồng trạng thái `acknowledgingAlarmId` trong `:core:alarm`, `:features:alarms` và `:app`.
 - Loại bỏ hoàn toàn tab Hôm nay (`:features:today`) khỏi thanh điều hướng để tập trung vào 3 tab cốt lõi (Báo thức, Nhắc nhở, Cài đặt); bảo toàn `ExitAppDialog` trong `:app`.
 - Loại bỏ hoàn toàn tính năng danh sách công việc phụ (Checklist) khỏi Nhắc nhở để tối giản hóa trải nghiệm người dùng.
 - Dọn dẹp các bộ lọc chip và các đoạn mã giao diện mồ côi (`ReminderTimeWindowDialog`).

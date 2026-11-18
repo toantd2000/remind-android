@@ -150,7 +150,7 @@ fun ReminderRingingScreen(
 
     // Shake animation for dismiss and snooze buttons, aligned with AlarmRingingScreen
     val shakeTransition = rememberInfiniteTransition(label = "shake")
-    val shakeOffset by shakeTransition.animateFloat(
+    val shakeOffsetState = shakeTransition.animateFloat(
         initialValue = -3f,
         targetValue = 3f,
         animationSpec = infiniteRepeatable(
@@ -159,7 +159,7 @@ fun ReminderRingingScreen(
         ),
         label = "shakeOffset"
     )
-    val snoozeShakeOffset by shakeTransition.animateFloat(
+    val snoozeShakeOffsetState = shakeTransition.animateFloat(
         initialValue = -1f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
@@ -238,8 +238,8 @@ fun ReminderRingingScreen(
             RingingBottomActions(
                 reminder = reminder,
                 showQuickSnoozeOptions = showQuickSnoozeOptions,
-                snoozeShakeOffset = snoozeShakeOffset,
-                dismissShakeOffset = shakeOffset,
+                snoozeShakeOffsetProvider = { snoozeShakeOffsetState.value },
+                dismissShakeOffsetProvider = { shakeOffsetState.value },
                 onToggleQuickSnoozeOptions = { showQuickSnoozeOptions = !showQuickSnoozeOptions },
                 onSnoozeClick = onSnoozeClick,
                 onOpenCustomSnooze = {
@@ -487,8 +487,8 @@ private fun RingingSchedulePill(
 private fun RingingBottomActions(
     reminder: Reminder,
     showQuickSnoozeOptions: Boolean,
-    snoozeShakeOffset: Float,
-    dismissShakeOffset: Float,
+    snoozeShakeOffsetProvider: () -> Float,
+    dismissShakeOffsetProvider: () -> Float,
     onToggleQuickSnoozeOptions: () -> Unit,
     onSnoozeClick: (Int) -> Unit,
     onOpenCustomSnooze: () -> Unit,
@@ -559,7 +559,7 @@ private fun RingingBottomActions(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .offset { IntOffset(x = snoozeShakeOffset.dp.roundToPx(), y = 0) },
+                        .offset { IntOffset(x = snoozeShakeOffsetProvider().dp.roundToPx(), y = 0) },
                     horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
                 ) {
                     LvButton(
@@ -632,7 +632,7 @@ private fun RingingBottomActions(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp)
-                .offset { IntOffset(x = dismissShakeOffset.dp.roundToPx(), y = 0) }
+                .offset { IntOffset(x = dismissShakeOffsetProvider().dp.roundToPx(), y = 0) }
         ) {
             Text(
                 text = stringResource(R.string.dismiss_action),

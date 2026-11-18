@@ -240,7 +240,8 @@ fun ReminderListScreen(
                 ) {
                     items(
                         items = uiState.reminders,
-                        key = { it.id }
+                        key = { it.id },
+                        contentType = { "reminder_card" }
                     ) { reminder ->
                         ReminderCard(
                             reminder = reminder,

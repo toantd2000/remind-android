@@ -20,12 +20,6 @@ interface ReminderDao {
     @Query("SELECT * FROM reminders WHERE id = :id")
     suspend fun getReminderById(id: Long): ReminderEntity?
 
-    @Query("SELECT * FROM reminders WHERE isEnabled = 1 AND triggerType IN ('LOCATION', 'WIFI')")
-    fun getActiveMonitoringReminders(): Flow<List<ReminderEntity>>
-
-    @Query("SELECT * FROM reminders WHERE isEnabled = 1 AND triggerType IN ('LOCATION', 'WIFI')")
-    suspend fun getActiveMonitoringRemindersSync(): List<ReminderEntity>
-
     @Query("SELECT * FROM reminders WHERE isEnabled = 1")
     fun getActiveReminders(): Flow<List<ReminderEntity>>
 

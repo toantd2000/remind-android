@@ -37,9 +37,4 @@ interface ReminderRepository {
      * Deletes a reminder.
      */
     suspend fun deleteReminder(reminder: Reminder)
-
-    /**
-     * Observes enabled, non-completed reminders that have active background triggers (Location or Wi-Fi).
-     */
-    fun getActiveMonitoringReminders(): Flow<List<Reminder>>
 }

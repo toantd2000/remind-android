@@ -100,7 +100,6 @@ class ReminderReceiver : BroadcastReceiver() {
 
         reminderNotificationManager.showNotification(updatedReminder)
         reminderAlertManager.startAlert(updatedReminder)
-        fireReminderAlert(context, updatedReminder)
     }
 
     private suspend fun handleSnoozeAction(reminder: Reminder, snoozeMinutes: Int? = null) {
@@ -139,28 +138,15 @@ class ReminderReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun fireReminderAlert(context: Context, reminder: Reminder) {
-        val alertIntent = Intent(ACTION_FIRE_REMINDER_ALERT).apply {
-            setPackage(context.packageName)
-            putExtra(EXTRA_REMINDER_ID, reminder.id)
-            putExtra(EXTRA_NOTIFICATION_STYLE, reminder.action.notificationStyle.name)
-            putExtra(EXTRA_IS_PERSISTENT, reminder.action.isPersistentAlert)
-        }
-        context.sendBroadcast(alertIntent)
-    }
-
     companion object {
         const val ACTION_TRIGGER_REMINDER = "vn.io.litever.remind.core.alarm.ACTION_TRIGGER_REMINDER"
         const val ACTION_TRIGGER_REMINDER_SNOOZE = "vn.io.litever.remind.core.alarm.ACTION_TRIGGER_REMINDER_SNOOZE"
         const val ACTION_REMINDER_SNOOZE = "vn.io.litever.remind.core.alarm.ACTION_REMINDER_SNOOZE"
         const val ACTION_REMINDER_DISMISS = "vn.io.litever.remind.core.alarm.ACTION_REMINDER_DISMISS"
-        const val ACTION_FIRE_REMINDER_ALERT = "vn.io.litever.remind.core.alarm.ACTION_FIRE_REMINDER_ALERT"
 
         const val EXTRA_REMINDER_ID = "extra_reminder_id"
         const val EXTRA_SNOOZE_MINUTES = "extra_snooze_minutes"
         const val EXTRA_IS_SNOOZE = "extra_is_snooze"
-        const val EXTRA_NOTIFICATION_STYLE = "extra_notification_style"
-        const val EXTRA_IS_PERSISTENT = "extra_is_persistent"
     }
 }
 

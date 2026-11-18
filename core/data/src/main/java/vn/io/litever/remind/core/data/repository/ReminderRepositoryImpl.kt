@@ -40,10 +40,4 @@ class ReminderRepositoryImpl @Inject constructor(
     override suspend fun deleteReminder(reminder: Reminder) {
         reminderDao.deleteReminder(reminder.toEntity())
     }
-
-    override fun getActiveMonitoringReminders(): Flow<List<Reminder>> {
-        return reminderDao.getActiveMonitoringReminders().map { entities ->
-            entities.map { it.toModel() }
-        }
-    }
 }

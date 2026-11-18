@@ -104,19 +104,4 @@ class ReminderRepositoryImplTest {
 
         coVerify(exactly = 1) { reminderDao.deleteReminder(match { it.id == 12L }) }
     }
-
-    @Test
-    fun `getActiveMonitoringReminders emits active background triggers`() = runTest {
-        val activeList = listOf(
-            ReminderEntity(id = 2L, title = "Geofence Alert", triggerType = "LOCATION", isEnabled = true)
-        )
-        every { reminderDao.getActiveMonitoringReminders() } returns flowOf(activeList)
-
-        repository.getActiveMonitoringReminders().test {
-            val list = awaitItem()
-            assertEquals(1, list.size)
-            assertEquals("Geofence Alert", list[0].title)
-            awaitComplete()
-        }
-    }
 }

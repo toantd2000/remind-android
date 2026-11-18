@@ -111,6 +111,7 @@ class ReminderSchedulerImpl @Inject constructor(
 
     private fun setAlarmClock(reminderId: Long, triggerTime: Long, pendingIntent: PendingIntent) {
         val showIntent = Intent(Intent.ACTION_VIEW, "app://remind/reminder/$reminderId".toUri()).apply {
+            setPackage(context.packageName)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         val pendingShowIntent = PendingIntent.getActivity(

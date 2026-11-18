@@ -38,6 +38,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.hilt.android)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.google.billing.ktx)
     ksp(libs.hilt.compiler)
 
     testImplementation(libs.junit)

@@ -125,4 +125,45 @@
     <string name="share_title">Chia sẻ ReMind</string>
     <string name="rewarded_ad_not_ready">Quảng cáo chưa sẵn sàng. Vui lòng thử lại sau nhé!</string>
     <string name="loading_ad_message">Đang tải quảng cáo, vui lòng đợi...</string>
+
+    <!-- Pro & Paywall -->
+    <string name="pro_banner_title">Nâng cấp lên ReMind Pro</string>
+    <string name="pro_banner_subtitle">Không quảng cáo, 5 ô nhiệm vụ, đọc giọng nói TTS &amp; nhiều hơn nữa</string>
+    <string name="pro_banner_active_title">ReMind Pro đang hoạt động</string>
+    <string name="pro_banner_active_subtitle">Cảm ơn bạn đã ủng hộ! Toàn bộ tính năng Pro đã được mở khóa.</string>
+    <string name="paywall_restore_purchases">Phục hồi mua</string>
+    <string name="paywall_hero_title">Dùng thử Pro miễn phí 7 ngày</string>
+    <string name="paywall_hero_title_active">Bạn đang là thành viên ReMind Pro</string>
+    <string name="paywall_col_pro">Pro</string>
+    <string name="paywall_col_basic">Cơ bản</string>
+    <string name="paywall_feat_basic_alarm">Báo thức cơ bản &amp; mọi độ khó nhiệm vụ</string>
+    <string name="paywall_feat_no_ads">Không có quảng cáo</string>
+    <string name="paywall_feat_mission_chain">5 ô nhiệm vụ &amp; Nhiệm vụ ngẫu nhiên</string>
+    <string name="paywall_feat_voice_tts">Thông báo bằng giọng nói (TTS)</string>
+    <string name="paywall_feat_wakeup_check">Kiểm tra thức dậy</string>
+    <string name="paywall_feat_extra_loud">Chế độ âm lượng siêu lớn</string>
+    <string name="paywall_feat_multi_reminder">Không giới hạn mốc giờ &amp; khung giờ nhắc nhở</string>
+    <string name="paywall_slide_missions_title">5 Ô Nhiệm vụ &amp; Chế độ Ngẫu nhiên</string>
+    <string name="paywall_slide_missions_desc">Ghép chuỗi tối đa 5 thử thách liên tiếp hoặc để ReMind chọn ngẫu nhiên mỗi sáng.</string>
+    <string name="paywall_slide_tts_title">Thông báo bằng giọng nói thông minh</string>
+    <string name="paywall_slide_tts_desc">Tự động đọc nhãn báo thức, tiêu đề nhắc nhở và đọc giờ mỗi phút khi đang reo.</string>
+    <string name="paywall_slide_wakeup_title">Kiểm tra thức dậy</string>
+    <string name="paywall_slide_wakeup_desc">Xác nhận bạn đã thực sự tỉnh táo sau khi tắt báo thức, nếu không chuông sẽ kêu lại.</string>
+    <string name="paywall_slide_loud_title">Âm lượng báo thức tăng cường</string>
+    <string name="paywall_slide_loud_desc">Tự động chuyển sang chế độ siêu to nếu bạn chưa phản hồi sau 40 giây.</string>
+    <string name="paywall_slide_reminder_title">Đa mốc giờ &amp; khung giờ nhắc nhở</string>
+    <string name="paywall_slide_reminder_desc">Thêm hơn 2 mốc giờ cố định hoặc nhiều khung giờ hoạt động cho mỗi nhắc nhở.</string>
+    <string name="paywall_social_proof">Bắt đầu buổi sáng tỉnh táo và hiệu quả hơn</string>
+    <string name="paywall_plan_monthly">Hàng tháng</string>
+    <string name="paywall_plan_monthly_suffix">/tháng</string>
+    <string name="paywall_plan_annual">7-Ngày dùng thử miễn phí</string>
+    <string name="paywall_plan_annual_suffix">/năm</string>
+    <string name="paywall_plan_annual_badge">Tiết kiệm 41%</string>
+    <string name="paywall_plan_lifetime">Trọn đời</string>
+    <string name="paywall_plan_lifetime_desc">Thanh toán 1 lần duy nhất</string>
+    <string name="paywall_cancel_anytime">Hủy bất kỳ lúc nào qua Google Play</string>
+    <string name="paywall_cta_trial">Bắt đầu Dùng thử Miễn phí</string>
+    <string name="paywall_cta_subscribe">Nâng cấp Pro</string>
+    <string name="paywall_cta_lifetime">Mở khóa Trọn đời</string>
+    <string name="paywall_rewarded_ad_cta">Chưa sẵn sàng? Xem 1 quảng cáo để tắt quảng cáo 24h</string>
 </resources>

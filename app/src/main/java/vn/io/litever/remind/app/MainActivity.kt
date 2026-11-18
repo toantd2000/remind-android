@@ -17,11 +17,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
@@ -47,13 +49,16 @@ import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import vn.io.litever.designsystem.components.snackbar.LvSnackbarHost
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.ads.api.AdManager
+import vn.io.litever.remind.core.ads.api.AdPlacement
 import vn.io.litever.remind.core.ads.api.LocalAdManager
+import vn.io.litever.remind.core.domain.repository.ProRepository
 import vn.io.litever.remind.core.alarm.ReminderSyncManager
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import vn.io.litever.remind.core.designsystem.components.BrandingSplashScreen
@@ -78,6 +83,7 @@ import vn.io.litever.remind.features.reminders.ui.remindersGraph
 import vn.io.litever.remind.features.settings.ui.navigateToAttributions
 import vn.io.litever.remind.features.settings.ui.navigateToGeneralSettings
 import vn.io.litever.remind.features.settings.ui.navigateToLicenses
+import vn.io.litever.remind.features.settings.ui.navigateToPaywall
 import vn.io.litever.remind.features.settings.ui.navigateToPermissions
 import vn.io.litever.remind.features.settings.ui.settingsGraph
 import vn.io.litever.remind.features.settings.ui.settingsRoute
@@ -105,13 +111,16 @@ class MainViewModel @Inject constructor(
     val colorPalette = preferencesDataSource.colorPalette
     val language = preferencesDataSource.language
 
-    val isAdFreeActive: StateFlow<Boolean> = preferencesDataSource.adsDisabledUntil
-        .map { it > System.currentTimeMillis() }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = false
-        )
+    val isAdFreeActive: StateFlow<Boolean> = combine(
+        preferencesDataSource.isProUser,
+        preferencesDataSource.adsDisabledUntil
+    ) { isPro, disabledUntil ->
+        isPro || disabledUntil > System.currentTimeMillis()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = false
+    )
 
     val ringingAlarmId = alarmRingManager.ringingAlarmId
     val ringingReminderId = reminderAlertManager.playbackState
@@ -159,6 +168,9 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var adManager: AdManager
 
+    @Inject
+    lateinit var proRepository: ProRepository
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
@@ -170,6 +182,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         adManager.initialize()
+        proRepository.startConnection()
 
         handleLockScreenBypass()
 
@@ -353,18 +366,26 @@ class MainActivity : ComponentActivity() {
                                 snackbarHost = { LvSnackbarHost(hostState = snackbarHostState) },
                                 bottomBar = {
                                     if (isBottomBarVisible) {
-                                        ReMindNavigationBar(
-                                            currentRoute = currentRoute,
-                                            onNavigateToDestination = { route ->
-                                                navController.navigate(route) {
-                                                    popUpTo(navController.graph.startDestinationId) {
-                                                        saveState = true
-                                                    }
-                                                    launchSingleTop = true
-                                                    restoreState = true
-                                                }
+                                        Column(modifier = Modifier.fillMaxWidth()) {
+                                            if (currentRoute == settingsRoute) {
+                                                adManager.MicroAdStrip(
+                                                    placement = AdPlacement.SETTINGS_BOTTOM_STRIP,
+                                                    modifier = Modifier.fillMaxWidth()
+                                                )
                                             }
-                                        )
+                                            ReMindNavigationBar(
+                                                currentRoute = currentRoute,
+                                                onNavigateToDestination = { route ->
+                                                    navController.navigate(route) {
+                                                        popUpTo(navController.graph.startDestinationId) {
+                                                            saveState = true
+                                                        }
+                                                        launchSingleTop = true
+                                                        restoreState = true
+                                                    }
+                                                }
+                                            )
+                                        }
                                     }
                                 }
                             ) { paddingValues ->
@@ -455,6 +476,9 @@ class MainActivity : ComponentActivity() {
                                                 onNavigateToMissionPreview = { id ->
                                                     navController.navigate("mission_ringing_route/$id?isPreview=true")
                                                 },
+                                                onNavigateToPaywall = { initialSlide ->
+                                                    navController.navigateToPaywall(initialSlide)
+                                                },
                                                 navController = navController
                                             )
                                             missionGraph(
@@ -499,6 +523,9 @@ class MainActivity : ComponentActivity() {
                                                 onNavigateToPermissions = {
                                                     navController.navigateToPermissions()
                                                 },
+                                                onNavigateToPaywall = { initialSlide ->
+                                                    navController.navigateToPaywall(initialSlide)
+                                                },
                                                 onNavigateBack = {
                                                     navController.popBackStack()
                                                 },
@@ -509,6 +536,9 @@ class MainActivity : ComponentActivity() {
                                                 onNavigateToPermissions = { navController.navigateToPermissions() },
                                                 onNavigateToAttributions = { navController.navigateToAttributions() },
                                                 onNavigateToLicenses = { navController.navigateToLicenses() },
+                                                onNavigateToPaywall = { initialSlide ->
+                                                    navController.navigateToPaywall(initialSlide)
+                                                },
                                                 onNavigateBack = { navController.popBackStack() }
                                             )
                                         }

@@ -85,6 +85,7 @@ fun AlarmListRoute(
     onAlarmClick: (Alarm) -> Unit,
     onNavigateToPreview: (Long) -> Unit,
     onNavigateToPermissions: () -> Unit,
+    onNavigateToPaywall: (Int) -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: AlarmListViewModel = hiltViewModel()
 ) {
@@ -95,6 +96,7 @@ fun AlarmListRoute(
     val hasNonCriticalPermissions by viewModel.hasNonCriticalPermissions.collectAsState()
     val isPermissionWarningDismissed by viewModel.isPermissionWarningDismissed.collectAsState()
     val isAdFreeActive by viewModel.isAdFreeActive.collectAsState()
+    val isPro by viewModel.isPro.collectAsState()
 
     LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -161,6 +163,8 @@ fun AlarmListRoute(
         onNavigateToPermissions = onNavigateToPermissions,
         onRewardGranted = viewModel::disableAdsFor24Hours,
         isAdFreeActive = isAdFreeActive,
+        isPro = isPro,
+        onNavigateToPaywall = onNavigateToPaywall,
         onCreateQuickAlarm = viewModel::createQuickAlarm,
         modifier = modifier
     )
@@ -189,6 +193,8 @@ fun AlarmListScreen(
     onNavigateToPermissions: () -> Unit,
     onRewardGranted: () -> Unit,
     isAdFreeActive: Boolean,
+    isPro: Boolean = false,
+    onNavigateToPaywall: (Int) -> Unit = {},
     onCreateQuickAlarm: (minutes: Int, label: String, ringtoneUri: String?, volume: Int, vibrationEnabled: Boolean) -> Unit = { _, _, _, _, _ -> },
     modifier: Modifier = Modifier
 ) {
@@ -215,6 +221,11 @@ fun AlarmListScreen(
                         )
                     },
                     actions = {
+                        vn.io.litever.remind.core.designsystem.components.ReMindProTopBarButton(
+                            isPro = isPro,
+                            onClick = { onNavigateToPaywall(0) },
+                            modifier = Modifier.padding(end = if (hasAlarms) 0.dp else 8.dp)
+                        )
                         if (hasAlarms) {
                             LvIconButton(onClick = { showTopMenu = !showTopMenu }) {
                                 Icon(

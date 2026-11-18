@@ -33,6 +33,7 @@ import androidx.compose.material.icons.rounded.DateRange
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material.icons.rounded.Description
+import androidx.compose.material.icons.rounded.Diamond
 import androidx.compose.material.icons.rounded.DoneAll
 import androidx.compose.material.icons.rounded.DoNotDisturbOff
 import androidx.compose.material.icons.rounded.DoNotDisturbOn
@@ -59,6 +60,7 @@ import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material.icons.rounded.Lightbulb
 import androidx.compose.material.icons.rounded.LocationOff
 import androidx.compose.material.icons.rounded.LocationOn
+import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.MusicNote
@@ -131,6 +133,7 @@ object ReMindIcons {
     val Delete: ImageVector = Icons.Rounded.Delete
     val DeleteOutline: ImageVector = Icons.Rounded.DeleteOutline
     val Description: ImageVector = Icons.Rounded.Description
+    val Diamond: ImageVector = Icons.Rounded.Diamond
     val DirectionsWalk: ImageVector = Icons.AutoMirrored.Rounded.DirectionsWalk
     val DoneAll: ImageVector = Icons.Rounded.DoneAll
     val DoNotDisturbOff: ImageVector = Icons.Rounded.DoNotDisturbOff
@@ -160,6 +163,7 @@ object ReMindIcons {
     val LightMode: ImageVector = Icons.Rounded.LightMode
     val LocationOff: ImageVector = Icons.Rounded.LocationOff
     val LocationOn: ImageVector = Icons.Rounded.LocationOn
+    val Lock: ImageVector = Icons.Rounded.Lock
     val Menu: ImageVector = Icons.Rounded.Menu
     val MoreVert: ImageVector = Icons.Rounded.MoreVert
     val MusicNote: ImageVector = Icons.Rounded.MusicNote

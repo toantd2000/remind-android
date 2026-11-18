@@ -35,6 +35,7 @@ android {
 dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:domain"))
+    implementation(project(":core:ads:api"))
     implementation(project(":core:common"))
     implementation(project(":core:datastore"))
     implementation(project(":core:designsystem"))

@@ -44,7 +44,9 @@ fun ReminderTriggerSection(
     onTimeWindowsChange: (List<ReminderTimeWindow>) -> Unit = {},
     onAddTimeWindow: (ReminderTimeWindow) -> Unit = {},
     onRemoveTimeWindow: (Int) -> Unit = {},
-    is24HourFormat: Boolean = true
+    is24HourFormat: Boolean = true,
+    isPro: Boolean = false,
+    onNavigateToPaywall: (Int) -> Unit = {}
 ) {
     ReMindSettingsGroup(
         title = stringResource(R.string.section_time_trigger),
@@ -67,6 +69,8 @@ fun ReminderTriggerSection(
                     onRemoveFixedTime = onRemoveFixedTime,
                     onUpdateFixedTime = onUpdateFixedTime,
                     is24HourFormat = is24HourFormat,
+                    isPro = isPro,
+                    onNavigateToPaywall = onNavigateToPaywall,
                     modifier = Modifier
                         .padding(bottom = LiteverTheme.spacing.medium)
                         .padding(horizontal = LiteverTheme.spacing.medium)
@@ -170,6 +174,8 @@ fun ReminderTriggerSection(
                             )
                         },
                         is24HourFormat = is24HourFormat,
+                        isPro = isPro,
+                        onNavigateToPaywall = onNavigateToPaywall,
                         modifier = Modifier.padding(bottom = LiteverTheme.spacing.medium)
                     )
                 }

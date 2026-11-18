@@ -125,4 +125,45 @@
     <string name="share_title">Share ReMind</string>
     <string name="rewarded_ad_not_ready">Ad is not ready yet. Please try again later!</string>
     <string name="loading_ad_message">Loading ad, please wait...</string>
+
+    <!-- Pro & Paywall -->
+    <string name="pro_banner_title">Upgrade to ReMind Pro</string>
+    <string name="pro_banner_subtitle">Ad-free, 5 mission slots, voice TTS, wake-up check &amp; more</string>
+    <string name="pro_banner_active_title">ReMind Pro is Active</string>
+    <string name="pro_banner_active_subtitle">Thank you for supporting ReMind! All Pro features unlocked.</string>
+    <string name="paywall_restore_purchases">Restore</string>
+    <string name="paywall_hero_title">Try Pro free for 7 days</string>
+    <string name="paywall_hero_title_active">You are a ReMind Pro member</string>
+    <string name="paywall_col_pro">Pro</string>
+    <string name="paywall_col_basic">Basic</string>
+    <string name="paywall_feat_basic_alarm">Basic alarms &amp; all mission difficulties</string>
+    <string name="paywall_feat_no_ads">100% Ad-free experience</string>
+    <string name="paywall_feat_mission_chain">5 mission slots &amp; Random mission</string>
+    <string name="paywall_feat_voice_tts">Voice announcements (TTS)</string>
+    <string name="paywall_feat_wakeup_check">Wake-up Check</string>
+    <string name="paywall_feat_extra_loud">Extra Loud alarm boost</string>
+    <string name="paywall_feat_multi_reminder">Unlimited reminder times &amp; windows</string>
+    <string name="paywall_slide_missions_title">5 Mission Slots &amp; Random Mode</string>
+    <string name="paywall_slide_missions_desc">Chain up to 5 wake-up challenges in a row or let ReMind surprise you with Random mode.</string>
+    <string name="paywall_slide_tts_title">Smart Voice Announcements</string>
+    <string name="paywall_slide_tts_desc">Hear your alarm label, reminder title, and current time spoken aloud every minute.</string>
+    <string name="paywall_slide_wakeup_title">Wake-up Check Guard</string>
+    <string name="paywall_slide_wakeup_desc">Confirm you are truly awake a few minutes after dismissing, or the alarm rings again.</string>
+    <string name="paywall_slide_loud_title">Extra Loud Boost</string>
+    <string name="paywall_slide_loud_desc">Automatically amplifies sound if you do not respond within 40 seconds.</string>
+    <string name="paywall_slide_reminder_title">Unlimited Reminder Windows</string>
+    <string name="paywall_slide_reminder_desc">Add more than 2 fixed times or interval windows per reminder for complex schedules.</string>
+    <string name="paywall_social_proof">Unlock your most productive mornings</string>
+    <string name="paywall_plan_monthly">Monthly</string>
+    <string name="paywall_plan_monthly_suffix">/month</string>
+    <string name="paywall_plan_annual">7-Day Free Trial</string>
+    <string name="paywall_plan_annual_suffix">/year</string>
+    <string name="paywall_plan_annual_badge">Save 41%</string>
+    <string name="paywall_plan_lifetime">Lifetime</string>
+    <string name="paywall_plan_lifetime_desc">One-time payment</string>
+    <string name="paywall_cancel_anytime">Cancel anytime on Google Play</string>
+    <string name="paywall_cta_trial">Start 7-Day Free Trial</string>
+    <string name="paywall_cta_subscribe">Upgrade to Pro</string>
+    <string name="paywall_cta_lifetime">Unlock Lifetime Pro</string>
+    <string name="paywall_rewarded_ad_cta">Not ready yet? Watch 1 ad to remove ads for 24h</string>
 </resources>

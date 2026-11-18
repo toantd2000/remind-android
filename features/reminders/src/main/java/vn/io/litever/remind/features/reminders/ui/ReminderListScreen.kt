@@ -59,10 +59,12 @@ fun ReminderListRoute(
     onReminderClick: (Reminder) -> Unit,
     onEditReminderClick: (Long) -> Unit,
     onNavigateToPermissions: () -> Unit,
+    onNavigateToPaywall: (Int) -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: ReminderListViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val isPro by viewModel.isPro.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -109,6 +111,8 @@ fun ReminderListRoute(
         onDeleteReminder = viewModel::deleteReminder,
         onDuplicateReminder = viewModel::duplicateReminder,
         onDeleteDisabledReminders = viewModel::deleteDisabledReminders,
+        isPro = isPro,
+        onNavigateToPaywall = onNavigateToPaywall,
         modifier = modifier
     )
 }
@@ -127,6 +131,8 @@ fun ReminderListScreen(
     onDeleteReminder: (Reminder) -> Unit,
     onDuplicateReminder: (Reminder) -> Unit,
     onDeleteDisabledReminders: () -> Unit,
+    isPro: Boolean = false,
+    onNavigateToPaywall: (Int) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var showTopMenu by remember { mutableStateOf(false) }
@@ -140,6 +146,11 @@ fun ReminderListScreen(
             LiteverTopAppBar(
                 title = stringResource(R.string.reminders_title),
                 actions = {
+                    vn.io.litever.remind.core.designsystem.components.ReMindProTopBarButton(
+                        isPro = isPro,
+                        onClick = { onNavigateToPaywall(0) },
+                        modifier = Modifier.padding(end = if (hasReminders) 0.dp else 8.dp)
+                    )
                     if (hasReminders) {
                         Box {
                             LiteverIconButton(onClick = { showTopMenu = true }) {

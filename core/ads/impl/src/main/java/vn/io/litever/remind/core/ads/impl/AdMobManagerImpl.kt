@@ -60,12 +60,22 @@ class AdMobManagerImpl @Inject constructor(
     private var rewardedAd: RewardedAd? = null
     private var interstitialAd: InterstitialAd? = null
     private var adsDisabledUntilValue = 0L
+    private var isProUserValue = false
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
             preferencesDataSource.adsDisabledUntil.collect { timestamp ->
                 adsDisabledUntilValue = timestamp
                 if (System.currentTimeMillis() < timestamp) {
+                    cachedAds.clear()
+                    interstitialAd = null
+                }
+            }
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            preferencesDataSource.isProUser.collect { isPro ->
+                isProUserValue = isPro
+                if (isPro) {
                     cachedAds.clear()
                     interstitialAd = null
                 }
@@ -85,7 +95,9 @@ class AdMobManagerImpl @Inject constructor(
             AdPlacement.REMIND_NATIVE,
             AdPlacement.MESSAGE_NATIVE,
             AdPlacement.EXIT_NATIVE,
-            AdPlacement.ALARM_LIST_NATIVE -> PlacementConfig(
+            AdPlacement.ALARM_LIST_NATIVE,
+            AdPlacement.EDIT_BOTTOM_STRIP,
+            AdPlacement.SETTINGS_BOTTOM_STRIP -> PlacementConfig(
                 enabled = true,
                 adUnitId = "ca-app-pub-3940256099942544/2247696110"
             )
@@ -109,7 +121,7 @@ class AdMobManagerImpl @Inject constructor(
     }
 
     private fun isAdFreeActive(): Boolean {
-        return System.currentTimeMillis() < adsDisabledUntilValue
+        return isProUserValue || System.currentTimeMillis() < adsDisabledUntilValue
     }
 
     override fun initialize() {
@@ -325,9 +337,27 @@ class AdMobManagerImpl @Inject constructor(
     @Composable
     override fun NativeAdView(placement: AdPlacement, modifier: Modifier) {
         val adsDisabledUntil by preferencesDataSource.adsDisabledUntil.collectAsState(initial = 0L)
-        val isAdFree = remember(adsDisabledUntil) { System.currentTimeMillis() < adsDisabledUntil }
+        val isPro by preferencesDataSource.isProUser.collectAsState(initial = false)
+        val isAdFree = remember(adsDisabledUntil, isPro) {
+            isPro || System.currentTimeMillis() < adsDisabledUntil
+        }
         if (isAdFree) return
         AdMobNativeAdView(placement = placement, adManager = this, modifier = modifier)
+    }
+
+    @Composable
+    override fun MicroAdStrip(placement: AdPlacement, modifier: Modifier) {
+        val adsDisabledUntil by preferencesDataSource.adsDisabledUntil.collectAsState(initial = 0L)
+        val isPro by preferencesDataSource.isProUser.collectAsState(initial = false)
+        val isAdFree = remember(adsDisabledUntil, isPro) {
+            isPro || System.currentTimeMillis() < adsDisabledUntil
+        }
+        if (isAdFree) return
+        vn.io.litever.remind.core.ads.impl.ui.AdMobMicroAdStrip(
+            placement = placement,
+            adManager = this,
+            modifier = modifier
+        )
     }
 
     // internal method for AdMobNativeAdView to load native ads

@@ -50,6 +50,8 @@ class AlarmPreferencesDataSource @Inject constructor(
     val isPreNotificationEnabled: Flow<Boolean> = dataStore.data.map { it[ALARM_PRE_NOTIFICATION] ?: true }
     val lastMissedCheckTime: Flow<Long> = dataStore.data.map { it[LAST_MISSED_CHECK_TIME] ?: 0L }
     val adsDisabledUntil: Flow<Long> = dataStore.data.map { it[ADS_DISABLED_UNTIL] ?: 0L }
+    val isProUser: Flow<Boolean> = dataStore.data.map { it[IS_PRO_USER] ?: false }
+    val proProductId: Flow<String?> = dataStore.data.map { it[PRO_PRODUCT_ID] }
 
     suspend fun set24HourFormat(is24Hour: Boolean) {
         dataStore.edit { preferences ->
@@ -97,6 +99,17 @@ class AlarmPreferencesDataSource @Inject constructor(
         dataStore.edit { it[ADS_DISABLED_UNTIL] = timestamp }
     }
 
+    suspend fun setProStatus(isPro: Boolean, productId: String?) {
+        dataStore.edit { preferences ->
+            preferences[IS_PRO_USER] = isPro
+            if (productId != null) {
+                preferences[PRO_PRODUCT_ID] = productId
+            } else {
+                preferences.remove(PRO_PRODUCT_ID)
+            }
+        }
+    }
+
     companion object {
         val TIME_FORMAT_KEY = stringPreferencesKey("time_format")
         val THEME_MODE_KEY = stringPreferencesKey("theme_mode")
@@ -106,6 +119,8 @@ class AlarmPreferencesDataSource @Inject constructor(
         val ALARM_PRE_NOTIFICATION = booleanPreferencesKey("alarm_pre_notification")
         val LAST_MISSED_CHECK_TIME = longPreferencesKey("last_missed_check_time")
         val ADS_DISABLED_UNTIL = longPreferencesKey("ads_disabled_until")
+        val IS_PRO_USER = booleanPreferencesKey("is_pro_user")
+        val PRO_PRODUCT_ID = stringPreferencesKey("pro_product_id")
     }
 }
 

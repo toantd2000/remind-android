@@ -6,20 +6,27 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.ui.draw.clip
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -32,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -60,16 +68,16 @@ fun SettingsRoute(
     onNavigateToGeneralSettings: () -> Unit,
     onNavigateToPermissions: () -> Unit,
     onNavigateToAttributions: () -> Unit,
+    onNavigateToPaywall: (Int) -> Unit = {},
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val context = LocalContext.current
     SettingsScreen(
         uiState = uiState,
         onNavigateToGeneralSettings = onNavigateToGeneralSettings,
         onNavigateToPermissions = onNavigateToPermissions,
         onNavigateToAttributions = onNavigateToAttributions,
-        onRewardGranted = { viewModel.disableAdsFor24Hours(context) }
+        onNavigateToPaywall = onNavigateToPaywall
     )
 }
 
@@ -80,47 +88,10 @@ fun SettingsScreen(
     onNavigateToGeneralSettings: () -> Unit,
     onNavigateToPermissions: () -> Unit,
     onNavigateToAttributions: () -> Unit,
-    onRewardGranted: () -> Unit
+    onNavigateToPaywall: (Int) -> Unit = {}
 ) {
     val context = LocalContext.current
-    val adManager = LocalAdManager.current
-    val notReadyMessage = stringResource(R.string.rewarded_ad_not_ready)
-
-    val adState by adManager.adState.collectAsState()
-    var showDonateDialog by remember { mutableStateOf(false) }
     var showFaqDialog by remember { mutableStateOf(false) }
-    var showThankYouDialog by remember { mutableStateOf(false) }
-    var showSupportDeveloperDialog by remember { mutableStateOf(false) }
-    var showAdLoading by remember { mutableStateOf(false) }
-
-
-    LaunchedEffect(adState, showAdLoading) {
-        if (showAdLoading) {
-            when (adState) {
-                is AdState.Loaded -> {
-                    showAdLoading = false
-                    val activity = context.findActivity()
-                    if (activity != null) {
-                        adManager.showAd(activity, AdPlacement.SUPPORT_REWARDED) {
-                            onRewardGranted()
-                            showThankYouDialog = true
-                        }
-                    }
-                }
-
-                is AdState.Failed -> {
-                    showAdLoading = false
-                    Toast.makeText(
-                        context,
-                        notReadyMessage,
-                        android.widget.Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-                else -> {}
-            }
-        }
-    }
 
     Scaffold(
         topBar = {
@@ -136,6 +107,14 @@ fun SettingsScreen(
             verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small),
             contentPadding = PaddingValues(LiteverTheme.spacing.medium)
         ) {
+            // Pro Upgrade Banner
+            item {
+                ProSettingsBanner(
+                    isPro = uiState.isPro,
+                    onClick = { onNavigateToPaywall(0) }
+                )
+            }
+
             // Group 1: App Settings
             item {
                 ReMindSettingsGroup(title = stringResource(R.string.category_app_settings)) {
@@ -176,13 +155,6 @@ fun SettingsScreen(
                         title = stringResource(R.string.setting_share),
                         icon = ReMindIcons.Share,
                         onClick = { shareApp(context) }
-                    )
-
-                    ReMindSettingsItem(
-                        title = stringResource(R.string.setting_support_dev_title),
-                        subtitle = stringResource(R.string.setting_support_dev_desc),
-                        icon = ReMindIcons.Favorite,
-                        onClick = { showSupportDeveloperDialog = true }
                     )
                 }
             }
@@ -246,65 +218,6 @@ fun SettingsScreen(
         }
     }
 
-    // Support Developer Dialog
-    if (showSupportDeveloperDialog) {
-        LvAlertDialog(
-            title = {
-                Text(text = stringResource(R.string.setting_support_dev_title),)
-            },
-            text = {
-                Text(text = stringResource(R.string.support_dev_dialog_desc))
-            },
-            onDismissRequest = {
-                if (showSupportDeveloperDialog) showSupportDeveloperDialog = false
-            },
-            confirmButton = {
-                LvButton(
-                    onClick = {
-                        if (showSupportDeveloperDialog) showSupportDeveloperDialog = false
-                        val activity = context.findActivity()
-                        if (activity != null && adManager.isAdLoaded(AdPlacement.SUPPORT_REWARDED)) {
-                            adManager.showAd(activity, AdPlacement.SUPPORT_REWARDED) {
-                                onRewardGranted()
-                                showThankYouDialog = true
-                            }
-                        } else {
-                            adManager.loadAd(AdPlacement.SUPPORT_REWARDED)
-                            showAdLoading = true
-                        }
-                    }
-                ) {
-                    Text(stringResource(R.string.watch_ad_action))
-                }
-            },
-            dismissButton = {
-                LvButton(
-                    onClick = {
-                        if (showSupportDeveloperDialog) showSupportDeveloperDialog = false
-                        showDonateDialog = true
-                    },
-                    type = LvButtonType.Outlined,
-                ) {
-                    Text(stringResource(R.string.direct_support_action))
-                }
-            },
-        )
-    }
-
-    // Direct Donation Dialog
-    if (showDonateDialog) {
-        LvAlertDialog(
-            onDismissRequest = { showDonateDialog = false },
-            title = { Text(stringResource(R.string.support_dev_dialog_title)) },
-            text = { Text(stringResource(R.string.support_dev_dialog_message)) },
-            confirmButton = {
-                LvButton(onClick = { showDonateDialog = false }) {
-                    Text(stringResource(R.string.close_text))
-                }
-            }
-        )
-    }
-
     // FAQ / Q&A Upcoming Dialog
     if (showFaqDialog) {
         LvAlertDialog(
@@ -313,48 +226,6 @@ fun SettingsScreen(
             text = { Text(stringResource(R.string.faq_upcoming_message)) },
             confirmButton = {
                 LvButton(onClick = { showFaqDialog = false }) {
-                    Text(stringResource(R.string.close_text))
-                }
-            }
-        )
-    }
-
-    // Ad Loading Dialog Overlay
-    if (showAdLoading) {
-        val loadingAdMessage = stringResource(R.string.loading_ad_message)
-        LvAlertDialog(
-            onDismissRequest = { showAdLoading = false },
-            confirmButton = {},
-            text = {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(LiteverTheme.spacing.large),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
-                ) {
-                    CircularProgressIndicator(
-                        color = LiteverTheme.colors.primary,
-                        modifier = Modifier.size(LiteverTheme.spacing.doubleLarge)
-                    )
-                    Text(
-                        text = loadingAdMessage,
-                        style = LiteverTheme.typography.bodyMedium,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
-        )
-    }
-
-    // Ad-Free Granted Thank You Dialog
-    if (showThankYouDialog) {
-        LvAlertDialog(
-            onDismissRequest = { showThankYouDialog = false },
-            title = { Text(stringResource(R.string.watch_ad_dialog_title)) },
-            text = { Text(stringResource(R.string.ads_disabled_reward_message)) },
-            confirmButton = {
-                LvButton(onClick = { showThankYouDialog = false }) {
                     Text(stringResource(R.string.close_text))
                 }
             }
@@ -417,6 +288,66 @@ private fun launchCustomTab(context: Context, url: String) {
     }
 }
 
+@Composable
+private fun ProSettingsBanner(
+    isPro: Boolean,
+    onClick: () -> Unit
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(LiteverTheme.shapes.large)
+            .clickable(onClick = onClick),
+        shape = LiteverTheme.shapes.large,
+        color = if (isPro) LiteverTheme.colors.secondaryContainer else LiteverTheme.colors.primaryContainer
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(LiteverTheme.spacing.medium),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Surface(
+                shape = CircleShape,
+                color = if (isPro) LiteverTheme.colors.secondary else LiteverTheme.colors.primary,
+                modifier = Modifier.size(44.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = ReMindIcons.Diamond,
+                        contentDescription = null,
+                        tint = if (isPro) LiteverTheme.colors.onSecondary else LiteverTheme.colors.onPrimary,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.width(LiteverTheme.spacing.medium))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(
+                        if (isPro) R.string.pro_banner_active_title else R.string.pro_banner_title
+                    ),
+                    style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = if (isPro) LiteverTheme.colors.onSecondaryContainer else LiteverTheme.colors.onPrimaryContainer
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = stringResource(
+                        if (isPro) R.string.pro_banner_active_subtitle else R.string.pro_banner_subtitle
+                    ),
+                    style = LiteverTheme.typography.bodySmall,
+                    color = (if (isPro) LiteverTheme.colors.onSecondaryContainer else LiteverTheme.colors.onPrimaryContainer).copy(alpha = 0.85f)
+                )
+            }
+            Icon(
+                imageVector = ReMindIcons.ChevronRight,
+                contentDescription = null,
+                tint = if (isPro) LiteverTheme.colors.onSecondaryContainer else LiteverTheme.colors.onPrimaryContainer
+            )
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun SettingsScreenPreview() {
@@ -427,7 +358,7 @@ fun SettingsScreenPreview() {
                 onNavigateToGeneralSettings = {},
                 onNavigateToPermissions = {},
                 onNavigateToAttributions = {},
-                onRewardGranted = {}
+                onNavigateToPaywall = {}
             )
         }
     }
@@ -439,11 +370,11 @@ fun SettingsScreenDarkPreview() {
     ReMindTheme(darkTheme = true) {
         CompositionLocalProvider(LocalAdManager provides PreviewAdManager) {
             SettingsScreen(
-                uiState = SettingsUiState(),
+                uiState = SettingsUiState(isPro = true),
                 onNavigateToGeneralSettings = {},
                 onNavigateToPermissions = {},
                 onNavigateToAttributions = {},
-                onRewardGranted = {}
+                onNavigateToPaywall = {}
             )
         }
     }
@@ -472,4 +403,7 @@ private object PreviewAdManager : AdManager {
             )
         }
     }
+
+    @Composable
+    override fun MicroAdStrip(placement: AdPlacement, modifier: Modifier) {}
 }

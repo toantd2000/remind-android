@@ -49,6 +49,8 @@ fun ReminderTimeConfigSection(
     onRemoveFixedTime: (Int) -> Unit = {},
     onUpdateFixedTime: (Int, LocalTime) -> Unit = { _, t -> onTimeChange(t) },
     is24HourFormat: Boolean = true,
+    isPro: Boolean = false,
+    onNavigateToPaywall: (Int) -> Unit = {}
 ) {
     var showAddTimePicker by remember { mutableStateOf(false) }
     var showEditTimePicker by remember { mutableStateOf(false) }
@@ -106,9 +108,16 @@ fun ReminderTimeConfigSection(
                 )
             }
 
+            val isLimitReached = !isPro && timesList.size >= 2
             InputChip(
                 selected = false,
-                onClick = { showAddTimePicker = true },
+                onClick = {
+                    if (isLimitReached) {
+                        onNavigateToPaywall(5)
+                    } else {
+                        showAddTimePicker = true
+                    }
+                },
                 label = {
                     Text(
                         stringResource(R.string.add_fixed_time),
@@ -117,7 +126,7 @@ fun ReminderTimeConfigSection(
                 },
                 leadingIcon = {
                     Icon(
-                        imageVector = ReMindIcons.Add,
+                        imageVector = if (isLimitReached) ReMindIcons.Lock else ReMindIcons.Add,
                         contentDescription = null,
                         modifier = Modifier.size(18.dp)
                     )

@@ -76,6 +76,13 @@ class AlarmEditViewModel @Inject constructor(
             initialValue = true
         )
 
+    val isPro: StateFlow<Boolean> = preferencesDataSource.isProUser
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = false
+        )
+
     private val _uiState = MutableStateFlow(
         AlarmEditUiState(
             maxVolume = audioManager.getStreamMaxVolume(android.media.AudioManager.STREAM_ALARM),

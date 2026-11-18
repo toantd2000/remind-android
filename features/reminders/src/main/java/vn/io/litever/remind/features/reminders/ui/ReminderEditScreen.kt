@@ -3,7 +3,18 @@ package vn.io.litever.remind.features.reminders.ui
 import android.content.res.Configuration
 import android.media.RingtoneManager
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.NavigationBarDefaults
+import androidx.compose.ui.platform.LocalInspectionMode
+import vn.io.litever.remind.core.ads.api.AdPlacement
+import vn.io.litever.remind.core.ads.api.LocalAdManager
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -66,6 +77,7 @@ fun ReminderEditRoute(
     onBackClick: () -> Unit,
     onNavigateToRingtoneSelection: (String?) -> Unit,
     onNavigateToPermissions: () -> Unit,
+    onNavigateToPaywall: (Int) -> Unit = {},
     navController: NavController,
     modifier: Modifier = Modifier,
     viewModel: ReminderEditViewModel = hiltViewModel()
@@ -160,7 +172,8 @@ fun ReminderEditRoute(
         onTogglePreview = viewModel::toggleRingtonePlayback,
         onSnoozeEnabledChange = viewModel::setSnoozeEnabled,
         onSnoozeIntervalChange = viewModel::setSnoozeIntervalMinutes,
-        onToggleEnabled = viewModel::setIsEnabled
+        onToggleEnabled = viewModel::setIsEnabled,
+        onNavigateToPaywall = onNavigateToPaywall
     )
 }
 
@@ -182,6 +195,7 @@ fun ReminderEditScreen(
     onRingtoneClick: () -> Unit,
     onVibrationChange: (Boolean) -> Unit,
     onVolumeChange: (Int) -> Unit,
+    onNavigateToPaywall: (Int) -> Unit = {},
     modifier: Modifier = Modifier,
     onTriggerTypeSelected: (ReminderTriggerType) -> Unit = {},
     onTimeChange: (LocalTime) -> Unit = {},
@@ -250,12 +264,31 @@ fun ReminderEditScreen(
             )
         },
         bottomBar = {
-            ReMindBottomBar {
-                LiteverButton(
-                    onClick = onSaveClick,
-                    modifier = Modifier.fillMaxWidth()
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(NavigationBarDefaults.containerColor)
+                    .windowInsetsPadding(
+                        WindowInsets.safeDrawing.only(
+                            WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
+                        )
+                    )
+            ) {
+                ReMindBottomBar(
+                    windowInsets = WindowInsets(0, 0, 0, 0)
                 ) {
-                    Text(stringResource(R.string.action_save))
+                    LiteverButton(
+                        onClick = onSaveClick,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(stringResource(R.string.action_save))
+                    }
+                }
+                if (!LocalInspectionMode.current) {
+                    LocalAdManager.current.MicroAdStrip(
+                        placement = AdPlacement.EDIT_BOTTOM_STRIP,
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
             }
         }
@@ -318,6 +351,8 @@ fun ReminderEditScreen(
                     onAddTimeWindow = onAddTimeWindow,
                     onRemoveTimeWindow = onRemoveTimeWindow,
                     is24HourFormat = uiState.is24HourFormat,
+                    isPro = uiState.isPro,
+                    onNavigateToPaywall = onNavigateToPaywall,
                     modifier = Modifier.fillMaxWidth()
                 )
             }

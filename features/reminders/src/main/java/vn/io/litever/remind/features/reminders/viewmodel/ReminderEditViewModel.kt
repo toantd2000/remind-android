@@ -80,6 +80,7 @@ data class ReminderEditUiState(
     val showDiscardDialog: Boolean = false,
     val isLoading: Boolean = false,
     val is24HourFormat: Boolean = true,
+    val isPro: Boolean = false,
     val showTitleError: Boolean = false,
     val validationErrorField: ReminderValidationErrorField? = null,
     val validationErrorTrigger: Long = 0L
@@ -110,6 +111,11 @@ class ReminderEditViewModel @Inject constructor(
     private var existingLastTriggeredTime: Long? = null
 
     init {
+        viewModelScope.launch {
+            preferencesDataSource.isProUser.collect { pro ->
+                _uiState.update { it.copy(isPro = pro) }
+            }
+        }
         viewModelScope.launch {
             val is24h = runCatching { preferencesDataSource.is24HourFormat.first() }.getOrDefault(true)
             if (reminderId > 0L) {

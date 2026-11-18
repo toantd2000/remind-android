@@ -20,7 +20,8 @@ data class SettingsUiState(
     val language: String = if (java.util.Locale.getDefault().language == "vi") "vi" else "en",
     val useBuiltInSpeaker: Boolean = true,
     val isPreNotificationEnabled: Boolean = true,
-    val adsDisabledUntil: Long = 0L
+    val adsDisabledUntil: Long = 0L,
+    val isPro: Boolean = false
 )
 
 @HiltViewModel
@@ -38,7 +39,8 @@ class SettingsViewModel @Inject constructor(
             preferencesDataSource.language,
             preferencesDataSource.useBuiltInSpeaker,
             preferencesDataSource.isPreNotificationEnabled,
-            preferencesDataSource.adsDisabledUntil
+            preferencesDataSource.adsDisabledUntil,
+            preferencesDataSource.isProUser
         )
     ) { params ->
         SettingsUiState(
@@ -49,7 +51,8 @@ class SettingsViewModel @Inject constructor(
             language = params[4] as String,
             useBuiltInSpeaker = params[5] as Boolean,
             isPreNotificationEnabled = params[6] as Boolean,
-            adsDisabledUntil = params[7] as Long
+            adsDisabledUntil = params[7] as Long,
+            isPro = params[8] as Boolean
         )
     }.stateIn(
         scope = viewModelScope,

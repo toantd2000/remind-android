@@ -35,6 +35,7 @@ fun NavGraphBuilder.remindersGraph(
     onNavigateToEdit: (Long) -> Unit,
     onNavigateToRingtoneSelection: (String?) -> Unit = {},
     onNavigateToPermissions: () -> Unit,
+    onNavigateToPaywall: (Int) -> Unit = {},
     onNavigateBack: () -> Unit,
     navController: NavController
 ) {
@@ -56,7 +57,8 @@ fun NavGraphBuilder.remindersGraph(
             onEditReminderClick = { reminderId ->
                 onNavigateToEdit(reminderId)
             },
-            onNavigateToPermissions = onNavigateToPermissions
+            onNavigateToPermissions = onNavigateToPermissions,
+            onNavigateToPaywall = onNavigateToPaywall
         )
     }
 
@@ -76,6 +78,7 @@ fun NavGraphBuilder.remindersGraph(
             onBackClick = onNavigateBack,
             onNavigateToRingtoneSelection = onNavigateToRingtoneSelection,
             onNavigateToPermissions = onNavigateToPermissions,
+            onNavigateToPaywall = onNavigateToPaywall,
             navController = navController
         )
     }

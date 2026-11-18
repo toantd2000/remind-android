@@ -33,7 +33,8 @@ data class ReminderListUiState(
     val hasPermissionWarning: Boolean = false,
     val isCriticalPermissionWarning: Boolean = true,
     val isPermissionWarningDismissed: Boolean = false,
-    val missingPermissions: List<ReminderPermissionType> = emptyList()
+    val missingPermissions: List<ReminderPermissionType> = emptyList(),
+    val isPro: Boolean = false
 ) {
     val filteredReminders: List<Reminder> get() = reminders
 }
@@ -56,6 +57,13 @@ class ReminderListViewModel @Inject constructor(
     val uiMessage: SharedFlow<Int> = _uiMessage.asSharedFlow()
 
     private var recentlyDeletedReminder: Reminder? = null
+
+    val isPro: StateFlow<Boolean> = preferencesDataSource.isProUser
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = false
+        )
 
     val uiState: StateFlow<ReminderListUiState> = combine(
         reminderRepository.getAllReminders(),

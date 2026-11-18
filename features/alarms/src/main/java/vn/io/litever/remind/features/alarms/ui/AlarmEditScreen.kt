@@ -5,6 +5,15 @@ package vn.io.litever.remind.features.alarms.ui
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.NavigationBarDefaults
+import androidx.compose.ui.platform.LocalInspectionMode
+import vn.io.litever.remind.core.ads.api.AdPlacement
+import vn.io.litever.remind.core.ads.api.LocalAdManager
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -107,11 +116,13 @@ fun AlarmEditRoute(
     onNavigateToPermissions: () -> Unit,
     onMissionClick: (vn.io.litever.remind.core.model.Mission) -> Unit,
     onPreviewClick: (Long) -> Unit,
+    onNavigateToPaywall: (Int) -> Unit = {},
     navController: androidx.navigation.NavController,
     viewModel: AlarmEditViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val is24HourFormat by viewModel.is24HourFormat.collectAsState()
+    val isPro by viewModel.isPro.collectAsState()
     val nextAlarmState by viewModel.nextAlarmState.collectAsState()
 
     var showMissionSelection by androidx.compose.runtime.saveable.rememberSaveable {
@@ -349,7 +360,9 @@ fun AlarmEditRoute(
             viewModel.dismissDndPermissionDialog()
             val intent = android.content.Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
             context.startActivity(intent)
-        }
+        },
+        isPro = isPro,
+        onNavigateToPaywall = onNavigateToPaywall
     )
 }
 
@@ -386,6 +399,8 @@ fun AlarmEditScreen(
     onPreviewClick: () -> Unit,
     onDismissDndPermissionDialog: () -> Unit,
     onNavigateToDndSettings: () -> Unit,
+    isPro: Boolean = false,
+    onNavigateToPaywall: (Int) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     if (uiState.isLoading) {
@@ -641,25 +656,44 @@ fun AlarmEditScreen(
             }
         },
         bottomBar = {
-            ReMindBottomBar {
-                LvButton(
-                    onClick = onPreviewClick,
-                    type = LvButtonType.Outlined,
-                    semantic = LvSemantic.Secondary,
-                ) {
-                    Text(
-                        stringResource(R.string.action_preview),
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(NavigationBarDefaults.containerColor)
+                    .windowInsetsPadding(
+                        WindowInsets.safeDrawing.only(
+                            WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
+                        )
                     )
-                }
-                LvButton(
-                    onClick = onSaveClick,
-                    type = LvButtonType.Filled,
-                    semantic = LvSemantic.Primary,
-                    modifier = Modifier
-                        .weight(1f)
+            ) {
+                ReMindBottomBar(
+                    windowInsets = WindowInsets(0, 0, 0, 0)
                 ) {
-                    Text(
-                        stringResource(R.string.save),
+                    LvButton(
+                        onClick = onPreviewClick,
+                        type = LvButtonType.Outlined,
+                        semantic = LvSemantic.Secondary,
+                    ) {
+                        Text(
+                            stringResource(R.string.action_preview),
+                        )
+                    }
+                    LvButton(
+                        onClick = onSaveClick,
+                        type = LvButtonType.Filled,
+                        semantic = LvSemantic.Primary,
+                        modifier = Modifier
+                            .weight(1f)
+                    ) {
+                        Text(
+                            stringResource(R.string.save),
+                        )
+                    }
+                }
+                if (!LocalInspectionMode.current) {
+                    LocalAdManager.current.MicroAdStrip(
+                        placement = AdPlacement.EDIT_BOTTOM_STRIP,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
@@ -1101,39 +1135,58 @@ fun AlarmEditScreen(
             }
 
             item {
-                // Group 6: Missions
+                // Group 6: Missions (5-slot horizontal row matching 1/5 upsell design)
                 ReMindSettingsGroup(
                     title = stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_title),
                 ) {
-                    uiState.missions.forEach { mission ->
-                        MissionRow(
-                            mission = mission,
-                            onClick = { onMissionClick(mission) },
-                            onDelete = { onMissionRemove(mission) }
-                        )
-                        HorizontalDivider(
-                            color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.3F),
-                            modifier = Modifier.padding(horizontal = LiteverTheme.spacing.medium)
-                        )
-                    }
-
-                    if (uiState.missions.size < 5) {
-                        LvButton(
-                            onClick = onAddMissionClick,
-                            type = LvButtonType.Outlined,
-                            modifier = Modifier.fillMaxWidth().padding(all = LiteverTheme.spacing.medium),
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(LiteverTheme.spacing.medium),
+                        verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(
-                                imageVector = ReMindIcons.Add,
-                                contentDescription = null,
-                                modifier = Modifier.size(LiteVerButtonDefaults.IconSize)
+                            Text(
+                                text = stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_title),
+                                style = LiteverTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
+                                color = LiteverTheme.colors.onSurfaceVariant
                             )
-                            Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
-                            Text(stringResource(vn.io.litever.remind.core.designsystem.R.string.add_mission))
+                            Text(
+                                text = "${uiState.missions.size}/5",
+                                style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                color = LiteverTheme.colors.primary
+                            )
+                        }
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            repeat(5) { slotIndex ->
+                                val mission = uiState.missions.getOrNull(slotIndex)
+                                val isSlotUnlocked = isPro || slotIndex == 0
+                                MissionSlotCard(
+                                    mission = mission,
+                                    isUnlocked = isSlotUnlocked,
+                                    onFilledClick = { mission?.let(onMissionClick) },
+                                    onRemoveClick = { mission?.let(onMissionRemove) },
+                                    onAddClick = {
+                                        if (isSlotUnlocked) {
+                                            onAddMissionClick()
+                                        } else {
+                                            onNavigateToPaywall(1)
+                                        }
+                                    },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
                         }
                     }
                 }
-
             }
 
 
@@ -1217,6 +1270,91 @@ fun RepeatDaySelector(
     }
 }
 
+
+@Composable
+private fun MissionSlotCard(
+    mission: vn.io.litever.remind.core.model.Mission?,
+    isUnlocked: Boolean,
+    onFilledClick: () -> Unit,
+    onRemoveClick: () -> Unit,
+    onAddClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val slotShape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
+    Box(
+        modifier = modifier.height(58.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        if (mission != null) {
+            val icon = when (mission.type) {
+                MissionType.TYPING -> ReMindIcons.Keyboard
+                MissionType.MATH -> ReMindIcons.Calculate
+                MissionType.MEMORY_FIND_COLOR_TILES -> ReMindIcons.GridView
+            }
+            androidx.compose.material3.Surface(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 4.dp, end = 4.dp)
+                    .clip(slotShape)
+                    .clickable(onClick = onFilledClick),
+                shape = slotShape,
+                color = LiteverTheme.colors.primaryContainer
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = mission.type.name,
+                        tint = LiteverTheme.colors.onPrimaryContainer,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
+            androidx.compose.material3.Surface(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .size(20.dp)
+                    .clip(androidx.compose.foundation.shape.CircleShape)
+                    .clickable(onClick = onRemoveClick),
+                shape = androidx.compose.foundation.shape.CircleShape,
+                color = LiteverTheme.colors.errorContainer
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = ReMindIcons.Close,
+                        contentDescription = "Remove",
+                        tint = LiteverTheme.colors.onErrorContainer,
+                        modifier = Modifier.size(12.dp)
+                    )
+                }
+            }
+        } else {
+            val borderColor = if (isUnlocked) {
+                LiteverTheme.colors.primary.copy(alpha = 0.6f)
+            } else {
+                LiteverTheme.colors.outlineVariant.copy(alpha = 0.6f)
+            }
+            androidx.compose.material3.Surface(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 4.dp, end = 4.dp)
+                    .clip(slotShape)
+                    .clickable(onClick = onAddClick),
+                shape = slotShape,
+                color = LiteverTheme.colors.surfaceContainerHighest.copy(alpha = 0.5f),
+                border = androidx.compose.foundation.BorderStroke(1.dp, borderColor)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = if (isUnlocked) ReMindIcons.Add else ReMindIcons.Lock,
+                        contentDescription = if (isUnlocked) "Add Mission" else "Pro Locked",
+                        tint = if (isUnlocked) LiteverTheme.colors.primary else LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.6f),
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
+        }
+    }
+}
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF, heightDp = 1500)
 @Composable

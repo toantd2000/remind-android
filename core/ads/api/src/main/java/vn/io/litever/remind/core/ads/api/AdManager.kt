@@ -15,4 +15,7 @@ interface AdManager {
 
     @Composable
     fun NativeAdView(placement: AdPlacement, modifier: Modifier)
+
+    @Composable
+    fun MicroAdStrip(placement: AdPlacement, modifier: Modifier)
 }

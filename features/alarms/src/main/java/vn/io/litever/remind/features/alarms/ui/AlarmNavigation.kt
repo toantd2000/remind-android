@@ -22,6 +22,7 @@ fun NavGraphBuilder.alarmGraph(
     onMissionClick: (vn.io.litever.remind.core.model.Mission) -> Unit,
     onNavigateToPreview: (Long) -> Unit,
     onNavigateToMissionPreview: (Long) -> Unit,
+    onNavigateToPaywall: (Int) -> Unit = {},
     navController: NavController
 ) {
     composable(route = AlarmListRoute) {
@@ -29,7 +30,8 @@ fun NavGraphBuilder.alarmGraph(
             onAddAlarmClick = { onNavigateToEdit(0L) },
             onAlarmClick = { alarm -> onNavigateToEdit(alarm.id) },
             onNavigateToPreview = onNavigateToPreview,
-            onNavigateToPermissions = onNavigateToPermissions
+            onNavigateToPermissions = onNavigateToPermissions,
+            onNavigateToPaywall = onNavigateToPaywall
         )
     }
     composable(
@@ -45,6 +47,7 @@ fun NavGraphBuilder.alarmGraph(
             onNavigateToPermissions = onNavigateToPermissions,
             onMissionClick = onMissionClick,
             onPreviewClick = onNavigateToPreview,
+            onNavigateToPaywall = onNavigateToPaywall,
             navController = navController
         )
     }

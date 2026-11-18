@@ -67,13 +67,23 @@ class AlarmListViewModel @Inject constructor(
             initialValue = true
         )
 
-    val isAdFreeActive: StateFlow<Boolean> = preferencesDataSource.adsDisabledUntil
-        .map { System.currentTimeMillis() < it }
+    val isPro: StateFlow<Boolean> = preferencesDataSource.isProUser
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = false
         )
+
+    val isAdFreeActive: StateFlow<Boolean> = kotlinx.coroutines.flow.combine(
+        preferencesDataSource.isProUser,
+        preferencesDataSource.adsDisabledUntil
+    ) { isPro, disabledUntil ->
+        isPro || System.currentTimeMillis() < disabledUntil
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = false
+    )
 
     val alarms: StateFlow<List<Alarm>?> = repository.getAllAlarms()
         .map { list ->

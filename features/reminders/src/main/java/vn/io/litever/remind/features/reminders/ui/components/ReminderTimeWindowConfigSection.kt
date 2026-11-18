@@ -52,7 +52,9 @@ fun ReminderTimeWindowConfigSection(
     onRemoveTimeWindow: (Int) -> Unit,
     modifier: Modifier = Modifier,
     @Suppress("UNUSED_PARAMETER") onSetAllDayPreset: () -> Unit = {},
-    is24HourFormat: Boolean = true
+    is24HourFormat: Boolean = true,
+    isPro: Boolean = false,
+    onNavigateToPaywall: (Int) -> Unit = {}
 ) {
     var showWindowDialog by remember { mutableStateOf(false) }
     var editingWindowIndex by remember { mutableStateOf<Int?>(null) }
@@ -117,13 +119,18 @@ fun ReminderTimeWindowConfigSection(
                 )
             }
 
+            val isLimitReached = !isPro && displayWindows.size >= 2
             InputChip(
                 selected = false,
                 onClick = {
-                    editingWindowIndex = null
-                    editingStartTime = LocalTime.of(8, 0)
-                    editingEndTime = LocalTime.of(18, 0)
-                    showWindowDialog = true
+                    if (isLimitReached) {
+                        onNavigateToPaywall(5)
+                    } else {
+                        editingWindowIndex = null
+                        editingStartTime = LocalTime.of(8, 0)
+                        editingEndTime = LocalTime.of(18, 0)
+                        showWindowDialog = true
+                    }
                 },
                 label = {
                     Text(
@@ -133,7 +140,7 @@ fun ReminderTimeWindowConfigSection(
                 },
                 leadingIcon = {
                     Icon(
-                        imageVector = ReMindIcons.Add,
+                        imageVector = if (isLimitReached) ReMindIcons.Lock else ReMindIcons.Add,
                         contentDescription = null,
                         modifier = Modifier.size(18.dp)
                     )

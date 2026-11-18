@@ -150,8 +150,15 @@ data class TimeTrigger(
         val today = now.toLocalDate()
         val targets = effectiveExactDates
 
-        // 1. If exactDates are in the future (today is not in targets) for NONE mode
-        if (repeatMode == RepeatMode.NONE && targets.isNotEmpty() && !targets.contains(today)) {
+        val isTodayOrOvernightTail = isDateValid(today) || sortedWindows.any { w ->
+            w.startTime.isAfter(w.endTime) &&
+                !now.toLocalTime().isAfter(w.endTime) &&
+                isDateValid(today.minusDays(1)) &&
+                w.isWithinWindow(now)
+        }
+
+        // 1. If exactDates are in the future (today is not valid and not in overnight tail) for NONE mode
+        if (repeatMode == RepeatMode.NONE && targets.isNotEmpty() && !isTodayOrOvernightTail) {
             val nextTarget = targets.firstOrNull { it.isAfter(today) } ?: return null
             val activeWindow = sortedWindows.firstOrNull {
                 it.activeDays.isEmpty() || it.activeDays.contains(nextTarget.dayOfWeek)
@@ -159,8 +166,8 @@ data class TimeTrigger(
             return nextTarget.atTime(activeWindow.startTime).withSecond(0).withNano(0)
         }
 
-        // 2. Check if today is a valid date
-        if (isDateValid(today)) {
+        // 2. Check if today is a valid date or currently inside an overnight tail from yesterday
+        if (isTodayOrOvernightTail) {
             val baseTime = lastTriggeredTime ?: now
             var nextTime = if (lastTriggeredTime != null) {
                 lastTriggeredTime.plusMinutes(interval.toLong())
@@ -177,15 +184,22 @@ data class TimeTrigger(
             val candidateDate = nextTime.toLocalDate()
             val candidateLocalTime = nextTime.toLocalTime()
 
-            if (candidateDate == today) {
+            val isCandidateDateAllowed = isDateValid(candidateDate) || sortedWindows.any { w ->
+                w.startTime.isAfter(w.endTime) &&
+                    !candidateLocalTime.isAfter(w.endTime) &&
+                    isDateValid(candidateDate.minusDays(1)) &&
+                    w.isWithinWindow(nextTime)
+            }
+
+            if (isCandidateDateAllowed && sortedWindows.any { it.isWithinWindow(nextTime) }) {
+                return nextTime.withSecond(0).withNano(0)
+            }
+
+            if (candidateDate == today && isDateValid(today)) {
                 for (w in sortedWindows) {
                     val isDayActive = w.activeDays.isEmpty() || w.activeDays.contains(today.dayOfWeek)
-                    if (isDayActive) {
-                        if (candidateLocalTime in w.startTime..w.endTime) {
-                            return nextTime.withSecond(0).withNano(0)
-                        } else if (candidateLocalTime.isBefore(w.startTime)) {
-                            return today.atTime(w.startTime).withSecond(0).withNano(0)
-                        }
+                    if (isDayActive && candidateLocalTime.isBefore(w.startTime)) {
+                        return today.atTime(w.startTime).withSecond(0).withNano(0)
                     }
                 }
             }

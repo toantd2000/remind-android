@@ -299,5 +299,53 @@ class TimeTriggerTest {
             trigger.getNextOccurrence(onLastDateEvening, lastTriggeredTime = onLastDateEvening, isInterval = true)
         )
     }
+
+    @Test
+    fun getNextOccurrence_interval_overnightWindow_evaluatesAcrossMidnight() {
+        val overnightWindow = ReminderTimeWindow(
+            startTime = LocalTime.of(22, 0),
+            endTime = LocalTime.of(6, 0)
+        )
+        val trigger = TimeTrigger(
+            intervalMinutes = 60,
+            repeatMode = RepeatMode.DAILY,
+            timeWindows = listOf(overnightWindow)
+        )
+
+        // 23:00 + 60m -> 00:00 next day
+        val lateNight = LocalDateTime.of(2026, 8, 19, 23, 0)
+        assertEquals(
+            LocalDateTime.of(2026, 8, 20, 0, 0),
+            trigger.getNextOccurrence(lateNight, lastTriggeredTime = lateNight, isInterval = true)
+        )
+
+        // 01:00 + 60m -> 02:00 same morning
+        val earlyMorning = LocalDateTime.of(2026, 8, 20, 1, 0)
+        assertEquals(
+            LocalDateTime.of(2026, 8, 20, 2, 0),
+            trigger.getNextOccurrence(earlyMorning, lastTriggeredTime = earlyMorning, isInterval = true)
+        )
+
+        // 05:30 + 60m = 06:30 (outside 22:00-06:00) -> rolls to 22:00 tonight
+        val endOfShift = LocalDateTime.of(2026, 8, 20, 5, 30)
+        assertEquals(
+            LocalDateTime.of(2026, 8, 20, 22, 0),
+            trigger.getNextOccurrence(endOfShift, lastTriggeredTime = endOfShift, isInterval = true)
+        )
+    }
+
+    @Test
+    fun getNextOccurrence_interval_allDayMidnightRollover_preservesFullInterval() {
+        val trigger = TimeTrigger(
+            intervalMinutes = 60,
+            repeatMode = RepeatMode.DAILY
+        )
+
+        val now = LocalDateTime.of(2026, 8, 19, 23, 30)
+        assertEquals(
+            LocalDateTime.of(2026, 8, 20, 0, 30),
+            trigger.getNextOccurrence(now, lastTriggeredTime = now, isInterval = true)
+        )
+    }
 }
 

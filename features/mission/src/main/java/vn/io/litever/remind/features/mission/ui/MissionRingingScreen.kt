@@ -326,13 +326,6 @@ fun MissionRingingScreen(
                                         .verticalScroll(rememberScrollState())
                                 )
                             }
-                            else -> {
-                                Text(
-                                    text = "Mission type ${currentMission.type} not implemented yet",
-                                    style = LiteverTheme.typography.bodyLarge,
-                                    color = LiteverTheme.colors.onSurfaceVariant
-                                )
-                            }
                         }
                     }
                 }
@@ -357,7 +350,6 @@ private fun MissionProgressScaffold(
         MissionType.TYPING -> stringResource(R.string.mission_typing)
         MissionType.MATH -> stringResource(R.string.mission_math)
         MissionType.MEMORY_FIND_COLOR_TILES -> stringResource(R.string.memory_game_config_title)
-        else -> currentMissionType.name
     }
 
     Card(
@@ -485,15 +477,15 @@ private fun MissionBottomDockedBar(
     modifier: Modifier = Modifier
 ) {
     val isEnabled = when (currentMissionType) {
-        MissionType.TYPING -> userInput == targetPhrase?.content && (targetPhrase?.content?.isNotEmpty() == true)
+        MissionType.TYPING -> userInput == targetPhrase?.content && targetPhrase.content.isNotEmpty()
         MissionType.MEMORY_FIND_COLOR_TILES -> memoryGameState == MemoryGameState.SUCCESS || memoryGameState == MemoryGameState.FAILURE
         MissionType.MATH -> userInput.isNotBlank() && validationState == StepValidationState.IDLE
         else -> userInput.isNotBlank()
     }
 
-    val actionButtonText = when {
-        currentMissionType == MissionType.MEMORY_FIND_COLOR_TILES && memoryGameState == MemoryGameState.FAILURE -> stringResource(R.string.action_retry_now)
-        currentMissionType == MissionType.MATH -> stringResource(R.string.action_check_answer)
+    val actionButtonText = when (currentMissionType) {
+        MissionType.MEMORY_FIND_COLOR_TILES if memoryGameState == MemoryGameState.FAILURE -> stringResource(R.string.action_retry_now)
+        MissionType.MATH -> stringResource(R.string.action_check_answer)
         else -> stringResource(R.string.action_continue)
     }
 

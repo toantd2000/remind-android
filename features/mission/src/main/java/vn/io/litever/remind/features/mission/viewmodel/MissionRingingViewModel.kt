@@ -120,7 +120,6 @@ class MissionRingingViewModel @Inject constructor(
                     MemoryGameBoard(gridSize, targetCount, indices)
                 }
             }
-            else -> emptyList<Any>()
         }
 
         _uiState.update { 
@@ -207,7 +206,6 @@ class MissionRingingViewModel @Inject constructor(
                     onRepetitionCompleted()
                 }
             }
-            else -> {}
         }
     }
 

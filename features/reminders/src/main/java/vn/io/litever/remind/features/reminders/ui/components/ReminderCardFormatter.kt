@@ -37,11 +37,12 @@ object ReminderCardFormatter {
         if (timeTrigger == null) return ""
         return when (timeTrigger.repeatMode) {
             RepeatMode.NONE -> {
-                val exactDate = timeTrigger.exactDate
-                if (exactDate != null) {
-                    formatDate(exactDate)
-                } else {
-                    stringResource(R.string.once_only)
+                val dates = timeTrigger.effectiveExactDates
+                when {
+                    dates.isEmpty() -> stringResource(R.string.once_only)
+                    dates.size == 1 -> formatDate(dates.first())
+                    dates.size == 2 -> "${formatDate(dates[0])}, ${formatDate(dates[1])}"
+                    else -> "${formatDate(dates[0])}, ${formatDate(dates[1])} +${dates.size - 2}"
                 }
             }
             RepeatMode.DAILY -> stringResource(R.string.daily)
@@ -101,11 +102,12 @@ object ReminderCardFormatter {
         if (timeTrigger == null) return ""
         return when (timeTrigger.repeatMode) {
             RepeatMode.NONE -> {
-                val exactDate = timeTrigger.exactDate
-                if (exactDate != null) {
-                    formatDate(exactDate)
-                } else {
-                    provider.getString(R.string.once_only)
+                val dates = timeTrigger.effectiveExactDates
+                when {
+                    dates.isEmpty() -> provider.getString(R.string.once_only)
+                    dates.size == 1 -> formatDate(dates.first())
+                    dates.size == 2 -> "${formatDate(dates[0])}, ${formatDate(dates[1])}"
+                    else -> "${formatDate(dates[0])}, ${formatDate(dates[1])} +${dates.size - 2}"
                 }
             }
             RepeatMode.DAILY -> provider.getString(R.string.daily)

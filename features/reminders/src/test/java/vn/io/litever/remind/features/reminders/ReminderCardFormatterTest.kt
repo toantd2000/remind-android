@@ -69,6 +69,20 @@ class ReminderCardFormatterTest {
     }
 
     @Test
+    fun formatRecurrenceSchedule_multipleExactDates_returnsCompactDateList() {
+        val trigger = TimeTrigger(
+            repeatMode = RepeatMode.NONE,
+            exactDates = listOf(
+                java.time.LocalDate.of(2026, 11, 20),
+                java.time.LocalDate.of(2026, 11, 25),
+                java.time.LocalDate.of(2026, 12, 1)
+            )
+        )
+        val result = ReminderCardFormatter.formatRecurrenceSchedule(trigger, stringProvider)
+        assertEquals("20/11/2026, 25/11/2026 +1", result)
+    }
+
+    @Test
     fun formatRecurrenceSchedule_weekdays_returnsWeekdays() {
         val trigger = TimeTrigger(repeatMode = RepeatMode.WEEKLY, repeatValues = listOf(1, 2, 3, 4, 5))
         val result = ReminderCardFormatter.formatRecurrenceSchedule(trigger, stringProvider)

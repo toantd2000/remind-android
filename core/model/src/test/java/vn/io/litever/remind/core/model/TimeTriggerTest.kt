@@ -238,5 +238,66 @@ class TimeTriggerTest {
 
         assertEquals(LocalDateTime.of(2026, 10, 20, 9, 0, 0, 0), next)
     }
+
+    @Test
+    fun getNextOccurrence_fixedTime_multipleExactDates_selectsClosestFutureOccurrenceAndReturnsNullAfterLast() {
+        val trigger = TimeTrigger(
+            time = listOf(LocalTime.of(8, 0), LocalTime.of(18, 0)),
+            exactDates = listOf(
+                LocalDate.of(2026, 8, 20),
+                LocalDate.of(2026, 8, 25)
+            ),
+            repeatMode = RepeatMode.NONE
+        )
+
+        // Before first date -> 2026-08-20 08:00
+        assertEquals(
+            LocalDateTime.of(2026, 8, 20, 8, 0),
+            trigger.getNextOccurrence(LocalDateTime.of(2026, 8, 19, 10, 0))
+        )
+        // Between times on first date -> 2026-08-20 18:00
+        assertEquals(
+            LocalDateTime.of(2026, 8, 20, 18, 0),
+            trigger.getNextOccurrence(LocalDateTime.of(2026, 8, 20, 9, 0))
+        )
+        // After last time on first date -> rolls to 2026-08-25 08:00
+        assertEquals(
+            LocalDateTime.of(2026, 8, 25, 8, 0),
+            trigger.getNextOccurrence(LocalDateTime.of(2026, 8, 20, 19, 0))
+        )
+        // After last time on last date -> null (no yearly repeat)
+        assertEquals(
+            null,
+            trigger.getNextOccurrence(LocalDateTime.of(2026, 8, 25, 19, 0))
+        )
+    }
+
+    @Test
+    fun getNextOccurrence_interval_multipleExactDates_rollsBetweenSelectedDatesAndStops() {
+        val window = ReminderTimeWindow(startTime = LocalTime.of(8, 0), endTime = LocalTime.of(17, 0))
+        val trigger = TimeTrigger(
+            intervalMinutes = 60,
+            exactDates = listOf(
+                LocalDate.of(2026, 8, 20),
+                LocalDate.of(2026, 8, 22)
+            ),
+            repeatMode = RepeatMode.NONE,
+            timeWindows = listOf(window)
+        )
+
+        // Past window on first date -> jumps to 2026-08-22 08:00
+        val onFirstDateEvening = LocalDateTime.of(2026, 8, 20, 16, 30)
+        assertEquals(
+            LocalDateTime.of(2026, 8, 22, 8, 0),
+            trigger.getNextOccurrence(onFirstDateEvening, lastTriggeredTime = onFirstDateEvening, isInterval = true)
+        )
+
+        // Past window on last date -> null
+        val onLastDateEvening = LocalDateTime.of(2026, 8, 22, 16, 30)
+        assertEquals(
+            null,
+            trigger.getNextOccurrence(onLastDateEvening, lastTriggeredTime = onLastDateEvening, isInterval = true)
+        )
+    }
 }
 

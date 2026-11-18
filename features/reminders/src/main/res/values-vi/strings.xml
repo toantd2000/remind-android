@@ -69,7 +69,7 @@
     <string name="day_sat">T7</string>
     <string name="day_sun">CN</string>
     <string name="repeat_title">Lặp lại</string>
-    <string name="repeat_interval_once">Một lần</string>
+    <string name="repeat_interval_once">Ngày</string>
     <string name="repeat_interval_daily">Hàng ngày</string>
     <string name="repeat_interval_weekly">Hàng tuần</string>
     <string name="repeat_interval_monthly">Hàng tháng</string>

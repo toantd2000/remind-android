@@ -855,6 +855,61 @@ class ReminderEditViewModelTest {
             io.mockk.unmockkStatic("vn.io.litever.remind.core.common.util.SoundUtilsKt")
         }
     }
+
+    @Test
+    fun exactDates_addUpdateAndRemove_managesSortedDistinctListAndDraft() = runTest {
+        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
+        val viewModel = ReminderEditViewModel(
+            reminderRepository = repository,
+            reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
+            permissionChecker = permissionChecker,
+            preferencesDataSource = preferencesDataSource,
+            savedStateHandle = savedStateHandle
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val d1 = LocalDate.of(2026, 12, 1)
+        val d2 = LocalDate.of(2026, 12, 10)
+        val d3 = LocalDate.of(2026, 12, 5)
+
+        viewModel.setDate(d1)
+        viewModel.addExactDate(d2)
+        viewModel.addExactDate(d3)
+
+        assertEquals(listOf(d1, d3, d2), viewModel.uiState.value.exactDates)
+
+        val dUpdated = LocalDate.of(2026, 12, 20)
+        viewModel.updateExactDate(1, dUpdated)
+        assertEquals(listOf(d1, d2, dUpdated), viewModel.uiState.value.exactDates)
+
+        viewModel.removeExactDate(0)
+        assertEquals(listOf(d2, dUpdated), viewModel.uiState.value.exactDates)
+
+        val draft = viewModel.createDraftReminder()
+        assertEquals(listOf(d2, dUpdated), draft.timeTrigger?.effectiveExactDates)
+    }
+
+    @Test
+    fun repeatInterval_daily_clearsExactDatesAndSetsDailyMode() = runTest {
+        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
+        val viewModel = ReminderEditViewModel(
+            reminderRepository = repository,
+            reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
+            permissionChecker = permissionChecker,
+            preferencesDataSource = preferencesDataSource,
+            savedStateHandle = savedStateHandle
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.setRepeatInterval(vn.io.litever.remind.features.reminders.viewmodel.ReminderRepeatInterval.DAILY)
+        assertNull(viewModel.uiState.value.date)
+        assertTrue(viewModel.uiState.value.exactDates.isEmpty())
+
+        val draft = viewModel.createDraftReminder()
+        assertEquals(vn.io.litever.remind.core.model.RepeatMode.DAILY, draft.timeTrigger?.repeatMode)
+    }
 }
 
 

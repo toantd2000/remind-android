@@ -80,10 +80,16 @@ fun ReminderRepeatConfigSection(
     yearlyDates: List<ReminderMonthDay>,
     onAddYearlyDate: (Int, Int) -> Unit,
     onRemoveYearlyDate: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    exactDates: List<LocalDate> = if (date != null) listOf(date) else emptyList(),
+    onAddExactDate: (LocalDate) -> Unit = { onDateChange(it) },
+    onRemoveExactDate: (Int) -> Unit = {},
+    onUpdateExactDate: (Int, LocalDate) -> Unit = { _, d -> onDateChange(d) }
 ) {
     val currentLocale = ComposeLocale.current.platformLocale
     var showDatePicker by remember { mutableStateOf(false) }
+    var editingExactDateIndex by remember { mutableStateOf<Int?>(null) }
+    var editingExactDateInitial by remember { mutableStateOf<LocalDate?>(null) }
     var showAddYearlyDateDialog by remember { mutableStateOf(false) }
     var showEditYearlyDateDialog by remember { mutableStateOf(false) }
     var editingDateIndex by remember { mutableIntStateOf(-1) }
@@ -95,6 +101,7 @@ fun ReminderRepeatConfigSection(
     ) {
         val intervals = listOf(
             ReminderRepeatInterval.NONE,
+            ReminderRepeatInterval.DAILY,
             ReminderRepeatInterval.WEEKLY,
             ReminderRepeatInterval.MONTHLY,
             ReminderRepeatInterval.YEARLY
@@ -104,9 +111,14 @@ fun ReminderRepeatConfigSection(
             contentPadding = PaddingValues(horizontal = LiteverTheme.spacing.medium),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(intervals) { interval ->
+            items(
+                items = intervals,
+                key = { it.name },
+                contentType = { "repeat_chip" }
+            ) { interval ->
                 val labelRes = when (interval) {
                     ReminderRepeatInterval.NONE -> R.string.repeat_interval_once
+                    ReminderRepeatInterval.DAILY -> R.string.repeat_interval_daily
                     ReminderRepeatInterval.WEEKLY -> R.string.repeat_interval_weekly
                     ReminderRepeatInterval.MONTHLY -> R.string.repeat_interval_monthly
                     ReminderRepeatInterval.YEARLY -> R.string.repeat_interval_yearly
@@ -141,47 +153,59 @@ fun ReminderRepeatConfigSection(
         }
 
         // Connected Detail Panel
-        Surface(
-            modifier = Modifier.fillMaxWidth()
-                .padding(horizontal = LiteverTheme.spacing.medium)
-                .padding(bottom = LiteverTheme.spacing.medium)
-            ,
-            shape = LiteverTheme.shapes.large,
-            color = LiteverTheme.colors.surfaceContainer,
-            border = BorderStroke(1.dp, LiteverTheme.colors.outlineVariant)
-        ) {
-            AnimatedContent(
-                targetState = repeatInterval,
-                label = "repeat_interval_content"
-            ) { targetInterval ->
-                RepeatDetailContent(
-                    repeatInterval = targetInterval,
-                    date = date,
-                    onDateChange = onDateChange,
-                    repeatDays = repeatDays,
-                    onRepeatDayToggle = onRepeatDayToggle,
-                    monthlyDays = monthlyDays,
-                    onMonthlyDayToggle = onMonthlyDayToggle,
-                    yearlyDates = yearlyDates,
-                    onRemoveYearlyDate = onRemoveYearlyDate,
-                    onShowDatePicker = { showDatePicker = true },
-                    onShowAddYearlyDateDialog = { showAddYearlyDateDialog = true },
-                    onShowEditYearlyDateDialog = { index, entry ->
-                        editingDateIndex = index
-                        dateToEdit = entry
-                        showEditYearlyDateDialog = true
-                    }
-                )
+        if (repeatInterval != ReminderRepeatInterval.DAILY && repeatInterval != ReminderRepeatInterval.CUSTOM) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = LiteverTheme.spacing.medium)
+                    .padding(bottom = LiteverTheme.spacing.medium),
+                shape = LiteverTheme.shapes.large,
+                color = LiteverTheme.colors.surfaceContainer,
+                border = BorderStroke(1.dp, LiteverTheme.colors.outlineVariant)
+            ) {
+                AnimatedContent(
+                    targetState = repeatInterval,
+                    label = "repeat_interval_content"
+                ) { targetInterval ->
+                    RepeatDetailContent(
+                        repeatInterval = targetInterval,
+                        date = date,
+                        exactDates = exactDates,
+                        onRemoveExactDate = onRemoveExactDate,
+                        onShowAddExactDatePicker = {
+                            editingExactDateIndex = null
+                            editingExactDateInitial = null
+                            showDatePicker = true
+                        },
+                        onShowEditExactDatePicker = { index, targetDate ->
+                            editingExactDateIndex = index
+                            editingExactDateInitial = targetDate
+                            showDatePicker = true
+                        },
+                        repeatDays = repeatDays,
+                        onRepeatDayToggle = onRepeatDayToggle,
+                        monthlyDays = monthlyDays,
+                        onMonthlyDayToggle = onMonthlyDayToggle,
+                        yearlyDates = yearlyDates,
+                        onRemoveYearlyDate = onRemoveYearlyDate,
+                        onShowAddYearlyDateDialog = { showAddYearlyDateDialog = true },
+                        onShowEditYearlyDateDialog = { index, entry ->
+                            editingDateIndex = index
+                            dateToEdit = entry
+                            showEditYearlyDateDialog = true
+                        }
+                    )
+                }
             }
-
+        } else {
+            Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
         }
     }
 
-    // DatePicker Dialog for One-time
+    // DatePicker Dialog for Date Mode (Add / Edit exact date)
     if (showDatePicker) {
-        val initialEpochMillis =
-            date?.atStartOfDay(ZoneId.systemDefault())?.toInstant()?.toEpochMilli()
-                ?: System.currentTimeMillis()
+        val seedDate = editingExactDateInitial ?: date ?: LocalDate.now()
+        val initialEpochMillis = seedDate.atStartOfDay(ZoneId.of("UTC")).toInstant().toEpochMilli()
         val datePickerState = rememberDatePickerState(
             initialSelectedDateMillis = initialEpochMillis,
             selectableDates = object : SelectableDates {
@@ -195,7 +219,11 @@ fun ReminderRepeatConfigSection(
         )
 
         DatePickerDialog(
-            onDismissRequest = { showDatePicker = false },
+            onDismissRequest = {
+                showDatePicker = false
+                editingExactDateIndex = null
+                editingExactDateInitial = null
+            },
             confirmButton = {
                 LvButton(
                     onClick = {
@@ -204,10 +232,17 @@ fun ReminderRepeatConfigSection(
                             val selectedDate = Instant.ofEpochMilli(selectedMillis)
                                 .atZone(ZoneId.of("UTC"))
                                 .toLocalDate()
-                            onDateChange(selectedDate)
+                            val activeIdx = editingExactDateIndex
+                            if (activeIdx != null) {
+                                onUpdateExactDate(activeIdx, selectedDate)
+                            } else {
+                                onAddExactDate(selectedDate)
+                            }
                             onRepeatDaysChange(emptyList())
                         }
                         showDatePicker = false
+                        editingExactDateIndex = null
+                        editingExactDateInitial = null
                     },
                     semantic = LvSemantic.Primary
                 ) {
@@ -216,7 +251,11 @@ fun ReminderRepeatConfigSection(
             },
             dismissButton = {
                 LvButton(
-                    onClick = { showDatePicker = false },
+                    onClick = {
+                        showDatePicker = false
+                        editingExactDateIndex = null
+                        editingExactDateInitial = null
+                    },
                     type = LvButtonType.Outlined,
                     semantic = LvSemantic.Secondary
                 ) {
@@ -593,14 +632,16 @@ fun ReminderRepeatConfigSection(
 private fun RepeatDetailContent(
     repeatInterval: ReminderRepeatInterval,
     date: LocalDate?,
-    onDateChange: (LocalDate?) -> Unit,
+    exactDates: List<LocalDate>,
+    onRemoveExactDate: (Int) -> Unit,
+    onShowAddExactDatePicker: () -> Unit,
+    onShowEditExactDatePicker: (Int, LocalDate) -> Unit,
     repeatDays: List<DayOfWeek>,
     onRepeatDayToggle: (DayOfWeek) -> Unit,
     monthlyDays: List<Int>,
     onMonthlyDayToggle: (Int) -> Unit,
     yearlyDates: List<ReminderMonthDay>,
     onRemoveYearlyDate: (Int) -> Unit,
-    onShowDatePicker: () -> Unit,
     onShowAddYearlyDateDialog: () -> Unit,
     onShowEditYearlyDateDialog: (Int, ReminderMonthDay) -> Unit
 ) {
@@ -608,72 +649,78 @@ private fun RepeatDetailContent(
 
     when (repeatInterval) {
         ReminderRepeatInterval.NONE -> {
-            Surface(
-                onClick = onShowDatePicker,
-                color = LiteverTheme.colors.surfaceContainer,
-                shape = LiteverTheme.shapes.large
+            val dateFormatter = remember { DateTimeFormatter.ofPattern("dd/MM/yyyy") }
+            val datesList = exactDates.ifEmpty { listOfNotNull(date) }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(LiteverTheme.spacing.smallMedium),
+                verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            vertical = LiteverTheme.spacing.smallMedium
-                        )
-                        .padding(start = LiteverTheme.spacing.smallMedium),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                Text(
+                    text = stringResource(R.string.selected_dates),
+                    style = LiteverTheme.typography.labelMedium,
+                    color = LiteverTheme.colors.onSurfaceVariant,
+                    fontWeight = FontWeight.SemiBold,
+                )
+
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.extraSmall),
+                    verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.extraSmall)
                 ) {
-                    Surface(
-                        modifier = Modifier.size(44.dp),
-                        shape = LiteverTheme.shapes.medium,
-                        color = if(date != null) LiteverTheme.colors.secondaryContainer else LiteverTheme.colors.surfaceVariant,
-                        contentColor = if(date != null) LiteverTheme.colors.onSecondaryContainer else LiteverTheme.colors.onSurfaceVariant
-                    ) {
-                        Icon(
-                            imageVector = ReMindIcons.CalendarMonth,
-                            contentDescription = null,
-                            modifier = Modifier.padding(LiteverTheme.spacing.small),
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column(
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text(
-                            text = if (date != null) {
-                                date.format(DateTimeFormatter.ofPattern("EEEE, dd/MM/yyyy"))
-                            } else {
-                                stringResource(R.string.select_date)
-                            },
-                            style = LiteverTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.SemiBold,
-                            color = if (date != null) LiteverTheme.colors.primary else LiteverTheme.colors.onSurface
-                        )
-                        Text(
-                            text = stringResource(R.string.tap_to_select_date),
-                            style = LiteverTheme.typography.bodySmall,
-                            color = LiteverTheme.colors.onSurfaceVariant
+                    datesList.forEachIndexed { index, targetDate ->
+                        val label = targetDate.format(dateFormatter)
+
+                        InputChip(
+                            selected = true,
+                            onClick = { onShowEditExactDatePicker(index, targetDate) },
+                            label = { Text(label, style = LiteverTheme.typography.labelMedium) },
+                            trailingIcon = if (datesList.size > 1) {
+                                {
+                                    Icon(
+                                        imageVector = ReMindIcons.Close,
+                                        contentDescription = "Remove Date",
+                                        modifier = Modifier
+                                            .size(16.dp)
+                                            .clickable { onRemoveExactDate(index) }
+                                    )
+                                }
+                            } else null,
+                            colors = InputChipDefaults.inputChipColors(
+                                selectedContainerColor = LiteverTheme.colors.secondary,
+                                selectedLabelColor = LiteverTheme.colors.onSecondary,
+                                selectedTrailingIconColor = LiteverTheme.colors.onSecondary,
+                                containerColor = LiteverTheme.colors.surfaceVariant,
+                                labelColor = LiteverTheme.colors.onSurfaceVariant,
+                                leadingIconColor = LiteverTheme.colors.onSurfaceVariant
+                            ),
+                            modifier = Modifier.height(32.dp)
                         )
                     }
 
-                    if (date != null) {
-                        LiteverIconButton(
-                            onClick = { onDateChange(null) },
-                        ) {
-                            Icon(
-                                imageVector = ReMindIcons.Clear,
-                                contentDescription = "Clear Date",
-                                tint = LiteverTheme.colors.onSurfaceVariant
+                    InputChip(
+                        selected = false,
+                        onClick = { onShowAddExactDatePicker() },
+                        label = {
+                            Text(
+                                stringResource(R.string.add_date),
+                                style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
                             )
-                        }
-                    } else {
-                        Icon(
-                            imageVector = ReMindIcons.KeyboardArrowRight,
-                            contentDescription = null,
-                            tint = LiteverTheme.colors.onSurfaceVariant,
-                            modifier = Modifier.padding(end = LiteverTheme.spacing.small)
-                        )
-                    }
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = ReMindIcons.Add,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        },
+                        colors = InputChipDefaults.inputChipColors(
+                            containerColor = LiteverTheme.colors.surfaceVariant,
+                            labelColor = LiteverTheme.colors.onSurfaceVariant
+                        ),
+                        modifier = Modifier.height(32.dp)
+                    )
                 }
             }
         }

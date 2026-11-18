@@ -160,6 +160,32 @@ class ReminderMapperTest {
         assertTrue(entity.isPersistentAlert)
         assertEquals(15, entity.snoozeIntervalMinutes)
     }
+
+    @Test
+    fun `round-trip maps multiple exactDates in RepeatMode NONE`() {
+        val dates = listOf(
+            LocalDate.of(2026, 11, 20),
+            LocalDate.of(2026, 12, 1),
+            LocalDate.of(2026, 12, 15)
+        )
+        val domainReminder = Reminder(
+            id = 11L,
+            title = "Multi-date Reminder",
+            triggerType = ReminderTriggerType.FIXED_TIME,
+            timeTrigger = TimeTrigger(
+                time = listOf(LocalTime.of(9, 0)),
+                exactDates = dates,
+                repeatMode = RepeatMode.NONE
+            )
+        )
+
+        val entity = domainReminder.toEntity()
+        assertEquals("2026-11-20,2026-12-01,2026-12-15", entity.timeTriggerExactDate)
+
+        val mappedBack = entity.toModel()
+        assertEquals(dates, mappedBack.timeTrigger?.effectiveExactDates)
+        assertEquals(dates.first(), mappedBack.timeTrigger?.exactDate)
+    }
 }
 
 

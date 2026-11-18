@@ -63,10 +63,18 @@ fun ReminderEntity.toModel(): Reminder {
         } else emptyList()
     }
 
+    val parsedExactDates = timeTriggerExactDate
+        ?.split(",")
+        ?.mapNotNull { runCatching { LocalDate.parse(it.trim()) }.getOrNull() }
+        ?.distinct()
+        ?.sorted()
+        ?: emptyList()
+
     val timeTrigger = TimeTrigger(
         time = timeList,
         intervalMinutes = timeTriggerIntervalMinutes,
-        exactDate = timeTriggerExactDate?.let { runCatching { LocalDate.parse(it) }.getOrNull() },
+        exactDate = parsedExactDates.firstOrNull(),
+        exactDates = parsedExactDates,
         repeatMode = repeatModeEnum,
         repeatValues = repeatValues,
         monthlyDays = monthlyDays,
@@ -122,7 +130,7 @@ fun Reminder.toEntity(): ReminderEntity {
 
         timeTriggerTimes = timeTrigger?.time?.joinToString(",") { it.toString() },
         timeTriggerIntervalMinutes = timeTrigger?.intervalMinutes,
-        timeTriggerExactDate = timeTrigger?.exactDate?.toString(),
+        timeTriggerExactDate = timeTrigger?.effectiveExactDates?.takeIf { it.isNotEmpty() }?.joinToString(",") { it.toString() },
         timeTriggerRepeatMode = timeTrigger?.repeatMode?.name ?: "NONE",
         timeTriggerRepeatValues = timeTrigger?.repeatValues?.joinToString(","),
         timeTriggerMonthlyDays = formatMonthlyDays(timeTrigger?.monthlyDays),

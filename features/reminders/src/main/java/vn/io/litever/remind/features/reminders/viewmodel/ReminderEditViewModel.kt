@@ -56,6 +56,7 @@ data class ReminderEditUiState(
     val time: LocalTime = LocalTime.now().plusMinutes(5).withSecond(0).withNano(0),
     val fixedTimes: List<LocalTime> = listOf(time),
     val date: LocalDate? = LocalDate.now(),
+    val exactDates: List<LocalDate> = if (date != null) listOf(date) else emptyList(),
     val repeatInterval: ReminderRepeatInterval = ReminderRepeatInterval.NONE,
     val repeatDays: List<DayOfWeek> = emptyList(),
     val monthlyDays: List<Int> = emptyList(),
@@ -110,7 +111,8 @@ class ReminderEditViewModel @Inject constructor(
                 val existing = reminderRepository.getReminderById(reminderId)
                 if (existing != null) {
                     val timeTrigger = existing.timeTrigger
-                    val activeTriggerDate = timeTrigger?.exactDate ?: LocalDate.now()
+                    val existingDates = timeTrigger?.effectiveExactDates ?: emptyList()
+                    val activeTriggerDate = existingDates.firstOrNull() ?: LocalDate.now()
                     
                     val repeatInterval = when (timeTrigger?.repeatMode) {
                         RepeatMode.NONE -> ReminderRepeatInterval.NONE
@@ -133,6 +135,7 @@ class ReminderEditViewModel @Inject constructor(
                         time = primaryTime,
                         fixedTimes = if (existingTimes.isNotEmpty()) existingTimes else listOf(primaryTime),
                         date = activeTriggerDate,
+                        exactDates = if (existingDates.isNotEmpty()) existingDates else listOf(activeTriggerDate),
                         repeatInterval = repeatInterval,
                         repeatDays = if (repeatInterval == ReminderRepeatInterval.WEEKLY) (timeTrigger?.repeatValues?.mapNotNull { v -> DayOfWeek.values().find { it.value == v } } ?: emptyList()) else emptyList(),
                         monthlyDays = timeTrigger?.monthlyDays ?: emptyList(),
@@ -170,10 +173,12 @@ class ReminderEditViewModel @Inject constructor(
                 ReminderRepeatInterval.CUSTOM -> RepeatMode.NONE
             }
             val timeList = if (state.fixedTimes.isNotEmpty()) state.fixedTimes else listOf(state.time)
+            val datesList = if (state.exactDates.isNotEmpty()) state.exactDates else listOfNotNull(state.date)
             TimeTrigger(
                 time = timeList,
                 intervalMinutes = state.intervalMinutes,
-                exactDate = if (repeatMode == RepeatMode.NONE) state.date else null,
+                exactDate = if (repeatMode == RepeatMode.NONE) datesList.firstOrNull() else null,
+                exactDates = if (repeatMode == RepeatMode.NONE) datesList else emptyList(),
                 repeatMode = repeatMode,
                 repeatValues = if (repeatMode == RepeatMode.WEEKLY) state.repeatDays.map { it.value } else emptyList(),
                 monthlyDays = if (repeatMode == RepeatMode.MONTHLY) state.monthlyDays else emptyList(),
@@ -314,6 +319,7 @@ class ReminderEditViewModel @Inject constructor(
                 curr.triggerType != init.triggerType ||
                 curr.time != init.time ||
                 curr.date != init.date ||
+                curr.exactDates != init.exactDates ||
                 curr.repeatDays != init.repeatDays ||
                 curr.repeatInterval != init.repeatInterval ||
                 curr.monthlyDays != init.monthlyDays ||
@@ -392,10 +398,70 @@ class ReminderEditViewModel @Inject constructor(
         }
     }
     fun setDate(date: LocalDate?) {
-        _uiState.update { it.copy(date = date, repeatDays = if (date != null) emptyList() else it.repeatDays) }
+        _uiState.update {
+            it.copy(
+                date = date,
+                exactDates = if (date != null) listOf(date) else emptyList(),
+                repeatDays = if (date != null) emptyList() else it.repeatDays
+            )
+        }
     }
+
+    fun addExactDate(newDate: LocalDate) {
+        _uiState.update { state ->
+            val current = if (state.exactDates.isNotEmpty()) state.exactDates else listOfNotNull(state.date)
+            if (current.contains(newDate)) {
+                state
+            } else {
+                val updated = (current + newDate).sorted()
+                state.copy(
+                    exactDates = updated,
+                    date = updated.firstOrNull(),
+                    repeatDays = emptyList()
+                )
+            }
+        }
+    }
+
+    fun removeExactDate(index: Int) {
+        _uiState.update { state ->
+            val list = state.exactDates.toMutableList()
+            if (index in list.indices && list.size > 1) {
+                list.removeAt(index)
+                state.copy(
+                    exactDates = list,
+                    date = list.firstOrNull()
+                )
+            } else {
+                state
+            }
+        }
+    }
+
+    fun updateExactDate(index: Int, newDate: LocalDate) {
+        _uiState.update { state ->
+            val list = state.exactDates.toMutableList()
+            if (index in list.indices) {
+                list[index] = newDate
+                val sorted = list.distinct().sorted()
+                state.copy(
+                    exactDates = sorted,
+                    date = sorted.firstOrNull()
+                )
+            } else {
+                state
+            }
+        }
+    }
+
     fun setRepeatDays(days: List<DayOfWeek>) {
-        _uiState.update { it.copy(repeatDays = days, date = if (days.isNotEmpty()) null else it.date) }
+        _uiState.update {
+            it.copy(
+                repeatDays = days,
+                date = if (days.isNotEmpty()) null else it.date,
+                exactDates = if (days.isNotEmpty()) emptyList() else it.exactDates
+            )
+        }
     }
     fun toggleRepeatDay(day: DayOfWeek) {
         _uiState.update {
@@ -406,27 +472,39 @@ class ReminderEditViewModel @Inject constructor(
     fun setRepeatInterval(interval: ReminderRepeatInterval) {
         _uiState.update { state ->
             when (interval) {
-                ReminderRepeatInterval.NONE -> state.copy(
-                    repeatInterval = interval,
-                    date = state.date ?: LocalDate.now()
-                )
+                ReminderRepeatInterval.NONE -> {
+                    val restoredDates = if (state.exactDates.isNotEmpty()) {
+                        state.exactDates
+                    } else {
+                        listOf(state.date ?: LocalDate.now())
+                    }
+                    state.copy(
+                        repeatInterval = interval,
+                        date = restoredDates.first(),
+                        exactDates = restoredDates
+                    )
+                }
                 ReminderRepeatInterval.DAILY -> state.copy(
                     repeatInterval = interval,
                     date = null,
+                    exactDates = emptyList(),
                     repeatDays = emptyList()
                 )
                 ReminderRepeatInterval.WEEKLY -> state.copy(
                     repeatInterval = interval,
                     date = null,
+                    exactDates = emptyList(),
                     repeatDays = if (state.repeatDays.isEmpty()) listOf(DayOfWeek.MONDAY) else state.repeatDays
                 )
                 ReminderRepeatInterval.MONTHLY -> state.copy(
                     repeatInterval = interval,
-                    date = null
+                    date = null,
+                    exactDates = emptyList()
                 )
                 ReminderRepeatInterval.YEARLY -> state.copy(
                     repeatInterval = interval,
                     date = null,
+                    exactDates = emptyList(),
                     yearlyDates = if (state.yearlyDates.isEmpty()) {
                         val today = LocalDate.now()
                         listOf(ReminderMonthDay(month = today.monthValue, day = today.dayOfMonth))

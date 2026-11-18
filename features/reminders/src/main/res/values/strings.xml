@@ -69,7 +69,7 @@
     <string name="day_sat">Sa</string>
     <string name="day_sun">Su</string>
     <string name="repeat_title">Repeat</string>
-    <string name="repeat_interval_once">Once only</string>
+    <string name="repeat_interval_once">Date</string>
     <string name="repeat_interval_daily">Daily</string>
     <string name="repeat_interval_weekly">Weekly</string>
     <string name="repeat_interval_monthly">Monthly</string>

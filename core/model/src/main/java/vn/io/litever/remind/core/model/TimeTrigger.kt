@@ -12,6 +12,7 @@ data class TimeTrigger(
     val time: List<LocalTime> = emptyList(), // For FIXED_TIME
     val intervalMinutes: Int? = null, // For INTERVAL
     val exactDate: LocalDate? = null, // Only for RepeatMode.NONE
+    val exactDates: List<LocalDate> = if (exactDate != null) listOf(exactDate) else emptyList(), // Multiple exact dates for RepeatMode.NONE
     val repeatMode: RepeatMode = RepeatMode.NONE,
     val repeatValues: List<Int> = emptyList(), // DayOfWeek values for WEEKLY (1..7) or fallback days
     val monthlyDays: List<Int> = emptyList(), // Days of month for MONTHLY (1..31)
@@ -31,6 +32,7 @@ data class TimeTrigger(
         time = time,
         intervalMinutes = intervalMinutes,
         exactDate = exactDate,
+        exactDates = if (exactDate != null) listOf(exactDate) else emptyList(),
         repeatMode = repeatMode,
         repeatValues = repeatValues,
         monthlyDays = if (repeatMode == RepeatMode.MONTHLY) repeatValues else emptyList(),
@@ -41,8 +43,11 @@ data class TimeTrigger(
     val timeWindow: ReminderTimeWindow?
         get() = timeWindows.firstOrNull()
 
+    val effectiveExactDates: List<LocalDate>
+        get() = (if (exactDates.isNotEmpty()) exactDates else listOfNotNull(exactDate)).distinct().sorted()
+
     val isRecurring: Boolean
-        get() = repeatMode != RepeatMode.NONE || (exactDate == null && intervalMinutes != null)
+        get() = repeatMode != RepeatMode.NONE || (effectiveExactDates.isEmpty() && intervalMinutes != null)
 
     /**
      * Checks whether a specific date satisfies the recurrence condition.
@@ -50,9 +55,9 @@ data class TimeTrigger(
     fun isDateValid(date: LocalDate): Boolean {
         return when (repeatMode) {
             RepeatMode.NONE -> {
-                val target = exactDate
-                if (target != null) {
-                    date == target
+                val targets = effectiveExactDates
+                if (targets.isNotEmpty()) {
+                    targets.contains(date)
                 } else {
                     true
                 }
@@ -86,9 +91,9 @@ data class TimeTrigger(
     fun getNextValidDate(from: LocalDate): LocalDate? {
         return when (repeatMode) {
             RepeatMode.NONE -> {
-                val target = exactDate
-                if (target != null) {
-                    if (!from.isAfter(target)) target else null
+                val targets = effectiveExactDates
+                if (targets.isNotEmpty()) {
+                    targets.firstOrNull { !from.isAfter(it) }
                 } else {
                     from
                 }
@@ -143,11 +148,15 @@ data class TimeTrigger(
         }
 
         val today = now.toLocalDate()
+        val targets = effectiveExactDates
 
-        // 1. If exactDate is in the future for NONE mode
-        if (repeatMode == RepeatMode.NONE && exactDate != null && exactDate.isAfter(today)) {
-            val earliestWindow = sortedWindows.first()
-            return exactDate.atTime(earliestWindow.startTime).withSecond(0).withNano(0)
+        // 1. If exactDates are in the future (today is not in targets) for NONE mode
+        if (repeatMode == RepeatMode.NONE && targets.isNotEmpty() && !targets.contains(today)) {
+            val nextTarget = targets.firstOrNull { it.isAfter(today) } ?: return null
+            val activeWindow = sortedWindows.firstOrNull {
+                it.activeDays.isEmpty() || it.activeDays.contains(nextTarget.dayOfWeek)
+            } ?: sortedWindows.first()
+            return nextTarget.atTime(activeWindow.startTime).withSecond(0).withNano(0)
         }
 
         // 2. Check if today is a valid date
@@ -183,8 +192,12 @@ data class TimeTrigger(
         }
 
         // 3. Today has no more intervals/windows or is not valid. Find next valid date.
-        if (repeatMode == RepeatMode.NONE && exactDate != null) {
-            return null
+        if (repeatMode == RepeatMode.NONE && targets.isNotEmpty()) {
+            val nextTarget = targets.firstOrNull { it.isAfter(today) } ?: return null
+            val activeWindow = sortedWindows.firstOrNull {
+                it.activeDays.isEmpty() || it.activeDays.contains(nextTarget.dayOfWeek)
+            } ?: sortedWindows.first()
+            return nextTarget.atTime(activeWindow.startTime).withSecond(0).withNano(0)
         }
 
         val startNextDate = today.plusDays(1)
@@ -211,19 +224,32 @@ data class TimeTrigger(
 
         val sortedTimes = time.sorted()
 
-        // 1. NONE: exact date or today/tomorrow
+        // 1. NONE: exact dates or today/tomorrow
         if (repeatMode == RepeatMode.NONE) {
-            val date = exactDate ?: now.toLocalDate()
-            for (t in sortedTimes) {
-                val candidate = date.atTime(t)
-                if (candidate.isAfter(now)) {
-                    return candidate.withSecond(0).withNano(0)
+            val targets = effectiveExactDates
+            if (targets.isNotEmpty()) {
+                val today = now.toLocalDate()
+                for (d in targets) {
+                    if (!d.isBefore(today)) {
+                        for (t in sortedTimes) {
+                            val candidate = d.atTime(t)
+                            if (candidate.isAfter(now)) {
+                                return candidate.withSecond(0).withNano(0)
+                            }
+                        }
+                    }
                 }
+                return null
+            } else {
+                val date = now.toLocalDate()
+                for (t in sortedTimes) {
+                    val candidate = date.atTime(t)
+                    if (candidate.isAfter(now)) {
+                        return candidate.withSecond(0).withNano(0)
+                    }
+                }
+                return date.plusDays(1).atTime(sortedTimes.first()).withSecond(0).withNano(0)
             }
-            if (exactDate == null) {
-                return now.toLocalDate().plusDays(1).atTime(sortedTimes.first()).withSecond(0).withNano(0)
-            }
-            return null
         }
 
         // 2. DAILY: repeats every day

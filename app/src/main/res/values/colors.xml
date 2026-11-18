@@ -4,8 +4,8 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <!-- Splash Screen Background (Đồng bộ theo nền tổng thể tone Orange) -->
-    <color name="splash_background">#FFF1E7</color>
+    <!-- Splash Screen Background (Đồng bộ theo nền tổng thể tone black) -->
+    <color name="splash_background">#F9F9F9</color>
 
     <!-- Logo / Brand Text Colors -->
     <color name="logo_re_mono">#666666</color>

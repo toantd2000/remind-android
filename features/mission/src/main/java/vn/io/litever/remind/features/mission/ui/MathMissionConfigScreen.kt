@@ -120,6 +120,7 @@ fun MathMissionConfigScreen(
                 .fillMaxSize()
                 .background(LiteverTheme.colors.background)
                 .padding(padding)
+                .padding(horizontal = LiteverTheme.spacing.medium)
         ) {
             Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
 

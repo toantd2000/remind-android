@@ -115,7 +115,7 @@ fun TypingMissionConfigScreen(
         topBar = {
             Box(Modifier.fillMaxWidth()) {
                 LvTopAppBar(
-                    title = stringResource(vn.io.litever.remind.features.mission.R.string.typing_mission_title),
+                    title = stringResource(R.string.typing_mission_title),
                     onBackClick = onBackClick
                 )
             }
@@ -140,16 +140,17 @@ fun TypingMissionConfigScreen(
                 .fillMaxSize()
                 .background(LiteverTheme.colors.background)
                 .padding(padding)
+                .padding(horizontal = LiteverTheme.spacing.medium),
         ) {
             Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
 
             // Section 1: Phrases
             ReMindSettingsGroup(
-                title = stringResource(vn.io.litever.remind.features.mission.R.string.phrases_to_type)
+                title = stringResource(R.string.phrases_to_type)
             ) {
                 ReMindSettingsItem(
-                    title = stringResource(vn.io.litever.remind.features.mission.R.string.phrase_list),
-                    subtitle = stringResource(vn.io.litever.remind.features.mission.R.string.phrases_count, selectedPhrases.size),
+                    title = stringResource(R.string.phrase_list),
+                    subtitle = stringResource(R.string.phrases_count, selectedPhrases.size),
                     trailingContent = {
                         Icon(
                             imageVector = ReMindIcons.ChevronRight,
@@ -185,7 +186,7 @@ fun TypingMissionConfigScreen(
                 }
                 if (selectedPhrases.size > visibleCount) {
                     Text(
-                        text = stringResource(vn.io.litever.remind.features.mission.R.string.more_phrases_count, selectedPhrases.size - visibleCount),
+                        text = stringResource(R.string.more_phrases_count, selectedPhrases.size - visibleCount),
                         style = LiteverTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
                         color = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.6f),
                         modifier = Modifier.padding(start = LiteverTheme.spacing.mediumLarge)

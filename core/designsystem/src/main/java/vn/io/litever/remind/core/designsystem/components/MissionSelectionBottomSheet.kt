@@ -2,12 +2,9 @@ package vn.io.litever.remind.core.designsystem.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
@@ -22,14 +19,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
@@ -79,36 +73,19 @@ fun MissionSelectionBottomSheetContent(
                 type = MissionType.TYPING,
                 title = stringResource(R.string.mission_typing),
                 description = stringResource(R.string.mission_typing_desc),
-                icon = ReMindIcons.Keyboard,
-                isAvailable = true
+                icon = ReMindIcons.Keyboard
             ),
             MissionItem(
                 type = MissionType.MEMORY_FIND_COLOR_TILES,
                 title = stringResource(R.string.mission_memory_tiles),
                 description = stringResource(R.string.mission_memory_tiles_desc),
-                icon = ReMindIcons.GridView,
-                isAvailable = true
+                icon = ReMindIcons.GridView
             ),
             MissionItem(
                 type = MissionType.MATH,
                 title = stringResource(R.string.mission_math),
                 description = stringResource(R.string.mission_math_desc),
-                icon = ReMindIcons.Calculate,
-                isAvailable = true
-            ),
-            MissionItem(
-                type = MissionType.SHAKE,
-                title = stringResource(R.string.mission_shake),
-                description = stringResource(R.string.mission_shake_desc),
-                icon = ReMindIcons.Smartphone,
-                isAvailable = false
-            ),
-            MissionItem(
-                type = MissionType.QR_CODE,
-                title = stringResource(R.string.mission_qr_code),
-                description = stringResource(R.string.mission_qr_code_desc),
-                icon = ReMindIcons.QrCodeScanner,
-                isAvailable = false
+                icon = ReMindIcons.Calculate
             )
         )
 
@@ -116,39 +93,17 @@ fun MissionSelectionBottomSheetContent(
             modifier = Modifier.fillMaxWidth(),
         ) {
             items(missionTypes) { item ->
-                val isAvailable = item.isAvailable
-
                 ListItem(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .alpha(if (isAvailable) 1f else 0.5f)
-                        .clickable(enabled = isAvailable) {
+                        .clickable {
                             onMissionTypeSelected(item.type)
                         },
                     headlineContent = {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = item.title,
-                                style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                            )
-                            if (!isAvailable) {
-                                Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
-                                Surface(
-                                    color = LiteverTheme.colors.surfaceVariant,
-                                    shape = LiteverTheme.shapes.extraSmall
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.coming_soon),
-                                        style = LiteverTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                                        modifier = Modifier.padding(
-                                            horizontal = LiteverTheme.spacing.extraSmall,
-                                            vertical = LiteverTheme.spacing.tiny
-                                        ),
-                                        color = LiteverTheme.colors.onSurfaceVariant
-                                    )
-                                }
-                            }
-                        }
+                        Text(
+                            text = item.title,
+                            style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                        )
                     },
                     supportingContent = {
                         Text(
@@ -159,8 +114,7 @@ fun MissionSelectionBottomSheetContent(
                     leadingContent = {
                         Surface(
                             shape = LiteverTheme.shapes.medium,
-                            color = if (isAvailable) LiteverTheme.colors.primaryContainer
-                            else LiteverTheme.colors.surfaceVariant,
+                            color = LiteverTheme.colors.primaryContainer,
                         ) {
                             Icon(
                                 imageVector = item.icon,
@@ -168,7 +122,7 @@ fun MissionSelectionBottomSheetContent(
                                 modifier = Modifier
                                     .padding(LiteverTheme.spacing.smallMedium)
                                     .size(LiteverTheme.spacing.large),
-                                tint = if (isAvailable) LiteverTheme.colors.onPrimaryContainer else LiteverTheme.colors.onSurfaceVariant
+                                tint = LiteverTheme.colors.onPrimaryContainer
                             )
                         }
                     },
@@ -185,8 +139,7 @@ private data class MissionItem(
     val type: MissionType,
     val title: String,
     val description: String,
-    val icon: ImageVector,
-    val isAvailable: Boolean = true
+    val icon: ImageVector
 )
 
 @androidx.compose.ui.tooling.preview.Preview(showBackground = true)

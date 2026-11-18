@@ -9,13 +9,9 @@
     <string name="mission_selection_title">Select Mission</string>
     <string name="mission_typing">Typing</string>
     <string name="mission_math">Math</string>
-    <string name="mission_shake">Shake</string>
-    <string name="mission_qr_code">QR/Barcode</string>
     <string name="mission_memory_tiles">Memory Game</string>
     <string name="mission_typing_desc">Type phrases to wake up</string>
     <string name="mission_math_desc">Solve math problems</string>
-    <string name="mission_shake_desc">Shake your phone to wake up</string>
-    <string name="mission_qr_code_desc">Scan a QR code or barcode to dismiss</string>
     <string name="mission_memory_tiles_desc">Memorize and find the hidden color tiles</string>
     <string name="mission_repetitions">Times</string>
     <string name="mission_select_phrases">Select Phrases</string>
@@ -65,21 +61,8 @@
     <string name="typing_mode_shuffle_words">Shuffle Words</string>
     <string name="typing_mode_shuffle_chars">Shuffle Characters</string>
 
-    <string name="coming_soon">Coming Soon</string>
-
-    <!-- Weather -->
-    <string name="weather_change_location">Change Location</string>
-    <string name="weather_unknown_location">Unknown</string>
-    <string name="weather_temp_range">High: %1$d° • Low: %2$d°</string>
-    <string name="weather_temp_celsius">%d°C</string>
-    <string name="weather_feels_like">Feels like %d°</string>
-    <string name="weather_powered_by">Powered by WeatherAPI</string>
     <string name="action_back">Back</string>
 
-    <string name="good_morning">Good morning</string>
-    <string name="good_afternoon">Good afternoon</string>
-    <string name="good_evening">Good evening</string>
-    <string name="good_night">Good night</string>
 
     <!-- Ringtone & Snooze Shared Resources -->
     <string name="ringtone_selection_title">Ringtone</string>

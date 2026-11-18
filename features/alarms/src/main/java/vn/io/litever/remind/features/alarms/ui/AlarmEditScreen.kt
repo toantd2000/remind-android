@@ -262,18 +262,14 @@ fun AlarmEditRoute(
             onDismissRequest = { if (showMissionSelection) showMissionSelection = false },
             onMissionTypeSelected = { type ->
                 if (showMissionSelection) showMissionSelection = false
-                if (type == MissionType.TYPING || type == MissionType.MEMORY_FIND_COLOR_TILES || type == MissionType.MATH) {
-                    isNavigatingToConfig = true
-                    onMissionClick(
-                        vn.io.litever.remind.core.model.Mission(
-                            alarmId = uiState.id,
-                            type = type,
-                            order = -1 // Indication for adding
-                        )
+                isNavigatingToConfig = true
+                onMissionClick(
+                    vn.io.litever.remind.core.model.Mission(
+                        alarmId = uiState.id,
+                        type = type,
+                        order = -1 // Indication for adding
                     )
-                } else {
-                    viewModel.addMission(type)
-                }
+                )
             }
         )
     }
@@ -1318,19 +1314,13 @@ private fun MissionRow(
     val icon = when (mission.type) {
         MissionType.TYPING -> ReMindIcons.Keyboard
         MissionType.MATH -> ReMindIcons.Calculate
-        MissionType.SHAKE -> ReMindIcons.Smartphone
-        MissionType.QR_CODE -> ReMindIcons.QrCodeScanner
         MissionType.MEMORY_FIND_COLOR_TILES -> ReMindIcons.GridView
-        else -> ReMindIcons.Extension
     }
 
     val title = when (mission.type) {
         MissionType.TYPING -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_typing)
         MissionType.MATH -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_math)
-        MissionType.SHAKE -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_shake)
-        MissionType.QR_CODE -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_qr_code)
         MissionType.MEMORY_FIND_COLOR_TILES -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_memory_tiles)
-        else -> mission.type.name
     }
     ListItem(
         modifier = modifier.fillMaxWidth()

@@ -3,7 +3,7 @@ package vn.io.litever.remind.core.model
 import java.io.Serializable
 
 enum class MissionType : Serializable {
-    TYPING, MATH, QR_CODE, SHAKE, STEP, COLOR_MATCH, TAP_CHALLENGE, FIND_ITEM, MEMORY_FIND_COLOR_TILES
+    TYPING, MATH, MEMORY_FIND_COLOR_TILES
 }
 
 data class Mission(

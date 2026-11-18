@@ -219,13 +219,13 @@ class AlarmEditViewModelTest {
 
         viewModel.addMission(MissionType.MATH)
         viewModel.addMission(MissionType.TYPING)
-        viewModel.addMission(MissionType.SHAKE)
-        viewModel.addMission(MissionType.QR_CODE)
         viewModel.addMission(MissionType.MEMORY_FIND_COLOR_TILES)
+        viewModel.addMission(MissionType.MATH)
+        viewModel.addMission(MissionType.TYPING)
         assertEquals(5, viewModel.uiState.value.missions.size)
 
         // 6th mission is rejected
-        viewModel.addMission(MissionType.FIND_ITEM)
+        viewModel.addMission(MissionType.MEMORY_FIND_COLOR_TILES)
         assertEquals(5, viewModel.uiState.value.missions.size)
     }
 

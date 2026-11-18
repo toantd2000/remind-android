@@ -257,12 +257,6 @@ internal fun getMissionIcon(type: MissionType): ImageVector {
     return when (type) {
         MissionType.TYPING -> ReMindIcons.Keyboard
         MissionType.MATH -> ReMindIcons.Calculate
-        MissionType.QR_CODE -> ReMindIcons.QrCodeScanner
-        MissionType.SHAKE -> ReMindIcons.Smartphone
-        MissionType.STEP -> ReMindIcons.DirectionsWalk
-        MissionType.COLOR_MATCH -> ReMindIcons.Palette
-        MissionType.TAP_CHALLENGE -> ReMindIcons.TouchApp
-        MissionType.FIND_ITEM -> ReMindIcons.Search
         MissionType.MEMORY_FIND_COLOR_TILES -> ReMindIcons.GridView
     }
 }

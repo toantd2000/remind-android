@@ -87,7 +87,6 @@ dependencies {
     implementation(project(":features:settings"))
     implementation(project(":features:mission"))
     implementation(project(":features:reminders"))
-    implementation(project(":core:network"))
     implementation(project(":core:data"))
     implementation(project(":core:domain"))
     implementation(project(":core:model"))

@@ -26,9 +26,6 @@ browser = "1.10.0"
 googleServices = "4.5.0"
 crashlyticsPlugin = "3.0.8"
 firebaseBom = "34.19.0"
-retrofit = "3.0.0"
-okhttp = "5.5.0"
-coil = "2.7.0"
 liteverDesignsystem = "2.3.1"
 playServicesAds = "25.5.0"
 emoji2-emojipicker = "1.7.0"
@@ -86,14 +83,6 @@ kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "material-icons-extended" }
 aboutlibraries-compose-m3 = { group = "com.mikepenz", name = "aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinSerialization" }
-
-# Retrofit
-retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
-retrofit-kotlin-serialization = { group = "com.squareup.retrofit2", name = "converter-kotlinx-serialization", version.ref = "retrofit" }
-okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
-
-# Coil
-coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 
 # Litever Design System
 litever-designsystem = { group = "com.github.toantd2000", name = "litever-designsystem", version.ref = "liteverDesignsystem" }

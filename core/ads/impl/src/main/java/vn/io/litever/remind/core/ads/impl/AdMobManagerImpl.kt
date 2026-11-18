@@ -81,6 +81,7 @@ class AdMobManagerImpl @Inject constructor(
                 frequencyCapping = 0,
                 intervalSeconds = 0
             )
+            @Suppress("DEPRECATION")
             AdPlacement.REMIND_NATIVE,
             AdPlacement.MESSAGE_NATIVE,
             AdPlacement.EXIT_NATIVE,

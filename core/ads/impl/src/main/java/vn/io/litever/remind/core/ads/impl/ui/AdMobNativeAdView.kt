@@ -63,9 +63,10 @@ internal fun AdMobNativeAdView(
     if (adFailed) return
     
     // Customize ad size based on placement to avoid UI duplication
+    @Suppress("DEPRECATION")
     val isLarge = when (placement) {
         AdPlacement.MESSAGE_NATIVE -> true // Make alarm message ad larger to stand out
-        else -> false                      // TodayScreen and AlarmList should use small/compact
+        else -> false                      // AlarmList should use small/compact
     }
     
     val isFillSpace = false

@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -26,11 +25,13 @@ import org.junit.Test
 import vn.io.litever.remind.core.alarm.alert.ReminderAlertManager
 import vn.io.litever.remind.core.alarm.notification.ReminderNotificationManager
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
+import vn.io.litever.remind.core.domain.handler.ReminderActionHandler
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderAction
 import vn.io.litever.remind.core.model.ReminderTriggerType
+import vn.io.litever.remind.core.model.TimeTrigger
 import vn.io.litever.remind.features.reminders.viewmodel.ReminderRingingViewModel
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -39,6 +40,7 @@ class ReminderRingingViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
     private val repository = mockk<ReminderRepository>(relaxed = true)
     private val scheduler = mockk<ReminderScheduler>(relaxed = true)
+    private val actionHandler = ReminderActionHandler(repository, scheduler)
     private val alertManager = mockk<ReminderAlertManager>(relaxed = true)
     private val notificationManager = mockk<ReminderNotificationManager>(relaxed = true)
     private val preferencesDataSource = mockk<AlarmPreferencesDataSource>(relaxed = true)
@@ -59,6 +61,17 @@ class ReminderRingingViewModelTest {
         Dispatchers.resetMain()
     }
 
+    private fun createViewModel(): ReminderRingingViewModel {
+        return ReminderRingingViewModel(
+            reminderRepository = repository,
+            reminderActionHandler = actionHandler,
+            reminderAlertManager = alertManager,
+            reminderNotificationManager = notificationManager,
+            preferencesDataSource = preferencesDataSource,
+            savedStateHandle = SavedStateHandle(mapOf("reminderId" to 1L))
+        )
+    }
+
     @Test
     fun initialLoad_observesReminderAndCountdown() = runTest(testDispatcher) {
         val reminder = Reminder(
@@ -69,15 +82,7 @@ class ReminderRingingViewModelTest {
         reminderFlow.value = reminder
         countdownFlow.value = 45
 
-        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 1L))
-        val viewModel = ReminderRingingViewModel(
-            reminderRepository = repository,
-            reminderScheduler = scheduler,
-            reminderAlertManager = alertManager,
-            reminderNotificationManager = notificationManager,
-            preferencesDataSource = preferencesDataSource,
-            savedStateHandle = savedStateHandle
-        )
+        val viewModel = createViewModel()
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
         testDispatcher.scheduler.advanceUntilIdle()
 
@@ -95,23 +100,13 @@ class ReminderRingingViewModelTest {
             triggerType = ReminderTriggerType.FIXED_TIME,
             action = ReminderAction(
                 snoozeEnabled = true,
-                snoozeIntervalMinutes = 10,
-                
-            ),
-            
+                snoozeIntervalMinutes = 10
+            )
         )
         reminderFlow.value = reminder
         coEvery { repository.getReminderById(1L) } returns reminder
 
-        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 1L))
-        val viewModel = ReminderRingingViewModel(
-            reminderRepository = repository,
-            reminderScheduler = scheduler,
-            reminderAlertManager = alertManager,
-            reminderNotificationManager = notificationManager,
-            preferencesDataSource = preferencesDataSource,
-            savedStateHandle = savedStateHandle
-        )
+        val viewModel = createViewModel()
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
         testDispatcher.scheduler.advanceUntilIdle()
 
@@ -125,7 +120,7 @@ class ReminderRingingViewModelTest {
         coVerify { notificationManager.cancelNotification(1L) }
         coVerify {
             repository.updateReminder(match {
-                it.id == 1L
+                it.id == 1L && it.snoozeNextTriggerTime != null
             })
         }
         coVerify { scheduler.scheduleSnooze(match { it.id == 1L }, any()) }
@@ -141,15 +136,7 @@ class ReminderRingingViewModelTest {
         reminderFlow.value = reminder
         coEvery { repository.getReminderById(1L) } returns reminder
 
-        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 1L))
-        val viewModel = ReminderRingingViewModel(
-            reminderRepository = repository,
-            reminderScheduler = scheduler,
-            reminderAlertManager = alertManager,
-            reminderNotificationManager = notificationManager,
-            preferencesDataSource = preferencesDataSource,
-            savedStateHandle = savedStateHandle
-        )
+        val viewModel = createViewModel()
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
         testDispatcher.scheduler.advanceUntilIdle()
 
@@ -163,11 +150,42 @@ class ReminderRingingViewModelTest {
         coVerify { notificationManager.cancelNotification(1L) }
         coVerify {
             repository.updateReminder(match {
-                it.id == 1L && !it.isEnabled
+                it.id == 1L && !it.isEnabled && it.snoozeNextTriggerTime == null
             })
         }
         coVerify { scheduler.cancelSnooze(match { it.id == 1L }) }
     }
+
+    @Test
+    fun dismissAction_forIntervalReminder_completesAndReschedulesNextCycle() = runTest(testDispatcher) {
+        val reminder = Reminder(
+            id = 1L,
+            title = "Drink Water",
+            triggerType = ReminderTriggerType.INTERVAL,
+            timeTrigger = TimeTrigger(intervalMinutes = 60),
+            snoozeNextTriggerTime = 123456L
+        )
+        reminderFlow.value = reminder
+        coEvery { repository.getReminderById(1L) } returns reminder
+
+        val viewModel = createViewModel()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        var finishCalled = false
+        viewModel.dismiss(onFinished = { finishCalled = true })
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertTrue(finishCalled)
+        assertFalse(viewModel.uiState.value.isRinging)
+        coVerify { alertManager.stopAlert(1L) }
+        coVerify { notificationManager.cancelNotification(1L) }
+        coVerify {
+            repository.updateReminder(match {
+                it.id == 1L && it.isEnabled && it.lastTriggeredTime != null && it.snoozeNextTriggerTime == null
+            })
+        }
+        coVerify { scheduler.cancelSnooze(match { it.id == 1L }) }
+        coVerify { scheduler.schedule(match { it.id == 1L }) }
+    }
 }
-
-

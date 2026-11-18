@@ -138,7 +138,10 @@
     <!-- Ringing Screen -->
     <string name="ringing_screen_title">Cảnh báo lời nhắc</string>
     <string name="auto_silence_countdown_format">Tự tắt tiếng sau %ds</string>
+    <string name="auto_silence_countdown_mm_ss">Tự tắt tiếng sau %s</string>
     <string name="snooze_action">Báo lại</string>
+    <string name="snooze_default_format">Báo lại %d phút</string>
+    <string name="snooze_more_options">Khác</string>
     <string name="snooze_custom">Tùy chỉnh</string>
     <string name="snooze_custom_dialog_title">Báo lại tùy chỉnh</string>
     <string name="snooze_custom_minutes_hint">Số phút (vd: 20)</string>

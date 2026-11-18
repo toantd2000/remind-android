@@ -91,16 +91,13 @@ fun NavGraphBuilder.remindersGraph(
         deepLinks = listOf(
             navDeepLink { uriPattern = "app://remind/ringing/{reminderId}" }
         )
-    ) { backStackEntry ->
-        val reminderId = backStackEntry.arguments?.getLong("reminderId") ?: -1L
+    ) {
         ReminderRingingRoute(
-            reminderId = reminderId,
             onFinish = {
                 if (navController.currentBackStackEntry?.destination?.route == ReminderRingingRoute) {
                     navController.popBackStack()
                 }
-            },
-            navController = navController
+            }
         )
     }
 }

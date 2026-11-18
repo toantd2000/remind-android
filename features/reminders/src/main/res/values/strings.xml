@@ -138,7 +138,10 @@
     <!-- Ringing Screen -->
     <string name="ringing_screen_title">Reminder Alert</string>
     <string name="auto_silence_countdown_format">Auto-silencing in %ds</string>
+    <string name="auto_silence_countdown_mm_ss">Auto-silence in %s</string>
     <string name="snooze_action">Snooze</string>
+    <string name="snooze_default_format">Snooze %d min</string>
+    <string name="snooze_more_options">Other</string>
     <string name="snooze_custom">Custom</string>
     <string name="snooze_custom_dialog_title">Custom Snooze</string>
     <string name="snooze_custom_minutes_hint">Minutes (e.g. 20)</string>

@@ -26,6 +26,7 @@ import vn.io.litever.remind.core.alarm.alert.ReminderAlertManager
 import vn.io.litever.remind.core.alarm.notification.ReminderNotificationManager
 import vn.io.litever.remind.core.common.util.PermissionChecker
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
+import vn.io.litever.remind.core.domain.handler.ReminderActionHandler
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
 import java.time.DayOfWeek
@@ -159,7 +160,7 @@ class ReminderAdversarialReviewTest {
         val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 50L))
         val viewModel = ReminderRingingViewModel(
             reminderRepository = repository,
-            reminderScheduler = scheduler,
+            reminderActionHandler = ReminderActionHandler(repository, scheduler),
             reminderAlertManager = alertManager,
             reminderNotificationManager = notificationManager,
             preferencesDataSource = preferencesDataSource,
@@ -197,7 +198,7 @@ class ReminderAdversarialReviewTest {
         val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 51L))
         val viewModel = ReminderRingingViewModel(
             reminderRepository = repository,
-            reminderScheduler = scheduler,
+            reminderActionHandler = ReminderActionHandler(repository, scheduler),
             reminderAlertManager = alertManager,
             reminderNotificationManager = notificationManager,
             preferencesDataSource = preferencesDataSource,

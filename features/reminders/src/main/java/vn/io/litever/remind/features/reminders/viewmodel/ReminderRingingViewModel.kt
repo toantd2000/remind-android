@@ -13,9 +13,10 @@ import kotlinx.coroutines.launch
 import vn.io.litever.remind.core.alarm.alert.ReminderAlertManager
 import vn.io.litever.remind.core.alarm.notification.ReminderNotificationManager
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
+import vn.io.litever.remind.core.domain.handler.ReminderActionHandler
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
-import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
 import vn.io.litever.remind.core.model.Reminder
+import vn.io.litever.remind.core.model.ReminderTriggerType
 import javax.inject.Inject
 
 data class ReminderRingingUiState(
@@ -28,7 +29,7 @@ data class ReminderRingingUiState(
 @HiltViewModel
 class ReminderRingingViewModel @Inject constructor(
     private val reminderRepository: ReminderRepository,
-    private val reminderScheduler: ReminderScheduler,
+    private val reminderActionHandler: ReminderActionHandler,
     private val reminderAlertManager: ReminderAlertManager,
     private val reminderNotificationManager: ReminderNotificationManager,
     preferencesDataSource: AlarmPreferencesDataSource,
@@ -65,14 +66,8 @@ class ReminderRingingViewModel @Inject constructor(
             reminderNotificationManager.cancelNotification(reminderId)
 
             if (reminder != null && reminder.canSnooze()) {
-                val snoozeIntervalMillis = (minutes ?: reminder.action.snoozeIntervalMinutes) * 60 * 1000L
-                val nextTriggerTime = System.currentTimeMillis() + snoozeIntervalMillis
-
-                val snoozedReminder = reminder.copy(
-                    snoozeNextTriggerTime = nextTriggerTime
-                )
-                reminderRepository.updateReminder(snoozedReminder)
-                reminderScheduler.scheduleSnooze(snoozedReminder, nextTriggerTime)
+                val snoozeMinutes = minutes ?: reminder.action.snoozeIntervalMinutes
+                reminderActionHandler.handleSnooze(reminder, snoozeMinutes)
             }
 
             _isRinging.value = false
@@ -87,13 +82,17 @@ class ReminderRingingViewModel @Inject constructor(
             reminderNotificationManager.cancelNotification(reminderId)
 
             if (reminder != null) {
-                val isRecurring = reminder.isRecurring
-                val updatedReminder = reminder.copy(
-                    isEnabled = if (isRecurring) reminder.isEnabled else false,
-                    snoozeNextTriggerTime = null
-                )
-                reminderRepository.updateReminder(updatedReminder)
-                reminderScheduler.cancelSnooze(reminder)
+                if (reminder.triggerType == ReminderTriggerType.INTERVAL) {
+                    // Acknowledging an INTERVAL reminder shifts the cycle and schedules the next trigger
+                    reminderActionHandler.handleComplete(reminder)
+                } else {
+                    val isRecurring = reminder.isRecurring
+                    val updatedReminder = reminder.copy(
+                        isEnabled = if (isRecurring) reminder.isEnabled else false,
+                        snoozeNextTriggerTime = null
+                    )
+                    reminderActionHandler.handleDismiss(updatedReminder)
+                }
             }
 
             _isRinging.value = false

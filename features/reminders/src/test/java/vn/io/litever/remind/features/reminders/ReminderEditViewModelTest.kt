@@ -910,6 +910,61 @@ class ReminderEditViewModelTest {
         val draft = viewModel.createDraftReminder()
         assertEquals(vn.io.litever.remind.core.model.RepeatMode.DAILY, draft.timeTrigger?.repeatMode)
     }
+
+    @Test
+    fun editExistingReminder_preservesCreatedAtAndLastTriggeredTime_andSyncs24HourFormat() = runTest {
+        every { preferencesDataSource.is24HourFormat } returns flowOf(false)
+        val originalCreatedAt = 1_700_000_000_000L
+        val originalLastTriggered = 1_700_000_123_456L
+        val existing = Reminder(
+            id = 88L,
+            title = "Existing Task",
+            triggerType = ReminderTriggerType.INTERVAL,
+            timeTrigger = TimeTrigger(intervalMinutes = 45),
+            lastTriggeredTime = originalLastTriggered,
+            createdAt = originalCreatedAt
+        )
+        coEvery { repository.getReminderById(88L) } returns existing
+
+        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 88L))
+        val viewModel = ReminderEditViewModel(
+            reminderRepository = repository,
+            reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
+            permissionChecker = permissionChecker,
+            preferencesDataSource = preferencesDataSource,
+            savedStateHandle = savedStateHandle
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertFalse(viewModel.uiState.value.is24HourFormat)
+
+        viewModel.setTitle("Existing Task Updated")
+        val draft = viewModel.createDraftReminder()
+        assertEquals(originalCreatedAt, draft.createdAt)
+        assertEquals(originalLastTriggered, draft.lastTriggeredTime)
+    }
+
+    @Test
+    fun switchToInterval_defaultsIntervalMinutesTo60AndPreservesOnDraft() = runTest {
+        val savedStateHandle = SavedStateHandle(mapOf("reminderId" to 0L))
+        val viewModel = ReminderEditViewModel(
+            reminderRepository = repository,
+            reminderScheduler = scheduler,
+            reminderSyncManager = reminderSyncManager,
+            permissionChecker = permissionChecker,
+            preferencesDataSource = preferencesDataSource,
+            savedStateHandle = savedStateHandle
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.setTriggerType(ReminderTriggerType.INTERVAL)
+        assertEquals(60, viewModel.uiState.value.intervalMinutes)
+
+        viewModel.setIntervalMinutes(null)
+        val draft = viewModel.createDraftReminder()
+        assertEquals(60, draft.timeTrigger?.intervalMinutes)
+    }
 }
 
 

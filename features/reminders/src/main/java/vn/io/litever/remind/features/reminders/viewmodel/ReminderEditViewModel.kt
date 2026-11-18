@@ -7,6 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
@@ -78,6 +79,7 @@ data class ReminderEditUiState(
     val missingPermissions: List<ReminderPermissionType> = emptyList(),
     val showDiscardDialog: Boolean = false,
     val isLoading: Boolean = false,
+    val is24HourFormat: Boolean = true,
     val showTitleError: Boolean = false,
     val validationErrorField: ReminderValidationErrorField? = null,
     val validationErrorTrigger: Long = 0L
@@ -104,12 +106,17 @@ class ReminderEditViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ReminderEditUiState())
     val uiState: StateFlow<ReminderEditUiState> = _uiState.asStateFlow()
     private var initialSnapshot: ReminderEditUiState? = null
+    private var existingCreatedAt: Long? = null
+    private var existingLastTriggeredTime: Long? = null
 
     init {
         viewModelScope.launch {
+            val is24h = runCatching { preferencesDataSource.is24HourFormat.first() }.getOrDefault(true)
             if (reminderId > 0L) {
                 val existing = reminderRepository.getReminderById(reminderId)
                 if (existing != null) {
+                    existingCreatedAt = existing.createdAt
+                    existingLastTriggeredTime = existing.lastTriggeredTime
                     val timeTrigger = existing.timeTrigger
                     val existingDates = timeTrigger?.effectiveExactDates ?: emptyList()
                     val activeTriggerDate = existingDates.firstOrNull() ?: LocalDate.now()
@@ -151,9 +158,14 @@ class ReminderEditViewModel @Inject constructor(
                         vibrationEnabled = existing.action.vibrationEnabled,
                         volume = existing.action.volume,
                         snoozeEnabled = existing.action.snoozeEnabled,
-                        snoozeIntervalMinutes = existing.action.snoozeIntervalMinutes
+                        snoozeIntervalMinutes = existing.action.snoozeIntervalMinutes,
+                        is24HourFormat = is24h
                     )
+                } else {
+                    _uiState.update { it.copy(is24HourFormat = is24h) }
                 }
+            } else {
+                _uiState.update { it.copy(is24HourFormat = is24h) }
             }
             initialSnapshot = _uiState.value
         }
@@ -176,7 +188,11 @@ class ReminderEditViewModel @Inject constructor(
             val datesList = if (state.exactDates.isNotEmpty()) state.exactDates else listOfNotNull(state.date)
             TimeTrigger(
                 time = timeList,
-                intervalMinutes = state.intervalMinutes,
+                intervalMinutes = if (state.triggerType == ReminderTriggerType.INTERVAL) {
+                    state.intervalMinutes ?: 60
+                } else {
+                    state.intervalMinutes
+                },
                 exactDate = if (repeatMode == RepeatMode.NONE) datesList.firstOrNull() else null,
                 exactDates = if (repeatMode == RepeatMode.NONE) datesList else emptyList(),
                 repeatMode = repeatMode,
@@ -207,7 +223,8 @@ class ReminderEditViewModel @Inject constructor(
             triggerType = state.triggerType,
             timeTrigger = timeTrigger,
             action = action,
-            createdAt = now,
+            lastTriggeredTime = if (state.id > 0L) existingLastTriggeredTime else null,
+            createdAt = if (state.id > 0L) (existingCreatedAt ?: now) else now,
             isEnabled = state.isEnabled
         )
     }
@@ -354,7 +371,18 @@ class ReminderEditViewModel @Inject constructor(
     }
     fun setTitle(title: String) { _uiState.update { it.copy(title = title, showTitleError = false) } }
     fun setNotes(notes: String) { _uiState.update { it.copy(notes = notes) } }
-    fun setTriggerType(type: ReminderTriggerType) { _uiState.update { it.copy(triggerType = type) } }
+    fun setTriggerType(type: ReminderTriggerType) {
+        _uiState.update {
+            it.copy(
+                triggerType = type,
+                intervalMinutes = if (type == ReminderTriggerType.INTERVAL && it.intervalMinutes == null) {
+                    60
+                } else {
+                    it.intervalMinutes
+                }
+            )
+        }
+    }
     
     fun setTime(time: LocalTime) {
         _uiState.update { state ->
@@ -465,6 +493,7 @@ class ReminderEditViewModel @Inject constructor(
     }
     fun toggleRepeatDay(day: DayOfWeek) {
         _uiState.update {
+            if (it.repeatDays.size <= 1 && it.repeatDays.contains(day)) return@update it
             val days = if (it.repeatDays.contains(day)) it.repeatDays - day else it.repeatDays + day
             it.copy(repeatDays = days.sorted())
         }
@@ -499,7 +528,8 @@ class ReminderEditViewModel @Inject constructor(
                 ReminderRepeatInterval.MONTHLY -> state.copy(
                     repeatInterval = interval,
                     date = null,
-                    exactDates = emptyList()
+                    exactDates = emptyList(),
+                    monthlyDays = if (state.monthlyDays.isEmpty()) listOf(LocalDate.now().dayOfMonth) else state.monthlyDays
                 )
                 ReminderRepeatInterval.YEARLY -> state.copy(
                     repeatInterval = interval,
@@ -519,6 +549,7 @@ class ReminderEditViewModel @Inject constructor(
     
     fun toggleMonthlyDay(day: Int) {
         _uiState.update { state ->
+            if (state.monthlyDays.size <= 1 && state.monthlyDays.contains(day)) return@update state
             val updated = if (state.monthlyDays.contains(day)) {
                 state.monthlyDays - day
             } else {

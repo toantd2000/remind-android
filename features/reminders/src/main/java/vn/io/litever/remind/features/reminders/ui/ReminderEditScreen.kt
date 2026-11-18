@@ -317,7 +317,7 @@ fun ReminderEditScreen(
                     onTimeWindowsChange = onTimeWindowsChange,
                     onAddTimeWindow = onAddTimeWindow,
                     onRemoveTimeWindow = onRemoveTimeWindow,
-                    is24HourFormat = true,
+                    is24HourFormat = uiState.is24HourFormat,
                     modifier = Modifier.fillMaxWidth()
                 )
             }

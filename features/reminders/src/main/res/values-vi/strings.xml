@@ -261,4 +261,10 @@
     <string name="time_window_all_day_badge">Cả ngày</string>
     <string name="time_window_badge_format">Khung giờ: %s</string>
     <string name="reset">Đặt lại</string>
+
+    <!-- Pro Audio -->
+    <string name="extra_loud_title">Âm lượng siêu to</string>
+    <string name="extra_loud_desc">Tăng cường âm lượng cực đại sau 40s không phản hồi</string>
+    <string name="announce_title_tts_title">Đọc tiêu đề bằng giọng nói</string>
+    <string name="announce_title_tts_desc">Tự động đọc tên nhắc nhở khi đến giờ</string>
 </resources>

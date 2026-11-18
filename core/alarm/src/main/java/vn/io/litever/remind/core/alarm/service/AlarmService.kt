@@ -24,6 +24,7 @@ import vn.io.litever.remind.core.alarm.AlarmRingManager
 import vn.io.litever.remind.core.alarm.R
 import vn.io.litever.remind.core.alarm.provider.AlarmIntentProvider
 import vn.io.litever.remind.core.common.audio.AudioPlayer
+import vn.io.litever.remind.core.common.audio.TtsSpeaker
 import vn.io.litever.remind.core.common.util.getAccessibleRingtoneUri
 import vn.io.litever.remind.core.domain.repository.AlarmRepository
 import vn.io.litever.remind.core.domain.scheduler.AlarmController
@@ -52,10 +53,14 @@ class AlarmService : Service() {
     lateinit var audioPlayer: AudioPlayer
 
     @Inject
+    lateinit var ttsSpeaker: TtsSpeaker
+
+    @Inject
     lateinit var analyticsLogger: vn.io.litever.remind.core.analytics.AnalyticsLogger
 
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var autoSilenceJob: Job? = null
+    private var ttsJob: Job? = null
     
     private data class RingingState(
         val mainId: Long?,
@@ -206,8 +211,32 @@ class AlarmService : Service() {
             useAlarmStream = alarm.useAlarmStream,
             volume = alarm.volume,
             gradualVolumeDurationSeconds = alarm.gradualVolumeDurationSeconds,
-            vibrationEnabled = alarm.vibrationEnabled
+            vibrationEnabled = alarm.vibrationEnabled,
+            extraLoudEnabled = alarm.extraLoudEnabled,
+            extraLoudDelaySeconds = 40
         )
+
+        startTtsAnnouncements(alarm)
+    }
+
+    private fun startTtsAnnouncements(alarm: Alarm) {
+        ttsJob?.cancel()
+        if (!alarm.announceLabelTts && !alarm.announceTimeTts) return
+
+        ttsJob = scope.launch {
+            if (alarm.announceLabelTts && alarm.label.isNotBlank()) {
+                ttsSpeaker.speak(alarm.label, useAlarmStream = alarm.useAlarmStream)
+            }
+            if (alarm.announceTimeTts) {
+                while (true) {
+                    val nowText = java.time.LocalTime.now()
+                        .format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"))
+                    val phrase = getString(R.string.tts_time_announcement, nowText)
+                    ttsSpeaker.speak(phrase, useAlarmStream = alarm.useAlarmStream)
+                    delay(60_000L)
+                }
+            }
+        }
     }
 
     private fun setupAutoSilence(alarm: Alarm) {
@@ -239,6 +268,9 @@ class AlarmService : Service() {
     }
 
     private fun stopAudibleRinging() {
+        ttsJob?.cancel()
+        ttsJob = null
+        ttsSpeaker.stop()
         audioPlayer.stop()
     }
 

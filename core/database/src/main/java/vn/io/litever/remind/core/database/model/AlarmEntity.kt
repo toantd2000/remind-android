@@ -28,7 +28,11 @@ data class AlarmEntity(
     val lastTriggeredTime: Long?,
     val useAlarmStream: Boolean = true,
     val overrideDndEnabled: Boolean = false,
-    val isQuickAlarm: Boolean = false
+    val isQuickAlarm: Boolean = false,
+    val extraLoudEnabled: Boolean = false,
+    val announceTimeTts: Boolean = false,
+    val announceLabelTts: Boolean = false,
+    val wakeUpCheckMinutes: Int = 0
 )
 
 

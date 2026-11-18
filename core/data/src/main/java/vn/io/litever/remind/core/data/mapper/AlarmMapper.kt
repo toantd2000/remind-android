@@ -32,7 +32,11 @@ fun AlarmEntity.toModel(): Alarm {
         lastTriggeredTime = lastTriggeredTime,
         useAlarmStream = useAlarmStream,
         overrideDndEnabled = overrideDndEnabled,
-        isQuickAlarm = isQuickAlarm
+        isQuickAlarm = isQuickAlarm,
+        extraLoudEnabled = extraLoudEnabled,
+        announceTimeTts = announceTimeTts,
+        announceLabelTts = announceLabelTts,
+        wakeUpCheckMinutes = wakeUpCheckMinutes
     )
 }
 
@@ -66,6 +70,10 @@ fun Alarm.toEntity(): AlarmEntity {
         lastTriggeredTime = lastTriggeredTime,
         useAlarmStream = useAlarmStream,
         overrideDndEnabled = overrideDndEnabled,
-        isQuickAlarm = isQuickAlarm
+        isQuickAlarm = isQuickAlarm,
+        extraLoudEnabled = extraLoudEnabled,
+        announceTimeTts = announceTimeTts,
+        announceLabelTts = announceLabelTts,
+        wakeUpCheckMinutes = wakeUpCheckMinutes
     )
 }

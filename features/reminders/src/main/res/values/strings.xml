@@ -261,4 +261,10 @@
     <string name="time_window_all_day_badge">All day</string>
     <string name="time_window_badge_format">Window: %s</string>
     <string name="reset">Reset</string>
+
+    <!-- Pro Audio -->
+    <string name="extra_loud_title">Extra Loud</string>
+    <string name="extra_loud_desc">Switch to extra loud boosted sound after 40s without response</string>
+    <string name="announce_title_tts_title">Voice Announcement</string>
+    <string name="announce_title_tts_desc">Speak reminder title aloud when triggered</string>
 </resources>

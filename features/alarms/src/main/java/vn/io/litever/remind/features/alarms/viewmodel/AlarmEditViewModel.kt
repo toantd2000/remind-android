@@ -51,7 +51,11 @@ data class AlarmEditUiState(
     val isNewDraft: Boolean = false,
     val useAlarmStream: Boolean = true,
     val overrideDndEnabled: Boolean = true,
-    val showDndPermissionDialog: Boolean = false
+    val showDndPermissionDialog: Boolean = false,
+    val extraLoudEnabled: Boolean = false,
+    val announceTimeTts: Boolean = false,
+    val announceLabelTts: Boolean = false,
+    val wakeUpCheckMinutes: Int = 0
 )
 
 @HiltViewModel
@@ -63,7 +67,8 @@ class AlarmEditViewModel @Inject constructor(
     private val permissionChecker: vn.io.litever.remind.core.common.util.PermissionChecker,
     private val draftAlarmStore: DraftAlarmStore,
     private val audioPlayer: AudioPlayer,
-    @dagger.hilt.android.qualifiers.ApplicationContext private val context: android.content.Context
+    @dagger.hilt.android.qualifiers.ApplicationContext private val context: android.content.Context,
+    private val ttsSpeaker: vn.io.litever.remind.core.common.audio.TtsSpeaker? = null
 ) : ViewModel() {
 
     private val audioManager = context.getSystemService(android.content.Context.AUDIO_SERVICE) as android.media.AudioManager
@@ -180,7 +185,11 @@ class AlarmEditViewModel @Inject constructor(
                         },
                         missions = missions,
                         useAlarmStream = alarm.useAlarmStream,
-                        overrideDndEnabled = alarm.overrideDndEnabled
+                        overrideDndEnabled = alarm.overrideDndEnabled,
+                        extraLoudEnabled = alarm.extraLoudEnabled,
+                        announceTimeTts = alarm.announceTimeTts,
+                        announceLabelTts = alarm.announceLabelTts,
+                        wakeUpCheckMinutes = alarm.wakeUpCheckMinutes
                     )
                 }
             }
@@ -350,7 +359,78 @@ class AlarmEditViewModel @Inject constructor(
     fun stopRingtonePlayback() {
         progressJob?.cancel()
         audioPlayer.stop()
+        ttsSpeaker?.stop()
         _uiState.update { it.copy(isRingtonePlaying = false, ringtoneProgress = 0f) }
+    }
+
+    fun updateVolumeBoostSettings(
+        gradualSeconds: Int,
+        extraLoudEnabled: Boolean,
+        announceTimeTts: Boolean
+    ) {
+        _uiState.update {
+            it.copy(
+                gradualVolumeDurationSeconds = gradualSeconds,
+                extraLoudEnabled = extraLoudEnabled,
+                announceTimeTts = announceTimeTts
+            )
+        }
+    }
+
+    fun updateAnnounceLabelTts(enabled: Boolean) {
+        _uiState.update { it.copy(announceLabelTts = enabled) }
+    }
+
+    fun updateWakeUpCheckMinutes(minutes: Int) {
+        _uiState.update { it.copy(wakeUpCheckMinutes = minutes) }
+    }
+
+    fun previewGentleAlarm(durationSeconds: Int) {
+        stopRingtonePlayback()
+        val uri = vn.io.litever.remind.core.common.util.getAccessibleRingtoneUri(context, _uiState.value.ringtoneUri)
+        audioPlayer.play(
+            uri = uri,
+            useAlarmStream = false,
+            contentType = android.media.AudioAttributes.CONTENT_TYPE_MUSIC,
+            loop = false,
+            volume = _uiState.value.volume,
+            gradualVolumeDurationSeconds = if (durationSeconds > 0) durationSeconds else 5
+        )
+        viewModelScope.launch {
+            kotlinx.coroutines.delay(4000L)
+            audioPlayer.stop()
+        }
+    }
+
+    fun previewExtraLoud() {
+        stopRingtonePlayback()
+        val uri = vn.io.litever.remind.core.common.util.getAccessibleRingtoneUri(context, _uiState.value.ringtoneUri)
+        audioPlayer.play(
+            uri = uri,
+            useAlarmStream = false,
+            contentType = android.media.AudioAttributes.CONTENT_TYPE_MUSIC,
+            loop = false,
+            volume = _uiState.value.maxVolume,
+            extraLoudEnabled = true,
+            extraLoudDelaySeconds = 0
+        )
+        viewModelScope.launch {
+            kotlinx.coroutines.delay(3000L)
+            audioPlayer.stop()
+        }
+    }
+
+    fun previewTimeAnnouncementTts() {
+        val nowText = java.time.LocalTime.now()
+            .format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"))
+        val phrase = context.getString(vn.io.litever.remind.features.alarms.R.string.tts_preview_time, nowText)
+        ttsSpeaker?.speak(phrase, useAlarmStream = false)
+    }
+
+    fun previewLabelAnnouncementTts() {
+        val label = _uiState.value.label.takeIf { it.isNotBlank() }
+            ?: context.getString(vn.io.litever.remind.features.alarms.R.string.tts_preview_label_default)
+        ttsSpeaker?.speak(label, useAlarmStream = false)
     }
 
     fun refreshPermissions() {
@@ -472,6 +552,10 @@ class AlarmEditViewModel @Inject constructor(
             missions = state.missions,
             useAlarmStream = state.useAlarmStream,
             overrideDndEnabled = state.overrideDndEnabled,
+            extraLoudEnabled = state.extraLoudEnabled,
+            announceTimeTts = state.announceTimeTts,
+            announceLabelTts = state.announceLabelTts,
+            wakeUpCheckMinutes = state.wakeUpCheckMinutes,
             currentSnoozeCount = originalAlarm?.currentSnoozeCount ?: 0,
             snoozeNextTriggerTime = originalAlarm?.snoozeNextTriggerTime,
             skippedAt = originalAlarm?.skippedAt,

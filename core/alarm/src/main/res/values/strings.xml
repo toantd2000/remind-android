@@ -30,6 +30,13 @@
     <string name="reminder_action_snooze_interval">Snooze (%1$dm)</string>
     <string name="reminder_action_dismiss">Dismiss</string>
     <string name="reminder_action_complete">Done</string>
+
+    <!-- Wake-up Check -->
+    <string name="wakeup_check_channel_name">Wake-up Check</string>
+    <string name="wakeup_check_title">Are you really awake?</string>
+    <string name="wakeup_check_message">Tap to confirm you are awake within 60 seconds, or the alarm will ring again.</string>
+    <string name="wakeup_check_confirm">I am awake</string>
+    <string name="tts_time_announcement">It is %s</string>
 </resources>
 
 

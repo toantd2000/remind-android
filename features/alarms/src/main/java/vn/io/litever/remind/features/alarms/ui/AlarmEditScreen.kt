@@ -361,6 +361,13 @@ fun AlarmEditRoute(
             val intent = android.content.Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
             context.startActivity(intent)
         },
+        onVolumeBoostSave = viewModel::updateVolumeBoostSettings,
+        onPreviewGentle = viewModel::previewGentleAlarm,
+        onPreviewExtraLoud = viewModel::previewExtraLoud,
+        onPreviewTimeTts = viewModel::previewTimeAnnouncementTts,
+        onAnnounceLabelTtsChange = viewModel::updateAnnounceLabelTts,
+        onPreviewLabelTts = viewModel::previewLabelAnnouncementTts,
+        onWakeUpCheckChange = viewModel::updateWakeUpCheckMinutes,
         isPro = isPro,
         onNavigateToPaywall = onNavigateToPaywall
     )
@@ -399,6 +406,13 @@ fun AlarmEditScreen(
     onPreviewClick: () -> Unit,
     onDismissDndPermissionDialog: () -> Unit,
     onNavigateToDndSettings: () -> Unit,
+    onVolumeBoostSave: (Int, Boolean, Boolean) -> Unit = { duration, _, _ -> onGradualVolumeChange(duration) },
+    onPreviewGentle: (Int) -> Unit = {},
+    onPreviewExtraLoud: () -> Unit = {},
+    onPreviewTimeTts: () -> Unit = {},
+    onAnnounceLabelTtsChange: (Boolean) -> Unit = {},
+    onPreviewLabelTts: () -> Unit = {},
+    onWakeUpCheckChange: (Int) -> Unit = {},
     isPro: Boolean = false,
     onNavigateToPaywall: (Int) -> Unit = {},
     modifier: Modifier = Modifier
@@ -623,13 +637,31 @@ fun AlarmEditScreen(
         )
     }
 
+    var showWakeUpCheckSheet by remember { mutableStateOf(false) }
+
+    if (showWakeUpCheckSheet) {
+        vn.io.litever.remind.features.alarms.ui.components.WakeUpCheckBottomSheet(
+            currentMinutes = uiState.wakeUpCheckMinutes,
+            isPro = isPro,
+            onSelectMinutes = onWakeUpCheckChange,
+            onNavigateToPaywall = onNavigateToPaywall,
+            onDismissRequest = { showWakeUpCheckSheet = false }
+        )
+    }
+
     if (showGradualVolumeSheet) {
         GentleAlarmBottomSheet(
             currentDuration = uiState.gradualVolumeDurationSeconds,
-            onDurationSelect = {
-                onGradualVolumeChange(it)
-                if (showGradualVolumeSheet) showGradualVolumeSheet = false
+            extraLoudEnabled = uiState.extraLoudEnabled,
+            announceTimeTts = uiState.announceTimeTts,
+            isPro = isPro,
+            onPreviewGentle = onPreviewGentle,
+            onPreviewExtraLoud = onPreviewExtraLoud,
+            onPreviewTimeTts = onPreviewTimeTts,
+            onSave = { duration, extraLoud, announceTime ->
+                onVolumeBoostSave(duration, extraLoud, announceTime)
             },
+            onNavigateToPaywall = onNavigateToPaywall,
             onDismissRequest = { if (showGradualVolumeSheet) showGradualVolumeSheet = false },
             sheetState = sheetState
         )
@@ -926,6 +958,85 @@ fun AlarmEditScreen(
                                 }
                             }
                         }
+
+                        HorizontalDivider(
+                            color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.3f)
+                        )
+
+                        // Announce Label TTS (Pro)
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        if (!isPro && !uiState.announceLabelTts) {
+                                            onNavigateToPaywall(2)
+                                        } else {
+                                            onAnnounceLabelTtsChange(!uiState.announceLabelTts)
+                                        }
+                                    },
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = ReMindIcons.Speaker,
+                                    contentDescription = null,
+                                    tint = LiteverTheme.colors.onSurfaceVariant,
+                                    modifier = Modifier.size(22.dp)
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.announce_label_tts_title),
+                                            style = LiteverTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                                            color = LiteverTheme.colors.onSurface
+                                        )
+                                        vn.io.litever.remind.core.designsystem.components.ReMindProDiamondTag()
+                                    }
+                                    Text(
+                                        text = stringResource(R.string.announce_label_tts_desc),
+                                        style = LiteverTheme.typography.bodySmall,
+                                        color = LiteverTheme.colors.onSurfaceVariant
+                                    )
+                                }
+                                Switch(
+                                    checked = uiState.announceLabelTts,
+                                    onCheckedChange = { enabled ->
+                                        if (!isPro && enabled) {
+                                            onNavigateToPaywall(2)
+                                        } else {
+                                            onAnnounceLabelTtsChange(enabled)
+                                        }
+                                    }
+                                )
+                            }
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.End
+                            ) {
+                                LvButton(
+                                    onClick = onPreviewLabelTts,
+                                    type = LvButtonType.Tonal
+                                ) {
+                                    Icon(
+                                        imageVector = ReMindIcons.PlayArrow,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = stringResource(R.string.action_preview),
+                                        style = LiteverTheme.typography.labelMedium
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -1186,6 +1297,24 @@ fun AlarmEditScreen(
                             }
                         }
                     }
+
+                    HorizontalDivider(
+                        color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.3F),
+                        modifier = Modifier.padding(horizontal = LiteverTheme.spacing.extraLarge)
+                    )
+
+                    val wakeUpSummary = if (uiState.wakeUpCheckMinutes <= 0) {
+                        stringResource(R.string.off)
+                    } else {
+                        stringResource(R.string.minutes_unit, uiState.wakeUpCheckMinutes)
+                    }
+                    AlarmSettingRow(
+                        title = stringResource(R.string.wakeup_check_title),
+                        subtitle = wakeUpSummary,
+                        icon = ReMindIcons.AlarmOn,
+                        iconSelected = uiState.wakeUpCheckMinutes > 0,
+                        onClick = { showWakeUpCheckSheet = true }
+                    )
                 }
             }
 

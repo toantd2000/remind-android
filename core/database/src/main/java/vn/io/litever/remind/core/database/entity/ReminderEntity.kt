@@ -47,5 +47,9 @@ data class ReminderEntity(
     
     // State & Timestamps
     val lastTriggeredTime: Long? = null,
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
+
+    // Pro Audio Features
+    val extraLoudEnabled: Boolean = false,
+    val announceTitleTts: Boolean = false
 )

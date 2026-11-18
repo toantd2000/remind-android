@@ -147,6 +147,19 @@
     <string name="quick_alarm_desc_placeholder">Mô tả ngắn gọn (tùy chọn)</string>
     <string name="reset">Đặt lại</string>
     <string name="set_alarm">Đặt báo thức</string>
+
+    <!-- Pro Audio & Wake-up Check -->
+    <string name="volume_boost_sheet_title">Tăng âm lượng</string>
+    <string name="extra_loud_title">Siêu to</string>
+    <string name="extra_loud_desc">Chuyển sang âm thanh siêu to sau 40s không phản hồi</string>
+    <string name="time_announcement_title">Thông báo thời gian</string>
+    <string name="time_announcement_desc">Đọc giờ mỗi phút khi báo thức kêu</string>
+    <string name="announce_label_tts_title">Nhãn thông báo</string>
+    <string name="announce_label_tts_desc">Đọc nhãn khi báo thức reo</string>
+    <string name="wakeup_check_title">Kiểm tra thức dậy 🔥</string>
+    <string name="wakeup_check_desc">Xác nhận bạn đã tỉnh táo sau khi tắt chuông, nếu không sẽ reo lại</string>
+    <string name="tts_preview_time">Bây giờ là %s</string>
+    <string name="tts_preview_label_default">Đến giờ thức dậy rồi!</string>
 </resources>
 
 

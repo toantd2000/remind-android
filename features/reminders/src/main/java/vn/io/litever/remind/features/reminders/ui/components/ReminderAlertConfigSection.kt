@@ -64,7 +64,13 @@ fun ReminderAlertConfigSection(
     onSnoozeIntervalChange: (Int) -> Unit,
     modifier: Modifier = Modifier,
     isPlaying: Boolean = false,
-    onTogglePlay: () -> Unit = {}
+    onTogglePlay: () -> Unit = {},
+    extraLoudEnabled: Boolean = false,
+    onExtraLoudChange: (Boolean) -> Unit = {},
+    announceTitleTts: Boolean = false,
+    onAnnounceTitleTtsChange: (Boolean) -> Unit = {},
+    isPro: Boolean = false,
+    onNavigateToPaywall: (Int) -> Unit = {}
 ) {
     var showAutoSilenceSheet by remember { mutableStateOf(false) }
     var showSnoozeSheet by remember { mutableStateOf(false) }
@@ -474,6 +480,128 @@ fun ReminderAlertConfigSection(
                         imageVector = ReMindIcons.KeyboardArrowRight,
                         contentDescription = null,
                         tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.5f)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // 5. Voice Announcement TTS (Pro)
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(LiteverTheme.shapes.medium)
+                    .clickable {
+                        if (!isPro && !announceTitleTts) onNavigateToPaywall(2)
+                        else onAnnounceTitleTtsChange(!announceTitleTts)
+                    },
+                color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.4f),
+                shape = LiteverTheme.shapes.medium
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        ReMindSettingIcon(
+                            imageVector = ReMindIcons.Speaker,
+                            selected = announceTitleTts
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.announce_title_tts_title),
+                                    style = LiteverTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = LiteverTheme.colors.onSurface
+                                )
+                                vn.io.litever.remind.core.designsystem.components.ReMindProDiamondTag()
+                            }
+                            Text(
+                                text = stringResource(R.string.announce_title_tts_desc),
+                                style = LiteverTheme.typography.bodySmall,
+                                color = LiteverTheme.colors.onSurfaceVariant
+                            )
+                        }
+                    }
+
+                    LiteverSwitch(
+                        checked = announceTitleTts,
+                        onCheckedChange = { enabled ->
+                            if (!isPro && enabled) onNavigateToPaywall(2)
+                            else onAnnounceTitleTtsChange(enabled)
+                        }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // 6. Extra Loud (Pro)
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(LiteverTheme.shapes.medium)
+                    .clickable {
+                        if (!isPro && !extraLoudEnabled) onNavigateToPaywall(4)
+                        else onExtraLoudChange(!extraLoudEnabled)
+                    },
+                color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.4f),
+                shape = LiteverTheme.shapes.medium
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        ReMindSettingIcon(
+                            imageVector = ReMindIcons.VolumeUp,
+                            selected = extraLoudEnabled
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.extra_loud_title),
+                                    style = LiteverTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = LiteverTheme.colors.onSurface
+                                )
+                                vn.io.litever.remind.core.designsystem.components.ReMindProDiamondTag()
+                            }
+                            Text(
+                                text = stringResource(R.string.extra_loud_desc),
+                                style = LiteverTheme.typography.bodySmall,
+                                color = LiteverTheme.colors.onSurfaceVariant
+                            )
+                        }
+                    }
+
+                    LiteverSwitch(
+                        checked = extraLoudEnabled,
+                        onCheckedChange = { enabled ->
+                            if (!isPro && enabled) onNavigateToPaywall(4)
+                            else onExtraLoudChange(enabled)
+                        }
                     )
                 }
             }

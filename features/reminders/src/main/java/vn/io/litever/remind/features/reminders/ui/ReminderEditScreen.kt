@@ -173,6 +173,8 @@ fun ReminderEditRoute(
         onSnoozeEnabledChange = viewModel::setSnoozeEnabled,
         onSnoozeIntervalChange = viewModel::setSnoozeIntervalMinutes,
         onToggleEnabled = viewModel::setIsEnabled,
+        onExtraLoudChange = viewModel::setExtraLoudEnabled,
+        onAnnounceTitleTtsChange = viewModel::setAnnounceTitleTts,
         onNavigateToPaywall = onNavigateToPaywall
     )
 }
@@ -195,6 +197,8 @@ fun ReminderEditScreen(
     onRingtoneClick: () -> Unit,
     onVibrationChange: (Boolean) -> Unit,
     onVolumeChange: (Int) -> Unit,
+    onExtraLoudChange: (Boolean) -> Unit = {},
+    onAnnounceTitleTtsChange: (Boolean) -> Unit = {},
     onNavigateToPaywall: (Int) -> Unit = {},
     modifier: Modifier = Modifier,
     onTriggerTypeSelected: (ReminderTriggerType) -> Unit = {},
@@ -377,7 +381,13 @@ fun ReminderEditScreen(
                     snoozeEnabled = uiState.snoozeEnabled,
                     onSnoozeEnabledChange = onSnoozeEnabledChange,
                     snoozeIntervalMinutes = uiState.snoozeIntervalMinutes,
-                    onSnoozeIntervalChange = onSnoozeIntervalChange
+                    onSnoozeIntervalChange = onSnoozeIntervalChange,
+                    extraLoudEnabled = uiState.extraLoudEnabled,
+                    onExtraLoudChange = onExtraLoudChange,
+                    announceTitleTts = uiState.announceTitleTts,
+                    onAnnounceTitleTtsChange = onAnnounceTitleTtsChange,
+                    isPro = uiState.isPro,
+                    onNavigateToPaywall = onNavigateToPaywall
                 )
             }
 

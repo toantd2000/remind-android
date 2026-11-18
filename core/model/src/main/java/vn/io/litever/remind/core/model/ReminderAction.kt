@@ -12,7 +12,9 @@ data class ReminderAction(
     val vibrationEnabled: Boolean = true,
     val volume: Int = 100,
     val snoozeEnabled: Boolean = true,
-    val snoozeIntervalMinutes: Int = 5
+    val snoozeIntervalMinutes: Int = 5,
+    val extraLoudEnabled: Boolean = false,
+    val announceTitleTts: Boolean = false
 ) : Serializable {
 
     fun canSnooze(): Boolean {

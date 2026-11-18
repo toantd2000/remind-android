@@ -5,6 +5,7 @@ import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.media.MediaPlayer
+import android.media.audiofx.LoudnessEnhancer
 import android.net.Uri
 import android.os.Build
 import android.os.VibrationEffect
@@ -22,11 +23,13 @@ class AudioPlayer @Inject constructor(
 ) {
     private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     private var mediaPlayer: MediaPlayer? = null
+    private var loudnessEnhancer: LoudnessEnhancer? = null
     private var vibrator: Vibrator? = null
     private var focusRequest: AudioFocusRequest? = null
 
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private var volumeJob: Job? = null
+    private var extraLoudJob: Job? = null
 
     private val onAudioFocusChangeListener =
         AudioManager.OnAudioFocusChangeListener { focusChange ->
@@ -54,7 +57,9 @@ class AudioPlayer @Inject constructor(
         loop: Boolean = true,
         volume: Int? = null,
         gradualVolumeDurationSeconds: Int = 0,
-        vibrationEnabled: Boolean = false
+        vibrationEnabled: Boolean = false,
+        extraLoudEnabled: Boolean = false,
+        extraLoudDelaySeconds: Int = 40
     ) {
         stop()
 
@@ -94,6 +99,9 @@ class AudioPlayer @Inject constructor(
                 }
                 mp.start()
                 handleVolume(usage, volume, gradualVolumeDurationSeconds)
+                if (extraLoudEnabled) {
+                    scheduleExtraLoud(mp, usage, extraLoudDelaySeconds)
+                }
                 if (vibrationEnabled) startVibration()
             }
             player.prepareAsync()
@@ -158,9 +166,37 @@ class AudioPlayer @Inject constructor(
         vibrator?.vibrate(VibrationEffect.createWaveform(pattern, 0))
     }
 
+    private fun scheduleExtraLoud(mp: MediaPlayer, usage: Int, delaySeconds: Int) {
+        extraLoudJob = scope.launch {
+            if (delaySeconds > 0) {
+                delay(delaySeconds * 1000L)
+            }
+            if (mediaPlayer != mp) return@launch
+            runCatching {
+                val streamType = usageToStreamType(usage)
+                val maxVol = audioManager.getStreamMaxVolume(streamType)
+                audioManager.setStreamVolume(streamType, maxVol, 0)
+                mp.setVolume(1f, 1f)
+                loudnessEnhancer?.release()
+                loudnessEnhancer = LoudnessEnhancer(mp.audioSessionId).apply {
+                    setTargetGain(1200) // +12 dB boost
+                    enabled = true
+                }
+            }
+        }
+    }
+
     fun stop() {
         volumeJob?.cancel()
         volumeJob = null
+        extraLoudJob?.cancel()
+        extraLoudJob = null
+
+        runCatching {
+            loudnessEnhancer?.enabled = false
+            loudnessEnhancer?.release()
+        }
+        loudnessEnhancer = null
 
         mediaPlayer?.let {
             try {

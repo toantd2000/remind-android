@@ -6,6 +6,7 @@ import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.RingtoneManager
+import android.media.audiofx.LoudnessEnhancer
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import vn.io.litever.remind.core.alarm.notification.ReminderNotificationManager
+import vn.io.litever.remind.core.common.audio.TtsSpeaker
 import vn.io.litever.remind.core.common.util.getAccessibleRingtoneUri
 import vn.io.litever.remind.core.domain.repository.ReminderRepository
 import vn.io.litever.remind.core.domain.scheduler.ReminderScheduler
@@ -69,7 +71,8 @@ class ReminderAlertManagerImpl @Inject constructor(
     private val reminderRepositoryProvider: Provider<ReminderRepository>? = null,
     private val reminderSchedulerProvider: Provider<ReminderScheduler>? = null,
     private val reminderNotificationManagerProvider: Provider<ReminderNotificationManager>? = null,
-    private val reminderActionHandlerProvider: Provider<vn.io.litever.remind.core.domain.handler.ReminderActionHandler>? = null
+    private val reminderActionHandlerProvider: Provider<vn.io.litever.remind.core.domain.handler.ReminderActionHandler>? = null,
+    private val ttsSpeaker: TtsSpeaker? = null
 ) : ReminderAlertManager {
 
     private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
@@ -77,6 +80,8 @@ class ReminderAlertManagerImpl @Inject constructor(
     private val stateMutex = Mutex()
 
     private var mediaPlayer: MediaPlayer? = null
+    private var loudnessEnhancer: LoudnessEnhancer? = null
+    private var extraLoudJob: Job? = null
     private var vibrator: Vibrator? = null
     private var focusRequest: AudioFocusRequest? = null
     private var autoSilenceJob: Job? = null
@@ -249,6 +254,25 @@ class ReminderAlertManagerImpl @Inject constructor(
                 if (reminder.action.vibrationEnabled) {
                     startVibration(isPersistent, audioAttributes)
                 }
+                if (reminder.action.announceTitleTts && reminder.title.isNotBlank()) {
+                    ttsSpeaker?.speak(reminder.title, useAlarmStream = reminder.action.useAlarmStream)
+                }
+                if (reminder.action.extraLoudEnabled) {
+                    extraLoudJob?.cancel()
+                    extraLoudJob = scope.launch {
+                        delay(40_000L)
+                        if (mediaPlayer == mp) {
+                            runCatching {
+                                mp.setVolume(1f, 1f)
+                                loudnessEnhancer?.release()
+                                loudnessEnhancer = LoudnessEnhancer(mp.audioSessionId).apply {
+                                    setTargetGain(1200)
+                                    enabled = true
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             player.setOnCompletionListener {
@@ -342,6 +366,15 @@ class ReminderAlertManagerImpl @Inject constructor(
     }
 
     private fun stopAudiblePlayback() {
+        extraLoudJob?.cancel()
+        extraLoudJob = null
+        runCatching {
+            loudnessEnhancer?.enabled = false
+            loudnessEnhancer?.release()
+        }
+        loudnessEnhancer = null
+        ttsSpeaker?.stop()
+
         mediaPlayer?.let {
             try {
                 if (it.isPlaying) it.stop()

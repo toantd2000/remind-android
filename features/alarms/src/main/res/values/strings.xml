@@ -147,6 +147,19 @@
     <string name="quick_alarm_desc_placeholder">Brief description (optional)</string>
     <string name="reset">Reset</string>
     <string name="set_alarm">Set alarm</string>
+
+    <!-- Pro Audio & Wake-up Check -->
+    <string name="volume_boost_sheet_title">Volume Boost</string>
+    <string name="extra_loud_title">Extra Loud</string>
+    <string name="extra_loud_desc">Switch to extra loud boosted sound after 40s without response</string>
+    <string name="time_announcement_title">Time Announcement</string>
+    <string name="time_announcement_desc">Speak the current time every minute while ringing</string>
+    <string name="announce_label_tts_title">Announce Label</string>
+    <string name="announce_label_tts_desc">Read the alarm label aloud when ringing</string>
+    <string name="wakeup_check_title">Wake-up Check 🔥</string>
+    <string name="wakeup_check_desc">Verify you are awake after dismissing the alarm, or it rings again</string>
+    <string name="tts_preview_time">It is %s</string>
+    <string name="tts_preview_label_default">Time to wake up!</string>
 </resources>
 
 

@@ -75,6 +75,8 @@ data class ReminderEditUiState(
     val isRingtonePlaying: Boolean = false,
     val snoozeEnabled: Boolean = true,
     val snoozeIntervalMinutes: Int = 5,
+    val extraLoudEnabled: Boolean = false,
+    val announceTitleTts: Boolean = false,
     val showPermissionDialog: Boolean = false,
     val missingPermissions: List<ReminderPermissionType> = emptyList(),
     val showDiscardDialog: Boolean = false,
@@ -165,6 +167,8 @@ class ReminderEditViewModel @Inject constructor(
                         volume = existing.action.volume,
                         snoozeEnabled = existing.action.snoozeEnabled,
                         snoozeIntervalMinutes = existing.action.snoozeIntervalMinutes,
+                        extraLoudEnabled = existing.action.extraLoudEnabled,
+                        announceTitleTts = existing.action.announceTitleTts,
                         is24HourFormat = is24h
                     )
                 } else {
@@ -219,7 +223,9 @@ class ReminderEditViewModel @Inject constructor(
             useAlarmStream = state.useAlarmStream,
             autoSilenceMinutes = state.autoSilenceMinutes,
             ringtoneUri = state.ringtoneUri,
-            notificationStyle = state.notificationStyle
+            notificationStyle = state.notificationStyle,
+            extraLoudEnabled = state.extraLoudEnabled,
+            announceTitleTts = state.announceTitleTts
         )
 
         return Reminder(
@@ -632,6 +638,8 @@ class ReminderEditViewModel @Inject constructor(
     }
     fun setIsEnabled(enabled: Boolean) { _uiState.update { it.copy(isEnabled = enabled) } }
     fun setPersistentAlert(persistent: Boolean) { _uiState.update { it.copy(isPersistentAlert = persistent) } }
+    fun setExtraLoudEnabled(enabled: Boolean) { _uiState.update { it.copy(extraLoudEnabled = enabled) } }
+    fun setAnnounceTitleTts(enabled: Boolean) { _uiState.update { it.copy(announceTitleTts = enabled) } }
 
     fun toggleRingtonePlayback() {
         if (_uiState.value.isRingtonePlaying) {

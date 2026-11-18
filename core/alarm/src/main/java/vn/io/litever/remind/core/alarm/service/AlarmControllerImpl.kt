@@ -53,6 +53,13 @@ class AlarmControllerImpl @Inject constructor(
                             snoozeNextTriggerTime = null
                         )
                         alarmRepository.updateAlarm(updatedAlarm)
+                        if (alarm.wakeUpCheckMinutes > 0) {
+                            vn.io.litever.remind.core.alarm.receiver.WakeUpCheckReceiver.schedule(
+                                context = context,
+                                alarmId = alarm.id,
+                                delayMinutes = alarm.wakeUpCheckMinutes
+                            )
+                        }
                     }
                 }
             }

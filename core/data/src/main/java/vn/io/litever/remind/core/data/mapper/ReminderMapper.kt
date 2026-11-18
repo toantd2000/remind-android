@@ -100,7 +100,9 @@ fun ReminderEntity.toModel(): Reminder {
         vibrationEnabled = vibrationEnabled,
         volume = volume,
         snoozeEnabled = snoozeEnabled,
-        snoozeIntervalMinutes = snoozeIntervalMinutes
+        snoozeIntervalMinutes = snoozeIntervalMinutes,
+        extraLoudEnabled = extraLoudEnabled,
+        announceTitleTts = announceTitleTts
     )
 
     return Reminder(
@@ -158,7 +160,9 @@ fun Reminder.toEntity(): ReminderEntity {
         snoozeNextTriggerTime = snoozeNextTriggerTime,
 
         lastTriggeredTime = lastTriggeredTime,
-        createdAt = createdAt
+        createdAt = createdAt,
+        extraLoudEnabled = action.extraLoudEnabled,
+        announceTitleTts = action.announceTitleTts
     )
 }
 

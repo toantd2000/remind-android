@@ -27,6 +27,16 @@
             android:exported="false" />
 
         <receiver
+            android:name=".receiver.WakeUpCheckReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="vn.io.litever.remind.core.alarm.ACTION_WAKE_UP_CHECK" />
+                <action android:name="vn.io.litever.remind.core.alarm.ACTION_CONFIRM_AWAKE" />
+                <action android:name="vn.io.litever.remind.core.alarm.ACTION_WAKE_UP_CHECK_TIMEOUT" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
             android:name=".receiver.BootCompletedReceiver"
             android:exported="true">
             <intent-filter>

@@ -1,24 +1,42 @@
 package vn.io.litever.remind.features.alarms.ui.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import vn.io.litever.designsystem.components.button.LvButton
+import vn.io.litever.designsystem.components.button.LvButtonType
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomSheetContent
+import vn.io.litever.remind.core.designsystem.components.ReMindProDiamondTag
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.features.alarms.R
 
@@ -26,11 +44,24 @@ import vn.io.litever.remind.features.alarms.R
 @Composable
 fun GentleAlarmBottomSheet(
     currentDuration: Int,
-    onDurationSelect: (Int) -> Unit,
+    extraLoudEnabled: Boolean = false,
+    announceTimeTts: Boolean = false,
+    isPro: Boolean = false,
+    onPreviewGentle: (Int) -> Unit = {},
+    onPreviewExtraLoud: () -> Unit = {},
+    onPreviewTimeTts: () -> Unit = {},
+    onSave: (durationSeconds: Int, extraLoud: Boolean, announceTime: Boolean) -> Unit,
+    onNavigateToPaywall: (Int) -> Unit = {},
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
-    sheetState: SheetState = rememberModalBottomSheetState()
+    sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 ) {
+    var draftDuration by remember(currentDuration) { mutableIntStateOf(currentDuration) }
+    var draftExtraLoud by remember(extraLoudEnabled) { mutableStateOf(extraLoudEnabled) }
+    var draftAnnounceTime by remember(announceTimeTts) { mutableStateOf(announceTimeTts) }
+
+    val requiresPro = !isPro && (draftExtraLoud || draftAnnounceTime)
+
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
@@ -38,11 +69,29 @@ fun GentleAlarmBottomSheet(
         modifier = modifier
     ) {
         ReMindBottomSheetContent(
-            title = stringResource(R.string.gentle_alarm_title)
+            title = stringResource(R.string.volume_boost_sheet_title)
         ) {
             GentleAlarmBottomSheetContent(
-                currentDuration = currentDuration,
-                onDurationSelect = onDurationSelect
+                durationSeconds = draftDuration,
+                onDurationToggle = { enabled -> draftDuration = if (enabled) 10 else 0 },
+                extraLoudEnabled = draftExtraLoud,
+                onExtraLoudToggle = { draftExtraLoud = it },
+                announceTimeTts = draftAnnounceTime,
+                onAnnounceTimeToggle = { draftAnnounceTime = it },
+                requiresPro = requiresPro,
+                onPreviewGentle = { onPreviewGentle(draftDuration) },
+                onPreviewExtraLoud = onPreviewExtraLoud,
+                onPreviewTimeTts = onPreviewTimeTts,
+                onSaveClick = {
+                    if (requiresPro) {
+                        val targetSlide = if (draftExtraLoud) 4 else 2
+                        onDismissRequest()
+                        onNavigateToPaywall(targetSlide)
+                    } else {
+                        onSave(draftDuration, draftExtraLoud, draftAnnounceTime)
+                        onDismissRequest()
+                    }
+                }
             )
         }
     }
@@ -50,48 +99,159 @@ fun GentleAlarmBottomSheet(
 
 @Composable
 fun GentleAlarmBottomSheetContent(
-    currentDuration: Int,
-    onDurationSelect: (Int) -> Unit,
+    durationSeconds: Int,
+    onDurationToggle: (Boolean) -> Unit,
+    extraLoudEnabled: Boolean,
+    onExtraLoudToggle: (Boolean) -> Unit,
+    announceTimeTts: Boolean,
+    onAnnounceTimeToggle: (Boolean) -> Unit,
+    requiresPro: Boolean,
+    onPreviewGentle: () -> Unit,
+    onPreviewExtraLoud: () -> Unit,
+    onPreviewTimeTts: () -> Unit,
+    onSaveClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val options = listOf(0, 5, 10, 20)
-
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(bottom = LiteverTheme.spacing.medium)
+            .padding(horizontal = LiteverTheme.spacing.medium)
+            .padding(bottom = LiteverTheme.spacing.medium),
+        verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.smallMedium)
     ) {
-        Text(
-            text = stringResource(R.string.gentle_alarm_description),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(horizontal = LiteverTheme.spacing.medium, vertical = LiteverTheme.spacing.small)
+        VolumeBoostOptionRow(
+            icon = ReMindIcons.GraphicEq,
+            title = stringResource(R.string.gentle_alarm_title),
+            description = stringResource(R.string.gentle_alarm_description),
+            isProFeature = false,
+            checked = durationSeconds > 0,
+            onCheckedChange = onDurationToggle,
+            onPreviewClick = onPreviewGentle
         )
 
-        options.forEach { option ->
-            val label = if (option == 0) {
-                stringResource(R.string.off)
-            } else if (option < 60) {
-                stringResource(R.string.seconds_unit, option)
-            } else {
-                stringResource(R.string.minutes_unit, option / 60)
-            }
+        HorizontalDivider(color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.3f))
 
-            ListItem(
-                headlineContent = {
-                    Text(
-                        label,
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
-                    )
-                },
-                leadingContent = {
-                    RadioButton(
-                        selected = currentDuration == option,
-                        onClick = { onDurationSelect(option) }
-                    )
-                },
-                modifier = Modifier.clickable { onDurationSelect(option) }
+        VolumeBoostOptionRow(
+            icon = ReMindIcons.VolumeUp,
+            title = stringResource(R.string.extra_loud_title),
+            description = stringResource(R.string.extra_loud_desc),
+            isProFeature = true,
+            checked = extraLoudEnabled,
+            onCheckedChange = onExtraLoudToggle,
+            onPreviewClick = onPreviewExtraLoud
+        )
+
+        HorizontalDivider(color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.3f))
+
+        VolumeBoostOptionRow(
+            icon = ReMindIcons.AccessTime,
+            title = stringResource(R.string.time_announcement_title),
+            description = stringResource(R.string.time_announcement_desc),
+            isProFeature = true,
+            checked = announceTimeTts,
+            onCheckedChange = onAnnounceTimeToggle,
+            onPreviewClick = onPreviewTimeTts
+        )
+
+        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+
+        LvButton(
+            onClick = onSaveClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+        ) {
+            if (requiresPro) {
+                Icon(
+                    imageVector = ReMindIcons.Lock,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+            }
+            Text(
+                text = stringResource(R.string.save),
+                style = LiteverTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
             )
+        }
+    }
+}
+
+@Composable
+private fun VolumeBoostOptionRow(
+    icon: ImageVector,
+    title: String,
+    description: String,
+    isProFeature: Boolean,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    onPreviewClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onCheckedChange(!checked) }
+            .padding(vertical = 4.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = LiteverTheme.colors.onSurfaceVariant,
+                modifier = Modifier.size(22.dp)
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Text(
+                        text = title,
+                        style = LiteverTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                        color = LiteverTheme.colors.onSurface
+                    )
+                    if (isProFeature) {
+                        ReMindProDiamondTag()
+                    }
+                }
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = description,
+                    style = LiteverTheme.typography.bodySmall,
+                    color = LiteverTheme.colors.onSurfaceVariant
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Switch(
+                checked = checked,
+                onCheckedChange = onCheckedChange
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            LvButton(
+                onClick = onPreviewClick,
+                type = LvButtonType.Tonal
+            ) {
+                Icon(
+                    imageVector = ReMindIcons.PlayArrow,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = stringResource(R.string.action_preview),
+                    style = LiteverTheme.typography.labelMedium
+                )
+            }
         }
     }
 }
@@ -101,8 +261,17 @@ fun GentleAlarmBottomSheetContent(
 private fun GentleAlarmBottomSheetContentPreview() {
     ReMindTheme {
         GentleAlarmBottomSheetContent(
-            currentDuration = 5,
-            onDurationSelect = {}
+            durationSeconds = 10,
+            onDurationToggle = {},
+            extraLoudEnabled = true,
+            onExtraLoudToggle = {},
+            announceTimeTts = false,
+            onAnnounceTimeToggle = {},
+            requiresPro = true,
+            onPreviewGentle = {},
+            onPreviewExtraLoud = {},
+            onPreviewTimeTts = {},
+            onSaveClick = {}
         )
     }
 }

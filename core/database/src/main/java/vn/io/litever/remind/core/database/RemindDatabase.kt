@@ -23,7 +23,7 @@ import vn.io.litever.remind.core.database.model.PhraseEntity
         MissedAlarmEntity::class,
         ReminderEntity::class
     ],
-    version = 9,
+    version = 10,
     exportSchema = false
 )
 abstract class RemindDatabase : RoomDatabase() {
@@ -225,6 +225,17 @@ abstract class RemindDatabase : RoomDatabase() {
         val MIGRATION_8_9 = object : Migration(8, 9) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE `alarms` ADD COLUMN `isQuickAlarm` INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+
+        val MIGRATION_9_10 = object : Migration(9, 10) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `alarms` ADD COLUMN `extraLoudEnabled` INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE `alarms` ADD COLUMN `announceTimeTts` INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE `alarms` ADD COLUMN `announceLabelTts` INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE `alarms` ADD COLUMN `wakeUpCheckMinutes` INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE `reminders` ADD COLUMN `extraLoudEnabled` INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE `reminders` ADD COLUMN `announceTitleTts` INTEGER NOT NULL DEFAULT 0")
             }
         }
     }

@@ -374,12 +374,10 @@ class MainActivity : ComponentActivity() {
                                 bottomBar = {
                                     if (isBottomBarVisible) {
                                         Column(modifier = Modifier.fillMaxWidth()) {
-                                            if (currentRoute == settingsRoute) {
-                                                adManager.MicroAdStrip(
-                                                    placement = AdPlacement.SETTINGS_BOTTOM_STRIP,
-                                                    modifier = Modifier.fillMaxWidth()
-                                                )
-                                            }
+                                            adManager.MicroAdStrip(
+                                                placement = AdPlacement.SETTINGS_BOTTOM_STRIP,
+                                                modifier = Modifier.fillMaxWidth()
+                                            )
                                             ReMindNavigationBar(
                                                 currentRoute = currentRoute,
                                                 onNavigateToDestination = { route ->

@@ -65,7 +65,7 @@ internal fun AdMobMicroAdStrip(
                         adFailed = true
                     }
                 }
-                delay(120_000L.milliseconds)
+                delay(60_000L.milliseconds) // Refresh every 60s per AdMob banner/strip best practice
             }
         }
     }

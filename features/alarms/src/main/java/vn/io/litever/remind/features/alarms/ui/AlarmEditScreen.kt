@@ -726,6 +726,7 @@ fun AlarmEditScreen(
                     }
                 }
                 if (!LocalInspectionMode.current) {
+                    Spacer(modifier = Modifier.height(4.dp))
                     LocalAdManager.current.MicroAdStrip(
                         placement = AdPlacement.EDIT_BOTTOM_STRIP,
                         modifier = Modifier.fillMaxWidth()

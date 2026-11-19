@@ -50,9 +50,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import vn.io.litever.remind.core.ads.api.AdPlacement
+import vn.io.litever.remind.core.ads.api.LocalAdManager
 import vn.io.litever.remind.core.model.BarcodeMissionConfig
 import vn.io.litever.remind.core.model.ShakeMissionConfig
 import androidx.compose.ui.tooling.preview.Preview
@@ -219,6 +222,13 @@ fun MissionRingingScreen(
                             }
                         }
                     )
+
+                    if (!LocalInspectionMode.current) {
+                        LocalAdManager.current.MicroAdStrip(
+                            placement = AdPlacement.MISSION_TOP_STRIP,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
 
                     // Top Progress Scaffold (Tên nhiệm vụ + Số vòng + Segmented Progress Bar)
                     val currentMission = uiState.currentMission

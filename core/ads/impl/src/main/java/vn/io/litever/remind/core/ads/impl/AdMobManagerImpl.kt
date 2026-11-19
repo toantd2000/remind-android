@@ -97,7 +97,8 @@ class AdMobManagerImpl @Inject constructor(
             AdPlacement.EXIT_NATIVE,
             AdPlacement.ALARM_LIST_NATIVE,
             AdPlacement.EDIT_BOTTOM_STRIP,
-            AdPlacement.SETTINGS_BOTTOM_STRIP -> PlacementConfig(
+            AdPlacement.SETTINGS_BOTTOM_STRIP,
+            AdPlacement.MISSION_TOP_STRIP -> PlacementConfig(
                 enabled = true,
                 adUnitId = "ca-app-pub-3940256099942544/2247696110"
             )

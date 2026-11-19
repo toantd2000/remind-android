@@ -366,16 +366,6 @@ fun AlarmListScreen(
                                 onMoreClick = { selectedAlarmForMenu = alarm },
                                 modifier = Modifier.animateItem()
                             )
-
-                            if (index == 1 && alarms.size >= 3 && !isAdFreeActive) {
-                                vn.io.litever.remind.core.ads.api.LocalAdManager.current.NativeAdView(
-                                    placement = vn.io.litever.remind.core.ads.api.AdPlacement.ALARM_LIST_NATIVE,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = LiteverTheme.spacing.small)
-                                        .animateItem()
-                                )
-                            }
                         }
                     }
                 }

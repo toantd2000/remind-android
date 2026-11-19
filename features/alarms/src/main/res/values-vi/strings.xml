@@ -160,6 +160,20 @@
     <string name="wakeup_check_desc">Xác nhận bạn đã tỉnh táo sau khi tắt chuông, nếu không sẽ reo lại</string>
     <string name="tts_preview_time">Bây giờ là %s</string>
     <string name="tts_preview_label_default">Đến giờ thức dậy rồi!</string>
+    <string name="tts_preview_sheet_speaking">Đang đọc nhãn thông báo…</string>
+    <string name="tts_preview_sheet_ready">Nhấn Nghe lại để kiểm tra giọng đọc khi báo thức reo.</string>
+    <string name="tts_preview_label_fallback_hint">Đang dùng câu mặc định vì báo thức chưa có nhãn.</string>
+    <string name="tts_preview_action_replay">Nghe lại</string>
+    <string name="tts_preview_action_stop">Dừng</string>
+    <string name="tts_preview_missing_voice_data">Thiếu gói giọng nói offline cho ngôn ngữ này. Hãy tải về để báo thức vẫn đọc được khi không có mạng.</string>
+    <string name="tts_preview_install_voice_data">Tải gói giọng nói</string>
+    <string name="tts_preview_language_label">Ngôn ngữ đọc: %s</string>
+    <string name="tts_language_auto">Tự động</string>
+    <string name="tts_language_auto_detected">Tự động (%s)</string>
+    <string name="tts_language_vi">Tiếng Việt</string>
+    <string name="tts_language_en">English</string>
+    <string name="tts_language_zh">Tiếng Trung</string>
+    <string name="tts_preview_open_settings">Cài đặt TTS</string>
 </resources>
 
 

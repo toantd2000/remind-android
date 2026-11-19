@@ -94,6 +94,7 @@ import vn.io.litever.remind.features.alarms.R
 import vn.io.litever.remind.features.alarms.ui.components.AlarmSettingRow
 import vn.io.litever.remind.core.designsystem.components.AutoSilenceBottomSheet
 import vn.io.litever.remind.core.designsystem.components.SnoozeBottomSheet
+import vn.io.litever.remind.features.alarms.ui.components.AnnounceLabelPreviewBottomSheet
 import vn.io.litever.remind.features.alarms.ui.components.GentleAlarmBottomSheet
 import vn.io.litever.remind.features.alarms.ui.components.NextAlarmHeader
 import vn.io.litever.remind.features.alarms.ui.components.getRepeatSummaryText
@@ -195,6 +196,9 @@ fun AlarmEditRoute(
     val context = androidx.compose.ui.platform.LocalContext.current
     val activity = context as? android.app.Activity
     val adManager = vn.io.litever.remind.core.ads.api.LocalAdManager.current
+    val isTtsSpeaking by viewModel.isTtsSpeaking.collectAsState()
+    val isTtsLanguageMissing by viewModel.isTtsLanguageMissing.collectAsState()
+    val ttsLanguage by viewModel.ttsLanguage.collectAsState()
 
     // Reset navigation flag when returning to screen
     DisposableEffect(lifecycleOwner) {
@@ -367,7 +371,33 @@ fun AlarmEditRoute(
         onPreviewTimeTts = viewModel::previewTimeAnnouncementTts,
         onStopPreview = viewModel::stopRingtonePlayback,
         onAnnounceLabelTtsChange = viewModel::updateAnnounceLabelTts,
-        onPreviewLabelTts = viewModel::previewLabelAnnouncementTts,
+        onPreviewLabelTts = { viewModel.previewLabelAnnouncementTts() },
+        isTtsSpeaking = isTtsSpeaking,
+        isTtsLanguageMissing = isTtsLanguageMissing,
+        selectedTtsLanguage = ttsLanguage,
+        onTtsLanguageSelected = viewModel::updateTtsLanguage,
+        onInstallTtsVoiceData = {
+            runCatching {
+                context.startActivity(
+                    android.content.Intent(android.speech.tts.TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA)
+                )
+            }.onFailure {
+                runCatching {
+                    context.startActivity(android.content.Intent("com.android.settings.TTS_SETTINGS"))
+                }
+            }
+        },
+        onOpenTtsSettings = {
+            runCatching {
+                context.startActivity(android.content.Intent("com.android.settings.TTS_SETTINGS"))
+            }.onFailure {
+                runCatching {
+                    context.startActivity(
+                        android.content.Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                    )
+                }
+            }
+        },
         onWakeUpCheckChange = viewModel::updateWakeUpCheckMinutes,
         isPro = isPro,
         onNavigateToPaywall = onNavigateToPaywall
@@ -414,6 +444,12 @@ fun AlarmEditScreen(
     onStopPreview: () -> Unit = {},
     onAnnounceLabelTtsChange: (Boolean) -> Unit = {},
     onPreviewLabelTts: () -> Unit = {},
+    isTtsSpeaking: Boolean = false,
+    isTtsLanguageMissing: Boolean = false,
+    selectedTtsLanguage: vn.io.litever.remind.core.common.audio.TtsLanguageOption = vn.io.litever.remind.core.common.audio.TtsLanguageOption.AUTO,
+    onTtsLanguageSelected: (vn.io.litever.remind.core.common.audio.TtsLanguageOption) -> Unit = {},
+    onInstallTtsVoiceData: () -> Unit = {},
+    onOpenTtsSettings: () -> Unit = {},
     onWakeUpCheckChange: (Int) -> Unit = {},
     isPro: Boolean = false,
     onNavigateToPaywall: (Int) -> Unit = {},
@@ -438,6 +474,7 @@ fun AlarmEditScreen(
 
     var showTimePicker by remember { mutableStateOf(false) }
     var showGradualVolumeSheet by remember { mutableStateOf(false) }
+    var showLabelTtsPreviewSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
 
     if (showTimePicker) {
@@ -667,6 +704,21 @@ fun AlarmEditScreen(
             onNavigateToPaywall = onNavigateToPaywall,
             onDismissRequest = { if (showGradualVolumeSheet) showGradualVolumeSheet = false },
             sheetState = sheetState
+        )
+    }
+
+    if (showLabelTtsPreviewSheet) {
+        AnnounceLabelPreviewBottomSheet(
+            label = uiState.label,
+            isSpeaking = isTtsSpeaking,
+            isLanguageDataMissing = isTtsLanguageMissing,
+            selectedLanguage = selectedTtsLanguage,
+            onLanguageSelected = onTtsLanguageSelected,
+            onPreviewClick = onPreviewLabelTts,
+            onStopClick = onStopPreview,
+            onInstallVoiceDataClick = onInstallTtsVoiceData,
+            onOpenTtsSettingsClick = onOpenTtsSettings,
+            onDismissRequest = { if (showLabelTtsPreviewSheet) showLabelTtsPreviewSheet = false }
         )
     }
 
@@ -1025,7 +1077,7 @@ fun AlarmEditScreen(
                                 horizontalArrangement = Arrangement.End
                             ) {
                                 LvButton(
-                                    onClick = onPreviewLabelTts,
+                                    onClick = { showLabelTtsPreviewSheet = true },
                                     type = LvButtonType.Tonal
                                 ) {
                                     Icon(

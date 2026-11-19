@@ -24,6 +24,8 @@ import org.junit.Before
 import org.junit.Test
 import vn.io.litever.remind.core.alarm.DraftAlarmStore
 import vn.io.litever.remind.core.common.audio.AudioPlayer
+import vn.io.litever.remind.core.common.audio.TtsLanguageOption
+import vn.io.litever.remind.core.common.audio.TtsSpeaker
 import vn.io.litever.remind.core.common.util.PermissionChecker
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import vn.io.litever.remind.core.domain.repository.AlarmRepository
@@ -48,6 +50,7 @@ class AlarmEditViewModelTest {
     private val permissionChecker = mockk<PermissionChecker>(relaxed = true)
     private val draftAlarmStore = mockk<DraftAlarmStore>(relaxed = true)
     private val audioPlayer = mockk<AudioPlayer>(relaxed = true)
+    private val ttsSpeaker = mockk<TtsSpeaker>(relaxed = true)
     private val context = mockk<Context>(relaxed = true)
     private val audioManager = mockk<AudioManager>(relaxed = true)
 
@@ -72,7 +75,8 @@ class AlarmEditViewModelTest {
             permissionChecker = permissionChecker,
             draftAlarmStore = draftAlarmStore,
             audioPlayer = audioPlayer,
-            context = context
+            context = context,
+            ttsSpeaker = ttsSpeaker
         )
     }
 
@@ -326,5 +330,45 @@ class AlarmEditViewModelTest {
         viewModel.preparePreview()
 
         coVerify { draftAlarmStore.setDraft(any()) }
+    }
+
+    @Test
+    fun previewLabelAnnouncementTts_withCustomLabel_stopsPreviousPlaybackAndSpeaksLabel() {
+        viewModel.updateLabel("Morning Workout")
+
+        viewModel.previewLabelAnnouncementTts()
+
+        io.mockk.verify {
+            audioPlayer.stop()
+            ttsSpeaker.stop()
+            ttsSpeaker.speak("Morning Workout", useAlarmStream = false, locale = null)
+        }
+    }
+
+    @Test
+    fun previewLabelAnnouncementTts_withBlankLabel_speaksDefaultPhrase() {
+        every { context.getString(vn.io.litever.remind.features.alarms.R.string.tts_preview_label_default) } returns "Time to wake up!"
+        viewModel.updateLabel("   ")
+
+        viewModel.previewLabelAnnouncementTts()
+
+        io.mockk.verify {
+            audioPlayer.stop()
+            ttsSpeaker.stop()
+            ttsSpeaker.speak("Time to wake up!", useAlarmStream = false, locale = null)
+        }
+    }
+
+    @Test
+    fun updateTtsLanguage_savesPreferenceAndPreviewsWithSelectedLocale() = runTest(testDispatcher) {
+        viewModel.updateLabel("Morning Workout")
+
+        viewModel.updateTtsLanguage(TtsLanguageOption.VIETNAMESE)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { preferencesDataSource.setTtsLanguage(TtsLanguageOption.VIETNAMESE.tag) }
+        io.mockk.verify {
+            ttsSpeaker.speak("Morning Workout", useAlarmStream = false, locale = TtsSpeaker.LOCALE_VI)
+        }
     }
 }

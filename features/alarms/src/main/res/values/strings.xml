@@ -160,6 +160,20 @@
     <string name="wakeup_check_desc">Verify you are awake after dismissing the alarm, or it rings again</string>
     <string name="tts_preview_time">It is %s</string>
     <string name="tts_preview_label_default">Time to wake up!</string>
+    <string name="tts_preview_sheet_speaking">Speaking aloud…</string>
+    <string name="tts_preview_sheet_ready">Tap Replay to hear how your alarm label will sound.</string>
+    <string name="tts_preview_label_fallback_hint">Using the default phrase because the alarm label is empty.</string>
+    <string name="tts_preview_action_replay">Replay</string>
+    <string name="tts_preview_action_stop">Stop</string>
+    <string name="tts_preview_missing_voice_data">Offline voice data for this language is missing. Download it so alarms can speak without internet.</string>
+    <string name="tts_preview_install_voice_data">Download voice data</string>
+    <string name="tts_preview_language_label">Voice language: %s</string>
+    <string name="tts_language_auto">Auto</string>
+    <string name="tts_language_auto_detected">Auto (%s)</string>
+    <string name="tts_language_vi">Vietnamese</string>
+    <string name="tts_language_en">English</string>
+    <string name="tts_language_zh">Chinese</string>
+    <string name="tts_preview_open_settings">TTS Settings</string>
 </resources>
 
 

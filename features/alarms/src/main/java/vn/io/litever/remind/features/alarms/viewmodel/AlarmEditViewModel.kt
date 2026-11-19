@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import vn.io.litever.remind.core.common.audio.AudioPlayer
+import vn.io.litever.remind.core.common.audio.TtsLanguageOption
 import vn.io.litever.remind.core.domain.repository.AlarmRepository
 import vn.io.litever.remind.core.domain.scheduler.AlarmScheduler
 import vn.io.litever.remind.core.model.Alarm
@@ -86,6 +87,20 @@ class AlarmEditViewModel @Inject constructor(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = false
+        )
+
+    val isTtsSpeaking: StateFlow<Boolean> = ttsSpeaker?.isSpeaking
+        ?: MutableStateFlow(false).asStateFlow()
+
+    val isTtsLanguageMissing: StateFlow<Boolean> = ttsSpeaker?.isLanguageDataMissing
+        ?: MutableStateFlow(false).asStateFlow()
+
+    val ttsLanguage: StateFlow<TtsLanguageOption> = preferencesDataSource.ttsLanguage
+        .map { TtsLanguageOption.fromTag(it) }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = TtsLanguageOption.AUTO
         )
 
     private val _uiState = MutableStateFlow(
@@ -422,16 +437,25 @@ class AlarmEditViewModel @Inject constructor(
     }
 
     fun previewTimeAnnouncementTts() {
+        stopRingtonePlayback()
         val nowText = java.time.LocalTime.now()
             .format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"))
         val phrase = context.getString(vn.io.litever.remind.features.alarms.R.string.tts_preview_time, nowText)
-        ttsSpeaker?.speak(phrase, useAlarmStream = false)
+        ttsSpeaker?.speak(phrase, useAlarmStream = false, locale = ttsLanguage.value.locale)
     }
 
-    fun previewLabelAnnouncementTts() {
+    fun previewLabelAnnouncementTts(languageOverride: TtsLanguageOption = ttsLanguage.value) {
+        stopRingtonePlayback()
         val label = _uiState.value.label.takeIf { it.isNotBlank() }
             ?: context.getString(vn.io.litever.remind.features.alarms.R.string.tts_preview_label_default)
-        ttsSpeaker?.speak(label, useAlarmStream = false)
+        ttsSpeaker?.speak(label, useAlarmStream = false, locale = languageOverride.locale)
+    }
+
+    fun updateTtsLanguage(option: TtsLanguageOption) {
+        viewModelScope.launch {
+            preferencesDataSource.setTtsLanguage(option.tag)
+        }
+        previewLabelAnnouncementTts(languageOverride = option)
     }
 
     fun refreshPermissions() {

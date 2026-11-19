@@ -52,6 +52,7 @@ class AlarmPreferencesDataSource @Inject constructor(
     val adsDisabledUntil: Flow<Long> = dataStore.data.map { it[ADS_DISABLED_UNTIL] ?: 0L }
     val isProUser: Flow<Boolean> = dataStore.data.map { it[IS_PRO_USER] ?: false }
     val proProductId: Flow<String?> = dataStore.data.map { it[PRO_PRODUCT_ID] }
+    val ttsLanguage: Flow<String> = dataStore.data.map { it[TTS_LANGUAGE_KEY] ?: "AUTO" }
 
     suspend fun set24HourFormat(is24Hour: Boolean) {
         dataStore.edit { preferences ->
@@ -110,6 +111,12 @@ class AlarmPreferencesDataSource @Inject constructor(
         }
     }
 
+    suspend fun setTtsLanguage(languageTag: String) {
+        dataStore.edit { preferences ->
+            preferences[TTS_LANGUAGE_KEY] = languageTag
+        }
+    }
+
     companion object {
         val TIME_FORMAT_KEY = stringPreferencesKey("time_format")
         val THEME_MODE_KEY = stringPreferencesKey("theme_mode")
@@ -121,6 +128,7 @@ class AlarmPreferencesDataSource @Inject constructor(
         val ADS_DISABLED_UNTIL = longPreferencesKey("ads_disabled_until")
         val IS_PRO_USER = booleanPreferencesKey("is_pro_user")
         val PRO_PRODUCT_ID = stringPreferencesKey("pro_product_id")
+        val TTS_LANGUAGE_KEY = stringPreferencesKey("tts_language")
     }
 }
 

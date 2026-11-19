@@ -89,7 +89,7 @@ internal fun AdMobMicroAdStrip(
 
     Surface(
         modifier = modifier.fillMaxWidth(),
-        color = LiteverTheme.colors.surfaceContainerLow
+        color = Color.Transparent
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             HorizontalDivider(

@@ -15,16 +15,25 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -39,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalLocale
+import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -373,13 +383,19 @@ class MainActivity : ComponentActivity() {
                                 snackbarHost = { LvSnackbarHost(hostState = snackbarHostState) },
                                 bottomBar = {
                                     if (isBottomBarVisible) {
-                                        Column(modifier = Modifier.fillMaxWidth()) {
-                                            adManager.MicroAdStrip(
-                                                placement = AdPlacement.SETTINGS_BOTTOM_STRIP,
-                                                modifier = Modifier.fillMaxWidth()
-                                            )
+                                        Column(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .background(NavigationBarDefaults.containerColor)
+                                                .windowInsetsPadding(
+                                                    WindowInsets.safeDrawing.only(
+                                                        WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
+                                                    )
+                                                )
+                                        ) {
                                             ReMindNavigationBar(
                                                 currentRoute = currentRoute,
+                                                windowInsets = WindowInsets(0, 0, 0, 0),
                                                 onNavigateToDestination = { route ->
                                                     navController.navigate(route) {
                                                         popUpTo(navController.graph.startDestinationId) {
@@ -389,6 +405,11 @@ class MainActivity : ComponentActivity() {
                                                         restoreState = true
                                                     }
                                                 }
+                                            )
+                                            Spacer(modifier = Modifier.height(4.dp))
+                                            adManager.MicroAdStrip(
+                                                placement = AdPlacement.SETTINGS_BOTTOM_STRIP,
+                                                modifier = Modifier.fillMaxWidth()
                                             )
                                         }
                                     }

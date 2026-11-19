@@ -50,11 +50,12 @@ enum class TopLevelDestination(
 fun ReMindNavigationBar(
     currentRoute: String?,
     onNavigateToDestination: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    windowInsets: WindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
 ) {
     NavigationBar(
         modifier = modifier,
-        windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+        windowInsets = windowInsets
     ) {
         TopLevelDestination.entries.forEach { destination ->
             val isSelected = currentRoute == destination.route

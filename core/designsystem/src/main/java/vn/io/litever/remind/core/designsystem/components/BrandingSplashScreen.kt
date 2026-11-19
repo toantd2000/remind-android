@@ -1,11 +1,9 @@
 package vn.io.litever.remind.core.designsystem.components
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,16 +12,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -33,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -43,16 +43,62 @@ fun BrandingSplashScreen(
     onFinished: () -> Unit = {}
 ) {
     val isPreview = LocalInspectionMode.current
-    var visible by remember { mutableStateOf(isPreview) }
+
+    // Dùng Animatable + graphicsLayer lambda để chạy hoàn toàn trên GPU RenderNode,
+    // không recompose layout tree trong suốt quá trình animation.
+    val logoAlpha = remember { Animatable(if (isPreview) 1f else 0f) }
+    val logoScale = remember { Animatable(if (isPreview) 1f else 0.88f) }
+    val glowProgress = remember { Animatable(if (isPreview) 1f else 0f) }
+    val wordmarkProgress = remember { Animatable(if (isPreview) 1f else 0f) }
+    val attributionAlpha = remember { Animatable(if (isPreview) 1f else 0f) }
 
     LaunchedEffect(Unit) {
         if (!isPreview) {
-            delay(100.milliseconds) // Small delay before animation
-            visible = true
-            delay(900.milliseconds) // Wait for animations to finish
+            // Chờ nhịp khởi tạo Activity/Theme ổn định để tránh drop frame đầu tiên
+            delay(180.milliseconds)
+
+            launch {
+                logoAlpha.animateTo(
+                    targetValue = 1f,
+                    animationSpec = tween(durationMillis = 550, easing = FastOutSlowInEasing)
+                )
+            }
+            launch {
+                logoScale.animateTo(
+                    targetValue = 1f,
+                    animationSpec = tween(durationMillis = 750, easing = FastOutSlowInEasing)
+                )
+            }
+            launch {
+                glowProgress.animateTo(
+                    targetValue = 1f,
+                    animationSpec = tween(durationMillis = 1000, easing = FastOutSlowInEasing)
+                )
+            }
+
+            delay(260.milliseconds)
+            launch {
+                wordmarkProgress.animateTo(
+                    targetValue = 1f,
+                    animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing)
+                )
+            }
+
+            delay(220.milliseconds)
+            launch {
+                attributionAlpha.animateTo(
+                    targetValue = 1f,
+                    animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing)
+                )
+            }
+
+            delay(1300.milliseconds)
         }
         onFinished()
     }
+
+    val haloColor = LiteverTheme.colors.primary
+    val slideOffsetPx = with(LocalDensity.current) { 12.dp.toPx() }
 
     Box(
         modifier = Modifier
@@ -60,35 +106,60 @@ fun BrandingSplashScreen(
             .background(LiteverTheme.colors.background),
         contentAlignment = Alignment.Center
     ) {
-        val scale by animateFloatAsState(
-            targetValue = if (visible) 1f else 0.8f,
-            animationSpec = tween(durationMillis = 600, easing = LinearOutSlowInEasing),
-            label = "logoScale"
-        )
-
         // Main Logo Content
-        AnimatedVisibility(
-            visible = isPreview || visible,
-            enter = fadeIn(tween(600)),
-            exit = fadeOut(tween(400))
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
         ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.graphicsLayer {
+                    alpha = logoAlpha.value
+                    scaleX = logoScale.value
+                    scaleY = logoScale.value
+                }
+            ) {
+                // Warm Citrus Halo behind the Orange Alarm Clock logo
+                Canvas(modifier = Modifier.size(232.dp)) {
+                    val gp = glowProgress.value
+                    if (gp > 0f) {
+                        val radius = (this.size.minDimension / 2f) * (0.65f + 0.35f * gp)
+                        drawCircle(
+                            brush = Brush.radialGradient(
+                                colors = listOf(
+                                    haloColor.copy(alpha = 0.16f * gp),
+                                    haloColor.copy(alpha = 0.05f * gp),
+                                    Color.Transparent
+                                ),
+                                center = center,
+                                radius = radius
+                            ),
+                            radius = radius,
+                            center = center
+                        )
+                    }
+                }
+
+                AppIcon(
+                    size = 184.dp,
+                    animated = true
+                )
+            }
+
+            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .graphicsLayer(scaleX = scale, scaleY = scale)
+                modifier = Modifier.graphicsLayer {
+                    val wp = wordmarkProgress.value
+                    alpha = wp
+                    translationY = (1f - wp) * slideOffsetPx
+                }
             ) {
-                // App Logo (Fixed Brand Icon with Ray Burst & Hand Sweep Animation + Wordmark)
-                AppIcon(
-                    size = 240.dp,
-                    animated = true,
-                )
-
                 ReMindLogo(style = LiteverTheme.typography.titleLarge)
 
                 Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
 
-                // Slogan
                 Text(
                     text = stringResource(R.string.app_slogan),
                     style = LiteverTheme.typography.titleMedium,
@@ -101,26 +172,27 @@ fun BrandingSplashScreen(
         }
 
         // Bottom Brand Attribution
-        AnimatedVisibility(
-            visible = isPreview || visible,
-            enter = fadeIn(tween(500, delayMillis = 200)),
-            exit = fadeOut(tween(400)),
-            modifier = Modifier.align(Alignment.BottomCenter)
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = LiteverTheme.spacing.tripleLarge)
+                .graphicsLayer {
+                    alpha = attributionAlpha.value
+                },
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(bottom = LiteverTheme.spacing.tripleLarge),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "from",
-                    style = LiteverTheme.typography.labelMedium,
-                    color = LiteverTheme.colors.outline.copy(alpha = 0.5f),
-                    modifier = Modifier.padding(bottom = LiteverTheme.spacing.extraSmall),
-                    letterSpacing = 1.sp
-                )
-                LiteVerLogo(fontSize = 20.sp)
-            }
+            Text(
+                text = "from",
+                style = LiteverTheme.typography.labelMedium,
+                color = LiteverTheme.colors.outline.copy(alpha = 0.5f),
+                modifier = Modifier.padding(bottom = LiteverTheme.spacing.extraSmall),
+                letterSpacing = 1.sp
+            )
+            LiteVerLogo(
+                fontSize = 20.sp,
+                showIcon = true,
+                iconSize = 24.dp
+            )
         }
     }
 }

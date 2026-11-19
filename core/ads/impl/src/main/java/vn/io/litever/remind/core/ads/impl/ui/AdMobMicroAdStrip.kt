@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalFontFamilyResolver
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -77,6 +78,7 @@ internal fun AdMobMicroAdStrip(
     val colorOnSurfaceVariant = LiteverTheme.colors.onSurfaceVariant
     val colorPrimary = LiteverTheme.colors.primary
     val colorBadgeBg = LiteverTheme.colors.surfaceVariant
+    val fallbackCta = stringResource(vn.io.litever.remind.core.ads.impl.R.string.ad_cta_open)
 
     val fontFamilyResolver = LocalFontFamilyResolver.current
     val titleFontFamily = LiteverTheme.typography.labelMedium.fontFamily
@@ -99,7 +101,7 @@ internal fun AdMobMicroAdStrip(
             AndroidView(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(38.dp),
+                    .height(40.dp),
                 factory = { ctx ->
                     val adView = GmsNativeAdView(ctx)
                     val row = createMicroStripLayout(
@@ -132,7 +134,7 @@ internal fun AdMobMicroAdStrip(
                     }
 
                     (adView.callToActionView as TextView).apply {
-                        val cta = currentAd.callToAction?.takeIf { it.isNotBlank() } ?: "Mở"
+                        val cta = currentAd.callToAction?.takeIf { it.isNotBlank() } ?: fallbackCta
                         text = "$cta ›"
                         setTextColor(colorPrimary.toArgb())
                         headlineTypeface?.let { typeface = it }

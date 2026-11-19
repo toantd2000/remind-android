@@ -12,12 +12,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import vn.io.litever.designsystem.components.FeedbackStateType
 import vn.io.litever.designsystem.components.FeedbackStateView
 import vn.io.litever.designsystem.components.button.LvButton
 import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
-import vn.io.litever.remind.core.designsystem.components.ReMindIllustration
-import vn.io.litever.remind.core.designsystem.components.ReMindIllustrationType
 import vn.io.litever.remind.core.designsystem.components.ReMindLogo
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.features.reminders.R
@@ -31,6 +30,7 @@ fun ReminderEmptyState(
 
     FeedbackStateView(
         modifier = modifier,
+        type = FeedbackStateType.EMPTY,
         title = {
             Text(
                 text = stringResource(R.string.no_reminders),
@@ -50,9 +50,6 @@ fun ReminderEmptyState(
                 )
                 ReMindLogo(fontSize = LiteverTheme.typography.bodyMedium.fontSize)
             }
-        },
-        illustration = {
-            ReMindIllustration(type = ReMindIllustrationType.NO_REMINDER)
         },
         action = {
             LvButton(

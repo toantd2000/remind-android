@@ -103,6 +103,15 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun setDebugProEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            preferencesDataSource.setProStatus(
+                isPro = enabled,
+                productId = if (enabled) "debug_lifetime" else null
+            )
+        }
+    }
+
     fun disableAdsFor24Hours(context: android.content.Context) {
         viewModelScope.launch {
             val isDebug = (context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0

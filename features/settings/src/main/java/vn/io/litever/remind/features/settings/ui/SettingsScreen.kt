@@ -25,6 +25,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.ui.draw.clip
 import androidx.compose.runtime.Composable
@@ -77,7 +78,8 @@ fun SettingsRoute(
         onNavigateToGeneralSettings = onNavigateToGeneralSettings,
         onNavigateToPermissions = onNavigateToPermissions,
         onNavigateToAttributions = onNavigateToAttributions,
-        onNavigateToPaywall = onNavigateToPaywall
+        onNavigateToPaywall = onNavigateToPaywall,
+        onDebugProToggle = viewModel::setDebugProEnabled
     )
 }
 
@@ -88,7 +90,8 @@ fun SettingsScreen(
     onNavigateToGeneralSettings: () -> Unit,
     onNavigateToPermissions: () -> Unit,
     onNavigateToAttributions: () -> Unit,
-    onNavigateToPaywall: (Int) -> Unit = {}
+    onNavigateToPaywall: (Int) -> Unit = {},
+    onDebugProToggle: (Boolean) -> Unit = {}
 ) {
     val context = LocalContext.current
     var showFaqDialog by remember { mutableStateOf(false) }
@@ -201,8 +204,23 @@ fun SettingsScreen(
                 val versionName = packageInfo.versionName ?: "1.0"
                 val versionCode =
                     packageInfo.longVersionCode
+                val isDebugBuild = (context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
 
                 ReMindSettingsGroup {
+                    if (isDebugBuild) {
+                        ReMindSettingsItem(
+                            title = "Debug: Lifetime Pro",
+                            subtitle = if (uiState.isPro) "Active (Debug override)" else "Free mode (Tap to unlock)",
+                            icon = ReMindIcons.Diamond,
+                            onClick = { onDebugProToggle(!uiState.isPro) },
+                            trailingContent = {
+                                Switch(
+                                    checked = uiState.isPro,
+                                    onCheckedChange = onDebugProToggle
+                                )
+                            }
+                        )
+                    }
                     ReMindSettingsItem(
                         title = stringResource(R.string.setting_version_title),
                         subtitle = stringResource(

@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import vn.io.litever.remind.core.common.billing.BillingLauncher
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
@@ -38,6 +39,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 private const val TAG = "PlayBillingManager"
+private const val DEBUG_LIFETIME_PRODUCT_ID = "debug_lifetime"
 
 @Singleton
 class PlayBillingManagerImpl @Inject constructor(
@@ -47,6 +49,9 @@ class PlayBillingManagerImpl @Inject constructor(
 
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
     private val scope = CoroutineScope(SupervisorJob() + ioDispatcher)
+
+    private val isDebugBuild: Boolean
+        get() = (context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
 
     override val isPro: Flow<Boolean> = preferencesDataSource.isProUser
 
@@ -236,6 +241,11 @@ class PlayBillingManagerImpl @Inject constructor(
             preferencesDataSource.setProStatus(isPro = true, productId = productId)
             _purchaseStatus.value = PurchaseStatus.Success
         } else if (isRestore) {
+            val currentProductId = preferencesDataSource.proProductId.firstOrNull()
+            if (isDebugBuild && currentProductId == DEBUG_LIFETIME_PRODUCT_ID) {
+                Log.d(TAG, "Preserving debug lifetime Pro entitlement")
+                return
+            }
             preferencesDataSource.setProStatus(isPro = false, productId = null)
         }
     }
@@ -243,6 +253,13 @@ class PlayBillingManagerImpl @Inject constructor(
     override fun launchPurchaseFlow(activity: Activity, productId: String, offerToken: String?) {
         val details = productDetailsMap[productId]
         if (details == null || !billingClient.isReady) {
+            if (isDebugBuild) {
+                scope.launch {
+                    preferencesDataSource.setProStatus(isPro = true, productId = DEBUG_LIFETIME_PRODUCT_ID)
+                    _purchaseStatus.value = PurchaseStatus.Success
+                }
+                return
+            }
             _purchaseStatus.value = PurchaseStatus.Error("Google Play Billing is not ready")
             return
         }

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
@@ -19,6 +20,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -50,6 +52,7 @@ fun GentleAlarmBottomSheet(
     onPreviewGentle: (Int) -> Unit = {},
     onPreviewExtraLoud: () -> Unit = {},
     onPreviewTimeTts: () -> Unit = {},
+    onStopPreview: () -> Unit = {},
     onSave: (durationSeconds: Int, extraLoud: Boolean, announceTime: Boolean) -> Unit,
     onNavigateToPaywall: (Int) -> Unit = {},
     onDismissRequest: () -> Unit,
@@ -62,6 +65,10 @@ fun GentleAlarmBottomSheet(
 
     val requiresPro = !isPro && (draftExtraLoud || draftAnnounceTime)
 
+    DisposableEffect(Unit) {
+        onDispose { onStopPreview() }
+    }
+
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
@@ -73,7 +80,7 @@ fun GentleAlarmBottomSheet(
         ) {
             GentleAlarmBottomSheetContent(
                 durationSeconds = draftDuration,
-                onDurationToggle = { enabled -> draftDuration = if (enabled) 10 else 0 },
+                onDurationChange = { draftDuration = it },
                 extraLoudEnabled = draftExtraLoud,
                 onExtraLoudToggle = { draftExtraLoud = it },
                 announceTimeTts = draftAnnounceTime,
@@ -100,7 +107,7 @@ fun GentleAlarmBottomSheet(
 @Composable
 fun GentleAlarmBottomSheetContent(
     durationSeconds: Int,
-    onDurationToggle: (Boolean) -> Unit,
+    onDurationChange: (Int) -> Unit,
     extraLoudEnabled: Boolean,
     onExtraLoudToggle: (Boolean) -> Unit,
     announceTimeTts: Boolean,
@@ -112,6 +119,8 @@ fun GentleAlarmBottomSheetContent(
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val durationOptions = listOf(5, 10, 20)
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -125,8 +134,31 @@ fun GentleAlarmBottomSheetContent(
             description = stringResource(R.string.gentle_alarm_description),
             isProFeature = false,
             checked = durationSeconds > 0,
-            onCheckedChange = onDurationToggle,
-            onPreviewClick = onPreviewGentle
+            onCheckedChange = { enabled -> onDurationChange(if (enabled) 10 else 0) },
+            onPreviewClick = onPreviewGentle,
+            extraContent = {
+                if (durationSeconds > 0) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 34.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        durationOptions.forEach { seconds ->
+                            FilterChip(
+                                selected = durationSeconds == seconds,
+                                onClick = { onDurationChange(seconds) },
+                                label = {
+                                    Text(
+                                        text = stringResource(R.string.seconds_unit_short, seconds),
+                                        style = LiteverTheme.typography.labelMedium
+                                    )
+                                }
+                            )
+                        }
+                    }
+                }
+            }
         )
 
         HorizontalDivider(color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.3f))
@@ -185,7 +217,8 @@ private fun VolumeBoostOptionRow(
     isProFeature: Boolean,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
-    onPreviewClick: () -> Unit
+    onPreviewClick: () -> Unit,
+    extraContent: (@Composable () -> Unit)? = null
 ) {
     Column(
         modifier = Modifier
@@ -233,6 +266,8 @@ private fun VolumeBoostOptionRow(
             )
         }
 
+        extraContent?.invoke()
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End
@@ -262,7 +297,7 @@ private fun GentleAlarmBottomSheetContentPreview() {
     ReMindTheme {
         GentleAlarmBottomSheetContent(
             durationSeconds = 10,
-            onDurationToggle = {},
+            onDurationChange = {},
             extraLoudEnabled = true,
             onExtraLoudToggle = {},
             announceTimeTts = false,

@@ -365,6 +365,7 @@ fun AlarmEditRoute(
         onPreviewGentle = viewModel::previewGentleAlarm,
         onPreviewExtraLoud = viewModel::previewExtraLoud,
         onPreviewTimeTts = viewModel::previewTimeAnnouncementTts,
+        onStopPreview = viewModel::stopRingtonePlayback,
         onAnnounceLabelTtsChange = viewModel::updateAnnounceLabelTts,
         onPreviewLabelTts = viewModel::previewLabelAnnouncementTts,
         onWakeUpCheckChange = viewModel::updateWakeUpCheckMinutes,
@@ -410,6 +411,7 @@ fun AlarmEditScreen(
     onPreviewGentle: (Int) -> Unit = {},
     onPreviewExtraLoud: () -> Unit = {},
     onPreviewTimeTts: () -> Unit = {},
+    onStopPreview: () -> Unit = {},
     onAnnounceLabelTtsChange: (Boolean) -> Unit = {},
     onPreviewLabelTts: () -> Unit = {},
     onWakeUpCheckChange: (Int) -> Unit = {},
@@ -658,6 +660,7 @@ fun AlarmEditScreen(
             onPreviewGentle = onPreviewGentle,
             onPreviewExtraLoud = onPreviewExtraLoud,
             onPreviewTimeTts = onPreviewTimeTts,
+            onStopPreview = onStopPreview,
             onSave = { duration, extraLoud, announceTime ->
                 onVolumeBoostSave(duration, extraLoud, announceTime)
             },
@@ -1132,26 +1135,29 @@ fun AlarmEditScreen(
                         modifier = Modifier.padding(horizontal = LiteverTheme.spacing.extraLarge)
                     )
 
-                    // Row 4: Gentle Alarm (Increasing Volume)
-                    val gentleAlarmSummary = if (uiState.gradualVolumeDurationSeconds == 0) {
+                    // Row 4: Volume Boost (Gentle Alarm + Extra Loud + Time TTS)
+                    val summaryParts = buildList {
+                        if (uiState.gradualVolumeDurationSeconds > 0) {
+                            add(stringResource(R.string.seconds_unit_short, uiState.gradualVolumeDurationSeconds))
+                        }
+                        if (uiState.extraLoudEnabled) {
+                            add(stringResource(R.string.extra_loud_title))
+                        }
+                        if (uiState.announceTimeTts) {
+                            add(stringResource(R.string.time_announcement_title))
+                        }
+                    }
+                    val gentleAlarmSummary = if (summaryParts.isEmpty()) {
                         stringResource(R.string.off)
-                    } else if (uiState.gradualVolumeDurationSeconds < 60) {
-                        stringResource(
-                            R.string.seconds_unit_short,
-                            uiState.gradualVolumeDurationSeconds
-                        )
                     } else {
-                        stringResource(
-                            R.string.minutes_unit_short,
-                            uiState.gradualVolumeDurationSeconds / 60
-                        )
+                        summaryParts.joinToString(" · ")
                     }
 
                     AlarmSettingRow(
-                        title = stringResource(R.string.gentle_alarm_title),
+                        title = stringResource(R.string.volume_boost_sheet_title),
                         subtitle = gentleAlarmSummary,
                         icon = ReMindIcons.GraphicEq,
-                        iconSelected = uiState.gradualVolumeDurationSeconds > 0,
+                        iconSelected = summaryParts.isNotEmpty(),
                         onClick = { showGradualVolumeSheet = true }
                     )
 

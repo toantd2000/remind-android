@@ -387,6 +387,7 @@ class AlarmEditViewModel @Inject constructor(
 
     fun previewGentleAlarm(durationSeconds: Int) {
         stopRingtonePlayback()
+        val effectiveDuration = (if (durationSeconds > 0) durationSeconds else 5).coerceAtMost(6)
         val uri = vn.io.litever.remind.core.common.util.getAccessibleRingtoneUri(context, _uiState.value.ringtoneUri)
         audioPlayer.play(
             uri = uri,
@@ -394,10 +395,10 @@ class AlarmEditViewModel @Inject constructor(
             contentType = android.media.AudioAttributes.CONTENT_TYPE_MUSIC,
             loop = false,
             volume = _uiState.value.volume,
-            gradualVolumeDurationSeconds = if (durationSeconds > 0) durationSeconds else 5
+            gradualVolumeDurationSeconds = effectiveDuration
         )
         viewModelScope.launch {
-            kotlinx.coroutines.delay(4000L)
+            kotlinx.coroutines.delay(effectiveDuration * 1000L + 500L)
             audioPlayer.stop()
         }
     }

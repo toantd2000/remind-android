@@ -28,6 +28,7 @@ crashlyticsPlugin = "3.0.8"
 firebaseBom = "35.2.0"
 liteverDesignsystem = "2.3.1"
 playServicesAds = "25.5.0"
+playServicesCodeScanner = "16.1.0"
 billingKtx = "7.1.1"
 emoji2-emojipicker = "1.7.0"
 mockk = "1.14.12"
@@ -88,6 +89,7 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 # Litever Design System
 litever-designsystem = { group = "com.github.toantd2000", name = "litever-designsystem", version.ref = "liteverDesignsystem" }
 google-play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playServicesAds" }
+google-play-services-code-scanner = { group = "com.google.android.gms", name = "play-services-code-scanner", version.ref = "playServicesCodeScanner" }
 google-billing-ktx = { group = "com.android.billingclient", name = "billing-ktx", version.ref = "billingKtx" }
 androidx-emoji2-emojipicker = { group = "androidx.emoji2", name = "emoji2-emojipicker", version.ref = "emoji2-emojipicker" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }

@@ -78,6 +78,32 @@
     <string name="memory_legend_correct">Found</string>
     <string name="memory_legend_wrong">Wrong</string>
     <string name="memory_legend_missed">Missed</string>
+
+    <!-- Shake Mission -->
+    <string name="shake_config_title">Shake Mission</string>
+    <string name="shake_count_label">Shake Count</string>
+    <string name="shake_sensitivity_label">Sensitivity</string>
+    <string name="shake_sensitivity_easy">Easy</string>
+    <string name="shake_sensitivity_normal">Normal</string>
+    <string name="shake_sensitivity_hard">Hard</string>
+    <string name="shake_ringing_instruction">Shake your phone %d more times!</string>
+
+    <!-- Barcode Mission -->
+    <string name="barcode_config_title">Barcode / QR Mission</string>
+    <string name="barcode_registered_label">Registered Code</string>
+    <string name="barcode_not_set">No code registered yet (any code will work)</string>
+    <string name="barcode_scan_to_register">Scan Barcode / QR</string>
+    <string name="barcode_label_hint">Item name (e.g. Toothpaste)</string>
+    <string name="barcode_scan_to_dismiss">Scan Code to Dismiss</string>
+    <string name="barcode_mismatch_error">Wrong barcode! Please scan: %s</string>
+    <string name="barcode_scan_failed">Scan cancelled or failed</string>
+
+    <!-- Random Mission (Pro) -->
+    <string name="random_config_title">Random Mission</string>
+    <string name="random_candidates_label">Include Missions</string>
+    <string name="random_difficulty_label">Difficulty</string>
+    <string name="random_repetitions_label">Repetitions</string>
+    <string name="save_mission_action">Save</string>
 </resources>
 
 

@@ -64,18 +64,25 @@ import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import vn.io.litever.remind.core.designsystem.components.BrandingSplashScreen
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.domain.repository.AlarmRepository
+import vn.io.litever.remind.core.model.BarcodeMissionConfig
 import vn.io.litever.remind.core.model.MathMissionConfig
 import vn.io.litever.remind.core.model.MissionType
+import vn.io.litever.remind.core.model.RandomMissionConfig
+import vn.io.litever.remind.core.model.ShakeMissionConfig
+import vn.io.litever.remind.core.model.ShakeSensitivity
 import vn.io.litever.remind.core.model.TypingMissionConfig
 import vn.io.litever.remind.core.model.TypingMode
 import vn.io.litever.remind.features.alarms.ui.AlarmListRoute
 import vn.io.litever.remind.features.alarms.ui.alarmGraph
 import vn.io.litever.remind.features.alarms.ui.ringtoneSelectionRoute
 import vn.io.litever.remind.features.mission.ui.missionGraph
+import vn.io.litever.remind.features.mission.ui.navigateToBarcodeMissionConfig
 import vn.io.litever.remind.features.mission.ui.navigateToMathMissionConfig
 import vn.io.litever.remind.features.mission.ui.navigateToMemoryGameConfig
 import vn.io.litever.remind.features.mission.ui.navigateToMissionRinging
 import vn.io.litever.remind.features.mission.ui.navigateToPhraseSelection
+import vn.io.litever.remind.features.mission.ui.navigateToRandomMissionConfig
+import vn.io.litever.remind.features.mission.ui.navigateToShakeMissionConfig
 import vn.io.litever.remind.features.mission.ui.navigateToTypingMissionConfig
 import vn.io.litever.remind.features.reminders.ui.RemindersListRoute
 import vn.io.litever.remind.features.reminders.ui.navigateToReminderEdit
@@ -468,6 +475,43 @@ class MainActivity : ComponentActivity() {
                                                         navController.navigateToMemoryGameConfig(
                                                             mission.alarmId
                                                         )
+                                                    } else if (mission.type == MissionType.SHAKE) {
+                                                        val config = mission.config as? ShakeMissionConfig
+                                                        navController.currentBackStackEntry?.savedStateHandle?.set(
+                                                            "shakeTargetCount",
+                                                            config?.targetCount ?: 30
+                                                        )
+                                                        navController.currentBackStackEntry?.savedStateHandle?.set(
+                                                            "shakeSensitivity",
+                                                            (config?.sensitivity ?: ShakeSensitivity.NORMAL).name
+                                                        )
+                                                        navController.navigateToShakeMissionConfig(mission.alarmId)
+                                                    } else if (mission.type == MissionType.BARCODE) {
+                                                        val config = mission.config as? BarcodeMissionConfig
+                                                        navController.currentBackStackEntry?.savedStateHandle?.set(
+                                                            "targetBarcode",
+                                                            config?.targetBarcode ?: ""
+                                                        )
+                                                        navController.currentBackStackEntry?.savedStateHandle?.set(
+                                                            "barcodeLabel",
+                                                            config?.label ?: ""
+                                                        )
+                                                        navController.navigateToBarcodeMissionConfig(mission.alarmId)
+                                                    } else if (mission.type == MissionType.RANDOM) {
+                                                        val config = mission.config as? RandomMissionConfig
+                                                        navController.currentBackStackEntry?.savedStateHandle?.set(
+                                                            "repetitions",
+                                                            mission.repeatCount
+                                                        )
+                                                        navController.currentBackStackEntry?.savedStateHandle?.set(
+                                                            "randomDifficulty",
+                                                            (config?.difficulty ?: vn.io.litever.remind.core.model.MathDifficulty.NORMAL).name
+                                                        )
+                                                        navController.currentBackStackEntry?.savedStateHandle?.set(
+                                                            "randomCandidates",
+                                                            (config?.candidateTypes ?: emptyList()).map { it.name }
+                                                        )
+                                                        navController.navigateToRandomMissionConfig(mission.alarmId)
                                                     }
                                                 },
                                                 onNavigateToPreview = { id ->
@@ -507,6 +551,9 @@ class MainActivity : ComponentActivity() {
                                                     navController.popBackStack()
                                                 },
                                                 onBackClick = { navController.popBackStack() },
+                                                onNavigateToPaywall = { initialSlide ->
+                                                    navController.navigateToPaywall(initialSlide)
+                                                },
                                                 navController = navController
                                             )
                                             remindersGraph(

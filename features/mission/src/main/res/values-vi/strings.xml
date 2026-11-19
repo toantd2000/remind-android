@@ -78,4 +78,30 @@
     <string name="memory_legend_correct">Đã tìm</string>
     <string name="memory_legend_wrong">Chọn nhầm</string>
     <string name="memory_legend_missed">Bỏ sót</string>
+
+    <!-- Shake Mission -->
+    <string name="shake_config_title">Nhiệm vụ Lắc điện thoại</string>
+    <string name="shake_count_label">Số lần lắc</string>
+    <string name="shake_sensitivity_label">Độ nhạy</string>
+    <string name="shake_sensitivity_easy">Nhẹ</string>
+    <string name="shake_sensitivity_normal">Vừa</string>
+    <string name="shake_sensitivity_hard">Mạnh</string>
+    <string name="shake_ringing_instruction">Lắc điện thoại thêm %d lần nữa!</string>
+
+    <!-- Barcode Mission -->
+    <string name="barcode_config_title">Nhiệm vụ Quét mã QR / Barcode</string>
+    <string name="barcode_registered_label">Mã đã đăng ký</string>
+    <string name="barcode_not_set">Chưa đăng ký mã (quét mã bất kỳ sẽ tắt được)</string>
+    <string name="barcode_scan_to_register">Quét mã QR / Barcode</string>
+    <string name="barcode_label_hint">Tên vật dụng (VD: Kem đánh răng)</string>
+    <string name="barcode_scan_to_dismiss">Quét mã để tắt báo thức</string>
+    <string name="barcode_mismatch_error">Sai mã! Hãy quét đúng mã: %s</string>
+    <string name="barcode_scan_failed">Đã hủy hoặc không quét được mã</string>
+
+    <!-- Random Mission (Pro) -->
+    <string name="random_config_title">Nhiệm vụ Ngẫu nhiên</string>
+    <string name="random_candidates_label">Chọn các nhiệm vụ tham gia</string>
+    <string name="random_difficulty_label">Độ khó chung</string>
+    <string name="random_repetitions_label">Số lần lặp</string>
+    <string name="save_mission_action">Lưu</string>
 </resources>

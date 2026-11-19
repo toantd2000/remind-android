@@ -8,11 +8,16 @@ import androidx.navigation.navArgument
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import vn.io.litever.remind.core.model.MathDifficulty
+import vn.io.litever.remind.core.model.MissionType
+import vn.io.litever.remind.core.model.ShakeSensitivity
 import vn.io.litever.remind.core.model.TypingMode
 
 const val typingMissionConfigRoute = "typing_mission_config_route/{alarmId}"
 const val memoryGameConfigRoute = "memory_game_config_route/{alarmId}"
 const val mathMissionConfigRoute = "math_mission_config_route/{alarmId}"
+const val shakeMissionConfigRoute = "shake_mission_config_route/{alarmId}"
+const val barcodeMissionConfigRoute = "barcode_mission_config_route/{alarmId}"
+const val randomMissionConfigRoute = "random_mission_config_route/{alarmId}"
 const val phraseSelectionRoute = "phrase_selection_route/{alarmId}"
 const val missionRingingRoute = "mission_ringing_route/{alarmId}?isPreview={isPreview}"
 
@@ -26,6 +31,18 @@ fun NavController.navigateToMathMissionConfig(alarmId: Long) {
 
 fun NavController.navigateToMemoryGameConfig(alarmId: Long) {
     this.navigate("memory_game_config_route/$alarmId")
+}
+
+fun NavController.navigateToShakeMissionConfig(alarmId: Long) {
+    this.navigate("shake_mission_config_route/$alarmId")
+}
+
+fun NavController.navigateToBarcodeMissionConfig(alarmId: Long) {
+    this.navigate("barcode_mission_config_route/$alarmId")
+}
+
+fun NavController.navigateToRandomMissionConfig(alarmId: Long) {
+    this.navigate("random_mission_config_route/$alarmId")
 }
 
 fun NavController.navigateToPhraseSelection(alarmId: Long) {
@@ -42,6 +59,7 @@ fun NavGraphBuilder.missionGraph(
     onSaveMission: (vn.io.litever.remind.core.model.Mission) -> Unit,
     onMissionFinish: (Long) -> Unit,
     onBackClick: () -> Unit,
+    onNavigateToPaywall: (Int) -> Unit = {},
     navController: NavController
 ) {
     composable(
@@ -98,6 +116,67 @@ fun NavGraphBuilder.missionGraph(
             alarmId = alarmId,
             initialRepetitions = initialRepetitions,
             onBackClick = onBackClick,
+            onSaveMission = onSaveMission
+        )
+    }
+
+    composable(
+        route = shakeMissionConfigRoute,
+        arguments = listOf(navArgument("alarmId") { type = NavType.LongType })
+    ) { backStackEntry ->
+        val alarmId = backStackEntry.arguments?.getLong("alarmId") ?: 0L
+        val targetCount = navController.previousBackStackEntry?.savedStateHandle?.get<Int>("shakeTargetCount") ?: 30
+        val sensitivityStr = navController.previousBackStackEntry?.savedStateHandle?.get<String>("shakeSensitivity")
+        val sensitivity = sensitivityStr?.let { runCatching { ShakeSensitivity.valueOf(it) }.getOrNull() }
+            ?: ShakeSensitivity.NORMAL
+
+        ShakeMissionConfigRoute(
+            alarmId = alarmId,
+            initialTargetCount = targetCount,
+            initialSensitivity = sensitivity,
+            onBackClick = onBackClick,
+            onSaveMission = onSaveMission
+        )
+    }
+
+    composable(
+        route = barcodeMissionConfigRoute,
+        arguments = listOf(navArgument("alarmId") { type = NavType.LongType })
+    ) { backStackEntry ->
+        val alarmId = backStackEntry.arguments?.getLong("alarmId") ?: 0L
+        val targetBarcode = navController.previousBackStackEntry?.savedStateHandle?.get<String>("targetBarcode") ?: ""
+        val barcodeLabel = navController.previousBackStackEntry?.savedStateHandle?.get<String>("barcodeLabel") ?: ""
+
+        BarcodeMissionConfigRoute(
+            alarmId = alarmId,
+            initialBarcode = targetBarcode,
+            initialLabel = barcodeLabel,
+            onBackClick = onBackClick,
+            onSaveMission = onSaveMission
+        )
+    }
+
+    composable(
+        route = randomMissionConfigRoute,
+        arguments = listOf(navArgument("alarmId") { type = NavType.LongType })
+    ) { backStackEntry ->
+        val alarmId = backStackEntry.arguments?.getLong("alarmId") ?: 0L
+        val initialRepetitions = navController.previousBackStackEntry?.savedStateHandle?.get<Int>("repetitions") ?: 1
+        val difficultyStr = navController.previousBackStackEntry?.savedStateHandle?.get<String>("randomDifficulty")
+        val difficulty = difficultyStr?.let { runCatching { MathDifficulty.valueOf(it) }.getOrNull() }
+            ?: MathDifficulty.NORMAL
+        val candidateNames = navController.previousBackStackEntry?.savedStateHandle?.get<List<String>>("randomCandidates")
+        val candidates = candidateNames?.mapNotNull { runCatching { MissionType.valueOf(it) }.getOrNull() }
+            ?.ifEmpty { null }
+            ?: listOf(MissionType.MATH, MissionType.TYPING, MissionType.MEMORY_FIND_COLOR_TILES, MissionType.SHAKE)
+
+        RandomMissionConfigRoute(
+            alarmId = alarmId,
+            initialCandidateTypes = candidates,
+            initialDifficulty = difficulty,
+            initialRepetitions = initialRepetitions,
+            onBackClick = onBackClick,
+            onNavigateToPaywall = onNavigateToPaywall,
             onSaveMission = onSaveMission
         )
     }

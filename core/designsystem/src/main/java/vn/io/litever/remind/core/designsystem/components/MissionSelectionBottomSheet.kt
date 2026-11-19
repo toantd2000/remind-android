@@ -1,7 +1,9 @@
 package vn.io.litever.remind.core.designsystem.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -86,6 +88,25 @@ fun MissionSelectionBottomSheetContent(
                 title = stringResource(R.string.mission_math),
                 description = stringResource(R.string.mission_math_desc),
                 icon = ReMindIcons.Calculate
+            ),
+            MissionItem(
+                type = MissionType.SHAKE,
+                title = stringResource(R.string.mission_shake),
+                description = stringResource(R.string.mission_shake_desc),
+                icon = ReMindIcons.Vibration
+            ),
+            MissionItem(
+                type = MissionType.BARCODE,
+                title = stringResource(R.string.mission_barcode),
+                description = stringResource(R.string.mission_barcode_desc),
+                icon = ReMindIcons.QrCodeScanner
+            ),
+            MissionItem(
+                type = MissionType.RANDOM,
+                title = stringResource(R.string.mission_random),
+                description = stringResource(R.string.mission_random_desc),
+                icon = ReMindIcons.Refresh,
+                isProOnly = true
             )
         )
 
@@ -100,10 +121,18 @@ fun MissionSelectionBottomSheetContent(
                             onMissionTypeSelected(item.type)
                         },
                     headlineContent = {
-                        Text(
-                            text = item.title,
-                            style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                        )
+                        Row(
+                            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                        ) {
+                            Text(
+                                text = item.title,
+                                style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                            )
+                            if (item.isProOnly) {
+                                ReMindProDiamondTag()
+                            }
+                        }
                     },
                     supportingContent = {
                         Text(
@@ -139,7 +168,8 @@ private data class MissionItem(
     val type: MissionType,
     val title: String,
     val description: String,
-    val icon: ImageVector
+    val icon: ImageVector,
+    val isProOnly: Boolean = false
 )
 
 @androidx.compose.ui.tooling.preview.Preview(showBackground = true)

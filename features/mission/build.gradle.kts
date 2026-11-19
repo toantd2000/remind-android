@@ -36,6 +36,9 @@ dependencies {
     implementation(project(":core:designsystem"))
     implementation(project(":core:alarm"))
     implementation(project(":core:analytics"))
+    implementation(project(":core:datastore"))
+
+    implementation(libs.google.play.services.code.scanner)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

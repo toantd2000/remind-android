@@ -3,7 +3,12 @@ package vn.io.litever.remind.core.model
 import java.io.Serializable
 
 enum class MissionType : Serializable {
-    TYPING, MATH, MEMORY_FIND_COLOR_TILES
+    TYPING,
+    MATH,
+    MEMORY_FIND_COLOR_TILES,
+    SHAKE,
+    BARCODE,
+    RANDOM
 }
 
 data class Mission(
@@ -42,6 +47,28 @@ data class MemoryGameBoard(
     val targetTiles: Int,
     val targetIndices: List<Int>
 )
+
+enum class ShakeSensitivity : Serializable { EASY, NORMAL, HARD }
+
+data class ShakeMissionConfig(
+    val targetCount: Int = 30,
+    val sensitivity: ShakeSensitivity = ShakeSensitivity.NORMAL
+) : MissionConfig
+
+data class BarcodeMissionConfig(
+    val targetBarcode: String = "",
+    val label: String = ""
+) : MissionConfig
+
+data class RandomMissionConfig(
+    val candidateTypes: List<MissionType> = listOf(
+        MissionType.MATH,
+        MissionType.TYPING,
+        MissionType.MEMORY_FIND_COLOR_TILES,
+        MissionType.SHAKE
+    ),
+    val difficulty: MathDifficulty = MathDifficulty.NORMAL
+) : MissionConfig
 
 
 

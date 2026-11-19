@@ -258,6 +258,9 @@ internal fun getMissionIcon(type: MissionType): ImageVector {
         MissionType.TYPING -> ReMindIcons.Keyboard
         MissionType.MATH -> ReMindIcons.Calculate
         MissionType.MEMORY_FIND_COLOR_TILES -> ReMindIcons.GridView
+        MissionType.SHAKE -> ReMindIcons.Vibration
+        MissionType.BARCODE -> ReMindIcons.QrCodeScanner
+        MissionType.RANDOM -> ReMindIcons.Refresh
     }
 }
 

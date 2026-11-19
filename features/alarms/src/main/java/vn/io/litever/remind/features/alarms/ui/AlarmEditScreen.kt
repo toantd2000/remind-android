@@ -1425,6 +1425,9 @@ private fun MissionSlotCard(
                 MissionType.TYPING -> ReMindIcons.Keyboard
                 MissionType.MATH -> ReMindIcons.Calculate
                 MissionType.MEMORY_FIND_COLOR_TILES -> ReMindIcons.GridView
+                MissionType.SHAKE -> ReMindIcons.Vibration
+                MissionType.BARCODE -> ReMindIcons.QrCodeScanner
+                MissionType.RANDOM -> ReMindIcons.Refresh
             }
             androidx.compose.material3.Surface(
                 modifier = Modifier
@@ -1588,12 +1591,18 @@ private fun MissionRow(
         MissionType.TYPING -> ReMindIcons.Keyboard
         MissionType.MATH -> ReMindIcons.Calculate
         MissionType.MEMORY_FIND_COLOR_TILES -> ReMindIcons.GridView
+        MissionType.SHAKE -> ReMindIcons.Vibration
+        MissionType.BARCODE -> ReMindIcons.QrCodeScanner
+        MissionType.RANDOM -> ReMindIcons.Refresh
     }
 
     val title = when (mission.type) {
         MissionType.TYPING -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_typing)
         MissionType.MATH -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_math)
         MissionType.MEMORY_FIND_COLOR_TILES -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_memory_tiles)
+        MissionType.SHAKE -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_shake)
+        MissionType.BARCODE -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_barcode)
+        MissionType.RANDOM -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_random)
     }
     ListItem(
         modifier = modifier.fillMaxWidth()

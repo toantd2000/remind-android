@@ -47,13 +47,46 @@ class MissionRingingViewModel @Inject constructor(
         viewModelScope.launch {
             val alarm = draftAlarmStore.getDraft() ?: alarmRepository.getAlarmById(alarmId) ?: return@launch
             if (alarm.missions.isNotEmpty()) {
-                val missions = alarm.missions.sortedBy { it.order }
+                val missions = alarm.missions.sortedBy { it.order }.map { resolveRandomMission(it) }
                 _uiState.update { it.copy(isLoading = false, missions = missions, alarm = alarm) }
                 loadMissionData(0)
             } else {
                 _uiState.update { it.copy(isLoading = false) }
             }
         }
+    }
+
+    private fun resolveRandomMission(mission: Mission): Mission {
+        if (mission.type != MissionType.RANDOM) return mission
+        val config = mission.config as? RandomMissionConfig ?: RandomMissionConfig()
+        val candidates = config.candidateTypes.filter { it != MissionType.RANDOM }
+            .ifEmpty { listOf(MissionType.MATH, MissionType.TYPING, MissionType.MEMORY_FIND_COLOR_TILES, MissionType.SHAKE) }
+        val chosenType = candidates.random()
+        val chosenConfig: MissionConfig = when (chosenType) {
+            MissionType.MATH -> MathMissionConfig(difficulty = config.difficulty)
+            MissionType.TYPING -> TypingMissionConfig(
+                mode = when (config.difficulty) {
+                    MathDifficulty.EASY, MathDifficulty.NORMAL -> TypingMode.NORMAL
+                    MathDifficulty.HARD -> TypingMode.SHUFFLE_WORDS
+                    MathDifficulty.VERY_HARD -> TypingMode.SHUFFLE_CHARS
+                }
+            )
+            MissionType.MEMORY_FIND_COLOR_TILES -> when (config.difficulty) {
+                MathDifficulty.EASY -> MemoryTilesMissionConfig(gridSize = 3, targetTiles = 3)
+                MathDifficulty.NORMAL -> MemoryTilesMissionConfig(gridSize = 3, targetTiles = 4)
+                MathDifficulty.HARD -> MemoryTilesMissionConfig(gridSize = 4, targetTiles = 5)
+                MathDifficulty.VERY_HARD -> MemoryTilesMissionConfig(gridSize = 4, targetTiles = 7)
+            }
+            MissionType.SHAKE -> when (config.difficulty) {
+                MathDifficulty.EASY -> ShakeMissionConfig(targetCount = 15, sensitivity = ShakeSensitivity.EASY)
+                MathDifficulty.NORMAL -> ShakeMissionConfig(targetCount = 30, sensitivity = ShakeSensitivity.NORMAL)
+                MathDifficulty.HARD -> ShakeMissionConfig(targetCount = 45, sensitivity = ShakeSensitivity.NORMAL)
+                MathDifficulty.VERY_HARD -> ShakeMissionConfig(targetCount = 60, sensitivity = ShakeSensitivity.HARD)
+            }
+            MissionType.BARCODE -> BarcodeMissionConfig()
+            MissionType.RANDOM -> MathMissionConfig(difficulty = config.difficulty)
+        }
+        return mission.copy(type = chosenType, config = chosenConfig)
     }
 
     private suspend fun loadMissionData(index: Int) {
@@ -120,6 +153,15 @@ class MissionRingingViewModel @Inject constructor(
                     MemoryGameBoard(gridSize, targetCount, indices)
                 }
             }
+            MissionType.SHAKE -> {
+                val config = mission.config as? ShakeMissionConfig ?: ShakeMissionConfig()
+                listOf(config)
+            }
+            MissionType.BARCODE -> {
+                val config = mission.config as? BarcodeMissionConfig ?: BarcodeMissionConfig()
+                listOf(config)
+            }
+            MissionType.RANDOM -> emptyList()
         }
 
         _uiState.update { 
@@ -201,11 +243,14 @@ class MissionRingingViewModel @Inject constructor(
                     }
                 }
             }
-            MissionType.MEMORY_FIND_COLOR_TILES -> {
+            MissionType.MEMORY_FIND_COLOR_TILES,
+            MissionType.SHAKE,
+            MissionType.BARCODE -> {
                 if (input == "SUCCESS") {
                     onRepetitionCompleted()
                 }
             }
+            MissionType.RANDOM -> {}
         }
     }
 

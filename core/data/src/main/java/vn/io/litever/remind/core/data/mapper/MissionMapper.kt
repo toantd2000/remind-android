@@ -18,6 +18,29 @@ internal sealed class MissionConfigDto {
     
     @Serializable
     internal data class MemoryTiles(val gridSize: Int, val targetTiles: Int) : MissionConfigDto()
+
+    @Serializable
+    internal data class Shake(
+        val targetCount: Int = 30,
+        val sensitivity: ShakeSensitivity = ShakeSensitivity.NORMAL
+    ) : MissionConfigDto()
+
+    @Serializable
+    internal data class Barcode(
+        val targetBarcode: String = "",
+        val label: String = ""
+    ) : MissionConfigDto()
+
+    @Serializable
+    internal data class Random(
+        val candidateTypes: List<MissionType> = listOf(
+            MissionType.MATH,
+            MissionType.TYPING,
+            MissionType.MEMORY_FIND_COLOR_TILES,
+            MissionType.SHAKE
+        ),
+        val difficulty: MathDifficulty = MathDifficulty.NORMAL
+    ) : MissionConfigDto()
 }
 
 private val json = Json { ignoreUnknownKeys = true }
@@ -30,6 +53,9 @@ fun MissionEntity.toModel(): Mission {
                 is MissionConfigDto.Typing -> TypingMissionConfig(dto.selectedPhraseIds, dto.mode)
                 is MissionConfigDto.Math -> MathMissionConfig(dto.difficulty)
                 is MissionConfigDto.MemoryTiles -> MemoryTilesMissionConfig(dto.gridSize, dto.targetTiles)
+                is MissionConfigDto.Shake -> ShakeMissionConfig(dto.targetCount, dto.sensitivity)
+                is MissionConfigDto.Barcode -> BarcodeMissionConfig(dto.targetBarcode, dto.label)
+                is MissionConfigDto.Random -> RandomMissionConfig(dto.candidateTypes, dto.difficulty)
             }
         } catch (e: Exception) {
             null
@@ -52,6 +78,9 @@ fun Mission.toEntity(): MissionEntity {
             is TypingMissionConfig -> MissionConfigDto.Typing(configModel.selectedPhraseIds, configModel.mode)
             is MathMissionConfig -> MissionConfigDto.Math(configModel.difficulty)
             is MemoryTilesMissionConfig -> MissionConfigDto.MemoryTiles(configModel.gridSize, configModel.targetTiles)
+            is ShakeMissionConfig -> MissionConfigDto.Shake(configModel.targetCount, configModel.sensitivity)
+            is BarcodeMissionConfig -> MissionConfigDto.Barcode(configModel.targetBarcode, configModel.label)
+            is RandomMissionConfig -> MissionConfigDto.Random(configModel.candidateTypes, configModel.difficulty)
         }
         dto.let { json.encodeToString(MissionConfigDto.serializer(), it) }
     }

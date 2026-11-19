@@ -53,6 +53,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import vn.io.litever.remind.core.model.BarcodeMissionConfig
+import vn.io.litever.remind.core.model.ShakeMissionConfig
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -326,6 +328,33 @@ fun MissionRingingScreen(
                                         .verticalScroll(rememberScrollState())
                                 )
                             }
+                            MissionType.SHAKE -> {
+                                val config = (uiState.currentTargetData as? ShakeMissionConfig) ?: ShakeMissionConfig()
+                                vn.io.litever.remind.features.mission.ui.components.ShakeMissionContent(
+                                    targetCount = config.targetCount,
+                                    sensitivity = config.sensitivity,
+                                    onInteraction = onUserInteraction,
+                                    onComplete = {
+                                        onUserInputChange("SUCCESS")
+                                        onFinish()
+                                    },
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+                            MissionType.BARCODE -> {
+                                val config = (uiState.currentTargetData as? BarcodeMissionConfig) ?: BarcodeMissionConfig()
+                                vn.io.litever.remind.features.mission.ui.components.BarcodeMissionContent(
+                                    targetBarcode = config.targetBarcode,
+                                    label = config.label,
+                                    onInteraction = onUserInteraction,
+                                    onComplete = {
+                                        onUserInputChange("SUCCESS")
+                                        onFinish()
+                                    },
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+                            MissionType.RANDOM -> {}
                         }
                     }
                 }
@@ -350,6 +379,9 @@ private fun MissionProgressScaffold(
         MissionType.TYPING -> stringResource(R.string.mission_typing)
         MissionType.MATH -> stringResource(R.string.mission_math)
         MissionType.MEMORY_FIND_COLOR_TILES -> stringResource(R.string.memory_game_config_title)
+        MissionType.SHAKE -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_shake)
+        MissionType.BARCODE -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_barcode)
+        MissionType.RANDOM -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_random)
     }
 
     Card(

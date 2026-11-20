@@ -19,6 +19,7 @@ Tài liệu này chứa các quy tắc nghiệp vụ, giải pháp kỹ thuật 
 - **Chuẩn bị không block UI:** `MediaPlayer.prepare()` hoặc nạp Audio URI phải chạy trên **Dispatcher IO** để tránh gây hiện tượng ANR/Jank.
 - **Kiểm tra Coroutine Active:** Trước khi gọi `player.start()`, luôn kiểm tra `coroutineContext.isActive` để tránh phát âm thanh nếu phiên reo chuông đã bị hủy giữa chừng.
 - **Tắt chuông khi làm nhiệm vụ (Mission):** Khi bắt đầu nhiệm vụ (Math, Typing), gọi `mute()` để dừng âm thanh và tạm dừng auto-silence timer. Nếu bấm Back/Bỏ dở, lập tức gọi `unmute()` để kích hoạt lại âm thanh.
+- **Text-to-Speech (TTS) Visibility & Recovery:** `AndroidManifest.xml` bắt buộc giữ `<queries>` với `INTENT_ACTION_TTS_SERVICE` cho Android 11+; `TtsSpeaker` phải reset `tts = null` và `shutdown()` khi `onInit` lỗi để có thể thử lại, đồng thời tự nhận diện ngôn ngữ (`detectLocale`) nếu `locale = null`.
 
 ## 3. Cơ Sở Dữ Liệu & Tầng Dữ Liệu (Room & Data)
 - **Room Database Migration:** Cấm dùng `fallbackToDestructiveMigration()` trên Production. Bất kỳ thay đổi Entity nào trong `:core:database` đều phải tăng `version` và viết `Migration(old, new)` tường minh với câu lệnh SQL.
@@ -31,6 +32,7 @@ Tài liệu này chứa các quy tắc nghiệp vụ, giải pháp kỹ thuật 
 - **Theme & Spacing:** Sử dụng `LiteverTheme.colors` (36 M3 tokens), `LiteverTheme.shapes` và `LiteverTheme.spacing` (`none`, `tiny`, `small`, `medium`, `large`...). Cấm hardcode mã màu HEX và kích thước `.dp` tự do.
 - **Preview Bắt Buộc:** Mọi Composable Screen/Component phải có `@Preview` cho cả Light và Dark mode. Render kiểm tra ngay qua `compose-preview`.
 - **Exit App Dialog:** Màn hình chính bắt sự kiện Back bằng `BackHandler` hiển thị Exit Dialog. Nếu người dùng chưa bật tính năng ủng hộ (Ad-free), hiển thị Native Ad; nếu đã bật, ẩn hoàn toàn quảng cáo và lời kêu gọi.
+- **Bundled Typography Fonts:** `litever-designsystem` nhúng sẵn file `.ttf` (`Be Vietnam Pro` static + `Nunito` variable) trong `res/font/` thay cho `GoogleFont` tải về qua GMS để loại bỏ hiện tượng giật layout (FOUT) khi mở app/chuyển màn hình.
 
 ---
 > *Khi phát hiện một quy tắc hoặc bài học mới "chỉ-có-dự-án-này-mới-thế", Agent bổ sung trực tiếp 1-2 dòng vào nhóm tương ứng trong file này.*

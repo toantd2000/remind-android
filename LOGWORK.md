@@ -19,6 +19,12 @@ Tài liệu này ghi lại lộ trình phát triển và các Quyết Định Ki
 
 ## 🧠 Quyết Định Kiến Trúc Gần Nhất (Active Micro-TDRs)
 
+### [TDR-098] - Chuyển Typography Sang Bundled Fonts Trong LiteVer Design System
+- **Date:** 2026-11-20 | **Status:** Accepted
+- **Context:** `GoogleFont.Provider` tải bất đồng bộ qua GMS IPC gây hiện tượng giật chữ/nhảy layout (FOUT) khi vào app hoặc chuyển màn hình trên máy yếu và phụ thuộc mạng lần đầu.
+- **Decision:** Nhúng đủ 18 file static `.ttf` (`Be Vietnam Pro`) và 2 file variable `.ttf` (`Nunito`) kèm giấy phép OFL-1.1 vào `litever-designsystem`, thay thế `GoogleFont` trong `Type.kt` bằng `Font(R.font.*)`.
+- **Consequences:** Render font chuẩn ngay từ frame đầu tiên (0 ms), hoạt động 100% offline, tăng ~1.5 MB dung lượng nén.
+
 ### [TDR-097] - Tối Giản Hoá Kiến Trúc Cốt Lõi: Loại Bỏ Thời Tiết, Quote & Lớp Mạng
 - **Date:** 2026-11-18 | **Status:** Accepted
 - **Context:** Các tính năng Thời tiết, Quote hằng ngày, màn hình đệm `AlarmMessageScreen` và các loại Mission chưa hoàn thiện làm phình to kiến trúc và đi ngược triết lý ứng dụng Báo thức & Nhắc nhở tối giản.

@@ -10,8 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Rich Reminder Presentation:** Hiển thị chi tiết chu kỳ lặp lại, khung giờ hoạt động và dòng đếm ngược tương đối ("Lần tới: Hôm nay 14:00 (sau 2 giờ)") trên từng thẻ nhắc nhở.
 - **Interval Recurrence Parity:** Hỗ trợ đầy đủ chu kỳ lặp ngày (Hàng tuần, hàng tháng, hàng năm) cho cả hai loại nhắc nhở Theo mốc giờ (`FIXED_TIME`) và Lặp định kỳ (`INTERVAL`).
 - **Shared Components in Design System:** Hợp nhất `SnoozeBottomSheet`, `AutoSilenceBottomSheet` và `PermissionWarningBanner` vào `:core:designsystem` dùng chung cho Báo thức và Nhắc nhở.
+- **Interactive TTS Label Preview:** Thêm `AnnounceLabelPreviewBottomSheet` hiển thị trạng thái đọc thời gian thực (`isSpeaking`), tự động phát hiện ngôn ngữ (Việt/Anh/Trung/Nhật/Hàn), cho phép chọn và lưu ngôn ngữ đọc (`AUTO`, `vi-VN`, `en-US`, `zh-CN`), cảnh báo thiếu gói giọng nói offline và điều hướng thẳng tới cài đặt TTS hệ thống.
 
 ### Changed
+- **Bundled Typography Fonts:** Nhúng sẵn toàn bộ bộ font `Be Vietnam Pro` và `Nunito` vào `litever-designsystem` thay cho Downloadable Google Fonts để loại bỏ giật chữ khi chuyển màn hình.
+- **Fixed Android 11+ TTS Visibility:** Bổ sung `<queries>` (`INTENT_ACTION_TTS_SERVICE`) trong `AndroidManifest.xml` và cơ chế tự reset khi `TtsSpeaker` khởi tạo lỗi.
 - **Unified Dialogs & Pickers:** Chuẩn hóa toàn bộ Date Picker, Time Picker và form thông tin cơ bản của Nhắc nhở theo phong cách hiện đại của Báo thức.
 - **Single Source of Truth for Reminder Lifecycle:** Thống nhất trạng thái hoạt động của Nhắc nhở qua cờ `isEnabled`, loại bỏ cột `isCompleted` dư thừa.
 - **Modernized Trigger Controls:** Tinh giản cấu hình điều kiện kích hoạt nhắc nhở ngay trên màn hình biên tập, loại bỏ điều hướng phụ.

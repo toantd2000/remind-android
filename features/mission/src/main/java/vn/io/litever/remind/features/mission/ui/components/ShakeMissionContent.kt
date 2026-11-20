@@ -97,7 +97,7 @@ fun ShakeMissionContent(
             .fillMaxWidth()
             .padding(LiteverTheme.spacing.large),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
+        verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium, Alignment.CenterVertically)
     ) {
         Icon(
             imageVector = ReMindIcons.Vibration,

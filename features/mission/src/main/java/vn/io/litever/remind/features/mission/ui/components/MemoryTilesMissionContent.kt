@@ -8,19 +8,24 @@ import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
@@ -58,6 +63,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import vn.io.litever.designsystem.components.button.LvButton
+import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -82,12 +89,9 @@ private const val MAX_LIVES = 3
 @Composable
 fun MemoryTilesMissionContent(
     board: MemoryGameBoard?,
-    retryTrigger: Int = 0,
     onUserInteraction: () -> Unit = {},
     onTimerPauseChange: (Boolean) -> Unit = {},
-    onStateChange: (MemoryGameState) -> Unit = {},
-    onProgressChange: (correct: Int, total: Int) -> Unit = { _, _ -> },
-    onSuccess: () -> Unit = {},
+    onContinue: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     if (board == null) return
@@ -104,27 +108,19 @@ fun MemoryTilesMissionContent(
         selectedIndices.count { currentBoard.targetIndices.contains(it) }
     }
 
-    LaunchedEffect(correctCount, currentBoard.targetTiles) {
-        onProgressChange(correctCount, currentBoard.targetTiles)
+    val resetRound = {
+        val totalTiles = currentBoard.gridSize * currentBoard.gridSize
+        currentBoard = currentBoard.copy(
+            targetIndices = (0 until totalTiles).shuffled().take(currentBoard.targetTiles)
+        )
+        selectedIndices = emptySet()
+        livesRemaining = MAX_LIVES
+        gameState = MemoryGameState.MEMORIZE
     }
 
     LaunchedEffect(gameState) {
-        onStateChange(gameState)
         val shouldPauseTimer = gameState != MemoryGameState.PLAYING
         onTimerPauseChange(shouldPauseTimer)
-    }
-
-    // Lắng nghe retryTrigger từ ngoài
-    LaunchedEffect(retryTrigger) {
-        if (retryTrigger > 0 && gameState == MemoryGameState.FAILURE) {
-            val totalTiles = currentBoard.gridSize * currentBoard.gridSize
-            currentBoard = currentBoard.copy(
-                targetIndices = (0 until totalTiles).shuffled().take(currentBoard.targetTiles)
-            )
-            selectedIndices = emptySet()
-            livesRemaining = MAX_LIVES
-            gameState = MemoryGameState.MEMORIZE
-        }
     }
 
     // Điều phối vòng đời các pha trò chơi
@@ -163,7 +159,7 @@ fun MemoryTilesMissionContent(
     }
 
     Column(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
     ) {
@@ -172,6 +168,16 @@ fun MemoryTilesMissionContent(
             icon = ReMindIcons.GridView,
             requirementText = stringResource(R.string.mission_memory_requirement)
         )
+
+        // Vùng chơi căn giữa theo chiều dọc
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium, Alignment.CenterVertically)
+        ) {
 
         // 2. Thẻ hiển thị Trạng thái + 3 Mạng (❤️❤️❤️)
         Card(
@@ -244,23 +250,38 @@ fun MemoryTilesMissionContent(
                     }
                 }
 
-                // Thanh rút ngắn thời gian khi ở pha Ghi nhớ
-                if (gameState == MemoryGameState.MEMORIZE) {
-                    val progress by animateFloatAsState(
-                        targetValue = countdown / 3f,
-                        animationSpec = tween(1000, easing = FastOutSlowInEasing),
-                        label = "memorizeProgress"
-                    )
-                    LinearProgressIndicator(
-                        progress = { progress },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(4.dp)
-                            .clip(CircleShape),
-                        color = LiteverTheme.colors.primary,
-                        trackColor = LiteverTheme.colors.surfaceContainerHighest
-                    )
+                // Thanh tiến độ: đếm ngược khi Ghi nhớ, tiến độ tìm ô khi Đang chơi / Kết thúc
+                val progressTarget = if (gameState == MemoryGameState.MEMORIZE) {
+                    countdown / 3f
+                } else {
+                    (correctCount.toFloat() / currentBoard.targetTiles.coerceAtLeast(1).toFloat()).coerceIn(0f, 1f)
                 }
+                val progress by animateFloatAsState(
+                    targetValue = progressTarget,
+                    animationSpec = if (gameState == MemoryGameState.MEMORIZE) {
+                        tween(1000, easing = FastOutSlowInEasing)
+                    } else {
+                        tween(250, easing = FastOutSlowInEasing)
+                    },
+                    label = "memoryProgress"
+                )
+                val progressColor by animateColorAsState(
+                    targetValue = when (gameState) {
+                        MemoryGameState.SUCCESS -> LiteverTheme.colors.success
+                        MemoryGameState.FAILURE -> LiteverTheme.colors.error
+                        else -> LiteverTheme.colors.primary
+                    },
+                    label = "memoryProgressColor"
+                )
+                LinearProgressIndicator(
+                    progress = { progress },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(4.dp)
+                        .clip(CircleShape),
+                    color = progressColor,
+                    trackColor = LiteverTheme.colors.surfaceContainerHighest
+                )
             }
         }
 
@@ -315,7 +336,6 @@ fun MemoryTilesMissionContent(
                                         val foundAll = currentBoard.targetIndices.all { selectedIndices.contains(it) || it == index }
                                         if (foundAll) {
                                             gameState = MemoryGameState.SUCCESS
-                                            onSuccess()
                                         }
                                     } else {
                                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -341,7 +361,7 @@ fun MemoryTilesMissionContent(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         LegendItem(
-                            color = LiteverTheme.colors.primary,
+                            color = LiteverTheme.colors.success,
                             icon = ReMindIcons.Check,
                             text = stringResource(R.string.memory_legend_correct)
                         )
@@ -357,6 +377,55 @@ fun MemoryTilesMissionContent(
                         )
                     }
                 }
+            }
+        }
+        }
+
+        // 4. Nút hành động riêng cho Trò chơi ô nhớ (giữ chiều cao ổn định tránh giật bố cục)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 48.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            when (gameState) {
+                MemoryGameState.SUCCESS -> {
+                    LvButton(
+                        onClick = onContinue,
+                        semantic = LvSemantic.Primary,
+                        modifier = Modifier.fillMaxWidth(2f / 3f)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.action_continue),
+                            style = LiteverTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
+                        )
+                        Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
+                        Icon(
+                            imageVector = ReMindIcons.ArrowForward,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
+                MemoryGameState.FAILURE -> {
+                    LvButton(
+                        onClick = resetRound,
+                        semantic = LvSemantic.Destructive,
+                        modifier = Modifier.fillMaxWidth(2f / 3f)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.action_retry_now),
+                            style = LiteverTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
+                        )
+                        Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
+                        Icon(
+                            imageVector = ReMindIcons.Refresh,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
+                else -> Unit
             }
         }
     }
@@ -428,6 +497,7 @@ private fun MemoryTileItem(
         gameState == MemoryGameState.FAILURE && !isSelected && isTarget -> LiteverTheme.colors.tertiaryContainer
         gameState == MemoryGameState.FAILURE && !isSelected && !isTarget -> LiteverTheme.colors.surfaceContainerHighest.copy(alpha = 0.4f)
         isSelected && !isTarget -> LiteverTheme.colors.error
+        isSelected && isTarget -> LiteverTheme.colors.success
         else -> LiteverTheme.colors.primary
     }
 
@@ -440,6 +510,9 @@ private fun MemoryTileItem(
     val isClickable = gameState == MemoryGameState.PLAYING && !isSelected
 
     Surface(
+        onClick = onTileClick,
+        enabled = isClickable,
+        interactionSource = interactionSource,
         modifier = Modifier
             .aspectRatio(1f)
             .offset { IntOffset(shakeOffset.value.roundToInt(), 0) }
@@ -448,13 +521,6 @@ private fun MemoryTileItem(
                 this.rotationY = rotationY
                 cameraDistance = 12f * density
             }
-            .clip(RoundedCornerShape(14.dp))
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null,
-                enabled = isClickable,
-                onClick = onTileClick
-            )
             .semantics {
                 selected = isSelected
                 stateDescription = if (isRevealed) "Revealed" else "Hidden"
@@ -475,13 +541,13 @@ private fun MemoryTileItem(
                 },
             contentAlignment = Alignment.Center
         ) {
-            if (isRevealed && isFrontFace) {
+            if (gameState == MemoryGameState.FAILURE && isRevealed && isFrontFace) {
                 when {
                     isSelected && isTarget -> {
                         Icon(
                             imageVector = ReMindIcons.Check,
                             contentDescription = null,
-                            tint = LiteverTheme.colors.onPrimary,
+                            tint = LiteverTheme.colors.onSuccess,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -493,7 +559,7 @@ private fun MemoryTileItem(
                             modifier = Modifier.size(24.dp)
                         )
                     }
-                    gameState == MemoryGameState.FAILURE && isTarget -> {
+                    isTarget -> {
                         Icon(
                             imageVector = ReMindIcons.Star,
                             contentDescription = null,
@@ -549,7 +615,7 @@ fun MemoryTilesMissionContentPreview() {
                     targetTiles = 3,
                     targetIndices = listOf(0, 4, 8)
                 ),
-                onSuccess = {}
+                onContinue = {}
             )
         }
     }

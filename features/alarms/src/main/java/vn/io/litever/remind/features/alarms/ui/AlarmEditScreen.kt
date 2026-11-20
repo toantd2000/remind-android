@@ -1483,11 +1483,10 @@ private fun MissionSlotCard(
                 MissionType.RANDOM -> ReMindIcons.Refresh
             }
             androidx.compose.material3.Surface(
+                onClick = onFilledClick,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 4.dp, end = 4.dp)
-                    .clip(slotShape)
-                    .clickable(onClick = onFilledClick),
+                    .padding(top = 4.dp, end = 4.dp),
                 shape = slotShape,
                 color = LiteverTheme.colors.primaryContainer
             ) {
@@ -1501,11 +1500,10 @@ private fun MissionSlotCard(
                 }
             }
             androidx.compose.material3.Surface(
+                onClick = onRemoveClick,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .size(20.dp)
-                    .clip(androidx.compose.foundation.shape.CircleShape)
-                    .clickable(onClick = onRemoveClick),
+                    .size(20.dp),
                 shape = androidx.compose.foundation.shape.CircleShape,
                 color = LiteverTheme.colors.errorContainer
             ) {
@@ -1525,11 +1523,10 @@ private fun MissionSlotCard(
                 LiteverTheme.colors.outlineVariant.copy(alpha = 0.6f)
             }
             androidx.compose.material3.Surface(
+                onClick = onAddClick,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 4.dp, end = 4.dp)
-                    .clip(slotShape)
-                    .clickable(onClick = onAddClick),
+                    .padding(top = 4.dp, end = 4.dp),
                 shape = slotShape,
                 color = LiteverTheme.colors.surfaceContainerHighest.copy(alpha = 0.5f),
                 border = androidx.compose.foundation.BorderStroke(1.dp, borderColor)

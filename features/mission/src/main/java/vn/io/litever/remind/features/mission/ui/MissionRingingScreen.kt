@@ -148,12 +148,6 @@ fun MissionRingingScreen(
     )
 
     val alarmTimeString = uiState.alarm?.time?.format(DateTimeFormatter.ofPattern("HH:mm")) ?: ""
-    var memoryCorrectTiles by remember(uiState.currentTargetData) { mutableIntStateOf(0) }
-    var memoryTargetTiles by remember(uiState.currentTargetData) {
-        mutableIntStateOf((uiState.currentTargetData as? MemoryGameBoard)?.targetTiles ?: 0)
-    }
-    var memoryGameState by remember(uiState.currentTargetData) { mutableStateOf(MemoryGameState.MEMORIZE) }
-    var memoryRetryTrigger by remember(uiState.currentTargetData) { mutableIntStateOf(0) }
 
     Scaffold(
         topBar = {
@@ -249,23 +243,6 @@ fun MissionRingingScreen(
                     }
                 }
             }
-        },
-        bottomBar = {
-            if (!uiState.isMissionJustCompleted && !uiState.isDismissed) {
-                MissionBottomDockedBar(
-                    userInput = userInput,
-                    targetPhrase = uiState.currentTargetData as? Phrase,
-                    currentMissionType = uiState.currentMission?.type,
-                    memoryGameState = memoryGameState,
-                    memoryCorrectTiles = memoryCorrectTiles,
-                    memoryTargetTiles = memoryTargetTiles,
-                    validationState = uiState.validationState,
-                    onFinish = onFinish,
-                    onRetryNow = {
-                        memoryRetryTrigger++
-                    }
-                )
-            }
         }
     ) { padding ->
         if (uiState.isMissionJustCompleted) {
@@ -302,6 +279,7 @@ fun MissionRingingScreen(
                                     targetPhrase = uiState.currentTargetData as? Phrase,
                                     userInput = userInput,
                                     onUserInputChange = onUserInputChange,
+                                    onSubmit = onFinish,
                                     modifier = Modifier.fillMaxSize()
                                 )
                             }
@@ -314,28 +292,19 @@ fun MissionRingingScreen(
                                     validationState = uiState.validationState,
                                     onUserInputChange = onUserInputChange,
                                     onSubmit = onFinish,
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .verticalScroll(rememberScrollState())
+                                    modifier = Modifier.fillMaxSize()
                                 )
                             }
                             MissionType.MEMORY_FIND_COLOR_TILES -> {
                                 MemoryTilesMissionContent(
                                     board = uiState.currentTargetData as? MemoryGameBoard,
-                                    retryTrigger = memoryRetryTrigger,
                                     onUserInteraction = onUserInteraction,
                                     onTimerPauseChange = onTimerPauseChange,
-                                    onStateChange = { memoryGameState = it },
-                                    onProgressChange = { correct, total ->
-                                        memoryCorrectTiles = correct
-                                        memoryTargetTiles = total
-                                    },
-                                    onSuccess = {
+                                    onContinue = {
                                         onUserInputChange("SUCCESS")
+                                        onFinish()
                                     },
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .verticalScroll(rememberScrollState())
+                                    modifier = Modifier.fillMaxSize()
                                 )
                             }
                             MissionType.SHAKE -> {
@@ -497,107 +466,6 @@ private fun MissionProgressScaffold(
                             .background(LiteverTheme.colors.primary.copy(alpha = animatedAlpha))
                     )
                 }
-            }
-        }
-    }
-}
-
-/**
- * Docked Action Bar nằm sát dưới cùng.
- */
-@Composable
-private fun MissionBottomDockedBar(
-    userInput: String,
-    targetPhrase: Phrase?,
-    currentMissionType: MissionType?,
-    memoryGameState: MemoryGameState = MemoryGameState.MEMORIZE,
-    memoryCorrectTiles: Int = 0,
-    memoryTargetTiles: Int = 0,
-    validationState: StepValidationState = StepValidationState.IDLE,
-    onFinish: () -> Unit,
-    onRetryNow: () -> Unit = {},
-    modifier: Modifier = Modifier
-) {
-    val isEnabled = when (currentMissionType) {
-        MissionType.TYPING -> userInput == targetPhrase?.content && targetPhrase.content.isNotEmpty()
-        MissionType.MEMORY_FIND_COLOR_TILES -> memoryGameState == MemoryGameState.SUCCESS || memoryGameState == MemoryGameState.FAILURE
-        MissionType.MATH -> userInput.isNotBlank() && validationState == StepValidationState.IDLE
-        else -> userInput.isNotBlank()
-    }
-
-    val actionButtonText = when (currentMissionType) {
-        MissionType.MEMORY_FIND_COLOR_TILES if memoryGameState == MemoryGameState.FAILURE -> stringResource(R.string.action_retry_now)
-        MissionType.MATH -> stringResource(R.string.action_check_answer)
-        else -> stringResource(R.string.action_continue)
-    }
-
-    val onActionClick = when {
-        currentMissionType == MissionType.MEMORY_FIND_COLOR_TILES && memoryGameState == MemoryGameState.FAILURE -> onRetryNow
-        else -> onFinish
-    }
-
-    Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .imePadding(),
-        color = LiteverTheme.colors.surfaceContainerHigh,
-    ) {
-        Row(
-            modifier = Modifier
-                .windowInsetsPadding(
-                    WindowInsets.safeDrawing.only(
-                        WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
-                    )
-                )
-                .padding(
-                    horizontal = LiteverTheme.spacing.medium,
-                    vertical = LiteverTheme.spacing.small
-                )
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            when (currentMissionType) {
-                MissionType.TYPING if targetPhrase != null -> {
-                    val totalChars = targetPhrase.content.length
-                    val typedChars = userInput.length.coerceAtMost(totalChars)
-                    Text(
-                        text = "$typedChars / $totalChars",
-                        style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
-                        color = LiteverTheme.colors.onSurfaceVariant
-                    )
-                }
-                MissionType.MEMORY_FIND_COLOR_TILES if memoryTargetTiles > 0 -> {
-                    Text(
-                        text = stringResource(
-                            R.string.mission_memory_tiles_progress,
-                            memoryCorrectTiles,
-                            memoryTargetTiles
-                        ),
-                        style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
-                        color = LiteverTheme.colors.onSurfaceVariant
-                    )
-                }
-                else -> {
-                    Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
-                }
-            }
-
-            LvButton(
-                onClick = onActionClick,
-                enabled = isEnabled,
-                semantic = if (currentMissionType == MissionType.MEMORY_FIND_COLOR_TILES && memoryGameState == MemoryGameState.FAILURE) LvSemantic.Destructive else LvSemantic.Primary
-            ) {
-                Text(
-                    text = actionButtonText,
-                    style = LiteverTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
-                )
-                Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
-                Icon(
-                    imageVector = if (currentMissionType == MissionType.MEMORY_FIND_COLOR_TILES && memoryGameState == MemoryGameState.FAILURE) ReMindIcons.Refresh else ReMindIcons.ArrowForward,
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp)
-                )
             }
         }
     }

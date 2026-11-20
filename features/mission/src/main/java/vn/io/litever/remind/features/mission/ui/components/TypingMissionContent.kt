@@ -10,15 +10,21 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import vn.io.litever.designsystem.components.button.LvButton
+import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -71,6 +77,7 @@ fun TypingMissionContent(
     targetPhrase: Phrase?,
     userInput: String,
     onUserInputChange: (String) -> Unit,
+    onSubmit: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val haptic = LocalHapticFeedback.current
@@ -306,9 +313,40 @@ fun TypingMissionContent(
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Done
                         ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                if (isMatched) onSubmit()
+                            }
+                        ),
                         singleLine = false
                     )
                 }
+            }
+        }
+
+        // 3. Nút Tiếp tục riêng cho nhiệm vụ Gõ chữ (2/3 chiều ngang, căn giữa)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .imePadding(),
+            contentAlignment = Alignment.Center
+        ) {
+            LvButton(
+                onClick = onSubmit,
+                enabled = isMatched,
+                semantic = LvSemantic.Primary,
+                modifier = Modifier.fillMaxWidth(2f / 3f)
+            ) {
+                Text(
+                    text = stringResource(R.string.action_continue),
+                    style = LiteverTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
+                )
+                Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
+                Icon(
+                    imageVector = ReMindIcons.ArrowForward,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp)
+                )
             }
         }
     }

@@ -378,14 +378,13 @@ fun PhraseItem(
     var showMenu by remember { mutableStateOf(false) }
 
     Surface(
+        onClick = onToggle,
         modifier = Modifier
             .fillMaxWidth()
             .padding(
                 horizontal = LiteverTheme.spacing.medium,
                 vertical = LiteverTheme.spacing.extraSmall
-            )
-            .clip(LiteverTheme.shapes.medium)
-            .clickable { onToggle() },
+            ),
         shape = LiteverTheme.shapes.medium,
         color = if (isSelected) LiteverTheme.colors.primaryContainer.copy(alpha = 0.3f)
         else LiteverTheme.colors.surface,

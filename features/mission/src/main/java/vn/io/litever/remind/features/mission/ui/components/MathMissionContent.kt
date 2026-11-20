@@ -7,19 +7,21 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -32,7 +34,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -120,119 +121,128 @@ fun MathMissionContent(
     }
 
     Column(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
     ) {
-        // 1. Phía trên: Banner hướng dẫn
-        MissionInstructionBanner(
-            icon = ReMindIcons.Calculate,
-            requirementText = stringResource(R.string.mission_math_requirement)
-        )
-
-        // 2. Thẻ hiển thị phép tính và kết quả nhập
-        val cardBorderColor by animateColorAsState(
-            targetValue = when (validationState) {
-                StepValidationState.CORRECT -> LiteverTheme.colors.success
-                StepValidationState.WRONG -> LiteverTheme.colors.error
-                else -> LiteverTheme.colors.primary.copy(alpha = 0.25f)
-            },
-            label = "cardBorderColor"
-        )
-
-        Card(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .offset { IntOffset(shakeOffset.value.roundToInt(), 0) },
-            colors = CardDefaults.cardColors(
-                containerColor = LiteverTheme.colors.surfaceContainerLowest
-            ),
-            shape = LiteverTheme.shapes.medium,
-            border = BorderStroke(1.5.dp, cardBorderColor)
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
         ) {
-            Column(
+            // 1. Phía trên: Banner hướng dẫn
+            MissionInstructionBanner(
+                icon = ReMindIcons.Calculate,
+                requirementText = stringResource(R.string.mission_math_requirement)
+            )
+
+            // 2. Thẻ hiển thị phép tính và kết quả nhập
+            val cardBorderColor by animateColorAsState(
+                targetValue = when (validationState) {
+                    StepValidationState.CORRECT -> LiteverTheme.colors.success
+                    StepValidationState.WRONG -> LiteverTheme.colors.error
+                    else -> LiteverTheme.colors.primary.copy(alpha = 0.25f)
+                },
+                label = "cardBorderColor"
+            )
+
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = LiteverTheme.spacing.large, horizontal = LiteverTheme.spacing.medium),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
+                    .offset { IntOffset(shakeOffset.value.roundToInt(), 0) },
+                colors = CardDefaults.cardColors(
+                    containerColor = LiteverTheme.colors.surfaceContainerLowest
+                ),
+                shape = LiteverTheme.shapes.medium,
+                border = BorderStroke(1.5.dp, cardBorderColor)
             ) {
-                // Biểu thức toán học
-                Text(
-                    text = problem?.expression ?: "",
-                    style = LiteverTheme.typography.displayMedium.copy(
-                        fontWeight = FontWeight.ExtraBold,
-                        letterSpacing = 2.sp
-                    ),
-                    textAlign = TextAlign.Center,
-                    color = LiteverTheme.colors.onSurface
-                )
-
-                // Hàng hiển thị kết quả người dùng nhập
-                val surfaceBgColor by animateColorAsState(
-                    targetValue = when (validationState) {
-                        StepValidationState.CORRECT -> LiteverTheme.colors.success.copy(alpha = 0.15f)
-                        StepValidationState.WRONG -> LiteverTheme.colors.error.copy(alpha = 0.15f)
-                        else -> LiteverTheme.colors.surfaceContainerHighest.copy(alpha = 0.6f)
-                    },
-                    label = "surfaceBgColor"
-                )
-
-                val resultTextColor by animateColorAsState(
-                    targetValue = when (validationState) {
-                        StepValidationState.CORRECT -> LiteverTheme.colors.success
-                        StepValidationState.WRONG -> LiteverTheme.colors.error
-                        else -> if (userInput.isEmpty()) LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.5f) else LiteverTheme.colors.primary
-                    },
-                    label = "resultTextColor"
-                )
-
-                Surface(
-                    shape = RoundedCornerShape(16.dp),
-                    color = surfaceBgColor,
-                    modifier = Modifier.fillMaxWidth(0.75f)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = LiteverTheme.spacing.large, horizontal = LiteverTheme.spacing.medium),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = LiteverTheme.spacing.smallMedium, horizontal = LiteverTheme.spacing.medium),
-                        contentAlignment = Alignment.Center
+                    // Biểu thức toán học
+                    Text(
+                        text = problem?.expression ?: "",
+                        style = LiteverTheme.typography.displayMedium.copy(
+                            fontWeight = FontWeight.ExtraBold,
+                            letterSpacing = 2.sp
+                        ),
+                        textAlign = TextAlign.Center,
+                        color = LiteverTheme.colors.onSurface
+                    )
+
+                    // Hàng hiển thị kết quả người dùng nhập
+                    val surfaceBgColor by animateColorAsState(
+                        targetValue = when (validationState) {
+                            StepValidationState.CORRECT -> LiteverTheme.colors.success.copy(alpha = 0.15f)
+                            StepValidationState.WRONG -> LiteverTheme.colors.error.copy(alpha = 0.15f)
+                            else -> LiteverTheme.colors.surfaceContainerHighest.copy(alpha = 0.6f)
+                        },
+                        label = "surfaceBgColor"
+                    )
+
+                    val resultTextColor by animateColorAsState(
+                        targetValue = when (validationState) {
+                            StepValidationState.CORRECT -> LiteverTheme.colors.success
+                            StepValidationState.WRONG -> LiteverTheme.colors.error
+                            else -> if (userInput.isEmpty()) LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.5f) else LiteverTheme.colors.primary
+                        },
+                        label = "resultTextColor"
+                    )
+
+                    Surface(
+                        shape = RoundedCornerShape(16.dp),
+                        color = surfaceBgColor,
+                        modifier = Modifier.fillMaxWidth(0.75f)
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = LiteverTheme.spacing.smallMedium, horizontal = LiteverTheme.spacing.medium),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = if (userInput.isEmpty()) stringResource(R.string.mission_math_placeholder) else userInput,
-                                style = LiteverTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
-                                color = resultTextColor,
-                                textAlign = TextAlign.Center
-                            )
-                            if (validationState == StepValidationState.CORRECT) {
-                                Icon(
-                                    imageVector = ReMindIcons.CheckCircle,
-                                    contentDescription = null,
-                                    tint = LiteverTheme.colors.success,
-                                    modifier = Modifier.size(28.dp)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                            ) {
+                                Text(
+                                    text = if (userInput.isEmpty()) stringResource(R.string.mission_math_placeholder) else userInput,
+                                    style = LiteverTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+                                    color = resultTextColor,
+                                    textAlign = TextAlign.Center
                                 )
+                                if (validationState == StepValidationState.CORRECT) {
+                                    Icon(
+                                        imageVector = ReMindIcons.CheckCircle,
+                                        contentDescription = null,
+                                        tint = LiteverTheme.colors.success,
+                                        modifier = Modifier.size(28.dp)
+                                    )
+                                }
                             }
                         }
                     }
-                }
 
-                // Dòng cảnh báo khi nhập sai
-                AnimatedVisibility(visible = validationState == StepValidationState.WRONG) {
-                    Text(
-                        text = stringResource(R.string.mission_math_wrong),
-                        style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
-                        color = LiteverTheme.colors.error,
-                        textAlign = TextAlign.Center
-                    )
+                    // Dòng cảnh báo khi nhập sai
+                    AnimatedVisibility(visible = validationState == StepValidationState.WRONG) {
+                        Text(
+                            text = stringResource(R.string.mission_math_wrong),
+                            style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                            color = LiteverTheme.colors.error,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             }
         }
 
-        // 3. Bàn phím số chuyên dụng (In-app Keypad)
+        // 3. Bàn phím số chuyên dụng (In-app Keypad) sát bên dưới
         MathKeypad(
             onDigitClick = onDigitClick,
             onDeleteClick = onDeleteClick,
@@ -319,33 +329,16 @@ private fun KeypadNumberButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-    val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.94f else 1f,
-        label = "btnScale"
-    )
-
-    Surface(
+    KeypadButton(
+        onClick = onClick,
+        containerColor = LiteverTheme.colors.surfaceContainerHigh,
         modifier = modifier
-            .height(58.dp)
-            .scale(scale)
-            .clip(RoundedCornerShape(18.dp))
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null,
-                onClick = onClick
-            ),
-        shape = RoundedCornerShape(18.dp),
-        color = LiteverTheme.colors.surfaceContainerHigh
     ) {
-        Box(contentAlignment = Alignment.Center) {
-            Text(
-                text = digit.toString(),
-                style = LiteverTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-                color = LiteverTheme.colors.onSurface
-            )
-        }
+        Text(
+            text = digit.toString(),
+            style = LiteverTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+            color = LiteverTheme.colors.onSurface
+        )
     }
 }
 
@@ -359,34 +352,49 @@ private fun KeypadActionButton(
     enabled: Boolean = true,
     modifier: Modifier = Modifier
 ) {
+    KeypadButton(
+        onClick = onClick,
+        containerColor = containerColor,
+        enabled = enabled,
+        modifier = modifier
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDescription,
+            tint = contentColor,
+            modifier = Modifier.size(26.dp)
+        )
+    }
+}
+
+@Composable
+private fun KeypadButton(
+    onClick: () -> Unit,
+    containerColor: Color,
+    enabled: Boolean = true,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val scale by animateFloatAsState(
         targetValue = if (isPressed && enabled) 0.94f else 1f,
-        label = "actionBtnScale"
+        animationSpec = tween(durationMillis = 80),
+        label = "keypadBtnScale"
     )
 
     Surface(
+        onClick = onClick,
+        enabled = enabled,
+        interactionSource = interactionSource,
         modifier = modifier
             .height(58.dp)
-            .scale(scale)
-            .clip(RoundedCornerShape(18.dp))
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null,
-                enabled = enabled,
-                onClick = onClick
-            ),
+            .scale(scale),
         shape = RoundedCornerShape(18.dp),
         color = containerColor
     ) {
         Box(contentAlignment = Alignment.Center) {
-            Icon(
-                imageVector = icon,
-                contentDescription = contentDescription,
-                tint = contentColor,
-                modifier = Modifier.size(26.dp)
-            )
+            content()
         }
     }
 }

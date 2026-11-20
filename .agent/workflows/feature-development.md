@@ -22,7 +22,7 @@ Quy trình này hợp nhất việc xây dựng tính năng mới, cập nhật 
 
 ## Bước 3: Xây dựng Giao diện & Kiểm thử Trực quan (UI & Preview)
 *Skills kích hoạt tự động: `litever-design-system`, `compose-preview`, `edge-to-edge`, `adaptive` (từ `android-skills`), `stitch-design-sync` (nếu đồng bộ Stitch)*
-1. Tái sử dụng hoặc tạo wrapper component trong `:core:designsystem` (kế thừa từ `:litever-designsystem`), tuyệt đối không gọi trực tiếp Interactive/Structural Material3 API trong `:features:*`.
+1. Sử dụng trực tiếp các component chuẩn của `androidx.compose.material3.*` kết hợp chặt chẽ với Design Tokens (`LiteverTheme.colors` / `MaterialTheme.colorScheme`, `LiteverTheme.spacing`, `LiteverTheme.shapes`, `LiteverTheme.typography`) và Brand Assets. Chỉ tạo composite component trong `:core:designsystem` khi mang nghiệp vụ đặc thù dùng chung của ReMind; không tạo hoặc dùng các wrapper `@Deprecated` trong `LiteverLegacyCompat.kt`.
 2. Viết `@Preview` (Light & Dark mode, các trạng thái Loading/Success/Empty) cho mọi Screen/Component.
 3. Sử dụng công cụ **`compose-preview`** để render và kiểm tra trực quan giao diện ngay sau khi sửa.
 

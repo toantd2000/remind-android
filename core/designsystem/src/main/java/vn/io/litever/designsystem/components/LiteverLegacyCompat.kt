@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package vn.io.litever.designsystem.components
 
 import androidx.compose.foundation.BorderStroke
@@ -40,6 +42,13 @@ import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 
+@Deprecated(
+    message = "Use native Material 3 Scaffold directly instead of legacy wrapper.",
+    replaceWith = ReplaceWith(
+        "Scaffold(modifier = modifier, topBar = topBar, bottomBar = bottomBar, snackbarHost = snackbarHost, floatingActionButton = floatingActionButton, content = content)",
+        "androidx.compose.material3.Scaffold"
+    )
+)
 @Composable
 fun LiteverScaffold(
     modifier: Modifier = Modifier,
@@ -59,6 +68,10 @@ fun LiteverScaffold(
     )
 }
 
+@Deprecated(
+    message = "Use native Material 3 TopAppBar or LvTopAppBar directly.",
+    replaceWith = ReplaceWith("TopAppBar(title = title, modifier = modifier, actions = actions)", "androidx.compose.material3.TopAppBar")
+)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LiteverTopAppBar(
@@ -85,6 +98,13 @@ fun LiteverTopAppBar(
     )
 }
 
+@Deprecated(
+    message = "Use LvTopAppBar or native Material 3 TopAppBar directly.",
+    replaceWith = ReplaceWith(
+        "LvTopAppBar(title = title, modifier = modifier, onBackClick = onBackClick, actions = actions)",
+        "vn.io.litever.remind.core.designsystem.components.LvTopAppBar"
+    )
+)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LiteverTopAppBar(
@@ -102,6 +122,13 @@ fun LiteverTopAppBar(
     )
 }
 
+@Deprecated(
+    message = "Use native Material 3 Button directly.",
+    replaceWith = ReplaceWith(
+        "Button(onClick = onClick, modifier = modifier, enabled = enabled, colors = colors, content = content)",
+        "androidx.compose.material3.Button"
+    )
+)
 @Composable
 fun LiteverButton(
     onClick: () -> Unit,
@@ -118,6 +145,13 @@ fun LiteverButton(
     )
 }
 
+@Deprecated(
+    message = "Use native Material 3 OutlinedButton directly.",
+    replaceWith = ReplaceWith(
+        "OutlinedButton(onClick = onClick, modifier = modifier, enabled = enabled, content = content)",
+        "androidx.compose.material3.OutlinedButton"
+    )
+)
 @Composable
 fun LiteverOutlinedButton(
     onClick: () -> Unit,
@@ -135,6 +169,13 @@ fun LiteverOutlinedButton(
     )
 }
 
+@Deprecated(
+    message = "Use native Material 3 FloatingActionButton directly.",
+    replaceWith = ReplaceWith(
+        "FloatingActionButton(onClick = onClick, modifier = modifier, content = content)",
+        "androidx.compose.material3.FloatingActionButton"
+    )
+)
 @Composable
 fun LiteverFloatingActionButton(
     onClick: () -> Unit,
@@ -148,6 +189,13 @@ fun LiteverFloatingActionButton(
     )
 }
 
+@Deprecated(
+    message = "Use native Material 3 IconButton directly.",
+    replaceWith = ReplaceWith(
+        "IconButton(onClick = onClick, modifier = modifier, enabled = enabled, content = content)",
+        "androidx.compose.material3.IconButton"
+    )
+)
 @Composable
 fun LiteverIconButton(
     onClick: () -> Unit,
@@ -163,6 +211,13 @@ fun LiteverIconButton(
     )
 }
 
+@Deprecated(
+    message = "Use native Material 3 SnackbarHost or LvSnackbarHost directly.",
+    replaceWith = ReplaceWith(
+        "SnackbarHost(hostState = hostState, modifier = modifier)",
+        "androidx.compose.material3.SnackbarHost"
+    )
+)
 @Composable
 fun LiteverSnackbarHost(
     hostState: SnackbarHostState,
@@ -174,6 +229,13 @@ fun LiteverSnackbarHost(
     )
 }
 
+@Deprecated(
+    message = "Use native Material 3 Card directly.",
+    replaceWith = ReplaceWith(
+        "Card(modifier = modifier, shape = shape, colors = colors, border = border, content = content)",
+        "androidx.compose.material3.Card"
+    )
+)
 @Composable
 fun LiteverCard(
     modifier: Modifier = Modifier,
@@ -191,6 +253,13 @@ fun LiteverCard(
     )
 }
 
+@Deprecated(
+    message = "Use native Material 3 OutlinedCard directly.",
+    replaceWith = ReplaceWith(
+        "OutlinedCard(modifier = modifier, content = content)",
+        "androidx.compose.material3.OutlinedCard"
+    )
+)
 @Composable
 fun LiteverOutlinedCard(
     modifier: Modifier = Modifier,
@@ -202,6 +271,13 @@ fun LiteverOutlinedCard(
     )
 }
 
+@Deprecated(
+    message = "Use native Material 3 Switch directly.",
+    replaceWith = ReplaceWith(
+        "Switch(checked = checked, onCheckedChange = onCheckedChange, modifier = modifier, enabled = enabled)",
+        "androidx.compose.material3.Switch"
+    )
+)
 @Composable
 fun LiteverSwitch(
     checked: Boolean,
@@ -217,6 +293,13 @@ fun LiteverSwitch(
     )
 }
 
+@Deprecated(
+    message = "Use native Material 3 ListItem directly.",
+    replaceWith = ReplaceWith(
+        "ListItem(headlineContent = headlineContent, modifier = modifier, leadingContent = leadingContent, supportingContent = supportingContent, trailingContent = trailingContent)",
+        "androidx.compose.material3.ListItem"
+    )
+)
 @Composable
 fun LiteverListItem(
     headlineContent: @Composable () -> Unit,
@@ -234,6 +317,13 @@ fun LiteverListItem(
     )
 }
 
+@Deprecated(
+    message = "Use native Material 3 ModalBottomSheet directly.",
+    replaceWith = ReplaceWith(
+        "ModalBottomSheet(onDismissRequest = onDismissRequest, modifier = modifier, containerColor = containerColor, tonalElevation = tonalElevation, content = content)",
+        "androidx.compose.material3.ModalBottomSheet"
+    )
+)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LiteverModalBottomSheet(
@@ -252,6 +342,13 @@ fun LiteverModalBottomSheet(
     )
 }
 
+@Deprecated(
+    message = "Use native Material 3 DatePickerDialog directly.",
+    replaceWith = ReplaceWith(
+        "DatePickerDialog(onDismissRequest = onDismissRequest, confirmButton = confirmButton, modifier = modifier, dismissButton = dismissButton, content = content)",
+        "androidx.compose.material3.DatePickerDialog"
+    )
+)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LiteverDatePickerDialog(
@@ -270,6 +367,13 @@ fun LiteverDatePickerDialog(
     )
 }
 
+@Deprecated(
+    message = "Use native Material 3 TextField or OutlinedTextField directly with LiteverTheme.shapes.medium.",
+    replaceWith = ReplaceWith(
+        "TextField(value = value, onValueChange = onValueChange, modifier = modifier, shape = LiteverTheme.shapes.medium, isError = isError, supportingText = supportingText, singleLine = singleLine, minLines = minLines, maxLines = maxLines, keyboardOptions = keyboardOptions, keyboardActions = keyboardActions)",
+        "androidx.compose.material3.TextField"
+    )
+)
 @Composable
 fun LiteverTextField(
     value: String,
@@ -302,6 +406,13 @@ fun LiteverTextField(
     )
 }
 
+@Deprecated(
+    message = "Use native Material 3 CircularProgressIndicator directly.",
+    replaceWith = ReplaceWith(
+        "CircularProgressIndicator(modifier = modifier, color = color, strokeWidth = strokeWidth, trackColor = trackColor, strokeCap = strokeCap)",
+        "androidx.compose.material3.CircularProgressIndicator"
+    )
+)
 @Composable
 fun LiteverCircularProgressIndicator(
     modifier: Modifier = Modifier,
@@ -319,6 +430,13 @@ fun LiteverCircularProgressIndicator(
     )
 }
 
+@Deprecated(
+    message = "Use native Material 3 LinearProgressIndicator directly.",
+    replaceWith = ReplaceWith(
+        "LinearProgressIndicator(progress = progress, modifier = modifier, color = color, trackColor = trackColor, strokeCap = strokeCap)",
+        "androidx.compose.material3.LinearProgressIndicator"
+    )
+)
 @Composable
 fun LiteverLinearProgressIndicator(
     progress: () -> Float,
@@ -336,6 +454,13 @@ fun LiteverLinearProgressIndicator(
     )
 }
 
+@Deprecated(
+    message = "Use native Material 3 LinearProgressIndicator directly.",
+    replaceWith = ReplaceWith(
+        "LinearProgressIndicator(progress = { progress }, modifier = modifier, color = color, trackColor = trackColor, strokeCap = strokeCap)",
+        "androidx.compose.material3.LinearProgressIndicator"
+    )
+)
 @Composable
 fun LiteverLinearProgressIndicator(
     progress: Float,
@@ -353,6 +478,9 @@ fun LiteverLinearProgressIndicator(
     )
 }
 
+@Deprecated(
+    message = "Use native Material 3 TimePickerDialog directly."
+)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LiteverTimePickerDialog(
@@ -388,6 +516,13 @@ fun LiteverTimePickerDialog(
     )
 }
 
+@Deprecated(
+    message = "Use native Material 3 RadioButton directly.",
+    replaceWith = ReplaceWith(
+        "RadioButton(selected = selected, onClick = onClick, modifier = modifier, enabled = enabled)",
+        "androidx.compose.material3.RadioButton"
+    )
+)
 @Composable
 fun LiteverRadioButton(
     selected: Boolean,
@@ -403,6 +538,13 @@ fun LiteverRadioButton(
     )
 }
 
+@Deprecated(
+    message = "Use native Material 3 SingleChoiceSegmentedButtonRow directly.",
+    replaceWith = ReplaceWith(
+        "SingleChoiceSegmentedButtonRow(modifier = modifier, space = space, content = content)",
+        "androidx.compose.material3.SingleChoiceSegmentedButtonRow"
+    )
+)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LiteverSingleChoiceSegmentedButtonRow(
@@ -417,6 +559,13 @@ fun LiteverSingleChoiceSegmentedButtonRow(
     )
 }
 
+@Deprecated(
+    message = "Use native Material 3 SegmentedButton directly.",
+    replaceWith = ReplaceWith(
+        "SegmentedButton(selected = selected, onClick = onClick, shape = shape, modifier = modifier, enabled = enabled, colors = colors, border = border, interactionSource = interactionSource, icon = icon, label = label)",
+        "androidx.compose.material3.SegmentedButton"
+    )
+)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun androidx.compose.material3.SingleChoiceSegmentedButtonRowScope.LiteverSegmentedButton(
@@ -445,6 +594,13 @@ fun androidx.compose.material3.SingleChoiceSegmentedButtonRowScope.LiteverSegmen
     )
 }
 
+@Deprecated(
+    message = "Use native Material 3 FilterChip directly.",
+    replaceWith = ReplaceWith(
+        "FilterChip(selected = selected, onClick = onClick, label = label, modifier = modifier, enabled = enabled, leadingIcon = leadingIcon, trailingIcon = trailingIcon, shape = shape, colors = colors, elevation = elevation, border = border, interactionSource = interactionSource)",
+        "androidx.compose.material3.FilterChip"
+    )
+)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LiteverFilterChip(
@@ -477,6 +633,13 @@ fun LiteverFilterChip(
     )
 }
 
+@Deprecated(
+    message = "Use native Material 3 AlertDialog or ReMindAlertDialog directly.",
+    replaceWith = ReplaceWith(
+        "AlertDialog(onDismissRequest = onDismissRequest, confirmButton = confirmButton, modifier = modifier, dismissButton = dismissButton, icon = icon, title = title, text = text, shape = shape, containerColor = containerColor, tonalElevation = tonalElevation)",
+        "androidx.compose.material3.AlertDialog"
+    )
+)
 @Composable
 fun LiteverDialog(
     onDismissRequest: () -> Unit,
@@ -503,5 +666,3 @@ fun LiteverDialog(
         tonalElevation = tonalElevation
     )
 }
-
-

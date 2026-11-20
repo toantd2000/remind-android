@@ -25,7 +25,7 @@ Every module namespace and source path MUST follow `vn.io.litever.remind.<module
 - **`:core:data`**: Repository implementations (`OfflineFirst*Repository`) and Mappers (`Entity.toDomain()` / `Domain.toEntity()`).
 - **`:core:database`**: Room Database, DAOs, Room Entities, and explicit SQL `Migration(old, new)`.
 - **`:core:alarm`**: Exact alarm scheduling, `BroadcastReceiver`, `PendingIntent`, and foreground alarm services.
-- **`:core:designsystem`**: App-specific theme (`Color.kt`, `Theme.kt`) and component wrappers delegating to `:litever-designsystem`.
+- **`:core:designsystem`**: App-owned theme entry point (`ReMindTheme` directly configuring `MaterialTheme` + token `CompositionLocal`s from `:litever-designsystem`) and ReMind-specific composite UI components.
 
 ## 2. Strict Data & Domain Constraints
 

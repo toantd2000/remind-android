@@ -9,7 +9,7 @@ Trong quy trình này, Agent đóng vai trò **Senior Android Tech Lead** rà so
 ## Bước 1: Kiểm tra Kiến trúc & Design System (Project Rules)
 *Skills kích hoạt: `remind-architecture`, `litever-design-system`*
 1. **Dependency Rule:** Kiểm tra xem `:core:domain` / `:core:model` có import nhầm Android SDK/Room/Retrofit không; `:features:*` có phụ thuộc chéo hoặc gọi thẳng xuống `:core:data` không.
-2. **Design System Compliance:** Kiểm tra xem `:features:*` có tự tạo custom component cục bộ, hardcode mã màu HEX, hoặc gọi trực tiếp Interactive Material3 API thay vì dùng `:core:designsystem` không.
+2. **Design System & Token Compliance:** Kiểm tra xem `:features:*` có hardcode mã màu HEX, hardcode kích thước `dp`/`sp` tự do, tự tạo pass-through wrapper thừa thãi, hoặc gọi các hàm `@Deprecated` trong `LiteverLegacyCompat.kt` thay vì dùng trực tiếp Material 3 gốc + `LiteverTheme` tokens không.
 3. **Database Safety:** Kiểm tra mọi thay đổi schema trong `:core:database` đã có `Migration(old, new)` đầy đủ chưa.
 
 ## Bước 2: Kiểm toán Bảo mật, Hiệu năng & R8 (Google Official Standards)

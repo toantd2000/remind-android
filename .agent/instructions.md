@@ -4,7 +4,7 @@
 Bạn là một **Senior Android Developer** phụ trách dự án **ReMind** (`vn.io.litever.remind`):
 - **Language & Async:** Kotlin, Coroutines & Flow.
 - **Architecture:** Clean Architecture + Multi-module (`:app`, `:core:*`, `:features:*`).
-- **UI & Design System:** Jetpack Compose + `:core:designsystem` (wrapper của composite build `../litever-designsystem`).
+- **UI & Design System:** Jetpack Compose (Material 3 Native) + `:core:designsystem` (App-owned `ReMindTheme` & ReMind-specific composite UI) + `../litever-designsystem` (Brand Assets, Mascot, Bundled Fonts & Raw Tokens).
 - **DI / DB / Network:** Hilt, Room, DataStore, Retrofit + Kotlinx Serialization.
 - **Testing:** JUnit, MockK, Turbine, Robolectric (`gradle/libs.versions.toml`).
 
@@ -15,7 +15,7 @@ Hệ thống skills được cấu hình tự động trong [`.agent/skills.json
 
 1. **Project Domain Skills (Tại `.agent/skills/` - Ưu tiên cao nhất cho quy ước dự án):**
    - `remind-architecture`: Quy tắc kiến trúc Multi-module, Dependency Graph, Exception Mapping, Room Migration và Gradle STOP Protocol.
-   - `litever-design-system`: Quy tắc bắt buộc tái sử dụng UI từ `:core:designsystem` & `:litever-designsystem`, quản lý `LiteverTheme` và kiểm thử `@Preview`.
+   - `litever-design-system`: Quy tắc sử dụng trực tiếp Material 3 gốc kèm Design Tokens (`LiteverTheme`), Brand Assets (Mascot/Logo), quản lý `ReMindTheme` tại `:core:designsystem` và kiểm thử `@Preview`.
    - `stitch-design-sync`: Đồng bộ Design System Tokens và màn hình Compose lên Google Stitch qua `StitchMCP`.
 2. **Official Google Android Skills (Host tại `C:\Users\Admin\OneDrive\Desktop\Dev\Github\skills\android-skills`):**
    - Kho skills chính thức từ `https://github.com/android/skills` (`jetpack-compose-performance`, `anr-audit-and-fix`, `r8-analyzer`, `android-intent-security`, `android-permissions-security`, `edge-to-edge`, `adaptive`, `testing-setup`, `agp-9-upgrade`, v.v.).
@@ -25,7 +25,7 @@ Hệ thống skills được cấu hình tự động trong [`.agent/skills.json
 
 ## 3. Quy tắc làm việc cốt lõi (Rules of Engagement)
 - **Conventional Commits (BẮT BUỘC):** Mọi commit message phải tuân thủ chuẩn `feat:`, `fix:`, `refactor:`, `chore:`, `docs:`, `test:`.
-- **Single Source of Truth cho UI:** Tuyệt đối không tự viết mới hoặc gọi trực tiếp các Interactive/Structural Material3 components (`Button`, `Dialog`, `Scaffold`, `Switch`, `Card`) bên trong `:features:*`. Bắt buộc sử dụng thông qua `:core:designsystem` / `:litever-designsystem`.
+- **M3 Native + Single Source of Truth cho Tokens & Brand Assets:** Trong `:features:*`, gọi trực tiếp các component chuẩn của `androidx.compose.material3.*` (không tạo hoặc dùng thêm pass-through wrapper kiểu `LiteverButton`, `LiteverCard`, `LiteverScaffold`). Bắt buộc đồng bộ giao diện thông qua Design Tokens (`LiteverTheme.colors` / `MaterialTheme.colorScheme`, `LiteverTheme.spacing`, `LiteverTheme.shapes`, `LiteverTheme.typography`) và chỉ đặt vào `:core:designsystem` các composite component mang nghiệp vụ dùng chung của ReMind.
 - **Dừng lại khi có lỗi Gradle (STOP Protocol):** Nếu thay đổi file Gradle gây lỗi đồng bộ không thể giải quyết ngay tại file vừa sửa, TUYỆT ĐỐI KHÔNG tự ý mò mẫm sửa `:app/build.gradle.kts` hay đoán version. Dừng lại và in lỗi để người dùng quyết định.
 - **No Shortcuts:** Không đặt business logic vào Composable hay ViewModel. Luôn inject `CoroutineDispatcher` qua constructor và viết Unit Test (cả 2 nhánh `Success` và `Failure`) khi thêm/sửa UseCase hoặc Repository.
 - **Documentation Integrity (Chống rác tài liệu - Chỉ ghi khi cần thiết):**

@@ -19,6 +19,12 @@ Tài liệu này ghi lại lộ trình phát triển và các Quyết Định Ki
 
 ## 🧠 Quyết Định Kiến Trúc Gần Nhất (Active Micro-TDRs)
 
+### [TDR-099] - Chuyển Dịch Sang Mô Hình Brand Resource Kit & App-Owned Material 3 Theme
+- **Date:** 2026-11-20 | **Status:** Accepted
+- **Context:** Việc bọc lại các component Material 3 (`Litever*` / `Lv*`) và ủy quyền hàm `LiteverTheme` cho thư viện ngoài gây nợ kỹ thuật lớn (507 dòng `LiteverLegacyCompat.kt`, ~302 điểm gọi) và khóa chặt phiên bản Compose/M3 giữa các dự án.
+- **Decision:** Chuyển sang mô hình 3 tầng độc lập: (1) Thư viện chung chỉ giữ Brand Assets (Logo, Mascot), Bundled Fonts và Raw Tokens; (2) `:core:designsystem` trực tiếp làm chủ `ReMindTheme` (`MaterialTheme` + `CompositionLocalProvider`) và composite UI nghiệp vụ của ReMind; (3) `:features:*` gọi thẳng `androidx.compose.material3.*` kết hợp Tokens và đánh dấu `@Deprecated` toàn bộ `LiteverLegacyCompat.kt` để di cư dần (Strangler Fig).
+- **Consequences:** Cắt đứt hoàn toàn sự phụ thuộc phiên bản M3 với thư viện gốc, sẵn sàng nâng cấp từng phần lên M3 Expressive mà không làm vỡ code hiện tại.
+
 ### [TDR-098] - Chuyển Typography Sang Bundled Fonts Trong LiteVer Design System
 - **Date:** 2026-11-20 | **Status:** Accepted
 - **Context:** `GoogleFont.Provider` tải bất đồng bộ qua GMS IPC gây hiện tượng giật chữ/nhảy layout (FOUT) khi vào app hoặc chuyển màn hình trên máy yếu và phụ thuộc mạng lần đầu.

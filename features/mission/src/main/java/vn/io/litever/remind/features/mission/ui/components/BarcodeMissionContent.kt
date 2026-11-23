@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.mission.ui.components
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -26,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import androidx.compose.material3.Button
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.features.mission.R
 
@@ -46,26 +47,26 @@ fun BarcodeMissionContent(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(LiteverTheme.spacing.large),
+            .padding(MaterialTheme.spacing.large),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
     ) {
         Icon(
             imageVector = ReMindIcons.QrCodeScanner,
             contentDescription = null,
-            tint = LiteverTheme.colors.primary,
+            tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(64.dp)
         )
 
         if (label.isNotBlank() || targetBarcode.isNotBlank()) {
             Surface(
-                shape = LiteverTheme.shapes.medium,
-                color = LiteverTheme.colors.surfaceContainerHigh
+                shape = MaterialTheme.shapes.medium,
+                color = MaterialTheme.colorScheme.surfaceContainerHigh
             ) {
                 Text(
                     text = label.ifBlank { targetBarcode },
-                    style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = LiteverTheme.colors.onSurface,
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
                 )
             }
@@ -74,8 +75,8 @@ fun BarcodeMissionContent(
         if (errorMessage != null) {
             Text(
                 text = errorMessage.orEmpty(),
-                style = LiteverTheme.typography.bodyMedium,
-                color = LiteverTheme.colors.error,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.error,
                 textAlign = TextAlign.Center
             )
         }
@@ -115,7 +116,7 @@ fun BarcodeMissionContent(
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = stringResource(R.string.barcode_scan_to_dismiss),
-                style = LiteverTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
+                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
             )
         }
     }

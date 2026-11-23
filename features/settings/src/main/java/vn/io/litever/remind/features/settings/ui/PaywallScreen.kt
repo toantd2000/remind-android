@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.settings.ui
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
@@ -59,7 +61,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.ads.api.AdPlacement
 import vn.io.litever.remind.core.ads.api.AdState
 import vn.io.litever.remind.core.ads.api.LocalAdManager
@@ -160,7 +161,7 @@ fun PaywallScreen(
     )
 
     Scaffold(
-        containerColor = LiteverTheme.colors.background
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -168,14 +169,14 @@ fun PaywallScreen(
                 .padding(paddingValues)
                 .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = LiteverTheme.spacing.medium),
+                .padding(horizontal = MaterialTheme.spacing.medium),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Top bar: Close & Restore
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = LiteverTheme.spacing.small),
+                    .padding(top = MaterialTheme.spacing.small),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -183,30 +184,30 @@ fun PaywallScreen(
                     Icon(
                         imageVector = ReMindIcons.Close,
                         contentDescription = stringResource(R.string.close_text),
-                        tint = LiteverTheme.colors.onSurface
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
 
                 TextButton(onClick = onRestoreClick) {
                     Text(
                         text = stringResource(R.string.paywall_restore_purchases),
-                        style = LiteverTheme.typography.labelLarge
+                        style = MaterialTheme.typography.labelLarge
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
 
             Text(
                 text = stringResource(
                     if (uiState.isPro) R.string.paywall_hero_title_active else R.string.paywall_hero_title
                 ),
-                style = LiteverTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                color = LiteverTheme.colors.onBackground,
+                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
 
             // Carousel: Comparison table + 5 Feature Spotlights
             HorizontalPager(
@@ -243,7 +244,7 @@ fun PaywallScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.smallMedium))
 
             // Pager Dots
             Row(
@@ -257,23 +258,23 @@ fun PaywallScreen(
                             .size(if (isSelected) 8.dp else 6.dp)
                             .clip(CircleShape)
                             .background(
-                                if (isSelected) LiteverTheme.colors.primary
-                                else LiteverTheme.colors.outlineVariant
+                                if (isSelected) MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.outlineVariant
                             )
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
 
             Text(
                 text = stringResource(R.string.paywall_social_proof),
-                style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
-                color = LiteverTheme.colors.onBackground,
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+                color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
 
             // Plan Selector Cards
             val monthlyProduct = uiState.products.firstOrNull { it.planType == BillingPlanType.MONTHLY }
@@ -282,7 +283,7 @@ fun PaywallScreen(
 
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
             ) {
                 PlanOptionCard(
                     title = stringResource(R.string.paywall_plan_monthly),
@@ -312,16 +313,16 @@ fun PaywallScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.smallMedium))
 
             Text(
                 text = stringResource(R.string.paywall_cancel_anytime),
-                style = LiteverTheme.typography.bodySmall,
-                color = LiteverTheme.colors.onSurfaceVariant,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
 
             // Primary CTA
             val ctaText = when {
@@ -342,12 +343,12 @@ fun PaywallScreen(
                     CircularProgressIndicator(
                         modifier = Modifier.size(20.dp),
                         strokeWidth = 2.dp,
-                        color = LiteverTheme.colors.onPrimary
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 } else {
                     Text(
                         text = ctaText,
-                        style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                     )
                 }
             }
@@ -355,7 +356,7 @@ fun PaywallScreen(
             // Rewarded Ad Option (moved from SettingsScreen)
             if (!uiState.isPro && !isInspection) {
                 val adManager = LocalAdManager.current
-                Spacer(modifier = Modifier.height(LiteverTheme.spacing.extraSmall))
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.extraSmall))
                 TextButton(
                     onClick = {
                         val activity = context.findPaywallActivity()
@@ -373,13 +374,13 @@ fun PaywallScreen(
                 ) {
                     Text(
                         text = stringResource(R.string.paywall_rewarded_ad_cta),
-                        style = LiteverTheme.typography.labelMedium,
+                        style = MaterialTheme.typography.labelMedium,
                         textAlign = TextAlign.Center
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
         }
     }
 
@@ -396,7 +397,7 @@ fun PaywallScreen(
                     CircularProgressIndicator()
                     Text(
                         text = stringResource(R.string.loading_ad_message),
-                        style = LiteverTheme.typography.bodyMedium,
+                        style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center
                     )
                 }
@@ -427,17 +428,17 @@ fun PaywallScreen(
 private fun ComparisonSlide() {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = LiteverTheme.shapes.large,
-        color = LiteverTheme.colors.surfaceContainerLow
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.surfaceContainerLow
     ) {
-        Column(modifier = Modifier.padding(LiteverTheme.spacing.medium)) {
+        Column(modifier = Modifier.padding(MaterialTheme.spacing.medium)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Spacer(modifier = Modifier.weight(1f))
                 Surface(
-                    color = LiteverTheme.colors.primaryContainer,
+                    color = MaterialTheme.colorScheme.primaryContainer,
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.width(68.dp)
                 ) {
@@ -449,22 +450,22 @@ private fun ComparisonSlide() {
                         Icon(
                             imageVector = ReMindIcons.Diamond,
                             contentDescription = null,
-                            tint = LiteverTheme.colors.primary,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(14.dp)
                         )
                         Spacer(modifier = Modifier.width(3.dp))
                         Text(
                             text = stringResource(R.string.paywall_col_pro),
-                            style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                            color = LiteverTheme.colors.onPrimaryContainer
+                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     }
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = stringResource(R.string.paywall_col_basic),
-                    style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
-                    color = LiteverTheme.colors.onSurfaceVariant,
+                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.width(58.dp)
                 )
@@ -491,8 +492,8 @@ private fun ComparisonSlide() {
                 ) {
                     Text(
                         text = label,
-                        style = LiteverTheme.typography.bodySmall,
-                        color = LiteverTheme.colors.onSurface,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.weight(1f)
                     )
                     Box(
@@ -502,7 +503,7 @@ private fun ComparisonSlide() {
                         Icon(
                             imageVector = ReMindIcons.Check,
                             contentDescription = null,
-                            tint = LiteverTheme.colors.primary,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -514,13 +515,13 @@ private fun ComparisonSlide() {
                         Icon(
                             imageVector = if (isFree) ReMindIcons.Check else ReMindIcons.Close,
                             contentDescription = null,
-                            tint = if (isFree) LiteverTheme.colors.onSurfaceVariant else LiteverTheme.colors.outlineVariant,
+                            tint = if (isFree) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.outlineVariant,
                             modifier = Modifier.size(16.dp)
                         )
                     }
                 }
                 if (index < rows.lastIndex) {
-                    HorizontalDivider(color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.25f))
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.25f))
                 }
             }
         }
@@ -537,42 +538,42 @@ private fun FeatureSpotlightSlide(
         modifier = Modifier
             .fillMaxWidth()
             .height(250.dp),
-        shape = LiteverTheme.shapes.large,
-        color = LiteverTheme.colors.surfaceContainerLow
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.surfaceContainerLow
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(LiteverTheme.spacing.large),
+                .padding(MaterialTheme.spacing.large),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Surface(
                 shape = CircleShape,
-                color = LiteverTheme.colors.primaryContainer,
+                color = MaterialTheme.colorScheme.primaryContainer,
                 modifier = Modifier.size(64.dp)
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
                         imageVector = icon,
                         contentDescription = null,
-                        tint = LiteverTheme.colors.primary,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(32.dp)
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
             Text(
                 text = title,
-                style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                color = LiteverTheme.colors.onSurface,
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center
             )
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
             Text(
                 text = description,
-                style = LiteverTheme.typography.bodyMedium,
-                color = LiteverTheme.colors.onSurfaceVariant,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )
         }
@@ -593,21 +594,21 @@ private fun PlanOptionCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = if (badgeText != null) 10.dp else 0.dp)
-                .clip(LiteverTheme.shapes.large)
+                .clip(MaterialTheme.shapes.large)
                 .clickable(onClick = onClick),
-            shape = LiteverTheme.shapes.large,
-            color = if (selected) LiteverTheme.colors.primaryContainer.copy(alpha = 0.28f)
-            else LiteverTheme.colors.surfaceContainerLow,
+            shape = MaterialTheme.shapes.large,
+            color = if (selected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.28f)
+            else MaterialTheme.colorScheme.surfaceContainerLow,
             border = BorderStroke(
                 width = if (selected) 2.dp else 1.dp,
-                color = if (selected) LiteverTheme.colors.primary
-                else LiteverTheme.colors.outlineVariant.copy(alpha = 0.5f)
+                color = if (selected) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
             )
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = LiteverTheme.spacing.medium, vertical = 14.dp),
+                    .padding(horizontal = MaterialTheme.spacing.medium, vertical = 14.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 RadioButton(
@@ -618,21 +619,21 @@ private fun PlanOptionCard(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = title,
-                        style = LiteverTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                        color = LiteverTheme.colors.onSurface
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     if (subtitle != null) {
                         Text(
                             text = subtitle,
-                            style = LiteverTheme.typography.bodySmall,
-                            color = LiteverTheme.colors.onSurfaceVariant
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
                 Text(
                     text = priceText,
-                    style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = if (selected) LiteverTheme.colors.primary else LiteverTheme.colors.onSurface
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -642,13 +643,13 @@ private fun PlanOptionCard(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(end = 16.dp),
-                color = LiteverTheme.colors.primary,
+                color = MaterialTheme.colorScheme.primary,
                 shape = RoundedCornerShape(50)
             ) {
                 Text(
                     text = badgeText,
-                    style = LiteverTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                    color = LiteverTheme.colors.onPrimary,
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
                 )
             }

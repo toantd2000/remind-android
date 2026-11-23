@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.settings.ui
 
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.Context
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.net.toUri
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsItem
@@ -46,7 +46,7 @@ fun AttributionsScreen(
                 Text(
                     text = stringResource(R.string.attributions_thanks_message),
                     style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(LiteverTheme.spacing.medium),
+                    modifier = Modifier.padding(MaterialTheme.spacing.medium),
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }

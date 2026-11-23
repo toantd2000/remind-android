@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,7 +35,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomSheetContent
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -52,7 +53,7 @@ fun IntervalBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
-        containerColor = LiteverTheme.colors.surface,
+        containerColor = MaterialTheme.colorScheme.surface,
         modifier = modifier
     ) {
         ReMindBottomSheetContent(
@@ -79,8 +80,8 @@ fun IntervalBottomSheetContent(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = LiteverTheme.spacing.mediumLarge)
-            .padding(bottom = LiteverTheme.spacing.large)
+            .padding(horizontal = MaterialTheme.spacing.mediumLarge)
+            .padding(bottom = MaterialTheme.spacing.large)
             .navigationBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -100,14 +101,14 @@ fun IntervalBottomSheetContent(
 
             Text(
                 text = displayText,
-                style = LiteverTheme.typography.headlineMedium.copy(
+                style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.Bold,
                     letterSpacing = (-1).sp
                 ),
-                color = LiteverTheme.colors.onSurface
+                color = MaterialTheme.colorScheme.onSurface
             )
 
-            Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
+            Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
 
             IconButton(
                 onClick = { totalMinutes = 0 },
@@ -116,12 +117,12 @@ fun IntervalBottomSheetContent(
                 Icon(
                     imageVector = ReMindIcons.Refresh,
                     contentDescription = stringResource(R.string.reset),
-                    tint = LiteverTheme.colors.onSurfaceVariant
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
 
         // 2. Preset Time Grid (2 rows x 3 buttons) - Exactly like QuickAlarmBottomSheet
         val presetsRow1 = listOf(15 to R.string.interval_preset_15m, 30 to R.string.interval_preset_30m, 60 to R.string.interval_preset_1h)
@@ -129,7 +130,7 @@ fun IntervalBottomSheetContent(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
         ) {
             presetsRow1.forEach { (mins, resId) ->
                 FilledTonalButton(
@@ -143,7 +144,7 @@ fun IntervalBottomSheetContent(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
         ) {
             presetsRow2.forEach { (mins, resId) ->
                 FilledTonalButton(
@@ -155,12 +156,12 @@ fun IntervalBottomSheetContent(
             }
         }
 
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.mediumLarge))
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.mediumLarge))
 
         // 3. Action Buttons (Cancel & Save) - Exactly like QuickAlarmBottomSheet
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
         ) {
             OutlinedButton(onClick = onDismiss) {
                 Text(

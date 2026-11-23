@@ -1,5 +1,6 @@
 package vn.io.litever.remind.core.ads.impl.ui
 
+import androidx.compose.material3.MaterialTheme
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.text.TextUtils
@@ -34,7 +35,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.ads.nativead.NativeAd
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.ads.api.AdPlacement
 import vn.io.litever.remind.core.ads.impl.AdMobManagerImpl
 import kotlin.time.Duration.Companion.milliseconds
@@ -74,14 +74,14 @@ internal fun AdMobMicroAdStrip(
     val currentAd = nativeAd
     if (adFailed || currentAd == null) return
 
-    val colorOnSurface = LiteverTheme.colors.onSurface
-    val colorOnSurfaceVariant = LiteverTheme.colors.onSurfaceVariant
-    val colorPrimary = LiteverTheme.colors.primary
-    val colorBadgeBg = LiteverTheme.colors.surfaceVariant
+    val colorOnSurface = MaterialTheme.colorScheme.onSurface
+    val colorOnSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
+    val colorPrimary = MaterialTheme.colorScheme.primary
+    val colorBadgeBg = MaterialTheme.colorScheme.surfaceVariant
     val fallbackCta = stringResource(vn.io.litever.remind.core.ads.impl.R.string.ad_cta_open)
 
     val fontFamilyResolver = LocalFontFamilyResolver.current
-    val titleFontFamily = LiteverTheme.typography.labelMedium.fontFamily
+    val titleFontFamily = MaterialTheme.typography.labelMedium.fontFamily
     val headlineTypeface = remember(fontFamilyResolver, titleFontFamily) {
         fontFamilyResolver.resolve(
             fontFamily = titleFontFamily,
@@ -96,7 +96,7 @@ internal fun AdMobMicroAdStrip(
         Column(modifier = Modifier.fillMaxWidth()) {
             HorizontalDivider(
                 thickness = 0.5.dp,
-                color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.4f)
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
             )
             AndroidView(
                 modifier = Modifier

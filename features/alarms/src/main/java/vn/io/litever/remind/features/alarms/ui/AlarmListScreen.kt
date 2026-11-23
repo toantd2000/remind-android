@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.alarms.ui
 
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -64,7 +65,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.SnackbarHost
 import kotlinx.coroutines.flow.collectLatest
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindLogo
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -256,9 +256,9 @@ fun AlarmListScreen(
                         isCritical = true,
                         onClick = onNavigateToPermissions,
                         modifier = Modifier.padding(
-                            start = LiteverTheme.spacing.medium,
-                            end = LiteverTheme.spacing.medium,
-                            bottom = LiteverTheme.spacing.small
+                            start = MaterialTheme.spacing.medium,
+                            end = MaterialTheme.spacing.medium,
+                            bottom = MaterialTheme.spacing.small
                         )
                     )
                 } else {
@@ -270,18 +270,18 @@ fun AlarmListScreen(
                             onClick = onNavigateToPermissions,
                             onDismiss = onDismissPermissionWarning,
                             modifier = Modifier.padding(
-                                start = LiteverTheme.spacing.medium,
-                                end = LiteverTheme.spacing.medium,
-                                bottom = LiteverTheme.spacing.small
+                                start = MaterialTheme.spacing.medium,
+                                end = MaterialTheme.spacing.medium,
+                                bottom = MaterialTheme.spacing.small
                             )
                         )
                     }
                     if (hasAlarms) {
                         NextAlarmHeader(
                             modifier = Modifier.padding(
-                                start = LiteverTheme.spacing.medium,
-                                end = LiteverTheme.spacing.medium,
-                                bottom = LiteverTheme.spacing.small
+                                start = MaterialTheme.spacing.medium,
+                                end = MaterialTheme.spacing.medium,
+                                bottom = MaterialTheme.spacing.small
                             ),
                             state = nextAlarmState
                         )
@@ -327,7 +327,7 @@ fun AlarmListScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
-            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
         ) {
             if (alarms == null) {
                 // Show nothing while loading to avoid empty state flash
@@ -341,10 +341,10 @@ fun AlarmListScreen(
                 } else {
                     LazyColumn(
                         modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small),
+                        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
                         contentPadding = PaddingValues(
-                            horizontal = LiteverTheme.spacing.mediumLarge,
-                            vertical = LiteverTheme.spacing.small
+                            horizontal = MaterialTheme.spacing.mediumLarge,
+                            vertical = MaterialTheme.spacing.small
                         ).let {
                             PaddingValues(
                                 start = it.calculateStartPadding(androidx.compose.ui.unit.LayoutDirection.Ltr),
@@ -430,7 +430,7 @@ private fun AlarmActionBottomSheet(
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        containerColor = LiteverTheme.colors.surface
+        containerColor = MaterialTheme.colorScheme.surface
     ) {
         AlarmActionBottomSheetContent(
             alarm = alarm,
@@ -458,13 +458,13 @@ private fun AlarmActionBottomSheetContent(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(bottom = LiteverTheme.spacing.small)
+            .padding(bottom = MaterialTheme.spacing.small)
     ) {
         // Selected Alarm Info Summary
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(LiteverTheme.spacing.medium)
+                .padding(MaterialTheme.spacing.medium)
         ) {
             // Repeat summary
             val repeatText =
@@ -475,14 +475,14 @@ private fun AlarmActionBottomSheetContent(
                 )
             Text(
                 text = repeatText,
-                style = LiteverTheme.typography.labelSmall,
-                color = LiteverTheme.colors.primary,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
 
-            Spacer(modifier = Modifier.size(LiteverTheme.spacing.extraSmall))
+            Spacer(modifier = Modifier.size(MaterialTheme.spacing.extraSmall))
 
             // Time + AM/PM + Mission Icons
             val (timeStr, amPm) = vn.io.litever.remind.core.common.util.TimeFormatUtils.formatTimeParts(
@@ -494,21 +494,21 @@ private fun AlarmActionBottomSheetContent(
             ) {
                 Text(
                     text = timeStr,
-                    style = LiteverTheme.typography.displaySmall.copy(
+                    style = MaterialTheme.typography.displaySmall.copy(
                         fontWeight = FontWeight.Bold,
                         letterSpacing = (-0.5).sp
                     ),
-                    color = LiteverTheme.colors.onSurface
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 if (amPm != null) {
                     Text(
                         text = amPm.uppercase(),
-                        style = LiteverTheme.typography.titleSmall.copy(fontWeight = FontWeight.Medium),
-                        color = LiteverTheme.colors.onSurfaceVariant,
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Medium),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier
                             .padding(
-                                start = LiteverTheme.spacing.extraSmall,
-                                bottom = LiteverTheme.spacing.small
+                                start = MaterialTheme.spacing.extraSmall,
+                                bottom = MaterialTheme.spacing.small
                             )
                             .align(androidx.compose.ui.Alignment.Bottom)
                     )
@@ -517,18 +517,18 @@ private fun AlarmActionBottomSheetContent(
                 vn.io.litever.remind.features.alarms.ui.components.MissionIcons(
                     missions = alarm.missions,
                     modifier = Modifier.padding(
-                        start = LiteverTheme.spacing.small,
-                        bottom = LiteverTheme.spacing.small
+                        start = MaterialTheme.spacing.small,
+                        bottom = MaterialTheme.spacing.small
                     )
                 )
 
                 // Label if present
                 if (alarm.label.isNotBlank()) {
-                    Spacer(modifier = Modifier.size(LiteverTheme.spacing.small))
+                    Spacer(modifier = Modifier.size(MaterialTheme.spacing.small))
                     Text(
                         text = alarm.label,
-                        style = LiteverTheme.typography.bodyMedium,
-                        color = LiteverTheme.colors.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -537,8 +537,8 @@ private fun AlarmActionBottomSheetContent(
         }
 
         HorizontalDivider(
-            color = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.12f),
-            modifier = Modifier.padding(horizontal = LiteverTheme.spacing.medium)
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.12f),
+            modifier = Modifier.padding(horizontal = MaterialTheme.spacing.medium)
         )
 
         if (alarm.isEnabled && alarm.repeatDays.isNotEmpty()) {
@@ -621,7 +621,7 @@ fun EmptyState(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(LiteverTheme.spacing.large),
+            .padding(MaterialTheme.spacing.large),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -631,25 +631,25 @@ fun EmptyState(
             contentScale = ContentScale.Fit,
             modifier = Modifier.size(160.dp)
         )
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.mediumLarge))
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.mediumLarge))
         Text(
             text = stringResource(R.string.no_alarms),
-            style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
         Column(
             modifier = Modifier.wrapContentHeight(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = descriptionPrefix,
-                style = LiteverTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center
             )
-            ReMindLogo(fontSize = LiteverTheme.typography.bodyMedium.fontSize)
+            ReMindLogo(fontSize = MaterialTheme.typography.bodyMedium.fontSize)
         }
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.large))
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.large))
         Button(onClick = onAddAlarmClick) {
             Text(text = stringResource(R.string.action_add_new_alarm))
         }

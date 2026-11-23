@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.alarms.ui
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
@@ -22,7 +24,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import vn.io.litever.remind.core.model.Alarm
 import vn.io.litever.remind.features.alarms.R
@@ -87,7 +88,7 @@ fun AlarmPreviewContent(
     var currentTime by remember { mutableStateOf(LocalDateTime.now()) }
     
     if (alarm == null) {
-        Box(modifier = Modifier.fillMaxSize().background(LiteverTheme.colors.background))
+        Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
         return
     }
 
@@ -151,7 +152,7 @@ fun AlarmPreviewContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .statusBarsPadding()
-                .padding(LiteverTheme.spacing.medium),
+                .padding(MaterialTheme.spacing.medium),
             contentAlignment = Alignment.TopEnd
         ) {
             OutlinedButton(
@@ -165,7 +166,7 @@ fun AlarmPreviewContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(LiteverTheme.spacing.medium),
+                .padding(MaterialTheme.spacing.medium),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Column(
@@ -187,78 +188,78 @@ fun AlarmPreviewContent(
                 ) {
                     Text(
                         text = timeStr,
-                        style = LiteverTheme.typography.displayLarge.copy(
+                        style = MaterialTheme.typography.displayLarge.copy(
                             fontSize = 80.sp,
                             fontWeight = FontWeight.Black
                         ),
-                        color = LiteverTheme.colors.primary
+                        color = MaterialTheme.colorScheme.primary
                     )
                     if (amPm != null) {
                         Text(
                             text = amPm.uppercase(Locale.getDefault()),
-                            style = LiteverTheme.typography.displayLarge.copy(
+                            style = MaterialTheme.typography.displayLarge.copy(
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.Black
                             ),
-                            color = LiteverTheme.colors.primary,
+                            color = MaterialTheme.colorScheme.primary,
                         )
                     }
                 }
                 Text(
                     text = currentTime.format(dateFormatter).replaceFirstChar { it.uppercase() },
-                    style = LiteverTheme.typography.titleLarge,
-                    color = LiteverTheme.colors.secondary,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center
                 )
 
-                Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
                 Surface(
-                    color = LiteverTheme.colors.tertiaryContainer,
+                    color = MaterialTheme.colorScheme.tertiaryContainer,
                     shape = CircleShape
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(
-                            horizontal = LiteverTheme.spacing.smallMedium,
-                            vertical = LiteverTheme.spacing.extraSmall
+                            horizontal = MaterialTheme.spacing.smallMedium,
+                            vertical = MaterialTheme.spacing.extraSmall
                         )
                     ) {
                         Icon(
                             imageVector = ReMindIcons.Notifications,
                             contentDescription = null,
                             modifier = Modifier.size(14.dp),
-                            tint = LiteverTheme.colors.onTertiaryContainer
+                            tint = MaterialTheme.colorScheme.onTertiaryContainer
                         )
-                        Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
+                        Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
                         Text(
                             text = stringResource(
                                 R.string.scheduled_time_format,
                                 TimeFormatUtils.formatTime(alarm.time, is24HourFormat)
                             ),
-                            style = LiteverTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium),
-                            color = LiteverTheme.colors.onTertiaryContainer
+                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium),
+                            color = MaterialTheme.colorScheme.onTertiaryContainer
                         )
                     }
                 }
 
                 if (alarm.label.isNotBlank()) {
-                    Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+                    Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
                     Text(
                         text = alarm.label,
-                        style = LiteverTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = LiteverTheme.spacing.medium),
+                        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = MaterialTheme.spacing.medium),
                         textAlign = TextAlign.Center
                     )
                 }
 
                 if (alarm.message.isNotBlank()) {
-                    Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+                    Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
                     Text(
                         text = alarm.message,
-                        style = LiteverTheme.typography.bodyMedium,
-                        color = LiteverTheme.colors.onBackground.copy(alpha = 0.6f),
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = LiteverTheme.spacing.extraLarge),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = MaterialTheme.spacing.extraLarge),
                         textAlign = TextAlign.Center
                     )
                 }
@@ -272,26 +273,26 @@ fun AlarmPreviewContent(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+                        Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
                         val safeCountdown = autoSilenceCountdown ?: 0
                         val minutes = safeCountdown / 60
                         val seconds = safeCountdown % 60
                         val formattedTime = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
                         Text(
                             text = stringResource(R.string.auto_silence_countdown, formattedTime),
-                            style = LiteverTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
-                            color = LiteverTheme.colors.error,
+                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                            color = MaterialTheme.colorScheme.error,
                             modifier = Modifier
                                 .background(
-                                    color = LiteverTheme.colors.errorContainer.copy(alpha = 0.3f),
-                                    shape = LiteverTheme.shapes.medium
+                                    color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f),
+                                    shape = MaterialTheme.shapes.medium
                                 )
                                 .border(
                                     width = 1.dp,
-                                    color = LiteverTheme.colors.error.copy(alpha = 0.1f),
-                                    shape = LiteverTheme.shapes.medium
+                                    color = MaterialTheme.colorScheme.error.copy(alpha = 0.1f),
+                                    shape = MaterialTheme.shapes.medium
                                 )
-                                .padding(horizontal = LiteverTheme.spacing.medium, vertical = LiteverTheme.spacing.small)
+                                .padding(horizontal = MaterialTheme.spacing.medium, vertical = MaterialTheme.spacing.small)
                         )
                     }
                 }
@@ -302,13 +303,13 @@ fun AlarmPreviewContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .navigationBarsPadding()
-                    .padding(bottom = LiteverTheme.spacing.medium)
+                    .padding(bottom = MaterialTheme.spacing.medium)
                     .graphicsLayer {
                         translationY = bottomOffset.toPx()
                         alpha = bottomAlpha
                     },
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
             ) {
                 Button(
                     onClick = {
@@ -319,7 +320,7 @@ fun AlarmPreviewContent(
                             onExit()
                         }
                     },
-                    shape = LiteverTheme.shapes.large,
+                    shape = MaterialTheme.shapes.large,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(52.dp)
@@ -333,7 +334,7 @@ fun AlarmPreviewContent(
                     }
                     Text(
                         text = dismissText,
-                        style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold)
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold)
                     )
                 }
             }

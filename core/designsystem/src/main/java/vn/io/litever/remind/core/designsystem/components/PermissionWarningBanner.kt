@@ -1,5 +1,8 @@
 package vn.io.litever.remind.core.designsystem.components
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
+import vn.io.litever.remind.core.designsystem.theme.semanticColors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -47,15 +49,15 @@ fun PermissionWarningBanner(
     onDismiss: (() -> Unit)? = null
 ) {
     val containerColor = if (isCritical) {
-        LiteverTheme.colors.errorContainer
+        MaterialTheme.colorScheme.errorContainer
     } else {
-        LiteverTheme.colors.warningContainer
+        MaterialTheme.semanticColors.warningContainer
     }
 
     val contentColor = if (isCritical) {
-        LiteverTheme.colors.onErrorContainer
+        MaterialTheme.colorScheme.onErrorContainer
     } else {
-        LiteverTheme.colors.onWarningContainer
+        MaterialTheme.semanticColors.onWarningContainer
     }
 
     val icon = if (isCritical) {
@@ -74,10 +76,10 @@ fun PermissionWarningBanner(
         modifier = modifier.fillMaxWidth(),
         color = containerColor,
         contentColor = contentColor,
-        shape = LiteverTheme.shapes.large
+        shape = MaterialTheme.shapes.large
     ) {
         Column(
-            modifier = Modifier.padding(LiteverTheme.spacing.medium)
+            modifier = Modifier.padding(MaterialTheme.spacing.medium)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -86,22 +88,22 @@ fun PermissionWarningBanner(
                     imageVector = icon,
                     contentDescription = null,
                 )
-                Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
+                Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
                 Text(
                     text = title,
-                    style = LiteverTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
             }
 
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
 
             Text(
                 text = message,
-                style = LiteverTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodySmall,
             )
 
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.smallMedium))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -112,7 +114,7 @@ fun PermissionWarningBanner(
                     OutlinedButton(onClick = onDismiss) {
                         Text(dismissLabel)
                     }
-                    Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
+                    Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
                 }
                 Button(
                     onClick = onClick,
@@ -157,8 +159,8 @@ private fun PermissionWarningBannerWarningPreview() {
 private fun PermissionWarningBannerDarkPreview() {
     ReMindTheme(darkTheme = true) {
         Column(
-            modifier = Modifier.padding(LiteverTheme.spacing.medium),
-            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
+            modifier = Modifier.padding(MaterialTheme.spacing.medium),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
         ) {
             PermissionWarningBanner(
                 title = "Missing Permissions",

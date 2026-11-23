@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.mission.ui.components
 
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,7 +22,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import vn.io.litever.brand.assets.LiteverMascotState
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.features.mission.R
 
@@ -34,7 +34,7 @@ fun MissionCompleteContent(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(LiteverTheme.spacing.large),
+            .padding(MaterialTheme.spacing.large),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -44,19 +44,19 @@ fun MissionCompleteContent(
             contentScale = ContentScale.Fit,
             modifier = Modifier.size(160.dp)
         )
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.mediumLarge))
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.mediumLarge))
         Text(
             text = title,
-            style = LiteverTheme.typography.titleLarge.copy(
+            style = MaterialTheme.typography.titleLarge.copy(
                 fontWeight = FontWeight.Bold,
             ),
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
         Text(
             text = subtitle,
-            style = LiteverTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )

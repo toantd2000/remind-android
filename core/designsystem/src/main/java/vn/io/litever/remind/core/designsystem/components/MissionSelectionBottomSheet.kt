@@ -1,5 +1,7 @@
 package vn.io.litever.remind.core.designsystem.components
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,7 +30,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import kotlinx.coroutines.launch
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.model.MissionType
 
@@ -44,7 +45,7 @@ fun MissionSelectionBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
-        containerColor = LiteverTheme.colors.surface,
+        containerColor = MaterialTheme.colorScheme.surface,
     ) {
         ReMindBottomSheetContent(
             title = stringResource(R.string.mission_selection_title),
@@ -69,7 +70,7 @@ fun MissionSelectionBottomSheetContent(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(bottom = LiteverTheme.spacing.medium)
+            .padding(bottom = MaterialTheme.spacing.medium)
     ) {
         val missionTypes = listOf(
             MissionItem(
@@ -124,21 +125,21 @@ fun MissionSelectionBottomSheetContent(
                     supportingContent = {
                         Text(
                             text = item.description,
-                            style = LiteverTheme.typography.bodySmall
+                            style = MaterialTheme.typography.bodySmall
                         )
                     },
                     leadingContent = {
                         Surface(
-                            shape = LiteverTheme.shapes.medium,
-                            color = LiteverTheme.colors.primaryContainer,
+                            shape = MaterialTheme.shapes.medium,
+                            color = MaterialTheme.colorScheme.primaryContainer,
                         ) {
                             Icon(
                                 imageVector = item.icon,
                                 contentDescription = null,
                                 modifier = Modifier
-                                    .padding(LiteverTheme.spacing.smallMedium)
-                                    .size(LiteverTheme.spacing.large),
-                                tint = LiteverTheme.colors.onPrimaryContainer
+                                    .padding(MaterialTheme.spacing.smallMedium)
+                                    .size(MaterialTheme.spacing.large),
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer
                             )
                         }
                     },
@@ -148,11 +149,11 @@ fun MissionSelectionBottomSheetContent(
                 ) {
                     Row(
                         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
                     ) {
                         Text(
                             text = item.title,
-                            style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                         )
                         if (item.isProOnly) {
                             ReMindProDiamondTag()

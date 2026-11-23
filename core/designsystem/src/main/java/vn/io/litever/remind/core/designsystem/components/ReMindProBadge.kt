@@ -1,5 +1,6 @@
 package vn.io.litever.remind.core.designsystem.components
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -16,7 +17,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 
@@ -30,14 +30,14 @@ fun ReMindProTopBarButton(
     modifier: Modifier = Modifier
 ) {
     val containerColor = if (isPro) {
-        LiteverTheme.colors.secondaryContainer
+        MaterialTheme.colorScheme.secondaryContainer
     } else {
-        LiteverTheme.colors.primaryContainer
+        MaterialTheme.colorScheme.primaryContainer
     }
     val contentColor = if (isPro) {
-        LiteverTheme.colors.onSecondaryContainer
+        MaterialTheme.colorScheme.onSecondaryContainer
     } else {
-        LiteverTheme.colors.onPrimaryContainer
+        MaterialTheme.colorScheme.onPrimaryContainer
     }
 
     Surface(
@@ -60,7 +60,7 @@ fun ReMindProTopBarButton(
             )
             Text(
                 text = if (isPro) "PRO ✓" else "PRO",
-                style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.ExtraBold),
+                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.ExtraBold),
                 color = contentColor
             )
         }
@@ -76,13 +76,13 @@ fun ReMindProDiamondTag(
 ) {
     Surface(
         modifier = modifier,
-        color = LiteverTheme.colors.primaryContainer,
+        color = MaterialTheme.colorScheme.primaryContainer,
         shape = RoundedCornerShape(6.dp)
     ) {
         Icon(
             imageVector = ReMindIcons.Diamond,
             contentDescription = "Pro",
-            tint = LiteverTheme.colors.primary,
+            tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier
                 .padding(horizontal = 5.dp, vertical = 3.dp)
                 .size(12.dp)

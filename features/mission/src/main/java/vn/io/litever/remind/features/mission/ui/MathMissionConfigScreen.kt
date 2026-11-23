@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.mission.ui
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,7 +37,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsCategory
@@ -115,11 +116,11 @@ fun MathMissionConfigScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(LiteverTheme.colors.background)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(padding)
-                .padding(horizontal = LiteverTheme.spacing.medium)
+                .padding(horizontal = MaterialTheme.spacing.medium)
         ) {
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
 
             // Section 1: Difficulty Selection
             ReMindSettingsGroup(
@@ -128,7 +129,7 @@ fun MathMissionConfigScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = LiteverTheme.spacing.small)
+                        .padding(vertical = MaterialTheme.spacing.small)
                 ) {
                     DifficultyOptionRow(
                         title = stringResource(R.string.math_difficulty_easy),
@@ -153,7 +154,7 @@ fun MathMissionConfigScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
 
             // Section 2: Number of problems (Repetitions)
             ReMindSettingsGroup {
@@ -161,10 +162,10 @@ fun MathMissionConfigScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
-                            top = LiteverTheme.spacing.medium,
-                            bottom = LiteverTheme.spacing.extraSmall,
-                            start = LiteverTheme.spacing.medium,
-                            end = LiteverTheme.spacing.small
+                            top = MaterialTheme.spacing.medium,
+                            bottom = MaterialTheme.spacing.extraSmall,
+                            start = MaterialTheme.spacing.medium,
+                            end = MaterialTheme.spacing.small
                         ),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
@@ -189,8 +190,8 @@ fun MathMissionConfigScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
-                            horizontal = LiteverTheme.spacing.medium,
-                            vertical = LiteverTheme.spacing.small
+                            horizontal = MaterialTheme.spacing.medium,
+                            vertical = MaterialTheme.spacing.small
                         ),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
@@ -209,8 +210,8 @@ fun MathMissionConfigScreen(
 
                     Text(
                         text = "$repetitions",
-                        style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = LiteverTheme.colors.onSurface
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
                     IconButton(
@@ -228,12 +229,12 @@ fun MathMissionConfigScreen(
 
                 Text(
                     text = stringResource(R.string.math_problems_helper, repetitions),
-                    style = LiteverTheme.typography.bodySmall,
-                    color = LiteverTheme.colors.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(
-                        start = LiteverTheme.spacing.medium,
-                        end = LiteverTheme.spacing.medium,
-                        bottom = LiteverTheme.spacing.medium
+                        start = MaterialTheme.spacing.medium,
+                        end = MaterialTheme.spacing.medium,
+                        bottom = MaterialTheme.spacing.medium
                     )
                 )
             }
@@ -253,11 +254,11 @@ private fun DifficultyOptionRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(LiteverTheme.shapes.small)
+            .clip(MaterialTheme.shapes.small)
             .clickable(onClick = onClick)
             .padding(
-                horizontal = LiteverTheme.spacing.medium,
-                vertical = LiteverTheme.spacing.small
+                horizontal = MaterialTheme.spacing.medium,
+                vertical = MaterialTheme.spacing.small
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -265,17 +266,17 @@ private fun DifficultyOptionRow(
             selected = selected,
             onClick = null,
             colors = RadioButtonDefaults.colors(
-                selectedColor = LiteverTheme.colors.primary,
-                unselectedColor = LiteverTheme.colors.onSurfaceVariant
+                selectedColor = MaterialTheme.colorScheme.primary,
+                unselectedColor = MaterialTheme.colorScheme.onSurfaceVariant
             )
         )
-        Spacer(modifier = Modifier.width(LiteverTheme.spacing.medium))
+        Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium))
         Text(
             text = title,
-            style = LiteverTheme.typography.bodyLarge.copy(
+            style = MaterialTheme.typography.bodyLarge.copy(
                 fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal
             ),
-            color = if (selected) LiteverTheme.colors.onSurface else LiteverTheme.colors.onSurfaceVariant
+            color = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }

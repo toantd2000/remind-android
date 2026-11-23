@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.alarms.ui
 
+import vn.io.litever.remind.core.designsystem.theme.spacing
 
 
 import androidx.activity.compose.BackHandler
@@ -89,7 +90,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.theme.errorColors
 import vn.io.litever.remind.core.designsystem.components.MissionSelectionBottomSheet
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
@@ -490,9 +490,9 @@ fun AlarmEditScreen(
             title = {
                 Text(
                     stringResource(R.string.set_alarm_time),
-                    style = LiteverTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                     modifier = Modifier.padding(
-                        bottom = LiteverTheme.spacing.medium,
+                        bottom = MaterialTheme.spacing.medium,
                     )
                 )
             },
@@ -511,7 +511,7 @@ fun AlarmEditScreen(
                     onClick = {
                         if (showTimePicker) showTimePicker = false
                     },
-                    modifier = Modifier.padding(end = LiteverTheme.spacing.medium)
+                    modifier = Modifier.padding(end = MaterialTheme.spacing.medium)
                 ) {
                     Text(stringResource(R.string.action_cancel))
                 }
@@ -570,12 +570,12 @@ fun AlarmEditScreen(
                 title = {
                     Text(
                         stringResource(R.string.set_alarm_date),
-                        style = LiteverTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                         modifier = Modifier.padding(
-                            top = LiteverTheme.spacing.medium,
-                            bottom = LiteverTheme.spacing.small,
-                            start = LiteverTheme.spacing.medium,
-                            end = LiteverTheme.spacing.medium
+                            top = MaterialTheme.spacing.medium,
+                            bottom = MaterialTheme.spacing.small,
+                            start = MaterialTheme.spacing.medium,
+                            end = MaterialTheme.spacing.medium
                         )
                     )
                 }
@@ -728,9 +728,9 @@ fun AlarmEditScreen(
                 )
                 NextAlarmHeader(
                     modifier = Modifier.padding(
-                        start = LiteverTheme.spacing.medium,
-                        end = LiteverTheme.spacing.medium,
-                        bottom = LiteverTheme.spacing.small
+                        start = MaterialTheme.spacing.medium,
+                        end = MaterialTheme.spacing.medium,
+                        bottom = MaterialTheme.spacing.small
                     ),
                     state = nextAlarmState
                 )
@@ -774,8 +774,8 @@ fun AlarmEditScreen(
             modifier = modifier
                 .fillMaxSize()
                 .padding(padding),
-            contentPadding = PaddingValues(all = LiteverTheme.spacing.medium),
-            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+            contentPadding = PaddingValues(all = MaterialTheme.spacing.medium),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
         ) {
 
             item {
@@ -789,7 +789,7 @@ fun AlarmEditScreen(
                             .clickable { showTimePicker = true },
 
                         ) {
-                        Spacer(modifier = Modifier.height(LiteverTheme.spacing.large))
+                        Spacer(modifier = Modifier.height(MaterialTheme.spacing.large))
                         Row(
                             verticalAlignment = Alignment.Bottom
                         ) {
@@ -812,12 +812,12 @@ fun AlarmEditScreen(
                                         color = MaterialTheme.colorScheme.secondary,
                                         fontWeight = FontWeight.Bold
                                     ),
-                                    modifier = Modifier.padding(bottom = LiteverTheme.spacing.smallMedium)
+                                    modifier = Modifier.padding(bottom = MaterialTheme.spacing.smallMedium)
                                 )
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+                        Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
 
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -826,10 +826,10 @@ fun AlarmEditScreen(
                             Icon(
                                 imageVector = ReMindIcons.Edit,
                                 contentDescription = null,
-                                modifier = Modifier.size(LiteverTheme.spacing.medium),
+                                modifier = Modifier.size(MaterialTheme.spacing.medium),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                             )
-                            Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
+                            Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
                             Text(
                                 text = stringResource(R.string.tap_to_edit_time),
                                 style = MaterialTheme.typography.labelSmall.copy(
@@ -840,7 +840,7 @@ fun AlarmEditScreen(
                             )
 
                         }
-                        Spacer(modifier = Modifier.height(LiteverTheme.spacing.large))
+                        Spacer(modifier = Modifier.height(MaterialTheme.spacing.large))
                     }
                 }
             }
@@ -854,7 +854,7 @@ fun AlarmEditScreen(
                         date = uiState.date,
                         onDayToggle = onRepeatDayToggle,
                         onShowDatePicker = { showDatePicker = true },
-                        modifier = Modifier.padding(LiteverTheme.spacing.medium)
+                        modifier = Modifier.padding(MaterialTheme.spacing.medium)
                     )
                 }
             }
@@ -870,8 +870,8 @@ fun AlarmEditScreen(
                         Column {
                             Text(
                                 text = stringResource(R.string.alarm_label_title),
-                                style = LiteverTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                color = LiteverTheme.colors.onSurfaceVariant
+                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             val labelState = rememberTextFieldState(uiState.label)
@@ -894,22 +894,22 @@ fun AlarmEditScreen(
                                 BasicTextField(
                                     state = labelState,
                                     modifier = Modifier.weight(1f),
-                                    textStyle = LiteverTheme.typography.bodyLarge.copy(
-                                        color = LiteverTheme.colors.onSurface
+                                    textStyle = MaterialTheme.typography.bodyLarge.copy(
+                                        color = MaterialTheme.colorScheme.onSurface
                                     ),
                                     keyboardOptions = KeyboardOptions(
                                         keyboardType = KeyboardType.Text,
                                         imeAction = ImeAction.Next
                                     ),
                                     lineLimits = TextFieldLineLimits.SingleLine,
-                                    cursorBrush = SolidColor(LiteverTheme.colors.primary),
+                                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                                     decorator = { innerTextField ->
                                         Box(contentAlignment = Alignment.CenterStart) {
                                             if (labelState.text.isEmpty()) {
                                                 Text(
                                                     text = stringResource(R.string.alarm_label_placeholder),
-                                                    style = LiteverTheme.typography.bodyLarge.copy(
-                                                        color = LiteverTheme.colors.outlineVariant
+                                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                                        color = MaterialTheme.colorScheme.outlineVariant
                                                     )
                                                 )
                                             }
@@ -933,22 +933,22 @@ fun AlarmEditScreen(
                                     Icon(
                                         imageVector = ReMindIcons.NewLabel,
                                         contentDescription = "Ghi chú",
-                                        tint = LiteverTheme.colors.outlineVariant
+                                        tint = MaterialTheme.colorScheme.outlineVariant
                                     )
                                 }
                             }
                         }
 
                         HorizontalDivider(
-                            color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.3f)
+                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
                         )
 
                         // Message Field
                         Column {
                             Text(
                                 text = stringResource(R.string.alarm_message_title),
-                                style = LiteverTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                color = LiteverTheme.colors.onSurfaceVariant
+                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             val messageState = rememberTextFieldState(uiState.message)
@@ -971,22 +971,22 @@ fun AlarmEditScreen(
                                 BasicTextField(
                                     state = messageState,
                                     modifier = Modifier.weight(1f),
-                                    textStyle = LiteverTheme.typography.bodyLarge.copy(
-                                        color = LiteverTheme.colors.onSurface
+                                    textStyle = MaterialTheme.typography.bodyLarge.copy(
+                                        color = MaterialTheme.colorScheme.onSurface
                                     ),
                                     keyboardOptions = KeyboardOptions(
                                         keyboardType = KeyboardType.Text,
                                         imeAction = ImeAction.Done
                                     ),
                                     lineLimits = TextFieldLineLimits.MultiLine(maxHeightInLines = 4),
-                                    cursorBrush = SolidColor(LiteverTheme.colors.primary),
+                                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                                     decorator = { innerTextField ->
                                         Box(contentAlignment = Alignment.TopStart) {
                                             if (messageState.text.isEmpty()) {
                                                 Text(
                                                     text = stringResource(R.string.alarm_message_placeholder),
-                                                    style = LiteverTheme.typography.bodyLarge.copy(
-                                                        color = LiteverTheme.colors.outlineVariant
+                                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                                        color = MaterialTheme.colorScheme.outlineVariant
                                                     )
                                                 )
                                             }
@@ -1010,7 +1010,7 @@ fun AlarmEditScreen(
                                     Icon(
                                         imageVector = ReMindIcons.EditNote,
                                         contentDescription = "Ghi chú",
-                                        tint = LiteverTheme.colors.outlineVariant,
+                                        tint = MaterialTheme.colorScheme.outlineVariant,
                                         modifier = Modifier
                                             .size(24.dp)
                                             .padding(top = 2.dp)
@@ -1020,7 +1020,7 @@ fun AlarmEditScreen(
                         }
 
                         HorizontalDivider(
-                            color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.3f)
+                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
                         )
 
                         // Announce Label TTS (Pro)
@@ -1043,7 +1043,7 @@ fun AlarmEditScreen(
                                 Icon(
                                     imageVector = ReMindIcons.Speaker,
                                     contentDescription = null,
-                                    tint = LiteverTheme.colors.onSurfaceVariant,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(22.dp)
                                 )
                                 Spacer(modifier = Modifier.width(12.dp))
@@ -1054,15 +1054,15 @@ fun AlarmEditScreen(
                                     ) {
                                         Text(
                                             text = stringResource(R.string.announce_label_tts_title),
-                                            style = LiteverTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                                            color = LiteverTheme.colors.onSurface
+                                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                                            color = MaterialTheme.colorScheme.onSurface
                                         )
                                         vn.io.litever.remind.core.designsystem.components.ReMindProDiamondTag()
                                     }
                                     Text(
                                         text = stringResource(R.string.announce_label_tts_desc),
-                                        style = LiteverTheme.typography.bodySmall,
-                                        color = LiteverTheme.colors.onSurfaceVariant
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                                 Switch(
@@ -1091,7 +1091,7 @@ fun AlarmEditScreen(
                                     Spacer(modifier = Modifier.width(4.dp))
                                     Text(
                                         text = stringResource(R.string.action_preview),
-                                        style = LiteverTheme.typography.labelMedium
+                                        style = MaterialTheme.typography.labelMedium
                                     )
                                 }
                             }
@@ -1116,8 +1116,8 @@ fun AlarmEditScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(LiteverTheme.spacing.small)
-                            .padding(start = 56.dp, end = LiteverTheme.spacing.extraLarge)
+                            .height(MaterialTheme.spacing.small)
+                            .padding(start = 56.dp, end = MaterialTheme.spacing.extraLarge)
                     ) {
                         if (uiState.isRingtonePlaying || uiState.ringtoneProgress > 0f) {
                             LinearProgressIndicator(
@@ -1129,19 +1129,19 @@ fun AlarmEditScreen(
                     }
 
                     HorizontalDivider(
-                        color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.3F),
-                        modifier = Modifier.padding(horizontal = LiteverTheme.spacing.extraLarge)
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3F),
+                        modifier = Modifier.padding(horizontal = MaterialTheme.spacing.extraLarge)
                     )
 
                     // Row 3: Volume
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(vertical = LiteverTheme.spacing.medium),
+                        modifier = Modifier.fillMaxWidth().padding(vertical = MaterialTheme.spacing.medium),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         ReMindSettingIcon(
                             imageVector = if (uiState.volume == 0) ReMindIcons.VolumeOff else ReMindIcons.VolumeUp,
                             selected = false,
-                            modifier = Modifier.padding(start = LiteverTheme.spacing.medium)
+                            modifier = Modifier.padding(start = MaterialTheme.spacing.medium)
                         )
 
                         val volumeSliderState = remember(uiState.maxVolume) {
@@ -1164,7 +1164,7 @@ fun AlarmEditScreen(
                             },
                             modifier = Modifier
                                 .weight(1f)
-                                .padding(horizontal = LiteverTheme.spacing.smallMedium),
+                                .padding(horizontal = MaterialTheme.spacing.smallMedium),
                             colors = SliderDefaults.colors(
                                 thumbColor = MaterialTheme.colorScheme.primary,
                                 activeTrackColor = MaterialTheme.colorScheme.primary,
@@ -1176,13 +1176,13 @@ fun AlarmEditScreen(
                             imageVector = if (uiState.isRingtonePlaying) ReMindIcons.Pause else ReMindIcons.PlayArrow,
                             selected = uiState.isRingtonePlaying,
                             onClick = onTogglePreview,
-                            modifier = Modifier.padding(end = LiteverTheme.spacing.medium)
+                            modifier = Modifier.padding(end = MaterialTheme.spacing.medium)
                         )
                     }
 
                     HorizontalDivider(
-                        color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.3F),
-                        modifier = Modifier.padding(horizontal = LiteverTheme.spacing.extraLarge)
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3F),
+                        modifier = Modifier.padding(horizontal = MaterialTheme.spacing.extraLarge)
                     )
 
                     // Row 4: Vibration
@@ -1200,8 +1200,8 @@ fun AlarmEditScreen(
                     )
 
                     HorizontalDivider(
-                        color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.3F),
-                        modifier = Modifier.padding(horizontal = LiteverTheme.spacing.extraLarge)
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3F),
+                        modifier = Modifier.padding(horizontal = MaterialTheme.spacing.extraLarge)
                     )
 
                     // Row 4: Volume Boost (Gentle Alarm + Extra Loud + Time TTS)
@@ -1231,8 +1231,8 @@ fun AlarmEditScreen(
                     )
 
                     HorizontalDivider(
-                        color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.3F),
-                        modifier = Modifier.padding(horizontal = LiteverTheme.spacing.extraLarge)
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3F),
+                        modifier = Modifier.padding(horizontal = MaterialTheme.spacing.extraLarge)
                     )
 
                     // Row 5: Alarm Stream Toggle
@@ -1303,8 +1303,8 @@ fun AlarmEditScreen(
                     )
 
                     HorizontalDivider(
-                        color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.3F),
-                        modifier = Modifier.padding(horizontal = LiteverTheme.spacing.extraLarge)
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3F),
+                        modifier = Modifier.padding(horizontal = MaterialTheme.spacing.extraLarge)
                     )
 
                     // Auto Silence Row
@@ -1328,8 +1328,8 @@ fun AlarmEditScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(LiteverTheme.spacing.medium),
-                        verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                            .padding(MaterialTheme.spacing.medium),
+                        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -1338,13 +1338,13 @@ fun AlarmEditScreen(
                         ) {
                             Text(
                                 text = stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_title),
-                                style = LiteverTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
-                                color = LiteverTheme.colors.onSurfaceVariant
+                                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
                                 text = "${uiState.missions.size}/5",
-                                style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                                color = LiteverTheme.colors.primary
+                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
 
@@ -1374,8 +1374,8 @@ fun AlarmEditScreen(
                     }
 
                     HorizontalDivider(
-                        color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.3F),
-                        modifier = Modifier.padding(horizontal = LiteverTheme.spacing.extraLarge)
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3F),
+                        modifier = Modifier.padding(horizontal = MaterialTheme.spacing.extraLarge)
                     )
 
                     val wakeUpSummary = if (uiState.wakeUpCheckMinutes <= 0) {
@@ -1395,7 +1395,7 @@ fun AlarmEditScreen(
 
 
             item {
-                Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
             }
         }
     }
@@ -1421,8 +1421,8 @@ fun RepeatDaySelector(
         ) {
             Text(
                 text = label,
-                style = LiteverTheme.typography.labelLarge,
-                color = LiteverTheme.colors.primary,
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.weight(1f)
             )
@@ -1442,11 +1442,11 @@ fun RepeatDaySelector(
             }
         }
 
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.extraSmall))
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.extraSmall))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
         ) {
             allDays.forEach { day ->
                 val dayLabel = when (day) {
@@ -1516,13 +1516,13 @@ private fun MissionSlotCard(
                     .fillMaxSize()
                     .padding(top = 4.dp, end = 4.dp),
                 shape = slotShape,
-                color = LiteverTheme.colors.primaryContainer
+                color = MaterialTheme.colorScheme.primaryContainer
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
                         imageVector = icon,
                         contentDescription = mission.type.name,
-                        tint = LiteverTheme.colors.onPrimaryContainer,
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -1533,22 +1533,22 @@ private fun MissionSlotCard(
                     .align(Alignment.TopEnd)
                     .size(20.dp),
                 shape = androidx.compose.foundation.shape.CircleShape,
-                color = LiteverTheme.colors.errorContainer
+                color = MaterialTheme.colorScheme.errorContainer
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
                         imageVector = ReMindIcons.Close,
                         contentDescription = "Remove",
-                        tint = LiteverTheme.colors.onErrorContainer,
+                        tint = MaterialTheme.colorScheme.onErrorContainer,
                         modifier = Modifier.size(12.dp)
                     )
                 }
             }
         } else {
             val borderColor = if (isUnlocked) {
-                LiteverTheme.colors.primary.copy(alpha = 0.6f)
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
             } else {
-                LiteverTheme.colors.outlineVariant.copy(alpha = 0.6f)
+                MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)
             }
             androidx.compose.material3.Surface(
                 onClick = onAddClick,
@@ -1556,14 +1556,14 @@ private fun MissionSlotCard(
                     .fillMaxSize()
                     .padding(top = 4.dp, end = 4.dp),
                 shape = slotShape,
-                color = LiteverTheme.colors.surfaceContainerHighest.copy(alpha = 0.5f),
+                color = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f),
                 border = androidx.compose.foundation.BorderStroke(1.dp, borderColor)
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
                         imageVector = if (isUnlocked) ReMindIcons.Add else ReMindIcons.Lock,
                         contentDescription = if (isUnlocked) "Add Mission" else "Pro Locked",
-                        tint = if (isUnlocked) LiteverTheme.colors.primary else LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.6f),
+                        tint = if (isUnlocked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -1695,7 +1695,7 @@ private fun MissionRow(
                     vn.io.litever.remind.core.designsystem.R.string.times_unit,
                     mission.repeatCount
                 ),
-                style = LiteverTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyMedium,
             )
         },
         leadingContent = {
@@ -1712,7 +1712,7 @@ private fun MissionRow(
                 Icon(
                     imageVector = ReMindIcons.Delete,
                     contentDescription = null,
-                    modifier = Modifier.size(LiteverTheme.spacing.mediumLarge),
+                    modifier = Modifier.size(MaterialTheme.spacing.mediumLarge),
                     tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
                 )
             }
@@ -1720,7 +1720,7 @@ private fun MissionRow(
     ) {
         Text(
             text = title,
-            style = LiteverTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
+            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
         )
     }
 }

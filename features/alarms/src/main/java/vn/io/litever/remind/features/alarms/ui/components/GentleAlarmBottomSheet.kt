@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.alarms.ui.components
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,7 +38,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomSheetContent
 import vn.io.litever.remind.core.designsystem.components.ReMindProDiamondTag
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
@@ -73,7 +74,7 @@ fun GentleAlarmBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
-        containerColor = LiteverTheme.colors.surface,
+        containerColor = MaterialTheme.colorScheme.surface,
         modifier = modifier
     ) {
         ReMindBottomSheetContent(
@@ -125,9 +126,9 @@ fun GentleAlarmBottomSheetContent(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = LiteverTheme.spacing.medium)
-            .padding(bottom = LiteverTheme.spacing.medium),
-        verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.smallMedium)
+            .padding(horizontal = MaterialTheme.spacing.medium)
+            .padding(bottom = MaterialTheme.spacing.medium),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.smallMedium)
     ) {
         VolumeBoostOptionRow(
             icon = ReMindIcons.GraphicEq,
@@ -152,7 +153,7 @@ fun GentleAlarmBottomSheetContent(
                                 label = {
                                     Text(
                                         text = stringResource(R.string.seconds_unit_short, seconds),
-                                        style = LiteverTheme.typography.labelMedium
+                                        style = MaterialTheme.typography.labelMedium
                                     )
                                 }
                             )
@@ -162,7 +163,7 @@ fun GentleAlarmBottomSheetContent(
             }
         )
 
-        HorizontalDivider(color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.3f))
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
 
         VolumeBoostOptionRow(
             icon = ReMindIcons.VolumeUp,
@@ -174,7 +175,7 @@ fun GentleAlarmBottomSheetContent(
             onPreviewClick = onPreviewExtraLoud
         )
 
-        HorizontalDivider(color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.3f))
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
 
         VolumeBoostOptionRow(
             icon = ReMindIcons.AccessTime,
@@ -186,7 +187,7 @@ fun GentleAlarmBottomSheetContent(
             onPreviewClick = onPreviewTimeTts
         )
 
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
 
         Button(
             onClick = onSaveClick,
@@ -204,7 +205,7 @@ fun GentleAlarmBottomSheetContent(
             }
             Text(
                 text = stringResource(R.string.save),
-                style = LiteverTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
+                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
             )
         }
     }
@@ -235,7 +236,7 @@ private fun VolumeBoostOptionRow(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = LiteverTheme.colors.onSurfaceVariant,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(22.dp)
             )
             Spacer(modifier = Modifier.width(12.dp))
@@ -246,8 +247,8 @@ private fun VolumeBoostOptionRow(
                 ) {
                     Text(
                         text = title,
-                        style = LiteverTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                        color = LiteverTheme.colors.onSurface
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     if (isProFeature) {
                         ReMindProDiamondTag()
@@ -256,8 +257,8 @@ private fun VolumeBoostOptionRow(
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = description,
-                    style = LiteverTheme.typography.bodySmall,
-                    color = LiteverTheme.colors.onSurfaceVariant
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
@@ -284,7 +285,7 @@ private fun VolumeBoostOptionRow(
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = stringResource(R.string.action_preview),
-                    style = LiteverTheme.typography.labelMedium
+                    style = MaterialTheme.typography.labelMedium
                 )
             }
         }

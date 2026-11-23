@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.reminders.ui
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.res.Configuration
 import android.media.RingtoneManager
 import androidx.activity.compose.BackHandler
@@ -52,7 +54,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -121,7 +122,7 @@ fun ReminderEditRoute(
 
     if (uiState.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(color = LiteverTheme.colors.primary)
+            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
         }
         return
     }
@@ -305,8 +306,8 @@ fun ReminderEditScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            contentPadding = PaddingValues(horizontal = LiteverTheme.spacing.medium),
-            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+            contentPadding = PaddingValues(horizontal = MaterialTheme.spacing.medium),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
         ) {
             // 1. Basic Info Section
             item {

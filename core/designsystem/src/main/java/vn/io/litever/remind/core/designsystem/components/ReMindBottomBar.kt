@@ -1,5 +1,7 @@
 package vn.io.litever.remind.core.designsystem.components
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 
 /**
@@ -49,11 +50,11 @@ fun ReMindBottomBar(
             modifier = Modifier
                 .windowInsetsPadding(windowInsets)
                 .padding(
-                    horizontal = LiteverTheme.spacing.smallMedium,
-                    vertical = LiteverTheme.spacing.small
+                    horizontal = MaterialTheme.spacing.smallMedium,
+                    vertical = MaterialTheme.spacing.small
                 )
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small),
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
             verticalAlignment = Alignment.CenterVertically,
             content = content
         )
@@ -64,12 +65,12 @@ fun ReMindBottomBar(
 @Composable
 private fun ReMindBottomBarPreview() {
     ReMindTheme {
-        Column(verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)) {
+        Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)) {
             // Single button
             ReMindBottomBar {
                 Button(
                     onClick = {},
-                    modifier = Modifier.fillMaxWidth().height(LiteverTheme.spacing.doubleLarge)
+                    modifier = Modifier.fillMaxWidth().height(MaterialTheme.spacing.doubleLarge)
                 ) {
                     Text("Save Changes")
                 }

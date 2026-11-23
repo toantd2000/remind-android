@@ -1,5 +1,7 @@
 package vn.io.litever.remind.core.designsystem.components
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,7 +28,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 
@@ -46,7 +47,7 @@ fun SnoozeBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
-        containerColor = LiteverTheme.colors.surface,
+        containerColor = MaterialTheme.colorScheme.surface,
         modifier = modifier
     ) {
         ReMindBottomSheetContent(
@@ -80,9 +81,9 @@ fun SnoozeBottomSheetContent(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = LiteverTheme.spacing.small, horizontal = LiteverTheme.spacing.medium)
+            .padding(vertical = MaterialTheme.spacing.small, horizontal = MaterialTheme.spacing.medium)
             .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
     ) {
         ReMindGroupCard(
             modifier = Modifier.fillMaxWidth(),
@@ -91,13 +92,13 @@ fun SnoozeBottomSheetContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { onEnabledChange(!enabled) }
-                    .padding(LiteverTheme.spacing.medium),
+                    .padding(MaterialTheme.spacing.medium),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
                     text = stringResource(R.string.enable_snooze),
-                    style = LiteverTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold
                 )
                 Switch(
@@ -115,8 +116,8 @@ fun SnoozeBottomSheetContent(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = LiteverTheme.spacing.medium),
-                    horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                        .padding(horizontal = MaterialTheme.spacing.medium),
+                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
                 ) {
                     rowOptions.forEach { option ->
                         val isSelected = interval == option
@@ -142,7 +143,7 @@ fun SnoozeBottomSheetContent(
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
         }
 
         if (repeatCount != null && onRepeatCountChange != null) {
@@ -154,8 +155,8 @@ fun SnoozeBottomSheetContent(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = LiteverTheme.spacing.medium),
-                        horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                            .padding(horizontal = MaterialTheme.spacing.medium),
+                        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
                     ) {
                         rowOptions.forEach { option ->
                             val isSelected = repeatCount == option
@@ -194,7 +195,7 @@ fun SnoozeBottomSheetContent(
                         }
                     }
                 }
-                Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
             }
         }
     }

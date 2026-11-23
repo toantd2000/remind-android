@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.reminders.ui
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -71,7 +73,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -107,10 +108,10 @@ fun ReminderRingingRoute(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(LiteverTheme.colors.background),
+                .background(MaterialTheme.colorScheme.background),
             contentAlignment = Alignment.Center
         ) {
-            CircularProgressIndicator(color = LiteverTheme.colors.primary)
+            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
         }
         return
     }
@@ -196,7 +197,7 @@ fun ReminderRingingScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
-                .padding(LiteverTheme.spacing.medium),
+                .padding(MaterialTheme.spacing.medium),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Top Section: Clock & Date anchored at top, matching AlarmRingingScreen typography & colors
@@ -204,7 +205,7 @@ fun ReminderRingingScreen(
                 currentDateTime = currentDateTime,
                 is24HourFormat = uiState.is24HourFormat,
                 modifier = Modifier
-                    .padding(top = LiteverTheme.spacing.large)
+                    .padding(top = MaterialTheme.spacing.large)
                     .graphicsLayer {
                         translationY = topOffset.toPx()
                         alpha = topAlpha
@@ -247,7 +248,7 @@ fun ReminderRingingScreen(
                 onDismissClick = onDismissClick,
                 modifier = Modifier
                     .navigationBarsPadding()
-                    .padding(bottom = LiteverTheme.spacing.medium)
+                    .padding(bottom = MaterialTheme.spacing.medium)
                     .graphicsLayer {
                         translationY = bottomOffset.toPx()
                         alpha = bottomAlpha
@@ -291,29 +292,29 @@ private fun RingingClockHeader(
         ) {
             Text(
                 text = timeStr,
-                style = LiteverTheme.typography.displayLarge.copy(
+                style = MaterialTheme.typography.displayLarge.copy(
                     fontSize = 80.sp,
                     fontWeight = FontWeight.Black
                 ),
-                color = LiteverTheme.colors.primary
+                color = MaterialTheme.colorScheme.primary
             )
             if (amPm != null) {
-                Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
+                Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
                 Text(
                     text = amPm.uppercase(Locale.getDefault()),
-                    style = LiteverTheme.typography.displayLarge.copy(
+                    style = MaterialTheme.typography.displayLarge.copy(
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Black
                     ),
-                    color = LiteverTheme.colors.primary
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }
 
         Text(
             text = currentDateTime.format(dateFormatter).replaceFirstChar { it.uppercase() },
-            style = LiteverTheme.typography.titleLarge,
-            color = LiteverTheme.colors.secondary,
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.secondary,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center
         )
@@ -351,10 +352,10 @@ private fun RingingReminderContent(
         if (scheduleSummary.isNotBlank() || isHardUrgency) {
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(
-                    LiteverTheme.spacing.small,
+                    MaterialTheme.spacing.small,
                     Alignment.CenterHorizontally
                 ),
-                verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.extraSmall),
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 if (scheduleSummary.isNotBlank()) {
@@ -365,8 +366,8 @@ private fun RingingReminderContent(
                             ReMindIcons.Notifications
                         },
                         text = scheduleSummary,
-                        containerColor = LiteverTheme.colors.tertiaryContainer,
-                        contentColor = LiteverTheme.colors.onTertiaryContainer
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer
                     )
                 }
 
@@ -374,34 +375,34 @@ private fun RingingReminderContent(
                     RingingSchedulePill(
                         icon = ReMindIcons.NotificationImportant,
                         text = stringResource(R.string.urgency_hard),
-                        containerColor = LiteverTheme.colors.errorContainer,
-                        contentColor = LiteverTheme.colors.onErrorContainer
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.onErrorContainer
                     )
                 }
             }
         }
 
         if (reminder.title.isNotBlank()) {
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
             Text(
                 text = reminder.title,
-                style = LiteverTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = LiteverTheme.spacing.medium),
+                    .padding(horizontal = MaterialTheme.spacing.medium),
                 textAlign = TextAlign.Center
             )
         }
 
         if (reminder.notes.isNotBlank()) {
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
             Text(
                 text = reminder.notes,
-                style = LiteverTheme.typography.bodyMedium,
-                color = LiteverTheme.colors.onBackground.copy(alpha = 0.6f),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = LiteverTheme.spacing.extraLarge),
+                    .padding(horizontal = MaterialTheme.spacing.extraLarge),
                 textAlign = TextAlign.Center
             )
         }
@@ -415,7 +416,7 @@ private fun RingingReminderContent(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
                 val safeCountdown = (autoSilenceCountdown ?: 0).coerceAtLeast(0)
                 val minutes = safeCountdown / 60
                 val seconds = safeCountdown % 60
@@ -423,21 +424,21 @@ private fun RingingReminderContent(
 
                 Text(
                     text = stringResource(R.string.auto_silence_countdown_mm_ss, formattedTime),
-                    style = LiteverTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
-                    color = LiteverTheme.colors.error,
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                    color = MaterialTheme.colorScheme.error,
                     modifier = Modifier
                         .background(
-                            color = LiteverTheme.colors.errorContainer.copy(alpha = 0.3f),
-                            shape = LiteverTheme.shapes.medium
+                            color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f),
+                            shape = MaterialTheme.shapes.medium
                         )
                         .border(
                             width = 1.dp,
-                            color = LiteverTheme.colors.error.copy(alpha = 0.1f),
-                            shape = LiteverTheme.shapes.medium
+                            color = MaterialTheme.colorScheme.error.copy(alpha = 0.1f),
+                            shape = MaterialTheme.shapes.medium
                         )
                         .padding(
-                            horizontal = LiteverTheme.spacing.medium,
-                            vertical = LiteverTheme.spacing.small
+                            horizontal = MaterialTheme.spacing.medium,
+                            vertical = MaterialTheme.spacing.small
                         )
                 )
             }
@@ -459,8 +460,8 @@ private fun RingingSchedulePill(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(
-                horizontal = LiteverTheme.spacing.smallMedium,
-                vertical = LiteverTheme.spacing.extraSmall
+                horizontal = MaterialTheme.spacing.smallMedium,
+                vertical = MaterialTheme.spacing.extraSmall
             )
         ) {
             Icon(
@@ -469,10 +470,10 @@ private fun RingingSchedulePill(
                 modifier = Modifier.size(14.dp),
                 tint = contentColor
             )
-            Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
+            Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
             Text(
                 text = text,
-                style = LiteverTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium),
+                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium),
                 color = contentColor,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -501,7 +502,7 @@ private fun RingingBottomActions(
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
     ) {
         if (reminder.action.snoozeEnabled) {
             if (reminder.action.canSnooze()) {
@@ -512,21 +513,21 @@ private fun RingingBottomActions(
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
                     ) {
                         val quickOptions = listOf(5, 10, 15)
                         quickOptions.forEach { mins ->
                             OutlinedButton(
                                 onClick = { onSnoozeClick(mins) },
-                                shape = LiteverTheme.shapes.large,
-                                contentPadding = PaddingValues(horizontal = LiteverTheme.spacing.extraSmall),
+                                shape = MaterialTheme.shapes.large,
+                                contentPadding = PaddingValues(horizontal = MaterialTheme.spacing.extraSmall),
                                 modifier = Modifier
                                     .weight(1f)
                                     .height(48.dp)
                             ) {
                                 Text(
                                     text = "+${mins}m",
-                                    style = LiteverTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
                                     maxLines = 1
                                 )
                             }
@@ -534,15 +535,15 @@ private fun RingingBottomActions(
 
                         OutlinedButton(
                             onClick = onOpenCustomSnooze,
-                            shape = LiteverTheme.shapes.large,
-                            contentPadding = PaddingValues(horizontal = LiteverTheme.spacing.small),
+                            shape = MaterialTheme.shapes.large,
+                            contentPadding = PaddingValues(horizontal = MaterialTheme.spacing.small),
                             modifier = Modifier
                                 .weight(1.4f)
                                 .height(48.dp)
                         ) {
                             Text(
                                 text = stringResource(R.string.snooze_custom),
-                                style = LiteverTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
@@ -554,11 +555,11 @@ private fun RingingBottomActions(
                     modifier = Modifier
                         .fillMaxWidth()
                         .offset { IntOffset(x = snoozeShakeOffsetProvider().dp.roundToPx(), y = 0) },
-                    horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
                 ) {
                     OutlinedButton(
                         onClick = { onSnoozeClick(reminder.action.snoozeIntervalMinutes) },
-                        shape = LiteverTheme.shapes.large,
+                        shape = MaterialTheme.shapes.large,
                         modifier = Modifier
                             .weight(1f)
                             .height(52.dp)
@@ -568,7 +569,7 @@ private fun RingingBottomActions(
                                 R.string.snooze_default_format,
                                 reminder.action.snoozeIntervalMinutes
                             ),
-                            style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -576,16 +577,16 @@ private fun RingingBottomActions(
 
                     OutlinedButton(
                         onClick = onToggleQuickSnoozeOptions,
-                        shape = LiteverTheme.shapes.large,
-                        contentPadding = PaddingValues(horizontal = LiteverTheme.spacing.medium),
+                        shape = MaterialTheme.shapes.large,
+                        contentPadding = PaddingValues(horizontal = MaterialTheme.spacing.medium),
                         modifier = Modifier.height(52.dp)
                     ) {
                         Text(
                             text = stringResource(R.string.snooze_more_options),
-                            style = LiteverTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                             maxLines = 1
                         )
-                        Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
+                        Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
                         Icon(
                             imageVector = ReMindIcons.ArrowDropDown,
                             contentDescription = null,
@@ -599,14 +600,14 @@ private fun RingingBottomActions(
                 OutlinedButton(
                     onClick = {},
                     enabled = false,
-                    shape = LiteverTheme.shapes.large,
+                    shape = MaterialTheme.shapes.large,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(52.dp)
                 ) {
                     Text(
                         text = stringResource(R.string.snooze_limit_reached),
-                        style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                     )
                 }
             }
@@ -614,7 +615,7 @@ private fun RingingBottomActions(
 
         Button(
             onClick = onDismissClick,
-            shape = LiteverTheme.shapes.large,
+            shape = MaterialTheme.shapes.large,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp)
@@ -622,7 +623,7 @@ private fun RingingBottomActions(
         ) {
             Text(
                 text = stringResource(R.string.dismiss_action),
-                style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold)
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold)
             )
         }
     }
@@ -642,7 +643,7 @@ private fun CustomSnoozeDialog(
         title = {
             Text(
                 text = stringResource(R.string.snooze_custom_dialog_title),
-                style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
             )
         },
         text = {
@@ -650,7 +651,7 @@ private fun CustomSnoozeDialog(
                 value = minutesText,
                 onValueChange = onMinutesChange,
                 modifier = Modifier.fillMaxWidth(),
-                shape = LiteverTheme.shapes.medium,
+                shape = MaterialTheme.shapes.medium,
                 label = { Text(stringResource(R.string.snooze_custom_minutes_hint)) },
                 placeholder = { Text(stringResource(R.string.snooze_custom_minutes_hint)) },
                 singleLine = true,

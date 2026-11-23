@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -17,7 +19,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.ReminderTriggerType
@@ -31,7 +32,7 @@ fun ReminderTriggerTypeSelector(
 ) {
 
     Row(
-        modifier = modifier.fillMaxWidth().padding(horizontal = LiteverTheme.spacing.medium),
+        modifier = modifier.fillMaxWidth().padding(horizontal = MaterialTheme.spacing.medium),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         ReminderTriggerType.entries.forEach { triggerType ->
@@ -47,7 +48,7 @@ fun ReminderTriggerTypeSelector(
                 label = {
                     Text(
                         text = stringResource(labelRes),
-                        style = LiteverTheme.typography.labelSmall,
+                        style = MaterialTheme.typography.labelSmall,
                         fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.SemiBold
                     )
                 },
@@ -59,20 +60,20 @@ fun ReminderTriggerTypeSelector(
                     )
                 },
                 colors = FilterChipDefaults.filterChipColors(
-                    containerColor = LiteverTheme.colors.surfaceVariant,
-                    labelColor = LiteverTheme.colors.onSurfaceVariant,
-                    iconColor = LiteverTheme.colors.onSurfaceVariant,
-                    selectedContainerColor = LiteverTheme.colors.primary,
-                    selectedLabelColor = LiteverTheme.colors.onPrimary,
-                    selectedLeadingIconColor = LiteverTheme.colors.onPrimary
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    iconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                    selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 border = FilterChipDefaults.filterChipBorder(
                     enabled = true,
                     selected = isSelected,
-                    borderColor = LiteverTheme.colors.outlineVariant,
-                    selectedBorderColor = LiteverTheme.colors.outline
+                    borderColor = MaterialTheme.colorScheme.outlineVariant,
+                    selectedBorderColor = MaterialTheme.colorScheme.outline
                 ),
-                shape = LiteverTheme.shapes.medium,
+                shape = MaterialTheme.shapes.medium,
             )
         }
     }

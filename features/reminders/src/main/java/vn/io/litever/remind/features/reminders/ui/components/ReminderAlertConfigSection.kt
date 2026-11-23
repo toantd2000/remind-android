@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,7 +34,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.AutoSilenceBottomSheet
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingIcon
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsCategory
@@ -100,13 +100,13 @@ fun ReminderAlertConfigSection(
 
     Surface(
         modifier = modifier.fillMaxWidth(),
-        shape = LiteverTheme.shapes.large,
-        color = LiteverTheme.colors.surfaceContainerLow
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.surfaceContainerLow
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(LiteverTheme.spacing.medium)
+                .padding(MaterialTheme.spacing.medium)
         ) {
 
             ReMindSettingsCategory(
@@ -130,23 +130,23 @@ fun ReminderAlertConfigSection(
                         label = {
                             Text(
                                 text = stringResource(labelRes),
-                                style = LiteverTheme.typography.labelSmall,
+                                style = MaterialTheme.typography.labelSmall,
                                 fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.SemiBold
                             )
                         },
                         colors = FilterChipDefaults.filterChipColors(
-                            containerColor = LiteverTheme.colors.surfaceVariant,
-                            labelColor = LiteverTheme.colors.onSurfaceVariant,
-                            selectedContainerColor = LiteverTheme.colors.primary,
-                            selectedLabelColor = LiteverTheme.colors.onPrimary
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            selectedContainerColor = MaterialTheme.colorScheme.primary,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         border = FilterChipDefaults.filterChipBorder(
                             enabled = true,
                             selected = isSelected,
-                            borderColor = LiteverTheme.colors.outlineVariant,
-                            selectedBorderColor = LiteverTheme.colors.outline
+                            borderColor = MaterialTheme.colorScheme.outlineVariant,
+                            selectedBorderColor = MaterialTheme.colorScheme.outline
                         ),
-                        shape = LiteverTheme.shapes.medium,
+                        shape = MaterialTheme.shapes.medium,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -158,17 +158,17 @@ fun ReminderAlertConfigSection(
             }
             Text(
                 text = styleDesc,
-                style = LiteverTheme.typography.bodySmall,
-                color = LiteverTheme.colors.onSurfaceVariant,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 6.dp, bottom = 12.dp)
             )
 
             // 2. Sound & Vibration Settings (Applies to both ringing and standard)
             Text(
                 text = stringResource(R.string.sound_settings_title),
-                style = LiteverTheme.typography.titleSmall,
+                style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
-                color = LiteverTheme.colors.primary
+                color = MaterialTheme.colorScheme.primary
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -177,10 +177,10 @@ fun ReminderAlertConfigSection(
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(LiteverTheme.shapes.medium)
+                    .clip(MaterialTheme.shapes.medium)
                     .clickable(onClick = onRingtoneClick),
-                color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.4f),
-                shape = LiteverTheme.shapes.medium
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                shape = MaterialTheme.shapes.medium
             ) {
                 Row(
                     modifier = Modifier
@@ -200,14 +200,14 @@ fun ReminderAlertConfigSection(
                         Column {
                             Text(
                                 text = stringResource(R.string.ringtone_title),
-                                style = LiteverTheme.typography.bodyMedium,
+                                style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.SemiBold,
-                                color = LiteverTheme.colors.onSurface
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = ringtoneTitle.ifBlank { stringResource(R.string.default_ringtone) },
-                                style = LiteverTheme.typography.bodySmall,
-                                color = LiteverTheme.colors.onSurfaceVariant
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -215,7 +215,7 @@ fun ReminderAlertConfigSection(
                     Icon(
                         imageVector = ReMindIcons.KeyboardArrowRight,
                         contentDescription = null,
-                        tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.5f)
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                     )
                 }
             }
@@ -227,9 +227,9 @@ fun ReminderAlertConfigSection(
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(LiteverTheme.shapes.medium),
-                    color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.4f),
-                    shape = LiteverTheme.shapes.medium
+                        .clip(MaterialTheme.shapes.medium),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                    shape = MaterialTheme.shapes.medium
                 ) {
                     Row(
                         modifier = Modifier
@@ -285,10 +285,10 @@ fun ReminderAlertConfigSection(
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(LiteverTheme.shapes.medium)
+                    .clip(MaterialTheme.shapes.medium)
                     .clickable { onVibrationChange(!vibrationEnabled) },
-                color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.4f),
-                shape = LiteverTheme.shapes.medium
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                shape = MaterialTheme.shapes.medium
             ) {
                 Row(
                     modifier = Modifier
@@ -309,9 +309,9 @@ fun ReminderAlertConfigSection(
                         Column {
                             Text(
                                 text = stringResource(R.string.vibration_label),
-                                style = LiteverTheme.typography.bodyMedium,
+                                style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.SemiBold,
-                                color = LiteverTheme.colors.onSurface
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = if (vibrationEnabled) {
@@ -319,8 +319,8 @@ fun ReminderAlertConfigSection(
                                 } else {
                                     stringResource(R.string.off)
                                 },
-                                style = LiteverTheme.typography.bodySmall,
-                                color = LiteverTheme.colors.onSurfaceVariant
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -340,10 +340,10 @@ fun ReminderAlertConfigSection(
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(LiteverTheme.shapes.medium)
+                        .clip(MaterialTheme.shapes.medium)
                         .clickable { showAutoSilenceSheet = true },
-                    color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.4f),
-                    shape = LiteverTheme.shapes.medium
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                    shape = MaterialTheme.shapes.medium
                 ) {
                     Row(
                         modifier = Modifier
@@ -364,9 +364,9 @@ fun ReminderAlertConfigSection(
                             Column {
                                 Text(
                                     text = stringResource(R.string.auto_silence_title),
-                                    style = LiteverTheme.typography.bodyMedium,
+                                    style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.SemiBold,
-                                    color = LiteverTheme.colors.onSurface
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 val autoSilenceSummary = if (autoSilenceMinutes <= 0) {
                                     stringResource(R.string.auto_silence_never)
@@ -375,8 +375,8 @@ fun ReminderAlertConfigSection(
                                 }
                                 Text(
                                     text = autoSilenceSummary,
-                                    style = LiteverTheme.typography.bodySmall,
-                                    color = LiteverTheme.colors.onSurfaceVariant
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -384,7 +384,7 @@ fun ReminderAlertConfigSection(
                         Icon(
                             imageVector = ReMindIcons.KeyboardArrowRight,
                             contentDescription = null,
-                            tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.5f)
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                         )
                     }
                 }
@@ -395,10 +395,10 @@ fun ReminderAlertConfigSection(
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(LiteverTheme.shapes.medium)
+                        .clip(MaterialTheme.shapes.medium)
                         .clickable { onUseAlarmStreamChange(!useAlarmStream) },
-                    color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.4f),
-                    shape = LiteverTheme.shapes.medium
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                    shape = MaterialTheme.shapes.medium
                 ) {
                     Row(
                         modifier = Modifier
@@ -419,9 +419,9 @@ fun ReminderAlertConfigSection(
                             Column(modifier = Modifier.padding(end = 8.dp)) {
                                 Text(
                                     text = stringResource(R.string.use_alarm_stream_title),
-                                    style = LiteverTheme.typography.bodyMedium,
+                                    style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.SemiBold,
-                                    color = LiteverTheme.colors.onSurface
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
                                     text = if (useAlarmStream) {
@@ -429,8 +429,8 @@ fun ReminderAlertConfigSection(
                                     } else {
                                         stringResource(R.string.use_notification_stream_desc)
                                     },
-                                    style = LiteverTheme.typography.bodySmall,
-                                    color = LiteverTheme.colors.onSurfaceVariant
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -449,10 +449,10 @@ fun ReminderAlertConfigSection(
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(LiteverTheme.shapes.medium)
+                    .clip(MaterialTheme.shapes.medium)
                     .clickable { showSnoozeSheet = true },
-                color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.4f),
-                shape = LiteverTheme.shapes.medium
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                shape = MaterialTheme.shapes.medium
             ) {
                 Row(
                     modifier = Modifier
@@ -473,9 +473,9 @@ fun ReminderAlertConfigSection(
                         Column {
                             Text(
                                 text = stringResource(R.string.snooze_action),
-                                style = LiteverTheme.typography.bodyMedium,
+                                style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.SemiBold,
-                                color = LiteverTheme.colors.onSurface
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             val snoozeSummary = if (snoozeEnabled) {
                                 stringResource(R.string.minutes_format, snoozeIntervalMinutes)
@@ -484,8 +484,8 @@ fun ReminderAlertConfigSection(
                             }
                             Text(
                                 text = snoozeSummary,
-                                style = LiteverTheme.typography.bodySmall,
-                                color = LiteverTheme.colors.onSurfaceVariant
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -493,7 +493,7 @@ fun ReminderAlertConfigSection(
                     Icon(
                         imageVector = ReMindIcons.KeyboardArrowRight,
                         contentDescription = null,
-                        tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.5f)
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                     )
                 }
             }
@@ -504,13 +504,13 @@ fun ReminderAlertConfigSection(
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(LiteverTheme.shapes.medium)
+                    .clip(MaterialTheme.shapes.medium)
                     .clickable {
                         if (!isPro && !announceTitleTts) onNavigateToPaywall(2)
                         else onAnnounceTitleTtsChange(!announceTitleTts)
                     },
-                color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.4f),
-                shape = LiteverTheme.shapes.medium
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                shape = MaterialTheme.shapes.medium
             ) {
                 Row(
                     modifier = Modifier
@@ -535,16 +535,16 @@ fun ReminderAlertConfigSection(
                             ) {
                                 Text(
                                     text = stringResource(R.string.announce_title_tts_title),
-                                    style = LiteverTheme.typography.bodyMedium,
+                                    style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.SemiBold,
-                                    color = LiteverTheme.colors.onSurface
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 vn.io.litever.remind.core.designsystem.components.ReMindProDiamondTag()
                             }
                             Text(
                                 text = stringResource(R.string.announce_title_tts_desc),
-                                style = LiteverTheme.typography.bodySmall,
-                                color = LiteverTheme.colors.onSurfaceVariant
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -565,13 +565,13 @@ fun ReminderAlertConfigSection(
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(LiteverTheme.shapes.medium)
+                    .clip(MaterialTheme.shapes.medium)
                     .clickable {
                         if (!isPro && !extraLoudEnabled) onNavigateToPaywall(4)
                         else onExtraLoudChange(!extraLoudEnabled)
                     },
-                color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.4f),
-                shape = LiteverTheme.shapes.medium
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                shape = MaterialTheme.shapes.medium
             ) {
                 Row(
                     modifier = Modifier
@@ -596,16 +596,16 @@ fun ReminderAlertConfigSection(
                             ) {
                                 Text(
                                     text = stringResource(R.string.extra_loud_title),
-                                    style = LiteverTheme.typography.bodyMedium,
+                                    style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.SemiBold,
-                                    color = LiteverTheme.colors.onSurface
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 vn.io.litever.remind.core.designsystem.components.ReMindProDiamondTag()
                             }
                             Text(
                                 text = stringResource(R.string.extra_loud_desc),
-                                style = LiteverTheme.typography.bodySmall,
-                                color = LiteverTheme.colors.onSurfaceVariant
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }

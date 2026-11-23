@@ -1,5 +1,7 @@
 package vn.io.litever.remind.core.designsystem.components
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -33,7 +35,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import kotlin.time.Duration.Companion.milliseconds
@@ -97,13 +98,13 @@ fun BrandingSplashScreen(
         onFinished()
     }
 
-    val haloColor = LiteverTheme.colors.primary
+    val haloColor = MaterialTheme.colorScheme.primary
     val slideOffsetPx = with(LocalDensity.current) { 12.dp.toPx() }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(LiteverTheme.colors.background),
+            .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
         // Main Logo Content
@@ -146,7 +147,7 @@ fun BrandingSplashScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -156,14 +157,14 @@ fun BrandingSplashScreen(
                     translationY = (1f - wp) * slideOffsetPx
                 }
             ) {
-                ReMindLogo(style = LiteverTheme.typography.titleLarge)
+                ReMindLogo(style = MaterialTheme.typography.titleLarge)
 
-                Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
 
                 Text(
                     text = stringResource(R.string.app_slogan),
-                    style = LiteverTheme.typography.titleMedium,
-                    color = LiteverTheme.colors.onSurfaceVariant,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Center,
                     letterSpacing = 1.5.sp
@@ -175,7 +176,7 @@ fun BrandingSplashScreen(
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = LiteverTheme.spacing.tripleLarge)
+                .padding(bottom = MaterialTheme.spacing.tripleLarge)
                 .graphicsLayer {
                     alpha = attributionAlpha.value
                 },
@@ -183,9 +184,9 @@ fun BrandingSplashScreen(
         ) {
             Text(
                 text = "from",
-                style = LiteverTheme.typography.labelMedium,
-                color = LiteverTheme.colors.outline.copy(alpha = 0.5f),
-                modifier = Modifier.padding(bottom = LiteverTheme.spacing.extraSmall),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                modifier = Modifier.padding(bottom = MaterialTheme.spacing.extraSmall),
                 letterSpacing = 1.sp
             )
             LiteVerLogo(

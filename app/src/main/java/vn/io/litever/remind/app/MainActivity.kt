@@ -1,5 +1,7 @@
 package vn.io.litever.remind.app
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
@@ -64,7 +66,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import androidx.compose.material3.SnackbarHost
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.ads.api.AdManager
 import vn.io.litever.remind.core.ads.api.AdPlacement
 import vn.io.litever.remind.core.ads.api.LocalAdManager
@@ -420,7 +421,7 @@ class MainActivity : ComponentActivity() {
                                         start = paddingValues.calculateStartPadding(layoutDirection),
                                         top = paddingValues.calculateTopPadding(),
                                         end = paddingValues.calculateEndPadding(layoutDirection),
-                                        bottom = if (isBottomBarVisible) paddingValues.calculateBottomPadding() else LiteverTheme.spacing.none
+                                        bottom = if (isBottomBarVisible) paddingValues.calculateBottomPadding() else MaterialTheme.spacing.none
                                     )
 
                                     Box(

@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.BorderStroke
@@ -49,7 +51,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -106,7 +107,7 @@ fun ReminderRepeatConfigSection(
         )
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(horizontal = LiteverTheme.spacing.medium),
+            contentPadding = PaddingValues(horizontal = MaterialTheme.spacing.medium),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(
@@ -129,23 +130,23 @@ fun ReminderRepeatConfigSection(
                     label = {
                         Text(
                             text = stringResource(labelRes),
-                            style = LiteverTheme.typography.labelSmall,
+                            style = MaterialTheme.typography.labelSmall,
                             fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.SemiBold
                         )
                     },
                     colors = FilterChipDefaults.filterChipColors(
-                        containerColor = LiteverTheme.colors.surfaceVariant,
-                        labelColor = LiteverTheme.colors.onSurfaceVariant,
-                        selectedContainerColor = LiteverTheme.colors.primary,
-                        selectedLabelColor = LiteverTheme.colors.onPrimary
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        selectedContainerColor = MaterialTheme.colorScheme.primary,
+                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary
                     ),
                     border = FilterChipDefaults.filterChipBorder(
                         enabled = true,
                         selected = isSelected,
-                        borderColor = LiteverTheme.colors.outlineVariant,
-                        selectedBorderColor = LiteverTheme.colors.outline
+                        borderColor = MaterialTheme.colorScheme.outlineVariant,
+                        selectedBorderColor = MaterialTheme.colorScheme.outline
                     ),
-                    shape = LiteverTheme.shapes.medium
+                    shape = MaterialTheme.shapes.medium
                 )
             }
         }
@@ -155,11 +156,11 @@ fun ReminderRepeatConfigSection(
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = LiteverTheme.spacing.medium)
-                    .padding(bottom = LiteverTheme.spacing.medium),
-                shape = LiteverTheme.shapes.large,
-                color = LiteverTheme.colors.surfaceContainer,
-                border = BorderStroke(1.dp, LiteverTheme.colors.outlineVariant)
+                    .padding(horizontal = MaterialTheme.spacing.medium)
+                    .padding(bottom = MaterialTheme.spacing.medium),
+                shape = MaterialTheme.shapes.large,
+                color = MaterialTheme.colorScheme.surfaceContainer,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
             ) {
                 AnimatedContent(
                     targetState = repeatInterval,
@@ -196,7 +197,7 @@ fun ReminderRepeatConfigSection(
                 }
             }
         } else {
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
         }
     }
 
@@ -263,12 +264,12 @@ fun ReminderRepeatConfigSection(
                 title = {
                     Text(
                         stringResource(R.string.set_reminder_date),
-                        style = LiteverTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                         modifier = Modifier.padding(
-                            top = LiteverTheme.spacing.medium,
-                            bottom = LiteverTheme.spacing.small,
-                            start = LiteverTheme.spacing.medium,
-                            end = LiteverTheme.spacing.medium
+                            top = MaterialTheme.spacing.medium,
+                            bottom = MaterialTheme.spacing.small,
+                            start = MaterialTheme.spacing.medium,
+                            end = MaterialTheme.spacing.medium
                         )
                     )
                 }
@@ -291,7 +292,7 @@ fun ReminderRepeatConfigSection(
             text = {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
                 ) {
                     // Month dropdown
                     var monthExpanded by remember { mutableStateOf(false) }
@@ -299,8 +300,8 @@ fun ReminderRepeatConfigSection(
                         Surface(
                             modifier = Modifier.fillMaxWidth(),
                             onClick = { monthExpanded = true },
-                            color = LiteverTheme.colors.surfaceVariant,
-                            shape = LiteverTheme.shapes.medium
+                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            shape = MaterialTheme.shapes.medium
                         ) {
                             Row(
                                 modifier = Modifier
@@ -312,21 +313,21 @@ fun ReminderRepeatConfigSection(
                                 Column {
                                     Text(
                                         text = stringResource(R.string.select_month_label),
-                                        style = LiteverTheme.typography.labelSmall,
-                                        color = LiteverTheme.colors.onSurfaceVariant
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     Text(
                                         text = Month.of(selectedMonth)
                                             .getDisplayName(TextStyle.FULL, currentLocale),
-                                        style = LiteverTheme.typography.bodyMedium,
+                                        style = MaterialTheme.typography.bodyMedium,
                                         fontWeight = FontWeight.SemiBold,
-                                        color = LiteverTheme.colors.onSurface
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
                                 Icon(
                                     imageVector = ReMindIcons.ArrowDropDown,
                                     contentDescription = null,
-                                    tint = LiteverTheme.colors.onSurfaceVariant
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -343,7 +344,7 @@ fun ReminderRepeatConfigSection(
                                             text = Month.of(m)
                                                 .getDisplayName(TextStyle.FULL, currentLocale),
                                             fontWeight = if (m == selectedMonth) FontWeight.Bold else FontWeight.Normal,
-                                            color = if (m == selectedMonth) LiteverTheme.colors.primary else LiteverTheme.colors.onSurface
+                                            color = if (m == selectedMonth) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                                         )
                                     },
                                     onClick = {
@@ -364,8 +365,8 @@ fun ReminderRepeatConfigSection(
                         Surface(
                             modifier = Modifier.fillMaxWidth(),
                             onClick = { dayExpanded = true },
-                            color = LiteverTheme.colors.surfaceVariant,
-                            shape = LiteverTheme.shapes.medium
+                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            shape = MaterialTheme.shapes.medium
                         ) {
                             Row(
                                 modifier = Modifier
@@ -377,20 +378,20 @@ fun ReminderRepeatConfigSection(
                                 Column {
                                     Text(
                                         text = stringResource(R.string.select_day_label),
-                                        style = LiteverTheme.typography.labelSmall,
-                                        color = LiteverTheme.colors.onSurfaceVariant
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     Text(
                                         text = stringResource(R.string.day_format, selectedDay),
-                                        style = LiteverTheme.typography.bodyMedium,
+                                        style = MaterialTheme.typography.bodyMedium,
                                         fontWeight = FontWeight.SemiBold,
-                                        color = LiteverTheme.colors.onSurface
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
                                 Icon(
                                     imageVector = ReMindIcons.ArrowDropDown,
                                     contentDescription = null,
-                                    tint = LiteverTheme.colors.onSurfaceVariant
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -406,7 +407,7 @@ fun ReminderRepeatConfigSection(
                                         Text(
                                             text = stringResource(R.string.day_format, d),
                                             fontWeight = if (d == selectedDay) FontWeight.Bold else FontWeight.Normal,
-                                            color = if (d == selectedDay) LiteverTheme.colors.primary else LiteverTheme.colors.onSurface
+                                            color = if (d == selectedDay) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                                         )
                                     },
                                     onClick = {
@@ -457,7 +458,7 @@ fun ReminderRepeatConfigSection(
             text = {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
                 ) {
                     // Month dropdown
                     var monthExpanded by remember { mutableStateOf(false) }
@@ -465,8 +466,8 @@ fun ReminderRepeatConfigSection(
                         Surface(
                             modifier = Modifier.fillMaxWidth(),
                             onClick = { monthExpanded = true },
-                            color = LiteverTheme.colors.surfaceVariant,
-                            shape = LiteverTheme.shapes.medium
+                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            shape = MaterialTheme.shapes.medium
                         ) {
                             Row(
                                 modifier = Modifier
@@ -478,21 +479,21 @@ fun ReminderRepeatConfigSection(
                                 Column {
                                     Text(
                                         text = stringResource(R.string.select_month_label),
-                                        style = LiteverTheme.typography.labelSmall,
-                                        color = LiteverTheme.colors.onSurfaceVariant
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     Text(
                                         text = Month.of(selectedMonth)
                                             .getDisplayName(TextStyle.FULL, currentLocale),
-                                        style = LiteverTheme.typography.bodyMedium,
+                                        style = MaterialTheme.typography.bodyMedium,
                                         fontWeight = FontWeight.SemiBold,
-                                        color = LiteverTheme.colors.onSurface
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
                                 Icon(
                                     imageVector = ReMindIcons.ArrowDropDown,
                                     contentDescription = null,
-                                    tint = LiteverTheme.colors.onSurfaceVariant
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -509,7 +510,7 @@ fun ReminderRepeatConfigSection(
                                             text = Month.of(m)
                                                 .getDisplayName(TextStyle.FULL, currentLocale),
                                             fontWeight = if (m == selectedMonth) FontWeight.Bold else FontWeight.Normal,
-                                            color = if (m == selectedMonth) LiteverTheme.colors.primary else LiteverTheme.colors.onSurface
+                                            color = if (m == selectedMonth) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                                         )
                                     },
                                     onClick = {
@@ -530,8 +531,8 @@ fun ReminderRepeatConfigSection(
                         Surface(
                             modifier = Modifier.fillMaxWidth(),
                             onClick = { dayExpanded = true },
-                            color = LiteverTheme.colors.surfaceVariant,
-                            shape = LiteverTheme.shapes.medium
+                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            shape = MaterialTheme.shapes.medium
                         ) {
                             Row(
                                 modifier = Modifier
@@ -543,20 +544,20 @@ fun ReminderRepeatConfigSection(
                                 Column {
                                     Text(
                                         text = stringResource(R.string.select_day_label),
-                                        style = LiteverTheme.typography.labelSmall,
-                                        color = LiteverTheme.colors.onSurfaceVariant
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     Text(
                                         text = stringResource(R.string.day_format, selectedDay),
-                                        style = LiteverTheme.typography.bodyMedium,
+                                        style = MaterialTheme.typography.bodyMedium,
                                         fontWeight = FontWeight.SemiBold,
-                                        color = LiteverTheme.colors.onSurface
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
                                 Icon(
                                     imageVector = ReMindIcons.ArrowDropDown,
                                     contentDescription = null,
-                                    tint = LiteverTheme.colors.onSurfaceVariant
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -572,7 +573,7 @@ fun ReminderRepeatConfigSection(
                                         Text(
                                             text = stringResource(R.string.day_format, d),
                                             fontWeight = if (d == selectedDay) FontWeight.Bold else FontWeight.Normal,
-                                            color = if (d == selectedDay) LiteverTheme.colors.primary else LiteverTheme.colors.onSurface
+                                            color = if (d == selectedDay) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                                         )
                                     },
                                     onClick = {
@@ -641,20 +642,20 @@ private fun RepeatDetailContent(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(LiteverTheme.spacing.smallMedium),
-                verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                    .padding(MaterialTheme.spacing.smallMedium),
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
             ) {
                 Text(
                     text = stringResource(R.string.selected_dates),
-                    style = LiteverTheme.typography.labelMedium,
-                    color = LiteverTheme.colors.onSurfaceVariant,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.SemiBold,
                 )
 
                 FlowRow(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.extraSmall),
-                    verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.extraSmall)
+                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall),
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall)
                 ) {
                     datesList.forEachIndexed { index, targetDate ->
                         val label = targetDate.format(dateFormatter)
@@ -662,7 +663,7 @@ private fun RepeatDetailContent(
                         InputChip(
                             selected = true,
                             onClick = { onShowEditExactDatePicker(index, targetDate) },
-                            label = { Text(label, style = LiteverTheme.typography.labelMedium) },
+                            label = { Text(label, style = MaterialTheme.typography.labelMedium) },
                             trailingIcon = if (datesList.size > 1) {
                                 {
                                     Icon(
@@ -675,12 +676,12 @@ private fun RepeatDetailContent(
                                 }
                             } else null,
                             colors = InputChipDefaults.inputChipColors(
-                                selectedContainerColor = LiteverTheme.colors.secondary,
-                                selectedLabelColor = LiteverTheme.colors.onSecondary,
-                                selectedTrailingIconColor = LiteverTheme.colors.onSecondary,
-                                containerColor = LiteverTheme.colors.surfaceVariant,
-                                labelColor = LiteverTheme.colors.onSurfaceVariant,
-                                leadingIconColor = LiteverTheme.colors.onSurfaceVariant
+                                selectedContainerColor = MaterialTheme.colorScheme.secondary,
+                                selectedLabelColor = MaterialTheme.colorScheme.onSecondary,
+                                selectedTrailingIconColor = MaterialTheme.colorScheme.onSecondary,
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                leadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
                             ),
                             modifier = Modifier.height(32.dp)
                         )
@@ -692,7 +693,7 @@ private fun RepeatDetailContent(
                         label = {
                             Text(
                                 stringResource(R.string.add_date),
-                                style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
+                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
                             )
                         },
                         leadingIcon = {
@@ -703,8 +704,8 @@ private fun RepeatDetailContent(
                             )
                         },
                         colors = InputChipDefaults.inputChipColors(
-                            containerColor = LiteverTheme.colors.surfaceVariant,
-                            labelColor = LiteverTheme.colors.onSurfaceVariant
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            labelColor = MaterialTheme.colorScheme.onSurfaceVariant
                         ),
                         modifier = Modifier.height(32.dp)
                     )
@@ -714,7 +715,7 @@ private fun RepeatDetailContent(
 
         ReminderRepeatInterval.WEEKLY -> {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(LiteverTheme.spacing.smallMedium),
+                modifier = Modifier.fillMaxWidth().padding(MaterialTheme.spacing.smallMedium),
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 DayOfWeek.entries.forEach { day ->
@@ -733,24 +734,24 @@ private fun RepeatDetailContent(
                         modifier = Modifier
                             .weight(1f)
                             .height(44.dp)
-                            .clip(LiteverTheme.shapes.medium)
+                            .clip(MaterialTheme.shapes.medium)
                             .clickable { onRepeatDayToggle(day) },
-                        color = if (isSelected) LiteverTheme.colors.secondary
-                        else LiteverTheme.colors.surfaceVariant,
-                        shape = LiteverTheme.shapes.medium,
+                        color = if (isSelected) MaterialTheme.colorScheme.secondary
+                        else MaterialTheme.colorScheme.surfaceVariant,
+                        shape = MaterialTheme.shapes.medium,
                         border = if (isSelected) null else BorderStroke(
                             1.dp,
-                            LiteverTheme.colors.outlineVariant
+                            MaterialTheme.colorScheme.outlineVariant
                         )
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Text(
                                 text = stringResource(dayLabelRes),
-                                style = LiteverTheme.typography.labelMedium.copy(
+                                style = MaterialTheme.typography.labelMedium.copy(
                                     fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Medium
                                 ),
-                                color = if (isSelected) LiteverTheme.colors.onSecondary
-                                else LiteverTheme.colors.onSurfaceVariant,
+                                color = if (isSelected) MaterialTheme.colorScheme.onSecondary
+                                else MaterialTheme.colorScheme.onSurfaceVariant,
                                 maxLines = 1,
                                 softWrap = false
                             )
@@ -761,7 +762,7 @@ private fun RepeatDetailContent(
         }
 
         ReminderRepeatInterval.MONTHLY -> {
-            Column(modifier = Modifier.fillMaxWidth().padding(LiteverTheme.spacing.smallMedium)) {
+            Column(modifier = Modifier.fillMaxWidth().padding(MaterialTheme.spacing.smallMedium)) {
                 val selectedSummary = if (monthlyDays.isEmpty()) {
                     stringResource(R.string.select_day_of_month)
                 } else {
@@ -773,8 +774,8 @@ private fun RepeatDetailContent(
 
                 Text(
                     text = selectedSummary,
-                    style = LiteverTheme.typography.labelMedium,
-                    color = LiteverTheme.colors.primary,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
@@ -796,24 +797,24 @@ private fun RepeatDetailContent(
                                     modifier = Modifier
                                         .weight(1f)
                                         .height(36.dp)
-                                        .clip(LiteverTheme.shapes.small)
+                                        .clip(MaterialTheme.shapes.small)
                                         .clickable { onMonthlyDayToggle(dayNumber) },
-                                    color = if (isSelected) LiteverTheme.colors.secondary
-                                    else LiteverTheme.colors.surfaceVariant,
-                                    shape = LiteverTheme.shapes.small,
+                                    color = if (isSelected) MaterialTheme.colorScheme.secondary
+                                    else MaterialTheme.colorScheme.surfaceVariant,
+                                    shape = MaterialTheme.shapes.small,
                                     border = if (isSelected) null else BorderStroke(
                                         1.dp,
-                                        LiteverTheme.colors.outlineVariant
+                                        MaterialTheme.colorScheme.outlineVariant
                                     )
                                 ) {
                                     Box(contentAlignment = Alignment.Center) {
                                         Text(
                                             text = dayNumber.toString(),
-                                            style = LiteverTheme.typography.labelSmall.copy(
+                                            style = MaterialTheme.typography.labelSmall.copy(
                                                 fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.SemiBold
                                             ),
-                                            color = if (isSelected) LiteverTheme.colors.onSecondary
-                                            else LiteverTheme.colors.onSurfaceVariant,
+                                            color = if (isSelected) MaterialTheme.colorScheme.onSecondary
+                                            else MaterialTheme.colorScheme.onSurfaceVariant,
                                             maxLines = 1,
                                             softWrap = false
                                         )
@@ -831,20 +832,20 @@ private fun RepeatDetailContent(
         ReminderRepeatInterval.DAILY, ReminderRepeatInterval.CUSTOM -> {}
         ReminderRepeatInterval.YEARLY -> {
             Column(
-                modifier = Modifier.fillMaxWidth().padding(LiteverTheme.spacing.smallMedium),
-                verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                modifier = Modifier.fillMaxWidth().padding(MaterialTheme.spacing.smallMedium),
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
             ) {
                 Text(
                     text = stringResource(R.string.selected_dates),
-                    style = LiteverTheme.typography.labelMedium,
-                    color = LiteverTheme.colors.onSurfaceVariant,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.SemiBold,
                 )
 
                 FlowRow(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.extraSmall),
-                    verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.extraSmall)
+                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall),
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall)
                 ) {
                     yearlyDates.forEachIndexed { index, dateEntry ->
                         val monthName =
@@ -854,7 +855,7 @@ private fun RepeatDetailContent(
                         InputChip(
                             selected = true,
                             onClick = { onShowEditYearlyDateDialog(index, dateEntry) },
-                            label = { Text(label, style = LiteverTheme.typography.labelMedium) },
+                            label = { Text(label, style = MaterialTheme.typography.labelMedium) },
                             trailingIcon = if (yearlyDates.size > 1) {
                                 {
                                     Icon(
@@ -867,12 +868,12 @@ private fun RepeatDetailContent(
                                 }
                             } else null,
                             colors = InputChipDefaults.inputChipColors(
-                                selectedContainerColor = LiteverTheme.colors.secondary,
-                                selectedLabelColor = LiteverTheme.colors.onSecondary,
-                                selectedTrailingIconColor = LiteverTheme.colors.onSecondary,
-                                containerColor = LiteverTheme.colors.surfaceVariant,
-                                labelColor = LiteverTheme.colors.onSurfaceVariant,
-                                leadingIconColor = LiteverTheme.colors.onSurfaceVariant
+                                selectedContainerColor = MaterialTheme.colorScheme.secondary,
+                                selectedLabelColor = MaterialTheme.colorScheme.onSecondary,
+                                selectedTrailingIconColor = MaterialTheme.colorScheme.onSecondary,
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                leadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
                             ),
                             modifier = Modifier.height(32.dp)
                         )
@@ -884,7 +885,7 @@ private fun RepeatDetailContent(
                         label = {
                             Text(
                                 stringResource(R.string.add_date),
-                                style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
+                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
                             )
                         },
                         leadingIcon = {
@@ -895,8 +896,8 @@ private fun RepeatDetailContent(
                             )
                         },
                         colors = InputChipDefaults.inputChipColors(
-                            containerColor = LiteverTheme.colors.surfaceVariant,
-                            labelColor = LiteverTheme.colors.onSurfaceVariant
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            labelColor = MaterialTheme.colorScheme.onSurfaceVariant
                         ),
                         modifier = Modifier.height(32.dp)
                     )

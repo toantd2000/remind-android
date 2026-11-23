@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.alarms.ui.components
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.compose.foundation.layout.*
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.*
@@ -9,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.features.alarms.R
 import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState
 
@@ -20,12 +21,12 @@ fun NextAlarmHeader(
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
-        color = LiteverTheme.colors.tertiaryContainer,
-        contentColor = LiteverTheme.colors.onTertiaryContainer,
-        shape = LiteverTheme.shapes.large,
+        color = MaterialTheme.colorScheme.tertiaryContainer,
+        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+        shape = MaterialTheme.shapes.large,
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(all = LiteverTheme.spacing.medium),
+            modifier = Modifier.fillMaxWidth().padding(all = MaterialTheme.spacing.medium),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
@@ -33,10 +34,10 @@ fun NextAlarmHeader(
                 contentDescription = null,
                 modifier = Modifier.size(18.dp)
             )
-            Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
+            Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
             Text(
                 text = formatNextAlarmText(state),
-                style = LiteverTheme.typography.labelMedium,
+                style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.SemiBold
             )
         }

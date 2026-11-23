@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.alarms.ui.components
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,7 +31,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.model.Alarm
@@ -50,18 +51,18 @@ fun AlarmCard(
     val isSkipped = alarm.skippedAt != null
 
     val containerColor = if (alarm.isEnabled && !isSkipped) {
-        LiteverTheme.colors.surfaceContainer
+        MaterialTheme.colorScheme.surfaceContainer
     } else {
-        LiteverTheme.colors.surfaceContainerLow
+        MaterialTheme.colorScheme.surfaceContainerLow
     }
 
-    val primaryColor = LiteverTheme.colors.primary
-    val secondaryColor = LiteverTheme.colors.secondary
+    val primaryColor = MaterialTheme.colorScheme.primary
+    val secondaryColor = MaterialTheme.colorScheme.secondary
 
     Surface(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
-        shape = LiteverTheme.shapes.large,
+        shape = MaterialTheme.shapes.large,
         color = containerColor,
     ) {
         Column(
@@ -80,10 +81,10 @@ fun AlarmCard(
                     }
                 }
                 .padding(
-                    start = LiteverTheme.spacing.medium,
-                    end = LiteverTheme.spacing.none,
-                    top = LiteverTheme.spacing.smallMedium,
-                    bottom = LiteverTheme.spacing.smallMedium
+                    start = MaterialTheme.spacing.medium,
+                    end = MaterialTheme.spacing.none,
+                    top = MaterialTheme.spacing.smallMedium,
+                    bottom = MaterialTheme.spacing.smallMedium
                 ),
         ) {
             // Top Row: Repeat Info or Quick Alarm Tag
@@ -93,14 +94,14 @@ fun AlarmCard(
                     Icon(
                         imageVector = ReMindIcons.FlashOn,
                         contentDescription = null,
-                        tint = if (alarm.isEnabled && !isSkipped) LiteverTheme.colors.primary else LiteverTheme.colors.secondary,
+                        tint = if (alarm.isEnabled && !isSkipped) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
                         modifier = Modifier.size(14.dp)
                     )
-                    Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
+                    Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
                     Text(
                         text = stringResource(R.string.quick_alarm_tag),
-                        style = LiteverTheme.typography.labelSmall,
-                        color = if (alarm.isEnabled && !isSkipped) LiteverTheme.colors.primary else LiteverTheme.colors.secondary,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = if (alarm.isEnabled && !isSkipped) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.weight(1f, fill = false),
                         maxLines = 1,
@@ -109,11 +110,11 @@ fun AlarmCard(
                 } else {
                     Text(
                         text = getRepeatText(alarm),
-                        style = LiteverTheme.typography.labelSmall,
+                        style = MaterialTheme.typography.labelSmall,
                         color = if (alarm.isEnabled && !isSkipped)
-                            LiteverTheme.colors.primary
+                            MaterialTheme.colorScheme.primary
                         else
-                            LiteverTheme.colors.secondary,
+                            MaterialTheme.colorScheme.secondary,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.weight(1f, fill = false),
                         maxLines = 1,
@@ -122,22 +123,22 @@ fun AlarmCard(
                 }
 
                 if (isSkipped && skippedAt != null) {
-                    Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
+                    Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
                     Box(
                         modifier = Modifier
-                            .size(LiteverTheme.spacing.extraSmall)
+                            .size(MaterialTheme.spacing.extraSmall)
                             .background(
-                                LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.6f),
+                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                                 CircleShape
                             )
                     )
-                    Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
+                    Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
 
                     val dateFormatter = remember { DateTimeFormatter.ofPattern("dd/MM") }
                     Text(
                         text = stringResource(R.string.skipped_next_format, skippedAt.format(dateFormatter)),
-                        style = LiteverTheme.typography.labelSmall,
-                        color = LiteverTheme.colors.tertiary,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.tertiary,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -148,19 +149,19 @@ fun AlarmCard(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = timeStr,
-                    style = LiteverTheme.typography.displaySmall.copy(
+                    style = MaterialTheme.typography.displaySmall.copy(
                         fontWeight = FontWeight.Bold,
                         letterSpacing = (-0.5).sp
                     ),
-                    color = LiteverTheme.colors.onSurface
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 if (amPm != null) {
                     Text(
                         text = amPm.uppercase(),
-                        style = LiteverTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                        color = LiteverTheme.colors.onSurface,
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier
-                            .padding(start = LiteverTheme.spacing.extraSmall, bottom = LiteverTheme.spacing.small)
+                            .padding(start = MaterialTheme.spacing.extraSmall, bottom = MaterialTheme.spacing.small)
                             .align(Alignment.Bottom)
                     )
                 }
@@ -168,7 +169,7 @@ fun AlarmCard(
                 // Mission Icons
                 MissionIcons(
                     missions = alarm.missions,
-                    modifier = Modifier.padding(start = LiteverTheme.spacing.small, bottom = LiteverTheme.spacing.small)
+                    modifier = Modifier.padding(start = MaterialTheme.spacing.small, bottom = MaterialTheme.spacing.small)
                 )
 
                 Spacer(Modifier.weight(1F))
@@ -180,24 +181,24 @@ fun AlarmCard(
 
                 IconButton(
                     onClick = onMoreClick,
-                    modifier = Modifier.size(LiteverTheme.spacing.extraLarge)
+                    modifier = Modifier.size(MaterialTheme.spacing.extraLarge)
                 ) {
                     Icon(
                         imageVector = ReMindIcons.MoreVert,
                         contentDescription = stringResource(R.string.action_more),
-                        modifier = Modifier.size(LiteverTheme.spacing.mediumLarge),
+                        modifier = Modifier.size(MaterialTheme.spacing.mediumLarge),
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.tiny))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.tiny))
 
             // Bottom Row: Label - Italics if empty
             val labelText = alarm.label.ifEmpty { stringResource(R.string.no_label) }
             Text(
                 text = labelText,
-                color = LiteverTheme.colors.onSurfaceVariant,
-                style = LiteverTheme.typography.bodyMedium.copy(
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodyMedium.copy(
                     fontStyle = if (alarm.label.isEmpty()) FontStyle.Italic else FontStyle.Normal,
                 ),
                 maxLines = 1,
@@ -221,28 +222,28 @@ internal fun MissionIcons(missions: List<Mission>, modifier: Modifier = Modifier
                     imageVector = getMissionIcon(mission.type),
                     contentDescription = null,
                     modifier = Modifier
-                        .size(LiteverTheme.spacing.medium)
-                        .padding(horizontal = LiteverTheme.spacing.tiny),
-                    tint = LiteverTheme.colors.primary.copy(alpha = 0.6f)
+                        .size(MaterialTheme.spacing.medium)
+                        .padding(horizontal = MaterialTheme.spacing.tiny),
+                    tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
                 )
             }
         } else {
             Icon(
                 imageVector = getMissionIcon(missions[0].type),
                 contentDescription = null,
-                modifier = Modifier.size(LiteverTheme.spacing.medium),
-                tint = LiteverTheme.colors.primary.copy(alpha = 0.6f)
+                modifier = Modifier.size(MaterialTheme.spacing.medium),
+                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
             )
-            Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
+            Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
             Surface(
-                color = LiteverTheme.colors.primaryContainer.copy(alpha = 0.6f),
+                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f),
                 shape = CircleShape
             ) {
                 Text(
                     text = "+${missions.size - 1}",
-                    style = LiteverTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                    color = LiteverTheme.colors.onPrimaryContainer,
-                    modifier = Modifier.padding(horizontal = LiteverTheme.spacing.extraSmall, vertical = 1.dp),
+                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.padding(horizontal = MaterialTheme.spacing.extraSmall, vertical = 1.dp),
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -278,7 +279,7 @@ fun AlarmCardPreview() {
         repeatDays = listOf(java.time.DayOfWeek.MONDAY, java.time.DayOfWeek.WEDNESDAY, java.time.DayOfWeek.FRIDAY)
     )
     vn.io.litever.remind.core.designsystem.theme.ReMindTheme {
-        Box(modifier = Modifier.padding(LiteverTheme.spacing.medium)) {
+        Box(modifier = Modifier.padding(MaterialTheme.spacing.medium)) {
             AlarmCard(
                 alarm = alarm,
                 is24HourFormat = false,
@@ -301,7 +302,7 @@ fun AlarmCardDisabledPreview() {
         repeatDays = listOf(java.time.DayOfWeek.SATURDAY, java.time.DayOfWeek.SUNDAY)
     )
     vn.io.litever.remind.core.designsystem.theme.ReMindTheme {
-        Box(modifier = Modifier.padding(LiteverTheme.spacing.medium)) {
+        Box(modifier = Modifier.padding(MaterialTheme.spacing.medium)) {
             AlarmCard(
                 alarm = alarm,
                 is24HourFormat = true,
@@ -325,7 +326,7 @@ fun AlarmCardSkippedPreview() {
         skippedAt = java.time.LocalDateTime.now()
     )
     vn.io.litever.remind.core.designsystem.theme.ReMindTheme {
-        Box(modifier = Modifier.padding(LiteverTheme.spacing.medium)) {
+        Box(modifier = Modifier.padding(MaterialTheme.spacing.medium)) {
             AlarmCard(
                 alarm = alarm,
                 is24HourFormat = false,
@@ -348,7 +349,7 @@ fun AlarmCardNoLabelPreview() {
         repeatDays = listOf(java.time.DayOfWeek.MONDAY, java.time.DayOfWeek.TUESDAY)
     )
     vn.io.litever.remind.core.designsystem.theme.ReMindTheme {
-        Box(modifier = Modifier.padding(LiteverTheme.spacing.medium)) {
+        Box(modifier = Modifier.padding(MaterialTheme.spacing.medium)) {
             AlarmCard(
                 alarm = alarm,
                 is24HourFormat = false,

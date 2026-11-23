@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.mission.ui
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
@@ -62,7 +64,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.compose.material3.IconButton
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.MathProblem
@@ -131,17 +132,17 @@ fun MissionRingingScreen(
     BackHandler { onAbandon() }
 
     if (uiState.isLoading) {
-        Box(modifier = Modifier.fillMaxSize().background(LiteverTheme.colors.background))
+        Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
         return
     }
 
     val isUrgent = uiState.timeoutCountdown < 10
     val timerContainerColor by animateColorAsState(
-        targetValue = if (isUrgent) LiteverTheme.colors.error.copy(alpha = 0.12f) else LiteverTheme.colors.primary.copy(alpha = 0.08f),
+        targetValue = if (isUrgent) MaterialTheme.colorScheme.error.copy(alpha = 0.12f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.08f),
         label = "timerContainerColor"
     )
     val timerContentColor by animateColorAsState(
-        targetValue = if (isUrgent) LiteverTheme.colors.error else LiteverTheme.colors.primary,
+        targetValue = if (isUrgent) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
         label = "timerContentColor"
     )
 
@@ -159,16 +160,16 @@ fun MissionRingingScreen(
                             ) {
                                 Text(
                                     text = stringResource(R.string.wakeup_challenge_title),
-                                    style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                    color = LiteverTheme.colors.onSurface,
+                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
                                 )
                                 if (alarmTimeString.isNotBlank()) {
                                     Text(
                                         text = stringResource(R.string.alarm_time_subtitle, alarmTimeString),
-                                        style = LiteverTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
-                                        color = LiteverTheme.colors.onSurfaceVariant,
+                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         maxLines = 1
                                     )
                                 }
@@ -186,15 +187,15 @@ fun MissionRingingScreen(
                             Surface(
                                 shape = CircleShape,
                                 color = timerContainerColor,
-                                modifier = Modifier.padding(end = LiteverTheme.spacing.medium)
+                                modifier = Modifier.padding(end = MaterialTheme.spacing.medium)
                             ) {
                                 Row(
                                     modifier = Modifier.padding(
-                                        horizontal = LiteverTheme.spacing.smallMedium,
-                                        vertical = LiteverTheme.spacing.extraSmall
+                                        horizontal = MaterialTheme.spacing.smallMedium,
+                                        vertical = MaterialTheme.spacing.extraSmall
                                     ),
                                     verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.extraSmall)
+                                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall)
                                 ) {
                                     Icon(
                                         imageVector = ReMindIcons.Alarm,
@@ -204,7 +205,7 @@ fun MissionRingingScreen(
                                     )
                                     Text(
                                         text = String.format("%02d:%02d", uiState.timeoutCountdown / 60, uiState.timeoutCountdown % 60),
-                                        style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.ExtraBold),
+                                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.ExtraBold),
                                         color = timerContentColor
                                     )
                                 }
@@ -231,8 +232,8 @@ fun MissionRingingScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(
-                                    horizontal = LiteverTheme.spacing.medium,
-                                    vertical = LiteverTheme.spacing.smallMedium
+                                    horizontal = MaterialTheme.spacing.medium,
+                                    vertical = MaterialTheme.spacing.smallMedium
                                 )
                         )
                     }
@@ -255,8 +256,8 @@ fun MissionRingingScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .padding(horizontal = LiteverTheme.spacing.medium)
-                    .padding(bottom = LiteverTheme.spacing.medium),
+                    .padding(horizontal = MaterialTheme.spacing.medium)
+                    .padding(bottom = MaterialTheme.spacing.medium),
                 contentAlignment = Alignment.TopCenter
             ) {
                 if (currentMission != null) {
@@ -360,16 +361,16 @@ private fun MissionProgressScaffold(
 
     Card(
         modifier = modifier,
-        shape = LiteverTheme.shapes.large,
+        shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
-            containerColor = LiteverTheme.colors.surfaceContainer
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
         ),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(LiteverTheme.spacing.medium),
-            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.smallMedium)
+                .padding(MaterialTheme.spacing.medium),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.smallMedium)
         ) {
             // Header Row: [Nhiệm vụ 1/2] Gõ chữ ------- [flag] Vòng 2/3
             Row(
@@ -379,12 +380,12 @@ private fun MissionProgressScaffold(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
                 ) {
                     if (totalMissions > 1) {
                         Surface(
-                            shape = LiteverTheme.shapes.small,
-                            color = LiteverTheme.colors.primary
+                            shape = MaterialTheme.shapes.small,
+                            color = MaterialTheme.colorScheme.primary
                         ) {
                             Text(
                                 text = stringResource(
@@ -392,10 +393,10 @@ private fun MissionProgressScaffold(
                                     currentMissionIndex + 1,
                                     totalMissions
                                 ),
-                                style = LiteverTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                color = LiteverTheme.colors.onPrimary,
+                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                color = MaterialTheme.colorScheme.onPrimary,
                                 modifier = Modifier.padding(
-                                    horizontal = LiteverTheme.spacing.small,
+                                    horizontal = MaterialTheme.spacing.small,
                                     vertical = 2.dp
                                 )
                             )
@@ -403,8 +404,8 @@ private fun MissionProgressScaffold(
                     }
                     Text(
                         text = missionName,
-                        style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                        color = LiteverTheme.colors.onSurface
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
 
@@ -416,7 +417,7 @@ private fun MissionProgressScaffold(
                     Icon(
                         imageVector = ReMindIcons.Flag,
                         contentDescription = null,
-                        tint = LiteverTheme.colors.primary,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(14.dp)
                     )
                     Text(
@@ -425,8 +426,8 @@ private fun MissionProgressScaffold(
                             currentRepetition,
                             totalRepetitions
                         ),
-                        style = LiteverTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                        color = LiteverTheme.colors.primary
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -458,7 +459,7 @@ private fun MissionProgressScaffold(
                             .weight(1f)
                             .height(6.dp)
                             .clip(CircleShape)
-                            .background(LiteverTheme.colors.primary.copy(alpha = animatedAlpha))
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = animatedAlpha))
                     )
                 }
             }

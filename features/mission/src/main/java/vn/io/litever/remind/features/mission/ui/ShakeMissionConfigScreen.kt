@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.mission.ui
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,7 +30,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
@@ -101,14 +102,14 @@ fun ShakeMissionConfigScreen(
                 .fillMaxSize()
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
-                .padding(LiteverTheme.spacing.medium),
-            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
+                .padding(MaterialTheme.spacing.medium),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
         ) {
             ReMindSettingsGroup(title = stringResource(R.string.shake_count_label)) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(LiteverTheme.spacing.medium),
+                        .padding(MaterialTheme.spacing.medium),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     countOptions.forEach { count ->
@@ -118,7 +119,7 @@ fun ShakeMissionConfigScreen(
                             label = {
                                 Text(
                                     text = "$count",
-                                    style = LiteverTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
+                                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
                                 )
                             },
                             modifier = Modifier.weight(1f)
@@ -131,7 +132,7 @@ fun ShakeMissionConfigScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(LiteverTheme.spacing.medium),
+                        .padding(MaterialTheme.spacing.medium),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     ShakeSensitivity.entries.forEach { level ->

@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.mission.ui
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,7 +34,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Scaffold
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsCategory
@@ -121,11 +122,11 @@ fun MemoryGameConfigScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(LiteverTheme.colors.background)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(padding)
-                .padding(horizontal = LiteverTheme.spacing.medium)
+                .padding(horizontal = MaterialTheme.spacing.medium)
         ) {
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
 
             // Section 1: Difficulty Settings
             ReMindSettingsGroup(
@@ -143,8 +144,8 @@ fun MemoryGameConfigScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
-                            horizontal = LiteverTheme.spacing.medium,
-                            vertical = LiteverTheme.spacing.small
+                            horizontal = MaterialTheme.spacing.medium,
+                            vertical = MaterialTheme.spacing.small
                         ),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
@@ -163,8 +164,8 @@ fun MemoryGameConfigScreen(
 
                     Text(
                         text = difficultyText,
-                        style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = LiteverTheme.colors.onSurfaceVariant
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
                     IconButton(
@@ -179,12 +180,12 @@ fun MemoryGameConfigScreen(
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
                 MemoryGameStaticPreview(gridSize = gridSize, targetTiles = targetTiles)
-                Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
             }
 
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
 
             // Section 2: Repetitions
             ReMindSettingsGroup {
@@ -192,10 +193,10 @@ fun MemoryGameConfigScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
-                            top = LiteverTheme.spacing.medium,
-                            bottom = LiteverTheme.spacing.extraSmall,
-                            start = LiteverTheme.spacing.medium,
-                            end = LiteverTheme.spacing.small
+                            top = MaterialTheme.spacing.medium,
+                            bottom = MaterialTheme.spacing.extraSmall,
+                            start = MaterialTheme.spacing.medium,
+                            end = MaterialTheme.spacing.small
                         ),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
@@ -220,8 +221,8 @@ fun MemoryGameConfigScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
-                            horizontal = LiteverTheme.spacing.medium,
-                            vertical = LiteverTheme.spacing.small
+                            horizontal = MaterialTheme.spacing.medium,
+                            vertical = MaterialTheme.spacing.small
                         ),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
@@ -240,8 +241,8 @@ fun MemoryGameConfigScreen(
 
                     Text(
                         text = "$repetitions",
-                        style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = LiteverTheme.colors.onSurface
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
                     IconButton(
@@ -259,12 +260,12 @@ fun MemoryGameConfigScreen(
 
                 Text(
                     text = stringResource(R.string.memory_game_repetition_helper, repetitions),
-                    style = LiteverTheme.typography.bodySmall,
-                    color = LiteverTheme.colors.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(
-                        start = LiteverTheme.spacing.medium,
-                        end = LiteverTheme.spacing.medium,
-                        bottom = LiteverTheme.spacing.medium
+                        start = MaterialTheme.spacing.medium,
+                        end = MaterialTheme.spacing.medium,
+                        bottom = MaterialTheme.spacing.medium
                     )
                 )
             }
@@ -284,7 +285,7 @@ fun MemoryGameStaticPreview(gridSize: Int, targetTiles: Int) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = LiteverTheme.spacing.small),
+            .padding(vertical = MaterialTheme.spacing.small),
         contentAlignment = Alignment.Center
     ) {
         Box(modifier = Modifier.size(200.dp)) {
@@ -298,10 +299,10 @@ fun MemoryGameStaticPreview(gridSize: Int, targetTiles: Int) {
                                 modifier = Modifier
                                     .weight(1f)
                                     .fillMaxHeight()
-                                    .padding(LiteverTheme.spacing.tiny)
+                                    .padding(MaterialTheme.spacing.tiny)
                                     .background(
-                                        color = if (isTarget) LiteverTheme.colors.primary else LiteverTheme.colors.surfaceVariant,
-                                        shape = LiteverTheme.shapes.extraSmall
+                                        color = if (isTarget) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+                                        shape = MaterialTheme.shapes.extraSmall
                                     )
                             )
                         }

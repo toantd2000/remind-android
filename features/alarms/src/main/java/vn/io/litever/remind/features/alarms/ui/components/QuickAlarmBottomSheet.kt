@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.alarms.ui.components
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.Context
 import android.media.AudioManager
 import android.media.RingtoneManager
@@ -60,7 +62,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomSheetContent
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
@@ -83,7 +84,7 @@ fun QuickAlarmBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
-        containerColor = LiteverTheme.colors.surface,
+        containerColor = MaterialTheme.colorScheme.surface,
         modifier = modifier
     ) {
         ReMindBottomSheetContent(
@@ -129,8 +130,8 @@ fun QuickAlarmBottomSheetContent(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = LiteverTheme.spacing.mediumLarge)
-            .padding(bottom = LiteverTheme.spacing.large)
+            .padding(horizontal = MaterialTheme.spacing.mediumLarge)
+            .padding(bottom = MaterialTheme.spacing.large)
             .navigationBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -151,15 +152,15 @@ fun QuickAlarmBottomSheetContent(
 
             Text(
                 text = displayText,
-                style = LiteverTheme.typography.displayMedium.copy(
+                style = MaterialTheme.typography.displayMedium.copy(
                     fontSize = 44.sp,
                     fontWeight = FontWeight.ExtraBold,
                     letterSpacing = (-1).sp
                 ),
-                color = LiteverTheme.colors.onSurface
+                color = MaterialTheme.colorScheme.onSurface
             )
 
-            Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
+            Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
 
             IconButton(
                 onClick = { totalMinutes = 0 },
@@ -168,7 +169,7 @@ fun QuickAlarmBottomSheetContent(
                 Icon(
                     imageVector = ReMindIcons.Refresh,
                     contentDescription = stringResource(R.string.reset),
-                    tint = LiteverTheme.colors.onSurfaceVariant
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -176,9 +177,9 @@ fun QuickAlarmBottomSheetContent(
         // Subtitle: Target ring time calculation
         Text(
             text = stringResource(R.string.quick_alarm_ring_at, formattedRingTime),
-            style = LiteverTheme.typography.labelMedium,
-            color = LiteverTheme.colors.onSurfaceVariant,
-            modifier = Modifier.padding(bottom = LiteverTheme.spacing.mediumLarge)
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(bottom = MaterialTheme.spacing.mediumLarge)
         )
 
         // 2. Preset Time Grid (2 rows x 3 buttons)
@@ -187,7 +188,7 @@ fun QuickAlarmBottomSheetContent(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
         ) {
             presetsRow1.forEach { (mins, resId) ->
                 FilledTonalButton(
@@ -201,7 +202,7 @@ fun QuickAlarmBottomSheetContent(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
         ) {
             presetsRow2.forEach { (mins, resId) ->
                 FilledTonalButton(
@@ -213,17 +214,17 @@ fun QuickAlarmBottomSheetContent(
             }
         }
 
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
 
         // 3. Optional Label (description) input field
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
-                .background(LiteverTheme.colors.surfaceContainer)
+                .background(MaterialTheme.colorScheme.surfaceContainer)
                 .padding(
-                    horizontal = LiteverTheme.spacing.medium,
-                    vertical = LiteverTheme.spacing.smallMedium
+                    horizontal = MaterialTheme.spacing.medium,
+                    vertical = MaterialTheme.spacing.smallMedium
                 )
         ) {
             Row(
@@ -233,11 +234,11 @@ fun QuickAlarmBottomSheetContent(
                 Icon(
                     imageVector = ReMindIcons.NewLabel,
                     contentDescription = null,
-                    tint = LiteverTheme.colors.onSurfaceVariant,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(20.dp)
                 )
 
-                Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
+                Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
 
                 val labelState = rememberTextFieldState(label)
                 LaunchedEffect(label) {
@@ -255,16 +256,16 @@ fun QuickAlarmBottomSheetContent(
                 BasicTextField(
                     state = labelState,
                     modifier = Modifier.weight(1f),
-                    textStyle = LiteverTheme.typography.bodyLarge.copy(color = LiteverTheme.colors.onSurface),
+                    textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
                     lineLimits = TextFieldLineLimits.SingleLine,
-                    cursorBrush = SolidColor(LiteverTheme.colors.primary),
+                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     decorator = { innerTextField ->
                         if (labelState.text.isEmpty()) {
                             Text(
                                 text = stringResource(R.string.quick_alarm_desc_placeholder),
-                                style = LiteverTheme.typography.bodyLarge,
-                                color = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.7f),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
@@ -281,7 +282,7 @@ fun QuickAlarmBottomSheetContent(
                         Icon(
                             imageVector = ReMindIcons.Close,
                             contentDescription = stringResource(R.string.close_text),
-                            tint = LiteverTheme.colors.onSurfaceVariant,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(16.dp)
                         )
                     }
@@ -290,37 +291,37 @@ fun QuickAlarmBottomSheetContent(
         }
 
         // 4. Sound & Vibration settings group
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
         ReMindSettingsGroup {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { showRingtoneDialog = true }
-                    .padding(top = LiteverTheme.spacing.medium)
-                    .padding(horizontal = LiteverTheme.spacing.medium),
+                    .padding(top = MaterialTheme.spacing.medium)
+                    .padding(horizontal = MaterialTheme.spacing.medium),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = stringResource(R.string.alarm_sound),
-                    style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = LiteverTheme.colors.onSurface,
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.weight(1f)
                 )
 
                 Text(
                     text = displayRingtoneTitle,
-                    style = LiteverTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                    color = LiteverTheme.colors.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
 
-                Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
+                Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
 
                 Icon(
                     imageVector = ReMindIcons.ChevronRight,
                     contentDescription = null,
-                    tint = LiteverTheme.colors.onSurfaceVariant,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -329,14 +330,14 @@ fun QuickAlarmBottomSheetContent(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = LiteverTheme.spacing.medium)
-                    .padding(top = LiteverTheme.spacing.small, bottom = LiteverTheme.spacing.medium),
+                    .padding(horizontal = MaterialTheme.spacing.medium)
+                    .padding(top = MaterialTheme.spacing.small, bottom = MaterialTheme.spacing.medium),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     imageVector = if (volume == 0) ReMindIcons.VolumeOff else ReMindIcons.VolumeUp,
                     contentDescription = stringResource(R.string.volume),
-                    tint = LiteverTheme.colors.onSurfaceVariant,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(24.dp)
                 )
 
@@ -360,11 +361,11 @@ fun QuickAlarmBottomSheetContent(
                     },
                     modifier = Modifier
                         .weight(1f)
-                        .padding(horizontal = LiteverTheme.spacing.small),
+                        .padding(horizontal = MaterialTheme.spacing.small),
                     colors = SliderDefaults.colors(
-                        thumbColor = LiteverTheme.colors.onSurface,
-                        activeTrackColor = LiteverTheme.colors.onSurface,
-                        inactiveTrackColor = LiteverTheme.colors.surfaceContainerHighest
+                        thumbColor = MaterialTheme.colorScheme.onSurface,
+                        activeTrackColor = MaterialTheme.colorScheme.onSurface,
+                        inactiveTrackColor = MaterialTheme.colorScheme.surfaceContainerHighest
                     )
                 )
 
@@ -373,19 +374,19 @@ fun QuickAlarmBottomSheetContent(
                     modifier = Modifier
                         .height(20.dp)
                         .width(1.dp)
-                        .background(LiteverTheme.colors.outlineVariant.copy(alpha = 0.5f))
+                        .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                 )
 
-                Spacer(modifier = Modifier.width(LiteverTheme.spacing.smallMedium))
+                Spacer(modifier = Modifier.width(MaterialTheme.spacing.smallMedium))
 
                 Icon(
                     imageVector = ReMindIcons.Vibration,
                     contentDescription = stringResource(R.string.vibration),
-                    tint = if (vibrationEnabled) LiteverTheme.colors.primary else LiteverTheme.colors.onSurfaceVariant,
+                    tint = if (vibrationEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(24.dp)
                 )
 
-                Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
+                Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
 
                 Switch(
                     checked = vibrationEnabled,
@@ -396,12 +397,12 @@ fun QuickAlarmBottomSheetContent(
 
 
 
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
 
         // 5. Action Buttons (Cancel & Set Alarm)
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
         ) {
             OutlinedButton(onClick = onDismiss) {
                 Text(
@@ -484,13 +485,13 @@ private fun QuickRingtoneDialog(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable { onSelect(uri, title) }
-                                .padding(vertical = LiteverTheme.spacing.smallMedium),
+                                .padding(vertical = MaterialTheme.spacing.smallMedium),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
                                 text = title,
-                                style = LiteverTheme.typography.bodyLarge,
-                                color = if (isSelected) LiteverTheme.colors.primary else LiteverTheme.colors.onSurface,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                                 modifier = Modifier.weight(1f)
                             )
@@ -498,13 +499,13 @@ private fun QuickRingtoneDialog(
                                 Icon(
                                     imageVector = ReMindIcons.Check,
                                     contentDescription = null,
-                                    tint = LiteverTheme.colors.primary,
+                                    tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(20.dp)
                                 )
                             }
                         }
                         if (index < ringtones.size - 1) {
-                            HorizontalDivider(color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.2f))
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
                         }
                     }
                 }

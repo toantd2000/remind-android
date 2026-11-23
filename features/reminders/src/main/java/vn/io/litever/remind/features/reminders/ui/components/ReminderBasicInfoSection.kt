@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
+import androidx.compose.material3.MaterialTheme
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,7 +35,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -65,8 +65,8 @@ fun ReminderBasicInfoSection(
             Column {
                 Text(
                     text = stringResource(R.string.reminder_title_label),
-                    style = LiteverTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                    color = if (showTitleError) LiteverTheme.colors.error else LiteverTheme.colors.onSurfaceVariant
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                    color = if (showTitleError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(
@@ -94,22 +94,22 @@ fun ReminderBasicInfoSection(
                     BasicTextField(
                         state = titleState,
                         modifier = textFieldModifier,
-                        textStyle = LiteverTheme.typography.bodyLarge.copy(
-                            color = LiteverTheme.colors.onSurface
+                        textStyle = MaterialTheme.typography.bodyLarge.copy(
+                            color = MaterialTheme.colorScheme.onSurface
                         ),
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Text,
                             imeAction = ImeAction.Next
                         ),
                         lineLimits = TextFieldLineLimits.SingleLine,
-                        cursorBrush = SolidColor(LiteverTheme.colors.primary),
+                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                         decorator = TextFieldDecorator { innerTextField ->
                             Box(contentAlignment = Alignment.CenterStart) {
                                 if (titleState.text.isEmpty()) {
                                     Text(
                                         text = stringResource(R.string.reminder_title_placeholder),
-                                        style = LiteverTheme.typography.bodyLarge.copy(
-                                            color = LiteverTheme.colors.outlineVariant
+                                        style = MaterialTheme.typography.bodyLarge.copy(
+                                            color = MaterialTheme.colorScheme.outlineVariant
                                         )
                                     )
                                 }
@@ -133,7 +133,7 @@ fun ReminderBasicInfoSection(
                         Icon(
                             imageVector = ReMindIcons.NewLabel,
                             contentDescription = null,
-                            tint = LiteverTheme.colors.outlineVariant
+                            tint = MaterialTheme.colorScheme.outlineVariant
                         )
                     }
                 }
@@ -142,22 +142,22 @@ fun ReminderBasicInfoSection(
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = stringResource(R.string.reminder_title_required),
-                        style = LiteverTheme.typography.bodySmall,
-                        color = LiteverTheme.colors.error
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
                     )
                 }
             }
 
             HorizontalDivider(
-                color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.3f)
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
             )
 
             // Notes Field
             Column {
                 Text(
                     text = stringResource(R.string.reminder_notes_label),
-                    style = LiteverTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                    color = LiteverTheme.colors.onSurfaceVariant
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(
@@ -179,22 +179,22 @@ fun ReminderBasicInfoSection(
                     BasicTextField(
                         state = notesState,
                         modifier = Modifier.weight(1f),
-                        textStyle = LiteverTheme.typography.bodyLarge.copy(
-                            color = LiteverTheme.colors.onSurface
+                        textStyle = MaterialTheme.typography.bodyLarge.copy(
+                            color = MaterialTheme.colorScheme.onSurface
                         ),
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Text,
                             imeAction = ImeAction.Default
                         ),
                         lineLimits = TextFieldLineLimits.MultiLine(maxHeightInLines = 4),
-                        cursorBrush = SolidColor(LiteverTheme.colors.primary),
+                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                         decorator = TextFieldDecorator { innerTextField ->
                             Box(contentAlignment = Alignment.TopStart) {
                                 if (notesState.text.isEmpty()) {
                                     Text(
                                         text = stringResource(R.string.reminder_notes_placeholder),
-                                        style = LiteverTheme.typography.bodyLarge.copy(
-                                            color = LiteverTheme.colors.outlineVariant
+                                        style = MaterialTheme.typography.bodyLarge.copy(
+                                            color = MaterialTheme.colorScheme.outlineVariant
                                         )
                                     )
                                 }
@@ -218,7 +218,7 @@ fun ReminderBasicInfoSection(
                         Icon(
                             imageVector = ReMindIcons.EditNote,
                             contentDescription = null,
-                            tint = LiteverTheme.colors.outlineVariant,
+                            tint = MaterialTheme.colorScheme.outlineVariant,
                             modifier = Modifier
                                 .size(24.dp)
                                 .padding(top = 2.dp)

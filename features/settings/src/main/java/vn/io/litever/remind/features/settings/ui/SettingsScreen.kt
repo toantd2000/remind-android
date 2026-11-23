@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.settings.ui
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -50,7 +52,6 @@ import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.ads.api.AdManager
 import vn.io.litever.remind.core.ads.api.AdPlacement
 import vn.io.litever.remind.core.ads.api.AdState
@@ -106,8 +107,8 @@ fun SettingsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small),
-            contentPadding = PaddingValues(LiteverTheme.spacing.medium)
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
+            contentPadding = PaddingValues(MaterialTheme.spacing.medium)
         ) {
             // Pro Upgrade Banner
             item {
@@ -313,53 +314,53 @@ private fun ProSettingsBanner(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(LiteverTheme.shapes.large)
+            .clip(MaterialTheme.shapes.large)
             .clickable(onClick = onClick),
-        shape = LiteverTheme.shapes.large,
-        color = if (isPro) LiteverTheme.colors.secondaryContainer else LiteverTheme.colors.primaryContainer
+        shape = MaterialTheme.shapes.large,
+        color = if (isPro) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.primaryContainer
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(LiteverTheme.spacing.medium),
+                .padding(MaterialTheme.spacing.medium),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
                 shape = CircleShape,
-                color = if (isPro) LiteverTheme.colors.secondary else LiteverTheme.colors.primary,
+                color = if (isPro) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(44.dp)
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
                         imageVector = ReMindIcons.Diamond,
                         contentDescription = null,
-                        tint = if (isPro) LiteverTheme.colors.onSecondary else LiteverTheme.colors.onPrimary,
+                        tint = if (isPro) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(24.dp)
                     )
                 }
             }
-            Spacer(modifier = Modifier.width(LiteverTheme.spacing.medium))
+            Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = stringResource(
                         if (isPro) R.string.pro_banner_active_title else R.string.pro_banner_title
                     ),
-                    style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = if (isPro) LiteverTheme.colors.onSecondaryContainer else LiteverTheme.colors.onPrimaryContainer
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = if (isPro) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onPrimaryContainer
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = stringResource(
                         if (isPro) R.string.pro_banner_active_subtitle else R.string.pro_banner_subtitle
                     ),
-                    style = LiteverTheme.typography.bodySmall,
-                    color = (if (isPro) LiteverTheme.colors.onSecondaryContainer else LiteverTheme.colors.onPrimaryContainer).copy(alpha = 0.85f)
+                    style = MaterialTheme.typography.bodySmall,
+                    color = (if (isPro) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onPrimaryContainer).copy(alpha = 0.85f)
                 )
             }
             Icon(
                 imageVector = ReMindIcons.ChevronRight,
                 contentDescription = null,
-                tint = if (isPro) LiteverTheme.colors.onSecondaryContainer else LiteverTheme.colors.onPrimaryContainer
+                tint = if (isPro) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onPrimaryContainer
             )
         }
     }
@@ -410,13 +411,13 @@ private object PreviewAdManager : AdManager {
             modifier = modifier
                 .fillMaxWidth()
                 .height(250.dp)
-                .background(LiteverTheme.colors.surfaceVariant, LiteverTheme.shapes.medium),
+                .background(MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.shapes.medium),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "Native Ad Preview ($placement)",
-                style = LiteverTheme.typography.labelLarge,
-                color = LiteverTheme.colors.onSurfaceVariant
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }

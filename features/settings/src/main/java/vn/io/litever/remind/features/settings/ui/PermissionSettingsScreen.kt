@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.settings.ui
 
+import vn.io.litever.remind.core.designsystem.theme.spacing
+import vn.io.litever.remind.core.designsystem.theme.semanticColors
 import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
@@ -46,7 +48,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -117,8 +118,8 @@ fun PermissionSettingsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            contentPadding = PaddingValues(LiteverTheme.spacing.medium),
-            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+            contentPadding = PaddingValues(MaterialTheme.spacing.medium),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
         ) {
             // 1. Exact Alarm (Top Priority, critical)
             item {
@@ -257,11 +258,11 @@ fun PermissionTile(
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        color = LiteverTheme.colors.surfaceContainerLow,
-        shape = LiteverTheme.shapes.large,
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        shape = MaterialTheme.shapes.large,
     ) {
         Column(
-            modifier = Modifier.padding(LiteverTheme.spacing.medium)
+            modifier = Modifier.padding(MaterialTheme.spacing.medium)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -270,14 +271,14 @@ fun PermissionTile(
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = LiteverTheme.colors.primary,
-                    modifier = Modifier.size(LiteverTheme.spacing.large)
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(MaterialTheme.spacing.large)
                 )
 
                 Column(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(horizontal = LiteverTheme.spacing.smallMedium)
+                        .padding(horizontal = MaterialTheme.spacing.smallMedium)
                 ) {
                     Text(
                         text = title,
@@ -286,22 +287,22 @@ fun PermissionTile(
                         lineHeight = 20.sp
                     )
 
-                    Spacer(modifier = Modifier.height(LiteverTheme.spacing.extraSmall))
+                    Spacer(modifier = Modifier.height(MaterialTheme.spacing.extraSmall))
 
                     StatusBadge(isGranted = isGranted)
                 }
             }
 
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.smallMedium))
 
             Text(
                 text = description,
                 style = MaterialTheme.typography.bodyMedium,
-                color = LiteverTheme.colors.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             if (!isGranted && isCritical) {
-                Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.smallMedium))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
@@ -309,21 +310,21 @@ fun PermissionTile(
                     Icon(
                         imageVector = ReMindIcons.ErrorOutline,
                         contentDescription = null,
-                        tint = LiteverTheme.colors.error,
-                        modifier = Modifier.size(LiteverTheme.spacing.medium)
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.size(MaterialTheme.spacing.medium)
                     )
-                    Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
+                    Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
                     Text(
                         text = stringResource(R.string.permission_warning_critical),
                         style = MaterialTheme.typography.labelSmall,
-                        color = LiteverTheme.colors.error,
+                        color = MaterialTheme.colorScheme.error,
                         fontWeight = FontWeight.Bold
                     )
                 }
             }
 
             if (!isGranted) {
-                Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
                 Button(
                     onClick = onRequest,
                     modifier = Modifier.fillMaxWidth()
@@ -341,12 +342,12 @@ fun PermissionTile(
 fun ManufacturerSettingsTile(onOpen: () -> Unit) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        color = LiteverTheme.colors.secondaryContainer.copy(alpha = 0.1f),
-        shape = LiteverTheme.shapes.large,
-        border = BorderStroke(1.dp, LiteverTheme.colors.secondary.copy(alpha = 0.1f))
+        color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.1f),
+        shape = MaterialTheme.shapes.large,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f))
     ) {
         Column(
-            modifier = Modifier.padding(LiteverTheme.spacing.medium)
+            modifier = Modifier.padding(MaterialTheme.spacing.medium)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -354,9 +355,9 @@ fun ManufacturerSettingsTile(onOpen: () -> Unit) {
                 Icon(
                     imageVector = ReMindIcons.SettingsSuggest,
                     contentDescription = null,
-                    tint = LiteverTheme.colors.secondary
+                    tint = MaterialTheme.colorScheme.secondary
                 )
-                Spacer(modifier = Modifier.width(LiteverTheme.spacing.smallMedium))
+                Spacer(modifier = Modifier.width(MaterialTheme.spacing.smallMedium))
                 Text(
                     text = stringResource(R.string.permission_manufacturer_title),
                     style = MaterialTheme.typography.titleMedium,
@@ -364,15 +365,15 @@ fun ManufacturerSettingsTile(onOpen: () -> Unit) {
                 )
             }
 
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
 
             Text(
                 text = stringResource(R.string.permission_manufacturer_desc),
                 style = MaterialTheme.typography.bodySmall,
-                color = LiteverTheme.colors.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
 
             OutlinedButton(
                 onClick = onOpen,
@@ -388,24 +389,24 @@ fun ManufacturerSettingsTile(onOpen: () -> Unit) {
 
 @Composable
 fun StatusBadge(isGranted: Boolean) {
-    val successColor = LiteverTheme.colors.success
-    val errorColor = LiteverTheme.colors.error
-    val containerColor = if (isGranted) successColor.copy(alpha = 0.12f) else LiteverTheme.colors.errorContainer.copy(alpha = 0.4f)
+    val successColor = MaterialTheme.semanticColors.success
+    val errorColor = MaterialTheme.colorScheme.error
+    val containerColor = if (isGranted) successColor.copy(alpha = 0.12f) else MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.4f)
     val borderColor = if (isGranted) successColor.copy(alpha = 0.3f) else errorColor.copy(alpha = 0.2f)
     val textColor = if (isGranted) successColor else errorColor
 
     Surface(
         color = containerColor,
-        shape = LiteverTheme.shapes.small,
+        shape = MaterialTheme.shapes.small,
         border = BorderStroke(1.dp, borderColor)
     ) {
         Text(
             text = if (isGranted) stringResource(R.string.permission_granted) else stringResource(R.string.permission_denied),
             modifier = Modifier.padding(
-                horizontal = LiteverTheme.spacing.small,
-                vertical = LiteverTheme.spacing.extraSmall
+                horizontal = MaterialTheme.spacing.small,
+                vertical = MaterialTheme.spacing.extraSmall
             ),
-            style = LiteverTheme.typography.labelSmall,
+            style = MaterialTheme.typography.labelSmall,
             color = textColor,
             fontWeight = FontWeight.Bold
         )

@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.settings.ui
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -46,7 +48,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.OutlinedButton
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.brand.tokens.palettes.blackDarkColorScheme
 import vn.io.litever.brand.tokens.palettes.blackLightColorScheme
 import vn.io.litever.brand.tokens.palettes.blueDarkColorScheme
@@ -234,8 +235,8 @@ fun GeneralSettingsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            contentPadding = PaddingValues(LiteverTheme.spacing.medium),
-            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+            contentPadding = PaddingValues(MaterialTheme.spacing.medium),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
         ) {
             // Display Group
             item {
@@ -248,15 +249,15 @@ fun GeneralSettingsScreen(
                             Icon(
                                 imageVector = ReMindIcons.ChevronRight,
                                 contentDescription = null,
-                                tint = LiteverTheme.colors.onSurfaceVariant
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         },
                         onClick = { showThemeModeDialog = true }
                     )
 
                     HorizontalDivider(
-                        color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.3F),
-                        modifier = Modifier.padding(horizontal = LiteverTheme.spacing.extraLarge)
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3F),
+                        modifier = Modifier.padding(horizontal = MaterialTheme.spacing.extraLarge)
                     )
 
                     ReMindSettingsItem(
@@ -266,18 +267,18 @@ fun GeneralSettingsScreen(
                         trailingContent = {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
                             ) {
                                 Box(
                                     modifier = Modifier
                                         .size(20.dp)
-                                        .clip(LiteverTheme.shapes.small)
+                                        .clip(MaterialTheme.shapes.small)
                                         .background(currentColorSwatch)
                                 )
                                 Icon(
                                     imageVector = ReMindIcons.ChevronRight,
                                     contentDescription = null,
-                                    tint = LiteverTheme.colors.onSurfaceVariant
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         },
@@ -297,15 +298,15 @@ fun GeneralSettingsScreen(
                             Icon(
                                 imageVector = ReMindIcons.ChevronRight,
                                 contentDescription = null,
-                                tint = LiteverTheme.colors.onSurfaceVariant
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         },
                         onClick = { showLanguageDialog = true }
                     )
 
                     HorizontalDivider(
-                        color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.3F),
-                        modifier = Modifier.padding(horizontal = LiteverTheme.spacing.extraLarge)
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3F),
+                        modifier = Modifier.padding(horizontal = MaterialTheme.spacing.extraLarge)
                     )
 
                     ReMindSettingsItem(
@@ -316,7 +317,7 @@ fun GeneralSettingsScreen(
                             Icon(
                                 imageVector = ReMindIcons.ChevronRight,
                                 contentDescription = null,
-                                tint = LiteverTheme.colors.onSurfaceVariant
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         },
                         onClick = { showTimeFormatDialog = true }
@@ -402,17 +403,17 @@ private fun SingleChoiceDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable { onSelect(key) }
-                            .padding(vertical = LiteverTheme.spacing.smallMedium),
+                            .padding(vertical = MaterialTheme.spacing.smallMedium),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         RadioButton(
                             selected = key == selectedKey,
                             onClick = { onSelect(key) }
                         )
-                        Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
+                        Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
                         Text(
                             text = label,
-                            style = LiteverTheme.typography.bodyLarge
+                            style = MaterialTheme.typography.bodyLarge
                         )
                     }
                 }
@@ -452,8 +453,8 @@ private fun ColorPaletteSelectionDialog(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = LiteverTheme.spacing.small),
-                verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
+                    .padding(top = MaterialTheme.spacing.small),
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
             ) {
                 chunkedOptions.forEach { rowOptions ->
                     Row(
@@ -489,11 +490,11 @@ private fun ColorCircleSwatch(
     Column(
         modifier = modifier
             .width(64.dp)
-            .clip(LiteverTheme.shapes.large)
+            .clip(MaterialTheme.shapes.large)
             .clickable(onClick = onClick)
-            .padding(vertical = LiteverTheme.spacing.extraSmall),
+            .padding(vertical = MaterialTheme.spacing.extraSmall),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.extraSmall)
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall)
     ) {
         Box(
             modifier = Modifier
@@ -523,10 +524,10 @@ private fun ColorCircleSwatch(
 
         Text(
             text = stringResource(item.titleRes),
-            style = LiteverTheme.typography.labelSmall.copy(
+            style = MaterialTheme.typography.labelSmall.copy(
                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
             ),
-            color = if (isSelected) primaryColor else LiteverTheme.colors.onSurfaceVariant,
+            color = if (isSelected) primaryColor else MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis

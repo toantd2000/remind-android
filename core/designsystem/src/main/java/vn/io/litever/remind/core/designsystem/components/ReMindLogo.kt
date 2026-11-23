@@ -1,5 +1,6 @@
 package vn.io.litever.remind.core.designsystem.components
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -17,7 +18,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 
 @Composable
@@ -48,10 +48,10 @@ fun ReMindLogoText(
     style: TextStyle? = null,
     fontSize: TextUnit = TextUnit.Unspecified
 ) {
-    val reColor = LiteverTheme.colors.onSurfaceVariant
-    val mindColor = LiteverTheme.colors.primary
+    val reColor = MaterialTheme.colorScheme.onSurfaceVariant
+    val mindColor = MaterialTheme.colorScheme.primary
 
-    val baseStyle = style ?: LiteverTheme.typography.titleLarge
+    val baseStyle = style ?: MaterialTheme.typography.titleLarge
     val finalStyle = if (fontSize != TextUnit.Unspecified) {
         baseStyle.copy(fontSize = fontSize)
     } else {

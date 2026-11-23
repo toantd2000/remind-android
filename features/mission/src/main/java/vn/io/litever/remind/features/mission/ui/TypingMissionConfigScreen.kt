@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.mission.ui
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -40,7 +42,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsCategory
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
@@ -135,11 +136,11 @@ fun TypingMissionConfigScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(LiteverTheme.colors.background)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(padding)
-                .padding(horizontal = LiteverTheme.spacing.medium),
+                .padding(horizontal = MaterialTheme.spacing.medium),
         ) {
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
 
             // Section 1: Phrases
             ReMindSettingsGroup(
@@ -162,21 +163,21 @@ fun TypingMissionConfigScreen(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(
-                            horizontal = LiteverTheme.spacing.medium,
-                            vertical = LiteverTheme.spacing.tiny
+                            horizontal = MaterialTheme.spacing.medium,
+                            vertical = MaterialTheme.spacing.tiny
                         )
                     ) {
                         Box(
                             modifier = Modifier
                                 .size(6.dp)
-                                .background(LiteverTheme.colors.primary.copy(alpha = 0.5f), RoundedCornerShape(50))
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.5f), RoundedCornerShape(50))
                         )
-                        Spacer(modifier = Modifier.width(LiteverTheme.spacing.smallMedium))
+                        Spacer(modifier = Modifier.width(MaterialTheme.spacing.smallMedium))
                         Text(
                             text = "\"${phrase.content}\"",
-                            style = LiteverTheme.typography.bodyMedium.copy(
+                            style = MaterialTheme.typography.bodyMedium.copy(
                                 fontStyle = FontStyle.Italic,
-                                color = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.8f)
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
                             )
                         )
                     }
@@ -184,15 +185,15 @@ fun TypingMissionConfigScreen(
                 if (selectedPhrases.size > visibleCount) {
                     Text(
                         text = stringResource(R.string.more_phrases_count, selectedPhrases.size - visibleCount),
-                        style = LiteverTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
-                        color = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.6f),
-                        modifier = Modifier.padding(start = LiteverTheme.spacing.mediumLarge)
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                        modifier = Modifier.padding(start = MaterialTheme.spacing.mediumLarge)
                     )
                 }
-                Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.smallMedium))
             }
 
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
 
             // Section 2: Repetitions
             ReMindSettingsGroup {
@@ -200,10 +201,10 @@ fun TypingMissionConfigScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
-                            top = LiteverTheme.spacing.medium,
-                            bottom = LiteverTheme.spacing.extraSmall,
-                            start = LiteverTheme.spacing.medium,
-                            end = LiteverTheme.spacing.small
+                            top = MaterialTheme.spacing.medium,
+                            bottom = MaterialTheme.spacing.extraSmall,
+                            start = MaterialTheme.spacing.medium,
+                            end = MaterialTheme.spacing.small
                         ),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
@@ -228,8 +229,8 @@ fun TypingMissionConfigScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
-                            horizontal = LiteverTheme.spacing.medium,
-                            vertical = LiteverTheme.spacing.small
+                            horizontal = MaterialTheme.spacing.medium,
+                            vertical = MaterialTheme.spacing.small
                         ),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
@@ -248,8 +249,8 @@ fun TypingMissionConfigScreen(
 
                     Text(
                         text = "$repetitions",
-                        style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = LiteverTheme.colors.onSurface
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
                     IconButton(
@@ -267,17 +268,17 @@ fun TypingMissionConfigScreen(
 
                 Text(
                     text = stringResource(R.string.repetition_helper, repetitions),
-                    style = LiteverTheme.typography.bodySmall,
-                    color = LiteverTheme.colors.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(
-                        start = LiteverTheme.spacing.medium,
-                        end = LiteverTheme.spacing.medium,
-                        bottom = LiteverTheme.spacing.medium
+                        start = MaterialTheme.spacing.medium,
+                        end = MaterialTheme.spacing.medium,
+                        bottom = MaterialTheme.spacing.medium
                     )
                 )
             }
 
-            Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
 
             // Section 3: Modes
             ReMindSettingsGroup(
@@ -295,8 +296,8 @@ fun TypingMissionConfigScreen(
                             .fillMaxWidth()
                             .clickable { onModeChange(m) }
                             .padding(
-                                horizontal = LiteverTheme.spacing.medium,
-                                vertical = LiteverTheme.spacing.tiny
+                                horizontal = MaterialTheme.spacing.medium,
+                                vertical = MaterialTheme.spacing.tiny
                             ),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -304,15 +305,15 @@ fun TypingMissionConfigScreen(
                             selected = mode == m,
                             onClick = { onModeChange(m) },
                         )
-                        Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
+                        Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
                         Text(
                             text = label,
-                            style = LiteverTheme.typography.bodyLarge,
-                            color = LiteverTheme.colors.onSurface
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(LiteverTheme.spacing.smallMedium))
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.smallMedium))
             }
             Spacer(modifier = Modifier.weight(1f))
 
@@ -321,7 +322,7 @@ fun TypingMissionConfigScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(100.dp)
-                    .padding(bottom = LiteverTheme.spacing.medium)
+                    .padding(bottom = MaterialTheme.spacing.medium)
             )
         }
     }

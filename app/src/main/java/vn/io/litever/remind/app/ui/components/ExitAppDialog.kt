@@ -1,5 +1,7 @@
 package vn.io.litever.remind.app.ui.components
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.app.R
 import vn.io.litever.remind.core.ads.api.AdPlacement
 import vn.io.litever.remind.core.ads.api.LocalAdManager
@@ -53,17 +54,17 @@ fun ExitAppDialog(
             Column {
                 Text(
                     text = message,
-                    style = LiteverTheme.typography.bodyMedium,
-                    color = LiteverTheme.colors.onSurfaceVariant
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 
                 if (!isAdFreeActive) {
-                    Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+                    Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
                     
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = LiteverTheme.spacing.extraSmall)
+                            .padding(vertical = MaterialTheme.spacing.extraSmall)
                     ) {
                         adManager.NativeAdView(
                             placement = AdPlacement.EXIT_NATIVE,

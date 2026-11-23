@@ -1,5 +1,6 @@
 package vn.io.litever.remind.core.designsystem.components
 
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 
@@ -35,7 +35,7 @@ fun AutoSilenceBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
-        containerColor = LiteverTheme.colors.surface,
+        containerColor = MaterialTheme.colorScheme.surface,
         modifier = modifier
     ) {
         ReMindBottomSheetContent(
@@ -60,15 +60,15 @@ fun AutoSilenceBottomSheetContent(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(bottom = LiteverTheme.spacing.medium)
+            .padding(bottom = MaterialTheme.spacing.medium)
     ) {
         Text(
             text = stringResource(R.string.auto_silence_description),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(
-                horizontal = LiteverTheme.spacing.medium,
-                vertical = LiteverTheme.spacing.small
+                horizontal = MaterialTheme.spacing.medium,
+                vertical = MaterialTheme.spacing.small
             )
         )
 

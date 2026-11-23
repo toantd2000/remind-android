@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.reminders.ui
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,7 +42,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.flow.collectLatest
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.features.reminders.R
@@ -157,7 +158,7 @@ fun ReminderListScreen(
                                 Icon(
                                     imageVector = ReMindIcons.MoreVert,
                                     contentDescription = stringResource(R.string.action_more),
-                                    tint = LiteverTheme.colors.onSurface
+                                    tint = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                             DropdownMenu(
@@ -207,8 +208,8 @@ fun ReminderListScreen(
                         isCritical = true,
                         onClick = onNavigateToPermissions,
                         modifier = Modifier.padding(
-                            horizontal = LiteverTheme.spacing.medium,
-                            vertical = LiteverTheme.spacing.small
+                            horizontal = MaterialTheme.spacing.medium,
+                            vertical = MaterialTheme.spacing.small
                         )
                     )
                 } else if (!uiState.isPermissionWarningDismissed) {
@@ -220,8 +221,8 @@ fun ReminderListScreen(
                         dismissLabel = stringResource(R.string.permission_warning_banner_remind_later),
                         onDismiss = onDismissPermissionWarning,
                         modifier = Modifier.padding(
-                            horizontal = LiteverTheme.spacing.medium,
-                            vertical = LiteverTheme.spacing.small
+                            horizontal = MaterialTheme.spacing.medium,
+                            vertical = MaterialTheme.spacing.small
                         )
                     )
                 }
@@ -239,8 +240,8 @@ fun ReminderListScreen(
             } else {
                 LazyColumn(
                     modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small),
-                    contentPadding = PaddingValues(LiteverTheme.spacing.medium).let {
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
+                    contentPadding = PaddingValues(MaterialTheme.spacing.medium).let {
                         PaddingValues(
                             start = it.calculateStartPadding(androidx.compose.ui.unit.LayoutDirection.Ltr),
                             top = it.calculateTopPadding(),

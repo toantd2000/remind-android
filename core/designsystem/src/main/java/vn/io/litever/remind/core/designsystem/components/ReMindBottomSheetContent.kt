@@ -1,5 +1,6 @@
 package vn.io.litever.remind.core.designsystem.components
 
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -11,7 +12,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import vn.io.litever.designsystem.theme.LiteverTheme
 
 /**
  * Standard content container for bottom sheets in ReMind.
@@ -37,9 +37,9 @@ fun ReMindBottomSheetContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
-                        start = LiteverTheme.spacing.medium,
-                        end = LiteverTheme.spacing.medium,
-                        bottom = LiteverTheme.spacing.smallMedium
+                        start = MaterialTheme.spacing.medium,
+                        end = MaterialTheme.spacing.medium,
+                        bottom = MaterialTheme.spacing.smallMedium
                     )
             ) {
                 ProvideTextStyle(

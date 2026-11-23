@@ -1,5 +1,6 @@
 package vn.io.litever.remind.core.ads.impl.ui
 
+import androidx.compose.material3.MaterialTheme
 import android.graphics.Typeface
 import android.text.TextUtils
 import android.widget.Button
@@ -27,7 +28,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.ads.nativead.NativeAd
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.ads.api.AdPlacement
 import vn.io.litever.remind.core.ads.impl.AdMobManagerImpl
 import kotlin.time.Duration.Companion.milliseconds
@@ -85,23 +85,23 @@ private fun AdNativeContainer(
     content: @Composable () -> Unit
 ) {
     Surface(
-        modifier = if (isFillSpace) modifier.fillMaxSize().clip(LiteverTheme.shapes.large)
-                   else modifier.fillMaxWidth().clip(LiteverTheme.shapes.large),
-        shape = LiteverTheme.shapes.large,
-        color = LiteverTheme.colors.surfaceContainerLow,
+        modifier = if (isFillSpace) modifier.fillMaxSize().clip(MaterialTheme.shapes.large)
+                   else modifier.fillMaxWidth().clip(MaterialTheme.shapes.large),
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
         content = content
     )
 }
 
 @Composable
 private fun NativeAdContent(nativeAd: NativeAd, isLarge: Boolean = false, isFillSpace: Boolean = false) {
-    val colorOnSurface = LiteverTheme.colors.onSurface
-    val colorOnSurfaceVariant = LiteverTheme.colors.onSurfaceVariant
-    val colorPrimary = LiteverTheme.colors.secondary
-    val colorOnPrimary = LiteverTheme.colors.onSecondary
+    val colorOnSurface = MaterialTheme.colorScheme.onSurface
+    val colorOnSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
+    val colorPrimary = MaterialTheme.colorScheme.secondary
+    val colorOnPrimary = MaterialTheme.colorScheme.onSecondary
 
     val fontFamilyResolver = LocalFontFamilyResolver.current
-    val typography = LiteverTheme.typography
+    val typography = MaterialTheme.typography
     val titleFontFamily = typography.titleMedium.fontFamily
     val bodyFontFamily = typography.bodyMedium.fontFamily
 

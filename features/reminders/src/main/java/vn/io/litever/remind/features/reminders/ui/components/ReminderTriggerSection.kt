@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,7 +22,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -72,8 +73,8 @@ fun ReminderTriggerSection(
                     isPro = isPro,
                     onNavigateToPaywall = onNavigateToPaywall,
                     modifier = Modifier
-                        .padding(bottom = LiteverTheme.spacing.medium)
-                        .padding(horizontal = LiteverTheme.spacing.medium)
+                        .padding(bottom = MaterialTheme.spacing.medium)
+                        .padding(horizontal = MaterialTheme.spacing.medium)
                 )
             }
 
@@ -92,24 +93,24 @@ fun ReminderTriggerSection(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = LiteverTheme.spacing.medium),
-                    verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
+                        .padding(horizontal = MaterialTheme.spacing.medium),
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
                 ) {
                     // Simple settings row (clickable card) opening IntervalBottomSheet
                     Surface(
                         onClick = { showIntervalBottomSheet = true },
-                        shape = LiteverTheme.shapes.medium,
-                        color = LiteverTheme.colors.surfaceContainer,
+                        shape = MaterialTheme.shapes.medium,
+                        color = MaterialTheme.colorScheme.surfaceContainer,
                         border = BorderStroke(
                             width = 1.dp,
-                            color = LiteverTheme.colors.outlineVariant
+                            color = MaterialTheme.colorScheme.outlineVariant
                         ),
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth()
-                                .padding(LiteverTheme.spacing.medium),
+                                .padding(MaterialTheme.spacing.medium),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
                         ) {
                             Column(
                                 modifier = Modifier.weight(1f),
@@ -117,13 +118,13 @@ fun ReminderTriggerSection(
                             ) {
                                 Text(
                                     text = stringResource(R.string.interval_section_title),
-                                    style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                    color = LiteverTheme.colors.onSurface
+                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
                                     text = stringResource(R.string.tap_to_set_interval),
-                                    style = LiteverTheme.typography.bodySmall,
-                                    color = LiteverTheme.colors.onSurfaceVariant
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
 
@@ -133,14 +134,14 @@ fun ReminderTriggerSection(
                                 } else {
                                     stringResource(R.string.interval_not_set)
                                 },
-                                style = LiteverTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                                color = if (totalMins > 0) LiteverTheme.colors.primary else LiteverTheme.colors.onSurfaceVariant
+                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                                color = if (totalMins > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                             )
 
                             Icon(
                                 imageVector = ReMindIcons.ChevronRight,
                                 contentDescription = null,
-                                tint = LiteverTheme.colors.onSurfaceVariant,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
                     }
@@ -176,7 +177,7 @@ fun ReminderTriggerSection(
                         is24HourFormat = is24HourFormat,
                         isPro = isPro,
                         onNavigateToPaywall = onNavigateToPaywall,
-                        modifier = Modifier.padding(bottom = LiteverTheme.spacing.medium)
+                        modifier = Modifier.padding(bottom = MaterialTheme.spacing.medium)
                     )
                 }
             }

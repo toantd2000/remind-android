@@ -1,5 +1,8 @@
 package vn.io.litever.remind.features.mission.ui.components
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
+import vn.io.litever.remind.core.designsystem.theme.semanticColors
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.keyframes
@@ -59,7 +62,6 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.Phrase
 import vn.io.litever.remind.features.mission.R
@@ -85,9 +87,9 @@ fun TypingMissionContent(
     val focusRequester = remember { FocusRequester() }
     val interactionSource = remember { MutableInteractionSource() }
 
-    val successColor = LiteverTheme.colors.success
-    val errorColor = LiteverTheme.colors.error
-    val hintColor = LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.38f)
+    val successColor = MaterialTheme.semanticColors.success
+    val errorColor = MaterialTheme.colorScheme.error
+    val hintColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f)
 
     val targetContent = targetPhrase?.content ?: ""
     val isMatched = userInput == targetContent && targetContent.isNotEmpty()
@@ -173,7 +175,7 @@ fun TypingMissionContent(
         }
     }
 
-    val textStyle = LiteverTheme.typography.headlineSmall.copy(
+    val textStyle = MaterialTheme.typography.headlineSmall.copy(
         fontWeight = FontWeight.Medium,
         letterSpacing = 0.5.sp,
         lineHeight = 30.sp,
@@ -187,7 +189,7 @@ fun TypingMissionContent(
     Column(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
     ) {
         // 1. Phía trên: Banner hướng dẫn
         MissionInstructionBanner(
@@ -197,7 +199,7 @@ fun TypingMissionContent(
 
         // 2. Phía dưới: Vùng làm nhiệm vụ (Interactive Typing Board)
         val borderColor by animateColorAsState(
-            targetValue = if (isMatched) LiteverTheme.colors.success else LiteverTheme.colors.primary.copy(alpha = 0.25f),
+            targetValue = if (isMatched) MaterialTheme.semanticColors.success else MaterialTheme.colorScheme.primary.copy(alpha = 0.25f),
             label = "typingBorderColor"
         )
 
@@ -211,17 +213,17 @@ fun TypingMissionContent(
                     indication = null,
                     onClick = { focusRequester.requestFocus() }
                 ),
-            shape = LiteverTheme.shapes.large,
+            shape = MaterialTheme.shapes.large,
             colors = CardDefaults.cardColors(
-                containerColor = LiteverTheme.colors.surfaceContainerLowest
+                containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
             ),
             border = BorderStroke(1.5.dp, borderColor)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(LiteverTheme.spacing.medium),
-                verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.smallMedium)
+                    .padding(MaterialTheme.spacing.medium),
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.smallMedium)
             ) {
                 // Header của bảng
                 Row(
@@ -231,25 +233,25 @@ fun TypingMissionContent(
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.extraSmall)
+                        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall)
                     ) {
                         Icon(
                             imageVector = ReMindIcons.Spellcheck,
                             contentDescription = null,
-                            tint = if (isMatched) LiteverTheme.colors.success else LiteverTheme.colors.primary,
+                            tint = if (isMatched) MaterialTheme.semanticColors.success else MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
                             text = stringResource(R.string.mission_typing_board_header),
-                            style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                            color = LiteverTheme.colors.onSurface
+                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
 
                     if (isMatched) {
                         Surface(
-                            shape = LiteverTheme.shapes.small,
-                            color = LiteverTheme.colors.successContainer
+                            shape = MaterialTheme.shapes.small,
+                            color = MaterialTheme.semanticColors.successContainer
                         ) {
                             Row(
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
@@ -259,13 +261,13 @@ fun TypingMissionContent(
                                 Icon(
                                     imageVector = ReMindIcons.CheckCircle,
                                     contentDescription = null,
-                                    tint = LiteverTheme.colors.onSuccessContainer,
+                                    tint = MaterialTheme.semanticColors.onSuccessContainer,
                                     modifier = Modifier.size(12.dp)
                                 )
                                 Text(
                                     text = stringResource(R.string.mission_typing_completed_badge),
-                                    style = LiteverTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                    color = LiteverTheme.colors.onSuccessContainer
+                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                    color = MaterialTheme.semanticColors.onSuccessContainer
                                 )
                             }
                         }
@@ -273,7 +275,7 @@ fun TypingMissionContent(
                 }
 
                 HorizontalDivider(
-                    color = LiteverTheme.colors.surfaceContainerHighest.copy(alpha = 0.5f),
+                    color = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f),
                     thickness = 1.dp
                 )
 
@@ -284,7 +286,7 @@ fun TypingMissionContent(
                         .fillMaxWidth()
                         .weight(1f)
                         .verticalScroll(scrollState)
-                        .padding(bottom = LiteverTheme.spacing.small),
+                        .padding(bottom = MaterialTheme.spacing.small),
                     contentAlignment = Alignment.TopStart
                 ) {
                     val inputState = rememberTextFieldState(userInput)
@@ -306,7 +308,7 @@ fun TypingMissionContent(
                             .fillMaxWidth()
                             .focusRequester(focusRequester),
                         textStyle = textStyle,
-                        cursorBrush = SolidColor(if (isMatched) LiteverTheme.colors.success else LiteverTheme.colors.primary),
+                        cursorBrush = SolidColor(if (isMatched) MaterialTheme.semanticColors.success else MaterialTheme.colorScheme.primary),
                         outputTransformation = outputTransformation,
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Done
@@ -334,9 +336,9 @@ fun TypingMissionContent(
             ) {
                 Text(
                     text = stringResource(R.string.action_continue),
-                    style = LiteverTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
+                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
                 )
-                Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
+                Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
                 Icon(
                     imageVector = ReMindIcons.ArrowForward,
                     contentDescription = null,

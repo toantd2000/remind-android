@@ -1,5 +1,6 @@
 package vn.io.litever.remind.core.designsystem.components
 
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -13,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.theme.LiteverTheme
 
 @Composable
 fun ReMindSettingIcon(
@@ -41,7 +41,7 @@ fun ReMindSettingIcon(
         FilledTonalIconButton(
             onClick = onClick,
             modifier = finalModifier,
-            shape = LiteverTheme.shapes.medium,
+            shape = MaterialTheme.shapes.medium,
             colors = IconButtonDefaults.filledTonalIconButtonColors(
                 containerColor = containerColor,
                 contentColor = contentColor
@@ -50,20 +50,20 @@ fun ReMindSettingIcon(
             Icon(
                 imageVector = imageVector,
                 contentDescription = null,
-                modifier = Modifier.size(LiteverTheme.spacing.mediumLarge)
+                modifier = Modifier.size(MaterialTheme.spacing.mediumLarge)
             )
         }
     } else {
         Box(
             modifier = finalModifier
-                .clip(LiteverTheme.shapes.medium)
+                .clip(MaterialTheme.shapes.medium)
                 .background(if (enabled) containerColor else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = imageVector,
                 contentDescription = null,
-                modifier = Modifier.size(LiteverTheme.spacing.mediumLarge),
+                modifier = Modifier.size(MaterialTheme.spacing.mediumLarge),
                 tint = if (enabled) contentColor else contentColor.copy(alpha = 0.38f)
             )
         }

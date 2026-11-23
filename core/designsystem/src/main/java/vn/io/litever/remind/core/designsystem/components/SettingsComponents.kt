@@ -1,5 +1,7 @@
 package vn.io.litever.remind.core.designsystem.components
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -21,7 +23,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 
 /**
@@ -34,8 +35,8 @@ fun ReMindSettingsCategory(
 ) {
     Text(
         text = title,
-        style = LiteverTheme.typography.labelLarge,
-        color = LiteverTheme.colors.primary,
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.primary,
         fontWeight = FontWeight.Bold,
         modifier = modifier
             .fillMaxWidth()
@@ -51,7 +52,7 @@ fun ReMindSettingsGroup(
     title: String? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    val spacing = LiteverTheme.spacing
+    val spacing = MaterialTheme.spacing
     ReMindGroupCard {
         Column(modifier = modifier.padding()) {
             if (title != null) {
@@ -91,8 +92,8 @@ fun ReMindSettingsItem(
             {
                 Text(
                     text = it,
-                    style = LiteverTheme.typography.bodyMedium,
-                    color = LiteverTheme.colors.onSurfaceVariant.copy(alpha = alpha)
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = alpha)
                 )
             }
         },
@@ -101,8 +102,8 @@ fun ReMindSettingsItem(
                 Icon(
                     imageVector = it,
                     contentDescription = null,
-                    modifier = Modifier.size(LiteverTheme.spacing.large),
-                    tint = LiteverTheme.colors.onSurfaceVariant.copy(alpha = alpha)
+                    modifier = Modifier.size(MaterialTheme.spacing.large),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = alpha)
                 )
             }
         },
@@ -116,7 +117,7 @@ fun ReMindSettingsItem(
         ),
         modifier = modifier
             .fillMaxWidth()
-            .clip(LiteverTheme.shapes.large)
+            .clip(MaterialTheme.shapes.large)
             .then(
                 if (onClick != null) Modifier.clickable(
                     enabled = enabled,
@@ -127,14 +128,14 @@ fun ReMindSettingsItem(
         Column {
             Text(
                 text = title,
-                style = LiteverTheme.typography.bodyLarge,
-                color = LiteverTheme.colors.onSurface.copy(alpha = alpha)
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = alpha)
             )
             if (statusText != null) {
                 Text(
                     text = statusText,
-                    style = LiteverTheme.typography.labelMedium,
-                    color = (statusColor ?: LiteverTheme.colors.primary).copy(alpha = alpha),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = (statusColor ?: MaterialTheme.colorScheme.primary).copy(alpha = alpha),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )

@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,7 +36,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -65,19 +66,19 @@ fun ReminderTimeWindowConfigSection(
 
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
     ) {
         Text(
             text = stringResource(R.string.time_window_section_title),
-            style = LiteverTheme.typography.labelMedium,
-            color = LiteverTheme.colors.onSurfaceVariant,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontWeight = FontWeight.SemiBold,
         )
 
         FlowRow(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.extraSmall),
-            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.extraSmall)
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall)
         ) {
             val displayWindows = timeWindows.ifEmpty { listOf(ReminderTimeWindow.ALL_DAY) }
 
@@ -94,7 +95,7 @@ fun ReminderTimeWindowConfigSection(
                         editingEndTime = window.endTime
                         showWindowDialog = true
                     },
-                    label = { Text(label, style = LiteverTheme.typography.labelMedium) },
+                    label = { Text(label, style = MaterialTheme.typography.labelMedium) },
                     trailingIcon = if (displayWindows.size > 1 && timeWindows.isNotEmpty()) {
                         {
                             Icon(
@@ -107,12 +108,12 @@ fun ReminderTimeWindowConfigSection(
                         }
                     } else null,
                     colors = InputChipDefaults.inputChipColors(
-                        selectedContainerColor = LiteverTheme.colors.secondary,
-                        selectedLabelColor = LiteverTheme.colors.onSecondary,
-                        selectedTrailingIconColor = LiteverTheme.colors.onSecondary,
-                        containerColor = LiteverTheme.colors.surfaceVariant,
-                        labelColor = LiteverTheme.colors.onSurfaceVariant,
-                        leadingIconColor = LiteverTheme.colors.onSurfaceVariant
+                        selectedContainerColor = MaterialTheme.colorScheme.secondary,
+                        selectedLabelColor = MaterialTheme.colorScheme.onSecondary,
+                        selectedTrailingIconColor = MaterialTheme.colorScheme.onSecondary,
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        leadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
                     ),
                     modifier = Modifier.height(32.dp)
                 )
@@ -134,7 +135,7 @@ fun ReminderTimeWindowConfigSection(
                 label = {
                     Text(
                         stringResource(R.string.add_time_window),
-                        style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
                     )
                 },
                 leadingIcon = {
@@ -145,8 +146,8 @@ fun ReminderTimeWindowConfigSection(
                     )
                 },
                 colors = InputChipDefaults.inputChipColors(
-                    containerColor = LiteverTheme.colors.surfaceVariant,
-                    labelColor = LiteverTheme.colors.onSurfaceVariant
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    labelColor = MaterialTheme.colorScheme.onSurfaceVariant
                 ),
                 modifier = Modifier.height(32.dp)
             )
@@ -166,15 +167,15 @@ fun ReminderTimeWindowConfigSection(
             text = {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
                 ) {
                     // Start Time Selector
                     Surface(
                         modifier = Modifier
                             .weight(1f)
                             .clickable { showStartTimePicker = true },
-                        color = LiteverTheme.colors.surfaceVariant,
-                        shape = LiteverTheme.shapes.medium
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        shape = MaterialTheme.shapes.medium
                     ) {
                         Column(
                             modifier = Modifier.padding(12.dp),
@@ -182,15 +183,15 @@ fun ReminderTimeWindowConfigSection(
                         ) {
                             Text(
                                 text = stringResource(R.string.time_window_start_time),
-                                style = LiteverTheme.typography.labelSmall,
-                                color = LiteverTheme.colors.onSurfaceVariant
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
                                 text = TimeFormatUtils.formatTime(editingStartTime, is24HourFormat),
-                                style = LiteverTheme.typography.titleMedium,
+                                style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = LiteverTheme.colors.primary
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
@@ -200,8 +201,8 @@ fun ReminderTimeWindowConfigSection(
                         modifier = Modifier
                             .weight(1f)
                             .clickable { showEndTimePicker = true },
-                        color = LiteverTheme.colors.surfaceVariant,
-                        shape = LiteverTheme.shapes.medium
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        shape = MaterialTheme.shapes.medium
                     ) {
                         Column(
                             modifier = Modifier.padding(12.dp),
@@ -209,15 +210,15 @@ fun ReminderTimeWindowConfigSection(
                         ) {
                             Text(
                                 text = stringResource(R.string.time_window_end_time),
-                                style = LiteverTheme.typography.labelSmall,
-                                color = LiteverTheme.colors.onSurfaceVariant
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
                                 text = TimeFormatUtils.formatTime(editingEndTime, is24HourFormat),
-                                style = LiteverTheme.typography.titleMedium,
+                                style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = LiteverTheme.colors.primary
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
@@ -268,9 +269,9 @@ fun ReminderTimeWindowConfigSection(
             title = {
                 Text(
                     stringResource(R.string.set_start_time),
-                    style = LiteverTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                     modifier = Modifier.padding(
-                        bottom = LiteverTheme.spacing.medium,
+                        bottom = MaterialTheme.spacing.medium,
                     )
                 )
             },
@@ -288,7 +289,7 @@ fun ReminderTimeWindowConfigSection(
             dismissButton = {
                 OutlinedButton(
                     onClick = { showStartTimePicker = false },
-                    modifier = Modifier.padding(end = LiteverTheme.spacing.medium)
+                    modifier = Modifier.padding(end = MaterialTheme.spacing.medium)
                 ) {
                     Text(stringResource(R.string.action_cancel))
                 }
@@ -309,9 +310,9 @@ fun ReminderTimeWindowConfigSection(
             title = {
                 Text(
                     stringResource(R.string.set_end_time),
-                    style = LiteverTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                     modifier = Modifier.padding(
-                        bottom = LiteverTheme.spacing.medium,
+                        bottom = MaterialTheme.spacing.medium,
                     )
                 )
             },
@@ -329,7 +330,7 @@ fun ReminderTimeWindowConfigSection(
             dismissButton = {
                 OutlinedButton(
                     onClick = { showEndTimePicker = false },
-                    modifier = Modifier.padding(end = LiteverTheme.spacing.medium)
+                    modifier = Modifier.padding(end = MaterialTheme.spacing.medium)
                 ) {
                     Text(stringResource(R.string.action_cancel))
                 }

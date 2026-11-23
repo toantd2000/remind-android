@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.mission.ui.components
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -28,7 +30,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.model.ShakeSensitivity
 import vn.io.litever.remind.features.mission.R
@@ -95,27 +96,27 @@ fun ShakeMissionContent(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(LiteverTheme.spacing.large),
+            .padding(MaterialTheme.spacing.large),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium, Alignment.CenterVertically)
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium, Alignment.CenterVertically)
     ) {
         Icon(
             imageVector = ReMindIcons.Vibration,
             contentDescription = null,
-            tint = LiteverTheme.colors.primary,
+            tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(64.dp)
         )
 
         Text(
             text = "$remaining",
-            style = LiteverTheme.typography.displayLarge.copy(fontWeight = FontWeight.ExtraBold),
-            color = LiteverTheme.colors.primary
+            style = MaterialTheme.typography.displayLarge.copy(fontWeight = FontWeight.ExtraBold),
+            color = MaterialTheme.colorScheme.primary
         )
 
         Text(
             text = stringResource(R.string.shake_ringing_instruction, remaining),
-            style = LiteverTheme.typography.titleMedium,
-            color = LiteverTheme.colors.onSurface,
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center
         )
 

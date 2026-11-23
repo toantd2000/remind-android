@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,7 +31,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.features.reminders.R
 import kotlin.random.Random
@@ -53,49 +54,49 @@ fun ReminderPuzzleDialog(
         title = {
             Text(
                 text = stringResource(R.string.puzzle_dialog_title),
-                style = LiteverTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = LiteverTheme.colors.onSurface
+                color = MaterialTheme.colorScheme.onSurface
             )
         },
         text = {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = LiteverTheme.spacing.extraSmall),
+                    .padding(vertical = MaterialTheme.spacing.extraSmall),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
                     text = stringResource(R.string.puzzle_dialog_message),
-                    style = LiteverTheme.typography.bodyMedium,
-                    color = LiteverTheme.colors.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
                 )
 
-                Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
 
                 // Target code display box
                 Surface(
-                    modifier = Modifier.clip(LiteverTheme.shapes.medium),
-                    color = LiteverTheme.colors.primaryContainer.copy(alpha = 0.6f),
-                    shape = LiteverTheme.shapes.medium
+                    modifier = Modifier.clip(MaterialTheme.shapes.medium),
+                    color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f),
+                    shape = MaterialTheme.shapes.medium
                 ) {
                     Text(
                         text = targetCode,
-                        style = LiteverTheme.typography.headlineMedium.copy(
+                        style = MaterialTheme.typography.headlineMedium.copy(
                             fontWeight = FontWeight.ExtraBold,
                             fontFamily = FontFamily.Monospace,
                             letterSpacing = 6.sp
                         ),
-                        color = LiteverTheme.colors.primary,
+                        color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(
-                            horizontal = LiteverTheme.spacing.large,
-                            vertical = LiteverTheme.spacing.smallMedium
+                            horizontal = MaterialTheme.spacing.large,
+                            vertical = MaterialTheme.spacing.smallMedium
                         )
                     )
                 }
 
-                Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
 
                 OutlinedTextField(
                     value = enteredCode,
@@ -104,7 +105,7 @@ fun ReminderPuzzleDialog(
                         showError = false
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = LiteverTheme.shapes.medium,
+                    shape = MaterialTheme.shapes.medium,
                     label = { Text(stringResource(R.string.puzzle_input_hint)) },
                     placeholder = { Text(stringResource(R.string.puzzle_input_hint)) },
                     isError = showError,

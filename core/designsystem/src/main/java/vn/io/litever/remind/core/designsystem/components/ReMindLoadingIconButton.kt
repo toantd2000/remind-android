@@ -1,5 +1,7 @@
 package vn.io.litever.remind.core.designsystem.components
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -12,7 +14,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import vn.io.litever.designsystem.theme.LiteverTheme
 
 /**
  * A standard IconButton that automatically transitions between an [icon] and a loading spinner.
@@ -47,9 +48,9 @@ fun ReMindLoadingIconButton(
         ) { isLoading ->
             if (isLoading) {
                 CircularProgressIndicator(
-                    modifier = Modifier.size(LiteverTheme.spacing.large),
-                    strokeWidth = LiteverTheme.spacing.tiny,
-                    color = LiteverTheme.colors.primary
+                    modifier = Modifier.size(MaterialTheme.spacing.large),
+                    strokeWidth = MaterialTheme.spacing.tiny,
+                    color = MaterialTheme.colorScheme.primary
                 )
             } else {
                 Icon(

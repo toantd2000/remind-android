@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.alarms.ui.components
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,7 +16,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.model.MissedAlarm
 import vn.io.litever.remind.core.model.MissedReason
 import java.time.Instant
@@ -41,15 +42,15 @@ fun MissedAlarmDialog(
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = stringResource(R.string.missed_alarms_dialog_desc),
-                    style = LiteverTheme.typography.bodyMedium,
-                    color = LiteverTheme.colors.onSurfaceVariant
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(max = 300.dp),
-                    verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
                 ) {
                     items(missedAlarms) { missed ->
                         MissedAlarmItem(missed)
@@ -105,36 +106,36 @@ private fun MissedAlarmItem(missed: MissedAlarm) {
     }
 
     Surface(
-        color = LiteverTheme.colors.surfaceVariant.copy(alpha = 0.5f),
-        shape = LiteverTheme.shapes.small
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+        shape = MaterialTheme.shapes.small
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(LiteverTheme.spacing.smallMedium),
+                .padding(MaterialTheme.spacing.smallMedium),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                modifier = Modifier.size(LiteverTheme.spacing.large),
-                tint = LiteverTheme.colors.onSurfaceVariant
+                modifier = Modifier.size(MaterialTheme.spacing.large),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Spacer(modifier = Modifier.width(LiteverTheme.spacing.smallMedium))
+            Spacer(modifier = Modifier.width(MaterialTheme.spacing.smallMedium))
             Column {
                 val labelText = missed.alarmLabel.ifEmpty {
                     stringResource(R.string.no_label)
                 }
                 Text(
                     text = labelText,
-                    style = LiteverTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,
                     fontStyle = if (missed.alarmLabel.isEmpty()) FontStyle.Italic else FontStyle.Normal
                 )
                 Text(
                     text = "${dateTime.format(timeFormatter)} • $reasonText",
-                    style = LiteverTheme.typography.bodySmall,
-                    color = LiteverTheme.colors.onSurfaceVariant
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }

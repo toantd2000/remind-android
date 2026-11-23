@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +26,6 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import vn.io.litever.brand.assets.LiteverMascotState
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindLogo
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.features.reminders.R
@@ -39,7 +40,7 @@ fun ReminderEmptyState(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(LiteverTheme.spacing.large),
+            .padding(MaterialTheme.spacing.large),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -49,25 +50,25 @@ fun ReminderEmptyState(
             contentScale = ContentScale.Fit,
             modifier = Modifier.size(160.dp)
         )
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.mediumLarge))
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.mediumLarge))
         Text(
             text = stringResource(R.string.no_reminders),
-            style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
         Column(
             modifier = Modifier.wrapContentHeight(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = descriptionPrefix,
-                style = LiteverTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center
             )
-            ReMindLogo(fontSize = LiteverTheme.typography.bodyMedium.fontSize)
+            ReMindLogo(fontSize = MaterialTheme.typography.bodyMedium.fontSize)
         }
-        Spacer(modifier = Modifier.height(LiteverTheme.spacing.large))
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.large))
         Button(onClick = onAddReminderClick) {
             Text(text = stringResource(R.string.action_add_new_reminder))
         }

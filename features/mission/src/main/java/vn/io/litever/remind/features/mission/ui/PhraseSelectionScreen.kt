@@ -1,5 +1,8 @@
 package vn.io.litever.remind.features.mission.ui
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
+import vn.io.litever.remind.core.designsystem.theme.semanticColors
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -70,7 +73,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.compose.material3.ModalBottomSheet
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.theme.errorColors
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
@@ -155,7 +157,7 @@ fun PhraseSelectionRoute(
                 phraseToEdit = null
             },
             sheetState = sheetState,
-            containerColor = LiteverTheme.colors.surface
+            containerColor = MaterialTheme.colorScheme.surface
         ) {
             ReMindBottomSheetContent(
                 title = stringResource(if (phraseToEdit != null) R.string.mission_phrase_edit_title else R.string.mission_add_custom_phrase)
@@ -223,9 +225,9 @@ fun PhraseSelectionScreen(
             if (selectedTabIndex == 2) {
                 FloatingActionButton(
                     onClick = onAddCustomPhraseClick,
-                    containerColor = LiteverTheme.colors.primary,
-                    contentColor = LiteverTheme.colors.onPrimary,
-                    shape = LiteverTheme.shapes.medium
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    shape = MaterialTheme.shapes.medium
                 ) {
                     Icon(ReMindIcons.Add, contentDescription = null)
                 }
@@ -235,12 +237,12 @@ fun PhraseSelectionScreen(
         Column(modifier = Modifier.padding(padding)) {
             PrimaryTabRow(
                 selectedTabIndex = selectedTabIndex,
-                containerColor = LiteverTheme.colors.background,
-                contentColor = LiteverTheme.colors.primary,
+                containerColor = MaterialTheme.colorScheme.background,
+                contentColor = MaterialTheme.colorScheme.primary,
                 indicator = {
                     TabRowDefaults.PrimaryIndicator(
                         Modifier.tabIndicatorOffset(selectedTabIndex, matchContentSize = true),
-                        color = LiteverTheme.colors.primary
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             ) {
@@ -272,14 +274,14 @@ fun PhraseSelectionScreen(
                     ) {
                         Text(
                             text = stringResource(R.string.mission_phrase_empty),
-                            style = LiteverTheme.typography.bodyLarge,
-                            color = LiteverTheme.colors.onSurfaceVariant
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(bottom = LiteverTheme.spacing.medium)
+                        contentPadding = PaddingValues(bottom = MaterialTheme.spacing.medium)
                     ) {
                         if (currentCategory == "custom") {
                             val sharedPhrases =
@@ -324,8 +326,8 @@ fun PhraseSelectionScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(
-                                            horizontal = LiteverTheme.spacing.medium,
-                                            vertical = LiteverTheme.spacing.small
+                                            horizontal = MaterialTheme.spacing.medium,
+                                            vertical = MaterialTheme.spacing.small
                                         ),
                                     horizontalArrangement = Arrangement.End
                                 ) {
@@ -337,7 +339,7 @@ fun PhraseSelectionScreen(
                                     ) {
                                         Text(
                                             text = stringResource(if (allSelected) R.string.action_deselect_all else R.string.action_select_all),
-                                            style = LiteverTheme.typography.labelLarge
+                                            style = MaterialTheme.typography.labelLarge
                                         )
                                     }
                                 }
@@ -363,9 +365,9 @@ fun PhraseSelectionScreen(
 fun SectionHeader(title: String) {
     Text(
         text = title,
-        style = LiteverTheme.typography.titleSmall,
-        color = LiteverTheme.colors.primary,
-        modifier = Modifier.padding(start = LiteverTheme.spacing.medium, top = LiteverTheme.spacing.medium, bottom = LiteverTheme.spacing.small)
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(start = MaterialTheme.spacing.medium, top = MaterialTheme.spacing.medium, bottom = MaterialTheme.spacing.small)
     )
 }
 
@@ -384,21 +386,21 @@ fun PhraseItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(
-                horizontal = LiteverTheme.spacing.medium,
-                vertical = LiteverTheme.spacing.extraSmall
+                horizontal = MaterialTheme.spacing.medium,
+                vertical = MaterialTheme.spacing.extraSmall
             ),
-        shape = LiteverTheme.shapes.medium,
-        color = if (isSelected) LiteverTheme.colors.primaryContainer.copy(alpha = 0.3f)
-        else LiteverTheme.colors.surface,
+        shape = MaterialTheme.shapes.medium,
+        color = if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+        else MaterialTheme.colorScheme.surface,
         border = BorderStroke(
             1.dp,
-            if (isSelected) LiteverTheme.colors.primary.copy(alpha = 0.5f)
-            else LiteverTheme.colors.outlineVariant.copy(alpha = 0.3f)
+            if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+            else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
         )
     ) {
         Row(
             modifier = Modifier
-                .padding(LiteverTheme.spacing.medium)
+                .padding(MaterialTheme.spacing.medium)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -406,26 +408,26 @@ fun PhraseItem(
                 checked = isSelected,
                 onCheckedChange = { onToggle() },
                 colors = CheckboxDefaults.colors(
-                    checkedColor = LiteverTheme.colors.primary,
-                    uncheckedColor = LiteverTheme.colors.outline
+                    checkedColor = MaterialTheme.colorScheme.primary,
+                    uncheckedColor = MaterialTheme.colorScheme.outline
                 )
             )
 
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(start = LiteverTheme.spacing.smallMedium)
+                    .padding(start = MaterialTheme.spacing.smallMedium)
             ) {
                 Text(
                     text = phrase.content,
-                    style = LiteverTheme.typography.bodyLarge,
-                    color = LiteverTheme.colors.onSurface
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 if (phrase.isCustom) {
                     Text(
                         text = stringResource(if (phrase.isShared) R.string.mission_shared else R.string.mission_private),
-                        style = LiteverTheme.typography.labelSmall,
-                        color = LiteverTheme.colors.onSurfaceVariant
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -436,7 +438,7 @@ fun PhraseItem(
                         Icon(
                             imageVector = ReMindIcons.MoreVert,
                             contentDescription = "More options",
-                            tint = LiteverTheme.colors.onSurfaceVariant
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     val context = LocalContext.current
@@ -468,14 +470,14 @@ fun PhraseItem(
                                     text = {
                                         Text(
                                             stringResource(R.string.action_delete),
-                                            color = LiteverTheme.colors.error
+                                            color = MaterialTheme.colorScheme.error
                                         )
                                     },
                                     leadingIcon = {
                                         Icon(
                                             ReMindIcons.Delete,
                                             contentDescription = null,
-                                            tint = LiteverTheme.colors.error
+                                            tint = MaterialTheme.colorScheme.error
                                         )
                                     },
                                     onClick = {
@@ -510,17 +512,17 @@ fun AddCustomPhraseContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(LiteverTheme.spacing.medium),
-        verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
+            .padding(MaterialTheme.spacing.medium),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
     ) {
         ReMindGroupCard {
             Column(
-                modifier = Modifier.padding(LiteverTheme.spacing.medium)
+                modifier = Modifier.padding(MaterialTheme.spacing.medium)
             ) {
                 Text(
                     text = stringResource(R.string.mission_phrase_placeholder),
-                    style = LiteverTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                    color = LiteverTheme.colors.onSurfaceVariant
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(
@@ -543,8 +545,8 @@ fun AddCustomPhraseContent(
                     BasicTextField(
                         state = textState,
                         modifier = Modifier.weight(1f),
-                        textStyle = LiteverTheme.typography.bodyLarge.copy(
-                            color = LiteverTheme.colors.onSurface
+                        textStyle = MaterialTheme.typography.bodyLarge.copy(
+                            color = MaterialTheme.colorScheme.onSurface
                         ),
                         inputTransformation = InputTransformation.maxLengthReject(128),
                         keyboardOptions = KeyboardOptions(
@@ -552,14 +554,14 @@ fun AddCustomPhraseContent(
                             imeAction = ImeAction.Done
                         ),
                         lineLimits = TextFieldLineLimits.MultiLine(maxHeightInLines = 5),
-                        cursorBrush = SolidColor(LiteverTheme.colors.primary),
+                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                         decorator = { innerTextField ->
                             Box(contentAlignment = Alignment.TopStart) {
                                 if (textState.text.isEmpty()) {
                                     Text(
                                         text = stringResource(R.string.mission_phrase_placeholder),
-                                        style = LiteverTheme.typography.bodyLarge.copy(
-                                            color = LiteverTheme.colors.outlineVariant
+                                        style = MaterialTheme.typography.bodyLarge.copy(
+                                            color = MaterialTheme.colorScheme.outlineVariant
                                         )
                                     )
                                 }
@@ -583,7 +585,7 @@ fun AddCustomPhraseContent(
                         Icon(
                             imageVector = ReMindIcons.EditNote,
                             contentDescription = null,
-                            tint = LiteverTheme.colors.outlineVariant,
+                            tint = MaterialTheme.colorScheme.outlineVariant,
                             modifier = Modifier
                                 .size(24.dp)
                                 .padding(top = 2.dp)
@@ -594,8 +596,8 @@ fun AddCustomPhraseContent(
                 Text(
                     text = "${text.length}/128",
                     modifier = Modifier.fillMaxWidth(),
-                    style = LiteverTheme.typography.bodySmall,
-                    color = LiteverTheme.colors.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.End
                 )
             }
@@ -604,22 +606,22 @@ fun AddCustomPhraseContent(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(LiteverTheme.shapes.large)
-                .background(color = LiteverTheme.colors.tertiaryContainer)
-                .padding(LiteverTheme.spacing.smallMedium),
+                .clip(MaterialTheme.shapes.large)
+                .background(color = MaterialTheme.colorScheme.tertiaryContainer)
+                .padding(MaterialTheme.spacing.smallMedium),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 imageVector = ReMindIcons.Lightbulb,
                 contentDescription = null,
-                tint = LiteverTheme.colors.onTertiaryContainer,
+                tint = MaterialTheme.colorScheme.onTertiaryContainer,
                 modifier = Modifier.size(20.dp)
             )
-            Spacer(modifier = Modifier.width(LiteverTheme.spacing.smallMedium))
+            Spacer(modifier = Modifier.width(MaterialTheme.spacing.smallMedium))
             Text(
                 text = stringResource(R.string.mission_typing_tip),
-                style = LiteverTheme.typography.labelMedium,
-                color = LiteverTheme.colors.onTertiaryContainer
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onTertiaryContainer
             )
         }
 
@@ -627,35 +629,35 @@ fun AddCustomPhraseContent(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(LiteverTheme.shapes.large)
-                .background(color = LiteverTheme.colors.secondaryContainer)
-                .padding(vertical = LiteverTheme.spacing.small)
+                .clip(MaterialTheme.shapes.large)
+                .background(color = MaterialTheme.colorScheme.secondaryContainer)
+                .padding(vertical = MaterialTheme.spacing.small)
         ) {
             Checkbox(
                 checked = isShared,
                 onCheckedChange = { isShared = it },
                 enabled = editingPhrase == null && canBePrivate,
                 colors = CheckboxDefaults.colors(
-                    checkedColor = LiteverTheme.colors.onSecondaryContainer,
-                    uncheckedColor = LiteverTheme.colors.outline
+                    checkedColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    uncheckedColor = MaterialTheme.colorScheme.outline
                 )
             )
             Column {
                 Text(
                     text = stringResource(R.string.mission_shared),
-                    style = LiteverTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
                 )
                 Text(
                     text = stringResource(if (canBePrivate) R.string.mission_shared_desc else R.string.mission_private_disabled_desc),
-                    style = LiteverTheme.typography.bodySmall,
-                    color = if (canBePrivate) LiteverTheme.colors.onSurfaceVariant else LiteverTheme.colors.warning
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (canBePrivate) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.semanticColors.warning
                 )
             }
         }
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.smallMedium)
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.smallMedium)
         ) {
             OutlinedButton(
                 onClick = onDismiss,

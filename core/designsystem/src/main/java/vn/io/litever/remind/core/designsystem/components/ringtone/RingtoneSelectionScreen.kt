@@ -1,5 +1,6 @@
 package vn.io.litever.remind.core.designsystem.components.ringtone
 
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -39,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedButton
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
@@ -123,15 +123,15 @@ fun RingtoneSelectionScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding),
-                contentPadding = PaddingValues(bottom = LiteverTheme.spacing.medium)
+                contentPadding = PaddingValues(bottom = MaterialTheme.spacing.medium)
             ) {
                 item {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(
-                                horizontal = LiteverTheme.spacing.medium,
-                                vertical = LiteverTheme.spacing.small
+                                horizontal = MaterialTheme.spacing.medium,
+                                vertical = MaterialTheme.spacing.small
                             )
                     ) {
                         OutlinedButton(
@@ -141,9 +141,9 @@ fun RingtoneSelectionScreen(
                             Icon(
                                 imageVector = ReMindIcons.LibraryMusic,
                                 contentDescription = null,
-                                modifier = Modifier.size(LiteverTheme.spacing.mediumLarge)
+                                modifier = Modifier.size(MaterialTheme.spacing.mediumLarge)
                             )
-                            Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
+                            Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
                             Text(stringResource(R.string.ringtone_custom_pick))
                         }
                     }
@@ -169,8 +169,8 @@ fun RingtoneListItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(
-                horizontal = LiteverTheme.spacing.medium,
-                vertical = LiteverTheme.spacing.extraSmall
+                horizontal = MaterialTheme.spacing.medium,
+                vertical = MaterialTheme.spacing.extraSmall
             )
             .clip(MaterialTheme.shapes.medium)
             .clickable { onClick() },
@@ -183,16 +183,16 @@ fun RingtoneListItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(LiteverTheme.spacing.smallMedium),
+                .padding(MaterialTheme.spacing.smallMedium),
             verticalAlignment = Alignment.CenterVertically
         ) {
             RadioButton(
                 selected = item.isSelected,
                 onClick = null,
-                modifier = Modifier.size(LiteverTheme.spacing.large)
+                modifier = Modifier.size(MaterialTheme.spacing.large)
             )
 
-            Spacer(modifier = Modifier.width(LiteverTheme.spacing.smallMedium))
+            Spacer(modifier = Modifier.width(MaterialTheme.spacing.smallMedium))
 
             Text(
                 text = item.title,
@@ -208,7 +208,7 @@ fun RingtoneListItem(
                     imageVector = ReMindIcons.VolumeUp,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(LiteverTheme.spacing.mediumLarge)
+                    modifier = Modifier.size(MaterialTheme.spacing.mediumLarge)
                 )
             }
         }

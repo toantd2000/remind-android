@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.mission.ui
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.res.Configuration
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -40,7 +42,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
@@ -113,26 +114,26 @@ fun BarcodeMissionConfigScreen(
                 .fillMaxSize()
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
-                .padding(LiteverTheme.spacing.medium),
-            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
+                .padding(MaterialTheme.spacing.medium),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
         ) {
             ReMindSettingsGroup(title = stringResource(R.string.barcode_registered_label)) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(LiteverTheme.spacing.medium),
+                        .padding(MaterialTheme.spacing.medium),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Surface(
-                        shape = LiteverTheme.shapes.medium,
-                        color = LiteverTheme.colors.surfaceContainerHighest,
+                        shape = MaterialTheme.shapes.medium,
+                        color = MaterialTheme.colorScheme.surfaceContainerHighest,
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
                             text = targetBarcode.ifBlank { stringResource(R.string.barcode_not_set) },
-                            style = LiteverTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
-                            color = if (targetBarcode.isNotBlank()) LiteverTheme.colors.primary else LiteverTheme.colors.onSurfaceVariant,
-                            modifier = Modifier.padding(LiteverTheme.spacing.medium)
+                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                            color = if (targetBarcode.isNotBlank()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(MaterialTheme.spacing.medium)
                         )
                     }
 
@@ -174,18 +175,18 @@ fun BarcodeMissionConfigScreen(
                 }
                 BasicTextField(
                     state = labelState,
-                    textStyle = LiteverTheme.typography.bodyLarge.copy(color = LiteverTheme.colors.onSurface),
+                    textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
                     lineLimits = TextFieldLineLimits.SingleLine,
-                    cursorBrush = SolidColor(LiteverTheme.colors.primary),
+                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(LiteverTheme.spacing.medium),
+                        .padding(MaterialTheme.spacing.medium),
                     decorator = TextFieldDecorator { inner ->
                         if (labelState.text.isEmpty()) {
                             Text(
                                 text = stringResource(R.string.barcode_label_hint),
-                                style = LiteverTheme.typography.bodyLarge,
-                                color = LiteverTheme.colors.outlineVariant
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.outlineVariant
                             )
                         }
                         inner()

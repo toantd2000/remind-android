@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.mission.ui
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,7 +43,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
@@ -169,8 +170,8 @@ fun RandomMissionConfigScreen(
                 .fillMaxSize()
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
-                .padding(LiteverTheme.spacing.medium),
-            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
+                .padding(MaterialTheme.spacing.medium),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
         ) {
             ReMindSettingsGroup(title = stringResource(R.string.random_candidates_label)) {
                 availableCandidates.forEach { (type, labelRes) ->
@@ -202,7 +203,7 @@ fun RandomMissionConfigScreen(
                     ) {
                         Text(
                             text = stringResource(labelRes),
-                            style = LiteverTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
+                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
                         )
                     }
                 }
@@ -212,7 +213,7 @@ fun RandomMissionConfigScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(LiteverTheme.spacing.medium),
+                        .padding(MaterialTheme.spacing.medium),
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     MathDifficulty.entries.forEach { level ->
@@ -236,7 +237,7 @@ fun RandomMissionConfigScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(LiteverTheme.spacing.medium),
+                        .padding(MaterialTheme.spacing.medium),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     listOf(1, 2, 3, 5).forEach { count ->

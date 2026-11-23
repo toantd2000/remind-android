@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.features.reminders.R
@@ -33,7 +33,7 @@ fun ReminderActionBottomSheet(
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
-        containerColor = LiteverTheme.colors.surface,
+        containerColor = MaterialTheme.colorScheme.surface,
         modifier = modifier
     ) {
         Column(
@@ -57,7 +57,7 @@ fun ReminderActionBottomSheet(
                     Icon(
                         imageVector = toggleIcon,
                         contentDescription = null,
-                        tint = if (reminder.isEnabled) LiteverTheme.colors.error else LiteverTheme.colors.primary
+                        tint = if (reminder.isEnabled) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
                     )
                 },
                 modifier = Modifier
@@ -76,7 +76,7 @@ fun ReminderActionBottomSheet(
                     Icon(
                         imageVector = ReMindIcons.Edit,
                         contentDescription = null,
-                        tint = LiteverTheme.colors.onSurface
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 modifier = Modifier
@@ -95,7 +95,7 @@ fun ReminderActionBottomSheet(
                     Icon(
                         imageVector = ReMindIcons.ContentCopy,
                         contentDescription = null,
-                        tint = LiteverTheme.colors.onSurface
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 modifier = Modifier
@@ -114,7 +114,7 @@ fun ReminderActionBottomSheet(
                     Icon(
                         imageVector = ReMindIcons.Delete,
                         contentDescription = null,
-                        tint = LiteverTheme.colors.error
+                        tint = MaterialTheme.colorScheme.error
                     )
                 },
                 modifier = Modifier
@@ -126,7 +126,7 @@ fun ReminderActionBottomSheet(
             ) {
                 Text(
                     text = stringResource(R.string.action_delete),
-                    color = LiteverTheme.colors.error
+                    color = MaterialTheme.colorScheme.error
                 )
             }
 

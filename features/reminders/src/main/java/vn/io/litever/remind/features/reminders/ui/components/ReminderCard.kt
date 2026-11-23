@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,7 +29,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -56,22 +56,22 @@ fun ReminderCard(
     val isCardActive = reminder.isEnabled
 
     val containerColor = if (isCardActive) {
-        LiteverTheme.colors.surfaceContainer
+        MaterialTheme.colorScheme.surfaceContainer
     } else {
-        LiteverTheme.colors.surfaceContainerLow
+        MaterialTheme.colorScheme.surfaceContainerLow
     }
 
     val indicatorColor = if (isSnoozed) {
-        LiteverTheme.colors.secondary
+        MaterialTheme.colorScheme.secondary
     } else {
-        LiteverTheme.colors.primary
+        MaterialTheme.colorScheme.primary
     }
 
     Surface(
         modifier = modifier.fillMaxWidth(),
         onClick = onClick,
         color = containerColor,
-        shape = LiteverTheme.shapes.large,
+        shape = MaterialTheme.shapes.large,
     ) {
         Column(
             modifier = Modifier
@@ -85,9 +85,9 @@ fun ReminderCard(
                     }
                 }
                 .padding(
-                    start = LiteverTheme.spacing.medium,
-                    top = LiteverTheme.spacing.smallMedium,
-                    bottom = LiteverTheme.spacing.smallMedium
+                    start = MaterialTheme.spacing.medium,
+                    top = MaterialTheme.spacing.smallMedium,
+                    bottom = MaterialTheme.spacing.smallMedium
                 ),
         ) {
             // Top Row: Separated Time badge, Recurrence badge, Time Windows, Snooze, Urgency badges
@@ -106,8 +106,8 @@ fun ReminderCard(
                 TimeBadge(
                     reminder = reminder,
                     is24HourFormat = is24HourFormat,
-                    containerColor = if (isSnoozed) LiteverTheme.colors.secondary else LiteverTheme.colors.secondary.copy(alpha = 0.7f),
-                    contentColor = if (isSnoozed) LiteverTheme.colors.onSecondary else LiteverTheme.colors.onSecondary.copy(alpha = 0.7f)
+                    containerColor = if (isSnoozed) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f),
+                    contentColor = if (isSnoozed) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.7f)
                 )
 
                 // 3. Time Window Badge (for Interval)
@@ -134,8 +134,8 @@ fun ReminderCard(
                     BadgeContainer(
                         icon = ReMindIcons.NotificationImportant,
                         text = stringResource(R.string.urgency_hard),
-                        containerColor = LiteverTheme.colors.errorContainer,
-                        contentColor = LiteverTheme.colors.onErrorContainer
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.onErrorContainer
                     )
                 }
 
@@ -144,8 +144,8 @@ fun ReminderCard(
                     BadgeContainer(
                         icon = ReMindIcons.Alarm,
                         text = stringResource(R.string.badge_persistent_alert),
-                        containerColor = LiteverTheme.colors.primaryContainer.copy(alpha = 0.8f),
-                        contentColor = LiteverTheme.colors.onPrimaryContainer
+                        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.8f),
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
             }
@@ -159,13 +159,13 @@ fun ReminderCard(
                     // Title
                     Text(
                         text = reminder.title,
-                        style = LiteverTheme.typography.titleMedium.copy(
+                        style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold
                         ),
                         color = when {
-                            !reminder.isEnabled -> LiteverTheme.colors.onSurface.copy(alpha = 0.5f)
-                            isSnoozed -> LiteverTheme.colors.secondary
-                            else -> LiteverTheme.colors.onSurface
+                            !reminder.isEnabled -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                            isSnoozed -> MaterialTheme.colorScheme.secondary
+                            else -> MaterialTheme.colorScheme.onSurface
                         },
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
@@ -175,11 +175,11 @@ fun ReminderCard(
                     if (reminder.notes.isNotBlank()) {
                         Text(
                             text = reminder.notes,
-                            style = LiteverTheme.typography.bodyMedium,
-                            color = LiteverTheme.colors.onSurfaceVariant,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.padding(top = LiteverTheme.spacing.tiny)
+                            modifier = Modifier.padding(top = MaterialTheme.spacing.tiny)
                         )
                     }
                 }
@@ -187,12 +187,12 @@ fun ReminderCard(
                 // Options menu button (3-dots)
                 IconButton(
                     onClick = onMoreClick,
-                    modifier = Modifier.size(LiteverTheme.spacing.extraLarge)
+                    modifier = Modifier.size(MaterialTheme.spacing.extraLarge)
                 ) {
                     Icon(
                         imageVector = ReMindIcons.MoreVert,
                         contentDescription = stringResource(R.string.action_more),
-                        modifier = Modifier.size(LiteverTheme.spacing.mediumLarge),
+                        modifier = Modifier.size(MaterialTheme.spacing.mediumLarge),
                     )
                 }
             }
@@ -248,8 +248,8 @@ private fun RecurrenceBadge(
     BadgeContainer(
         icon = ReMindIcons.CalendarMonth,
         text = text,
-        containerColor = LiteverTheme.colors.primary.copy(alpha = 0.8f),
-        contentColor = LiteverTheme.colors.onPrimary
+        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
+        contentColor = MaterialTheme.colorScheme.onPrimary
     )
 }
 
@@ -262,7 +262,7 @@ private fun TimeWindowBadge(
     if (text.isBlank()) return
 
     Surface(
-        color = LiteverTheme.colors.secondaryContainer,
+        color = MaterialTheme.colorScheme.secondaryContainer,
         shape = MaterialTheme.shapes.extraSmall
     ) {
         Row(
@@ -272,14 +272,14 @@ private fun TimeWindowBadge(
             Icon(
                 imageVector = ReMindIcons.DateRange,
                 contentDescription = null,
-                tint = LiteverTheme.colors.onSecondaryContainer,
+                tint = MaterialTheme.colorScheme.onSecondaryContainer,
                 modifier = Modifier.size(12.dp)
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = text,
-                style = LiteverTheme.typography.labelSmall.copy(fontSize = 11.sp),
-                color = LiteverTheme.colors.onSecondaryContainer,
+                style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
                 fontWeight = FontWeight.Medium
             )
         }
@@ -298,7 +298,7 @@ private fun SnoozingBadge(
     val formattedTime = TimeFormatUtils.formatTime(snoozeTime, is24HourFormat)
 
     Surface(
-        color = LiteverTheme.colors.secondaryContainer,
+        color = MaterialTheme.colorScheme.secondaryContainer,
         shape = MaterialTheme.shapes.extraSmall
     ) {
         Row(
@@ -308,14 +308,14 @@ private fun SnoozingBadge(
             Icon(
                 imageVector = ReMindIcons.Snooze,
                 contentDescription = null,
-                tint = LiteverTheme.colors.onSecondaryContainer,
+                tint = MaterialTheme.colorScheme.onSecondaryContainer,
                 modifier = Modifier.size(12.dp)
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = stringResource(R.string.snoozing_badge_format, formattedTime),
-                style = LiteverTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                color = LiteverTheme.colors.onSecondaryContainer,
+                style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
                 fontWeight = FontWeight.Medium
             )
         }
@@ -331,9 +331,9 @@ private fun NextTriggerFooter(
     val displayInfo = ReminderCardFormatter.getNextTriggerDisplayInfo(reminder, is24HourFormat)
 
     val contentColor = when {
-        displayInfo.isInactive -> LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.6f)
-        displayInfo.isSnoozed -> LiteverTheme.colors.onSurfaceVariant
-        else -> LiteverTheme.colors.tertiary
+        displayInfo.isInactive -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+        displayInfo.isSnoozed -> MaterialTheme.colorScheme.onSurfaceVariant
+        else -> MaterialTheme.colorScheme.tertiary
     }
 
     Row(
@@ -349,7 +349,7 @@ private fun NextTriggerFooter(
         Spacer(modifier = Modifier.width(5.dp))
         Text(
             text = displayInfo.text,
-            style = LiteverTheme.typography.labelSmall.copy(
+            style = MaterialTheme.typography.labelSmall.copy(
                 fontWeight = if (displayInfo.isInactive) FontWeight.Light else FontWeight.Medium
             ),
             color = contentColor,
@@ -383,7 +383,7 @@ private fun BadgeContainer(
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = text,
-                style = LiteverTheme.typography.labelSmall.copy(fontSize = 11.sp),
+                style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
                 color = contentColor,
                 fontWeight = FontWeight.Medium,
                 maxLines = 1,

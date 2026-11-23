@@ -13,7 +13,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.window.DialogProperties
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.theme.errorColors
 
 /**
@@ -30,7 +29,7 @@ fun ReMindAlertDialog(
     dismissButtonText: String? = null,
     onDismissClick: (() -> Unit)? = null,
     isDestructive: Boolean = false,
-    shape: Shape = LiteverTheme.shapes.extraLarge,
+    shape: Shape = MaterialTheme.shapes.extraLarge,
     containerColor: Color = MaterialTheme.colorScheme.surfaceContainerHigh,
     tonalElevation: Dp = AlertDialogDefaults.TonalElevation,
     properties: DialogProperties = DialogProperties(),
@@ -60,8 +59,8 @@ fun ReMindAlertDialog(
             {
                 Text(
                     text = it,
-                    style = LiteverTheme.typography.headlineSmall,
-                    color = LiteverTheme.colors.onSurface
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
         },
@@ -69,8 +68,8 @@ fun ReMindAlertDialog(
             {
                 Text(
                     text = it,
-                    style = LiteverTheme.typography.bodyMedium,
-                    color = LiteverTheme.colors.onSurfaceVariant
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         },
@@ -93,7 +92,7 @@ fun ReMindAlertDialog(
     icon: @Composable (() -> Unit)? = null,
     title: @Composable (() -> Unit)? = null,
     text: @Composable (() -> Unit)? = null,
-    shape: Shape = LiteverTheme.shapes.extraLarge,
+    shape: Shape = MaterialTheme.shapes.extraLarge,
     containerColor: Color = MaterialTheme.colorScheme.surfaceContainerHigh,
     tonalElevation: Dp = AlertDialogDefaults.TonalElevation,
     properties: DialogProperties = DialogProperties()

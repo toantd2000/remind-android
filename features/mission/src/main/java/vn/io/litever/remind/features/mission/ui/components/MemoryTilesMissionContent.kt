@@ -1,5 +1,8 @@
 package vn.io.litever.remind.features.mission.ui.components
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
+import vn.io.litever.remind.core.designsystem.theme.semanticColors
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -65,7 +68,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.designsystem.theme.errorColors
@@ -162,7 +164,7 @@ fun MemoryTilesMissionContent(
     Column(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
     ) {
         // 1. Phía trên: Banner hướng dẫn
         MissionInstructionBanner(
@@ -177,22 +179,22 @@ fun MemoryTilesMissionContent(
                 .weight(1f)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium, Alignment.CenterVertically)
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium, Alignment.CenterVertically)
         ) {
 
         // 2. Thẻ hiển thị Trạng thái + 3 Mạng (❤️❤️❤️)
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = LiteverTheme.shapes.medium,
+            shape = MaterialTheme.shapes.medium,
             colors = CardDefaults.cardColors(
-                containerColor = LiteverTheme.colors.surfaceContainer
+                containerColor = MaterialTheme.colorScheme.surfaceContainer
             )
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = LiteverTheme.spacing.medium, vertical = LiteverTheme.spacing.smallMedium),
-                verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                    .padding(horizontal = MaterialTheme.spacing.medium, vertical = MaterialTheme.spacing.smallMedium),
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -211,15 +213,15 @@ fun MemoryTilesMissionContent(
                     }
 
                     val statusColor = when (gameState) {
-                        MemoryGameState.MEMORIZE -> LiteverTheme.colors.primary
-                        MemoryGameState.PLAYING -> LiteverTheme.colors.onSurface
-                        MemoryGameState.SUCCESS -> LiteverTheme.colors.success
-                        MemoryGameState.FAILURE -> LiteverTheme.colors.error
+                        MemoryGameState.MEMORIZE -> MaterialTheme.colorScheme.primary
+                        MemoryGameState.PLAYING -> MaterialTheme.colorScheme.onSurface
+                        MemoryGameState.SUCCESS -> MaterialTheme.semanticColors.success
+                        MemoryGameState.FAILURE -> MaterialTheme.colorScheme.error
                     }
 
                     Text(
                         text = statusText,
-                        style = LiteverTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                         color = statusColor,
                         modifier = Modifier.weight(1f)
                     )
@@ -232,7 +234,7 @@ fun MemoryTilesMissionContent(
                         for (i in 1..MAX_LIVES) {
                             val isAlive = i <= livesRemaining
                             val heartColor by animateColorAsState(
-                                targetValue = if (isAlive) LiteverTheme.colors.error else LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.25f),
+                                targetValue = if (isAlive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.25f),
                                 label = "heartColor"
                             )
                             val heartScale by animateFloatAsState(
@@ -268,9 +270,9 @@ fun MemoryTilesMissionContent(
                 )
                 val progressColor by animateColorAsState(
                     targetValue = when (gameState) {
-                        MemoryGameState.SUCCESS -> LiteverTheme.colors.success
-                        MemoryGameState.FAILURE -> LiteverTheme.colors.error
-                        else -> LiteverTheme.colors.primary
+                        MemoryGameState.SUCCESS -> MaterialTheme.semanticColors.success
+                        MemoryGameState.FAILURE -> MaterialTheme.colorScheme.error
+                        else -> MaterialTheme.colorScheme.primary
                     },
                     label = "memoryProgressColor"
                 )
@@ -281,7 +283,7 @@ fun MemoryTilesMissionContent(
                         .height(4.dp)
                         .clip(CircleShape),
                     color = progressColor,
-                    trackColor = LiteverTheme.colors.surfaceContainerHighest
+                    trackColor = MaterialTheme.colorScheme.surfaceContainerHighest
                 )
             }
         }
@@ -289,9 +291,9 @@ fun MemoryTilesMissionContent(
         // 3. Khung chứa lưới ô nhớ (Interactive 3D Flip Grid)
         val boardBorderColor by animateColorAsState(
             targetValue = when (gameState) {
-                MemoryGameState.SUCCESS -> LiteverTheme.colors.success
-                MemoryGameState.FAILURE -> LiteverTheme.colors.error
-                else -> LiteverTheme.colors.outlineVariant
+                MemoryGameState.SUCCESS -> MaterialTheme.semanticColors.success
+                MemoryGameState.FAILURE -> MaterialTheme.colorScheme.error
+                else -> MaterialTheme.colorScheme.outlineVariant
             },
             label = "boardBorderColor"
         )
@@ -299,24 +301,24 @@ fun MemoryTilesMissionContent(
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
-                containerColor = LiteverTheme.colors.surfaceContainerLowest
+                containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
             ),
-            shape = LiteverTheme.shapes.large,
+            shape = MaterialTheme.shapes.large,
             border = BorderStroke(1.5.dp, boardBorderColor)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(LiteverTheme.spacing.medium),
-                verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                    .padding(MaterialTheme.spacing.medium),
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
             ) {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(currentBoard.gridSize),
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(1f),
-                    horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small),
-                    verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small),
+                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
                     userScrollEnabled = false
                 ) {
                     items(currentBoard.gridSize * currentBoard.gridSize) { index ->
@@ -357,22 +359,22 @@ fun MemoryTilesMissionContent(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = LiteverTheme.spacing.small),
+                            .padding(top = MaterialTheme.spacing.small),
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         LegendItem(
-                            color = LiteverTheme.colors.success,
+                            color = MaterialTheme.semanticColors.success,
                             icon = ReMindIcons.Check,
                             text = stringResource(R.string.memory_legend_correct)
                         )
                         LegendItem(
-                            color = LiteverTheme.colors.error,
+                            color = MaterialTheme.colorScheme.error,
                             icon = ReMindIcons.Close,
                             text = stringResource(R.string.memory_legend_wrong)
                         )
                         LegendItem(
-                            color = LiteverTheme.colors.tertiary,
+                            color = MaterialTheme.colorScheme.tertiary,
                             icon = ReMindIcons.Star,
                             text = stringResource(R.string.memory_legend_missed)
                         )
@@ -397,9 +399,9 @@ fun MemoryTilesMissionContent(
                     ) {
                         Text(
                             text = stringResource(R.string.action_continue),
-                            style = LiteverTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
+                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
                         )
-                        Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
+                        Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
                         Icon(
                             imageVector = ReMindIcons.ArrowForward,
                             contentDescription = null,
@@ -415,9 +417,9 @@ fun MemoryTilesMissionContent(
                     ) {
                         Text(
                             text = stringResource(R.string.action_retry_now),
-                            style = LiteverTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
+                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
                         )
-                        Spacer(modifier = Modifier.width(LiteverTheme.spacing.extraSmall))
+                        Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
                         Icon(
                             imageVector = ReMindIcons.Refresh,
                             contentDescription = null,
@@ -493,12 +495,12 @@ private fun MemoryTileItem(
     // Xác định màu sắc và biểu tượng mặt sau/mặt trước
     val isFrontFace = rotationY > 90f
     val targetColor = when {
-        !isRevealed -> LiteverTheme.colors.surfaceContainerHighest
-        gameState == MemoryGameState.FAILURE && !isSelected && isTarget -> LiteverTheme.colors.tertiaryContainer
-        gameState == MemoryGameState.FAILURE && !isSelected && !isTarget -> LiteverTheme.colors.surfaceContainerHighest.copy(alpha = 0.4f)
-        isSelected && !isTarget -> LiteverTheme.colors.error
-        isSelected && isTarget -> LiteverTheme.colors.success
-        else -> LiteverTheme.colors.primary
+        !isRevealed -> MaterialTheme.colorScheme.surfaceContainerHighest
+        gameState == MemoryGameState.FAILURE && !isSelected && isTarget -> MaterialTheme.colorScheme.tertiaryContainer
+        gameState == MemoryGameState.FAILURE && !isSelected && !isTarget -> MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.4f)
+        isSelected && !isTarget -> MaterialTheme.colorScheme.error
+        isSelected && isTarget -> MaterialTheme.semanticColors.success
+        else -> MaterialTheme.colorScheme.primary
     }
 
     val animatedColor by animateColorAsState(
@@ -528,7 +530,7 @@ private fun MemoryTileItem(
         shape = RoundedCornerShape(14.dp),
         color = animatedColor,
         border = if (gameState == MemoryGameState.FAILURE && !isSelected && isTarget) {
-            BorderStroke(2.dp, LiteverTheme.colors.tertiary)
+            BorderStroke(2.dp, MaterialTheme.colorScheme.tertiary)
         } else null
     ) {
         Box(
@@ -547,7 +549,7 @@ private fun MemoryTileItem(
                         Icon(
                             imageVector = ReMindIcons.Check,
                             contentDescription = null,
-                            tint = LiteverTheme.colors.onSuccess,
+                            tint = MaterialTheme.semanticColors.onSuccess,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -555,7 +557,7 @@ private fun MemoryTileItem(
                         Icon(
                             imageVector = ReMindIcons.Close,
                             contentDescription = null,
-                            tint = LiteverTheme.colors.onError,
+                            tint = MaterialTheme.colorScheme.onError,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -563,7 +565,7 @@ private fun MemoryTileItem(
                         Icon(
                             imageVector = ReMindIcons.Star,
                             contentDescription = null,
-                            tint = LiteverTheme.colors.onTertiaryContainer,
+                            tint = MaterialTheme.colorScheme.onTertiaryContainer,
                             modifier = Modifier.size(22.dp)
                         )
                     }
@@ -598,8 +600,8 @@ private fun LegendItem(
         }
         Text(
             text = text,
-            style = LiteverTheme.typography.labelSmall,
-            color = LiteverTheme.colors.onSurfaceVariant
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }

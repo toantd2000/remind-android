@@ -1,5 +1,8 @@
 package vn.io.litever.remind.core.designsystem.components
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
+import vn.io.litever.remind.core.designsystem.theme.semanticColors
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -20,7 +23,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 
@@ -35,7 +37,7 @@ fun LiteVerLogo(
     if (showIcon) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small),
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
             modifier = modifier
         ) {
             Image(
@@ -57,7 +59,7 @@ private fun LiteVerLogoText(
     style: TextStyle? = null,
     fontSize: TextUnit = TextUnit.Unspecified
 ) {
-    val baseStyle = style ?: LiteverTheme.typography.titleLarge
+    val baseStyle = style ?: MaterialTheme.typography.titleLarge
     val finalStyle = if (fontSize != TextUnit.Unspecified) {
         baseStyle.copy(fontSize = fontSize)
     } else {
@@ -68,7 +70,7 @@ private fun LiteVerLogoText(
         text = buildAnnotatedString {
             withStyle(
                 style = SpanStyle(
-                    color = LiteverTheme.colors.brandLite,
+                    color = MaterialTheme.semanticColors.brandLite,
                     fontWeight = FontWeight.SemiBold,
                 )
             ) {
@@ -76,7 +78,7 @@ private fun LiteVerLogoText(
             }
             withStyle(
                 style = SpanStyle(
-                    color = LiteverTheme.colors.brandVer,
+                    color = MaterialTheme.semanticColors.brandVer,
                     fontWeight = FontWeight.ExtraBold,
                 )
             ) {

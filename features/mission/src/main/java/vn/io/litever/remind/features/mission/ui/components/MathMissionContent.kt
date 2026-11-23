@@ -1,5 +1,8 @@
 package vn.io.litever.remind.features.mission.ui.components
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
+import vn.io.litever.remind.core.designsystem.theme.semanticColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
@@ -46,7 +49,6 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.model.MathProblem
@@ -123,7 +125,7 @@ fun MathMissionContent(
     Column(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
     ) {
         Column(
             modifier = Modifier
@@ -131,7 +133,7 @@ fun MathMissionContent(
                 .weight(1f)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
         ) {
             // 1. Phía trên: Banner hướng dẫn
             MissionInstructionBanner(
@@ -142,9 +144,9 @@ fun MathMissionContent(
             // 2. Thẻ hiển thị phép tính và kết quả nhập
             val cardBorderColor by animateColorAsState(
                 targetValue = when (validationState) {
-                    StepValidationState.CORRECT -> LiteverTheme.colors.success
-                    StepValidationState.WRONG -> LiteverTheme.colors.error
-                    else -> LiteverTheme.colors.primary.copy(alpha = 0.25f)
+                    StepValidationState.CORRECT -> MaterialTheme.semanticColors.success
+                    StepValidationState.WRONG -> MaterialTheme.colorScheme.error
+                    else -> MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)
                 },
                 label = "cardBorderColor"
             )
@@ -154,44 +156,44 @@ fun MathMissionContent(
                     .fillMaxWidth()
                     .offset { IntOffset(shakeOffset.value.roundToInt(), 0) },
                 colors = CardDefaults.cardColors(
-                    containerColor = LiteverTheme.colors.surfaceContainerLowest
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
                 ),
-                shape = LiteverTheme.shapes.medium,
+                shape = MaterialTheme.shapes.medium,
                 border = BorderStroke(1.5.dp, cardBorderColor)
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = LiteverTheme.spacing.large, horizontal = LiteverTheme.spacing.medium),
+                        .padding(vertical = MaterialTheme.spacing.large, horizontal = MaterialTheme.spacing.medium),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
                 ) {
                     // Biểu thức toán học
                     Text(
                         text = problem?.expression ?: "",
-                        style = LiteverTheme.typography.displayMedium.copy(
+                        style = MaterialTheme.typography.displayMedium.copy(
                             fontWeight = FontWeight.ExtraBold,
                             letterSpacing = 2.sp
                         ),
                         textAlign = TextAlign.Center,
-                        color = LiteverTheme.colors.onSurface
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
                     // Hàng hiển thị kết quả người dùng nhập
                     val surfaceBgColor by animateColorAsState(
                         targetValue = when (validationState) {
-                            StepValidationState.CORRECT -> LiteverTheme.colors.success.copy(alpha = 0.15f)
-                            StepValidationState.WRONG -> LiteverTheme.colors.error.copy(alpha = 0.15f)
-                            else -> LiteverTheme.colors.surfaceContainerHighest.copy(alpha = 0.6f)
+                            StepValidationState.CORRECT -> MaterialTheme.semanticColors.success.copy(alpha = 0.15f)
+                            StepValidationState.WRONG -> MaterialTheme.colorScheme.error.copy(alpha = 0.15f)
+                            else -> MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.6f)
                         },
                         label = "surfaceBgColor"
                     )
 
                     val resultTextColor by animateColorAsState(
                         targetValue = when (validationState) {
-                            StepValidationState.CORRECT -> LiteverTheme.colors.success
-                            StepValidationState.WRONG -> LiteverTheme.colors.error
-                            else -> if (userInput.isEmpty()) LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.5f) else LiteverTheme.colors.primary
+                            StepValidationState.CORRECT -> MaterialTheme.semanticColors.success
+                            StepValidationState.WRONG -> MaterialTheme.colorScheme.error
+                            else -> if (userInput.isEmpty()) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f) else MaterialTheme.colorScheme.primary
                         },
                         label = "resultTextColor"
                     )
@@ -204,16 +206,16 @@ fun MathMissionContent(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = LiteverTheme.spacing.smallMedium, horizontal = LiteverTheme.spacing.medium),
+                                .padding(vertical = MaterialTheme.spacing.smallMedium, horizontal = MaterialTheme.spacing.medium),
                             contentAlignment = Alignment.Center
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
                             ) {
                                 Text(
                                     text = if (userInput.isEmpty()) stringResource(R.string.mission_math_placeholder) else userInput,
-                                    style = LiteverTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+                                    style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
                                     color = resultTextColor,
                                     textAlign = TextAlign.Center
                                 )
@@ -221,7 +223,7 @@ fun MathMissionContent(
                                     Icon(
                                         imageVector = ReMindIcons.CheckCircle,
                                         contentDescription = null,
-                                        tint = LiteverTheme.colors.success,
+                                        tint = MaterialTheme.semanticColors.success,
                                         modifier = Modifier.size(28.dp)
                                     )
                                 }
@@ -233,8 +235,8 @@ fun MathMissionContent(
                     AnimatedVisibility(visible = validationState == StepValidationState.WRONG) {
                         Text(
                             text = stringResource(R.string.mission_math_wrong),
-                            style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
-                            color = LiteverTheme.colors.error,
+                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                            color = MaterialTheme.colorScheme.error,
                             textAlign = TextAlign.Center
                         )
                     }
@@ -273,12 +275,12 @@ private fun MathKeypad(
 
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
     ) {
         rows.forEach { rowDigits ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
             ) {
                 rowDigits.forEach { digit ->
                     KeypadNumberButton(
@@ -293,14 +295,14 @@ private fun MathKeypad(
         // Hàng cuối: [Xóa] - [0] - [Xác nhận]
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
         ) {
             KeypadActionButton(
                 icon = ReMindIcons.Backspace,
                 contentDescription = stringResource(R.string.mission_math_delete),
                 onClick = onDeleteClick,
-                containerColor = LiteverTheme.colors.surfaceContainerHighest,
-                contentColor = LiteverTheme.colors.onSurfaceVariant,
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.weight(1f)
             )
 
@@ -315,8 +317,8 @@ private fun MathKeypad(
                 contentDescription = stringResource(R.string.mission_math_submit),
                 onClick = onSubmitClick,
                 enabled = canSubmit,
-                containerColor = if (canSubmit) LiteverTheme.colors.primary else LiteverTheme.colors.surfaceContainerHighest.copy(alpha = 0.5f),
-                contentColor = if (canSubmit) LiteverTheme.colors.onPrimary else LiteverTheme.colors.onSurfaceVariant.copy(alpha = 0.38f),
+                containerColor = if (canSubmit) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f),
+                contentColor = if (canSubmit) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f),
                 modifier = Modifier.weight(1f)
             )
         }
@@ -331,13 +333,13 @@ private fun KeypadNumberButton(
 ) {
     KeypadButton(
         onClick = onClick,
-        containerColor = LiteverTheme.colors.surfaceContainerHigh,
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         modifier = modifier
     ) {
         Text(
             text = digit.toString(),
-            style = LiteverTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-            color = LiteverTheme.colors.onSurface
+            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }

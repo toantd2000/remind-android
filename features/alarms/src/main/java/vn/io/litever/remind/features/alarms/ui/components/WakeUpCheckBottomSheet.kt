@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.alarms.ui.components
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -28,7 +30,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomSheetContent
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -52,7 +53,7 @@ fun WakeUpCheckBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
-        containerColor = LiteverTheme.colors.surface,
+        containerColor = MaterialTheme.colorScheme.surface,
         modifier = modifier
     ) {
         ReMindBottomSheetContent(
@@ -61,15 +62,15 @@ fun WakeUpCheckBottomSheet(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = LiteverTheme.spacing.medium)
+                    .padding(bottom = MaterialTheme.spacing.medium)
             ) {
                 Text(
                     text = stringResource(R.string.wakeup_check_desc),
-                    style = LiteverTheme.typography.bodyMedium,
-                    color = LiteverTheme.colors.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(
-                        horizontal = LiteverTheme.spacing.medium,
-                        vertical = LiteverTheme.spacing.small
+                        horizontal = MaterialTheme.spacing.medium,
+                        vertical = MaterialTheme.spacing.small
                     )
                 )
 
@@ -90,12 +91,12 @@ fun WakeUpCheckBottomSheet(
                     ) {
                         Text(
                             text = label,
-                            style = LiteverTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
+                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
 
                 Button(
                     onClick = {
@@ -109,7 +110,7 @@ fun WakeUpCheckBottomSheet(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = LiteverTheme.spacing.medium)
+                        .padding(horizontal = MaterialTheme.spacing.medium)
                         .height(48.dp)
                 ) {
                     if (requiresPro) {
@@ -122,7 +123,7 @@ fun WakeUpCheckBottomSheet(
                     }
                     Text(
                         text = stringResource(R.string.save),
-                        style = LiteverTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
                     )
                 }
             }
@@ -135,7 +136,7 @@ fun WakeUpCheckBottomSheet(
 private fun WakeUpCheckBottomSheetPreview() {
     ReMindTheme {
         Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-            Text(text = "Wake-up Check Preview", style = LiteverTheme.typography.titleMedium)
+            Text(text = "Wake-up Check Preview", style = MaterialTheme.typography.titleMedium)
         }
     }
 }

@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.mission.ui.components
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,7 +21,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.features.mission.R
 
 /**
@@ -34,32 +35,32 @@ fun MissionInstructionBanner(
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = LiteverTheme.shapes.large,
+        shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
-            containerColor = LiteverTheme.colors.surfaceContainer
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
         ),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    horizontal = LiteverTheme.spacing.medium,
-                    vertical = LiteverTheme.spacing.smallMedium
+                    horizontal = MaterialTheme.spacing.medium,
+                    vertical = MaterialTheme.spacing.smallMedium
                 ),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.smallMedium)
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.smallMedium)
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = LiteverTheme.colors.tertiary,
+                tint = MaterialTheme.colorScheme.tertiary,
                 modifier = Modifier.size(20.dp)
             )
 
             val annotatedText = buildAnnotatedString {
                 withStyle(
                     style = SpanStyle(
-                        color = LiteverTheme.colors.tertiary,
+                        color = MaterialTheme.colorScheme.tertiary,
                         fontWeight = FontWeight.Bold
                     )
                 ) {
@@ -68,7 +69,7 @@ fun MissionInstructionBanner(
                 }
                 withStyle(
                     style = SpanStyle(
-                        color = LiteverTheme.colors.onSurface
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 ) {
                     append(requirementText)
@@ -77,8 +78,8 @@ fun MissionInstructionBanner(
 
             Text(
                 text = annotatedText,
-                style = LiteverTheme.typography.bodySmall,
-                lineHeight = LiteverTheme.typography.bodySmall.lineHeight
+                style = MaterialTheme.typography.bodySmall,
+                lineHeight = MaterialTheme.typography.bodySmall.lineHeight
             )
         }
     }

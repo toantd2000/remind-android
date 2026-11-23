@@ -1,5 +1,7 @@
 package vn.io.litever.remind.features.alarms.ui.components
 
+import androidx.compose.material3.MaterialTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.res.Configuration
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -36,7 +38,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.audio.TtsLanguageOption
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomSheetContent
 import vn.io.litever.remind.core.designsystem.components.ReMindGroupCard
@@ -71,7 +72,7 @@ fun AnnounceLabelPreviewBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
-        containerColor = LiteverTheme.colors.surface,
+        containerColor = MaterialTheme.colorScheme.surface,
         modifier = modifier
     ) {
         ReMindBottomSheetContent(
@@ -129,27 +130,27 @@ fun AnnounceLabelPreviewBottomSheetContent(
         TtsLanguageOption.CHINESE -> stringResource(R.string.tts_language_zh)
     }
     val statusTint by animateColorAsState(
-        targetValue = if (isSpeaking) LiteverTheme.colors.primary else LiteverTheme.colors.onSurfaceVariant,
+        targetValue = if (isSpeaking) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
         label = "ttsStatusTint"
     )
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = LiteverTheme.spacing.medium)
-            .padding(bottom = LiteverTheme.spacing.medium),
-        verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)
+            .padding(horizontal = MaterialTheme.spacing.medium)
+            .padding(bottom = MaterialTheme.spacing.medium),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
     ) {
         ReMindGroupCard {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(LiteverTheme.spacing.medium),
-                verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.smallMedium)
+                    .padding(MaterialTheme.spacing.medium),
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.smallMedium)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
                 ) {
                     Icon(
                         imageVector = if (isSpeaking) ReMindIcons.GraphicEq else ReMindIcons.Speaker,
@@ -163,7 +164,7 @@ fun AnnounceLabelPreviewBottomSheetContent(
                         } else {
                             stringResource(R.string.tts_preview_sheet_ready)
                         },
-                        style = LiteverTheme.typography.bodySmall.copy(
+                        style = MaterialTheme.typography.bodySmall.copy(
                             fontWeight = if (isSpeaking) FontWeight.SemiBold else FontWeight.Normal
                         ),
                         color = statusTint
@@ -171,25 +172,25 @@ fun AnnounceLabelPreviewBottomSheetContent(
                 }
 
                 HorizontalDivider(
-                    color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.3f)
+                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
                 )
 
                 Text(
                     text = "“$spokenText”",
-                    style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = LiteverTheme.colors.onSurface
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 if (isFallback) {
                     Text(
                         text = stringResource(R.string.tts_preview_label_fallback_hint),
-                        style = LiteverTheme.typography.bodySmall,
-                        color = LiteverTheme.colors.onSurfaceVariant
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
                 HorizontalDivider(
-                    color = LiteverTheme.colors.outlineVariant.copy(alpha = 0.3f)
+                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
                 )
 
                 Row(
@@ -199,8 +200,8 @@ fun AnnounceLabelPreviewBottomSheetContent(
                 ) {
                     Text(
                         text = stringResource(R.string.tts_preview_language_label, selectedLanguageDisplay),
-                        style = LiteverTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
-                        color = LiteverTheme.colors.primary,
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                        color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.weight(1f)
                     )
                     TextButton(onClick = onOpenTtsSettingsClick) {
@@ -212,7 +213,7 @@ fun AnnounceLabelPreviewBottomSheetContent(
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = stringResource(R.string.tts_preview_open_settings),
-                            style = LiteverTheme.typography.labelMedium
+                            style = MaterialTheme.typography.labelMedium
                         )
                     }
                 }
@@ -235,7 +236,7 @@ fun AnnounceLabelPreviewBottomSheetContent(
                             label = {
                                 Text(
                                     text = chipLabel,
-                                    style = LiteverTheme.typography.labelMedium
+                                    style = MaterialTheme.typography.labelMedium
                                 )
                             }
                         )
@@ -249,23 +250,23 @@ fun AnnounceLabelPreviewBottomSheetContent(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(LiteverTheme.spacing.medium),
-                    verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                        .padding(MaterialTheme.spacing.medium),
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
                 ) {
                     Row(
                         verticalAlignment = Alignment.Top,
-                        horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
                     ) {
                         Icon(
                             imageVector = ReMindIcons.Warning,
                             contentDescription = null,
-                            tint = LiteverTheme.colors.error,
+                            tint = MaterialTheme.colorScheme.error,
                             modifier = Modifier.size(18.dp)
                         )
                         Text(
                             text = stringResource(R.string.tts_preview_missing_voice_data),
-                            style = LiteverTheme.typography.bodySmall,
-                            color = LiteverTheme.colors.onSurfaceVariant
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     Row(
@@ -275,7 +276,7 @@ fun AnnounceLabelPreviewBottomSheetContent(
                         OutlinedButton(onClick = onInstallVoiceDataClick) {
                             Text(
                                 text = stringResource(R.string.tts_preview_install_voice_data),
-                                style = LiteverTheme.typography.labelMedium
+                                style = MaterialTheme.typography.labelMedium
                             )
                         }
                     }
@@ -285,7 +286,7 @@ fun AnnounceLabelPreviewBottomSheetContent(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.smallMedium)
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.smallMedium)
         ) {
             FilledTonalButton(
                 onClick = onCloseClick,
@@ -295,7 +296,7 @@ fun AnnounceLabelPreviewBottomSheetContent(
             ) {
                 Text(
                     text = stringResource(R.string.close_text),
-                    style = LiteverTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold)
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold)
                 )
             }
 
@@ -312,7 +313,7 @@ fun AnnounceLabelPreviewBottomSheetContent(
                     } else {
                         stringResource(R.string.tts_preview_action_replay)
                     },
-                    style = LiteverTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
                 )
             }
             if (isSpeaking) {

@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.Button
 import androidx.compose.material3.NavigationBarDefaults
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,9 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.button.LvButtonType
-import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 
@@ -68,7 +67,7 @@ private fun ReMindBottomBarPreview() {
         Column(verticalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.medium)) {
             // Single button
             ReMindBottomBar {
-                LvButton(
+                Button(
                     onClick = {},
                     modifier = Modifier.fillMaxWidth().height(LiteverTheme.spacing.doubleLarge)
                 ) {
@@ -78,15 +77,13 @@ private fun ReMindBottomBarPreview() {
 
             // Dual buttons - Automatically match heights
             ReMindBottomBar {
-                LvButton(
+                OutlinedButton(
                     onClick = {},
-                    type = LvButtonType.Outlined,
-                    semantic = LvSemantic.Secondary,
                     modifier = Modifier.weight(1f)
                 ) {
                     Text("Cancel")
                 }
-                LvButton(
+                Button(
                     onClick = {},
                     modifier = Modifier.weight(1f)
                 ) {

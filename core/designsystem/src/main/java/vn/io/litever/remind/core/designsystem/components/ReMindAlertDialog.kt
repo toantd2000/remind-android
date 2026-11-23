@@ -1,7 +1,11 @@
 package vn.io.litever.remind.core.designsystem.components
 
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -9,15 +13,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.window.DialogProperties
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.button.LvButtonType
 import vn.io.litever.designsystem.components.core.LvSemantic
-import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.theme.errorColors
+import vn.io.litever.remind.core.designsystem.theme.warningColors
 
 /**
- * Standard Alert Dialog for ReMind, wrapping LiteVer [LvAlertDialog]
- * with LiteVer opinionated components and semantic tokens.
+ * Standard Alert Dialog for ReMind using native Material 3 [AlertDialog] and theme tokens.
  */
 @Composable
 fun ReMindAlertDialog(
@@ -37,12 +39,17 @@ fun ReMindAlertDialog(
     properties: DialogProperties = DialogProperties(),
     content: @Composable (() -> Unit)? = null,
 ) {
-    LvAlertDialog(
+    val confirmColors = when (semantic) {
+        LvSemantic.Destructive -> ButtonDefaults.errorColors()
+        LvSemantic.Warning -> ButtonDefaults.warningColors()
+        else -> ButtonDefaults.buttonColors()
+    }
+    AlertDialog(
         onDismissRequest = onDismissRequest,
         confirmButton = {
-            LvButton(
+            Button(
                 onClick = onConfirmClick,
-                semantic = semantic
+                colors = confirmColors
             ) {
                 Text(text = confirmButtonText)
             }
@@ -50,10 +57,8 @@ fun ReMindAlertDialog(
         modifier = modifier,
         dismissButton = dismissButtonText?.let {
             {
-                LvButton(
-                    onClick = onDismissClick ?: onDismissRequest,
-                    type = LvButtonType.Outlined,
-                    semantic = LvSemantic.Secondary
+                OutlinedButton(
+                    onClick = onDismissClick ?: onDismissRequest
                 ) {
                     Text(text = it)
                 }
@@ -79,12 +84,13 @@ fun ReMindAlertDialog(
         },
         shape = shape,
         containerColor = containerColor,
+        tonalElevation = tonalElevation,
         properties = properties
     )
 }
 
 /**
- * Flexible Composable slot-based Dialog overload for ReMind wrapping [LvAlertDialog].
+ * Flexible Composable slot-based Dialog overload for ReMind using native Material 3 [AlertDialog].
  */
 @Composable
 fun ReMindAlertDialog(
@@ -100,7 +106,7 @@ fun ReMindAlertDialog(
     tonalElevation: Dp = AlertDialogDefaults.TonalElevation,
     properties: DialogProperties = DialogProperties()
 ) {
-    LvAlertDialog(
+    AlertDialog(
         onDismissRequest = onDismissRequest,
         confirmButton = confirmButton,
         modifier = modifier,
@@ -110,6 +116,7 @@ fun ReMindAlertDialog(
         text = text,
         shape = shape,
         containerColor = containerColor,
+        tonalElevation = tonalElevation,
         properties = properties
     )
 }

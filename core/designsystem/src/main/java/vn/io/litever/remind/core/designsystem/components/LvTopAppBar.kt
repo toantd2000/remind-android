@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
@@ -15,8 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import vn.io.litever.designsystem.components.button.LvIconButton
-import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
 
@@ -70,10 +69,7 @@ fun LvTopAppBar(
                     LvNavigationIconType.Close -> "Close"
                     LvNavigationIconType.Menu -> "Menu"
                 }
-                LvIconButton(
-                    onClick = onBackClick,
-                    semantic = LvSemantic.Text
-                ) {
+                IconButton(onClick = onBackClick) {
                     Icon(
                         imageVector = icon,
                         contentDescription = contentDesc

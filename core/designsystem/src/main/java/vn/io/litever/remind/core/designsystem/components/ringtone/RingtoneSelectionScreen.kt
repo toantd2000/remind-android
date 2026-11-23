@@ -36,10 +36,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.button.LvButtonType
-import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
@@ -106,14 +105,11 @@ fun RingtoneSelectionScreen(
         },
         bottomBar = {
             ReMindBottomBar {
-                LvButton(
+                Button(
                     onClick = onSaveClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(
-                        stringResource(R.string.save),
-                    )
+                    Text(stringResource(R.string.save))
                 }
             }
         }
@@ -138,10 +134,8 @@ fun RingtoneSelectionScreen(
                                 vertical = LiteverTheme.spacing.small
                             )
                     ) {
-                        LvButton(
+                        OutlinedButton(
                             onClick = onPickCustomClick,
-                            type = LvButtonType.Outlined,
-                            semantic = LvSemantic.Secondary,
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Icon(

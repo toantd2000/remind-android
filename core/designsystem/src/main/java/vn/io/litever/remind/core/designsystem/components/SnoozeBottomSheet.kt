@@ -12,7 +12,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -23,9 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.button.LvButtonType
-import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -120,17 +119,20 @@ fun SnoozeBottomSheetContent(
                 ) {
                     rowOptions.forEach { option ->
                         val isSelected = interval == option
-                        LvButton(
-                            onClick = { if (enabled) onIntervalChange(option) },
-                            modifier = Modifier.weight(1f),
-                            type = if (isSelected) LvButtonType.Tonal else LvButtonType.Outlined,
-                            semantic = if (isSelected) LvSemantic.Primary else LvSemantic.Text,
-                        ) {
-                            Text(
-                                stringResource(
-                                    R.string.minutes_unit,
-                                    option
-                                ),
+                        val buttonContent: @Composable androidx.compose.foundation.layout.RowScope.() -> Unit = {
+                            Text(stringResource(R.string.minutes_unit, option))
+                        }
+                        if (isSelected) {
+                            FilledTonalButton(
+                                onClick = { if (enabled) onIntervalChange(option) },
+                                modifier = Modifier.weight(1f),
+                                content = buttonContent
+                            )
+                        } else {
+                            OutlinedButton(
+                                onClick = { if (enabled) onIntervalChange(option) },
+                                modifier = Modifier.weight(1f),
+                                content = buttonContent
                             )
                         }
                     }
@@ -164,16 +166,25 @@ fun SnoozeBottomSheetContent(
                                     option
                                 )
                             }
-                            LvButton(
-                                onClick = { if (enabled) onRepeatCountChange(option) },
-                                modifier = Modifier.weight(1f),
-                                contentPadding = ButtonDefaults.TextButtonContentPadding,
-                                type = if (isSelected) LvButtonType.Tonal else LvButtonType.Outlined,
-                                semantic = if (isSelected) LvSemantic.Primary else LvSemantic.Text,
-                            ) {
+                            val buttonContent: @Composable androidx.compose.foundation.layout.RowScope.() -> Unit = {
                                 Text(
                                     text = label,
                                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold
+                                )
+                            }
+                            if (isSelected) {
+                                FilledTonalButton(
+                                    onClick = { if (enabled) onRepeatCountChange(option) },
+                                    modifier = Modifier.weight(1f),
+                                    contentPadding = ButtonDefaults.TextButtonContentPadding,
+                                    content = buttonContent
+                                )
+                            } else {
+                                OutlinedButton(
+                                    onClick = { if (enabled) onRepeatCountChange(option) },
+                                    modifier = Modifier.weight(1f),
+                                    contentPadding = ButtonDefaults.TextButtonContentPadding,
+                                    content = buttonContent
                                 )
                             }
                         }

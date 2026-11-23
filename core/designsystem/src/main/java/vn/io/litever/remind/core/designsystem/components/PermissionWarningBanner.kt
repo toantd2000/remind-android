@@ -12,18 +12,20 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.button.LvButtonType
-import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.designsystem.theme.errorColors
+import vn.io.litever.remind.core.designsystem.theme.warningColors
 
 /**
  * Common Permission Warning Banner for Alarms and Reminders features.
@@ -62,10 +64,10 @@ fun PermissionWarningBanner(
         ReMindIcons.Warning
     }
 
-    val buttonSemantic = if (isCritical) {
-        LvSemantic.Destructive
+    val buttonColors = if (isCritical) {
+        ButtonDefaults.errorColors()
     } else {
-        LvSemantic.Warning
+        ButtonDefaults.warningColors()
     }
 
     Surface(
@@ -107,18 +109,14 @@ fun PermissionWarningBanner(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (onDismiss != null) {
-                    LvButton(
-                        onClick = onDismiss,
-                        type = LvButtonType.Outlined,
-                        semantic = buttonSemantic
-                    ) {
+                    OutlinedButton(onClick = onDismiss) {
                         Text(dismissLabel)
                     }
                     Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
                 }
-                LvButton(
+                Button(
                     onClick = onClick,
-                    semantic = buttonSemantic
+                    colors = buttonColors
                 ) {
                     Text(actionLabel)
                 }

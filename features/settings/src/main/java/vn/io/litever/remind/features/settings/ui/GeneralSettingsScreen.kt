@@ -1,7 +1,5 @@
 package vn.io.litever.remind.features.settings.ui
 
-import androidx.compose.material3.MaterialTheme
-import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,17 +13,21 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -45,29 +47,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.OutlinedButton
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import vn.io.litever.brand.tokens.palettes.blackDarkColorScheme
 import vn.io.litever.brand.tokens.palettes.blackLightColorScheme
-import vn.io.litever.brand.tokens.palettes.blueDarkColorScheme
-import vn.io.litever.brand.tokens.palettes.blueLightColorScheme
-import vn.io.litever.brand.tokens.palettes.greenDarkColorScheme
-import vn.io.litever.brand.tokens.palettes.greenLightColorScheme
-import vn.io.litever.brand.tokens.palettes.indigoDarkColorScheme
-import vn.io.litever.brand.tokens.palettes.indigoLightColorScheme
-import vn.io.litever.brand.tokens.palettes.orangeDarkColorScheme
-import vn.io.litever.brand.tokens.palettes.orangeLightColorScheme
-import vn.io.litever.brand.tokens.palettes.redDarkColorScheme
-import vn.io.litever.brand.tokens.palettes.redLightColorScheme
-import vn.io.litever.brand.tokens.palettes.violetDarkColorScheme
-import vn.io.litever.brand.tokens.palettes.violetLightColorScheme
-import vn.io.litever.brand.tokens.palettes.yellowDarkColorScheme
-import vn.io.litever.brand.tokens.palettes.yellowLightColorScheme
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsItem
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.designsystem.theme.palettes.greenDarkColorScheme
+import vn.io.litever.remind.core.designsystem.theme.palettes.greenLightColorScheme
+import vn.io.litever.remind.core.designsystem.theme.palettes.orangeDarkColorScheme
+import vn.io.litever.remind.core.designsystem.theme.palettes.orangeLightColorScheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import vn.io.litever.remind.features.settings.R
 
 @Composable
@@ -99,7 +91,6 @@ fun GeneralSettingsScreen(
     var showTimeFormatDialog by remember { mutableStateOf(false) }
     var showThemeModeDialog by remember { mutableStateOf(false) }
     var showLanguageDialog by remember { mutableStateOf(false) }
-    var showColorPaletteDialog by remember { mutableStateOf(false) }
 
     val isDark = when (uiState.themeMode) {
         "LIGHT" -> false
@@ -114,76 +105,44 @@ fun GeneralSettingsScreen(
     val colorPaletteOptions = remember(dynamicLight, dynamicDark) {
         listOf(
             PaletteColorOption(
-                key = "BLACK",
-                titleRes = R.string.color_black,
-                primaryLight = blackLightColorScheme.primary,
-                onPrimaryLight = blackLightColorScheme.onPrimary,
-                primaryDark = blackDarkColorScheme.primary,
-                onPrimaryDark = blackDarkColorScheme.onPrimary
-            ),
-            PaletteColorOption(
-                key = "RED",
-                titleRes = R.string.color_red,
-                primaryLight = redLightColorScheme.primary,
-                onPrimaryLight = redLightColorScheme.onPrimary,
-                primaryDark = redDarkColorScheme.primary,
-                onPrimaryDark = redDarkColorScheme.onPrimary
-            ),
-            PaletteColorOption(
                 key = "ORANGE",
                 titleRes = R.string.color_orange,
                 primaryLight = orangeLightColorScheme.primary,
                 onPrimaryLight = orangeLightColorScheme.onPrimary,
+                primaryContainerLight = orangeLightColorScheme.primaryContainer,
                 primaryDark = orangeDarkColorScheme.primary,
-                onPrimaryDark = orangeDarkColorScheme.onPrimary
-            ),
-            PaletteColorOption(
-                key = "YELLOW",
-                titleRes = R.string.color_yellow,
-                primaryLight = yellowLightColorScheme.primary,
-                onPrimaryLight = yellowLightColorScheme.onPrimary,
-                primaryDark = yellowDarkColorScheme.primary,
-                onPrimaryDark = yellowDarkColorScheme.onPrimary
+                onPrimaryDark = orangeDarkColorScheme.onPrimary,
+                primaryContainerDark = orangeDarkColorScheme.primaryContainer
             ),
             PaletteColorOption(
                 key = "GREEN",
                 titleRes = R.string.color_green,
                 primaryLight = greenLightColorScheme.primary,
                 onPrimaryLight = greenLightColorScheme.onPrimary,
+                primaryContainerLight = greenLightColorScheme.primaryContainer,
                 primaryDark = greenDarkColorScheme.primary,
-                onPrimaryDark = greenDarkColorScheme.onPrimary
+                onPrimaryDark = greenDarkColorScheme.onPrimary,
+                primaryContainerDark = greenDarkColorScheme.primaryContainer
             ),
             PaletteColorOption(
-                key = "BLUE",
-                titleRes = R.string.color_blue,
-                primaryLight = blueLightColorScheme.primary,
-                onPrimaryLight = blueLightColorScheme.onPrimary,
-                primaryDark = blueDarkColorScheme.primary,
-                onPrimaryDark = blueDarkColorScheme.onPrimary
-            ),
-            PaletteColorOption(
-                key = "INDIGO",
-                titleRes = R.string.color_indigo,
-                primaryLight = indigoLightColorScheme.primary,
-                onPrimaryLight = indigoLightColorScheme.onPrimary,
-                primaryDark = indigoDarkColorScheme.primary,
-                onPrimaryDark = indigoDarkColorScheme.onPrimary
-            ),
-            PaletteColorOption(
-                key = "VIOLET",
-                titleRes = R.string.color_violet,
-                primaryLight = violetLightColorScheme.primary,
-                onPrimaryLight = violetLightColorScheme.onPrimary,
-                primaryDark = violetDarkColorScheme.primary,
-                onPrimaryDark = violetDarkColorScheme.onPrimary
+                key = "BLACK",
+                titleRes = R.string.color_black,
+                primaryLight = blackLightColorScheme.primary,
+                onPrimaryLight = blackLightColorScheme.onPrimary,
+                primaryContainerLight = blackLightColorScheme.primaryContainer,
+                primaryDark = blackDarkColorScheme.primary,
+                onPrimaryDark = blackDarkColorScheme.onPrimary,
+                primaryContainerDark = blackDarkColorScheme.primaryContainer
             ),
             PaletteColorOption(
                 key = "DYNAMIC",
                 titleRes = R.string.color_screen,
                 primaryLight = dynamicLight.primary,
                 onPrimaryLight = dynamicLight.onPrimary,
+                primaryContainerLight = dynamicLight.primaryContainer,
                 primaryDark = dynamicDark.primary,
-                onPrimaryDark = dynamicDark.onPrimary
+                onPrimaryDark = dynamicDark.onPrimary,
+                primaryContainerDark = dynamicDark.primaryContainer
             )
         )
     }
@@ -191,7 +150,6 @@ fun GeneralSettingsScreen(
     val selectedColorOption = colorPaletteOptions.firstOrNull { it.key == uiState.colorPalette }
         ?: colorPaletteOptions.first()
     val currentColorPaletteLabel = stringResource(selectedColorOption.titleRes)
-    val currentColorSwatch = if (isDark) selectedColorOption.primaryDark else selectedColorOption.primaryLight
 
     val timeOptions = listOf(
         "SYSTEM" to stringResource(R.string.time_format_system),
@@ -260,30 +218,33 @@ fun GeneralSettingsScreen(
                         modifier = Modifier.padding(horizontal = MaterialTheme.spacing.extraLarge)
                     )
 
+                    // Inline Color Palette Picker (Direct selection without dialog)
                     ReMindSettingsItem(
                         title = stringResource(R.string.color_source_headline),
                         subtitle = currentColorPaletteLabel,
-                        icon = ReMindIcons.Palette,
-                        trailingContent = {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(20.dp)
-                                        .clip(MaterialTheme.shapes.small)
-                                        .background(currentColorSwatch)
-                                )
-                                Icon(
-                                    imageVector = ReMindIcons.ChevronRight,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        },
-                        onClick = { showColorPaletteDialog = true }
+                        icon = ReMindIcons.Palette
                     )
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                start = MaterialTheme.spacing.medium,
+                                end = MaterialTheme.spacing.medium,
+                                bottom = MaterialTheme.spacing.medium
+                            ),
+                        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
+                    ) {
+                        colorPaletteOptions.forEach { item ->
+                            ColorSwatchOptionCard(
+                                item = item,
+                                isSelected = item.key == selectedColorOption.key,
+                                isDark = isDark,
+                                onClick = { onColorPaletteChange(item.key) },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
                 }
             }
 
@@ -365,19 +326,6 @@ fun GeneralSettingsScreen(
             }
         )
     }
-
-    if (showColorPaletteDialog) {
-        ColorPaletteSelectionDialog(
-            options = colorPaletteOptions,
-            selectedKey = uiState.colorPalette,
-            isDark = isDark,
-            onDismiss = { showColorPaletteDialog = false },
-            onSelect = { key ->
-                onColorPaletteChange(key)
-                showColorPaletteDialog = false
-            }
-        )
-    }
 }
 
 @Composable
@@ -427,57 +375,18 @@ private data class PaletteColorOption(
     val titleRes: Int,
     val primaryLight: Color,
     val onPrimaryLight: Color,
+    val primaryContainerLight: Color,
     val primaryDark: Color,
-    val onPrimaryDark: Color
+    val onPrimaryDark: Color,
+    val primaryContainerDark: Color
 )
 
+/**
+ * Inline color swatch card displaying `primary` and `onPrimary` tokens clearly
+ * so users can select a theme palette directly in General Settings without opening a dialog.
+ */
 @Composable
-private fun ColorPaletteSelectionDialog(
-    options: List<PaletteColorOption>,
-    selectedKey: String,
-    isDark: Boolean,
-    onDismiss: () -> Unit,
-    onSelect: (String) -> Unit
-) {
-    val chunkedOptions = options.chunked(3)
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            OutlinedButton(onClick = onDismiss) {
-                Text(stringResource(vn.io.litever.remind.core.designsystem.R.string.cancel))
-            }
-        },
-        title = { Text(stringResource(R.string.color_source_headline)) },
-        text = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = MaterialTheme.spacing.small),
-                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
-            ) {
-                chunkedOptions.forEach { rowOptions ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ) {
-                        rowOptions.forEach { item ->
-                            ColorCircleSwatch(
-                                item = item,
-                                isSelected = item.key == selectedKey,
-                                isDark = isDark,
-                                onClick = { onSelect(item.key) }
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    )
-}
-
-@Composable
-private fun ColorCircleSwatch(
+private fun ColorSwatchOptionCard(
     item: PaletteColorOption,
     isSelected: Boolean,
     isDark: Boolean,
@@ -486,52 +395,84 @@ private fun ColorCircleSwatch(
 ) {
     val primaryColor = if (isDark) item.primaryDark else item.primaryLight
     val onPrimaryColor = if (isDark) item.onPrimaryDark else item.onPrimaryLight
+    val containerColor = if (isDark) item.primaryContainerDark else item.primaryContainerLight
 
-    Column(
+    Surface(
+        onClick = onClick,
+        shape = MaterialTheme.shapes.medium,
+        color = if (isSelected) {
+            containerColor.copy(alpha = 0.45f)
+        } else {
+            MaterialTheme.colorScheme.surfaceContainerLow
+        },
+        border = BorderStroke(
+            width = if (isSelected) 2.dp else 1.dp,
+            color = if (isSelected) primaryColor else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+        ),
         modifier = modifier
-            .width(64.dp)
-            .clip(MaterialTheme.shapes.large)
-            .clickable(onClick = onClick)
-            .padding(vertical = MaterialTheme.spacing.extraSmall),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall)
     ) {
-        Box(
+        Column(
             modifier = Modifier
-                .size(48.dp)
-                .then(
-                    if (isSelected) {
-                        Modifier.border(
-                            border = BorderStroke(2.5.dp, primaryColor),
-                            shape = CircleShape
-                        )
-                    } else Modifier
-                )
-                .padding(if (isSelected) 4.dp else 0.dp)
-                .clip(CircleShape)
-                .background(primaryColor),
-            contentAlignment = Alignment.Center
+                .fillMaxWidth()
+                .padding(
+                    horizontal = MaterialTheme.spacing.extraSmall,
+                    vertical = MaterialTheme.spacing.smallMedium
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
         ) {
-            if (isSelected) {
-                Icon(
-                    imageVector = ReMindIcons.Check,
-                    contentDescription = null,
-                    tint = onPrimaryColor,
-                    modifier = Modifier.size(20.dp)
-                )
+            // Dual-color swatch showcasing Primary (outer circle) and onPrimary (inner badge / check)
+            Box(
+                modifier = Modifier
+                    .size(44.dp)
+                    .clip(CircleShape)
+                    .background(primaryColor)
+                    .border(
+                        border = BorderStroke(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
+                        ),
+                        shape = CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                if (isSelected) {
+                    Box(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clip(CircleShape)
+                            .background(onPrimaryColor),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = ReMindIcons.Check,
+                            contentDescription = null,
+                            tint = primaryColor,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                } else {
+                    // Inner onPrimary dot so both Primary and onPrimary are always visible
+                    Box(
+                        modifier = Modifier
+                            .size(14.dp)
+                            .clip(CircleShape)
+                            .background(onPrimaryColor)
+                    )
+                }
             }
-        }
 
-        Text(
-            text = stringResource(item.titleRes),
-            style = MaterialTheme.typography.labelSmall.copy(
-                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
-            ),
-            color = if (isSelected) primaryColor else MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
+            Text(
+                text = stringResource(item.titleRes),
+                style = MaterialTheme.typography.labelSmall.copy(
+                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
+                ),
+                color = if (isSelected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
     }
 }
 
@@ -540,7 +481,7 @@ private fun ColorCircleSwatch(
 fun GeneralSettingsScreenPreview() {
     ReMindTheme {
         GeneralSettingsScreen(
-            uiState = SettingsUiState(is24HourFormat = true, timeFormat = "SYSTEM", themeMode = "SYSTEM", colorPalette = "BLACK"),
+            uiState = SettingsUiState(is24HourFormat = true, timeFormat = "SYSTEM", themeMode = "SYSTEM", colorPalette = "ORANGE"),
             onTimeFormatChange = {},
             onThemeModeChange = {},
             onColorPaletteChange = {},
@@ -550,12 +491,17 @@ fun GeneralSettingsScreenPreview() {
     }
 }
 
-
-
-
-
-
-
-
-
-
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@Composable
+fun GeneralSettingsScreenDarkPreview() {
+    ReMindTheme(darkTheme = true, colorPalette = "GREEN") {
+        GeneralSettingsScreen(
+            uiState = SettingsUiState(is24HourFormat = true, timeFormat = "SYSTEM", themeMode = "DARK", colorPalette = "GREEN"),
+            onTimeFormatChange = {},
+            onThemeModeChange = {},
+            onColorPaletteChange = {},
+            onLanguageChange = {},
+            onNavigateBack = {}
+        )
+    }
+}

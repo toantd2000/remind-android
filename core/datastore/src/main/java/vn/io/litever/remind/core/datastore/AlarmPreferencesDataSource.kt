@@ -35,7 +35,7 @@ class AlarmPreferencesDataSource @Inject constructor(
     }
 
     val colorPalette: Flow<String> = dataStore.data.map { preferences ->
-        preferences[COLOR_PALETTE_KEY] ?: "BLACK"
+        preferences[COLOR_PALETTE_KEY] ?: "ORANGE"
     }
 
     val language: Flow<String> = dataStore.data.map { preferences ->

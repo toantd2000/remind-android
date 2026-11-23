@@ -31,31 +31,22 @@ import vn.io.litever.brand.tokens.asMaterial3
 import vn.io.litever.brand.tokens.defaultLiteverTypography
 import vn.io.litever.brand.tokens.palettes.blackDarkColorScheme
 import vn.io.litever.brand.tokens.palettes.blackLightColorScheme
-import vn.io.litever.brand.tokens.palettes.blueDarkColorScheme
-import vn.io.litever.brand.tokens.palettes.blueLightColorScheme
-import vn.io.litever.brand.tokens.palettes.greenDarkColorScheme
-import vn.io.litever.brand.tokens.palettes.greenLightColorScheme
-import vn.io.litever.brand.tokens.palettes.indigoDarkColorScheme
-import vn.io.litever.brand.tokens.palettes.indigoLightColorScheme
-import vn.io.litever.brand.tokens.palettes.orangeDarkColorScheme
-import vn.io.litever.brand.tokens.palettes.orangeLightColorScheme
-import vn.io.litever.brand.tokens.palettes.redDarkColorScheme
-import vn.io.litever.brand.tokens.palettes.redLightColorScheme
-import vn.io.litever.brand.tokens.palettes.violetDarkColorScheme
-import vn.io.litever.brand.tokens.palettes.violetLightColorScheme
-import vn.io.litever.brand.tokens.palettes.yellowDarkColorScheme
-import vn.io.litever.brand.tokens.palettes.yellowLightColorScheme
+import vn.io.litever.remind.core.designsystem.theme.palettes.greenDarkColorScheme
+import vn.io.litever.remind.core.designsystem.theme.palettes.greenLightColorScheme
+import vn.io.litever.remind.core.designsystem.theme.palettes.orangeDarkColorScheme
+import vn.io.litever.remind.core.designsystem.theme.palettes.orangeLightColorScheme
 
 /**
  * App-owned theme entry point for ReMind.
  *
  * Directly configures [MaterialExpressiveTheme] (with [MotionScheme.expressive]) and provides
  * Litever token [CompositionLocal]s without coupling to an external theme wrapper composable.
- * Consumes only raw color palettes, bundled fonts, and spacing/shape tokens from `litever-brand`.
+ * Consumes base tokens, bundled fonts, and the shared BLACK palette from `litever-brand`,
+ * while owning ReMind-specific palettes (`ORANGE`, `GREEN`) locally.
  *
  * @param darkTheme Whether dark theme should be applied. Defaults to system dark theme state.
  * @param dynamicColor Whether dynamic system coloring (Android 12+) should be used.
- * @param colorPalette Color palette selection: "BLACK", "RED", "ORANGE", "YELLOW", "GREEN", "BLUE", "INDIGO", "VIOLET", or "DYNAMIC".
+ * @param colorPalette Color palette selection: "ORANGE" (Ripe Orange), "GREEN" (Green Citrus), "BLACK" (Monochrome), or "DYNAMIC".
  * @param colorScheme Optional custom Material 3 [ColorScheme]. If supplied, it takes precedence.
  * @param colors Optional custom [LiteverColors] container. If supplied, it takes precedence for Litever token locals.
  * @param typography Typography specifications, defaulting to [defaultLiteverTypography].
@@ -68,7 +59,7 @@ import vn.io.litever.brand.tokens.palettes.yellowLightColorScheme
 fun ReMindTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false,
-    colorPalette: String = "RED",
+    colorPalette: String = "ORANGE",
     colorScheme: ColorScheme? = null,
     colors: LiteverColors? = null,
     typography: LiteverTypography = defaultLiteverTypography,
@@ -81,14 +72,9 @@ fun ReMindTheme(
 
     val predefinedColorScheme = when (colorPalette) {
         "BLACK" -> if (darkTheme) blackDarkColorScheme else blackLightColorScheme
-        "RED" -> if (darkTheme) redDarkColorScheme else redLightColorScheme
-        "ORANGE" -> if (darkTheme) orangeDarkColorScheme else orangeLightColorScheme
-        "YELLOW" -> if (darkTheme) yellowDarkColorScheme else yellowLightColorScheme
         "GREEN" -> if (darkTheme) greenDarkColorScheme else greenLightColorScheme
-        "BLUE" -> if (darkTheme) blueDarkColorScheme else blueLightColorScheme
-        "INDIGO" -> if (darkTheme) indigoDarkColorScheme else indigoLightColorScheme
-        "VIOLET" -> if (darkTheme) violetDarkColorScheme else violetLightColorScheme
-        else -> if (darkTheme) blackDarkColorScheme else blackLightColorScheme
+        "ORANGE" -> if (darkTheme) orangeDarkColorScheme else orangeLightColorScheme
+        else -> if (darkTheme) orangeDarkColorScheme else orangeLightColorScheme
     }
 
     val effectiveColorScheme: ColorScheme = when {

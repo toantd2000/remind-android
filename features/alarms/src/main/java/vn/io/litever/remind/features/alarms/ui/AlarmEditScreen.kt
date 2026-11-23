@@ -29,6 +29,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.runtime.snapshotFlow
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -49,14 +54,16 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SelectableDates
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.SliderState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerDialog
 import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -476,7 +483,7 @@ fun AlarmEditScreen(
     var showTimePicker by remember { mutableStateOf(false) }
     var showGradualVolumeSheet by remember { mutableStateOf(false) }
     var showLabelTtsPreviewSheet by remember { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden)
 
     if (showTimePicker) {
         TimePickerDialog(
@@ -867,13 +874,25 @@ fun AlarmEditScreen(
                                 color = LiteverTheme.colors.onSurfaceVariant
                             )
                             Spacer(modifier = Modifier.height(8.dp))
+                            val labelState = rememberTextFieldState(uiState.label)
+                            LaunchedEffect(uiState.label) {
+                                if (labelState.text.toString() != uiState.label) {
+                                    labelState.setTextAndPlaceCursorAtEnd(uiState.label)
+                                }
+                            }
+                            LaunchedEffect(labelState) {
+                                snapshotFlow { labelState.text.toString() }.collect {
+                                    if (it != uiState.label) {
+                                        onLabelChange(it)
+                                    }
+                                }
+                            }
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 BasicTextField(
-                                    value = uiState.label,
-                                    onValueChange = onLabelChange,
+                                    state = labelState,
                                     modifier = Modifier.weight(1f),
                                     textStyle = LiteverTheme.typography.bodyLarge.copy(
                                         color = LiteverTheme.colors.onSurface
@@ -882,11 +901,11 @@ fun AlarmEditScreen(
                                         keyboardType = KeyboardType.Text,
                                         imeAction = ImeAction.Next
                                     ),
-                                    singleLine = true,
+                                    lineLimits = TextFieldLineLimits.SingleLine,
                                     cursorBrush = SolidColor(LiteverTheme.colors.primary),
-                                    decorationBox = { innerTextField ->
+                                    decorator = { innerTextField ->
                                         Box(contentAlignment = Alignment.CenterStart) {
-                                            if (uiState.label.isEmpty()) {
+                                            if (labelState.text.isEmpty()) {
                                                 Text(
                                                     text = stringResource(R.string.alarm_label_placeholder),
                                                     style = LiteverTheme.typography.bodyLarge.copy(
@@ -899,9 +918,9 @@ fun AlarmEditScreen(
                                     }
                                 )
 
-                                if (uiState.label.isNotEmpty()) {
+                                if (labelState.text.isNotEmpty()) {
                                     IconButton(
-                                        onClick = { onLabelChange("") },
+                                        onClick = { labelState.clearText() },
                                         modifier = Modifier.size(28.dp)
                                     ) {
                                         Icon(
@@ -932,13 +951,25 @@ fun AlarmEditScreen(
                                 color = LiteverTheme.colors.onSurfaceVariant
                             )
                             Spacer(modifier = Modifier.height(8.dp))
+                            val messageState = rememberTextFieldState(uiState.message)
+                            LaunchedEffect(uiState.message) {
+                                if (messageState.text.toString() != uiState.message) {
+                                    messageState.setTextAndPlaceCursorAtEnd(uiState.message)
+                                }
+                            }
+                            LaunchedEffect(messageState) {
+                                snapshotFlow { messageState.text.toString() }.collect {
+                                    if (it != uiState.message) {
+                                        onMessageChange(it)
+                                    }
+                                }
+                            }
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.Top
                             ) {
                                 BasicTextField(
-                                    value = uiState.message,
-                                    onValueChange = onMessageChange,
+                                    state = messageState,
                                     modifier = Modifier.weight(1f),
                                     textStyle = LiteverTheme.typography.bodyLarge.copy(
                                         color = LiteverTheme.colors.onSurface
@@ -947,12 +978,11 @@ fun AlarmEditScreen(
                                         keyboardType = KeyboardType.Text,
                                         imeAction = ImeAction.Done
                                     ),
-                                    singleLine = false,
-                                    maxLines = 4,
+                                    lineLimits = TextFieldLineLimits.MultiLine(maxHeightInLines = 4),
                                     cursorBrush = SolidColor(LiteverTheme.colors.primary),
-                                    decorationBox = { innerTextField ->
+                                    decorator = { innerTextField ->
                                         Box(contentAlignment = Alignment.TopStart) {
-                                            if (uiState.message.isEmpty()) {
+                                            if (messageState.text.isEmpty()) {
                                                 Text(
                                                     text = stringResource(R.string.alarm_message_placeholder),
                                                     style = LiteverTheme.typography.bodyLarge.copy(
@@ -965,9 +995,9 @@ fun AlarmEditScreen(
                                     }
                                 )
 
-                                if (uiState.message.isNotEmpty()) {
+                                if (messageState.text.isNotEmpty()) {
                                     IconButton(
-                                        onClick = { onMessageChange("") },
+                                        onClick = { messageState.clearText() },
                                         modifier = Modifier.size(28.dp)
                                     ) {
                                         Icon(
@@ -1114,11 +1144,24 @@ fun AlarmEditScreen(
                             modifier = Modifier.padding(start = LiteverTheme.spacing.medium)
                         )
 
+                        val volumeSliderState = remember(uiState.maxVolume) {
+                            SliderState(
+                                value = uiState.volume.toFloat(),
+                                trackRange = 0f..uiState.maxVolume.toFloat(),
+                                steps = (uiState.maxVolume - 1).coerceAtLeast(0)
+                            )
+                        }
+                        LaunchedEffect(uiState.volume) {
+                            if (volumeSliderState.value.roundToInt() != uiState.volume) {
+                                volumeSliderState.value = uiState.volume.toFloat()
+                            }
+                        }
                         Slider(
-                            value = uiState.volume.toFloat(),
-                            onValueChange = { onVolumeChange(it.roundToInt()) },
-                            valueRange = 0f..uiState.maxVolume.toFloat(),
-                            steps = uiState.maxVolume - 1,
+                            state = volumeSliderState,
+                            onValueChange = {
+                                volumeSliderState.value = it
+                                onVolumeChange(it.roundToInt())
+                            },
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(horizontal = LiteverTheme.spacing.smallMedium),
@@ -1646,12 +1689,6 @@ private fun MissionRow(
         colors = ListItemDefaults.colors(
             containerColor = Color.Transparent
         ),
-        headlineContent = {
-            Text(
-                text = title,
-                style = LiteverTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
-            )
-        },
         supportingContent = {
             Text(
                 text = stringResource(
@@ -1680,5 +1717,10 @@ private fun MissionRow(
                 )
             }
         }
-    )
+    ) {
+        Text(
+            text = title,
+            style = LiteverTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
+        )
+    }
 }

@@ -12,11 +12,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldDecorator
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -73,9 +79,20 @@ fun ReminderBasicInfoSection(
                         Modifier.weight(1f)
                     }
 
+                    val titleState = rememberTextFieldState(initialText = title)
+                    LaunchedEffect(title) {
+                        if (titleState.text.toString() != title) {
+                            titleState.setTextAndPlaceCursorAtEnd(title)
+                        }
+                    }
+                    LaunchedEffect(titleState) {
+                        snapshotFlow { titleState.text.toString() }.collect {
+                            if (it != title) onTitleChange(it)
+                        }
+                    }
+
                     BasicTextField(
-                        value = title,
-                        onValueChange = onTitleChange,
+                        state = titleState,
                         modifier = textFieldModifier,
                         textStyle = LiteverTheme.typography.bodyLarge.copy(
                             color = LiteverTheme.colors.onSurface
@@ -84,11 +101,11 @@ fun ReminderBasicInfoSection(
                             keyboardType = KeyboardType.Text,
                             imeAction = ImeAction.Next
                         ),
-                        singleLine = true,
+                        lineLimits = TextFieldLineLimits.SingleLine,
                         cursorBrush = SolidColor(LiteverTheme.colors.primary),
-                        decorationBox = { innerTextField ->
+                        decorator = TextFieldDecorator { innerTextField ->
                             Box(contentAlignment = Alignment.CenterStart) {
-                                if (title.isEmpty()) {
+                                if (titleState.text.isEmpty()) {
                                     Text(
                                         text = stringResource(R.string.reminder_title_placeholder),
                                         style = LiteverTheme.typography.bodyLarge.copy(
@@ -147,9 +164,20 @@ fun ReminderBasicInfoSection(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.Top
                 ) {
+                    val notesState = rememberTextFieldState(initialText = notes)
+                    LaunchedEffect(notes) {
+                        if (notesState.text.toString() != notes) {
+                            notesState.setTextAndPlaceCursorAtEnd(notes)
+                        }
+                    }
+                    LaunchedEffect(notesState) {
+                        snapshotFlow { notesState.text.toString() }.collect {
+                            if (it != notes) onNotesChange(it)
+                        }
+                    }
+
                     BasicTextField(
-                        value = notes,
-                        onValueChange = onNotesChange,
+                        state = notesState,
                         modifier = Modifier.weight(1f),
                         textStyle = LiteverTheme.typography.bodyLarge.copy(
                             color = LiteverTheme.colors.onSurface
@@ -158,12 +186,11 @@ fun ReminderBasicInfoSection(
                             keyboardType = KeyboardType.Text,
                             imeAction = ImeAction.Default
                         ),
-                        singleLine = false,
-                        maxLines = 4,
+                        lineLimits = TextFieldLineLimits.MultiLine(maxHeightInLines = 4),
                         cursorBrush = SolidColor(LiteverTheme.colors.primary),
-                        decorationBox = { innerTextField ->
+                        decorator = TextFieldDecorator { innerTextField ->
                             Box(contentAlignment = Alignment.TopStart) {
-                                if (notes.isEmpty()) {
+                                if (notesState.text.isEmpty()) {
                                     Text(
                                         text = stringResource(R.string.reminder_notes_placeholder),
                                         style = LiteverTheme.typography.bodyLarge.copy(

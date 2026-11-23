@@ -13,6 +13,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.input.TextFieldDecorator
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -161,17 +166,22 @@ fun BarcodeMissionConfigScreen(
             }
 
             ReMindSettingsGroup(title = stringResource(R.string.barcode_label_hint)) {
+                val labelState = rememberTextFieldState(initialText = itemLabel)
+                LaunchedEffect(labelState) {
+                    snapshotFlow { labelState.text.toString() }.collect {
+                        if (it != itemLabel) itemLabel = it
+                    }
+                }
                 BasicTextField(
-                    value = itemLabel,
-                    onValueChange = { itemLabel = it },
+                    state = labelState,
                     textStyle = LiteverTheme.typography.bodyLarge.copy(color = LiteverTheme.colors.onSurface),
-                    singleLine = true,
+                    lineLimits = TextFieldLineLimits.SingleLine,
                     cursorBrush = SolidColor(LiteverTheme.colors.primary),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(LiteverTheme.spacing.medium),
-                    decorationBox = { inner ->
-                        if (itemLabel.isEmpty()) {
+                    decorator = TextFieldDecorator { inner ->
+                        if (labelState.text.isEmpty()) {
                             Text(
                                 text = stringResource(R.string.barcode_label_hint),
                                 style = LiteverTheme.typography.bodyLarge,

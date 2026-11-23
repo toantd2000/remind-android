@@ -87,24 +87,6 @@ fun ReMindSettingsItem(
     trailingContent: @Composable (() -> Unit)? = null,
 ) {
     ListItem(
-        headlineContent = {
-            Column {
-                Text(
-                    text = title,
-                    style = LiteverTheme.typography.bodyLarge,
-                    color = LiteverTheme.colors.onSurface.copy(alpha = alpha)
-                )
-                if (statusText != null) {
-                    Text(
-                        text = statusText,
-                        style = LiteverTheme.typography.labelMedium,
-                        color = (statusColor ?: LiteverTheme.colors.primary).copy(alpha = alpha),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-            }
-        },
         supportingContent = subtitle?.let {
             {
                 Text(
@@ -141,7 +123,24 @@ fun ReMindSettingsItem(
                     onClick = onClick
                 ) else Modifier
             )
-    )
+    ) {
+        Column {
+            Text(
+                text = title,
+                style = LiteverTheme.typography.bodyLarge,
+                color = LiteverTheme.colors.onSurface.copy(alpha = alpha)
+            )
+            if (statusText != null) {
+                Text(
+                    text = statusText,
+                    style = LiteverTheme.typography.labelMedium,
+                    color = (statusColor ?: LiteverTheme.colors.primary).copy(alpha = alpha),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+    }
 }
 
 @Preview(showBackground = true)

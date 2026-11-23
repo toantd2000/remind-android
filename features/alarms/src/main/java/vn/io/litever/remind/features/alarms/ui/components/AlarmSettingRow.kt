@@ -46,14 +46,6 @@ fun AlarmSettingRow(
     },
 ) {
     ListItem(
-        headlineContent = {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        },
         supportingContent = subtitle?.let {
             {
                 Text(
@@ -82,7 +74,14 @@ fun AlarmSettingRow(
                 if ((onClick != null) && enabled) Modifier.clickable(onClick = onClick)
                 else Modifier,
             ),
-    )
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.bodyLarge,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
 }
 
 @Preview(showBackground = true)

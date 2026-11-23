@@ -305,7 +305,10 @@ class ReminderAlertManagerImpl @Inject constructor(
 
         val effect = VibrationEffect.createWaveform(pattern, repeatIndex)
         if (audioAttributes != null) {
-            vibrator?.vibrate(effect, audioAttributes)
+            val vibrationAttributes = android.os.VibrationAttributes.Builder()
+                .setUsage(android.os.VibrationAttributes.USAGE_ALARM)
+                .build()
+            vibrator?.vibrate(effect, vibrationAttributes)
         } else {
             vibrator?.vibrate(effect)
         }

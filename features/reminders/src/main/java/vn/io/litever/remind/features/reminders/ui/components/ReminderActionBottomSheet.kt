@@ -53,7 +53,6 @@ fun ReminderActionBottomSheet(
                 ReMindIcons.NotificationsActive
             }
             ListItem(
-                headlineContent = { Text(toggleText) },
                 leadingContent = {
                     Icon(
                         imageVector = toggleIcon,
@@ -67,11 +66,12 @@ fun ReminderActionBottomSheet(
                         onDismissRequest()
                         onToggleEnabledClick()
                     }
-            )
+            ) {
+                Text(toggleText)
+            }
 
             // Edit
             ListItem(
-                headlineContent = { Text(stringResource(R.string.action_edit)) },
                 leadingContent = {
                     Icon(
                         imageVector = ReMindIcons.Edit,
@@ -85,11 +85,12 @@ fun ReminderActionBottomSheet(
                         onDismissRequest()
                         onEditClick()
                     }
-            )
+            ) {
+                Text(stringResource(R.string.action_edit))
+            }
 
             // Duplicate
             ListItem(
-                headlineContent = { Text(stringResource(R.string.action_duplicate)) },
                 leadingContent = {
                     Icon(
                         imageVector = ReMindIcons.ContentCopy,
@@ -103,16 +104,12 @@ fun ReminderActionBottomSheet(
                         onDismissRequest()
                         onDuplicateClick()
                     }
-            )
+            ) {
+                Text(stringResource(R.string.action_duplicate))
+            }
 
             // Delete
             ListItem(
-                headlineContent = {
-                    Text(
-                        text = stringResource(R.string.action_delete),
-                        color = LiteverTheme.colors.error
-                    )
-                },
                 leadingContent = {
                     Icon(
                         imageVector = ReMindIcons.Delete,
@@ -126,7 +123,12 @@ fun ReminderActionBottomSheet(
                         onDismissRequest()
                         onDeleteClick()
                     }
-            )
+            ) {
+                Text(
+                    text = stringResource(R.string.action_delete),
+                    color = LiteverTheme.colors.error
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
         }

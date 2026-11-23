@@ -544,9 +544,6 @@ private fun AlarmActionBottomSheetContent(
         if (alarm.isEnabled && alarm.repeatDays.isNotEmpty()) {
             val isSkipped = alarm.skippedAt != null
             ListItem(
-                headlineContent = {
-                    Text(stringResource(if (isSkipped) R.string.action_cancel_skip else R.string.action_skip_once))
-                },
                 leadingContent = {
                     Icon(
                         if (isSkipped) ReMindIcons.NotificationsPaused else ReMindIcons.SkipNext,
@@ -554,28 +551,26 @@ private fun AlarmActionBottomSheetContent(
                     )
                 },
                 modifier = Modifier.clickable { if (isSkipped) onCancelSkip() else onSkipOnce() }
-            )
+            ) {
+                Text(stringResource(if (isSkipped) R.string.action_cancel_skip else R.string.action_skip_once))
+            }
         }
 
         ListItem(
-            headlineContent = { Text(stringResource(R.string.action_preview)) },
             leadingContent = { Icon(ReMindIcons.PlayArrow, contentDescription = null) },
             modifier = Modifier.clickable { onPreview() }
-        )
+        ) {
+            Text(stringResource(R.string.action_preview))
+        }
 
         ListItem(
-            headlineContent = { Text(stringResource(R.string.action_duplicate)) },
             leadingContent = { Icon(ReMindIcons.ContentCopy, contentDescription = null) },
             modifier = Modifier.clickable { onDuplicate() }
-        )
+        ) {
+            Text(stringResource(R.string.action_duplicate))
+        }
 
         ListItem(
-            headlineContent = {
-                Text(
-                    stringResource(R.string.action_delete),
-                    color = MaterialTheme.colorScheme.error
-                )
-            },
             leadingContent = {
                 Icon(
                     ReMindIcons.Delete,
@@ -584,7 +579,12 @@ private fun AlarmActionBottomSheetContent(
                 )
             },
             modifier = Modifier.clickable { onDelete() }
-        )
+        ) {
+            Text(
+                stringResource(R.string.action_delete),
+                color = MaterialTheme.colorScheme.error
+            )
+        }
     }
 }
 

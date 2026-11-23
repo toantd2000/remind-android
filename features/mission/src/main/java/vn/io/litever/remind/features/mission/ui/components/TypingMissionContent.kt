@@ -21,8 +21,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.OutputTransformation
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.material3.Button
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.Card
@@ -47,14 +51,9 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.OffsetMapping
-import androidx.compose.ui.text.input.TransformedText
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -122,67 +121,55 @@ fun TypingMissionContent(
         prevLength = userInput.length
     }
 
-    val visualTransformation = remember(targetPhrase, userInput, successColor, errorColor, hintColor) {
-        VisualTransformation { text ->
-            val input = text.text
+    val outputTransformation = remember(targetPhrase, successColor, errorColor, hintColor) {
+        OutputTransformation {
+            val input = asCharSequence().toString()
             val target = targetPhrase?.content ?: ""
-            val annotatedString = buildAnnotatedString {
-                for (i in target.indices) {
-                    when {
-                        i < input.length -> {
-                            if (input[i] == target[i]) {
-                                withStyle(
-                                    style = SpanStyle(
-                                        color = successColor,
-                                        fontWeight = FontWeight.SemiBold
-                                    )
-                                ) {
-                                    append(input[i])
-                                }
-                            } else {
-                                withStyle(
-                                    style = SpanStyle(
-                                        color = errorColor,
-                                        fontWeight = FontWeight.Bold,
-                                        textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline
-                                    )
-                                ) {
-                                    append(input[i])
-                                }
-                            }
-                        }
-                        else -> {
-                            withStyle(
-                                style = SpanStyle(
-                                    color = hintColor,
-                                    fontWeight = FontWeight.Normal
-                                )
-                            ) {
-                                append(target[i])
-                            }
-                        }
-                    }
-                }
-                if (input.length > target.length) {
-                    withStyle(
-                        style = SpanStyle(
+            val minLen = minOf(input.length, target.length)
+            for (i in 0 until minLen) {
+                if (input[i] == target[i]) {
+                    addStyle(
+                        spanStyle = SpanStyle(
+                            color = successColor,
+                            fontWeight = FontWeight.SemiBold
+                        ),
+                        start = i,
+                        end = i + 1
+                    )
+                } else {
+                    addStyle(
+                        spanStyle = SpanStyle(
                             color = errorColor,
                             fontWeight = FontWeight.Bold,
                             textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline
-                        )
-                    ) {
-                        append(input.substring(target.length))
-                    }
+                        ),
+                        start = i,
+                        end = i + 1
+                    )
                 }
             }
-
-            TransformedText(
-                text = annotatedString,
-                offsetMapping = object : OffsetMapping {
-                    override fun originalToTransformed(offset: Int): Int = offset
-                    override fun transformedToOriginal(offset: Int): Int = offset.coerceAtMost(input.length)
-                }
-            )
+            if (input.length > target.length) {
+                addStyle(
+                    spanStyle = SpanStyle(
+                        color = errorColor,
+                        fontWeight = FontWeight.Bold,
+                        textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline
+                    ),
+                    start = target.length,
+                    end = input.length
+                )
+            } else if (input.length < target.length) {
+                val start = input.length
+                append(target.substring(start))
+                addStyle(
+                    spanStyle = SpanStyle(
+                        color = hintColor,
+                        fontWeight = FontWeight.Normal
+                    ),
+                    start = start,
+                    end = target.length
+                )
+            }
         }
     }
 
@@ -300,24 +287,34 @@ fun TypingMissionContent(
                         .padding(bottom = LiteverTheme.spacing.small),
                     contentAlignment = Alignment.TopStart
                 ) {
+                    val inputState = rememberTextFieldState(userInput)
+                    LaunchedEffect(userInput) {
+                        if (inputState.text.toString() != userInput) {
+                            inputState.setTextAndPlaceCursorAtEnd(userInput)
+                        }
+                    }
+                    LaunchedEffect(inputState) {
+                        snapshotFlow { inputState.text.toString() }.collect {
+                            if (it != userInput) {
+                                onUserInputChange(it)
+                            }
+                        }
+                    }
                     BasicTextField(
-                        value = userInput,
-                        onValueChange = onUserInputChange,
+                        state = inputState,
                         modifier = Modifier
                             .fillMaxWidth()
                             .focusRequester(focusRequester),
                         textStyle = textStyle,
                         cursorBrush = SolidColor(if (isMatched) LiteverTheme.colors.success else LiteverTheme.colors.primary),
-                        visualTransformation = visualTransformation,
+                        outputTransformation = outputTransformation,
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Done
                         ),
-                        keyboardActions = KeyboardActions(
-                            onDone = {
-                                if (isMatched) onSubmit()
-                            }
-                        ),
-                        singleLine = false
+                        onKeyboardAction = {
+                            if (isMatched) onSubmit()
+                        },
+                        lineLimits = TextFieldLineLimits.MultiLine()
                     )
                 }
             }

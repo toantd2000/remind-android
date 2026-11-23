@@ -15,8 +15,9 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Button
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -42,7 +43,7 @@ fun WakeUpCheckBottomSheet(
     onNavigateToPaywall: (Int) -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
-    sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    sheetState: SheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden)
 ) {
     var draftMinutes by remember(currentMinutes) { mutableIntStateOf(currentMinutes) }
     val requiresPro = !isPro && draftMinutes > 0
@@ -79,12 +80,6 @@ fun WakeUpCheckBottomSheet(
                         stringResource(R.string.minutes_unit, option)
                     }
                     ListItem(
-                        headlineContent = {
-                            Text(
-                                text = label,
-                                style = LiteverTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
-                            )
-                        },
                         leadingContent = {
                             RadioButton(
                                 selected = draftMinutes == option,
@@ -92,7 +87,12 @@ fun WakeUpCheckBottomSheet(
                             )
                         },
                         modifier = Modifier.clickable { draftMinutes = option }
-                    )
+                    ) {
+                        Text(
+                            text = label,
+                            style = LiteverTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))

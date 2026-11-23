@@ -17,6 +17,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.SliderState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -241,11 +242,24 @@ fun ReminderAlertConfigSection(
                             selected = false
                         )
 
+                        val volumeSliderState = remember {
+                            SliderState(
+                                value = volume.toFloat(),
+                                steps = 9,
+                                trackRange = 0f..100f
+                            )
+                        }
+                        androidx.compose.runtime.LaunchedEffect(volume) {
+                            if (volumeSliderState.value.roundToInt() != volume) {
+                                volumeSliderState.value = volume.toFloat()
+                            }
+                        }
                         Slider(
-                            value = volume.toFloat(),
-                            onValueChange = { onVolumeChange(it.roundToInt()) },
-                            valueRange = 0f..100f,
-                            steps = 9,
+                            state = volumeSliderState,
+                            onValueChange = {
+                                volumeSliderState.value = it
+                                onVolumeChange(it.roundToInt())
+                            },
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(horizontal = 12.dp),

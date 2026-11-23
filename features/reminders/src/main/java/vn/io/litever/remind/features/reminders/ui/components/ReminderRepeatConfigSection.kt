@@ -44,7 +44,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.intl.Locale as ComposeLocale
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -84,7 +84,7 @@ fun ReminderRepeatConfigSection(
     onRemoveExactDate: (Int) -> Unit = {},
     onUpdateExactDate: (Int, LocalDate) -> Unit = { _, d -> onDateChange(d) }
 ) {
-    val currentLocale = ComposeLocale.current.platformLocale
+    val currentLocale = LocalLocale.current.platformLocale
     var showDatePicker by remember { mutableStateOf(false) }
     var editingExactDateIndex by remember { mutableStateOf<Int?>(null) }
     var editingExactDateInitial by remember { mutableStateOf<LocalDate?>(null) }
@@ -632,7 +632,7 @@ private fun RepeatDetailContent(
     onShowAddYearlyDateDialog: () -> Unit,
     onShowEditYearlyDateDialog: (Int, ReminderMonthDay) -> Unit
 ) {
-    val currentLocale = ComposeLocale.current.platformLocale
+    val currentLocale = LocalLocale.current.platformLocale
 
     when (repeatInterval) {
         ReminderRepeatInterval.NONE -> {

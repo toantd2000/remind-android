@@ -10,8 +10,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -29,7 +30,7 @@ fun AutoSilenceBottomSheet(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
     options: List<Int> = listOf(1, 3, 5, 10, 15, 30),
-    sheetState: SheetState = rememberModalBottomSheetState()
+    sheetState: SheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden)
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
@@ -79,12 +80,6 @@ fun AutoSilenceBottomSheetContent(
             }
 
             ListItem(
-                headlineContent = {
-                    Text(
-                        text = label,
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
-                    )
-                },
                 leadingContent = {
                     RadioButton(
                         selected = currentMinutes == option,
@@ -92,7 +87,12 @@ fun AutoSilenceBottomSheetContent(
                     )
                 },
                 modifier = Modifier.clickable { onMinutesSelect(option) }
-            )
+            ) {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
+                )
+            }
         }
     }
 }

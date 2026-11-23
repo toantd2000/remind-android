@@ -19,6 +19,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -29,11 +35,13 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.SliderState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -70,7 +78,7 @@ fun QuickAlarmBottomSheet(
     is24HourFormat: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val sheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden)
 
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
@@ -231,16 +239,28 @@ fun QuickAlarmBottomSheetContent(
 
                 Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
 
+                val labelState = rememberTextFieldState(label)
+                LaunchedEffect(label) {
+                    if (labelState.text.toString() != label) {
+                        labelState.setTextAndPlaceCursorAtEnd(label)
+                    }
+                }
+                LaunchedEffect(labelState) {
+                    snapshotFlow { labelState.text.toString() }.collect {
+                        if (it != label) {
+                            label = it
+                        }
+                    }
+                }
                 BasicTextField(
-                    value = label,
-                    onValueChange = { label = it },
+                    state = labelState,
                     modifier = Modifier.weight(1f),
                     textStyle = LiteverTheme.typography.bodyLarge.copy(color = LiteverTheme.colors.onSurface),
-                    singleLine = true,
+                    lineLimits = TextFieldLineLimits.SingleLine,
                     cursorBrush = SolidColor(LiteverTheme.colors.primary),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    decorationBox = { innerTextField ->
-                        if (label.isEmpty()) {
+                    decorator = { innerTextField ->
+                        if (labelState.text.isEmpty()) {
                             Text(
                                 text = stringResource(R.string.quick_alarm_desc_placeholder),
                                 style = LiteverTheme.typography.bodyLarge,
@@ -253,9 +273,9 @@ fun QuickAlarmBottomSheetContent(
                     }
                 )
 
-                if (label.isNotEmpty()) {
+                if (labelState.text.isNotEmpty()) {
                     IconButton(
-                        onClick = { label = "" },
+                        onClick = { labelState.clearText() },
                         modifier = Modifier.size(28.dp)
                     ) {
                         Icon(
@@ -320,11 +340,24 @@ fun QuickAlarmBottomSheetContent(
                     modifier = Modifier.size(24.dp)
                 )
 
+                val volumeSliderState = remember(maxVolume) {
+                    SliderState(
+                        value = volume.toFloat(),
+                        trackRange = 0f..maxVolume.toFloat(),
+                        steps = if (maxVolume > 1) maxVolume - 1 else 0
+                    )
+                }
+                androidx.compose.runtime.LaunchedEffect(volume) {
+                    if (volumeSliderState.value.roundToInt() != volume) {
+                        volumeSliderState.value = volume.toFloat()
+                    }
+                }
                 Slider(
-                    value = volume.toFloat(),
-                    onValueChange = { volume = it.roundToInt() },
-                    valueRange = 0f..maxVolume.toFloat(),
-                    steps = if (maxVolume > 1) maxVolume - 1 else 0,
+                    state = volumeSliderState,
+                    onValueChange = {
+                        volumeSliderState.value = it
+                        volume = it.roundToInt()
+                    },
                     modifier = Modifier
                         .weight(1f)
                         .padding(horizontal = LiteverTheme.spacing.small),

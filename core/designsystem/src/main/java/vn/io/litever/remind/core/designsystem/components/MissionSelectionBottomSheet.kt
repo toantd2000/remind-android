@@ -16,9 +16,10 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -36,7 +37,7 @@ import vn.io.litever.remind.core.model.MissionType
 fun MissionSelectionBottomSheet(
     onDismissRequest: () -> Unit,
     onMissionTypeSelected: (MissionType) -> Unit,
-    sheetState: SheetState = rememberModalBottomSheetState()
+    sheetState: SheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden)
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -120,20 +121,6 @@ fun MissionSelectionBottomSheetContent(
                         .clickable {
                             onMissionTypeSelected(item.type)
                         },
-                    headlineContent = {
-                        Row(
-                            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
-                        ) {
-                            Text(
-                                text = item.title,
-                                style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                            )
-                            if (item.isProOnly) {
-                                ReMindProDiamondTag()
-                            }
-                        }
-                    },
                     supportingContent = {
                         Text(
                             text = item.description,
@@ -158,7 +145,20 @@ fun MissionSelectionBottomSheetContent(
                     colors = ListItemDefaults.colors(
                         containerColor = Color.Transparent
                     )
-                )
+                ) {
+                    Row(
+                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
+                    ) {
+                        Text(
+                            text = item.title,
+                            style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                        )
+                        if (item.isProOnly) {
+                            ReMindProDiamondTag()
+                        }
+                    }
+                }
             }
         }
     }

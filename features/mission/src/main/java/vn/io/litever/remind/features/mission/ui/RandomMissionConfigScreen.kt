@@ -176,12 +176,6 @@ fun RandomMissionConfigScreen(
                 availableCandidates.forEach { (type, labelRes) ->
                     val checked = selectedTypes.contains(type)
                     ListItem(
-                        headlineContent = {
-                            Text(
-                                text = stringResource(labelRes),
-                                style = LiteverTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
-                            )
-                        },
                         trailingContent = {
                             Checkbox(
                                 checked = checked,
@@ -205,7 +199,12 @@ fun RandomMissionConfigScreen(
                                 selectedTypes
                             }
                         }
-                    )
+                    ) {
+                        Text(
+                            text = stringResource(labelRes),
+                            style = LiteverTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
+                        )
+                    }
                 }
             }
 

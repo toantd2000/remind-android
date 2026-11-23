@@ -19,6 +19,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.maxLengthReject
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.runtime.snapshotFlow
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
@@ -34,12 +40,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -89,7 +96,7 @@ fun PhraseSelectionRoute(
     var showAddSheet by remember { mutableStateOf(false) }
     var phraseToEdit by remember { mutableStateOf<Phrase?>(null) }
     var phraseToDelete by remember { mutableStateOf<Phrase?>(null) }
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val sheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden)
 
     PhraseSelectionScreen(
         predefinedPhrases = predefinedPhrases,
@@ -520,23 +527,35 @@ fun AddCustomPhraseContent(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.Top
                 ) {
+                    val textState = rememberTextFieldState(text)
+                    LaunchedEffect(text) {
+                        if (textState.text.toString() != text) {
+                            textState.setTextAndPlaceCursorAtEnd(text)
+                        }
+                    }
+                    LaunchedEffect(textState) {
+                        snapshotFlow { textState.text.toString() }.collect {
+                            if (it != text) {
+                                text = it
+                            }
+                        }
+                    }
                     BasicTextField(
-                        value = text,
-                        onValueChange = { if (it.length <= 128) text = it },
+                        state = textState,
                         modifier = Modifier.weight(1f),
                         textStyle = LiteverTheme.typography.bodyLarge.copy(
                             color = LiteverTheme.colors.onSurface
                         ),
+                        inputTransformation = InputTransformation.maxLengthReject(128),
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Text,
                             imeAction = ImeAction.Done
                         ),
-                        singleLine = false,
-                        maxLines = 5,
+                        lineLimits = TextFieldLineLimits.MultiLine(maxHeightInLines = 5),
                         cursorBrush = SolidColor(LiteverTheme.colors.primary),
-                        decorationBox = { innerTextField ->
+                        decorator = { innerTextField ->
                             Box(contentAlignment = Alignment.TopStart) {
-                                if (text.isEmpty()) {
+                                if (textState.text.isEmpty()) {
                                     Text(
                                         text = stringResource(R.string.mission_phrase_placeholder),
                                         style = LiteverTheme.typography.bodyLarge.copy(

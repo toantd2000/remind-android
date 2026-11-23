@@ -8,7 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import vn.io.litever.designsystem.components.button.LiteVerButtonDefaults
+import androidx.compose.ui.unit.dp
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.features.alarms.R
 import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState
@@ -31,7 +31,7 @@ fun NextAlarmHeader(
             Icon(
                 imageVector = ReMindIcons.Alarm,
                 contentDescription = null,
-                modifier = Modifier.size(LiteVerButtonDefaults.IconSize)
+                modifier = Modifier.size(18.dp)
             )
             Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
             Text(

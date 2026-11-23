@@ -30,15 +30,23 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Slider
@@ -74,13 +82,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import vn.io.litever.designsystem.components.button.LiteVerButtonDefaults
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.button.LvButtonType
-import vn.io.litever.designsystem.components.button.LvIconButton
-import vn.io.litever.designsystem.components.core.LvSemantic
-import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.theme.errorColors
 import vn.io.litever.remind.core.designsystem.components.MissionSelectionBottomSheet
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.components.ReMindGroupCard
@@ -233,12 +236,12 @@ fun AlarmEditRoute(
     }
 
     if (showDiscardDialog) {
-        LvAlertDialog(
+        AlertDialog(
             onDismissRequest = { if (showDiscardDialog) showDiscardDialog = false },
             title = { Text(stringResource(R.string.discard_changes_title)) },
             text = { Text(stringResource(R.string.discard_changes_message)) },
             confirmButton = {
-                LvButton(
+                Button(
                     onClick = {
                         if (showDiscardDialog) showDiscardDialog = false
                         viewModel.stopRingtonePlayback()
@@ -257,14 +260,12 @@ fun AlarmEditRoute(
                 }
             },
             dismissButton = {
-                LvButton(
+                OutlinedButton(
                     onClick = {
                         if (showDiscardDialog) showDiscardDialog = false
                         viewModel.stopRingtonePlayback()
                         viewModel.discardChanges(onBackClick)
-                    },
-                    type = LvButtonType.Outlined,
-                    semantic = LvSemantic.Secondary
+                    }
                 ) {
                     Text(stringResource(R.string.action_discard))
                 }
@@ -490,22 +491,19 @@ fun AlarmEditScreen(
             },
             onDismissRequest = { if (showTimePicker) showTimePicker = false },
             confirmButton = {
-                LvButton(
+                Button(
                     onClick = {
                         if (showTimePicker) showTimePicker = false
-                    },
-                    semantic = LvSemantic.Primary
+                    }
                 ) {
                     Text(stringResource(R.string.save))
                 }
             },
             dismissButton = {
-                LvButton(
+                OutlinedButton(
                     onClick = {
                         if (showTimePicker) showTimePicker = false
                     },
-                    type = LvButtonType.Outlined,
-                    semantic = LvSemantic.Secondary,
                     modifier = Modifier.padding(end = LiteverTheme.spacing.medium)
                 ) {
                     Text(stringResource(R.string.action_cancel))
@@ -536,7 +534,7 @@ fun AlarmEditScreen(
         DatePickerDialog(
             onDismissRequest = { if (showDatePicker) showDatePicker = false },
             confirmButton = {
-                LvButton(
+                Button(
                     onClick = {
                         datePickerState.selectedDateMillis?.let { millis ->
                             val date = Instant.ofEpochMilli(millis)
@@ -545,19 +543,16 @@ fun AlarmEditScreen(
                             onDateChange(date)
                         }
                         if (showDatePicker) showDatePicker = false
-                    },
-                    semantic = LvSemantic.Primary
+                    }
                 ) {
                     Text(stringResource(R.string.save))
                 }
             },
             dismissButton = {
-                LvButton(
+                OutlinedButton(
                     onClick = {
                         if (showDatePicker) showDatePicker = false
-                    },
-                    type = LvButtonType.Outlined,
-                    semantic = LvSemantic.Secondary
+                    }
                 ) {
                     Text(stringResource(R.string.action_cancel))
                 }
@@ -588,21 +583,17 @@ fun AlarmEditScreen(
     }
 
     if (uiState.showPermissionDialog) {
-        LvAlertDialog(
+        AlertDialog(
             onDismissRequest = onDismissPermissionDialog,
             title = { Text(stringResource(R.string.permission_dialog_title)) },
             text = { Text(stringResource(R.string.permission_dialog_message)) },
             confirmButton = {
-                LvButton(onClick = onNavigateToPermissions) {
+                Button(onClick = onNavigateToPermissions) {
                     Text(stringResource(R.string.action_go_to_settings))
                 }
             },
             dismissButton = {
-                LvButton(
-                    onClick = onSaveAnyway,
-                    type = LvButtonType.Outlined,
-                    semantic = LvSemantic.Secondary
-                ) {
+                OutlinedButton(onClick = onSaveAnyway) {
                     Text(stringResource(R.string.action_save_anyway))
                 }
             }
@@ -610,21 +601,17 @@ fun AlarmEditScreen(
     }
 
     if (uiState.showDndPermissionDialog) {
-        LvAlertDialog(
+        AlertDialog(
             onDismissRequest = onDismissDndPermissionDialog,
             title = { Text(stringResource(R.string.dnd_permission_dialog_title)) },
             text = { Text(stringResource(R.string.dnd_permission_dialog_message)) },
             confirmButton = {
-                LvButton(onClick = onNavigateToDndSettings) {
+                Button(onClick = onNavigateToDndSettings) {
                     Text(stringResource(R.string.action_go_to_settings))
                 }
             },
             dismissButton = {
-                LvButton(
-                    onClick = onDismissDndPermissionDialog,
-                    type = LvButtonType.Outlined,
-                    semantic = LvSemantic.Secondary
-                ) {
+                OutlinedButton(onClick = onDismissDndPermissionDialog) {
                     Text(stringResource(R.string.close_text))
                 }
             }
@@ -756,25 +743,14 @@ fun AlarmEditScreen(
                 ReMindBottomBar(
                     windowInsets = WindowInsets(0, 0, 0, 0)
                 ) {
-                    LvButton(
-                        onClick = onPreviewClick,
-                        type = LvButtonType.Outlined,
-                        semantic = LvSemantic.Secondary,
-                    ) {
-                        Text(
-                            stringResource(R.string.action_preview),
-                        )
+                    OutlinedButton(onClick = onPreviewClick) {
+                        Text(stringResource(R.string.action_preview))
                     }
-                    LvButton(
+                    Button(
                         onClick = onSaveClick,
-                        type = LvButtonType.Filled,
-                        semantic = LvSemantic.Primary,
-                        modifier = Modifier
-                            .weight(1f)
+                        modifier = Modifier.weight(1f)
                     ) {
-                        Text(
-                            stringResource(R.string.save),
-                        )
+                        Text(stringResource(R.string.save))
                     }
                 }
                 if (!LocalInspectionMode.current) {
@@ -924,11 +900,10 @@ fun AlarmEditScreen(
                                 )
 
                                 if (uiState.label.isNotEmpty()) {
-                                    LvIconButton(
+                                    IconButton(
                                         onClick = { onLabelChange("") },
-                                        modifier = Modifier.size(28.dp),
-
-                                        ) {
+                                        modifier = Modifier.size(28.dp)
+                                    ) {
                                         Icon(
                                             imageVector = ReMindIcons.Close,
                                             contentDescription = "Clear label",
@@ -991,11 +966,10 @@ fun AlarmEditScreen(
                                 )
 
                                 if (uiState.message.isNotEmpty()) {
-                                    LvIconButton(
+                                    IconButton(
                                         onClick = { onMessageChange("") },
-                                        modifier = Modifier.size(28.dp),
-
-                                        ) {
+                                        modifier = Modifier.size(28.dp)
+                                    ) {
                                         Icon(
                                             imageVector = ReMindIcons.Close,
                                             contentDescription = "Clear message",
@@ -1076,9 +1050,8 @@ fun AlarmEditScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.End
                             ) {
-                                LvButton(
-                                    onClick = { showLabelTtsPreviewSheet = true },
-                                    type = LvButtonType.Tonal
+                                FilledTonalButton(
+                                    onClick = { showLabelTtsPreviewSheet = true }
                                 ) {
                                     Icon(
                                         imageVector = ReMindIcons.PlayArrow,
@@ -1411,9 +1384,13 @@ fun RepeatDaySelector(
                 modifier = Modifier.weight(1f)
             )
 
-            LvIconButton(
+            IconButton(
                 onClick = onShowDatePicker,
-                semantic = if (date != null) LvSemantic.Primary else LvSemantic.Text
+                colors = if (date != null) {
+                    IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.primary)
+                } else {
+                    IconButtonDefaults.iconButtonColors()
+                }
             ) {
                 Icon(
                     imageVector = ReMindIcons.CalendarMonth,
@@ -1440,17 +1417,25 @@ fun RepeatDaySelector(
                 }
 
                 val isSelected = selectedDays.contains(day)
-                LvIconButton(
-                    onClick = { onDayToggle(day) },
-                    modifier = Modifier.weight(1f),
-                    type = if (isSelected) LvButtonType.Tonal else LvButtonType.Outlined,
-                    semantic = if (isSelected) LvSemantic.Primary else LvSemantic.Text,
-                ) {
+                val dayContent: @Composable () -> Unit = {
                     Text(
                         text = dayLabel,
                         style = MaterialTheme.typography.labelMedium.copy(
                             fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Medium
                         )
+                    )
+                }
+                if (isSelected) {
+                    FilledTonalIconButton(
+                        onClick = { onDayToggle(day) },
+                        modifier = Modifier.weight(1f),
+                        content = dayContent
+                    )
+                } else {
+                    OutlinedIconButton(
+                        onClick = { onDayToggle(day) },
+                        modifier = Modifier.weight(1f),
+                        content = dayContent
                     )
                 }
             }
@@ -1683,9 +1668,9 @@ private fun MissionRow(
             )
         },
         trailingContent = {
-            LvIconButton(
+            IconButton(
                 onClick = onDelete,
-                semantic = LvSemantic.Destructive
+                colors = IconButtonDefaults.errorColors()
             ) {
                 Icon(
                     imageVector = ReMindIcons.Delete,

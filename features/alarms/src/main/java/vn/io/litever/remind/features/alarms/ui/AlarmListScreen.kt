@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -55,13 +56,14 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.compose.foundation.Image
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import vn.io.litever.brand.assets.LiteverMascotState
+import androidx.compose.material3.Button
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.SnackbarHost
 import kotlinx.coroutines.flow.collectLatest
-import vn.io.litever.designsystem.components.FeedbackStateType
-import vn.io.litever.designsystem.components.FeedbackStateView
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.button.LvIconButton
-import vn.io.litever.designsystem.components.core.LvSemantic
-import vn.io.litever.designsystem.components.snackbar.LvSnackbarHost
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindLogo
@@ -226,7 +228,7 @@ fun AlarmListScreen(
                             modifier = Modifier.padding(end = if (hasAlarms) 0.dp else 8.dp)
                         )
                         if (hasAlarms) {
-                            LvIconButton(onClick = { showTopMenu = !showTopMenu }) {
+                            IconButton(onClick = { showTopMenu = !showTopMenu }) {
                                 Icon(
                                     ReMindIcons.MoreVert,
                                     contentDescription = actionMoreDescription
@@ -319,7 +321,7 @@ fun AlarmListScreen(
                 }
             }
         },
-        snackbarHost = { LvSnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -616,40 +618,42 @@ fun EmptyState(
 ) {
     val descriptionPrefix = stringResource(R.string.empty_description)
 
-    FeedbackStateView(
-        modifier = modifier,
-        type = FeedbackStateType.IDLE,
-        title = {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(LiteverTheme.spacing.large),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Image(
+            painter = painterResource(id = LiteverMascotState.IDLE.drawableRes),
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+            modifier = Modifier.size(160.dp)
+        )
+        Spacer(modifier = Modifier.height(LiteverTheme.spacing.mediumLarge))
+        Text(
+            text = stringResource(R.string.no_alarms),
+            style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+        Column(
+            modifier = Modifier.wrapContentHeight(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text(
-                text = stringResource(R.string.no_alarms),
-                style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                text = descriptionPrefix,
+                style = LiteverTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center
             )
-        },
-        description = {
-            Column(
-                modifier = Modifier.wrapContentHeight(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = descriptionPrefix,
-                    style = LiteverTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Center
-                )
-                ReMindLogo(fontSize = LiteverTheme.typography.bodyMedium.fontSize)
-            }
-        },
-        action = {
-            LvButton(
-                onClick = onAddAlarmClick,
-                semantic = LvSemantic.Primary
-            ) {
-                Text(
-                    text = stringResource(R.string.action_add_new_alarm)
-                )
-            }
+            ReMindLogo(fontSize = LiteverTheme.typography.bodyMedium.fontSize)
         }
-    )
+        Spacer(modifier = Modifier.height(LiteverTheme.spacing.large))
+        Button(onClick = onAddAlarmClick) {
+            Text(text = stringResource(R.string.action_add_new_alarm))
+        }
+    }
 }
 
 

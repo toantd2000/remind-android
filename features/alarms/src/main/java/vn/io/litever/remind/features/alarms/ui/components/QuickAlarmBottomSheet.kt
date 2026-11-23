@@ -22,7 +22,13 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
@@ -46,11 +52,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.button.LvButtonType
-import vn.io.litever.designsystem.components.button.LvIconButton
-import vn.io.litever.designsystem.components.core.LvSemantic
-import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomSheetContent
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
@@ -152,7 +153,7 @@ fun QuickAlarmBottomSheetContent(
 
             Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
 
-            LvIconButton(
+            IconButton(
                 onClick = { totalMinutes = 0 },
                 modifier = Modifier.size(36.dp)
             ) {
@@ -181,9 +182,8 @@ fun QuickAlarmBottomSheetContent(
             horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
         ) {
             presetsRow1.forEach { (mins, resId) ->
-                LvButton(
+                FilledTonalButton(
                     onClick = { totalMinutes += mins },
-                    semantic = LvSemantic.Secondary,
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(stringResource(resId))
@@ -196,9 +196,8 @@ fun QuickAlarmBottomSheetContent(
             horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
         ) {
             presetsRow2.forEach { (mins, resId) ->
-                LvButton(
+                FilledTonalButton(
                     onClick = { totalMinutes += mins },
-                    semantic = LvSemantic.Secondary,
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(stringResource(resId))
@@ -255,7 +254,7 @@ fun QuickAlarmBottomSheetContent(
                 )
 
                 if (label.isNotEmpty()) {
-                    LvIconButton(
+                    IconButton(
                         onClick = { label = "" },
                         modifier = Modifier.size(28.dp)
                     ) {
@@ -371,24 +370,19 @@ fun QuickAlarmBottomSheetContent(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
         ) {
-            LvButton(
-                onClick = onDismiss,
-                type = LvButtonType.Outlined,
-                semantic = LvSemantic.Secondary
-            ) {
+            OutlinedButton(onClick = onDismiss) {
                 Text(
                     text = stringResource(R.string.action_cancel),
                 )
             }
 
-            LvButton(
+            Button(
                 onClick = {
                     if (totalMinutes > 0) {
                         onSave(totalMinutes, label, ringtoneUri, volume, vibrationEnabled)
                     }
                 },
                 enabled = totalMinutes > 0,
-                semantic = LvSemantic.Primary,
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
@@ -440,7 +434,7 @@ private fun QuickRingtoneDialog(
         list
     }
 
-    LvAlertDialog(
+    AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.ringtone_selection_title)) },
         text = {
@@ -484,7 +478,7 @@ private fun QuickRingtoneDialog(
             }
         },
         confirmButton = {
-            LvButton(onClick = onDismiss) {
+            Button(onClick = onDismiss) {
                 Text(stringResource(R.string.close_text))
             }
         }

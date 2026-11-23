@@ -13,13 +13,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -31,8 +35,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.button.LvButtonType
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.audio.TtsLanguageOption
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomSheetContent
@@ -200,10 +202,7 @@ fun AnnounceLabelPreviewBottomSheetContent(
                         color = LiteverTheme.colors.primary,
                         modifier = Modifier.weight(1f)
                     )
-                    LvButton(
-                        onClick = onOpenTtsSettingsClick,
-                        type = LvButtonType.Text
-                    ) {
+                    TextButton(onClick = onOpenTtsSettingsClick) {
                         Icon(
                             imageVector = ReMindIcons.Settings,
                             contentDescription = null,
@@ -272,10 +271,7 @@ fun AnnounceLabelPreviewBottomSheetContent(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End
                     ) {
-                        LvButton(
-                            onClick = onInstallVoiceDataClick,
-                            type = LvButtonType.Outlined
-                        ) {
+                        OutlinedButton(onClick = onInstallVoiceDataClick) {
                             Text(
                                 text = stringResource(R.string.tts_preview_install_voice_data),
                                 style = LiteverTheme.typography.labelMedium
@@ -290,9 +286,8 @@ fun AnnounceLabelPreviewBottomSheetContent(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.smallMedium)
         ) {
-            LvButton(
+            FilledTonalButton(
                 onClick = onCloseClick,
-                type = LvButtonType.Tonal,
                 modifier = Modifier
                     .weight(1f)
                     .height(48.dp)
@@ -303,13 +298,7 @@ fun AnnounceLabelPreviewBottomSheetContent(
                 )
             }
 
-            LvButton(
-                onClick = if (isSpeaking) onStopClick else onPreviewClick,
-                type = if (isSpeaking) LvButtonType.Outlined else LvButtonType.Filled,
-                modifier = Modifier
-                    .weight(1.4f)
-                    .height(48.dp)
-            ) {
+            val speakButtonContent: @Composable androidx.compose.foundation.layout.RowScope.() -> Unit = {
                 Icon(
                     imageVector = if (isSpeaking) ReMindIcons.Pause else ReMindIcons.PlayArrow,
                     contentDescription = null,
@@ -323,6 +312,23 @@ fun AnnounceLabelPreviewBottomSheetContent(
                         stringResource(R.string.tts_preview_action_replay)
                     },
                     style = LiteverTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
+                )
+            }
+            if (isSpeaking) {
+                OutlinedButton(
+                    onClick = onStopClick,
+                    modifier = Modifier
+                        .weight(1.4f)
+                        .height(48.dp),
+                    content = speakButtonContent
+                )
+            } else {
+                Button(
+                    onClick = onPreviewClick,
+                    modifier = Modifier
+                        .weight(1.4f)
+                        .height(48.dp),
+                    content = speakButtonContent
                 )
             }
         }

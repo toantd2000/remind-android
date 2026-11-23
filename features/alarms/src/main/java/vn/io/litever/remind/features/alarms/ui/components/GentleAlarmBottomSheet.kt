@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Button
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
@@ -33,8 +35,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.button.LvButtonType
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomSheetContent
 import vn.io.litever.remind.core.designsystem.components.ReMindProDiamondTag
@@ -187,7 +187,7 @@ fun GentleAlarmBottomSheetContent(
 
         Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
 
-        LvButton(
+        Button(
             onClick = onSaveClick,
             modifier = Modifier
                 .fillMaxWidth()
@@ -272,9 +272,8 @@ private fun VolumeBoostOptionRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End
         ) {
-            LvButton(
-                onClick = onPreviewClick,
-                type = LvButtonType.Tonal
+            FilledTonalButton(
+                onClick = onPreviewClick
             ) {
                 Icon(
                     imageVector = ReMindIcons.PlayArrow,

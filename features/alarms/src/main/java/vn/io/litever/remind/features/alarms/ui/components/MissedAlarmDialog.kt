@@ -14,8 +14,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.model.MissedAlarm
 import vn.io.litever.remind.core.model.MissedReason
@@ -31,11 +29,11 @@ fun MissedAlarmDialog(
     missedAlarms: List<MissedAlarm>,
     onDismiss: () -> Unit
 ) {
-    LvAlertDialog(
+    AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.missed_alarms_dialog_title)) },
         confirmButton = {
-            LvButton(onClick = onDismiss) {
+            Button(onClick = onDismiss) {
                 Text(stringResource(android.R.string.ok))
             }
         },

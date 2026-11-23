@@ -27,7 +27,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,9 +51,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.button.LvButtonType
-import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -448,10 +447,8 @@ fun AlarmRingingContent(
                         stringResource(vn.io.litever.remind.core.designsystem.R.string.snooze)
                     }
 
-                    LvButton(
+                    OutlinedButton(
                         onClick = onSnooze,
-                        type = LvButtonType.Outlined,
-                        semantic = LvSemantic.Secondary,
                         shape = LiteverTheme.shapes.large,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -465,7 +462,7 @@ fun AlarmRingingContent(
                     }
                 }
 
-                LvButton(
+                Button(
                     onClick = {
                         val hasMission = (alarm.missions.isNotEmpty())
                         if (hasMission) {
@@ -475,8 +472,6 @@ fun AlarmRingingContent(
                         }
                     },
                     shape = LiteverTheme.shapes.large,
-                    type = LvButtonType.Filled,
-                    semantic = LvSemantic.Primary,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(52.dp)

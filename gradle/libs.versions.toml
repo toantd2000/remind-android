@@ -26,7 +26,7 @@ browser = "1.10.0"
 googleServices = "4.6.0"
 crashlyticsPlugin = "3.0.8"
 firebaseBom = "35.2.0"
-liteverDesignsystem = "2.3.1"
+liteverBrand = "1.0.0"
 playServicesAds = "25.5.0"
 playServicesCodeScanner = "16.1.0"
 billingKtx = "7.1.1"
@@ -85,8 +85,8 @@ material-icons-extended = { group = "androidx.compose.material", name = "materia
 aboutlibraries-compose-m3 = { group = "com.mikepenz", name = "aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinSerialization" }
 
-# Litever Design System
-litever-designsystem = { group = "com.github.toantd2000", name = "litever-designsystem", version.ref = "liteverDesignsystem" }
+# Litever Brand & Resource Kit
+litever-brand = { group = "vn.io.litever", name = "brand", version.ref = "liteverBrand" }
 google-play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playServicesAds" }
 google-play-services-code-scanner = { group = "com.google.android.gms", name = "play-services-code-scanner", version.ref = "playServicesCodeScanner" }
 google-billing-ktx = { group = "com.android.billingclient", name = "billing-ktx", version.ref = "billingKtx" }

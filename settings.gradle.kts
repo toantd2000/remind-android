@@ -42,8 +42,8 @@ include(":features:reminders")
 include(":core:analytics")
 include(":core:testing")
 
-includeBuild("../litever-designsystem") {
+includeBuild("../litever-brand") {
     dependencySubstitution {
-        substitute(module("com.github.toantd2000:litever-designsystem")).using(project(":designsystem"))
+        substitute(module("vn.io.litever:brand")).using(project(":brand"))
     }
 }

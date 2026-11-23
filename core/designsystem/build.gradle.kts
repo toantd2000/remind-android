@@ -29,7 +29,7 @@ android {
 }
 
 dependencies {
-    api(libs.litever.designsystem)
+    api(libs.litever.brand)
     implementation(project(":core:model"))
     implementation(project(":core:common"))
 

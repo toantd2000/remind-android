@@ -10,9 +10,13 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -28,10 +32,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.button.LvButtonType
-import vn.io.litever.designsystem.components.button.LvIconButton
-import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomSheetContent
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
@@ -108,7 +108,7 @@ fun IntervalBottomSheetContent(
 
             Spacer(modifier = Modifier.width(LiteverTheme.spacing.small))
 
-            LvIconButton(
+            IconButton(
                 onClick = { totalMinutes = 0 },
                 modifier = Modifier.size(36.dp)
             ) {
@@ -131,9 +131,8 @@ fun IntervalBottomSheetContent(
             horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
         ) {
             presetsRow1.forEach { (mins, resId) ->
-                LvButton(
+                FilledTonalButton(
                     onClick = { totalMinutes += mins },
-                    semantic = LvSemantic.Secondary,
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(stringResource(resId))
@@ -146,9 +145,8 @@ fun IntervalBottomSheetContent(
             horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
         ) {
             presetsRow2.forEach { (mins, resId) ->
-                LvButton(
+                FilledTonalButton(
                     onClick = { totalMinutes += mins },
-                    semantic = LvSemantic.Secondary,
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(stringResource(resId))
@@ -163,24 +161,19 @@ fun IntervalBottomSheetContent(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
         ) {
-            LvButton(
-                onClick = onDismiss,
-                type = LvButtonType.Outlined,
-                semantic = LvSemantic.Secondary
-            ) {
+            OutlinedButton(onClick = onDismiss) {
                 Text(
                     text = stringResource(R.string.action_cancel),
                 )
             }
 
-            LvButton(
+            Button(
                 onClick = {
                     if (totalMinutes > 0) {
                         onConfirm(totalMinutes)
                     }
                 },
                 enabled = totalMinutes > 0,
-                semantic = LvSemantic.Primary,
                 modifier = Modifier.weight(1f)
             ) {
                 Text(

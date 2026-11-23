@@ -12,9 +12,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.InputChipDefaults
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimePicker
@@ -31,10 +34,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.button.LvButtonType
-import vn.io.litever.designsystem.components.core.LvSemantic
-import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
@@ -156,7 +155,7 @@ fun ReminderTimeWindowConfigSection(
 
     // Time Window Config Dialog (Start & End Time)
     if (showWindowDialog) {
-        LvAlertDialog(
+        AlertDialog(
             onDismissRequest = { showWindowDialog = false },
             title = {
                 Text(
@@ -225,7 +224,7 @@ fun ReminderTimeWindowConfigSection(
                 }
             },
             confirmButton = {
-                LvButton(
+                Button(
                     onClick = {
                         val newWindow = ReminderTimeWindow(
                             startTime = editingStartTime,
@@ -245,18 +244,13 @@ fun ReminderTimeWindowConfigSection(
                             }
                         }
                         showWindowDialog = false
-                    },
-                    semantic = LvSemantic.Primary
+                    }
                 ) {
                     Text(stringResource(R.string.action_save))
                 }
             },
             dismissButton = {
-                LvButton(
-                    onClick = { showWindowDialog = false },
-                    type = LvButtonType.Outlined,
-                    semantic = LvSemantic.Secondary
-                ) {
+                OutlinedButton(onClick = { showWindowDialog = false }) {
                     Text(stringResource(R.string.action_cancel))
                 }
             }
@@ -282,21 +276,18 @@ fun ReminderTimeWindowConfigSection(
             },
             onDismissRequest = { showStartTimePicker = false },
             confirmButton = {
-                LvButton(
+                Button(
                     onClick = {
                         editingStartTime = LocalTime.of(startPickerState.hour, startPickerState.minute)
                         showStartTimePicker = false
-                    },
-                    semantic = LvSemantic.Primary
+                    }
                 ) {
                     Text(stringResource(R.string.action_save))
                 }
             },
             dismissButton = {
-                LvButton(
+                OutlinedButton(
                     onClick = { showStartTimePicker = false },
-                    type = LvButtonType.Outlined,
-                    semantic = LvSemantic.Secondary,
                     modifier = Modifier.padding(end = LiteverTheme.spacing.medium)
                 ) {
                     Text(stringResource(R.string.action_cancel))
@@ -326,21 +317,18 @@ fun ReminderTimeWindowConfigSection(
             },
             onDismissRequest = { showEndTimePicker = false },
             confirmButton = {
-                LvButton(
+                Button(
                     onClick = {
                         editingEndTime = LocalTime.of(endPickerState.hour, endPickerState.minute)
                         showEndTimePicker = false
-                    },
-                    semantic = LvSemantic.Primary
+                    }
                 ) {
                     Text(stringResource(R.string.action_save))
                 }
             },
             dismissButton = {
-                LvButton(
+                OutlinedButton(
                     onClick = { showEndTimePicker = false },
-                    type = LvButtonType.Outlined,
-                    semantic = LvSemantic.Secondary,
                     modifier = Modifier.padding(end = LiteverTheme.spacing.medium)
                 ) {
                     Text(stringResource(R.string.action_cancel))

@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.InputChip
+import androidx.compose.material3.Button
 import androidx.compose.material3.InputChipDefaults
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerDialog
@@ -28,9 +30,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.button.LvButtonType
-import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
@@ -159,21 +158,18 @@ fun ReminderTimeConfigSection(
             },
             onDismissRequest = { showAddTimePicker = false },
             confirmButton = {
-                LvButton(
+                Button(
                     onClick = {
                         onAddFixedTime(LocalTime.of(addTimeState.hour, addTimeState.minute))
                         showAddTimePicker = false
-                    },
-                    semantic = LvSemantic.Primary
+                    }
                 ) {
                     Text(stringResource(R.string.action_save))
                 }
             },
             dismissButton = {
-                LvButton(
+                OutlinedButton(
                     onClick = { showAddTimePicker = false },
-                    type = LvButtonType.Outlined,
-                    semantic = LvSemantic.Secondary,
                     modifier = Modifier.padding(end = LiteverTheme.spacing.medium)
                 ) {
                     Text(stringResource(R.string.action_cancel))
@@ -203,21 +199,18 @@ fun ReminderTimeConfigSection(
             },
             onDismissRequest = { showEditTimePicker = false },
             confirmButton = {
-                LvButton(
+                Button(
                     onClick = {
                         onUpdateFixedTime(editingTimeIndex, LocalTime.of(editTimeState.hour, editTimeState.minute))
                         showEditTimePicker = false
-                    },
-                    semantic = LvSemantic.Primary
+                    }
                 ) {
                     Text(stringResource(R.string.action_save))
                 }
             },
             dismissButton = {
-                LvButton(
+                OutlinedButton(
                     onClick = { showEditTimePicker = false },
-                    type = LvButtonType.Outlined,
-                    semantic = LvSemantic.Secondary,
                     modifier = Modifier.padding(end = LiteverTheme.spacing.medium)
                 ) {
                     Text(stringResource(R.string.action_cancel))

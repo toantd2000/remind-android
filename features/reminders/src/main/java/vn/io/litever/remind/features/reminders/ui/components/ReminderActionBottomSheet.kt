@@ -8,13 +8,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.components.LiteverListItem
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.model.Reminder
@@ -52,7 +52,7 @@ fun ReminderActionBottomSheet(
             } else {
                 ReMindIcons.NotificationsActive
             }
-            LiteverListItem(
+            ListItem(
                 headlineContent = { Text(toggleText) },
                 leadingContent = {
                     Icon(
@@ -70,7 +70,7 @@ fun ReminderActionBottomSheet(
             )
 
             // Edit
-            LiteverListItem(
+            ListItem(
                 headlineContent = { Text(stringResource(R.string.action_edit)) },
                 leadingContent = {
                     Icon(
@@ -88,7 +88,7 @@ fun ReminderActionBottomSheet(
             )
 
             // Duplicate
-            LiteverListItem(
+            ListItem(
                 headlineContent = { Text(stringResource(R.string.action_duplicate)) },
                 leadingContent = {
                     Icon(
@@ -106,7 +106,7 @@ fun ReminderActionBottomSheet(
             )
 
             // Delete
-            LiteverListItem(
+            ListItem(
                 headlineContent = {
                     Text(
                         text = stringResource(R.string.action_delete),

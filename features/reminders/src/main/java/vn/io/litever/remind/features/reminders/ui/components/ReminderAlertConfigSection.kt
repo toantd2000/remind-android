@@ -11,12 +11,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,8 +32,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.components.LiteverFilterChip
-import vn.io.litever.designsystem.components.LiteverSwitch
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.AutoSilenceBottomSheet
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingIcon
@@ -123,7 +123,7 @@ fun ReminderAlertConfigSection(
                         NotificationStyle.STANDARD -> R.string.style_standard
                     }
                     val isSelected = notificationStyle == style
-                    LiteverFilterChip(
+                    FilterChip(
                         selected = isSelected,
                         onClick = { onNotificationStyleChange(style) },
                         label = {
@@ -311,7 +311,7 @@ fun ReminderAlertConfigSection(
                         }
                     }
 
-                    LiteverSwitch(
+                    Switch(
                         checked = vibrationEnabled,
                         onCheckedChange = onVibrationChange
                     )
@@ -421,7 +421,7 @@ fun ReminderAlertConfigSection(
                             }
                         }
 
-                        LiteverSwitch(
+                        Switch(
                             checked = useAlarmStream,
                             onCheckedChange = onUseAlarmStreamChange
                         )
@@ -535,7 +535,7 @@ fun ReminderAlertConfigSection(
                         }
                     }
 
-                    LiteverSwitch(
+                    Switch(
                         checked = announceTitleTts,
                         onCheckedChange = { enabled ->
                             if (!isPro && enabled) onNavigateToPaywall(2)
@@ -596,7 +596,7 @@ fun ReminderAlertConfigSection(
                         }
                     }
 
-                    LiteverSwitch(
+                    Switch(
                         checked = extraLoudEnabled,
                         onCheckedChange = { enabled ->
                             if (!isPro && enabled) onNavigateToPaywall(4)

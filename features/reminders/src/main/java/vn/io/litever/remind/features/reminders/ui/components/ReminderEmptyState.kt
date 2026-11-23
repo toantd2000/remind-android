@@ -1,21 +1,29 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
 import android.content.res.Configuration
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import vn.io.litever.designsystem.components.FeedbackStateType
-import vn.io.litever.designsystem.components.FeedbackStateView
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.core.LvSemantic
+import androidx.compose.ui.unit.dp
+import vn.io.litever.brand.assets.LiteverMascotState
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindLogo
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -28,40 +36,42 @@ fun ReminderEmptyState(
 ) {
     val descriptionPrefix = stringResource(R.string.empty_reminders_description)
 
-    FeedbackStateView(
-        modifier = modifier,
-        type = FeedbackStateType.EMPTY,
-        title = {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(LiteverTheme.spacing.large),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Image(
+            painter = painterResource(id = LiteverMascotState.EMPTY.drawableRes),
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+            modifier = Modifier.size(160.dp)
+        )
+        Spacer(modifier = Modifier.height(LiteverTheme.spacing.mediumLarge))
+        Text(
+            text = stringResource(R.string.no_reminders),
+            style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(LiteverTheme.spacing.small))
+        Column(
+            modifier = Modifier.wrapContentHeight(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text(
-                text = stringResource(R.string.no_reminders),
-                style = LiteverTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                text = descriptionPrefix,
+                style = LiteverTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center
             )
-        },
-        description = {
-            Column(
-                modifier = Modifier.wrapContentHeight(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = descriptionPrefix,
-                    style = LiteverTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Center
-                )
-                ReMindLogo(fontSize = LiteverTheme.typography.bodyMedium.fontSize)
-            }
-        },
-        action = {
-            LvButton(
-                onClick = onAddReminderClick,
-                semantic = LvSemantic.Primary
-            ) {
-                Text(
-                    text = stringResource(R.string.action_add_new_reminder)
-                )
-            }
+            ReMindLogo(fontSize = LiteverTheme.typography.bodyMedium.fontSize)
         }
-    )
+        Spacer(modifier = Modifier.height(LiteverTheme.spacing.large))
+        Button(onClick = onAddReminderClick) {
+            Text(text = stringResource(R.string.action_add_new_reminder))
+        }
+    }
 }
 
 @Preview(

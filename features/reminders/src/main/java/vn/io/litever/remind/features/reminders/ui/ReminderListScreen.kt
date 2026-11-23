@@ -17,6 +17,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,12 +40,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.flow.collectLatest
-import vn.io.litever.designsystem.components.LiteverFloatingActionButton
-import vn.io.litever.designsystem.components.LiteverIconButton
-import vn.io.litever.designsystem.components.LiteverScaffold
-import vn.io.litever.designsystem.components.LiteverSnackbarHost
-import vn.io.litever.designsystem.components.LiteverTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.features.reminders.R
 import vn.io.litever.remind.features.reminders.ui.components.ReminderActionBottomSheet
@@ -140,10 +140,10 @@ fun ReminderListScreen(
     var reminderForSnoozePuzzle by remember { mutableStateOf<Reminder?>(null) }
     val hasReminders = uiState.reminders.isNotEmpty()
 
-    LiteverScaffold(
+    Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
-            LiteverTopAppBar(
+            LvTopAppBar(
                 title = stringResource(R.string.reminders_title),
                 actions = {
                     vn.io.litever.remind.core.designsystem.components.ReMindProTopBarButton(
@@ -153,7 +153,7 @@ fun ReminderListScreen(
                     )
                     if (hasReminders) {
                         Box {
-                            LiteverIconButton(onClick = { showTopMenu = true }) {
+                            IconButton(onClick = { showTopMenu = true }) {
                                 Icon(
                                     imageVector = ReMindIcons.MoreVert,
                                     contentDescription = stringResource(R.string.action_more),
@@ -179,7 +179,7 @@ fun ReminderListScreen(
         },
         floatingActionButton = {
             if (hasReminders) {
-                LiteverFloatingActionButton(
+                FloatingActionButton(
                     onClick = onAddReminderClick
                 ) {
                     Icon(
@@ -190,7 +190,7 @@ fun ReminderListScreen(
             }
         },
         snackbarHost = {
-            LiteverSnackbarHost(hostState = snackbarHostState)
+            SnackbarHost(hostState = snackbarHostState)
         }
     ) { paddingValues ->
         Column(

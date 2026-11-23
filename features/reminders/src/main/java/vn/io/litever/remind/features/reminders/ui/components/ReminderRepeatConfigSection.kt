@@ -19,14 +19,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.InputChipDefaults
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -45,12 +49,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.components.LiteverFilterChip
-import vn.io.litever.designsystem.components.LiteverIconButton
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.button.LvButtonType
-import vn.io.litever.designsystem.components.core.LvSemantic
-import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
@@ -125,7 +123,7 @@ fun ReminderRepeatConfigSection(
                     else -> R.string.repeat_interval_once
                 }
                 val isSelected = repeatInterval == interval
-                LiteverFilterChip(
+                FilterChip(
                     selected = isSelected,
                     onClick = { onRepeatIntervalChange(interval) },
                     label = {
@@ -225,7 +223,7 @@ fun ReminderRepeatConfigSection(
                 editingExactDateInitial = null
             },
             confirmButton = {
-                LvButton(
+                Button(
                     onClick = {
                         val selectedMillis = datePickerState.selectedDateMillis
                         if (selectedMillis != null) {
@@ -243,21 +241,18 @@ fun ReminderRepeatConfigSection(
                         showDatePicker = false
                         editingExactDateIndex = null
                         editingExactDateInitial = null
-                    },
-                    semantic = LvSemantic.Primary
+                    }
                 ) {
                     Text(stringResource(R.string.action_save))
                 }
             },
             dismissButton = {
-                LvButton(
+                OutlinedButton(
                     onClick = {
                         showDatePicker = false
                         editingExactDateIndex = null
                         editingExactDateInitial = null
-                    },
-                    type = LvButtonType.Outlined,
-                    semantic = LvSemantic.Secondary
+                    }
                 ) {
                     Text(stringResource(R.string.action_cancel))
                 }
@@ -286,7 +281,7 @@ fun ReminderRepeatConfigSection(
         var selectedMonth by remember { mutableIntStateOf(LocalDate.now().monthValue) }
         var selectedDay by remember { mutableIntStateOf(LocalDate.now().dayOfMonth) }
 
-        LvAlertDialog(
+        AlertDialog(
             onDismissRequest = { showAddYearlyDateDialog = false },
             title = {
                 Text(
@@ -425,22 +420,17 @@ fun ReminderRepeatConfigSection(
                 }
             },
             confirmButton = {
-                LvButton(
+                Button(
                     onClick = {
                         onAddYearlyDate(selectedMonth, selectedDay)
                         showAddYearlyDateDialog = false
-                    },
-                    semantic = LvSemantic.Primary
+                    }
                 ) {
                     Text(stringResource(R.string.action_save))
                 }
             },
             dismissButton = {
-                LvButton(
-                    onClick = { showAddYearlyDateDialog = false },
-                    type = LvButtonType.Outlined,
-                    semantic = LvSemantic.Secondary
-                ) {
+                OutlinedButton(onClick = { showAddYearlyDateDialog = false }) {
                     Text(stringResource(R.string.action_cancel))
                 }
             }
@@ -453,7 +443,7 @@ fun ReminderRepeatConfigSection(
         var selectedMonth by remember(currentToEdit) { mutableIntStateOf(currentToEdit.month) }
         var selectedDay by remember(currentToEdit) { mutableIntStateOf(currentToEdit.day) }
 
-        LvAlertDialog(
+        AlertDialog(
             onDismissRequest = {
                 showEditYearlyDateDialog = false
                 dateToEdit = null
@@ -596,7 +586,7 @@ fun ReminderRepeatConfigSection(
                 }
             },
             confirmButton = {
-                LvButton(
+                Button(
                     onClick = {
                         if (editingDateIndex in yearlyDates.indices) {
                             onRemoveYearlyDate(editingDateIndex)
@@ -605,21 +595,18 @@ fun ReminderRepeatConfigSection(
                         showEditYearlyDateDialog = false
                         dateToEdit = null
                         editingDateIndex = -1
-                    },
-                    semantic = LvSemantic.Primary
+                    }
                 ) {
                     Text(stringResource(R.string.action_save))
                 }
             },
             dismissButton = {
-                LvButton(
+                OutlinedButton(
                     onClick = {
                         showEditYearlyDateDialog = false
                         dateToEdit = null
                         editingDateIndex = -1
-                    },
-                    type = LvButtonType.Outlined,
-                    semantic = LvSemantic.Secondary
+                    }
                 ) {
                     Text(stringResource(R.string.action_cancel))
                 }

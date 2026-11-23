@@ -7,6 +7,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,12 +29,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.button.LvButtonType
-import vn.io.litever.designsystem.components.core.LvSemantic
-import vn.io.litever.designsystem.components.dialog.LvAlertDialog
-import vn.io.litever.designsystem.components.textfield.LvTextField
-import vn.io.litever.designsystem.components.textfield.LvTextFieldType
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.features.reminders.R
@@ -49,7 +47,7 @@ fun ReminderPuzzleDialog(
     var enteredCode by remember { mutableStateOf("") }
     var showError by remember { mutableStateOf(false) }
 
-    LvAlertDialog(
+    AlertDialog(
         onDismissRequest = onDismissRequest,
         modifier = modifier,
         title = {
@@ -99,17 +97,20 @@ fun ReminderPuzzleDialog(
 
                 Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
 
-                LvTextField(
+                OutlinedTextField(
                     value = enteredCode,
                     onValueChange = {
                         enteredCode = it.filter { char -> char.isDigit() }.take(targetCode.length)
                         showError = false
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    type = LvTextFieldType.Outlined,
-                    label = stringResource(R.string.puzzle_input_hint),
-                    placeholder = stringResource(R.string.puzzle_input_hint),
-                    errorMessage = if (showError) stringResource(R.string.puzzle_incorrect) else null,
+                    shape = LiteverTheme.shapes.medium,
+                    label = { Text(stringResource(R.string.puzzle_input_hint)) },
+                    placeholder = { Text(stringResource(R.string.puzzle_input_hint)) },
+                    isError = showError,
+                    supportingText = if (showError) {
+                        { Text(stringResource(R.string.puzzle_incorrect)) }
+                    } else null,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.NumberPassword,
                         imeAction = ImeAction.Done
@@ -128,7 +129,7 @@ fun ReminderPuzzleDialog(
             }
         },
         confirmButton = {
-            LvButton(
+            Button(
                 onClick = {
                     if (enteredCode == targetCode) {
                         onConfirmed()
@@ -136,18 +137,13 @@ fun ReminderPuzzleDialog(
                         showError = true
                     }
                 },
-                enabled = enteredCode.isNotBlank(),
-                semantic = LvSemantic.Primary
+                enabled = enteredCode.isNotBlank()
             ) {
                 Text(stringResource(R.string.puzzle_confirm_button))
             }
         },
         dismissButton = {
-            LvButton(
-                onClick = onDismissRequest,
-                type = LvButtonType.Outlined,
-                semantic = LvSemantic.Secondary
-            ) {
+            OutlinedButton(onClick = onDismissRequest) {
                 Text(stringResource(R.string.action_cancel))
             }
         }

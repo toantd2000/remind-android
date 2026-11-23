@@ -14,6 +14,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,7 +28,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.components.button.LvIconButton
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
@@ -102,7 +102,7 @@ fun ReminderBasicInfoSection(
                     )
 
                     if (title.isNotEmpty()) {
-                        LvIconButton(
+                        IconButton(
                             onClick = { onTitleChange("") },
                             modifier = Modifier.size(28.dp)
                         ) {
@@ -177,7 +177,7 @@ fun ReminderBasicInfoSection(
                     )
 
                     if (notes.isNotEmpty()) {
-                        LvIconButton(
+                        IconButton(
                             onClick = { onNotesChange("") },
                             modifier = Modifier.size(28.dp)
                         ) {

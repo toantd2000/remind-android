@@ -24,6 +24,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -45,17 +52,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
-import vn.io.litever.designsystem.components.LiteverButton
-import vn.io.litever.designsystem.components.LiteverCircularProgressIndicator
-import vn.io.litever.designsystem.components.LiteverScaffold
-import vn.io.litever.designsystem.components.LiteverTopAppBar
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.button.LvButtonType
-import vn.io.litever.designsystem.components.core.LvSemantic
-import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.designsystem.theme.errorTextColors
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.core.model.ReminderTimeWindow
 import vn.io.litever.remind.core.model.ReminderTriggerType
@@ -120,7 +121,7 @@ fun ReminderEditRoute(
 
     if (uiState.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            LiteverCircularProgressIndicator(color = LiteverTheme.colors.primary)
+            CircularProgressIndicator(color = LiteverTheme.colors.primary)
         }
         return
     }
@@ -259,10 +260,11 @@ fun ReminderEditScreen(
         }
     }
 
-    LiteverScaffold(
+    @OptIn(ExperimentalMaterial3Api::class)
+    Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
-            LiteverTopAppBar(
+            LvTopAppBar(
                 title = stringResource(if (uiState.id == 0L) R.string.add_reminder_title else R.string.edit_reminder_title),
                 onBackClick = onBackClick
             )
@@ -281,7 +283,7 @@ fun ReminderEditScreen(
                 ReMindBottomBar(
                     windowInsets = WindowInsets(0, 0, 0, 0)
                 ) {
-                    LiteverButton(
+                    Button(
                         onClick = onSaveClick,
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -396,10 +398,9 @@ fun ReminderEditScreen(
             if (uiState.id != 0L) {
                 item {
                     Spacer(modifier = Modifier.height(8.dp))
-                    LvButton(
+                    OutlinedButton(
                         onClick = { onToggleEnabled(!uiState.isEnabled) },
-                        type = LvButtonType.Outlined,
-                        semantic = if (uiState.isEnabled) LvSemantic.Destructive else LvSemantic.Primary,
+                        colors = if (uiState.isEnabled) ButtonDefaults.errorTextColors() else ButtonDefaults.outlinedButtonColors(),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
@@ -421,21 +422,17 @@ fun ReminderEditScreen(
 
     // Permission Warning "Save Anyway" Dialog
     if (uiState.showPermissionDialog) {
-        LvAlertDialog(
+        AlertDialog(
             onDismissRequest = onDismissPermissionDialog,
             title = { Text(stringResource(R.string.reminder_permission_dialog_title)) },
             text = { Text(stringResource(R.string.reminder_permission_dialog_message)) },
             confirmButton = {
-                LvButton(onClick = onNavigateToPermissions) {
+                Button(onClick = onNavigateToPermissions) {
                     Text(stringResource(R.string.action_go_to_settings))
                 }
             },
             dismissButton = {
-                LvButton(
-                    onClick = onSaveAnyway,
-                    type = LvButtonType.Outlined,
-                    semantic = LvSemantic.Secondary
-                ) {
+                OutlinedButton(onClick = onSaveAnyway) {
                     Text(stringResource(R.string.action_save_anyway))
                 }
             }
@@ -444,22 +441,17 @@ fun ReminderEditScreen(
 
     // Discard Changes Dialog
     if (uiState.showDiscardDialog) {
-        LvAlertDialog(
+        AlertDialog(
             onDismissRequest = onDismissDiscardDialog,
             title = { Text(stringResource(R.string.discard_changes_title)) },
             text = { Text(stringResource(R.string.discard_changes_message)) },
             confirmButton = {
-                LvButton(
-                    onClick = onConfirmDiscard,
-                ) {
+                Button(onClick = onConfirmDiscard) {
                     Text(stringResource(R.string.action_discard))
                 }
             },
             dismissButton = {
-                LvButton(
-                    onClick = onDismissDiscardDialog,
-                    type = LvButtonType.Outlined,
-                ) {
+                OutlinedButton(onClick = onDismissDiscardDialog) {
                     Text(stringResource(R.string.action_cancel))
                 }
             }

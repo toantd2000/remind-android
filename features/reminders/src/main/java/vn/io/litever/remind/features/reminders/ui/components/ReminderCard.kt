@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,8 +28,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import vn.io.litever.designsystem.components.button.LvIconButton
-import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
@@ -186,10 +185,9 @@ fun ReminderCard(
                 }
 
                 // Options menu button (3-dots)
-                LvIconButton(
+                IconButton(
                     onClick = onMoreClick,
-                    modifier = Modifier.size(LiteverTheme.spacing.extraLarge),
-                    semantic = LvSemantic.Text
+                    modifier = Modifier.size(LiteverTheme.spacing.extraLarge)
                 ) {
                     Icon(
                         imageVector = ReMindIcons.MoreVert,

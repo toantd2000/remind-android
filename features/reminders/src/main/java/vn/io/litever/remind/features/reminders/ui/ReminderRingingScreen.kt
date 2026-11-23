@@ -66,13 +66,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import kotlinx.coroutines.delay
-import vn.io.litever.designsystem.components.LiteverCircularProgressIndicator
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.button.LvButtonType
-import vn.io.litever.designsystem.components.core.LvSemantic
-import vn.io.litever.designsystem.components.dialog.LvAlertDialog
-import vn.io.litever.designsystem.components.textfield.LvTextField
-import vn.io.litever.designsystem.components.textfield.LvTextFieldType
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
@@ -112,7 +110,7 @@ fun ReminderRingingRoute(
                 .background(LiteverTheme.colors.background),
             contentAlignment = Alignment.Center
         ) {
-            LiteverCircularProgressIndicator(color = LiteverTheme.colors.primary)
+            CircularProgressIndicator(color = LiteverTheme.colors.primary)
         }
         return
     }
@@ -518,10 +516,8 @@ private fun RingingBottomActions(
                     ) {
                         val quickOptions = listOf(5, 10, 15)
                         quickOptions.forEach { mins ->
-                            LvButton(
+                            OutlinedButton(
                                 onClick = { onSnoozeClick(mins) },
-                                type = LvButtonType.Outlined,
-                                semantic = LvSemantic.Secondary,
                                 shape = LiteverTheme.shapes.large,
                                 contentPadding = PaddingValues(horizontal = LiteverTheme.spacing.extraSmall),
                                 modifier = Modifier
@@ -536,10 +532,8 @@ private fun RingingBottomActions(
                             }
                         }
 
-                        LvButton(
+                        OutlinedButton(
                             onClick = onOpenCustomSnooze,
-                            type = LvButtonType.Outlined,
-                            semantic = LvSemantic.Secondary,
                             shape = LiteverTheme.shapes.large,
                             contentPadding = PaddingValues(horizontal = LiteverTheme.spacing.small),
                             modifier = Modifier
@@ -562,10 +556,8 @@ private fun RingingBottomActions(
                         .offset { IntOffset(x = snoozeShakeOffsetProvider().dp.roundToPx(), y = 0) },
                     horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.small)
                 ) {
-                    LvButton(
+                    OutlinedButton(
                         onClick = { onSnoozeClick(reminder.action.snoozeIntervalMinutes) },
-                        type = LvButtonType.Outlined,
-                        semantic = LvSemantic.Secondary,
                         shape = LiteverTheme.shapes.large,
                         modifier = Modifier
                             .weight(1f)
@@ -582,10 +574,8 @@ private fun RingingBottomActions(
                         )
                     }
 
-                    LvButton(
+                    OutlinedButton(
                         onClick = onToggleQuickSnoozeOptions,
-                        type = LvButtonType.Outlined,
-                        semantic = LvSemantic.Secondary,
                         shape = LiteverTheme.shapes.large,
                         contentPadding = PaddingValues(horizontal = LiteverTheme.spacing.medium),
                         modifier = Modifier.height(52.dp)
@@ -606,11 +596,9 @@ private fun RingingBottomActions(
                     }
                 }
             } else {
-                LvButton(
+                OutlinedButton(
                     onClick = {},
                     enabled = false,
-                    type = LvButtonType.Outlined,
-                    semantic = LvSemantic.Secondary,
                     shape = LiteverTheme.shapes.large,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -624,10 +612,8 @@ private fun RingingBottomActions(
             }
         }
 
-        LvButton(
+        Button(
             onClick = onDismissClick,
-            type = LvButtonType.Filled,
-            semantic = LvSemantic.Primary,
             shape = LiteverTheme.shapes.large,
             modifier = Modifier
                 .fillMaxWidth()
@@ -651,7 +637,7 @@ private fun CustomSnoozeDialog(
 ) {
     val parsedMinutes = minutesText.toIntOrNull() ?: 0
 
-    LvAlertDialog(
+    AlertDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
@@ -660,36 +646,31 @@ private fun CustomSnoozeDialog(
             )
         },
         text = {
-            LvTextField(
+            OutlinedTextField(
                 value = minutesText,
                 onValueChange = onMinutesChange,
                 modifier = Modifier.fillMaxWidth(),
-                type = LvTextFieldType.Outlined,
-                label = stringResource(R.string.snooze_custom_minutes_hint),
-                placeholder = stringResource(R.string.snooze_custom_minutes_hint),
+                shape = LiteverTheme.shapes.medium,
+                label = { Text(stringResource(R.string.snooze_custom_minutes_hint)) },
+                placeholder = { Text(stringResource(R.string.snooze_custom_minutes_hint)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
         },
         confirmButton = {
-            LvButton(
+            Button(
                 onClick = {
                     if (parsedMinutes > 0) {
                         onConfirm(parsedMinutes)
                     }
                 },
-                enabled = parsedMinutes > 0,
-                semantic = LvSemantic.Primary
+                enabled = parsedMinutes > 0
             ) {
                 Text(stringResource(R.string.snooze_action))
             }
         },
         dismissButton = {
-            LvButton(
-                onClick = onDismiss,
-                type = LvButtonType.Outlined,
-                semantic = LvSemantic.Secondary
-            ) {
+            OutlinedButton(onClick = onDismiss) {
                 Text(stringResource(R.string.action_cancel))
             }
         }

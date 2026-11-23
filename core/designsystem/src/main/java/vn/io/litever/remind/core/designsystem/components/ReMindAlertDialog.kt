@@ -13,10 +13,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.window.DialogProperties
-import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.theme.errorColors
-import vn.io.litever.remind.core.designsystem.theme.warningColors
 
 /**
  * Standard Alert Dialog for ReMind using native Material 3 [AlertDialog] and theme tokens.
@@ -32,24 +30,18 @@ fun ReMindAlertDialog(
     dismissButtonText: String? = null,
     onDismissClick: (() -> Unit)? = null,
     isDestructive: Boolean = false,
-    semantic: LvSemantic = if (isDestructive) LvSemantic.Destructive else LvSemantic.Primary,
     shape: Shape = LiteverTheme.shapes.extraLarge,
     containerColor: Color = MaterialTheme.colorScheme.surfaceContainerHigh,
     tonalElevation: Dp = AlertDialogDefaults.TonalElevation,
     properties: DialogProperties = DialogProperties(),
     content: @Composable (() -> Unit)? = null,
 ) {
-    val confirmColors = when (semantic) {
-        LvSemantic.Destructive -> ButtonDefaults.errorColors()
-        LvSemantic.Warning -> ButtonDefaults.warningColors()
-        else -> ButtonDefaults.buttonColors()
-    }
     AlertDialog(
         onDismissRequest = onDismissRequest,
         confirmButton = {
             Button(
                 onClick = onConfirmClick,
-                colors = confirmColors
+                colors = if (isDestructive) ButtonDefaults.errorColors() else ButtonDefaults.buttonColors()
             ) {
                 Text(text = confirmButtonText)
             }
@@ -120,66 +112,3 @@ fun ReMindAlertDialog(
         properties = properties
     )
 }
-
-// Backward-compatibility aliases
-@Composable
-fun LiteverAlertDialog(
-    onDismissRequest: () -> Unit,
-    confirmButtonText: String,
-    onConfirmClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    title: String? = null,
-    text: String? = null,
-    dismissButtonText: String? = null,
-    onDismissClick: (() -> Unit)? = null,
-    isDestructive: Boolean = false,
-    semantic: LvSemantic = if (isDestructive) LvSemantic.Destructive else LvSemantic.Primary,
-    shape: Shape = LiteverTheme.shapes.extraLarge,
-    containerColor: Color = MaterialTheme.colorScheme.surfaceContainerHigh,
-    tonalElevation: Dp = AlertDialogDefaults.TonalElevation,
-    properties: DialogProperties = DialogProperties(),
-    content: @Composable (() -> Unit)? = null,
-) = ReMindAlertDialog(
-    onDismissRequest = onDismissRequest,
-    confirmButtonText = confirmButtonText,
-    onConfirmClick = onConfirmClick,
-    modifier = modifier,
-    title = title,
-    text = text,
-    dismissButtonText = dismissButtonText,
-    onDismissClick = onDismissClick,
-    isDestructive = isDestructive,
-    semantic = semantic,
-    shape = shape,
-    containerColor = containerColor,
-    tonalElevation = tonalElevation,
-    properties = properties,
-    content = content
-)
-
-@Composable
-fun LiteverDialog(
-    onDismissRequest: () -> Unit,
-    confirmButton: @Composable () -> Unit,
-    modifier: Modifier = Modifier,
-    dismissButton: @Composable (() -> Unit)? = null,
-    icon: @Composable (() -> Unit)? = null,
-    title: @Composable (() -> Unit)? = null,
-    text: @Composable (() -> Unit)? = null,
-    shape: Shape = LiteverTheme.shapes.extraLarge,
-    containerColor: Color = MaterialTheme.colorScheme.surfaceContainerHigh,
-    tonalElevation: Dp = AlertDialogDefaults.TonalElevation,
-    properties: DialogProperties = DialogProperties()
-) = ReMindAlertDialog(
-    onDismissRequest = onDismissRequest,
-    confirmButton = confirmButton,
-    modifier = modifier,
-    dismissButton = dismissButton,
-    icon = icon,
-    title = title,
-    text = text,
-    shape = shape,
-    containerColor = containerColor,
-    tonalElevation = tonalElevation,
-    properties = properties
-)

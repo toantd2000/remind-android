@@ -5,7 +5,9 @@ import android.content.res.Configuration
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialExpressiveTheme
+import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -47,20 +49,21 @@ import vn.io.litever.brand.tokens.palettes.yellowLightColorScheme
 /**
  * App-owned theme entry point for ReMind.
  *
- * Directly configures [MaterialTheme] and provides Litever token [CompositionLocal]s
- * without coupling to an external theme wrapper composable. Consumes only raw color palettes,
- * bundled fonts, and spacing/shape tokens from the shared brand resource kit.
+ * Directly configures [MaterialExpressiveTheme] (with [MotionScheme.expressive]) and provides
+ * Litever token [CompositionLocal]s without coupling to an external theme wrapper composable.
+ * Consumes only raw color palettes, bundled fonts, and spacing/shape tokens from `litever-brand`.
  *
  * @param darkTheme Whether dark theme should be applied. Defaults to system dark theme state.
  * @param dynamicColor Whether dynamic system coloring (Android 12+) should be used.
  * @param colorPalette Color palette selection: "BLACK", "RED", "ORANGE", "YELLOW", "GREEN", "BLUE", "INDIGO", "VIOLET", or "DYNAMIC".
- * @param colorScheme Optional custom Material 3 [ColorScheme]. If supplied, it takes precedence for MaterialTheme.
+ * @param colorScheme Optional custom Material 3 [ColorScheme]. If supplied, it takes precedence.
  * @param colors Optional custom [LiteverColors] container. If supplied, it takes precedence for Litever token locals.
  * @param typography Typography specifications, defaulting to [defaultLiteverTypography].
  * @param spacing Spacing scale tokens, defaulting to [LiteverSpacing].
  * @param shapes Corner shape definitions, defaulting to [LiteverShapes].
  * @param content Composable child hierarchy.
  */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ReMindTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -129,8 +132,9 @@ fun ReMindTheme(
         LocalLiteverTypography provides typography,
         LocalLiteverSpacing provides spacing
     ) {
-        MaterialTheme(
+        MaterialExpressiveTheme(
             colorScheme = effectiveColorScheme,
+            motionScheme = MotionScheme.expressive(),
             typography = typography.asMaterial3(),
             shapes = shapes,
             content = content

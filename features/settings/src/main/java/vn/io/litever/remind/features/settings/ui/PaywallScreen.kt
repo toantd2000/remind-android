@@ -29,13 +29,17 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -55,10 +59,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.button.LvButtonType
-import vn.io.litever.designsystem.components.button.LvIconButton
-import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.ads.api.AdPlacement
 import vn.io.litever.remind.core.ads.api.AdState
@@ -179,7 +179,7 @@ fun PaywallScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                LvIconButton(onClick = onCloseClick) {
+                IconButton(onClick = onCloseClick) {
                     Icon(
                         imageVector = ReMindIcons.Close,
                         contentDescription = stringResource(R.string.close_text),
@@ -187,10 +187,7 @@ fun PaywallScreen(
                     )
                 }
 
-                LvButton(
-                    onClick = onRestoreClick,
-                    type = LvButtonType.Text
-                ) {
+                TextButton(onClick = onRestoreClick) {
                     Text(
                         text = stringResource(R.string.paywall_restore_purchases),
                         style = LiteverTheme.typography.labelLarge
@@ -334,7 +331,7 @@ fun PaywallScreen(
                 else -> stringResource(R.string.paywall_cta_subscribe)
             }
 
-            LvButton(
+            Button(
                 onClick = onPurchaseClick,
                 enabled = !uiState.isPro && uiState.purchaseStatus != PurchaseStatus.Loading,
                 modifier = Modifier
@@ -359,7 +356,7 @@ fun PaywallScreen(
             if (!uiState.isPro && !isInspection) {
                 val adManager = LocalAdManager.current
                 Spacer(modifier = Modifier.height(LiteverTheme.spacing.extraSmall))
-                LvButton(
+                TextButton(
                     onClick = {
                         val activity = context.findPaywallActivity()
                         if (activity != null && adManager.isAdLoaded(AdPlacement.SUPPORT_REWARDED)) {
@@ -372,7 +369,6 @@ fun PaywallScreen(
                             showAdLoading = true
                         }
                     },
-                    type = LvButtonType.Text,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
@@ -388,7 +384,7 @@ fun PaywallScreen(
     }
 
     if (showAdLoading) {
-        LvAlertDialog(
+        AlertDialog(
             onDismissRequest = { showAdLoading = false },
             title = { Text(stringResource(R.string.watch_ad_dialog_title)) },
             text = {
@@ -406,10 +402,7 @@ fun PaywallScreen(
                 }
             },
             confirmButton = {
-                LvButton(
-                    onClick = { showAdLoading = false },
-                    type = LvButtonType.Text
-                ) {
+                TextButton(onClick = { showAdLoading = false }) {
                     Text(stringResource(R.string.close_text))
                 }
             }
@@ -417,12 +410,12 @@ fun PaywallScreen(
     }
 
     if (showThankYouDialog) {
-        LvAlertDialog(
+        AlertDialog(
             onDismissRequest = { showThankYouDialog = false },
             title = { Text(stringResource(R.string.watch_ad_dialog_title)) },
             text = { Text(stringResource(R.string.ads_disabled_reward_message)) },
             confirmButton = {
-                LvButton(onClick = { showThankYouDialog = false }) {
+                Button(onClick = { showThankYouDialog = false }) {
                     Text(stringResource(R.string.close_text))
                 }
             }

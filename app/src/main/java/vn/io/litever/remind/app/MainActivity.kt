@@ -63,7 +63,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import vn.io.litever.designsystem.components.snackbar.LvSnackbarHost
+import androidx.compose.material3.SnackbarHost
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.ads.api.AdManager
 import vn.io.litever.remind.core.ads.api.AdPlacement
@@ -380,7 +380,7 @@ class MainActivity : ComponentActivity() {
                             }
 
                             Scaffold(
-                                snackbarHost = { LvSnackbarHost(hostState = snackbarHostState) },
+                                snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
                                 bottomBar = {
                                     if (isBottomBarVisible) {
                                         Column(

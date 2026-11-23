@@ -43,11 +43,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.OutlinedButton
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.button.LvButtonType
-import vn.io.litever.designsystem.components.core.LvSemantic
-import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.brand.tokens.palettes.blackDarkColorScheme
 import vn.io.litever.brand.tokens.palettes.blackLightColorScheme
@@ -389,14 +387,10 @@ private fun SingleChoiceDialog(
     onDismiss: () -> Unit,
     onSelect: (String) -> Unit
 ) {
-    LvAlertDialog(
+    AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
-            LvButton(
-                onClick = onDismiss,
-                type = LvButtonType.Outlined,
-                semantic = LvSemantic.Secondary
-            ) {
+            OutlinedButton(onClick = onDismiss) {
                 Text(stringResource(vn.io.litever.remind.core.designsystem.R.string.cancel))
             }
         },
@@ -446,14 +440,10 @@ private fun ColorPaletteSelectionDialog(
 ) {
     val chunkedOptions = options.chunked(3)
 
-    LvAlertDialog(
+    AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
-            LvButton(
-                onClick = onDismiss,
-                type = LvButtonType.Outlined,
-                semantic = LvSemantic.Secondary
-            ) {
+            OutlinedButton(onClick = onDismiss) {
                 Text(stringResource(vn.io.litever.remind.core.designsystem.R.string.cancel))
             }
         },

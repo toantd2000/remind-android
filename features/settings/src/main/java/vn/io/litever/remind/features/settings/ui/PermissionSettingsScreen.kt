@@ -20,9 +20,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -44,9 +46,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.button.LvButtonType
-import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
@@ -325,10 +324,9 @@ fun PermissionTile(
 
             if (!isGranted) {
                 Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
-                LvButton(
+                Button(
                     onClick = onRequest,
-                    modifier = Modifier.fillMaxWidth(),
-                    semantic = LvSemantic.Primary
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
                         stringResource(R.string.permission_request_action),
@@ -376,11 +374,9 @@ fun ManufacturerSettingsTile(onOpen: () -> Unit) {
 
             Spacer(modifier = Modifier.height(LiteverTheme.spacing.medium))
 
-            LvButton(
+            OutlinedButton(
                 onClick = onOpen,
-                modifier = Modifier.fillMaxWidth(),
-                type = LvButtonType.Outlined,
-                semantic = LvSemantic.Secondary
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
                     stringResource(R.string.permission_request_action),

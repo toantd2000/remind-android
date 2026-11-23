@@ -1,4 +1,4 @@
-import java.util.Properties
+﻿import java.util.Properties
 
 val localProperties = Properties()
 val localPropertiesFile = rootProject.file("local.properties")
@@ -24,7 +24,9 @@ android {
     namespace = "vn.io.litever.remind.app"
 
     compileSdk {
-        version = release(37)
+        version = release(37) {
+            minorApiLevel = 2
+        }
     }
 
     defaultConfig {

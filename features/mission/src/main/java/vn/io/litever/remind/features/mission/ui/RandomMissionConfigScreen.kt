@@ -17,6 +17,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
@@ -40,7 +41,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import vn.io.litever.designsystem.components.button.LvButton
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
@@ -147,7 +147,7 @@ fun RandomMissionConfigScreen(
         },
         bottomBar = {
             ReMindBottomBar {
-                LvButton(
+                Button(
                     onClick = { onSaveClick(selectedTypes, difficulty, repetitions) },
                     modifier = Modifier.fillMaxWidth()
                 ) {

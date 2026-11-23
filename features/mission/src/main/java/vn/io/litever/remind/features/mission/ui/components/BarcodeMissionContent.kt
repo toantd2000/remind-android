@@ -25,7 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
-import vn.io.litever.designsystem.components.button.LvButton
+import androidx.compose.material3.Button
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.features.mission.R
@@ -82,7 +82,7 @@ fun BarcodeMissionContent(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        LvButton(
+        Button(
             onClick = {
                 onInteraction()
                 errorMessage = null

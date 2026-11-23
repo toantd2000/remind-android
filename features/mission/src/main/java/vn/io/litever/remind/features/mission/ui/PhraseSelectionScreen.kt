@@ -22,17 +22,23 @@ import androidx.compose.foundation.text.KeyboardOptions
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -56,13 +62,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.button.LvButtonType
-import vn.io.litever.designsystem.components.button.LvIconButton
-import vn.io.litever.designsystem.components.core.LvSemantic
 import androidx.compose.material3.ModalBottomSheet
-import vn.io.litever.designsystem.components.dialog.LvAlertDialog
 import vn.io.litever.designsystem.theme.LiteverTheme
+import vn.io.litever.remind.core.designsystem.theme.errorColors
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
@@ -116,27 +118,23 @@ fun PhraseSelectionRoute(
     )
 
     if (phraseToDelete != null) {
-        LvAlertDialog(
+        AlertDialog(
             onDismissRequest = { phraseToDelete = null },
             title = { Text(stringResource(R.string.action_delete)) },
             text = { Text(stringResource(R.string.mission_phrase_delete_confirm)) },
             confirmButton = {
-                LvButton(
+                Button(
                     onClick = {
                         viewModel.deletePhrase(phraseToDelete!!)
                         phraseToDelete = null
                     },
-                    semantic = LvSemantic.Destructive
+                    colors = ButtonDefaults.errorColors()
                 ) {
                     Text(stringResource(R.string.action_delete))
                 }
             },
             dismissButton = {
-                LvButton(
-                    onClick = { phraseToDelete = null },
-                    type = LvButtonType.Outlined,
-                    semantic = LvSemantic.Secondary
-                ) {
+                OutlinedButton(onClick = { phraseToDelete = null }) {
                     Text(stringResource(R.string.cancel))
                 }
             }
@@ -205,11 +203,10 @@ fun PhraseSelectionScreen(
         },
         bottomBar = {
             ReMindBottomBar {
-                LvButton(
+                Button(
                     onClick = onComplete,
                     modifier = Modifier.fillMaxWidth(),
-                    enabled = selectedIds.isNotEmpty(),
-                    semantic = LvSemantic.Primary
+                    enabled = selectedIds.isNotEmpty()
                 ) {
                     Text(text = stringResource(R.string.save))
                 }
@@ -325,13 +322,11 @@ fun PhraseSelectionScreen(
                                         ),
                                     horizontalArrangement = Arrangement.End
                                 ) {
-                                    LvButton(
+                                    TextButton(
                                         onClick = {
                                             if (allSelected) onDeselectAll(phrases.map { it.id })
                                             else onSelectAll(phrases.map { it.id })
-                                        },
-                                        type = LvButtonType.Text,
-                                        semantic = LvSemantic.Primary
+                                        }
                                     ) {
                                         Text(
                                             text = stringResource(if (allSelected) R.string.action_deselect_all else R.string.action_select_all),
@@ -430,11 +425,7 @@ fun PhraseItem(
 
             if (phrase.isCustom) {
                 Box {
-                    LvIconButton(
-                        onClick = { showMenu = true },
-                        type = LvButtonType.Text,
-                        semantic = LvSemantic.Text
-                    ) {
+                    IconButton(onClick = { showMenu = true }) {
                         Icon(
                             imageVector = ReMindIcons.MoreVert,
                             contentDescription = "More options",
@@ -559,7 +550,7 @@ fun AddCustomPhraseContent(
                     )
 
                     if (text.isNotEmpty()) {
-                        LvIconButton(
+                        IconButton(
                             onClick = { text = "" },
                             modifier = Modifier.size(28.dp)
                         ) {
@@ -647,20 +638,17 @@ fun AddCustomPhraseContent(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(LiteverTheme.spacing.smallMedium)
         ) {
-            LvButton(
+            OutlinedButton(
                 onClick = onDismiss,
-                modifier = Modifier.weight(1f),
-                type = LvButtonType.Outlined,
-                semantic = LvSemantic.Secondary
+                modifier = Modifier.weight(1f)
             ) {
                 Text(stringResource(R.string.cancel))
             }
 
-            LvButton(
+            Button(
                 onClick = { onConfirm(text, isShared) },
                 enabled = text.isNotBlank(),
-                modifier = Modifier.weight(1f),
-                semantic = LvSemantic.Primary
+                modifier = Modifier.weight(1f)
             ) {
                 Text(stringResource(R.string.save))
             }

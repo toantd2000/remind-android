@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -33,8 +35,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.button.LvButtonType
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
@@ -94,7 +94,7 @@ fun BarcodeMissionConfigScreen(
         },
         bottomBar = {
             ReMindBottomBar {
-                LvButton(
+                Button(
                     onClick = { onSaveClick(targetBarcode.trim(), itemLabel.trim()) },
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -131,7 +131,7 @@ fun BarcodeMissionConfigScreen(
                         )
                     }
 
-                    LvButton(
+                    FilledTonalButton(
                         onClick = {
                             val options = GmsBarcodeScannerOptions.Builder()
                                 .enableAutoZoom()
@@ -147,7 +147,6 @@ fun BarcodeMissionConfigScreen(
                                     Toast.makeText(context, scanFailedMessage, Toast.LENGTH_SHORT).show()
                                 }
                         },
-                        type = LvButtonType.Tonal,
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Icon(

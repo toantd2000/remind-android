@@ -35,12 +35,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.compose.material3.Button
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.button.LvButtonType
-import vn.io.litever.designsystem.components.button.LvIconButton
-import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
@@ -122,11 +120,10 @@ fun TypingMissionConfigScreen(
         },
         bottomBar = {
             ReMindBottomBar {
-                LvButton(
+                Button(
                     onClick = onSave,
                     modifier = Modifier.fillMaxWidth(),
-                    enabled = selectedPhrases.isNotEmpty(),
-                    semantic = LvSemantic.Primary
+                    enabled = selectedPhrases.isNotEmpty()
                 ) {
                     Text(
                         text = stringResource(vn.io.litever.remind.core.designsystem.R.string.save),
@@ -215,11 +212,9 @@ fun TypingMissionConfigScreen(
                         title = stringResource(R.string.settings_title),
                         modifier = Modifier.weight(1f)
                     )
-                    LvIconButton(
+                    IconButton(
                         onClick = { onRepetitionsChange(1) },
-                        modifier = Modifier.size(32.dp),
-                        type = LvButtonType.Text,
-                        semantic = LvSemantic.Secondary
+                        modifier = Modifier.size(32.dp)
                     ) {
                         Icon(
                             imageVector = ReMindIcons.Refresh,
@@ -239,12 +234,10 @@ fun TypingMissionConfigScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    LvIconButton(
+                    IconButton(
                         onClick = { onRepetitionsChange(repetitions - 1) },
                         modifier = Modifier.size(40.dp),
-                        enabled = repetitions > 1,
-                        type = LvButtonType.Text,
-                        semantic = LvSemantic.Text
+                        enabled = repetitions > 1
                     ) {
                         Icon(
                             imageVector = ReMindIcons.KeyboardArrowLeft,
@@ -259,12 +252,10 @@ fun TypingMissionConfigScreen(
                         color = LiteverTheme.colors.onSurface
                     )
 
-                    LvIconButton(
+                    IconButton(
                         onClick = { onRepetitionsChange(repetitions + 1) },
                         modifier = Modifier.size(40.dp),
-                        enabled = repetitions < 99,
-                        type = LvButtonType.Text,
-                        semantic = LvSemantic.Text
+                        enabled = repetitions < 99
                     ) {
                         Icon(
                             imageVector = ReMindIcons.KeyboardArrowRight,

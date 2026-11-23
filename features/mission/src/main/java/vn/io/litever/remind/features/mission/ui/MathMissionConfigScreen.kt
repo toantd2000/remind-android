@@ -14,8 +14,10 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
@@ -33,10 +35,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.button.LvButtonType
-import vn.io.litever.designsystem.components.button.LvIconButton
-import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
@@ -104,10 +102,9 @@ fun MathMissionConfigScreen(
         bottomBar = {
             Box(Modifier.fillMaxWidth()) {
                 ReMindBottomBar {
-                    LvButton(
+                    Button(
                         onClick = onSave,
-                        modifier = Modifier.fillMaxWidth(),
-                        semantic = LvSemantic.Primary
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(stringResource(R.string.mission_complete))
                     }
@@ -176,11 +173,9 @@ fun MathMissionConfigScreen(
                         title = stringResource(R.string.math_problems_count),
                         modifier = Modifier.weight(1f)
                     )
-                    LvIconButton(
+                    IconButton(
                         onClick = { onRepetitionsChange(3) },
-                        modifier = Modifier.size(32.dp),
-                        type = LvButtonType.Text,
-                        semantic = LvSemantic.Secondary
+                        modifier = Modifier.size(32.dp)
                     ) {
                         Icon(
                             imageVector = ReMindIcons.Refresh,
@@ -200,12 +195,10 @@ fun MathMissionConfigScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    LvIconButton(
+                    IconButton(
                         onClick = { onRepetitionsChange(repetitions - 1) },
                         modifier = Modifier.size(40.dp),
-                        enabled = repetitions > 1,
-                        type = LvButtonType.Text,
-                        semantic = LvSemantic.Text
+                        enabled = repetitions > 1
                     ) {
                         Icon(
                             imageVector = ReMindIcons.KeyboardArrowLeft,
@@ -220,12 +213,10 @@ fun MathMissionConfigScreen(
                         color = LiteverTheme.colors.onSurface
                     )
 
-                    LvIconButton(
+                    IconButton(
                         onClick = { onRepetitionsChange(repetitions + 1) },
                         modifier = Modifier.size(40.dp),
-                        enabled = repetitions < 50,
-                        type = LvButtonType.Text,
-                        semantic = LvSemantic.Text
+                        enabled = repetitions < 50
                     ) {
                         Icon(
                             imageVector = ReMindIcons.KeyboardArrowRight,

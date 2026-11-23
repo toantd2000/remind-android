@@ -23,8 +23,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.core.LvSemantic
+import androidx.compose.material3.Button
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -331,10 +330,9 @@ fun TypingMissionContent(
                 .imePadding(),
             contentAlignment = Alignment.Center
         ) {
-            LvButton(
+            Button(
                 onClick = onSubmit,
                 enabled = isMatched,
-                semantic = LvSemantic.Primary,
                 modifier = Modifier.fillMaxWidth(2f / 3f)
             ) {
                 Text(

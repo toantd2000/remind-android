@@ -61,13 +61,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.designsystem.theme.errorColors
 import vn.io.litever.remind.core.model.MemoryGameBoard
 import vn.io.litever.remind.features.mission.R
 import kotlin.math.roundToInt
@@ -390,9 +391,8 @@ fun MemoryTilesMissionContent(
         ) {
             when (gameState) {
                 MemoryGameState.SUCCESS -> {
-                    LvButton(
+                    Button(
                         onClick = onContinue,
-                        semantic = LvSemantic.Primary,
                         modifier = Modifier.fillMaxWidth(2f / 3f)
                     ) {
                         Text(
@@ -408,9 +408,9 @@ fun MemoryTilesMissionContent(
                     }
                 }
                 MemoryGameState.FAILURE -> {
-                    LvButton(
+                    Button(
                         onClick = resetRound,
-                        semantic = LvSemantic.Destructive,
+                        colors = ButtonDefaults.errorColors(),
                         modifier = Modifier.fillMaxWidth(2f / 3f)
                     ) {
                         Text(

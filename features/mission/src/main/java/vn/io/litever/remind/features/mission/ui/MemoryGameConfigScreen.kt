@@ -14,8 +14,10 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,10 +32,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Scaffold
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.button.LvButtonType
-import vn.io.litever.designsystem.components.button.LvIconButton
-import vn.io.litever.designsystem.components.core.LvSemantic
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
@@ -110,10 +108,9 @@ fun MemoryGameConfigScreen(
         bottomBar = {
             Box(Modifier.fillMaxWidth()) {
                 ReMindBottomBar {
-                    LvButton(
+                    Button(
                         onClick = onSave,
-                        modifier = Modifier.fillMaxWidth(),
-                        semantic = LvSemantic.Primary
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(stringResource(R.string.mission_complete))
                     }
@@ -152,12 +149,10 @@ fun MemoryGameConfigScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    LvIconButton(
+                    IconButton(
                         onClick = { if (gridSize > 3) onGridSizeChange(gridSize - 1) },
                         modifier = Modifier.size(40.dp),
-                        enabled = gridSize > 3,
-                        type = LvButtonType.Text,
-                        semantic = LvSemantic.Text
+                        enabled = gridSize > 3
                     ) {
                         Icon(
                             imageVector = ReMindIcons.KeyboardArrowLeft,
@@ -172,12 +167,10 @@ fun MemoryGameConfigScreen(
                         color = LiteverTheme.colors.onSurfaceVariant
                     )
 
-                    LvIconButton(
+                    IconButton(
                         onClick = { if (gridSize < 7) onGridSizeChange(gridSize + 1) },
                         modifier = Modifier.size(40.dp),
-                        enabled = gridSize < 7,
-                        type = LvButtonType.Text,
-                        semantic = LvSemantic.Text
+                        enabled = gridSize < 7
                     ) {
                         Icon(
                             imageVector = ReMindIcons.KeyboardArrowRight,
@@ -211,11 +204,9 @@ fun MemoryGameConfigScreen(
                         title = stringResource(R.string.memory_game_repetitions),
                         modifier = Modifier.weight(1f)
                     )
-                    LvIconButton(
+                    IconButton(
                         onClick = { onRepetitionsChange(1) },
-                        modifier = Modifier.size(32.dp),
-                        type = LvButtonType.Text,
-                        semantic = LvSemantic.Secondary
+                        modifier = Modifier.size(32.dp)
                     ) {
                         Icon(
                             imageVector = ReMindIcons.Refresh,
@@ -235,12 +226,10 @@ fun MemoryGameConfigScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    LvIconButton(
+                    IconButton(
                         onClick = { onRepetitionsChange(repetitions - 1) },
                         modifier = Modifier.size(40.dp),
-                        enabled = repetitions > 1,
-                        type = LvButtonType.Text,
-                        semantic = LvSemantic.Text
+                        enabled = repetitions > 1
                     ) {
                         Icon(
                             imageVector = ReMindIcons.KeyboardArrowLeft,
@@ -255,12 +244,10 @@ fun MemoryGameConfigScreen(
                         color = LiteverTheme.colors.onSurface
                     )
 
-                    LvIconButton(
+                    IconButton(
                         onClick = { onRepetitionsChange(repetitions + 1) },
                         modifier = Modifier.size(40.dp),
-                        enabled = repetitions < 99,
-                        type = LvButtonType.Text,
-                        semantic = LvSemantic.Text
+                        enabled = repetitions < 99
                     ) {
                         Icon(
                             imageVector = ReMindIcons.KeyboardArrowRight,

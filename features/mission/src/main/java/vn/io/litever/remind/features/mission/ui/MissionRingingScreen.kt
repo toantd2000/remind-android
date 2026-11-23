@@ -61,9 +61,7 @@ import vn.io.litever.remind.core.model.ShakeMissionConfig
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import vn.io.litever.designsystem.components.button.LvButton
-import vn.io.litever.designsystem.components.button.LvIconButton
-import vn.io.litever.designsystem.components.core.LvSemantic
+import androidx.compose.material3.IconButton
 import vn.io.litever.designsystem.theme.LiteverTheme
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -177,10 +175,7 @@ fun MissionRingingScreen(
                             }
                         },
                         navigationIcon = {
-                            LvIconButton(
-                                onClick = onAbandon,
-                                semantic = LvSemantic.Text
-                            ) {
+                            IconButton(onClick = onAbandon) {
                                 Icon(
                                     imageVector = ReMindIcons.Close,
                                     contentDescription = stringResource(vn.io.litever.remind.core.designsystem.R.string.cancel)

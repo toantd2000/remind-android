@@ -103,6 +103,7 @@ import vn.io.litever.remind.core.model.MissionType
 import vn.io.litever.remind.features.alarms.R
 import vn.io.litever.remind.features.alarms.ui.components.AnnounceLabelPreviewBottomSheet
 import vn.io.litever.remind.features.alarms.ui.components.GentleAlarmBottomSheet
+import vn.io.litever.remind.features.alarms.ui.components.MissionStackSection
 import vn.io.litever.remind.features.alarms.ui.components.NextAlarmHeader
 import vn.io.litever.remind.features.alarms.ui.components.getRepeatSummaryText
 import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState
@@ -1320,39 +1321,21 @@ fun AlarmEditScreen(
                     headerTrailingContent = {
                         Text(
                             text = "${uiState.missions.size}/5",
-                            style = LiteverTokens.typography.labelMediumEmphasized,
+                            style = LiteverTokens.typography.labelMediumEmphasized.copy(
+                                fontFeatureSettings = "tnum"
+                            ),
                             color = MaterialTheme.colorScheme.primary
                         )
                     }
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                horizontal = MaterialTheme.spacing.medium,
-                                vertical = MaterialTheme.spacing.smallMedium
-                            ),
-                        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
-                    ) {
-                        repeat(5) { slotIndex ->
-                            val mission = uiState.missions.getOrNull(slotIndex)
-                            val isSlotUnlocked = isPro || slotIndex == 0
-                            MissionSlotCard(
-                                mission = mission,
-                                isUnlocked = isSlotUnlocked,
-                                onFilledClick = { mission?.let(onMissionClick) },
-                                onRemoveClick = { mission?.let(onMissionRemove) },
-                                onAddClick = {
-                                    if (isSlotUnlocked) {
-                                        onAddMissionClick()
-                                    } else {
-                                        onNavigateToPaywall(1)
-                                    }
-                                },
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
-                    }
+                    MissionStackSection(
+                        missions = uiState.missions,
+                        isPro = isPro,
+                        onMissionClick = onMissionClick,
+                        onMissionRemove = onMissionRemove,
+                        onAddMissionClick = onAddMissionClick,
+                        onLockedSlotClick = { onNavigateToPaywall(1) }
+                    )
 
                     ReMindSettingsDivider(inset = false)
 
@@ -1489,92 +1472,6 @@ fun RepeatDaySelector(
                             contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                         ),
                         content = dayContent
-                    )
-                }
-            }
-        }
-    }
-}
-
-
-@Composable
-private fun MissionSlotCard(
-    mission: vn.io.litever.remind.core.model.Mission?,
-    isUnlocked: Boolean,
-    onFilledClick: () -> Unit,
-    onRemoveClick: () -> Unit,
-    onAddClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val slotShape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
-    Box(
-        modifier = modifier.height(58.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        if (mission != null) {
-            val icon = when (mission.type) {
-                MissionType.TYPING -> ReMindIcons.Keyboard
-                MissionType.MATH -> ReMindIcons.Calculate
-                MissionType.MEMORY_FIND_COLOR_TILES -> ReMindIcons.GridView
-                MissionType.SHAKE -> ReMindIcons.Vibration
-                MissionType.BARCODE -> ReMindIcons.QrCodeScanner
-                MissionType.RANDOM -> ReMindIcons.Refresh
-            }
-            androidx.compose.material3.Surface(
-                onClick = onFilledClick,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 4.dp, end = 4.dp),
-                shape = slotShape,
-                color = MaterialTheme.colorScheme.primaryContainer
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = mission.type.name,
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-            }
-            androidx.compose.material3.Surface(
-                onClick = onRemoveClick,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .size(20.dp),
-                shape = androidx.compose.foundation.shape.CircleShape,
-                color = MaterialTheme.colorScheme.errorContainer
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        imageVector = ReMindIcons.Close,
-                        contentDescription = "Remove",
-                        tint = MaterialTheme.colorScheme.onErrorContainer,
-                        modifier = Modifier.size(12.dp)
-                    )
-                }
-            }
-        } else {
-            val borderColor = if (isUnlocked) {
-                MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
-            } else {
-                MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)
-            }
-            androidx.compose.material3.Surface(
-                onClick = onAddClick,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 4.dp, end = 4.dp),
-                shape = slotShape,
-                color = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f),
-                border = androidx.compose.foundation.BorderStroke(1.dp, borderColor)
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        imageVector = if (isUnlocked) ReMindIcons.Add else ReMindIcons.Lock,
-                        contentDescription = if (isUnlocked) "Add Mission" else "Pro Locked",
-                        tint = if (isUnlocked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                        modifier = Modifier.size(20.dp)
                     )
                 }
             }

@@ -1,35 +1,37 @@
 package vn.io.litever.remind.core.designsystem.components
 
-import androidx.compose.material3.MaterialTheme
-import vn.io.litever.remind.core.designsystem.theme.spacing
-import androidx.compose.foundation.clickable
+import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import vn.io.litever.remind.core.designsystem.R
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,127 +83,148 @@ fun SnoozeBottomSheetContent(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = MaterialTheme.spacing.small, horizontal = MaterialTheme.spacing.medium)
+            .padding(
+                horizontal = MaterialTheme.spacing.medium,
+                vertical = MaterialTheme.spacing.small
+            )
+            .navigationBarsPadding()
             .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.smallMedium)
     ) {
-        ReMindGroupCard(
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onEnabledChange(!enabled) }
-                    .padding(MaterialTheme.spacing.medium),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = stringResource(R.string.enable_snooze),
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold
-                )
-                Switch(
-                    checked = enabled,
-                    onCheckedChange = onEnabledChange
-                )
-            }
-        }
-
-        ReMindSettingsGroup(
-            title = stringResource(R.string.snooze_interval)
-        ) {
-            val chunkedIntervals = intervalOptions.chunked(3)
-            chunkedIntervals.forEach { rowOptions ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = MaterialTheme.spacing.medium),
-                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
-                ) {
-                    rowOptions.forEach { option ->
-                        val isSelected = interval == option
-                        val buttonContent: @Composable androidx.compose.foundation.layout.RowScope.() -> Unit = {
-                            Text(stringResource(R.string.minutes_unit, option))
-                        }
-                        if (isSelected) {
-                            FilledTonalButton(
-                                onClick = { if (enabled) onIntervalChange(option) },
-                                modifier = Modifier.weight(1f),
-                                content = buttonContent
-                            )
-                        } else {
-                            OutlinedButton(
-                                onClick = { if (enabled) onIntervalChange(option) },
-                                modifier = Modifier.weight(1f),
-                                content = buttonContent
-                            )
-                        }
-                    }
-                    repeat(3 - rowOptions.size) {
-                        Spacer(modifier = Modifier.weight(1f))
-                    }
+        ReMindGroupCard(modifier = Modifier.fillMaxWidth()) {
+            ReMindSettingsItem(
+                title = stringResource(R.string.enable_snooze),
+                icon = ReMindIcons.Snooze,
+                iconTint = if (enabled) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                },
+                onClick = { onEnabledChange(!enabled) },
+                trailingContent = {
+                    Switch(
+                        checked = enabled,
+                        onCheckedChange = onEnabledChange
+                    )
                 }
-            }
-            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
+            )
         }
 
-        if (repeatCount != null && onRepeatCountChange != null) {
-            ReMindSettingsGroup(
-                title = stringResource(R.string.snooze_repeat)
+        AnimatedVisibility(visible = enabled) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.smallMedium)
             ) {
-                val chunkedRepeats = repeatOptions.chunked(3)
-                chunkedRepeats.forEach { rowOptions ->
-                    Row(
+                ReMindSettingsGroup(
+                    title = stringResource(R.string.snooze_interval)
+                ) {
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = MaterialTheme.spacing.medium),
-                        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
+                            .padding(
+                                horizontal = MaterialTheme.spacing.medium,
+                                vertical = MaterialTheme.spacing.smallMedium
+                            ),
+                        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
                     ) {
-                        rowOptions.forEach { option ->
-                            val isSelected = repeatCount == option
-                            val label = when (option) {
-                                -1 -> stringResource(R.string.forever)
-                                1 -> stringResource(R.string.one_time)
-                                else -> stringResource(
-                                    R.string.times_unit,
-                                    option
-                                )
+                        intervalOptions.chunked(3).forEach { rowOptions ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
+                            ) {
+                                rowOptions.forEach { option ->
+                                    SnoozeOptionButton(
+                                        label = stringResource(R.string.minutes_unit, option),
+                                        selected = interval == option,
+                                        onClick = { onIntervalChange(option) },
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                                repeat(3 - rowOptions.size) {
+                                    Spacer(modifier = Modifier.weight(1f))
+                                }
                             }
-                            val buttonContent: @Composable androidx.compose.foundation.layout.RowScope.() -> Unit = {
-                                Text(
-                                    text = label,
-                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold
-                                )
-                            }
-                            if (isSelected) {
-                                FilledTonalButton(
-                                    onClick = { if (enabled) onRepeatCountChange(option) },
-                                    modifier = Modifier.weight(1f),
-                                    contentPadding = ButtonDefaults.TextButtonContentPadding,
-                                    content = buttonContent
-                                )
-                            } else {
-                                OutlinedButton(
-                                    onClick = { if (enabled) onRepeatCountChange(option) },
-                                    modifier = Modifier.weight(1f),
-                                    contentPadding = ButtonDefaults.TextButtonContentPadding,
-                                    content = buttonContent
-                                )
-                            }
-                        }
-                        repeat(3 - rowOptions.size) {
-                            Spacer(modifier = Modifier.weight(1f))
                         }
                     }
                 }
-                Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
+
+                if (repeatCount != null && onRepeatCountChange != null) {
+                    ReMindSettingsGroup(
+                        title = stringResource(R.string.snooze_repeat)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(
+                                    horizontal = MaterialTheme.spacing.medium,
+                                    vertical = MaterialTheme.spacing.smallMedium
+                                ),
+                            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
+                        ) {
+                            repeatOptions.chunked(3).forEach { rowOptions ->
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
+                                ) {
+                                    rowOptions.forEach { option ->
+                                        val label = when (option) {
+                                            -1 -> stringResource(R.string.forever)
+                                            1 -> stringResource(R.string.one_time)
+                                            else -> stringResource(R.string.times_unit, option)
+                                        }
+                                        SnoozeOptionButton(
+                                            label = label,
+                                            selected = repeatCount == option,
+                                            onClick = { onRepeatCountChange(option) },
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                    }
+                                    repeat(3 - rowOptions.size) {
+                                        Spacer(modifier = Modifier.weight(1f))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
+
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
     }
 }
 
-@Preview(showBackground = true)
+@Composable
+private fun SnoozeOptionButton(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val content: @Composable RowScope.() -> Unit = {
+        Text(text = label, maxLines = 1)
+    }
+    if (selected) {
+        Button(
+            onClick = onClick,
+            modifier = modifier,
+            contentPadding = ButtonDefaults.TextButtonContentPadding,
+            content = content
+        )
+    } else {
+        FilledTonalButton(
+            onClick = onClick,
+            modifier = modifier,
+            contentPadding = ButtonDefaults.TextButtonContentPadding,
+            colors = ButtonDefaults.filledTonalButtonColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+            ),
+            content = content
+        )
+    }
+}
+
+@Preview(name = "Snooze Alarm - Light", showBackground = true)
 @Composable
 private fun SnoozeBottomSheetAlarmPreview() {
     ReMindTheme {
@@ -216,12 +239,32 @@ private fun SnoozeBottomSheetAlarmPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(
+    name = "Snooze Alarm - Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    backgroundColor = 0xFF19120CL
+)
 @Composable
-private fun SnoozeBottomSheetReminderPreview() {
-    ReMindTheme {
+private fun SnoozeBottomSheetAlarmDarkPreview() {
+    ReMindTheme(darkTheme = true) {
         SnoozeBottomSheetContent(
             enabled = true,
+            interval = 5,
+            repeatCount = 3,
+            onEnabledChange = {},
+            onIntervalChange = {},
+            onRepeatCountChange = {}
+        )
+    }
+}
+
+@Preview(name = "Snooze Disabled - Light", showBackground = true)
+@Composable
+private fun SnoozeBottomSheetDisabledPreview() {
+    ReMindTheme {
+        SnoozeBottomSheetContent(
+            enabled = false,
             interval = 5,
             onEnabledChange = {},
             onIntervalChange = {}

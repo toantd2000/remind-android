@@ -1,8 +1,7 @@
 package vn.io.litever.remind.features.alarms.ui.components
 
-import androidx.compose.material3.MaterialTheme
-import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.Context
+import android.content.res.Configuration
 import android.media.AudioManager
 import android.media.RingtoneManager
 import androidx.compose.foundation.background
@@ -18,23 +17,20 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.snapshotFlow
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SheetValue
@@ -45,27 +41,30 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import vn.io.litever.brand.tokens.LiteverTokens
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomSheetContent
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsDivider
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import vn.io.litever.remind.features.alarms.R
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -130,12 +129,11 @@ fun QuickAlarmBottomSheetContent(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = MaterialTheme.spacing.mediumLarge)
-            .padding(bottom = MaterialTheme.spacing.large)
+            .padding(horizontal = MaterialTheme.spacing.medium)
+            .padding(bottom = MaterialTheme.spacing.medium)
             .navigationBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         // 1. Increment Display (+ 0h / + 0m) and Reset button
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -152,11 +150,7 @@ fun QuickAlarmBottomSheetContent(
 
             Text(
                 text = displayText,
-                style = MaterialTheme.typography.displayMedium.copy(
-                    fontSize = 44.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    letterSpacing = (-1).sp
-                ),
+                style = MaterialTheme.typography.displayMedium,
                 color = MaterialTheme.colorScheme.onSurface
             )
 
@@ -179,7 +173,7 @@ fun QuickAlarmBottomSheetContent(
             text = stringResource(R.string.quick_alarm_ring_at, formattedRingTime),
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(bottom = MaterialTheme.spacing.mediumLarge)
+            modifier = Modifier.padding(bottom = MaterialTheme.spacing.medium)
         )
 
         // 2. Preset Time Grid (2 rows x 3 buttons)
@@ -200,6 +194,8 @@ fun QuickAlarmBottomSheetContent(
             }
         }
 
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
@@ -216,11 +212,11 @@ fun QuickAlarmBottomSheetContent(
 
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
 
-        // 3. Optional Label (description) input field
+        // 3. Optional Label input field
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
+                .clip(MaterialTheme.shapes.medium)
                 .background(MaterialTheme.colorScheme.surfaceContainer)
                 .padding(
                     horizontal = MaterialTheme.spacing.medium,
@@ -235,7 +231,7 @@ fun QuickAlarmBottomSheetContent(
                     imageVector = ReMindIcons.NewLabel,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(MaterialTheme.spacing.mediumLarge)
                 )
 
                 Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
@@ -265,7 +261,7 @@ fun QuickAlarmBottomSheetContent(
                             Text(
                                 text = stringResource(R.string.quick_alarm_desc_placeholder),
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
@@ -283,7 +279,7 @@ fun QuickAlarmBottomSheetContent(
                             imageVector = ReMindIcons.Close,
                             contentDescription = stringResource(R.string.close_text),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(16.dp)
+                            modifier = Modifier.size(MaterialTheme.spacing.medium)
                         )
                     }
                 }
@@ -291,14 +287,16 @@ fun QuickAlarmBottomSheetContent(
         }
 
         // 4. Sound & Vibration settings group
-        Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.smallMedium))
         ReMindSettingsGroup {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { showRingtoneDialog = true }
-                    .padding(top = MaterialTheme.spacing.medium)
-                    .padding(horizontal = MaterialTheme.spacing.medium),
+                    .padding(
+                        horizontal = MaterialTheme.spacing.medium,
+                        vertical = MaterialTheme.spacing.smallMedium
+                    ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
@@ -310,7 +308,7 @@ fun QuickAlarmBottomSheetContent(
 
                 Text(
                     text = displayRingtoneTitle,
-                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                    style = LiteverTokens.typography.bodyMediumEmphasized,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -321,24 +319,28 @@ fun QuickAlarmBottomSheetContent(
                 Icon(
                     imageVector = ReMindIcons.ChevronRight,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(20.dp)
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                    modifier = Modifier.size(MaterialTheme.spacing.mediumLarge)
                 )
             }
+
+            ReMindSettingsDivider(inset = false)
 
             // Row: Volume slider & Vibration toggle switch
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = MaterialTheme.spacing.medium)
-                    .padding(top = MaterialTheme.spacing.small, bottom = MaterialTheme.spacing.medium),
+                    .padding(
+                        horizontal = MaterialTheme.spacing.medium,
+                        vertical = MaterialTheme.spacing.small
+                    ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     imageVector = if (volume == 0) ReMindIcons.VolumeOff else ReMindIcons.VolumeUp,
                     contentDescription = stringResource(R.string.volume),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(MaterialTheme.spacing.large)
                 )
 
                 val volumeSliderState = remember(maxVolume) {
@@ -348,7 +350,7 @@ fun QuickAlarmBottomSheetContent(
                         steps = if (maxVolume > 1) maxVolume - 1 else 0
                     )
                 }
-                androidx.compose.runtime.LaunchedEffect(volume) {
+                LaunchedEffect(volume) {
                     if (volumeSliderState.value.roundToInt() != volume) {
                         volumeSliderState.value = volume.toFloat()
                     }
@@ -363,9 +365,9 @@ fun QuickAlarmBottomSheetContent(
                         .weight(1f)
                         .padding(horizontal = MaterialTheme.spacing.small),
                     colors = SliderDefaults.colors(
-                        thumbColor = MaterialTheme.colorScheme.onSurface,
-                        activeTrackColor = MaterialTheme.colorScheme.onSurface,
-                        inactiveTrackColor = MaterialTheme.colorScheme.surfaceContainerHighest
+                        thumbColor = MaterialTheme.colorScheme.primary,
+                        activeTrackColor = MaterialTheme.colorScheme.primary,
+                        inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant
                     )
                 )
 
@@ -373,8 +375,8 @@ fun QuickAlarmBottomSheetContent(
                 Box(
                     modifier = Modifier
                         .height(20.dp)
-                        .width(1.dp)
-                        .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                        .width(0.5.dp)
+                        .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f))
                 )
 
                 Spacer(modifier = Modifier.width(MaterialTheme.spacing.smallMedium))
@@ -382,8 +384,12 @@ fun QuickAlarmBottomSheetContent(
                 Icon(
                     imageVector = ReMindIcons.Vibration,
                     contentDescription = stringResource(R.string.vibration),
-                    tint = if (vibrationEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(24.dp)
+                    tint = if (vibrationEnabled) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                    modifier = Modifier.size(MaterialTheme.spacing.large)
                 )
 
                 Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
@@ -395,8 +401,6 @@ fun QuickAlarmBottomSheetContent(
             }
         }
 
-
-
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
 
         // 5. Action Buttons (Cancel & Set Alarm)
@@ -405,9 +409,7 @@ fun QuickAlarmBottomSheetContent(
             horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
         ) {
             OutlinedButton(onClick = onDismiss) {
-                Text(
-                    text = stringResource(R.string.action_cancel),
-                )
+                Text(text = stringResource(R.string.action_cancel))
             }
 
             Button(
@@ -419,14 +421,11 @@ fun QuickAlarmBottomSheetContent(
                 enabled = totalMinutes > 0,
                 modifier = Modifier.weight(1f)
             ) {
-                Text(
-                    text = stringResource(R.string.set_alarm),
-                )
+                Text(text = stringResource(R.string.set_alarm))
             }
         }
     }
 
-    // Simple Ringtone Selection Dialog
     if (showRingtoneDialog) {
         QuickRingtoneDialog(
             currentUri = ringtoneUri,
@@ -477,7 +476,7 @@ private fun QuickRingtoneDialog(
                     .fillMaxWidth()
                     .height(280.dp)
             ) {
-                androidx.compose.foundation.lazy.LazyColumn {
+                LazyColumn {
                     items(ringtones.size) { index ->
                         val (uri, title) = ringtones[index]
                         val isSelected = (uri == currentUri)
@@ -490,9 +489,16 @@ private fun QuickRingtoneDialog(
                         ) {
                             Text(
                                 text = title,
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                style = if (isSelected) {
+                                    LiteverTokens.typography.bodyLargeEmphasized
+                                } else {
+                                    MaterialTheme.typography.bodyLarge
+                                },
+                                color = if (isSelected) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.onSurface
+                                },
                                 modifier = Modifier.weight(1f)
                             )
                             if (isSelected) {
@@ -500,12 +506,12 @@ private fun QuickRingtoneDialog(
                                     imageVector = ReMindIcons.Check,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(20.dp)
+                                    modifier = Modifier.size(MaterialTheme.spacing.mediumLarge)
                                 )
                             }
                         }
                         if (index < ringtones.size - 1) {
-                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
+                            ReMindSettingsDivider(inset = false)
                         }
                     }
                 }
@@ -519,7 +525,7 @@ private fun QuickRingtoneDialog(
     )
 }
 
-@Preview(showBackground = true)
+@Preview(name = "Quick Alarm - Light", showBackground = true)
 @Composable
 fun QuickAlarmBottomSheetPreview() {
     ReMindTheme {
@@ -527,6 +533,23 @@ fun QuickAlarmBottomSheetPreview() {
             onDismiss = {},
             onSave = { _, _, _, _, _ -> },
             is24HourFormat = false
+        )
+    }
+}
+
+@Preview(
+    name = "Quick Alarm - Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    backgroundColor = 0xFF19120CL
+)
+@Composable
+fun QuickAlarmBottomSheetDarkPreview() {
+    ReMindTheme(darkTheme = true) {
+        QuickAlarmBottomSheetContent(
+            onDismiss = {},
+            onSave = { _, _, _, _, _ -> },
+            is24HourFormat = true
         )
     }
 }

@@ -1,7 +1,6 @@
 package vn.io.litever.remind.features.alarms.ui.components
 
-import androidx.compose.material3.MaterialTheme
-import vn.io.litever.remind.core.designsystem.theme.spacing
+import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,20 +8,21 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.Button
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -39,8 +39,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomSheetContent
 import vn.io.litever.remind.core.designsystem.components.ReMindProDiamondTag
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsDivider
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import vn.io.litever.remind.features.alarms.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -126,8 +128,9 @@ fun GentleAlarmBottomSheetContent(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = MaterialTheme.spacing.medium)
-            .padding(bottom = MaterialTheme.spacing.medium),
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.smallMedium)
+            .padding(bottom = MaterialTheme.spacing.medium)
+            .navigationBarsPadding(),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
     ) {
         VolumeBoostOptionRow(
             icon = ReMindIcons.GraphicEq,
@@ -140,10 +143,7 @@ fun GentleAlarmBottomSheetContent(
             extraContent = {
                 if (durationSeconds > 0) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 34.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
                     ) {
                         durationOptions.forEach { seconds ->
                             FilterChip(
@@ -162,7 +162,7 @@ fun GentleAlarmBottomSheetContent(
             }
         )
 
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
+        ReMindSettingsDivider(inset = false)
 
         VolumeBoostOptionRow(
             icon = ReMindIcons.VolumeUp,
@@ -174,7 +174,7 @@ fun GentleAlarmBottomSheetContent(
             onPreviewClick = onPreviewExtraLoud
         )
 
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
+        ReMindSettingsDivider(inset = false)
 
         VolumeBoostOptionRow(
             icon = ReMindIcons.AccessTime,
@@ -200,12 +200,9 @@ fun GentleAlarmBottomSheetContent(
                     contentDescription = null,
                     modifier = Modifier.size(18.dp)
                 )
-                Spacer(modifier = Modifier.width(6.dp))
+                Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
             }
-            Text(
-                text = stringResource(R.string.save),
-                style = MaterialTheme.typography.titleSmall
-            )
+            Text(text = stringResource(R.string.save))
         }
     }
 }
@@ -225,8 +222,8 @@ private fun VolumeBoostOptionRow(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onCheckedChange(!checked) }
-            .padding(vertical = 4.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+            .padding(vertical = MaterialTheme.spacing.extraSmall),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -235,63 +232,67 @@ private fun VolumeBoostOptionRow(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(22.dp)
+                tint = if (checked) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                },
+                modifier = Modifier.size(MaterialTheme.spacing.large)
             )
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium))
             Column(modifier = Modifier.weight(1f)) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
                 ) {
                     Text(
                         text = title,
-                        style = MaterialTheme.typography.titleSmall,
+                        style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     if (isProFeature) {
                         ReMindProDiamondTag()
                     }
                 }
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.tiny))
                 Text(
                     text = description,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
             Switch(
                 checked = checked,
                 onCheckedChange = onCheckedChange
             )
         }
 
-        extraContent?.invoke()
-
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 40.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            FilledTonalButton(
-                onClick = onPreviewClick
-            ) {
+            extraContent?.invoke() ?: Spacer(modifier = Modifier.width(1.dp))
+            TextButton(onClick = onPreviewClick) {
                 Icon(
                     imageVector = ReMindIcons.PlayArrow,
                     contentDescription = null,
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier.size(18.dp)
                 )
-                Spacer(modifier = Modifier.width(4.dp))
+                Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
                 Text(
                     text = stringResource(R.string.action_preview),
-                    style = MaterialTheme.typography.labelMedium
+                    style = MaterialTheme.typography.labelLarge
                 )
             }
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview(name = "Volume Boost - Light", showBackground = true)
 @Composable
 private fun GentleAlarmBottomSheetContentPreview() {
     ReMindTheme {
@@ -303,6 +304,31 @@ private fun GentleAlarmBottomSheetContentPreview() {
             announceTimeTts = false,
             onAnnounceTimeToggle = {},
             requiresPro = true,
+            onPreviewGentle = {},
+            onPreviewExtraLoud = {},
+            onPreviewTimeTts = {},
+            onSaveClick = {}
+        )
+    }
+}
+
+@Preview(
+    name = "Volume Boost - Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    backgroundColor = 0xFF19120CL
+)
+@Composable
+private fun GentleAlarmBottomSheetContentDarkPreview() {
+    ReMindTheme(darkTheme = true) {
+        GentleAlarmBottomSheetContent(
+            durationSeconds = 10,
+            onDurationChange = {},
+            extraLoudEnabled = false,
+            onExtraLoudToggle = {},
+            announceTimeTts = true,
+            onAnnounceTimeToggle = {},
+            requiresPro = false,
             onPreviewGentle = {},
             onPreviewExtraLoud = {},
             onPreviewTimeTts = {},

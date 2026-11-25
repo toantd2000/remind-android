@@ -1,7 +1,5 @@
 package vn.io.litever.remind.features.alarms.ui.components
 
-import androidx.compose.material3.MaterialTheme
-import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.res.Configuration
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -9,9 +7,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -19,8 +19,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SheetState
@@ -35,15 +35,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import vn.io.litever.brand.tokens.LiteverTokens
 import vn.io.litever.remind.core.common.audio.TtsLanguageOption
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomSheetContent
 import vn.io.litever.remind.core.designsystem.components.ReMindGroupCard
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsDivider
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import vn.io.litever.remind.features.alarms.R
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -120,8 +123,8 @@ fun AnnounceLabelPreviewBottomSheetContent(
         "vi" -> stringResource(R.string.tts_language_vi)
         "en" -> stringResource(R.string.tts_language_en)
         "zh" -> stringResource(R.string.tts_language_zh)
-        else -> resolvedLocale.getDisplayLanguage(java.util.Locale.getDefault())
-            .replaceFirstChar { it.titlecase(java.util.Locale.getDefault()) }
+        else -> resolvedLocale.getDisplayLanguage(Locale.getDefault())
+            .replaceFirstChar { it.titlecase(Locale.getDefault()) }
     }
     val selectedLanguageDisplay = when (selectedLanguage) {
         TtsLanguageOption.AUTO -> stringResource(R.string.tts_language_auto_detected, resolvedLanguageName)
@@ -138,8 +141,9 @@ fun AnnounceLabelPreviewBottomSheetContent(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = MaterialTheme.spacing.medium)
-            .padding(bottom = MaterialTheme.spacing.medium),
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
+            .padding(bottom = MaterialTheme.spacing.medium)
+            .navigationBarsPadding(),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.smallMedium)
     ) {
         ReMindGroupCard {
             Column(
@@ -156,7 +160,7 @@ fun AnnounceLabelPreviewBottomSheetContent(
                         imageVector = if (isSpeaking) ReMindIcons.GraphicEq else ReMindIcons.Speaker,
                         contentDescription = null,
                         tint = statusTint,
-                        modifier = Modifier.size(22.dp)
+                        modifier = Modifier.size(MaterialTheme.spacing.mediumLarge)
                     )
                     Text(
                         text = if (isSpeaking) {
@@ -164,16 +168,16 @@ fun AnnounceLabelPreviewBottomSheetContent(
                         } else {
                             stringResource(R.string.tts_preview_sheet_ready)
                         },
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            fontWeight = if (isSpeaking) FontWeight.SemiBold else FontWeight.Normal
-                        ),
+                        style = if (isSpeaking) {
+                            LiteverTokens.typography.bodySmallEmphasized
+                        } else {
+                            MaterialTheme.typography.bodySmall
+                        },
                         color = statusTint
                     )
                 }
 
-                HorizontalDivider(
-                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
-                )
+                ReMindSettingsDivider(inset = false)
 
                 Text(
                     text = "“$spokenText”",
@@ -189,9 +193,7 @@ fun AnnounceLabelPreviewBottomSheetContent(
                     )
                 }
 
-                HorizontalDivider(
-                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
-                )
+                ReMindSettingsDivider(inset = false)
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -208,9 +210,9 @@ fun AnnounceLabelPreviewBottomSheetContent(
                         Icon(
                             imageVector = ReMindIcons.Settings,
                             contentDescription = null,
-                            modifier = Modifier.size(16.dp)
+                            modifier = Modifier.size(MaterialTheme.spacing.medium)
                         )
-                        Spacer(modifier = Modifier.width(4.dp))
+                        Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
                         Text(
                             text = stringResource(R.string.tts_preview_open_settings),
                             style = MaterialTheme.typography.labelMedium
@@ -220,8 +222,8 @@ fun AnnounceLabelPreviewBottomSheetContent(
 
                 FlowRow(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall)
                 ) {
                     TtsLanguageOption.entries.forEach { option ->
                         val chipLabel = when (option) {
@@ -274,10 +276,7 @@ fun AnnounceLabelPreviewBottomSheetContent(
                         horizontalArrangement = Arrangement.End
                     ) {
                         OutlinedButton(onClick = onInstallVoiceDataClick) {
-                            Text(
-                                text = stringResource(R.string.tts_preview_install_voice_data),
-                                style = MaterialTheme.typography.labelMedium
-                            )
+                            Text(text = stringResource(R.string.tts_preview_install_voice_data))
                         }
                     }
                 }
@@ -294,26 +293,22 @@ fun AnnounceLabelPreviewBottomSheetContent(
                     .weight(1f)
                     .height(48.dp)
             ) {
-                Text(
-                    text = stringResource(R.string.close_text),
-                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold)
-                )
+                Text(text = stringResource(R.string.close_text))
             }
 
-            val speakButtonContent: @Composable androidx.compose.foundation.layout.RowScope.() -> Unit = {
+            val speakButtonContent: @Composable RowScope.() -> Unit = {
                 Icon(
                     imageVector = if (isSpeaking) ReMindIcons.Pause else ReMindIcons.PlayArrow,
                     contentDescription = null,
                     modifier = Modifier.size(18.dp)
                 )
-                Spacer(modifier = Modifier.width(6.dp))
+                Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
                 Text(
                     text = if (isSpeaking) {
                         stringResource(R.string.tts_preview_action_stop)
                     } else {
                         stringResource(R.string.tts_preview_action_replay)
-                    },
-                    style = MaterialTheme.typography.titleSmall
+                    }
                 )
             }
             if (isSpeaking) {
@@ -337,7 +332,7 @@ fun AnnounceLabelPreviewBottomSheetContent(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(name = "TTS Preview - Speaking Light", showBackground = true)
 @Composable
 private fun AnnounceLabelPreviewBottomSheetSpeakingPreview() {
     ReMindTheme {
@@ -351,10 +346,15 @@ private fun AnnounceLabelPreviewBottomSheetSpeakingPreview() {
     }
 }
 
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(
+    name = "TTS Preview - Idle Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    backgroundColor = 0xFF19120CL
+)
 @Composable
 private fun AnnounceLabelPreviewBottomSheetIdleDarkPreview() {
-    ReMindTheme {
+    ReMindTheme(darkTheme = true) {
         AnnounceLabelPreviewBottomSheetContent(
             label = "",
             isSpeaking = false,

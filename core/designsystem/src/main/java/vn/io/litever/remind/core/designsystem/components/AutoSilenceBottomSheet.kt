@@ -1,12 +1,14 @@
 package vn.io.litever.remind.core.designsystem.components
 
-import vn.io.litever.remind.core.designsystem.theme.spacing
+import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
@@ -16,10 +18,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import vn.io.litever.brand.tokens.LiteverTokens
 import vn.io.litever.remind.core.designsystem.R
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,6 +65,7 @@ fun AutoSilenceBottomSheetContent(
         modifier = modifier
             .fillMaxWidth()
             .padding(bottom = MaterialTheme.spacing.medium)
+            .navigationBarsPadding()
     ) {
         Text(
             text = stringResource(R.string.auto_silence_description),
@@ -71,7 +77,8 @@ fun AutoSilenceBottomSheetContent(
             )
         )
 
-        options.forEach { option ->
+        options.forEachIndexed { index, option ->
+            val isSelected = currentMinutes == option
             val label = if (option == 0) {
                 stringResource(R.string.auto_silence_never)
             } else {
@@ -81,25 +88,54 @@ fun AutoSilenceBottomSheetContent(
             ListItem(
                 leadingContent = {
                     RadioButton(
-                        selected = currentMinutes == option,
+                        selected = isSelected,
                         onClick = { onMinutesSelect(option) }
                     )
                 },
+                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                 modifier = Modifier.clickable { onMinutesSelect(option) }
             ) {
                 Text(
                     text = label,
-                    style = MaterialTheme.typography.bodyLarge
+                    style = if (isSelected) {
+                        LiteverTokens.typography.bodyLargeEmphasized
+                    } else {
+                        MaterialTheme.typography.bodyLarge
+                    },
+                    color = if (isSelected) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    }
                 )
+            }
+            if (index < options.lastIndex) {
+                ReMindSettingsDivider()
             }
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview(name = "Auto Silence - Light", showBackground = true)
 @Composable
 private fun AutoSilenceBottomSheetContentPreview() {
     ReMindTheme {
+        AutoSilenceBottomSheetContent(
+            currentMinutes = 5,
+            onMinutesSelect = {}
+        )
+    }
+}
+
+@Preview(
+    name = "Auto Silence - Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    backgroundColor = 0xFF19120CL
+)
+@Composable
+private fun AutoSilenceBottomSheetContentDarkPreview() {
+    ReMindTheme(darkTheme = true) {
         AutoSilenceBottomSheetContent(
             currentMinutes = 5,
             onMinutesSelect = {}

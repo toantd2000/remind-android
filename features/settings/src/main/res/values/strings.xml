@@ -182,4 +182,10 @@
     <string name="paywall_cta_subscribe">Upgrade to Pro</string>
     <string name="paywall_cta_lifetime">Unlock Lifetime Pro</string>
     <string name="paywall_rewarded_ad_cta">Not ready yet? Watch 1 ad to remove ads for 24h</string>
+
+    <!-- App Icon -->
+    <string name="app_icon_headline">App icon</string>
+    <string name="app_icon_default">Default</string>
+    <string name="app_icon_pro_gold">Warm Gold</string>
+    <string name="app_icon_updated">App icon will update when you leave the app</string>
 </resources>

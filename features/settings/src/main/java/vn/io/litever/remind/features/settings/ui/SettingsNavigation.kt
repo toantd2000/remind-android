@@ -80,6 +80,7 @@ fun NavGraphBuilder.settingsGraph(
 
     composable(generalSettingsRoute) {
         GeneralSettingsRoute(
+            onNavigateToPaywall = onNavigateToPaywall,
             onNavigateBack = onNavigateBack
         )
     }

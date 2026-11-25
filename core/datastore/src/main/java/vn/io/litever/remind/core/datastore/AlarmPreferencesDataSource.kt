@@ -38,6 +38,10 @@ class AlarmPreferencesDataSource @Inject constructor(
         preferences[COLOR_PALETTE_KEY] ?: "ORANGE"
     }
 
+    val appIcon: Flow<String> = dataStore.data.map { preferences ->
+        preferences[APP_ICON_KEY] ?: "DEFAULT"
+    }
+
     val language: Flow<String> = dataStore.data.map { preferences ->
 
         preferences[LANGUAGE_KEY] ?: run {
@@ -75,6 +79,12 @@ class AlarmPreferencesDataSource @Inject constructor(
     suspend fun setColorPalette(palette: String) {
         dataStore.edit { preferences ->
             preferences[COLOR_PALETTE_KEY] = palette
+        }
+    }
+
+    suspend fun setAppIcon(iconKey: String) {
+        dataStore.edit { preferences ->
+            preferences[APP_ICON_KEY] = iconKey
         }
     }
 
@@ -121,6 +131,7 @@ class AlarmPreferencesDataSource @Inject constructor(
         val TIME_FORMAT_KEY = stringPreferencesKey("time_format")
         val THEME_MODE_KEY = stringPreferencesKey("theme_mode")
         val COLOR_PALETTE_KEY = stringPreferencesKey("color_palette")
+        val APP_ICON_KEY = stringPreferencesKey("app_icon")
         val LANGUAGE_KEY = stringPreferencesKey("language")
         val ALARM_BUILT_IN_SPEAKER = booleanPreferencesKey("alarm_built_in_speaker")
         val ALARM_PRE_NOTIFICATION = booleanPreferencesKey("alarm_pre_notification")

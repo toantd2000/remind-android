@@ -182,4 +182,10 @@
     <string name="paywall_cta_subscribe">Nâng cấp Pro</string>
     <string name="paywall_cta_lifetime">Mở khóa Trọn đời</string>
     <string name="paywall_rewarded_ad_cta">Chưa sẵn sàng? Xem 1 quảng cáo để tắt quảng cáo 24h</string>
+
+    <!-- App Icon -->
+    <string name="app_icon_headline">Biểu tượng ứng dụng</string>
+    <string name="app_icon_default">Mặc định</string>
+    <string name="app_icon_pro_gold">Vàng ấm</string>
+    <string name="app_icon_updated">Biểu tượng sẽ cập nhật khi bạn thoát ứng dụng</string>
 </resources>

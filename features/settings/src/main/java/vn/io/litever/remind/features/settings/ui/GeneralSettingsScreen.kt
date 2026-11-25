@@ -1,7 +1,10 @@
 package vn.io.litever.remind.features.settings.ui
 
+import android.widget.Toast
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -19,6 +22,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -41,9 +45,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLocale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -51,8 +59,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import vn.io.litever.brand.tokens.LiteverTokens
 import vn.io.litever.brand.tokens.palettes.blackDarkColorScheme
 import vn.io.litever.brand.tokens.palettes.blackLightColorScheme
+import vn.io.litever.remind.core.common.util.AppIconVariant
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsCategory
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsDivider
@@ -68,10 +78,10 @@ import vn.io.litever.remind.core.designsystem.theme.spacing
 import vn.io.litever.remind.features.settings.R
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 
 @Composable
 fun GeneralSettingsRoute(
+    onNavigateToPaywall: (Int) -> Unit = {},
     onNavigateBack: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
@@ -81,6 +91,8 @@ fun GeneralSettingsRoute(
         onTimeFormatChange = viewModel::setTimeFormat,
         onThemeModeChange = viewModel::setThemeMode,
         onColorPaletteChange = viewModel::setColorPalette,
+        onAppIconChange = viewModel::setAppIcon,
+        onNavigateToPaywall = onNavigateToPaywall,
         onLanguageChange = viewModel::setLanguage,
         onNavigateBack = onNavigateBack
     )
@@ -92,6 +104,8 @@ fun GeneralSettingsScreen(
     onTimeFormatChange: (String) -> Unit,
     onThemeModeChange: (String) -> Unit,
     onColorPaletteChange: (String) -> Unit,
+    onAppIconChange: (String) -> Unit = {},
+    onNavigateToPaywall: (Int) -> Unit = {},
     onLanguageChange: (String) -> Unit,
     onNavigateBack: () -> Unit
 ) {
@@ -197,10 +211,12 @@ fun GeneralSettingsScreen(
     val currentLanguageLabel = languageOptions.firstOrNull { it.first == uiState.language }?.second
         ?: stringResource(R.string.language_english)
 
-    val formattedTimePreview = remember(effective24Hour) {
+    val currentLocale = LocalLocale.current.platformLocale
+    val formattedTimePreview = remember(effective24Hour, currentLocale) {
         val pattern = if (effective24Hour) "HH:mm" else "h:mm a"
-        SimpleDateFormat(pattern, Locale.getDefault()).format(Date())
+        SimpleDateFormat(pattern, currentLocale).format(Date())
     }
+    val appIconUpdatedMessage = stringResource(R.string.app_icon_updated)
 
     Scaffold(
         topBar = {
@@ -270,7 +286,57 @@ fun GeneralSettingsScreen(
                 }
             }
 
-            // 3. Time Format & Language
+            // 3. App Icon (Pro-only: Default vs Warm Gold)
+            if (uiState.isPro) {
+                item {
+                    ReMindSettingsGroup(title = stringResource(R.string.app_icon_headline)) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(
+                                    start = MaterialTheme.spacing.medium,
+                                    end = MaterialTheme.spacing.medium,
+                                    top = MaterialTheme.spacing.small,
+                                    bottom = MaterialTheme.spacing.medium
+                                ),
+                            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.smallMedium)
+                        ) {
+                            AppIconOptionCard(
+                                title = stringResource(R.string.app_icon_default),
+                                backgroundBrush = Brush.verticalGradient(
+                                    listOf(Color(0xFFFAF8F5), Color(0xFFFAF8F5))
+                                ),
+                                foregroundRes = uiState.defaultIconForegroundRes,
+                                isSelected = uiState.appIcon == AppIconVariant.DEFAULT.key,
+                                onClick = {
+                                    if (uiState.appIcon != AppIconVariant.DEFAULT.key) {
+                                        onAppIconChange(AppIconVariant.DEFAULT.key)
+                                        Toast.makeText(context, appIconUpdatedMessage, Toast.LENGTH_SHORT).show()
+                                    }
+                                },
+                                modifier = Modifier.weight(1f)
+                            )
+                            AppIconOptionCard(
+                                title = stringResource(R.string.app_icon_pro_gold),
+                                backgroundBrush = Brush.linearGradient(
+                                    listOf(Color(0xFFFFF7E6), Color(0xFFF7D594))
+                                ),
+                                foregroundRes = uiState.proGoldIconForegroundRes,
+                                isSelected = uiState.appIcon == AppIconVariant.PRO_GOLD.key,
+                                onClick = {
+                                    if (uiState.appIcon != AppIconVariant.PRO_GOLD.key) {
+                                        onAppIconChange(AppIconVariant.PRO_GOLD.key)
+                                        Toast.makeText(context, appIconUpdatedMessage, Toast.LENGTH_SHORT).show()
+                                    }
+                                },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
+                }
+            }
+
+            // 4. Time Format & Language
             item {
                 ReMindSettingsGroup(title = stringResource(R.string.language_and_region_headline)) {
                     ReMindSettingsItem(
@@ -663,6 +729,101 @@ private fun ColorSwatchOptionCard(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
+        }
+    }
+}
+
+@Composable
+private fun AppIconOptionCard(
+    title: String,
+    backgroundBrush: Brush,
+    @DrawableRes foregroundRes: Int,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        onClick = onClick,
+        shape = MaterialTheme.shapes.medium,
+        color = if (isSelected) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else {
+            MaterialTheme.colorScheme.surfaceContainerLow
+        },
+        border = if (isSelected) {
+            null
+        } else {
+            BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+        },
+        modifier = modifier
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = MaterialTheme.spacing.smallMedium,
+                    vertical = MaterialTheme.spacing.medium
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(56.dp)
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(backgroundBrush)
+                    .border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+                        shape = RoundedCornerShape(14.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                if (foregroundRes != 0) {
+                    Image(
+                        painter = painterResource(id = foregroundRes),
+                        contentDescription = title,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    Icon(
+                        imageVector = ReMindIcons.Alarm,
+                        contentDescription = null,
+                        tint = Color(0xFFD9631E),
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall)
+            ) {
+                Text(
+                    text = title,
+                    style = if (isSelected) {
+                        LiteverTokens.typography.labelLargeEmphasized
+                    } else {
+                        MaterialTheme.typography.labelLarge
+                    },
+                    color = if (isSelected) {
+                        MaterialTheme.colorScheme.onPrimaryContainer
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                if (isSelected) {
+                    Icon(
+                        imageVector = ReMindIcons.CheckCircle,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
         }
     }
 }

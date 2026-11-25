@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import vn.io.litever.remind.core.common.util.AppIconManager
+import vn.io.litever.remind.core.common.util.AppIconVariant
 import vn.io.litever.remind.core.common.util.PermissionChecker
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import javax.inject.Inject
@@ -25,6 +27,9 @@ data class SettingsUiState(
     val timeFormat: String = "SYSTEM",
     val themeMode: String = "SYSTEM",
     val colorPalette: String = "ORANGE",
+    val appIcon: String = AppIconVariant.DEFAULT.key,
+    val defaultIconForegroundRes: Int = 0,
+    val proGoldIconForegroundRes: Int = 0,
     val language: String = if (java.util.Locale.getDefault().language == "vi") "vi" else "en",
     val useBuiltInSpeaker: Boolean = true,
     val isPreNotificationEnabled: Boolean = true,
@@ -36,7 +41,8 @@ data class SettingsUiState(
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val preferencesDataSource: AlarmPreferencesDataSource,
-    private val permissionChecker: PermissionChecker
+    private val permissionChecker: PermissionChecker,
+    private val appIconManager: AppIconManager
 ) : ViewModel() {
 
     private val permissionHealthFlow = MutableStateFlow(readPermissionHealth())
@@ -48,6 +54,7 @@ class SettingsViewModel @Inject constructor(
             preferencesDataSource.timeFormat,
             preferencesDataSource.themeMode,
             preferencesDataSource.colorPalette,
+            preferencesDataSource.appIcon,
             preferencesDataSource.language,
             preferencesDataSource.useBuiltInSpeaker,
             preferencesDataSource.isPreNotificationEnabled,
@@ -61,17 +68,24 @@ class SettingsViewModel @Inject constructor(
             timeFormat = params[1] as String,
             themeMode = params[2] as String,
             colorPalette = params[3] as String,
-            language = params[4] as String,
-            useBuiltInSpeaker = params[5] as Boolean,
-            isPreNotificationEnabled = params[6] as Boolean,
-            adsDisabledUntil = params[7] as Long,
-            isPro = params[8] as Boolean,
-            permissionHealth = params[9] as PermissionHealthSummary
+            appIcon = params[4] as String,
+            defaultIconForegroundRes = appIconManager.defaultForegroundRes,
+            proGoldIconForegroundRes = appIconManager.proGoldForegroundRes,
+            language = params[5] as String,
+            useBuiltInSpeaker = params[6] as Boolean,
+            isPreNotificationEnabled = params[7] as Boolean,
+            adsDisabledUntil = params[8] as Long,
+            isPro = params[9] as Boolean,
+            permissionHealth = params[10] as PermissionHealthSummary
         )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = SettingsUiState(permissionHealth = readPermissionHealth())
+        initialValue = SettingsUiState(
+            defaultIconForegroundRes = appIconManager.defaultForegroundRes,
+            proGoldIconForegroundRes = appIconManager.proGoldForegroundRes,
+            permissionHealth = readPermissionHealth()
+        )
     )
 
     fun refreshPermissions() {
@@ -115,6 +129,14 @@ class SettingsViewModel @Inject constructor(
     fun setColorPalette(palette: String) {
         viewModelScope.launch {
             preferencesDataSource.setColorPalette(palette)
+        }
+    }
+
+    fun setAppIcon(iconKey: String) {
+        viewModelScope.launch {
+            val variant = AppIconVariant.fromKey(iconKey)
+            preferencesDataSource.setAppIcon(variant.key)
+            appIconManager.scheduleAppIconChange(variant)
         }
     }
 

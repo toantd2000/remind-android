@@ -128,6 +128,7 @@ class MainViewModel @Inject constructor(
     val themeMode = preferencesDataSource.themeMode
     val colorPalette = preferencesDataSource.colorPalette
     val language = preferencesDataSource.language
+    val isPro = preferencesDataSource.isProUser
 
     val isAdFreeActive: StateFlow<Boolean> = combine(
         preferencesDataSource.isProUser,
@@ -189,6 +190,16 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var proRepository: ProRepository
 
+    @Inject
+    lateinit var appIconManager: vn.io.litever.remind.core.common.util.AppIconManager
+
+    override fun onStop() {
+        super.onStop()
+        if (!isChangingConfigurations) {
+            appIconManager.applyPendingIconChange()
+        }
+    }
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
@@ -216,6 +227,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val themeMode by viewModel.themeMode.collectAsState(initial = "SYSTEM")
             val colorPalette by viewModel.colorPalette.collectAsState(initial = "ORANGE")
+            val isPro by viewModel.isPro.collectAsState(initial = false)
             val language by viewModel.language.collectAsState(
                 initial = if (LocalLocale.current.platformLocale.language == "vi") "vi" else "en"
             )
@@ -238,7 +250,10 @@ class MainActivity : ComponentActivity() {
                     var showBranding by remember { mutableStateOf(true) }
 
                     if (showBranding) {
-                        BrandingSplashScreen(onFinished = { showBranding = false })
+                        BrandingSplashScreen(
+                            isPro = isPro,
+                            onFinished = { showBranding = false }
+                        )
                     } else {
                         Surface(
                             modifier = Modifier.fillMaxSize()

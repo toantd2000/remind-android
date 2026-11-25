@@ -7,8 +7,8 @@
 
     <!-- Empty States -->
     <string name="no_reminders">Chưa có nhắc nhở nào</string>
-    <string name="empty_reminders_description">Hãy tạo nhắc nhở đầu tiên để ghi nhớ mọi việc\nvà không bỏ lỡ khoảnh khắc quan trọng cùng</string>
-    <string name="action_add_new_reminder">+ Thêm nhắc nhở mới</string>
+    <string name="empty_reminders_description">Thêm lời nhắc để không bỏ lỡ việc quan trọng.</string>
+    <string name="action_add_new_reminder">Thêm nhắc nhở</string>
 
     <!-- List Item Card & Actions -->
     <string name="action_more">Tùy chọn khác</string>

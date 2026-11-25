@@ -67,7 +67,7 @@ import vn.io.litever.brand.assets.LiteverMascotState
 import vn.io.litever.brand.tokens.LiteverTokens
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.PermissionWarningBannerSection
-import vn.io.litever.remind.core.designsystem.components.ReMindLogo
+import vn.io.litever.remind.core.designsystem.components.ReMindMascotEmptyState
 import vn.io.litever.remind.core.designsystem.components.ReMindProTopBarButton
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -603,44 +603,14 @@ fun EmptyState(
     onAddAlarmClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val descriptionPrefix = stringResource(R.string.empty_description)
-
-    Column(
+    ReMindMascotEmptyState(
+        mascot = LiteverMascotState.IDLE,
+        title = stringResource(R.string.no_alarms),
+        description = stringResource(R.string.empty_description),
+        actionLabel = stringResource(R.string.action_add_new_alarm),
+        onActionClick = onAddAlarmClick,
         modifier = modifier
-            .fillMaxWidth()
-            .padding(MaterialTheme.spacing.large),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Image(
-            painter = painterResource(id = LiteverMascotState.IDLE.drawableRes),
-            contentDescription = null,
-            contentScale = ContentScale.Fit,
-            modifier = Modifier.size(160.dp)
-        )
-        Spacer(modifier = Modifier.height(MaterialTheme.spacing.mediumLarge))
-        Text(
-            text = stringResource(R.string.no_alarms),
-            style = MaterialTheme.typography.titleMedium,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
-        Column(
-            modifier = Modifier.wrapContentHeight(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = descriptionPrefix,
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center
-            )
-            ReMindLogo(fontSize = MaterialTheme.typography.bodyMedium.fontSize)
-        }
-        Spacer(modifier = Modifier.height(MaterialTheme.spacing.large))
-        Button(onClick = onAddAlarmClick) {
-            Text(text = stringResource(R.string.action_add_new_alarm))
-        }
-    }
+    )
 }
 
 

@@ -1,14 +1,14 @@
 <resources>
     <string name="delete_disabled_alarms">Delete disabled alarms</string>
-    <string name="no_alarms">No Alarms Available</string>
+    <string name="no_alarms">No alarms yet</string>
     <string name="next_alarm_prefix">Alarm in %s</string>
     <string name="all_alarms_off">All alarms are off</string>
     <string name="less_than_one_minute">less than 1 minute</string>
     <string name="days_hours">%1$d days %2$d hours</string>
     <string name="hours_minutes">%1$d hours %2$d mins</string>
     <string name="just_minutes">%1$d mins</string>
-    <string name="empty_description">Create your first alarm to start\na new day full of energy with</string>
-    <string name="action_add_new_alarm">+ Add new alarm</string>
+    <string name="empty_description">Set your first alarm to wake up on time.</string>
+    <string name="action_add_new_alarm">Add alarm</string>
     
     <string name="today">Today</string>
     <string name="tomorrow">Tomorrow</string>

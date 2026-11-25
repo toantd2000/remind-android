@@ -204,8 +204,9 @@ fun MissionRingingScreen(
                                         tint = timerContentColor,
                                         modifier = Modifier.size(14.dp)
                                     )
+                                    val currentLocale = androidx.compose.ui.platform.LocalLocale.current.platformLocale
                                     Text(
-                                        text = String.format("%02d:%02d", uiState.timeoutCountdown / 60, uiState.timeoutCountdown % 60),
+                                        text = String.format(currentLocale, "%02d:%02d", uiState.timeoutCountdown / 60, uiState.timeoutCountdown % 60),
                                         style = LiteverTokens.typography.labelMediumEmphasized.copy(
                                             fontFeatureSettings = "tnum"
                                         ),
@@ -251,7 +252,9 @@ fun MissionRingingScreen(
                 subtitle = if (isLastMission)
                     stringResource(R.string.mission_complete_subtitle)
                 else
-                    stringResource(R.string.mission_complete_next)
+                    stringResource(R.string.mission_complete_next),
+                completedStep = uiState.currentMissionIndex + 1,
+                totalSteps = uiState.missions.size
             )
         } else {
             val currentMission = uiState.currentMission

@@ -6,9 +6,9 @@
     <string name="navigation_reminders">Reminders</string>
 
     <!-- Empty States -->
-    <string name="no_reminders">No Reminders Available</string>
-    <string name="empty_reminders_description">Create your first reminder to stay organized\nand never miss an important moment with</string>
-    <string name="action_add_new_reminder">+ Add new reminder</string>
+    <string name="no_reminders">No reminders yet</string>
+    <string name="empty_reminders_description">Add a reminder so nothing slips your mind.</string>
+    <string name="action_add_new_reminder">Add reminder</string>
 
     <!-- List Item Card & Actions -->
     <string name="action_more">More options</string>

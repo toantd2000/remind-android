@@ -52,7 +52,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import vn.io.litever.remind.core.designsystem.components.ReMindLogo
-import vn.io.litever.remind.core.designsystem.components.ReMindPlanBadge
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsItem
 import vn.io.litever.remind.core.designsystem.components.rememberReMindProGradient
@@ -285,22 +284,15 @@ private fun ProSettingsTopBar(
                 }
                 Spacer(modifier = Modifier.width(MaterialTheme.spacing.smallMedium))
                 Column(modifier = Modifier.weight(1f)) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
-                    ) {
-                        Text(
-                            text = stringResource(
-                                if (isPro) R.string.pro_banner_active_title else R.string.pro_banner_title
-                            ),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = contentColor,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.weight(1f, fill = false)
-                        )
-                        ReMindPlanBadge(isPro = isPro)
-                    }
+                    Text(
+                        text = stringResource(
+                            if (isPro) R.string.pro_banner_active_title else R.string.pro_banner_title
+                        ),
+                        style = LiteverTokens.typography.titleMediumEmphasized,
+                        color = contentColor,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
                     Spacer(modifier = Modifier.height(MaterialTheme.spacing.tiny))
                     Text(
                         text = stringResource(
@@ -308,7 +300,7 @@ private fun ProSettingsTopBar(
                         ),
                         style = MaterialTheme.typography.bodySmall,
                         color = contentColor.copy(alpha = 0.85f),
-                        maxLines = 2,
+                        maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                 }

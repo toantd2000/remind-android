@@ -140,10 +140,10 @@
     <string name="loading_ad_message">Loading ad, please wait...</string>
 
     <!-- Pro & Paywall -->
-    <string name="pro_banner_title">Upgrade to ReMind Pro</string>
-    <string name="pro_banner_subtitle">Ad-free, 5 mission slots, voice TTS &amp; more</string>
-    <string name="pro_banner_active_title">ReMind Pro Active</string>
-    <string name="pro_banner_active_subtitle">All Pro features unlocked</string>
+    <string name="pro_banner_title">ReMind Pro</string>
+    <string name="pro_banner_subtitle">Try free for 7 days</string>
+    <string name="pro_banner_active_title">ReMind Pro</string>
+    <string name="pro_banner_active_subtitle">All features unlocked</string>
     <string name="pro_badge_label">PRO</string>
     <string name="pro_action_upgrade">Upgrade</string>
     <string name="pro_action_manage">Manage</string>

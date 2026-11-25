@@ -55,6 +55,7 @@ import vn.io.litever.brand.tokens.palettes.blackDarkColorScheme
 import vn.io.litever.brand.tokens.palettes.blackLightColorScheme
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsCategory
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsDivider
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsItem
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
@@ -284,6 +285,8 @@ fun GeneralSettingsScreen(
                             )
                         }
                     )
+
+                    ReMindSettingsDivider()
 
                     ReMindSettingsItem(
                         title = stringResource(R.string.setting_language),

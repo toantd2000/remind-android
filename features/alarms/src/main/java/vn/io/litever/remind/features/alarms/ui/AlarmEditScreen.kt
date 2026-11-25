@@ -5,6 +5,7 @@ import vn.io.litever.remind.core.designsystem.theme.spacing
 
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.WindowInsets
@@ -42,18 +43,15 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.SheetValue
@@ -62,6 +60,7 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.SliderState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerDialog
 import androidx.compose.material3.rememberDatePickerState
@@ -78,33 +77,30 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import vn.io.litever.remind.core.designsystem.theme.errorColors
+import vn.io.litever.remind.core.designsystem.components.AutoSilenceBottomSheet
+import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.MissionSelectionBottomSheet
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.components.ReMindGroupCard
-import vn.io.litever.remind.core.designsystem.components.ReMindSettingIcon
+import vn.io.litever.remind.core.designsystem.components.ReMindProDiamondTag
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsDivider
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
-import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsItem
+import vn.io.litever.remind.core.designsystem.components.SnoozeBottomSheet
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import java.time.DayOfWeek
 import vn.io.litever.remind.core.model.MissionType
 import vn.io.litever.remind.features.alarms.R
-import vn.io.litever.remind.features.alarms.ui.components.AlarmSettingRow
-import vn.io.litever.remind.core.designsystem.components.AutoSilenceBottomSheet
-import vn.io.litever.remind.core.designsystem.components.SnoozeBottomSheet
 import vn.io.litever.remind.features.alarms.ui.components.AnnounceLabelPreviewBottomSheet
 import vn.io.litever.remind.features.alarms.ui.components.GentleAlarmBottomSheet
 import vn.io.litever.remind.features.alarms.ui.components.NextAlarmHeader
@@ -776,293 +772,263 @@ fun AlarmEditScreen(
                 .fillMaxSize()
                 .padding(padding),
             contentPadding = PaddingValues(all = MaterialTheme.spacing.medium),
-            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.smallMedium)
         ) {
-
             item {
-                // Group 1: Time Selector
+                // Group 1: Time & Repeat Schedule (Unified Hero Card)
                 ReMindGroupCard {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(MaterialTheme.shapes.large)
-                            .clickable { showTimePicker = true },
-
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(MaterialTheme.shapes.large)
+                                .clickable { showTimePicker = true }
+                                .padding(vertical = MaterialTheme.spacing.medium),
                         ) {
-                        Spacer(modifier = Modifier.height(MaterialTheme.spacing.large))
-                        Row(
-                            verticalAlignment = Alignment.Bottom
-                        ) {
-                            val timeFormatter = remember(is24HourFormat) {
-                                DateTimeFormatter.ofPattern(if (is24HourFormat) "HH:mm" else "hh:mm")
-                            }
-                            Text(
-                                text = uiState.time.format(timeFormatter),
-                                style = MaterialTheme.typography.displayLarge.copy(
-                                    color = MaterialTheme.colorScheme.primary,
-                                    letterSpacing = (-2).sp
-                                )
-                            )
-                            if (!is24HourFormat) {
+                            Row {
+                                val timeFormatter = remember(is24HourFormat) {
+                                    DateTimeFormatter.ofPattern(if (is24HourFormat) "HH:mm" else "hh:mm")
+                                }
                                 Text(
-                                    text = uiState.time.format(DateTimeFormatter.ofPattern("a"))
-                                        .uppercase(),
-                                    style = MaterialTheme.typography.headlineSmall.copy(
-                                        color = MaterialTheme.colorScheme.secondary,),
-                                    modifier = Modifier.padding(bottom = MaterialTheme.spacing.smallMedium)
+                                    text = uiState.time.format(timeFormatter),
+                                    style = MaterialTheme.typography.displayMedium,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    maxLines = 1,
+                                    softWrap = false,
+                                    modifier = Modifier.alignByBaseline()
+                                )
+                                if (!is24HourFormat) {
+                                    Text(
+                                        text = uiState.time.format(DateTimeFormatter.ofPattern("a"))
+                                            .uppercase(),
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = MaterialTheme.colorScheme.secondary,
+                                        maxLines = 1,
+                                        softWrap = false,
+                                        modifier = Modifier
+                                            .padding(start = MaterialTheme.spacing.extraSmall)
+                                            .alignByBaseline()
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(MaterialTheme.spacing.extraSmall))
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Icon(
+                                    imageVector = ReMindIcons.Edit,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(14.dp),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.65f)
+                                )
+                                Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
+                                Text(
+                                    text = stringResource(R.string.tap_to_edit_time),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.65f)
                                 )
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
+                        ReMindSettingsDivider(inset = false)
 
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Icon(
-                                imageVector = ReMindIcons.Edit,
-                                contentDescription = null,
-                                modifier = Modifier.size(MaterialTheme.spacing.medium),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
-                            )
-                            Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
-                            Text(
-                                text = stringResource(R.string.tap_to_edit_time),
-                                style = MaterialTheme.typography.labelSmall.copy(
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                                        alpha = 0.6f
-                                    )
-                                )
-                            )
-
-                        }
-                        Spacer(modifier = Modifier.height(MaterialTheme.spacing.large))
+                        RepeatDaySelector(
+                            selectedDays = uiState.repeatDays,
+                            time = uiState.time,
+                            date = uiState.date,
+                            onDayToggle = onRepeatDayToggle,
+                            onShowDatePicker = { showDatePicker = true },
+                            modifier = Modifier.padding(MaterialTheme.spacing.medium)
+                        )
                     }
                 }
             }
 
             item {
-                // Group 2: Repeat Selector (Separated)
+                // Group 2: Content (Label, Message & Announce Label TTS)
                 ReMindGroupCard {
-                    RepeatDaySelector(
-                        selectedDays = uiState.repeatDays,
-                        time = uiState.time,
-                        date = uiState.date,
-                        onDayToggle = onRepeatDayToggle,
-                        onShowDatePicker = { showDatePicker = true },
-                        modifier = Modifier.padding(MaterialTheme.spacing.medium)
-                    )
-                }
-            }
-
-            item {
-                // Group 3: Content (Label & Message)
-                ReMindGroupCard {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        // Label Field
-                        Column {
-                            Text(
-                                text = stringResource(R.string.alarm_label_title),
-                                style = LiteverTokens.typography.labelSmallEmphasized,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            val labelState = rememberTextFieldState(uiState.label)
-                            LaunchedEffect(uiState.label) {
-                                if (labelState.text.toString() != uiState.label) {
-                                    labelState.setTextAndPlaceCursorAtEnd(uiState.label)
-                                }
-                            }
-                            LaunchedEffect(labelState) {
-                                snapshotFlow { labelState.text.toString() }.collect {
-                                    if (it != uiState.label) {
-                                        onLabelChange(it)
-                                    }
-                                }
-                            }
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                BasicTextField(
-                                    state = labelState,
-                                    modifier = Modifier.weight(1f),
-                                    textStyle = MaterialTheme.typography.bodyLarge.copy(
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    ),
-                                    keyboardOptions = KeyboardOptions(
-                                        keyboardType = KeyboardType.Text,
-                                        imeAction = ImeAction.Next
-                                    ),
-                                    lineLimits = TextFieldLineLimits.SingleLine,
-                                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                                    decorator = { innerTextField ->
-                                        Box(contentAlignment = Alignment.CenterStart) {
-                                            if (labelState.text.isEmpty()) {
-                                                Text(
-                                                    text = stringResource(R.string.alarm_label_placeholder),
-                                                    style = MaterialTheme.typography.bodyLarge.copy(
-                                                        color = MaterialTheme.colorScheme.outlineVariant
-                                                    )
-                                                )
-                                            }
-                                            innerTextField()
-                                        }
-                                    }
-                                )
-
-                                if (labelState.text.isNotEmpty()) {
-                                    IconButton(
-                                        onClick = { labelState.clearText() },
-                                        modifier = Modifier.size(28.dp)
-                                    ) {
-                                        Icon(
-                                            imageVector = ReMindIcons.Close,
-                                            contentDescription = "Clear label",
-                                            modifier = Modifier.size(20.dp)
-                                        )
-                                    }
-                                } else {
-                                    Icon(
-                                        imageVector = ReMindIcons.NewLabel,
-                                        contentDescription = "Ghi chú",
-                                        tint = MaterialTheme.colorScheme.outlineVariant
-                                    )
-                                }
-                            }
-                        }
-
-                        HorizontalDivider(
-                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
-                        )
-
-                        // Message Field
-                        Column {
-                            Text(
-                                text = stringResource(R.string.alarm_message_title),
-                                style = LiteverTokens.typography.labelSmallEmphasized,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            val messageState = rememberTextFieldState(uiState.message)
-                            LaunchedEffect(uiState.message) {
-                                if (messageState.text.toString() != uiState.message) {
-                                    messageState.setTextAndPlaceCursorAtEnd(uiState.message)
-                                }
-                            }
-                            LaunchedEffect(messageState) {
-                                snapshotFlow { messageState.text.toString() }.collect {
-                                    if (it != uiState.message) {
-                                        onMessageChange(it)
-                                    }
-                                }
-                            }
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.Top
-                            ) {
-                                BasicTextField(
-                                    state = messageState,
-                                    modifier = Modifier.weight(1f),
-                                    textStyle = MaterialTheme.typography.bodyLarge.copy(
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    ),
-                                    keyboardOptions = KeyboardOptions(
-                                        keyboardType = KeyboardType.Text,
-                                        imeAction = ImeAction.Done
-                                    ),
-                                    lineLimits = TextFieldLineLimits.MultiLine(maxHeightInLines = 4),
-                                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                                    decorator = { innerTextField ->
-                                        Box(contentAlignment = Alignment.TopStart) {
-                                            if (messageState.text.isEmpty()) {
-                                                Text(
-                                                    text = stringResource(R.string.alarm_message_placeholder),
-                                                    style = MaterialTheme.typography.bodyLarge.copy(
-                                                        color = MaterialTheme.colorScheme.outlineVariant
-                                                    )
-                                                )
-                                            }
-                                            innerTextField()
-                                        }
-                                    }
-                                )
-
-                                if (messageState.text.isNotEmpty()) {
-                                    IconButton(
-                                        onClick = { messageState.clearText() },
-                                        modifier = Modifier.size(28.dp)
-                                    ) {
-                                        Icon(
-                                            imageVector = ReMindIcons.Close,
-                                            contentDescription = "Clear message",
-                                            modifier = Modifier.size(20.dp)
-                                        )
-                                    }
-                                } else {
-                                    Icon(
-                                        imageVector = ReMindIcons.EditNote,
-                                        contentDescription = "Ghi chú",
-                                        tint = MaterialTheme.colorScheme.outlineVariant,
-                                        modifier = Modifier
-                                            .size(24.dp)
-                                            .padding(top = 2.dp)
-                                    )
-                                }
-                            }
-                        }
-
-                        HorizontalDivider(
-                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
-                        )
-
-                        // Announce Label TTS (Pro)
+                    Column(modifier = Modifier.fillMaxWidth()) {
                         Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                            modifier = Modifier.padding(MaterialTheme.spacing.medium),
+                            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
                         ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        if (!isPro && !uiState.announceLabelTts) {
-                                            onNavigateToPaywall(2)
-                                        } else {
-                                            onAnnounceLabelTtsChange(!uiState.announceLabelTts)
-                                        }
-                                    },
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    imageVector = ReMindIcons.Speaker,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.size(22.dp)
+                            // Label Field
+                            Column {
+                                Text(
+                                    text = stringResource(R.string.alarm_label_title),
+                                    style = LiteverTokens.typography.labelSmallEmphasized,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
-                                Spacer(modifier = Modifier.width(12.dp))
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                                    ) {
-                                        Text(
-                                            text = stringResource(R.string.announce_label_tts_title),
-                                            style = MaterialTheme.typography.titleSmall,
-                                            color = MaterialTheme.colorScheme.onSurface
-                                        )
-                                        vn.io.litever.remind.core.designsystem.components.ReMindProDiamondTag()
+                                Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
+                                val labelState = rememberTextFieldState(uiState.label)
+                                LaunchedEffect(uiState.label) {
+                                    if (labelState.text.toString() != uiState.label) {
+                                        labelState.setTextAndPlaceCursorAtEnd(uiState.label)
                                     }
-                                    Text(
-                                        text = stringResource(R.string.announce_label_tts_desc),
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
                                 }
+                                LaunchedEffect(labelState) {
+                                    snapshotFlow { labelState.text.toString() }.collect {
+                                        if (it != uiState.label) {
+                                            onLabelChange(it)
+                                        }
+                                    }
+                                }
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    BasicTextField(
+                                        state = labelState,
+                                        modifier = Modifier.weight(1f),
+                                        textStyle = MaterialTheme.typography.bodyLarge.copy(
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        ),
+                                        keyboardOptions = KeyboardOptions(
+                                            keyboardType = KeyboardType.Text,
+                                            imeAction = ImeAction.Next
+                                        ),
+                                        lineLimits = TextFieldLineLimits.SingleLine,
+                                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                                        decorator = { innerTextField ->
+                                            Box(contentAlignment = Alignment.CenterStart) {
+                                                if (labelState.text.isEmpty()) {
+                                                    Text(
+                                                        text = stringResource(R.string.alarm_label_placeholder),
+                                                        style = MaterialTheme.typography.bodyLarge,
+                                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                                                    )
+                                                }
+                                                innerTextField()
+                                            }
+                                        }
+                                    )
+
+                                    if (labelState.text.isNotEmpty()) {
+                                        IconButton(
+                                            onClick = { labelState.clearText() },
+                                            modifier = Modifier.size(28.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = ReMindIcons.Close,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(20.dp)
+                                            )
+                                        }
+                                    } else {
+                                        Icon(
+                                            imageVector = ReMindIcons.NewLabel,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                                        )
+                                    }
+                                }
+                            }
+
+                            HorizontalDivider(
+                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.25f)
+                            )
+
+                            // Message Field
+                            Column {
+                                Text(
+                                    text = stringResource(R.string.alarm_message_title),
+                                    style = LiteverTokens.typography.labelSmallEmphasized,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
+                                val messageState = rememberTextFieldState(uiState.message)
+                                LaunchedEffect(uiState.message) {
+                                    if (messageState.text.toString() != uiState.message) {
+                                        messageState.setTextAndPlaceCursorAtEnd(uiState.message)
+                                    }
+                                }
+                                LaunchedEffect(messageState) {
+                                    snapshotFlow { messageState.text.toString() }.collect {
+                                        if (it != uiState.message) {
+                                            onMessageChange(it)
+                                        }
+                                    }
+                                }
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.Top
+                                ) {
+                                    BasicTextField(
+                                        state = messageState,
+                                        modifier = Modifier.weight(1f),
+                                        textStyle = MaterialTheme.typography.bodyLarge.copy(
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        ),
+                                        keyboardOptions = KeyboardOptions(
+                                            keyboardType = KeyboardType.Text,
+                                            imeAction = ImeAction.Done
+                                        ),
+                                        lineLimits = TextFieldLineLimits.MultiLine(maxHeightInLines = 4),
+                                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                                        decorator = { innerTextField ->
+                                            Box(contentAlignment = Alignment.TopStart) {
+                                                if (messageState.text.isEmpty()) {
+                                                    Text(
+                                                        text = stringResource(R.string.alarm_message_placeholder),
+                                                        style = MaterialTheme.typography.bodyLarge,
+                                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                                                    )
+                                                }
+                                                innerTextField()
+                                            }
+                                        }
+                                    )
+
+                                    if (messageState.text.isNotEmpty()) {
+                                        IconButton(
+                                            onClick = { messageState.clearText() },
+                                            modifier = Modifier.size(28.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = ReMindIcons.Close,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(20.dp)
+                                            )
+                                        }
+                                    } else {
+                                        Icon(
+                                            imageVector = ReMindIcons.EditNote,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                                            modifier = Modifier
+                                                .size(MaterialTheme.spacing.large)
+                                                .padding(top = MaterialTheme.spacing.tiny)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        ReMindSettingsDivider(inset = false)
+
+                        // Announce Label TTS (Pro) — unified ReMindSettingsItem
+                        ReMindSettingsItem(
+                            title = stringResource(R.string.announce_label_tts_title),
+                            subtitle = stringResource(R.string.announce_label_tts_desc),
+                            icon = ReMindIcons.Speaker,
+                            iconTint = if (uiState.announceLabelTts) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            },
+                            titleBadge = { ReMindProDiamondTag() },
+                            onClick = {
+                                if (!isPro && !uiState.announceLabelTts) {
+                                    onNavigateToPaywall(2)
+                                } else {
+                                    onAnnounceLabelTtsChange(!uiState.announceLabelTts)
+                                }
+                            },
+                            trailingContent = {
                                 Switch(
                                     checked = uiState.announceLabelTts,
                                     onCheckedChange = { enabled ->
@@ -1074,22 +1040,29 @@ fun AlarmEditScreen(
                                     }
                                 )
                             }
+                        )
+
+                        AnimatedVisibility(visible = uiState.announceLabelTts) {
                             Row(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(
+                                        start = MaterialTheme.spacing.medium,
+                                        end = MaterialTheme.spacing.medium,
+                                        bottom = MaterialTheme.spacing.small
+                                    ),
                                 horizontalArrangement = Arrangement.End
                             ) {
-                                FilledTonalButton(
-                                    onClick = { showLabelTtsPreviewSheet = true }
-                                ) {
+                                TextButton(onClick = { showLabelTtsPreviewSheet = true }) {
                                     Icon(
                                         imageVector = ReMindIcons.PlayArrow,
                                         contentDescription = null,
-                                        modifier = Modifier.size(16.dp)
+                                        modifier = Modifier.size(18.dp)
                                     )
-                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
                                     Text(
                                         text = stringResource(R.string.action_preview),
-                                        style = MaterialTheme.typography.labelMedium
+                                        style = MaterialTheme.typography.labelLarge
                                     )
                                 }
                             }
@@ -1099,47 +1072,48 @@ fun AlarmEditScreen(
             }
 
             item {
-                // Group 4: Alert Settings
+                // Group 3: Sound & Vibration
                 ReMindSettingsGroup(
                     title = stringResource(R.string.sound),
                 ) {
-                    // Row 1: Ringtone Row
-                    AlarmSettingRow(
+                    // Ringtone
+                    ReMindSettingsItem(
                         title = uiState.ringtoneTitle,
                         icon = ReMindIcons.MusicNote,
+                        showChevron = true,
                         onClick = onRingtoneClick
                     )
 
-                    // Row 2: Progress
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(MaterialTheme.spacing.small)
-                            .padding(start = 56.dp, end = MaterialTheme.spacing.extraLarge)
-                    ) {
-                        if (uiState.isRingtonePlaying || uiState.ringtoneProgress > 0f) {
-                            LinearProgressIndicator(
-                                progress = { uiState.ringtoneProgress },
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                            )
-                        }
+                    if (uiState.isRingtonePlaying || uiState.ringtoneProgress > 0f) {
+                        LinearProgressIndicator(
+                            progress = { uiState.ringtoneProgress },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(
+                                    start = MaterialTheme.spacing.medium,
+                                    end = MaterialTheme.spacing.medium,
+                                    bottom = MaterialTheme.spacing.small
+                                ),
+                        )
                     }
 
-                    HorizontalDivider(
-                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3F),
-                        modifier = Modifier.padding(horizontal = MaterialTheme.spacing.extraLarge)
-                    )
+                    ReMindSettingsDivider()
 
-                    // Row 3: Volume
+                    // Volume Slider + Play Preview Button
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(vertical = MaterialTheme.spacing.medium),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                horizontal = MaterialTheme.spacing.medium,
+                                vertical = MaterialTheme.spacing.small
+                            ),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        ReMindSettingIcon(
+                        Icon(
                             imageVector = if (uiState.volume == 0) ReMindIcons.VolumeOff else ReMindIcons.VolumeUp,
-                            selected = false,
-                            modifier = Modifier.padding(start = MaterialTheme.spacing.medium)
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(MaterialTheme.spacing.large)
                         )
 
                         val volumeSliderState = remember(uiState.maxVolume) {
@@ -1170,24 +1144,41 @@ fun AlarmEditScreen(
                             )
                         )
 
-                        ReMindSettingIcon(
-                            imageVector = if (uiState.isRingtonePlaying) ReMindIcons.Pause else ReMindIcons.PlayArrow,
-                            selected = uiState.isRingtonePlaying,
+                        FilledTonalIconButton(
                             onClick = onTogglePreview,
-                            modifier = Modifier.padding(end = MaterialTheme.spacing.medium)
-                        )
+                            modifier = Modifier.size(40.dp),
+                            colors = IconButtonDefaults.filledTonalIconButtonColors(
+                                containerColor = if (uiState.isRingtonePlaying) {
+                                    MaterialTheme.colorScheme.primaryContainer
+                                } else {
+                                    MaterialTheme.colorScheme.surfaceContainerHighest
+                                },
+                                contentColor = if (uiState.isRingtonePlaying) {
+                                    MaterialTheme.colorScheme.onPrimaryContainer
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                }
+                            )
+                        ) {
+                            Icon(
+                                imageVector = if (uiState.isRingtonePlaying) ReMindIcons.Pause else ReMindIcons.PlayArrow,
+                                contentDescription = stringResource(R.string.action_preview),
+                                modifier = Modifier.size(MaterialTheme.spacing.mediumLarge)
+                            )
+                        }
                     }
 
-                    HorizontalDivider(
-                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3F),
-                        modifier = Modifier.padding(horizontal = MaterialTheme.spacing.extraLarge)
-                    )
+                    ReMindSettingsDivider()
 
-                    // Row 4: Vibration
-                    AlarmSettingRow(
+                    // Vibration
+                    ReMindSettingsItem(
                         title = stringResource(R.string.vibration),
                         icon = ReMindIcons.Vibration,
-                        iconSelected = uiState.vibrationEnabled,
+                        iconTint = if (uiState.vibrationEnabled) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
                         onClick = { onVibrationToggle(!uiState.vibrationEnabled) },
                         trailingContent = {
                             Switch(
@@ -1197,12 +1188,9 @@ fun AlarmEditScreen(
                         }
                     )
 
-                    HorizontalDivider(
-                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3F),
-                        modifier = Modifier.padding(horizontal = MaterialTheme.spacing.extraLarge)
-                    )
+                    ReMindSettingsDivider()
 
-                    // Row 4: Volume Boost (Gentle Alarm + Extra Loud + Time TTS)
+                    // Volume Boost (Gentle Alarm + Extra Loud + Time TTS)
                     val summaryParts = buildList {
                         if (uiState.gradualVolumeDurationSeconds > 0) {
                             add(stringResource(R.string.seconds_unit_short, uiState.gradualVolumeDurationSeconds))
@@ -1220,61 +1208,26 @@ fun AlarmEditScreen(
                         summaryParts.joinToString(" · ")
                     }
 
-                    AlarmSettingRow(
+                    ReMindSettingsItem(
                         title = stringResource(R.string.volume_boost_sheet_title),
                         subtitle = gentleAlarmSummary,
                         icon = ReMindIcons.GraphicEq,
-                        iconSelected = summaryParts.isNotEmpty(),
+                        iconTint = if (summaryParts.isNotEmpty()) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                        showChevron = true,
                         onClick = { showGradualVolumeSheet = true }
                     )
-
-                    HorizontalDivider(
-                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3F),
-                        modifier = Modifier.padding(horizontal = MaterialTheme.spacing.extraLarge)
-                    )
-
-                    // Row 5: Alarm Stream Toggle
-                    AlarmSettingRow(
-                        title = stringResource(R.string.use_alarm_stream_title),
-                        subtitle = if (uiState.useAlarmStream)
-                            stringResource(R.string.use_alarm_stream_desc)
-                        else
-                            stringResource(R.string.use_media_stream_desc),
-                        icon = if (uiState.useAlarmStream) ReMindIcons.AlarmOn else ReMindIcons.MusicNote,
-                        iconSelected = uiState.useAlarmStream,
-                        onClick = { onUseAlarmStreamChange(!uiState.useAlarmStream) },
-                        trailingContent = {
-                            Switch(
-                                checked = uiState.useAlarmStream,
-                                onCheckedChange = onUseAlarmStreamChange
-                            )
-                        }
-                    )
-
-                    // Row 6: Override DND
-                    AlarmSettingRow(
-                        title = stringResource(R.string.override_dnd_title),
-                        subtitle = stringResource(R.string.override_dnd_desc),
-                        icon = if (uiState.overrideDndEnabled) ReMindIcons.DoNotDisturbOff else ReMindIcons.DoNotDisturbOn,
-                        iconSelected = uiState.overrideDndEnabled,
-                        onClick = { onOverrideDndChange(!uiState.overrideDndEnabled) },
-                        trailingContent = {
-                            Switch(
-                                checked = uiState.overrideDndEnabled,
-                                onCheckedChange = onOverrideDndChange
-                            )
-                        }
-                    )
                 }
-
             }
 
             item {
-                // Group 5: Alarm specific settings
+                // Group 4: Alarm Behavior & Advanced Audio Routing
                 ReMindSettingsGroup(
                     title = stringResource(R.string.alarm_settings)
                 ) {
-                    // Snooze Row
                     val snoozeSummary = if (uiState.snoozeEnabled) {
                         val repeatLabel = when (uiState.snoozeRepeatCount) {
                             -1 -> stringResource(R.string.forever)
@@ -1293,104 +1246,135 @@ fun AlarmEditScreen(
                         stringResource(R.string.off)
                     }
 
-                    AlarmSettingRow(
+                    ReMindSettingsItem(
                         title = stringResource(R.string.snooze),
                         subtitle = snoozeSummary,
                         icon = ReMindIcons.Snooze,
+                        showChevron = true,
                         onClick = { showSnoozeSheet = true }
                     )
 
-                    HorizontalDivider(
-                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3F),
-                        modifier = Modifier.padding(horizontal = MaterialTheme.spacing.extraLarge)
-                    )
+                    ReMindSettingsDivider()
 
-                    // Auto Silence Row
-                    AlarmSettingRow(
+                    ReMindSettingsItem(
                         title = stringResource(R.string.auto_silence_title),
                         subtitle = stringResource(
                             R.string.minutes_unit,
                             uiState.autoSilenceMinutes
                         ),
                         icon = ReMindIcons.AlarmOff,
+                        showChevron = true,
                         onClick = { showAutoSilenceSheet = true }
+                    )
+
+                    ReMindSettingsDivider()
+
+                    ReMindSettingsItem(
+                        title = stringResource(R.string.use_alarm_stream_title),
+                        subtitle = if (uiState.useAlarmStream) {
+                            stringResource(R.string.use_alarm_stream_desc)
+                        } else {
+                            stringResource(R.string.use_media_stream_desc)
+                        },
+                        icon = if (uiState.useAlarmStream) ReMindIcons.AlarmOn else ReMindIcons.MusicNote,
+                        iconTint = if (uiState.useAlarmStream) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                        onClick = { onUseAlarmStreamChange(!uiState.useAlarmStream) },
+                        trailingContent = {
+                            Switch(
+                                checked = uiState.useAlarmStream,
+                                onCheckedChange = onUseAlarmStreamChange
+                            )
+                        }
+                    )
+
+                    ReMindSettingsDivider()
+
+                    ReMindSettingsItem(
+                        title = stringResource(R.string.override_dnd_title),
+                        subtitle = stringResource(R.string.override_dnd_desc),
+                        icon = if (uiState.overrideDndEnabled) ReMindIcons.DoNotDisturbOff else ReMindIcons.DoNotDisturbOn,
+                        iconTint = if (uiState.overrideDndEnabled) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                        onClick = { onOverrideDndChange(!uiState.overrideDndEnabled) },
+                        trailingContent = {
+                            Switch(
+                                checked = uiState.overrideDndEnabled,
+                                onCheckedChange = onOverrideDndChange
+                            )
+                        }
                     )
                 }
             }
 
             item {
-                // Group 6: Missions (5-slot horizontal row matching 1/5 upsell design)
+                // Group 5: Missions & Wake-Up Check (Anti-Oversleep)
                 ReMindSettingsGroup(
                     title = stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_title),
+                    headerTrailingContent = {
+                        Text(
+                            text = "${uiState.missions.size}/5",
+                            style = LiteverTokens.typography.labelMediumEmphasized,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 ) {
-                    Column(
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(MaterialTheme.spacing.medium),
-                        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
+                            .padding(
+                                horizontal = MaterialTheme.spacing.medium,
+                                vertical = MaterialTheme.spacing.smallMedium
+                            ),
+                        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_title),
-                                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                        repeat(5) { slotIndex ->
+                            val mission = uiState.missions.getOrNull(slotIndex)
+                            val isSlotUnlocked = isPro || slotIndex == 0
+                            MissionSlotCard(
+                                mission = mission,
+                                isUnlocked = isSlotUnlocked,
+                                onFilledClick = { mission?.let(onMissionClick) },
+                                onRemoveClick = { mission?.let(onMissionRemove) },
+                                onAddClick = {
+                                    if (isSlotUnlocked) {
+                                        onAddMissionClick()
+                                    } else {
+                                        onNavigateToPaywall(1)
+                                    }
+                                },
+                                modifier = Modifier.weight(1f)
                             )
-                            Text(
-                                text = "${uiState.missions.size}/5",
-                                style = LiteverTokens.typography.labelMediumEmphasized,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        }
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            repeat(5) { slotIndex ->
-                                val mission = uiState.missions.getOrNull(slotIndex)
-                                val isSlotUnlocked = isPro || slotIndex == 0
-                                MissionSlotCard(
-                                    mission = mission,
-                                    isUnlocked = isSlotUnlocked,
-                                    onFilledClick = { mission?.let(onMissionClick) },
-                                    onRemoveClick = { mission?.let(onMissionRemove) },
-                                    onAddClick = {
-                                        if (isSlotUnlocked) {
-                                            onAddMissionClick()
-                                        } else {
-                                            onNavigateToPaywall(1)
-                                        }
-                                    },
-                                    modifier = Modifier.weight(1f)
-                                )
-                            }
                         }
                     }
 
-                    HorizontalDivider(
-                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3F),
-                        modifier = Modifier.padding(horizontal = MaterialTheme.spacing.extraLarge)
-                    )
+                    ReMindSettingsDivider(inset = false)
 
                     val wakeUpSummary = if (uiState.wakeUpCheckMinutes <= 0) {
                         stringResource(R.string.off)
                     } else {
                         stringResource(R.string.minutes_unit, uiState.wakeUpCheckMinutes)
                     }
-                    AlarmSettingRow(
+                    ReMindSettingsItem(
                         title = stringResource(R.string.wakeup_check_title),
                         subtitle = wakeUpSummary,
                         icon = ReMindIcons.AlarmOn,
-                        iconSelected = uiState.wakeUpCheckMinutes > 0,
+                        iconTint = if (uiState.wakeUpCheckMinutes > 0) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                        showChevron = true,
                         onClick = { showWakeUpCheckSheet = true }
                     )
                 }
             }
-
 
             item {
                 Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
@@ -1411,6 +1395,12 @@ fun RepeatDaySelector(
     val allDays = DayOfWeek.entries
     val label = getRepeatSummaryText(selectedDays, time, date, isShortMode = true)
 
+    val summaryColor = when {
+        selectedDays.isNotEmpty() -> MaterialTheme.colorScheme.primary
+        date != null -> MaterialTheme.colorScheme.tertiary
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
+    }
+
     Column(modifier = modifier) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -1420,23 +1410,35 @@ fun RepeatDaySelector(
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Bold,
+                color = summaryColor,
                 modifier = Modifier.weight(1f)
             )
 
-            IconButton(
-                onClick = onShowDatePicker,
-                colors = if (date != null) {
-                    IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.primary)
-                } else {
-                    IconButtonDefaults.iconButtonColors()
+            if (date != null) {
+                FilledTonalIconButton(
+                    onClick = onShowDatePicker,
+                    colors = IconButtonDefaults.filledTonalIconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                    )
+                ) {
+                    Icon(
+                        imageVector = ReMindIcons.CalendarMonth,
+                        contentDescription = stringResource(R.string.set_alarm_date),
+                    )
                 }
-            ) {
-                Icon(
-                    imageVector = ReMindIcons.CalendarMonth,
-                    contentDescription = stringResource(R.string.set_alarm_date),
-                )
+            } else {
+                IconButton(
+                    onClick = onShowDatePicker,
+                    colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                ) {
+                    Icon(
+                        imageVector = ReMindIcons.CalendarMonth,
+                        contentDescription = stringResource(R.string.set_alarm_date),
+                    )
+                }
             }
         }
 
@@ -1461,21 +1463,31 @@ fun RepeatDaySelector(
                 val dayContent: @Composable () -> Unit = {
                     Text(
                         text = dayLabel,
-                        style = MaterialTheme.typography.labelMedium.copy(
-                            fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Medium
-                        )
+                        style = if (isSelected) {
+                            LiteverTokens.typography.labelMediumEmphasized
+                        } else {
+                            MaterialTheme.typography.labelMedium
+                        }
                     )
                 }
                 if (isSelected) {
-                    FilledTonalIconButton(
+                    FilledIconButton(
                         onClick = { onDayToggle(day) },
                         modifier = Modifier.weight(1f),
+                        colors = IconButtonDefaults.filledIconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        ),
                         content = dayContent
                     )
                 } else {
-                    OutlinedIconButton(
+                    FilledTonalIconButton(
                         onClick = { onDayToggle(day) },
                         modifier = Modifier.weight(1f),
+                        colors = IconButtonDefaults.filledTonalIconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        ),
                         content = dayContent
                     )
                 }
@@ -1652,73 +1664,6 @@ fun AlarmEditScreenDarkPreview() {
             onPreviewClick = {},
             onDismissDndPermissionDialog = {},
             onNavigateToDndSettings = {}
-        )
-    }
-}
-
-@Composable
-private fun MissionRow(
-    mission: vn.io.litever.remind.core.model.Mission,
-    onClick: () -> Unit,
-    onDelete: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val icon = when (mission.type) {
-        MissionType.TYPING -> ReMindIcons.Keyboard
-        MissionType.MATH -> ReMindIcons.Calculate
-        MissionType.MEMORY_FIND_COLOR_TILES -> ReMindIcons.GridView
-        MissionType.SHAKE -> ReMindIcons.Vibration
-        MissionType.BARCODE -> ReMindIcons.QrCodeScanner
-        MissionType.RANDOM -> ReMindIcons.Refresh
-    }
-
-    val title = when (mission.type) {
-        MissionType.TYPING -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_typing)
-        MissionType.MATH -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_math)
-        MissionType.MEMORY_FIND_COLOR_TILES -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_memory_tiles)
-        MissionType.SHAKE -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_shake)
-        MissionType.BARCODE -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_barcode)
-        MissionType.RANDOM -> stringResource(vn.io.litever.remind.core.designsystem.R.string.mission_random)
-    }
-    ListItem(
-        modifier = modifier.fillMaxWidth()
-            .clip(MaterialTheme.shapes.large)
-            .clickable(onClick = onClick),
-        colors = ListItemDefaults.colors(
-            containerColor = Color.Transparent
-        ),
-        supportingContent = {
-            Text(
-                text = stringResource(
-                    vn.io.litever.remind.core.designsystem.R.string.times_unit,
-                    mission.repeatCount
-                ),
-                style = MaterialTheme.typography.bodyMedium,
-            )
-        },
-        leadingContent = {
-            ReMindSettingIcon(
-                imageVector = icon,
-                selected = true
-            )
-        },
-        trailingContent = {
-            IconButton(
-                onClick = onDelete,
-                colors = IconButtonDefaults.errorColors()
-            ) {
-                Icon(
-                    imageVector = ReMindIcons.Delete,
-                    contentDescription = null,
-                    modifier = Modifier.size(MaterialTheme.spacing.mediumLarge),
-                    tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
-                )
-            }
-        }
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
         )
     }
 }

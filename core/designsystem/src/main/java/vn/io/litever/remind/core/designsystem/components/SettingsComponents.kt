@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -26,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.designsystem.theme.spacing
@@ -36,7 +38,8 @@ import vn.io.litever.remind.core.designsystem.theme.spacing
 @Composable
 fun ReMindSettingsCategory(
     title: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    trailingContent: (@Composable () -> Unit)? = null
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -52,8 +55,10 @@ fun ReMindSettingsCategory(
         Text(
             text = title.uppercase(),
             style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.weight(1f)
         )
+        trailingContent?.invoke()
     }
 }
 
@@ -64,6 +69,7 @@ fun ReMindSettingsCategory(
 fun ReMindSettingsGroup(
     modifier: Modifier = Modifier,
     title: String? = null,
+    headerTrailingContent: (@Composable () -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val spacing = MaterialTheme.spacing
@@ -72,6 +78,7 @@ fun ReMindSettingsGroup(
             if (title != null) {
                 ReMindSettingsCategory(
                     title = title,
+                    trailingContent = headerTrailingContent,
                     modifier = Modifier.padding(
                         top = spacing.medium,
                         bottom = spacing.extraSmall,
@@ -97,15 +104,37 @@ fun ReMindSettingsItem(
     title: String,
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
+    iconTint: Color? = null,
     subtitle: String? = null,
     statusText: String? = null,
     statusColor: Color? = null,
     enabled: Boolean = true,
     alpha: Float = if (enabled) 1f else 0.38f,
+    showChevron: Boolean = false,
     onClick: (() -> Unit)? = null,
     titleBadge: (@Composable () -> Unit)? = null,
     trailingContent: @Composable (() -> Unit)? = null,
 ) {
+    val effectiveTrailing: (@Composable () -> Unit)? = when {
+        trailingContent != null -> {
+            {
+                CompositionLocalProvider(LocalContentColor provides LocalContentColor.current.copy(alpha = alpha)) {
+                    trailingContent()
+                }
+            }
+        }
+        showChevron -> {
+            {
+                Icon(
+                    imageVector = ReMindIcons.ChevronRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f * alpha)
+                )
+            }
+        }
+        else -> null
+    }
+
     ListItem(
         supportingContent = subtitle?.let {
             {
@@ -122,17 +151,11 @@ fun ReMindSettingsItem(
                     imageVector = it,
                     contentDescription = null,
                     modifier = Modifier.size(MaterialTheme.spacing.large),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = alpha)
+                    tint = (iconTint ?: MaterialTheme.colorScheme.onSurfaceVariant).copy(alpha = alpha)
                 )
             }
         },
-        trailingContent = trailingContent?.let { content ->
-            {
-                CompositionLocalProvider(LocalContentColor provides LocalContentColor.current.copy(alpha = alpha)) {
-                    content()
-                }
-            }
-        },
+        trailingContent = effectiveTrailing,
         colors = ListItemDefaults.colors(
             containerColor = Color.Transparent
         ),
@@ -172,6 +195,27 @@ fun ReMindSettingsItem(
             }
         }
     }
+}
+
+/**
+ * Subtle 0.5.dp hairline divider for separating items inside a [ReMindSettingsGroup].
+ *
+ * When [inset] is true (default), aligns with the leading edge of item text (`56.dp`)
+ * so the leading icon column flows cleanly without heavy horizontal breaks.
+ */
+@Composable
+fun ReMindSettingsDivider(
+    modifier: Modifier = Modifier,
+    inset: Boolean = true
+) {
+    HorizontalDivider(
+        modifier = modifier.padding(
+            start = if (inset) 56.dp else MaterialTheme.spacing.medium,
+            end = MaterialTheme.spacing.medium
+        ),
+        thickness = 0.5.dp,
+        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f)
+    )
 }
 
 @Preview(showBackground = true)

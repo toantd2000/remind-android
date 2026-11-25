@@ -10,8 +10,8 @@ import androidx.navigation.navArgument
 const val settingsRoute = "settings_route"
 const val generalSettingsRoute = "general_settings_route"
 const val permissionsRoute = "permissions_route"
+const val aboutRoute = "about_route"
 const val licensesRoute = "licenses_route"
-const val attributionsRoute = "attributions_route"
 const val paywallRoutePattern = "paywall_route?initialSlide={initialSlide}"
 
 fun NavController.navigateToSettings(navOptions: NavOptions? = null) {
@@ -30,18 +30,18 @@ fun NavController.navigateToPermissions() {
     this.navigate(permissionsRoute)
 }
 
-fun NavController.navigateToLicenses() {
-    this.navigate(licensesRoute)
+fun NavController.navigateToAbout() {
+    this.navigate(aboutRoute)
 }
 
-fun NavController.navigateToAttributions() {
-    this.navigate(attributionsRoute)
+fun NavController.navigateToLicenses() {
+    this.navigate(licensesRoute)
 }
 
 fun NavGraphBuilder.settingsGraph(
     onNavigateToGeneralSettings: () -> Unit,
     onNavigateToPermissions: () -> Unit,
-    onNavigateToAttributions: () -> Unit,
+    onNavigateToAbout: () -> Unit,
     onNavigateToLicenses: () -> Unit,
     onNavigateToPaywall: (Int) -> Unit,
     onNavigateBack: () -> Unit
@@ -50,8 +50,15 @@ fun NavGraphBuilder.settingsGraph(
         SettingsRoute(
             onNavigateToGeneralSettings = onNavigateToGeneralSettings,
             onNavigateToPermissions = onNavigateToPermissions,
-            onNavigateToAttributions = onNavigateToAttributions,
+            onNavigateToAbout = onNavigateToAbout,
             onNavigateToPaywall = onNavigateToPaywall
+        )
+    }
+
+    composable(aboutRoute) {
+        AboutRoute(
+            onNavigateToLicenses = onNavigateToLicenses,
+            onNavigateBack = onNavigateBack
         )
     }
 
@@ -85,13 +92,6 @@ fun NavGraphBuilder.settingsGraph(
 
     composable(licensesRoute) {
         LicensesScreen(
-            onNavigateBack = onNavigateBack
-        )
-    }
-
-    composable(attributionsRoute) {
-        AttributionsScreen(
-            onNavigateToLicenses = onNavigateToLicenses,
             onNavigateBack = onNavigateBack
         )
     }

@@ -23,6 +23,7 @@ android {
         buildConfigField("String", "URL_TERMS", "\"https://litever.io.vn/legal/remind/terms\"")
         buildConfigField("String", "URL_PRIVACY", "\"https://litever.io.vn/legal/remind/privacy\"")
         buildConfigField("String", "URL_CHANGELOG", "\"https://litever.io.vn/changelog/remind\"")
+        buildConfigField("String", "SUPPORT_EMAIL", "\"support@litever.io.vn\"")
     }
 
     compileOptions {

@@ -5,20 +5,25 @@
     <string name="time_format_12h">12h</string>
     <string name="time_format_24h">24h</string>
     <string name="appearance_and_color_group">Appearance &amp; Color</string>
-    <string name="display_headline">Display</string>
+    <string name="display_headline">Appearance</string>
     <string name="display_mode_headline">Display mode</string>
     <string name="theme_system">System</string>
+    <string name="theme_system_desc">Matches OS</string>
     <string name="theme_light">Light</string>
+    <string name="theme_light_desc">Crisp &amp; clear</string>
     <string name="theme_dark">Dark</string>
+    <string name="theme_dark_desc">Easy on eyes</string>
+    <string name="time_format_preview">Preview: %1$s</string>
+    <string name="setting_language_desc">App display language</string>
     <string name="color_source_headline">Primary color source</string>
     <string name="color_source_remind">ReMind</string>
     <string name="color_source_wallpaper">Wallpaper</string>
     <string name="color_source_litever">LiteVer</string>
-    <string name="color_black">Monochrome</string>
+    <string name="color_black">Mono</string>
     <string name="color_red">Red</string>
-    <string name="color_orange">Ripe Orange</string>
+    <string name="color_orange">Orange</string>
     <string name="color_yellow">Yellow</string>
-    <string name="color_green">Green Citrus</string>
+    <string name="color_green">Green</string>
     <string name="color_blue">Blue</string>
     <string name="color_indigo">Indigo</string>
     <string name="color_violet">Violet</string>
@@ -38,13 +43,21 @@
     <string name="language_english">English</string>
     <string name="language_vietnamese">Tiếng Việt</string>
     <string name="setting_permissions_title">Permissions</string>
-    <string name="setting_permissions_subtitle">Manage status and system navigation</string>
+    <string name="setting_permissions_subtitle">Ensure alarms always ring on time</string>
+    <string name="permission_badge_critical">Action needed</string>
+    <string name="permission_badge_partial">%1$d/%2$d granted</string>
+    <string name="permission_badge_ready">Ready</string>
+    <string name="setting_about_subtitle">Author, changelog, legal &amp; licenses</string>
     <string name="setting_alarm_title">Alarm Settings</string>
     <string name="setting_alarm_subtitle">Built-in speaker, pre-alarm notifications...</string>
 
     <string name="setting_qa">QA</string>
     <string name="setting_rate">Rate App</string>
     <string name="setting_share">Share App</string>
+    <string name="setting_feedback_title">Feedback &amp; Bug Report</string>
+    <string name="setting_feedback_subtitle">Suggest features or report alarm issues</string>
+    <string name="feedback_email_subject">[ReMind] Feedback / Bug Report</string>
+    <string name="feedback_no_email_app">No email app found. Please contact %1$s</string>
 
     <string name="setting_story">Story - Author</string>
     <string name="setting_terms">Terms of Service</string>
@@ -68,10 +81,10 @@
 
     <!-- Permissions -->
     <string name="permission_granted">Granted</string>
-    <string name="permission_denied">Denied</string>
+    <string name="permission_denied">Missing</string>
     <string name="permission_not_required">Not required</string>
-    <string name="permission_request_action">Request</string>
-    <string name="permission_warning_critical">CRITICAL: App cannot alert you if this is missing!</string>
+    <string name="permission_request_action">Grant</string>
+    <string name="permission_warning_critical">Required for alarms to ring</string>
 
     <string name="permission_exact_alarm_title">Alarms</string>
     <string name="permission_exact_alarm_desc">Allow the app to set precise alarms even when the device is in power-saving mode.</string>
@@ -128,9 +141,12 @@
 
     <!-- Pro & Paywall -->
     <string name="pro_banner_title">Upgrade to ReMind Pro</string>
-    <string name="pro_banner_subtitle">Ad-free, 5 mission slots, voice TTS, wake-up check &amp; more</string>
-    <string name="pro_banner_active_title">ReMind Pro is Active</string>
-    <string name="pro_banner_active_subtitle">Thank you for supporting ReMind! All Pro features unlocked.</string>
+    <string name="pro_banner_subtitle">Ad-free, 5 mission slots, voice TTS &amp; more</string>
+    <string name="pro_banner_active_title">ReMind Pro Active</string>
+    <string name="pro_banner_active_subtitle">All Pro features unlocked</string>
+    <string name="pro_badge_label">PRO</string>
+    <string name="pro_action_upgrade">Upgrade</string>
+    <string name="pro_action_manage">Manage</string>
     <string name="paywall_restore_purchases">Restore</string>
     <string name="paywall_hero_title">Try Pro free for 7 days</string>
     <string name="paywall_hero_title_active">You are a ReMind Pro member</string>

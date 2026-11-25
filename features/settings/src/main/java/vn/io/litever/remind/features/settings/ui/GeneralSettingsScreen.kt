@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.settings.ui
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -11,15 +12,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -29,6 +32,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
@@ -41,16 +45,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import vn.io.litever.brand.tokens.palettes.blackDarkColorScheme
 import vn.io.litever.brand.tokens.palettes.blackLightColorScheme
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsCategory
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsItem
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
@@ -61,6 +68,9 @@ import vn.io.litever.remind.core.designsystem.theme.palettes.orangeDarkColorSche
 import vn.io.litever.remind.core.designsystem.theme.palettes.orangeLightColorScheme
 import vn.io.litever.remind.core.designsystem.theme.spacing
 import vn.io.litever.remind.features.settings.R
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun GeneralSettingsRoute(
@@ -78,7 +88,6 @@ fun GeneralSettingsRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GeneralSettingsScreen(
     uiState: SettingsUiState,
@@ -88,14 +97,18 @@ fun GeneralSettingsScreen(
     onLanguageChange: (String) -> Unit,
     onNavigateBack: () -> Unit
 ) {
-    var showTimeFormatDialog by remember { mutableStateOf(false) }
-    var showThemeModeDialog by remember { mutableStateOf(false) }
     var showLanguageDialog by remember { mutableStateOf(false) }
 
     val isDark = when (uiState.themeMode) {
         "LIGHT" -> false
         "DARK" -> true
         else -> isSystemInDarkTheme()
+    }
+
+    val effective24Hour = when (uiState.timeFormat) {
+        "H12" -> false
+        "H24" -> true
+        else -> uiState.is24HourFormat
     }
 
     val context = LocalContext.current
@@ -110,9 +123,11 @@ fun GeneralSettingsScreen(
                 primaryLight = orangeLightColorScheme.primary,
                 onPrimaryLight = orangeLightColorScheme.onPrimary,
                 primaryContainerLight = orangeLightColorScheme.primaryContainer,
+                onPrimaryContainerLight = orangeLightColorScheme.onPrimaryContainer,
                 primaryDark = orangeDarkColorScheme.primary,
                 onPrimaryDark = orangeDarkColorScheme.onPrimary,
-                primaryContainerDark = orangeDarkColorScheme.primaryContainer
+                primaryContainerDark = orangeDarkColorScheme.primaryContainer,
+                onPrimaryContainerDark = orangeDarkColorScheme.onPrimaryContainer
             ),
             PaletteColorOption(
                 key = "GREEN",
@@ -120,9 +135,11 @@ fun GeneralSettingsScreen(
                 primaryLight = greenLightColorScheme.primary,
                 onPrimaryLight = greenLightColorScheme.onPrimary,
                 primaryContainerLight = greenLightColorScheme.primaryContainer,
+                onPrimaryContainerLight = greenLightColorScheme.onPrimaryContainer,
                 primaryDark = greenDarkColorScheme.primary,
                 onPrimaryDark = greenDarkColorScheme.onPrimary,
-                primaryContainerDark = greenDarkColorScheme.primaryContainer
+                primaryContainerDark = greenDarkColorScheme.primaryContainer,
+                onPrimaryContainerDark = greenDarkColorScheme.onPrimaryContainer
             ),
             PaletteColorOption(
                 key = "BLACK",
@@ -130,9 +147,11 @@ fun GeneralSettingsScreen(
                 primaryLight = blackLightColorScheme.primary,
                 onPrimaryLight = blackLightColorScheme.onPrimary,
                 primaryContainerLight = blackLightColorScheme.primaryContainer,
+                onPrimaryContainerLight = blackLightColorScheme.onPrimaryContainer,
                 primaryDark = blackDarkColorScheme.primary,
                 onPrimaryDark = blackDarkColorScheme.onPrimary,
-                primaryContainerDark = blackDarkColorScheme.primaryContainer
+                primaryContainerDark = blackDarkColorScheme.primaryContainer,
+                onPrimaryContainerDark = blackDarkColorScheme.onPrimaryContainer
             ),
             PaletteColorOption(
                 key = "DYNAMIC",
@@ -140,45 +159,49 @@ fun GeneralSettingsScreen(
                 primaryLight = dynamicLight.primary,
                 onPrimaryLight = dynamicLight.onPrimary,
                 primaryContainerLight = dynamicLight.primaryContainer,
+                onPrimaryContainerLight = dynamicLight.onPrimaryContainer,
                 primaryDark = dynamicDark.primary,
                 onPrimaryDark = dynamicDark.onPrimary,
-                primaryContainerDark = dynamicDark.primaryContainer
+                primaryContainerDark = dynamicDark.primaryContainer,
+                onPrimaryContainerDark = dynamicDark.onPrimaryContainer
             )
         )
     }
 
     val selectedColorOption = colorPaletteOptions.firstOrNull { it.key == uiState.colorPalette }
         ?: colorPaletteOptions.first()
-    val currentColorPaletteLabel = stringResource(selectedColorOption.titleRes)
-
-    val timeOptions = listOf(
-        "SYSTEM" to stringResource(R.string.time_format_system),
-        "H12" to stringResource(R.string.time_format_12h),
-        "H24" to stringResource(R.string.time_format_24h)
-    )
 
     val themeOptions = listOf(
-        "SYSTEM" to stringResource(R.string.theme_system),
-        "LIGHT" to stringResource(R.string.theme_light),
-        "DARK" to stringResource(R.string.theme_dark)
+        ThemeModeOption(
+            key = "SYSTEM",
+            title = stringResource(R.string.theme_system),
+            subtitle = stringResource(R.string.theme_system_desc),
+            icon = ReMindIcons.BrightnessMedium
+        ),
+        ThemeModeOption(
+            key = "LIGHT",
+            title = stringResource(R.string.theme_light),
+            subtitle = stringResource(R.string.theme_light_desc),
+            icon = ReMindIcons.LightMode
+        ),
+        ThemeModeOption(
+            key = "DARK",
+            title = stringResource(R.string.theme_dark),
+            subtitle = stringResource(R.string.theme_dark_desc),
+            icon = ReMindIcons.DarkMode
+        )
     )
 
     val languageOptions = listOf(
         "en" to stringResource(R.string.language_english),
         "vi" to stringResource(R.string.language_vietnamese)
     )
-
-    val currentTimeFormatLabel = timeOptions.firstOrNull { it.first == uiState.timeFormat }?.second
-        ?: stringResource(R.string.time_format_system)
-    val currentThemeLabel = themeOptions.firstOrNull { it.first == uiState.themeMode }?.second
-        ?: stringResource(R.string.theme_system)
     val currentLanguageLabel = languageOptions.firstOrNull { it.first == uiState.language }?.second
         ?: stringResource(R.string.language_english)
 
-    val themeIcon = when (uiState.themeMode) {
-        "LIGHT" -> ReMindIcons.LightMode
-        "DARK" -> ReMindIcons.DarkMode
-        else -> ReMindIcons.BrightnessMedium
+    val formattedTimePreview = remember(effective24Hour) {
+        val pattern = if (effective24Hour) "HH:mm" else "h:mm a"
+        SimpleDateFormat(pattern, Locale.getDefault()).format(Date())
     }
 
     Scaffold(
@@ -194,43 +217,44 @@ fun GeneralSettingsScreen(
                 .fillMaxSize()
                 .padding(paddingValues),
             contentPadding = PaddingValues(MaterialTheme.spacing.medium),
-            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
         ) {
-            // Display Group
+            // 1. Appearance Cards (System / Light / Dark)
             item {
-                ReMindSettingsGroup(title = stringResource(R.string.display_headline)) {
-                    ReMindSettingsItem(
-                        title = stringResource(R.string.display_mode_headline),
-                        subtitle = currentThemeLabel,
-                        icon = themeIcon,
-                        trailingContent = {
-                            Icon(
-                                imageVector = ReMindIcons.ChevronRight,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.smallMedium)
+                ) {
+                    ReMindSettingsCategory(
+                        title = stringResource(R.string.display_headline),
+                        modifier = Modifier.padding(horizontal = MaterialTheme.spacing.extraSmall)
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
+                    ) {
+                        themeOptions.forEach { option ->
+                            ThemeModeOptionCard(
+                                option = option,
+                                isSelected = option.key == uiState.themeMode,
+                                onClick = { onThemeModeChange(option.key) },
+                                modifier = Modifier.weight(1f)
                             )
-                        },
-                        onClick = { showThemeModeDialog = true }
-                    )
+                        }
+                    }
+                }
+            }
 
-                    HorizontalDivider(
-                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3F),
-                        modifier = Modifier.padding(horizontal = MaterialTheme.spacing.extraLarge)
-                    )
-
-                    // Inline Color Palette Picker (Direct selection without dialog)
-                    ReMindSettingsItem(
-                        title = stringResource(R.string.color_source_headline),
-                        subtitle = currentColorPaletteLabel,
-                        icon = ReMindIcons.Palette
-                    )
-
+            // 2. Primary Accent Theme Swatches
+            item {
+                ReMindSettingsGroup(title = stringResource(R.string.color_source_headline)) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(
                                 start = MaterialTheme.spacing.medium,
                                 end = MaterialTheme.spacing.medium,
+                                top = MaterialTheme.spacing.small,
                                 bottom = MaterialTheme.spacing.medium
                             ),
                         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
@@ -248,70 +272,48 @@ fun GeneralSettingsScreen(
                 }
             }
 
-            // Language & Region Group
+            // 3. Time Format & Language
             item {
                 ReMindSettingsGroup(title = stringResource(R.string.language_and_region_headline)) {
                     ReMindSettingsItem(
-                        title = stringResource(R.string.setting_language),
-                        subtitle = currentLanguageLabel,
-                        icon = ReMindIcons.Language,
+                        title = stringResource(R.string.hour_format_24_headline),
+                        subtitle = stringResource(R.string.time_format_preview, formattedTimePreview),
+                        icon = ReMindIcons.Schedule,
                         trailingContent = {
-                            Icon(
-                                imageVector = ReMindIcons.ChevronRight,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            CompactTimeFormatToggle(
+                                is24Hour = effective24Hour,
+                                onSelect12Hour = { onTimeFormatChange("H12") },
+                                onSelect24Hour = { onTimeFormatChange("H24") }
                             )
-                        },
-                        onClick = { showLanguageDialog = true }
-                    )
-
-                    HorizontalDivider(
-                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3F),
-                        modifier = Modifier.padding(horizontal = MaterialTheme.spacing.extraLarge)
+                        }
                     )
 
                     ReMindSettingsItem(
-                        title = stringResource(R.string.hour_format_24_headline),
-                        subtitle = currentTimeFormatLabel,
-                        icon = ReMindIcons.Schedule,
+                        title = stringResource(R.string.setting_language),
+                        subtitle = stringResource(R.string.setting_language_desc),
+                        icon = ReMindIcons.Language,
+                        onClick = { showLanguageDialog = true },
                         trailingContent = {
-                            Icon(
-                                imageVector = ReMindIcons.ChevronRight,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        },
-                        onClick = { showTimeFormatDialog = true }
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall)
+                            ) {
+                                Text(
+                                    text = currentLanguageLabel,
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Icon(
+                                    imageVector = ReMindIcons.ChevronRight,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
                     )
                 }
             }
         }
-    }
-
-    if (showTimeFormatDialog) {
-        SingleChoiceDialog(
-            title = stringResource(R.string.hour_format_24_headline),
-            options = timeOptions,
-            selectedKey = uiState.timeFormat,
-            onDismiss = { showTimeFormatDialog = false },
-            onSelect = { key ->
-                onTimeFormatChange(key)
-                showTimeFormatDialog = false
-            }
-        )
-    }
-
-    if (showThemeModeDialog) {
-        SingleChoiceDialog(
-            title = stringResource(R.string.display_mode_headline),
-            options = themeOptions,
-            selectedKey = uiState.themeMode,
-            onDismiss = { showThemeModeDialog = false },
-            onSelect = { key ->
-                onThemeModeChange(key)
-                showThemeModeDialog = false
-            }
-        )
     }
 
     if (showLanguageDialog) {
@@ -325,6 +327,192 @@ fun GeneralSettingsScreen(
                 showLanguageDialog = false
             }
         )
+    }
+}
+
+@Composable
+private fun CompactTimeFormatToggle(
+    is24Hour: Boolean,
+    onSelect12Hour: () -> Unit,
+    onSelect24Hour: () -> Unit
+) {
+    Surface(
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.surfaceContainerHigh
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(MaterialTheme.spacing.extraSmall)
+                .animateContentSize(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            TimeFormatSegment(
+                label = stringResource(R.string.time_format_12h),
+                selected = !is24Hour,
+                onClick = onSelect12Hour
+            )
+            TimeFormatSegment(
+                label = stringResource(R.string.time_format_24h),
+                selected = is24Hour,
+                onClick = onSelect24Hour
+            )
+        }
+    }
+}
+
+@Composable
+private fun TimeFormatSegment(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    val segmentShape = MaterialTheme.shapes.medium
+    val contentPadding = PaddingValues(
+        horizontal = MaterialTheme.spacing.none,
+        vertical = MaterialTheme.spacing.none
+    )
+
+    if (selected) {
+        Button(
+            onClick = onClick,
+            shape = segmentShape,
+            contentPadding = contentPadding,
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                maxLines = 1
+            )
+        }
+    } else {
+        TextButton(
+            onClick = onClick,
+            shape = segmentShape,
+            contentPadding = contentPadding,
+            colors = ButtonDefaults.textButtonColors(
+                contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+            ),
+        ) {
+            Text(
+                text = label,
+                maxLines = 1
+            )
+        }
+    }
+}
+
+private data class ThemeModeOption(
+    val key: String,
+    val title: String,
+    val subtitle: String,
+    val icon: ImageVector
+)
+
+@Composable
+private fun ThemeModeOptionCard(
+    option: ThemeModeOption,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        onClick = onClick,
+        shape = MaterialTheme.shapes.large,
+        color = if (isSelected) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else {
+            MaterialTheme.colorScheme.surfaceContainerLow
+        },
+        border = if (isSelected) {
+            null
+        } else {
+            BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+        },
+        modifier = modifier
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = MaterialTheme.spacing.small,
+                    vertical = MaterialTheme.spacing.medium
+                )
+        ) {
+            if (isSelected) {
+                Surface(
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .size(18.dp)
+                        .align(Alignment.TopEnd)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            imageVector = ReMindIcons.Check,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier.size(12.dp)
+                        )
+                    }
+                }
+            }
+
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall)
+            ) {
+                Surface(
+                    shape = CircleShape,
+                    color = if (isSelected) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.surfaceContainerHigh
+                    },
+                    modifier = Modifier.size(44.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            imageVector = option.icon,
+                            contentDescription = null,
+                            tint = if (isSelected) {
+                                MaterialTheme.colorScheme.onPrimary
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            },
+                            modifier = Modifier.size(22.dp)
+                        )
+                    }
+                }
+
+                Text(
+                    text = option.title,
+                    style = MaterialTheme.typography.labelLarge.copy(
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold
+                    ),
+                    color = if (isSelected) {
+                        MaterialTheme.colorScheme.onPrimaryContainer
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Text(
+                    text = option.subtitle,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = if (isSelected) {
+                        MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
     }
 }
 
@@ -376,9 +564,11 @@ private data class PaletteColorOption(
     val primaryLight: Color,
     val onPrimaryLight: Color,
     val primaryContainerLight: Color,
+    val onPrimaryContainerLight: Color,
     val primaryDark: Color,
     val onPrimaryDark: Color,
-    val primaryContainerDark: Color
+    val primaryContainerDark: Color,
+    val onPrimaryContainerDark: Color
 )
 
 /**
@@ -396,19 +586,21 @@ private fun ColorSwatchOptionCard(
     val primaryColor = if (isDark) item.primaryDark else item.primaryLight
     val onPrimaryColor = if (isDark) item.onPrimaryDark else item.onPrimaryLight
     val containerColor = if (isDark) item.primaryContainerDark else item.primaryContainerLight
+    val onContainerColor = if (isDark) item.onPrimaryContainerDark else item.onPrimaryContainerLight
 
     Surface(
         onClick = onClick,
         shape = MaterialTheme.shapes.medium,
         color = if (isSelected) {
-            containerColor.copy(alpha = 0.45f)
+            containerColor
         } else {
             MaterialTheme.colorScheme.surfaceContainerLow
         },
-        border = BorderStroke(
-            width = if (isSelected) 2.dp else 1.dp,
-            color = if (isSelected) primaryColor else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
-        ),
+        border = if (isSelected) {
+            null
+        } else {
+            BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+        },
         modifier = modifier
     ) {
         Column(
@@ -430,7 +622,7 @@ private fun ColorSwatchOptionCard(
                     .border(
                         border = BorderStroke(
                             width = 1.dp,
-                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
+                            color = MaterialTheme.colorScheme.outlineVariant
                         ),
                         shape = CircleShape
                     ),
@@ -467,7 +659,7 @@ private fun ColorSwatchOptionCard(
                 style = MaterialTheme.typography.labelSmall.copy(
                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
                 ),
-                color = if (isSelected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
+                color = if (isSelected) onContainerColor else MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -476,12 +668,17 @@ private fun ColorSwatchOptionCard(
     }
 }
 
-@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@Preview(showBackground = true)
 @Composable
 fun GeneralSettingsScreenPreview() {
     ReMindTheme {
         GeneralSettingsScreen(
-            uiState = SettingsUiState(is24HourFormat = true, timeFormat = "SYSTEM", themeMode = "SYSTEM", colorPalette = "ORANGE"),
+            uiState = SettingsUiState(
+                is24HourFormat = false,
+                timeFormat = "H12",
+                themeMode = "SYSTEM",
+                colorPalette = "ORANGE"
+            ),
             onTimeFormatChange = {},
             onThemeModeChange = {},
             onColorPaletteChange = {},
@@ -491,12 +688,17 @@ fun GeneralSettingsScreenPreview() {
     }
 }
 
-@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFF19120C)
 @Composable
 fun GeneralSettingsScreenDarkPreview() {
-    ReMindTheme(darkTheme = true, colorPalette = "GREEN") {
+    ReMindTheme(darkTheme = true, colorPalette = "ORANGE") {
         GeneralSettingsScreen(
-            uiState = SettingsUiState(is24HourFormat = true, timeFormat = "SYSTEM", themeMode = "DARK", colorPalette = "GREEN"),
+            uiState = SettingsUiState(
+                is24HourFormat = true,
+                timeFormat = "H24",
+                themeMode = "DARK",
+                colorPalette = "ORANGE"
+            ),
             onTimeFormatChange = {},
             onThemeModeChange = {},
             onColorPaletteChange = {},

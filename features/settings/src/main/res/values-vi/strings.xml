@@ -5,20 +5,25 @@
     <string name="time_format_12h">12h</string>
     <string name="time_format_24h">24h</string>
     <string name="appearance_and_color_group">Giao diện &amp; Màu sắc</string>
-    <string name="display_headline">Hiển thị</string>
+    <string name="display_headline">Giao diện</string>
     <string name="display_mode_headline">Chế độ hiển thị</string>
     <string name="theme_system">Hệ thống</string>
+    <string name="theme_system_desc">Theo thiết bị</string>
     <string name="theme_light">Sáng</string>
+    <string name="theme_light_desc">Sáng rõ</string>
     <string name="theme_dark">Tối</string>
+    <string name="theme_dark_desc">Dịu mắt</string>
+    <string name="time_format_preview">Hiển thị: %1$s</string>
+    <string name="setting_language_desc">Ngôn ngữ hiển thị</string>
     <string name="color_source_headline">Nguồn màu chủ đạo</string>
     <string name="color_source_remind">ReMind</string>
     <string name="color_source_wallpaper">Hình nền</string>
     <string name="color_source_litever">LiteVer</string>
     <string name="color_black">Đơn sắc</string>
     <string name="color_red">Đỏ</string>
-    <string name="color_orange">Cam chín</string>
+    <string name="color_orange">Cam</string>
     <string name="color_yellow">Vàng</string>
-    <string name="color_green">Cam xanh</string>
+    <string name="color_green">Lục</string>
     <string name="color_blue">Lam</string>
     <string name="color_indigo">Chàm</string>
     <string name="color_violet">Tím</string>
@@ -38,13 +43,21 @@
     <string name="language_english">Tiếng Anh</string>
     <string name="language_vietnamese">Tiếng Việt</string>
     <string name="setting_permissions_title">Quyền</string>
-    <string name="setting_permissions_subtitle">Quản lý trạng thái và liên kết cài đặt</string>
+    <string name="setting_permissions_subtitle">Đảm bảo báo thức luôn kêu đúng giờ</string>
+    <string name="permission_badge_critical">Cần cấp quyền</string>
+    <string name="permission_badge_partial">%1$d/%2$d quyền</string>
+    <string name="permission_badge_ready">Sẵn sàng</string>
+    <string name="setting_about_subtitle">Tác giả, cập nhật, điều khoản &amp; nguồn</string>
     <string name="setting_alarm_title">Cài đặt báo thức</string>
     <string name="setting_alarm_subtitle">Loa tích hợp, thông báo sắp đến...</string>
 
     <string name="setting_qa">QA</string>
     <string name="setting_rate">Đánh giá ứng dụng</string>
     <string name="setting_share">Chia sẻ ứng dụng</string>
+    <string name="setting_feedback_title">Gửi phản hồi &amp; Báo lỗi</string>
+    <string name="setting_feedback_subtitle">Góp ý tính năng hoặc báo sự cố báo thức</string>
+    <string name="feedback_email_subject">[ReMind] Phản hồi / Báo lỗi</string>
+    <string name="feedback_no_email_app">Không tìm thấy ứng dụng email. Vui lòng liên hệ %1$s</string>
 
     <string name="setting_story">Câu chuyện - Tác giả</string>
     <string name="setting_terms">Điều khoản</string>
@@ -67,11 +80,11 @@
     <string name="author_info_developed_by">Phát triển với ❤️ bởi LiteVer Team</string>
 
     <!-- Permissions -->
-    <string name="permission_granted">Đã cấp quyền</string>
-    <string name="permission_denied">Chưa có quyền</string>
+    <string name="permission_granted">Đã cấp</string>
+    <string name="permission_denied">Chưa cấp</string>
     <string name="permission_not_required">Không yêu cầu</string>
-    <string name="permission_request_action">Thiết lập</string>
-    <string name="permission_warning_critical">QUAN TRỌNG: App sẽ không thể báo thức nếu thiếu quyền này!</string>
+    <string name="permission_request_action">Cấp quyền</string>
+    <string name="permission_warning_critical">Bắt buộc để báo thức có thể đổ chuông</string>
 
     <string name="permission_exact_alarm_title">Báo thức</string>
     <string name="permission_exact_alarm_desc">Cho phép ứng dụng đặt báo thức chính xác ngay cả khi thiết bị đang ở chế độ tiết kiệm pin.</string>
@@ -82,7 +95,7 @@
     <string name="permission_full_screen_intent_title">Cảnh báo toàn màn hình</string>
     <string name="permission_full_screen_intent_desc">Cho phép nhắc nhở khẩn cấp và báo thức hiển thị ngay lập tức trên màn hình khóa.</string>
 
-    <string name="permission_overlay_title">Hiển thị trên các ứng dụng khác</string>
+    <string name="permission_overlay_title">Hiện trên ứng dụng khác</string>
     <string name="permission_overlay_desc">Giúp giao diện báo thức xuất hiện ngay lập tức khi bạn đang sử dụng ứng dụng khác.</string>
 
     <string name="permission_battery_title">Tối ưu hóa pin</string>
@@ -91,7 +104,7 @@
     <string name="permission_dnd_title">Bỏ qua Không làm phiền</string>
     <string name="permission_dnd_desc">Cho phép ứng dụng phát chuông ngay cả khi thiết bị đang ở chế độ Không làm phiền.</string>
 
-    <string name="permission_manufacturer_title">Cài đặt riêng của nhà sản xuất</string>
+    <string name="permission_manufacturer_title">Cài đặt nhà sản xuất</string>
     <string name="permission_manufacturer_desc">Quản lý Tự khởi chạy và hoạt động nền cho riêng dòng máy của bạn.</string>
 
     <!-- Alarm Settings -->
@@ -127,10 +140,13 @@
     <string name="loading_ad_message">Đang tải quảng cáo, vui lòng đợi...</string>
 
     <!-- Pro & Paywall -->
-    <string name="pro_banner_title">Nâng cấp lên ReMind Pro</string>
-    <string name="pro_banner_subtitle">Không quảng cáo, 5 ô nhiệm vụ, đọc giọng nói TTS &amp; nhiều hơn nữa</string>
+    <string name="pro_banner_title">Nâng cấp ReMind Pro</string>
+    <string name="pro_banner_subtitle">Không quảng cáo, 5 ô nhiệm vụ, TTS &amp; nhiều hơn</string>
     <string name="pro_banner_active_title">ReMind Pro đang hoạt động</string>
-    <string name="pro_banner_active_subtitle">Cảm ơn bạn đã ủng hộ! Toàn bộ tính năng Pro đã được mở khóa.</string>
+    <string name="pro_banner_active_subtitle">Toàn bộ tính năng Pro đã mở khóa</string>
+    <string name="pro_badge_label">PRO</string>
+    <string name="pro_action_upgrade">Nâng cấp</string>
+    <string name="pro_action_manage">Quản lý</string>
     <string name="paywall_restore_purchases">Phục hồi mua</string>
     <string name="paywall_hero_title">Dùng thử Pro miễn phí 7 ngày</string>
     <string name="paywall_hero_title_active">Bạn đang là thành viên ReMind Pro</string>

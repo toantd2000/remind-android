@@ -99,6 +99,7 @@ import androidx.compose.material.icons.rounded.WbSunny
 import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material.icons.rounded.WifiFind
 import androidx.compose.material.icons.rounded.WifiOff
+import androidx.compose.material.icons.rounded.WorkspacePremium
 import androidx.compose.ui.graphics.vector.ImageVector
 
 /**
@@ -204,4 +205,5 @@ object ReMindIcons {
     val Wifi: ImageVector = Icons.Rounded.Wifi
     val WifiFind: ImageVector = Icons.Rounded.WifiFind
     val WifiOff: ImageVector = Icons.Rounded.WifiOff
+    val WorkspacePremium: ImageVector = Icons.Rounded.WorkspacePremium
 }

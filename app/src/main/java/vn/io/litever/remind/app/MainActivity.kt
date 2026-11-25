@@ -98,7 +98,7 @@ import vn.io.litever.remind.features.mission.ui.navigateToTypingMissionConfig
 import vn.io.litever.remind.features.reminders.ui.RemindersListRoute
 import vn.io.litever.remind.features.reminders.ui.navigateToReminderEdit
 import vn.io.litever.remind.features.reminders.ui.remindersGraph
-import vn.io.litever.remind.features.settings.ui.navigateToAttributions
+import vn.io.litever.remind.features.settings.ui.navigateToAbout
 import vn.io.litever.remind.features.settings.ui.navigateToGeneralSettings
 import vn.io.litever.remind.features.settings.ui.navigateToLicenses
 import vn.io.litever.remind.features.settings.ui.navigateToPaywall
@@ -381,6 +381,7 @@ class MainActivity : ComponentActivity() {
                             }
 
                             Scaffold(
+                                contentWindowInsets = WindowInsets(0, 0, 0, 0),
                                 snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
                                 bottomBar = {
                                     if (isBottomBarVisible) {
@@ -419,7 +420,7 @@ class MainActivity : ComponentActivity() {
                                     val layoutDirection = LocalLayoutDirection.current
                                     val actualPadding = PaddingValues(
                                         start = paddingValues.calculateStartPadding(layoutDirection),
-                                        top = paddingValues.calculateTopPadding(),
+                                        top = MaterialTheme.spacing.none,
                                         end = paddingValues.calculateEndPadding(layoutDirection),
                                         bottom = if (isBottomBarVisible) paddingValues.calculateBottomPadding() else MaterialTheme.spacing.none
                                     )
@@ -601,7 +602,7 @@ class MainActivity : ComponentActivity() {
                                             settingsGraph(
                                                 onNavigateToGeneralSettings = { navController.navigateToGeneralSettings() },
                                                 onNavigateToPermissions = { navController.navigateToPermissions() },
-                                                onNavigateToAttributions = { navController.navigateToAttributions() },
+                                                onNavigateToAbout = { navController.navigateToAbout() },
                                                 onNavigateToLicenses = { navController.navigateToLicenses() },
                                                 onNavigateToPaywall = { initialSlide ->
                                                     navController.navigateToPaywall(initialSlide)

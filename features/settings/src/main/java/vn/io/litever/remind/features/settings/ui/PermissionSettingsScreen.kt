@@ -1,7 +1,5 @@
 package vn.io.litever.remind.features.settings.ui
 
-import vn.io.litever.remind.core.designsystem.theme.spacing
-import vn.io.litever.remind.core.designsystem.theme.semanticColors
 import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
@@ -9,7 +7,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -22,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -41,8 +39,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -51,6 +47,8 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.designsystem.theme.semanticColors
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import vn.io.litever.remind.features.settings.R
 
 @Composable
@@ -222,7 +220,7 @@ fun PermissionSettingsScreenPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFF19120C)
 @Composable
 fun PermissionSettingsScreenDarkPreview() {
     ReMindTheme(darkTheme = true) {
@@ -266,34 +264,37 @@ fun PermissionTile(
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Top
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(MaterialTheme.spacing.large)
                 )
 
-                Column(
+                Row(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(horizontal = MaterialTheme.spacing.smallMedium)
+                        .padding(start = MaterialTheme.spacing.medium),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
                 ) {
                     Text(
                         text = title,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        lineHeight = 20.sp
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.weight(1f, fill = false)
                     )
 
-                    Spacer(modifier = Modifier.height(MaterialTheme.spacing.extraSmall))
-
-                    StatusBadge(isGranted = isGranted)
+                    StatusBadge(
+                        isGranted = isGranted,
+                        isCritical = isCritical
+                    )
                 }
             }
 
-            Spacer(modifier = Modifier.height(MaterialTheme.spacing.smallMedium))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
 
             Text(
                 text = description,
@@ -342,9 +343,8 @@ fun PermissionTile(
 fun ManufacturerSettingsTile(onOpen: () -> Unit) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.1f),
-        shape = MaterialTheme.shapes.large,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f))
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        shape = MaterialTheme.shapes.large
     ) {
         Column(
             modifier = Modifier.padding(MaterialTheme.spacing.medium)
@@ -355,13 +355,14 @@ fun ManufacturerSettingsTile(onOpen: () -> Unit) {
                 Icon(
                     imageVector = ReMindIcons.SettingsSuggest,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.secondary
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(MaterialTheme.spacing.large)
                 )
-                Spacer(modifier = Modifier.width(MaterialTheme.spacing.smallMedium))
+                Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium))
                 Text(
                     text = stringResource(R.string.permission_manufacturer_title),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
@@ -369,7 +370,7 @@ fun ManufacturerSettingsTile(onOpen: () -> Unit) {
 
             Text(
                 text = stringResource(R.string.permission_manufacturer_desc),
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
@@ -388,27 +389,34 @@ fun ManufacturerSettingsTile(onOpen: () -> Unit) {
 }
 
 @Composable
-fun StatusBadge(isGranted: Boolean) {
-    val successColor = MaterialTheme.semanticColors.success
-    val errorColor = MaterialTheme.colorScheme.error
-    val containerColor = if (isGranted) successColor.copy(alpha = 0.12f) else MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.4f)
-    val borderColor = if (isGranted) successColor.copy(alpha = 0.3f) else errorColor.copy(alpha = 0.2f)
-    val textColor = if (isGranted) successColor else errorColor
+fun StatusBadge(
+    isGranted: Boolean,
+    isCritical: Boolean = false
+) {
+    val containerColor = when {
+        isGranted -> MaterialTheme.semanticColors.success.copy(alpha = 0.14f)
+        isCritical -> MaterialTheme.colorScheme.errorContainer
+        else -> MaterialTheme.semanticColors.warningContainer
+    }
+    val textColor = when {
+        isGranted -> MaterialTheme.semanticColors.success
+        isCritical -> MaterialTheme.colorScheme.onErrorContainer
+        else -> MaterialTheme.semanticColors.onWarningContainer
+    }
 
     Surface(
         color = containerColor,
-        shape = MaterialTheme.shapes.small,
-        border = BorderStroke(1.dp, borderColor)
+        shape = CircleShape
     ) {
         Text(
             text = if (isGranted) stringResource(R.string.permission_granted) else stringResource(R.string.permission_denied),
             modifier = Modifier.padding(
                 horizontal = MaterialTheme.spacing.small,
-                vertical = MaterialTheme.spacing.extraSmall
+                vertical = MaterialTheme.spacing.tiny
             ),
-            style = MaterialTheme.typography.labelSmall,
+            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
             color = textColor,
-            fontWeight = FontWeight.Bold
+            maxLines = 1
         )
     }
 }

@@ -4,13 +4,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import vn.io.litever.remind.core.common.util.PermissionChecker
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import javax.inject.Inject
+
+data class PermissionHealthSummary(
+    val hasCriticalPermissions: Boolean = true,
+    val grantedCount: Int = 6,
+    val totalCount: Int = 6
+)
 
 data class SettingsUiState(
     val is24HourFormat: Boolean = true,
@@ -21,13 +29,17 @@ data class SettingsUiState(
     val useBuiltInSpeaker: Boolean = true,
     val isPreNotificationEnabled: Boolean = true,
     val adsDisabledUntil: Long = 0L,
-    val isPro: Boolean = false
+    val isPro: Boolean = false,
+    val permissionHealth: PermissionHealthSummary = PermissionHealthSummary()
 )
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val preferencesDataSource: AlarmPreferencesDataSource
+    private val preferencesDataSource: AlarmPreferencesDataSource,
+    private val permissionChecker: PermissionChecker
 ) : ViewModel() {
+
+    private val permissionHealthFlow = MutableStateFlow(readPermissionHealth())
 
     @Suppress("UNCHECKED_CAST")
     val uiState: StateFlow<SettingsUiState> = combine(
@@ -40,7 +52,8 @@ class SettingsViewModel @Inject constructor(
             preferencesDataSource.useBuiltInSpeaker,
             preferencesDataSource.isPreNotificationEnabled,
             preferencesDataSource.adsDisabledUntil,
-            preferencesDataSource.isProUser
+            preferencesDataSource.isProUser,
+            permissionHealthFlow
         )
     ) { params ->
         SettingsUiState(
@@ -52,13 +65,34 @@ class SettingsViewModel @Inject constructor(
             useBuiltInSpeaker = params[5] as Boolean,
             isPreNotificationEnabled = params[6] as Boolean,
             adsDisabledUntil = params[7] as Long,
-            isPro = params[8] as Boolean
+            isPro = params[8] as Boolean,
+            permissionHealth = params[9] as PermissionHealthSummary
         )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = SettingsUiState()
+        initialValue = SettingsUiState(permissionHealth = readPermissionHealth())
     )
+
+    fun refreshPermissions() {
+        permissionHealthFlow.value = readPermissionHealth()
+    }
+
+    private fun readPermissionHealth(): PermissionHealthSummary {
+        val checks = listOf(
+            permissionChecker.hasNotificationPermission(),
+            permissionChecker.hasExactAlarmPermission(),
+            permissionChecker.hasFullScreenIntentPermission(),
+            permissionChecker.hasOverlayPermission(),
+            permissionChecker.isIgnoringBatteryOptimizations(),
+            permissionChecker.hasNotificationPolicyAccess()
+        )
+        return PermissionHealthSummary(
+            hasCriticalPermissions = permissionChecker.hasCriticalPermissions(),
+            grantedCount = checks.count { it },
+            totalCount = checks.size
+        )
+    }
 
     fun setTimeFormat(format: String) {
         viewModelScope.launch {

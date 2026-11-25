@@ -1,27 +1,19 @@
 package vn.io.litever.remind.features.mission.ui
 
-import androidx.compose.material3.MaterialTheme
-import vn.io.litever.remind.core.designsystem.theme.spacing
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.RadioButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,24 +22,22 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
-import vn.io.litever.remind.core.designsystem.components.ReMindSettingsCategory
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsDivider
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
-import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import vn.io.litever.remind.core.model.MathDifficulty
 import vn.io.litever.remind.core.model.MathMissionConfig
 import vn.io.litever.remind.core.model.Mission
 import vn.io.litever.remind.core.model.MissionType
 import vn.io.litever.remind.features.mission.R
+import vn.io.litever.remind.features.mission.ui.components.MissionRadioOptionRow
+import vn.io.litever.remind.features.mission.ui.components.MissionStepperGroup
 
 @Composable
 fun MathMissionConfigRoute(
@@ -90,25 +80,28 @@ fun MathMissionConfigScreen(
     onDifficultyChange: (MathDifficulty) -> Unit,
     onSave: () -> Unit
 ) {
+    val difficulties = listOf(
+        MathDifficulty.EASY to R.string.math_difficulty_easy,
+        MathDifficulty.NORMAL to R.string.math_difficulty_normal,
+        MathDifficulty.HARD to R.string.math_difficulty_hard,
+        MathDifficulty.VERY_HARD to R.string.math_difficulty_very_hard
+    )
+
     Scaffold(
         modifier = Modifier.imePadding(),
         topBar = {
-            Box(Modifier.fillMaxWidth()) {
-                LvTopAppBar(
-                    title = stringResource(R.string.math_config_title),
-                    onBackClick = onBackClick
-                )
-            }
+            LvTopAppBar(
+                title = stringResource(R.string.math_config_title),
+                onBackClick = onBackClick
+            )
         },
         bottomBar = {
-            Box(Modifier.fillMaxWidth()) {
-                ReMindBottomBar {
-                    Button(
-                        onClick = onSave,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(stringResource(R.string.mission_complete))
-                    }
+            ReMindBottomBar {
+                Button(
+                    onClick = onSave,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(stringResource(R.string.save_mission_action))
                 }
             }
         }
@@ -116,172 +109,45 @@ fun MathMissionConfigScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
                 .padding(padding)
-                .padding(horizontal = MaterialTheme.spacing.medium)
+                .verticalScroll(rememberScrollState())
+                .padding(MaterialTheme.spacing.medium),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.smallMedium)
         ) {
-            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
-
             // Section 1: Difficulty Selection
             ReMindSettingsGroup(
                 title = stringResource(R.string.math_difficulty_settings)
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = MaterialTheme.spacing.small)
-                ) {
-                    DifficultyOptionRow(
-                        title = stringResource(R.string.math_difficulty_easy),
-                        selected = difficulty == MathDifficulty.EASY,
-                        onClick = { onDifficultyChange(MathDifficulty.EASY) }
+                difficulties.forEachIndexed { index, (level, titleRes) ->
+                    MissionRadioOptionRow(
+                        title = stringResource(titleRes),
+                        selected = difficulty == level,
+                        onClick = { onDifficultyChange(level) }
                     )
-                    DifficultyOptionRow(
-                        title = stringResource(R.string.math_difficulty_normal),
-                        selected = difficulty == MathDifficulty.NORMAL,
-                        onClick = { onDifficultyChange(MathDifficulty.NORMAL) }
-                    )
-                    DifficultyOptionRow(
-                        title = stringResource(R.string.math_difficulty_hard),
-                        selected = difficulty == MathDifficulty.HARD,
-                        onClick = { onDifficultyChange(MathDifficulty.HARD) }
-                    )
-                    DifficultyOptionRow(
-                        title = stringResource(R.string.math_difficulty_very_hard),
-                        selected = difficulty == MathDifficulty.VERY_HARD,
-                        onClick = { onDifficultyChange(MathDifficulty.VERY_HARD) }
-                    )
+                    if (index < difficulties.lastIndex) {
+                        ReMindSettingsDivider()
+                    }
                 }
             }
-
-            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
 
             // Section 2: Number of problems (Repetitions)
-            ReMindSettingsGroup {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            top = MaterialTheme.spacing.medium,
-                            bottom = MaterialTheme.spacing.extraSmall,
-                            start = MaterialTheme.spacing.medium,
-                            end = MaterialTheme.spacing.small
-                        ),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    ReMindSettingsCategory(
-                        title = stringResource(R.string.math_problems_count),
-                        modifier = Modifier.weight(1f)
-                    )
-                    IconButton(
-                        onClick = { onRepetitionsChange(3) },
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Icon(
-                            imageVector = ReMindIcons.Refresh,
-                            contentDescription = "Reset",
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
+            MissionStepperGroup(
+                title = stringResource(R.string.math_problems_count),
+                valueText = "$repetitions",
+                helperText = stringResource(R.string.math_problems_helper, repetitions),
+                canDecrement = repetitions > 1,
+                canIncrement = repetitions < 50,
+                onDecrement = { onRepetitionsChange(repetitions - 1) },
+                onIncrement = { onRepetitionsChange(repetitions + 1) },
+                onReset = { onRepetitionsChange(3) }
+            )
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            horizontal = MaterialTheme.spacing.medium,
-                            vertical = MaterialTheme.spacing.small
-                        ),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(
-                        onClick = { onRepetitionsChange(repetitions - 1) },
-                        modifier = Modifier.size(40.dp),
-                        enabled = repetitions > 1
-                    ) {
-                        Icon(
-                            imageVector = ReMindIcons.KeyboardArrowLeft,
-                            contentDescription = null,
-                            modifier = Modifier.size(28.dp)
-                        )
-                    }
-
-                    Text(
-                        text = "$repetitions",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-
-                    IconButton(
-                        onClick = { onRepetitionsChange(repetitions + 1) },
-                        modifier = Modifier.size(40.dp),
-                        enabled = repetitions < 50
-                    ) {
-                        Icon(
-                            imageVector = ReMindIcons.KeyboardArrowRight,
-                            contentDescription = null,
-                            modifier = Modifier.size(28.dp)
-                        )
-                    }
-                }
-
-                Text(
-                    text = stringResource(R.string.math_problems_helper, repetitions),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(
-                        start = MaterialTheme.spacing.medium,
-                        end = MaterialTheme.spacing.medium,
-                        bottom = MaterialTheme.spacing.medium
-                    )
-                )
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
         }
     }
 }
 
-@Composable
-private fun DifficultyOptionRow(
-    title: String,
-    selected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(MaterialTheme.shapes.small)
-            .clickable(onClick = onClick)
-            .padding(
-                horizontal = MaterialTheme.spacing.medium,
-                vertical = MaterialTheme.spacing.small
-            ),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        RadioButton(
-            selected = selected,
-            onClick = null,
-            colors = RadioButtonDefaults.colors(
-                selectedColor = MaterialTheme.colorScheme.primary,
-                unselectedColor = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        )
-        Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium))
-        Text(
-            text = title,
-            style = MaterialTheme.typography.bodyLarge.copy(
-                fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal
-            ),
-            color = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
-}
-
-@Preview(name = "Light Mode")
+@Preview(name = "Math Config - Light", showBackground = true)
 @Composable
 private fun MathMissionConfigScreenPreview() {
     ReMindTheme(darkTheme = false) {
@@ -296,7 +162,12 @@ private fun MathMissionConfigScreenPreview() {
     }
 }
 
-@Preview(name = "Dark Mode")
+@Preview(
+    name = "Math Config - Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    backgroundColor = 0xFF19120CL
+)
 @Composable
 private fun MathMissionConfigScreenDarkPreview() {
     ReMindTheme(darkTheme = true) {

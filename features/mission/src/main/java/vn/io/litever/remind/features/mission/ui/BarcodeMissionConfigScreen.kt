@@ -1,8 +1,5 @@
 package vn.io.litever.remind.features.mission.ui
 
-import vn.io.litever.brand.tokens.LiteverTokens
-import androidx.compose.material3.MaterialTheme
-import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.res.Configuration
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -19,21 +16,22 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.input.TextFieldDecorator
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
@@ -42,11 +40,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
+import vn.io.litever.brand.tokens.LiteverTokens
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import vn.io.litever.remind.core.model.BarcodeMissionConfig
 import vn.io.litever.remind.core.model.Mission
 import vn.io.litever.remind.core.model.MissionType
@@ -115,14 +115,14 @@ fun BarcodeMissionConfigScreen(
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
                 .padding(MaterialTheme.spacing.medium),
-            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.smallMedium)
         ) {
             ReMindSettingsGroup(title = stringResource(R.string.barcode_registered_label)) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(MaterialTheme.spacing.medium),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.smallMedium)
                 ) {
                     Surface(
                         shape = MaterialTheme.shapes.medium,
@@ -132,7 +132,11 @@ fun BarcodeMissionConfigScreen(
                         Text(
                             text = targetBarcode.ifBlank { stringResource(R.string.barcode_not_set) },
                             style = LiteverTokens.typography.bodyLargeEmphasized,
-                            color = if (targetBarcode.isNotBlank()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                            color = if (targetBarcode.isNotBlank()) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            },
                             modifier = Modifier.padding(MaterialTheme.spacing.medium)
                         )
                     }
@@ -160,7 +164,7 @@ fun BarcodeMissionConfigScreen(
                             contentDescription = null,
                             modifier = Modifier.size(18.dp)
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
                         Text(stringResource(R.string.barcode_scan_to_register))
                     }
                 }
@@ -186,7 +190,7 @@ fun BarcodeMissionConfigScreen(
                             Text(
                                 text = stringResource(R.string.barcode_label_hint),
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.outlineVariant
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                             )
                         }
                         inner()
@@ -194,12 +198,12 @@ fun BarcodeMissionConfigScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview(name = "Barcode Config - Light", showBackground = true)
 @Composable
 private fun BarcodeMissionConfigScreenPreview() {
     ReMindTheme {
@@ -212,7 +216,12 @@ private fun BarcodeMissionConfigScreenPreview() {
     }
 }
 
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(
+    name = "Barcode Config - Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    backgroundColor = 0xFF19120CL
+)
 @Composable
 private fun BarcodeMissionConfigScreenDarkPreview() {
     ReMindTheme(darkTheme = true) {

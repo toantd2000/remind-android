@@ -1,7 +1,6 @@
 package vn.io.litever.remind.features.mission.ui
 
-import androidx.compose.material3.MaterialTheme
-import vn.io.litever.remind.core.designsystem.theme.spacing
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,11 +14,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,16 +35,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.material3.Scaffold
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
-import vn.io.litever.remind.core.designsystem.components.ReMindSettingsCategory
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import vn.io.litever.remind.core.model.MemoryTilesMissionConfig
 import vn.io.litever.remind.core.model.Mission
 import vn.io.litever.remind.core.model.MissionType
 import vn.io.litever.remind.features.mission.R
+import vn.io.litever.remind.features.mission.ui.components.MissionStepperGroup
 
 @Composable
 fun MemoryGameConfigRoute(
@@ -53,7 +57,7 @@ fun MemoryGameConfigRoute(
 ) {
     var repetitions by rememberSaveable { mutableIntStateOf(initialRepetitions) }
     var gridSize by rememberSaveable { mutableIntStateOf(initialGridSize) }
-    
+
     val targetTiles = when (gridSize) {
         3 -> 3
         4 -> 5
@@ -75,7 +79,7 @@ fun MemoryGameConfigRoute(
                 Mission(
                     alarmId = alarmId,
                     type = MissionType.MEMORY_FIND_COLOR_TILES,
-                    order = 0, // Will be set by the caller
+                    order = 0,
                     repeatCount = repetitions,
                     config = MemoryTilesMissionConfig(gridSize, targetTiles)
                 )
@@ -98,22 +102,18 @@ fun MemoryGameConfigScreen(
     Scaffold(
         modifier = Modifier.imePadding(),
         topBar = {
-            Box(Modifier.fillMaxWidth()) {
-                LvTopAppBar(
-                    title = stringResource(R.string.memory_game_config_title),
-                    onBackClick = onBackClick
-                )
-            }
+            LvTopAppBar(
+                title = stringResource(R.string.memory_game_config_title),
+                onBackClick = onBackClick
+            )
         },
         bottomBar = {
-            Box(Modifier.fillMaxWidth()) {
-                ReMindBottomBar {
-                    Button(
-                        onClick = onSave,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(stringResource(R.string.mission_complete))
-                    }
+            ReMindBottomBar {
+                Button(
+                    onClick = onSave,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(stringResource(R.string.save_mission_action))
                 }
             }
         }
@@ -121,12 +121,11 @@ fun MemoryGameConfigScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
                 .padding(padding)
-                .padding(horizontal = MaterialTheme.spacing.medium)
+                .verticalScroll(rememberScrollState())
+                .padding(MaterialTheme.spacing.medium),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.smallMedium)
         ) {
-            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
-
             // Section 1: Difficulty Settings
             ReMindSettingsGroup(
                 title = stringResource(R.string.memory_game_difficulty_settings)
@@ -149,33 +148,41 @@ fun MemoryGameConfigScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(
+                    FilledTonalIconButton(
                         onClick = { if (gridSize > 3) onGridSizeChange(gridSize - 1) },
                         modifier = Modifier.size(40.dp),
-                        enabled = gridSize > 3
+                        enabled = gridSize > 3,
+                        colors = IconButtonDefaults.filledTonalIconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                            contentColor = MaterialTheme.colorScheme.onSurface
+                        )
                     ) {
                         Icon(
                             imageVector = ReMindIcons.KeyboardArrowLeft,
                             contentDescription = null,
-                            modifier = Modifier.size(28.dp)
+                            modifier = Modifier.size(MaterialTheme.spacing.large)
                         )
                     }
 
                     Text(
                         text = difficultyText,
                         style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
-                    IconButton(
+                    FilledTonalIconButton(
                         onClick = { if (gridSize < 7) onGridSizeChange(gridSize + 1) },
                         modifier = Modifier.size(40.dp),
-                        enabled = gridSize < 7
+                        enabled = gridSize < 7,
+                        colors = IconButtonDefaults.filledTonalIconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                            contentColor = MaterialTheme.colorScheme.onSurface
+                        )
                     ) {
                         Icon(
                             imageVector = ReMindIcons.KeyboardArrowRight,
                             contentDescription = null,
-                            modifier = Modifier.size(28.dp)
+                            modifier = Modifier.size(MaterialTheme.spacing.large)
                         )
                     }
                 }
@@ -184,92 +191,19 @@ fun MemoryGameConfigScreen(
                 Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
             }
 
-            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
-
             // Section 2: Repetitions
-            ReMindSettingsGroup {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            top = MaterialTheme.spacing.medium,
-                            bottom = MaterialTheme.spacing.extraSmall,
-                            start = MaterialTheme.spacing.medium,
-                            end = MaterialTheme.spacing.small
-                        ),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    ReMindSettingsCategory(
-                        title = stringResource(R.string.memory_game_repetitions),
-                        modifier = Modifier.weight(1f)
-                    )
-                    IconButton(
-                        onClick = { onRepetitionsChange(1) },
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Icon(
-                            imageVector = ReMindIcons.Refresh,
-                            contentDescription = "Reset",
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
+            MissionStepperGroup(
+                title = stringResource(R.string.memory_game_repetitions),
+                valueText = "$repetitions",
+                helperText = stringResource(R.string.memory_game_repetition_helper, repetitions),
+                canDecrement = repetitions > 1,
+                canIncrement = repetitions < 99,
+                onDecrement = { onRepetitionsChange(repetitions - 1) },
+                onIncrement = { onRepetitionsChange(repetitions + 1) },
+                onReset = { onRepetitionsChange(1) }
+            )
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            horizontal = MaterialTheme.spacing.medium,
-                            vertical = MaterialTheme.spacing.small
-                        ),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(
-                        onClick = { onRepetitionsChange(repetitions - 1) },
-                        modifier = Modifier.size(40.dp),
-                        enabled = repetitions > 1
-                    ) {
-                        Icon(
-                            imageVector = ReMindIcons.KeyboardArrowLeft,
-                            contentDescription = null,
-                            modifier = Modifier.size(28.dp)
-                        )
-                    }
-
-                    Text(
-                        text = "$repetitions",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-
-                    IconButton(
-                        onClick = { onRepetitionsChange(repetitions + 1) },
-                        modifier = Modifier.size(40.dp),
-                        enabled = repetitions < 99
-                    ) {
-                        Icon(
-                            imageVector = ReMindIcons.KeyboardArrowRight,
-                            contentDescription = null,
-                            modifier = Modifier.size(28.dp)
-                        )
-                    }
-                }
-
-                Text(
-                    text = stringResource(R.string.memory_game_repetition_helper, repetitions),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(
-                        start = MaterialTheme.spacing.medium,
-                        end = MaterialTheme.spacing.medium,
-                        bottom = MaterialTheme.spacing.medium
-                    )
-                )
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
         }
     }
 }
@@ -300,7 +234,11 @@ fun MemoryGameStaticPreview(gridSize: Int, targetTiles: Int) {
                                     .fillMaxHeight()
                                     .padding(MaterialTheme.spacing.tiny)
                                     .background(
-                                        color = if (isTarget) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+                                        color = if (isTarget) {
+                                            MaterialTheme.colorScheme.primary
+                                        } else {
+                                            MaterialTheme.colorScheme.surfaceContainerHighest
+                                        },
                                         shape = MaterialTheme.shapes.extraSmall
                                     )
                             )
@@ -312,7 +250,7 @@ fun MemoryGameStaticPreview(gridSize: Int, targetTiles: Int) {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(name = "Memory Config - Light", showBackground = true)
 @Composable
 fun MemoryGameConfigScreenPreview() {
     ReMindTheme {
@@ -328,10 +266,15 @@ fun MemoryGameConfigScreenPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(
+    name = "Memory Config - Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    backgroundColor = 0xFF19120CL
+)
 @Composable
-fun MemoryGameConfigScreenHardPreview() {
-    ReMindTheme {
+fun MemoryGameConfigScreenDarkPreview() {
+    ReMindTheme(darkTheme = true) {
         MemoryGameConfigScreen(
             repetitions = 5,
             gridSize = 6,

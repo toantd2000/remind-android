@@ -1,7 +1,5 @@
 package vn.io.litever.remind.features.mission.ui
 
-import androidx.compose.material3.MaterialTheme
-import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,12 +14,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +32,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -42,12 +43,16 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import vn.io.litever.brand.tokens.LiteverTokens
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
+import vn.io.litever.remind.core.designsystem.components.ReMindProDiamondTag
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsDivider
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import vn.io.litever.remind.core.model.MathDifficulty
 import vn.io.litever.remind.core.model.Mission
 import vn.io.litever.remind.core.model.MissionType
@@ -142,7 +147,14 @@ fun RandomMissionConfigScreen(
         topBar = {
             LvTopAppBar(
                 title = stringResource(R.string.random_config_title),
-                onBackClick = onBackClick
+                onBackClick = onBackClick,
+                actions = {
+                    if (!isPro) {
+                        ReMindProDiamondTag(
+                            modifier = Modifier.padding(end = MaterialTheme.spacing.medium)
+                        )
+                    }
+                }
             )
         },
         bottomBar = {
@@ -157,7 +169,7 @@ fun RandomMissionConfigScreen(
                             contentDescription = null,
                             modifier = Modifier.size(18.dp)
                         )
-                        Spacer(modifier = Modifier.width(6.dp))
+                        Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
                     }
                     Text(stringResource(R.string.save_mission_action))
                 }
@@ -170,40 +182,46 @@ fun RandomMissionConfigScreen(
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
                 .padding(MaterialTheme.spacing.medium),
-            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.smallMedium)
         ) {
             ReMindSettingsGroup(title = stringResource(R.string.random_candidates_label)) {
-                availableCandidates.forEach { (type, labelRes) ->
+                availableCandidates.forEachIndexed { index, (type, labelRes) ->
                     val checked = selectedTypes.contains(type)
+                    val toggleCandidate = {
+                        selectedTypes = if (!checked) {
+                            (selectedTypes + type).distinct()
+                        } else if (selectedTypes.size > 1) {
+                            selectedTypes - type
+                        } else {
+                            selectedTypes
+                        }
+                    }
                     ListItem(
                         trailingContent = {
                             Checkbox(
                                 checked = checked,
-                                onCheckedChange = { isChecked ->
-                                    selectedTypes = if (isChecked) {
-                                        (selectedTypes + type).distinct()
-                                    } else if (selectedTypes.size > 1) {
-                                        selectedTypes - type
-                                    } else {
-                                        selectedTypes
-                                    }
-                                }
+                                onCheckedChange = { toggleCandidate() }
                             )
                         },
-                        modifier = Modifier.clickable {
-                            selectedTypes = if (!checked) {
-                                (selectedTypes + type).distinct()
-                            } else if (selectedTypes.size > 1) {
-                                selectedTypes - type
-                            } else {
-                                selectedTypes
-                            }
-                        }
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                        modifier = Modifier.clickable(onClick = toggleCandidate)
                     ) {
                         Text(
                             text = stringResource(labelRes),
-                            style = MaterialTheme.typography.bodyLarge
+                            style = if (checked) {
+                                LiteverTokens.typography.bodyLargeEmphasized
+                            } else {
+                                MaterialTheme.typography.bodyLarge
+                            },
+                            color = if (checked) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.onSurface
+                            }
                         )
+                    }
+                    if (index < availableCandidates.lastIndex) {
+                        ReMindSettingsDivider(inset = false)
                     }
                 }
             }
@@ -213,7 +231,7 @@ fun RandomMissionConfigScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(MaterialTheme.spacing.medium),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
                 ) {
                     MathDifficulty.entries.forEach { level ->
                         val label = when (level) {
@@ -237,25 +255,25 @@ fun RandomMissionConfigScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(MaterialTheme.spacing.medium),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
                 ) {
                     listOf(1, 2, 3, 5).forEach { count ->
                         FilterChip(
                             selected = repetitions == count,
                             onClick = { repetitions = count },
-                            label = { Text("${count}x") },
+                            label = { Text("${count}x", maxLines = 1) },
                             modifier = Modifier.weight(1f)
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview(name = "Random Config - Light", showBackground = true)
 @Composable
 private fun RandomMissionConfigScreenPreview() {
     ReMindTheme {
@@ -267,7 +285,12 @@ private fun RandomMissionConfigScreenPreview() {
     }
 }
 
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(
+    name = "Random Config - Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    backgroundColor = 0xFF19120CL
+)
 @Composable
 private fun RandomMissionConfigScreenDarkPreview() {
     ReMindTheme(darkTheme = true) {

@@ -1,6 +1,6 @@
 package vn.io.litever.remind.core.designsystem.components.ringtone
 
-import vn.io.litever.remind.core.designsystem.theme.spacing
+import android.content.res.Configuration
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -17,11 +17,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -35,14 +36,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedButton
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import vn.io.litever.brand.tokens.LiteverTokens
 import vn.io.litever.remind.core.designsystem.R
-import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
+import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
+import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 
 @Composable
 fun RingtoneSelectionRoute(
@@ -173,12 +176,18 @@ fun RingtoneListItem(
                 vertical = MaterialTheme.spacing.extraSmall
             )
             .clip(MaterialTheme.shapes.medium)
-            .clickable { onClick() },
-        color = if (item.isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-        else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.1f),
+            .clickable(onClick = onClick),
+        color = if (item.isSelected) {
+            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
+        } else {
+            MaterialTheme.colorScheme.surfaceContainer
+        },
         shape = MaterialTheme.shapes.medium,
-        border = if (item.isSelected) BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
-        else null
+        border = if (item.isSelected) {
+            BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.35f))
+        } else {
+            null
+        }
     ) {
         Row(
             modifier = Modifier
@@ -197,10 +206,16 @@ fun RingtoneListItem(
             Text(
                 text = item.title,
                 modifier = Modifier.weight(1f),
-                style = if (item.isSelected) MaterialTheme.typography.bodyLarge.copy(
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.primary
-                ) else MaterialTheme.typography.bodyLarge
+                style = if (item.isSelected) {
+                    LiteverTokens.typography.bodyLargeEmphasized
+                } else {
+                    MaterialTheme.typography.bodyLarge
+                },
+                color = if (item.isSelected) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.onSurface
+                }
             )
 
             if (item.isPlaying) {
@@ -212,5 +227,51 @@ fun RingtoneListItem(
                 )
             }
         }
+    }
+}
+
+@Preview(name = "Ringtone Selection - Light", showBackground = true)
+@Composable
+private fun RingtoneSelectionLightPreview() {
+    ReMindTheme {
+        RingtoneSelectionScreen(
+            uiState = RingtoneSelectionUiState(
+                isLoading = false,
+                ringtones = listOf(
+                    RingtoneItem(uri = null, title = "Default", isSelected = true, isPlaying = true),
+                    RingtoneItem(uri = "1", title = "Morning Breeze", isSelected = false, isPlaying = false),
+                    RingtoneItem(uri = "2", title = "Gentle Chime", isSelected = false, isPlaying = false)
+                )
+            ),
+            onBackClick = {},
+            onRingtoneClick = {},
+            onPickCustomClick = {},
+            onSaveClick = {}
+        )
+    }
+}
+
+@Preview(
+    name = "Ringtone Selection - Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    backgroundColor = 0xFF19120CL
+)
+@Composable
+private fun RingtoneSelectionDarkPreview() {
+    ReMindTheme(darkTheme = true) {
+        RingtoneSelectionScreen(
+            uiState = RingtoneSelectionUiState(
+                isLoading = false,
+                ringtones = listOf(
+                    RingtoneItem(uri = null, title = "Default", isSelected = true, isPlaying = true),
+                    RingtoneItem(uri = "1", title = "Morning Breeze", isSelected = false, isPlaying = false)
+                )
+            ),
+            onBackClick = {},
+            onRingtoneClick = {},
+            onPickCustomClick = {},
+            onSaveClick = {}
+        )
     }
 }

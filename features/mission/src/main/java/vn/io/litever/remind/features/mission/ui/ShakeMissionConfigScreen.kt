@@ -1,9 +1,6 @@
 package vn.io.litever.remind.features.mission.ui
 
-import androidx.compose.material3.MaterialTheme
-import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.res.Configuration
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +14,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,11 +26,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import vn.io.litever.remind.core.model.Mission
 import vn.io.litever.remind.core.model.MissionType
 import vn.io.litever.remind.core.model.ShakeMissionConfig
@@ -102,14 +100,14 @@ fun ShakeMissionConfigScreen(
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
                 .padding(MaterialTheme.spacing.medium),
-            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.smallMedium)
         ) {
             ReMindSettingsGroup(title = stringResource(R.string.shake_count_label)) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(MaterialTheme.spacing.medium),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
                 ) {
                     countOptions.forEach { count ->
                         FilterChip(
@@ -132,7 +130,7 @@ fun ShakeMissionConfigScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(MaterialTheme.spacing.medium),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
                 ) {
                     ShakeSensitivity.entries.forEach { level ->
                         val labelRes = when (level) {
@@ -143,19 +141,19 @@ fun ShakeMissionConfigScreen(
                         FilterChip(
                             selected = sensitivity == level,
                             onClick = { sensitivity = level },
-                            label = { Text(stringResource(labelRes)) },
+                            label = { Text(stringResource(labelRes), maxLines = 1) },
                             modifier = Modifier.weight(1f)
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview(name = "Shake Config - Light", showBackground = true)
 @Composable
 private fun ShakeMissionConfigScreenPreview() {
     ReMindTheme {
@@ -166,7 +164,12 @@ private fun ShakeMissionConfigScreenPreview() {
     }
 }
 
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(
+    name = "Shake Config - Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    backgroundColor = 0xFF19120CL
+)
 @Composable
 private fun ShakeMissionConfigScreenDarkPreview() {
     ReMindTheme(darkTheme = true) {

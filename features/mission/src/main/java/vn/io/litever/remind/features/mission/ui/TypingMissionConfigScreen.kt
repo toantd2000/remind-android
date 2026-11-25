@@ -1,9 +1,7 @@
 package vn.io.litever.remind.features.mission.ui
 
-import androidx.compose.material3.MaterialTheme
-import vn.io.litever.remind.core.designsystem.theme.spacing
+import android.content.res.Configuration
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,10 +14,13 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,28 +34,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.compose.material3.Button
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Scaffold
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
-import vn.io.litever.remind.core.designsystem.components.ReMindSettingsCategory
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsDivider
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsItem
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import vn.io.litever.remind.core.model.Mission
 import vn.io.litever.remind.core.model.MissionType
 import vn.io.litever.remind.core.model.Phrase
 import vn.io.litever.remind.core.model.TypingMissionConfig
 import vn.io.litever.remind.core.model.TypingMode
 import vn.io.litever.remind.features.mission.R
+import vn.io.litever.remind.features.mission.ui.components.MissionRadioOptionRow
+import vn.io.litever.remind.features.mission.ui.components.MissionStepperGroup
 import vn.io.litever.remind.features.mission.viewmodel.TypingMissionConfigViewModel
-
 
 @Composable
 fun TypingMissionConfigRoute(
@@ -70,11 +68,11 @@ fun TypingMissionConfigRoute(
     var repetitions by rememberSaveable { mutableIntStateOf(initialRepetitions) }
     var mode by rememberSaveable { mutableStateOf(initialMode) }
     val selectedPhrases by viewModel.selectedPhrases.collectAsState()
-    
+
     LaunchedEffect(initialSelectedPhraseIds) {
         viewModel.loadSelectedPhrases(initialSelectedPhraseIds, alarmId)
     }
-    
+
     TypingMissionConfigScreen(
         repetitions = repetitions,
         selectedPhrases = selectedPhrases,
@@ -88,7 +86,7 @@ fun TypingMissionConfigRoute(
                 Mission(
                     alarmId = alarmId,
                     type = MissionType.TYPING,
-                    order = 0, // Will be set by the caller
+                    order = 0,
                     repeatCount = repetitions,
                     config = TypingMissionConfig(initialSelectedPhraseIds, mode)
                 )
@@ -109,15 +107,19 @@ fun TypingMissionConfigScreen(
     onNavigateToPhraseSelection: () -> Unit,
     onSave: () -> Unit
 ) {
+    val modes = listOf(
+        TypingMode.NORMAL to vn.io.litever.remind.core.designsystem.R.string.typing_mode_normal,
+        TypingMode.SHUFFLE_WORDS to vn.io.litever.remind.core.designsystem.R.string.typing_mode_shuffle_words,
+        TypingMode.SHUFFLE_CHARS to vn.io.litever.remind.core.designsystem.R.string.typing_mode_shuffle_chars
+    )
+
     Scaffold(
         modifier = Modifier.imePadding(),
         topBar = {
-            Box(Modifier.fillMaxWidth()) {
-                LvTopAppBar(
-                    title = stringResource(R.string.typing_mission_title),
-                    onBackClick = onBackClick
-                )
-            }
+            LvTopAppBar(
+                title = stringResource(R.string.typing_mission_title),
+                onBackClick = onBackClick
+            )
         },
         bottomBar = {
             ReMindBottomBar {
@@ -126,9 +128,7 @@ fun TypingMissionConfigScreen(
                     modifier = Modifier.fillMaxWidth(),
                     enabled = selectedPhrases.isNotEmpty()
                 ) {
-                    Text(
-                        text = stringResource(vn.io.litever.remind.core.designsystem.R.string.save),
-                    )
+                    Text(text = stringResource(R.string.save_mission_action))
                 }
             }
         }
@@ -136,12 +136,11 @@ fun TypingMissionConfigScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
                 .padding(padding)
-                .padding(horizontal = MaterialTheme.spacing.medium),
+                .verticalScroll(rememberScrollState())
+                .padding(MaterialTheme.spacing.medium),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.smallMedium)
         ) {
-            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
-
             // Section 1: Phrases
             ReMindSettingsGroup(
                 title = stringResource(R.string.phrases_to_type)
@@ -149,12 +148,7 @@ fun TypingMissionConfigScreen(
                 ReMindSettingsItem(
                     title = stringResource(R.string.phrase_list),
                     subtitle = stringResource(R.string.phrases_count, selectedPhrases.size),
-                    trailingContent = {
-                        Icon(
-                            imageVector = ReMindIcons.ChevronRight,
-                            contentDescription = null,
-                        )
-                    },
+                    showChevron = true,
                     onClick = onNavigateToPhraseSelection
                 )
 
@@ -170,165 +164,64 @@ fun TypingMissionConfigScreen(
                         Box(
                             modifier = Modifier
                                 .size(6.dp)
-                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.5f), RoundedCornerShape(50))
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.5f), CircleShape)
                         )
                         Spacer(modifier = Modifier.width(MaterialTheme.spacing.smallMedium))
                         Text(
                             text = "\"${phrase.content}\"",
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                fontStyle = FontStyle.Italic,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
-                            )
+                            style = MaterialTheme.typography.bodyMedium.copy(fontStyle = FontStyle.Italic),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.85f)
                         )
                     }
                 }
                 if (selectedPhrases.size > visibleCount) {
                     Text(
                         text = stringResource(R.string.more_phrases_count, selectedPhrases.size - visibleCount),
-                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                        modifier = Modifier.padding(start = MaterialTheme.spacing.mediumLarge)
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.65f),
+                        modifier = Modifier.padding(
+                            start = MaterialTheme.spacing.mediumLarge,
+                            top = MaterialTheme.spacing.tiny
+                        )
                     )
                 }
                 Spacer(modifier = Modifier.height(MaterialTheme.spacing.smallMedium))
             }
 
-            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
-
             // Section 2: Repetitions
-            ReMindSettingsGroup {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            top = MaterialTheme.spacing.medium,
-                            bottom = MaterialTheme.spacing.extraSmall,
-                            start = MaterialTheme.spacing.medium,
-                            end = MaterialTheme.spacing.small
-                        ),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    ReMindSettingsCategory(
-                        title = stringResource(R.string.settings_title),
-                        modifier = Modifier.weight(1f)
-                    )
-                    IconButton(
-                        onClick = { onRepetitionsChange(1) },
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Icon(
-                            imageVector = ReMindIcons.Refresh,
-                            contentDescription = "Reset",
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            horizontal = MaterialTheme.spacing.medium,
-                            vertical = MaterialTheme.spacing.small
-                        ),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(
-                        onClick = { onRepetitionsChange(repetitions - 1) },
-                        modifier = Modifier.size(40.dp),
-                        enabled = repetitions > 1
-                    ) {
-                        Icon(
-                            imageVector = ReMindIcons.KeyboardArrowLeft,
-                            contentDescription = null,
-                            modifier = Modifier.size(28.dp)
-                        )
-                    }
-
-                    Text(
-                        text = "$repetitions",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-
-                    IconButton(
-                        onClick = { onRepetitionsChange(repetitions + 1) },
-                        modifier = Modifier.size(40.dp),
-                        enabled = repetitions < 99
-                    ) {
-                        Icon(
-                            imageVector = ReMindIcons.KeyboardArrowRight,
-                            contentDescription = null,
-                            modifier = Modifier.size(28.dp)
-                        )
-                    }
-                }
-
-                Text(
-                    text = stringResource(R.string.repetition_helper, repetitions),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(
-                        start = MaterialTheme.spacing.medium,
-                        end = MaterialTheme.spacing.medium,
-                        bottom = MaterialTheme.spacing.medium
-                    )
-                )
-            }
-
-            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
+            MissionStepperGroup(
+                title = stringResource(R.string.settings_title),
+                valueText = "$repetitions",
+                helperText = stringResource(R.string.repetition_helper, repetitions),
+                canDecrement = repetitions > 1,
+                canIncrement = repetitions < 99,
+                onDecrement = { onRepetitionsChange(repetitions - 1) },
+                onIncrement = { onRepetitionsChange(repetitions + 1) },
+                onReset = { onRepetitionsChange(1) }
+            )
 
             // Section 3: Modes
             ReMindSettingsGroup(
                 title = stringResource(vn.io.litever.remind.core.designsystem.R.string.typing_mode)
             ) {
-                val modes = listOf(
-                    TypingMode.NORMAL to stringResource(vn.io.litever.remind.core.designsystem.R.string.typing_mode_normal),
-                    TypingMode.SHUFFLE_WORDS to stringResource(vn.io.litever.remind.core.designsystem.R.string.typing_mode_shuffle_words),
-                    TypingMode.SHUFFLE_CHARS to stringResource(vn.io.litever.remind.core.designsystem.R.string.typing_mode_shuffle_chars)
-                )
-
-                modes.forEach { (m, label) ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onModeChange(m) }
-                            .padding(
-                                horizontal = MaterialTheme.spacing.medium,
-                                vertical = MaterialTheme.spacing.tiny
-                            ),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(
-                            selected = mode == m,
-                            onClick = { onModeChange(m) },
-                        )
-                        Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
-                        Text(
-                            text = label,
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
+                modes.forEachIndexed { index, (m, labelRes) ->
+                    MissionRadioOptionRow(
+                        title = stringResource(labelRes),
+                        selected = mode == m,
+                        onClick = { onModeChange(m) }
+                    )
+                    if (index < modes.lastIndex) {
+                        ReMindSettingsDivider()
                     }
                 }
-                Spacer(modifier = Modifier.height(MaterialTheme.spacing.smallMedium))
             }
-            Spacer(modifier = Modifier.weight(1f))
 
-            // Placeholder for Ad
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp)
-                    .padding(bottom = MaterialTheme.spacing.medium)
-            )
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview(name = "Typing Config - Light", showBackground = true)
 @Composable
 fun TypingMissionConfigScreenPreview() {
     ReMindTheme {
@@ -348,18 +241,22 @@ fun TypingMissionConfigScreenPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(
+    name = "Typing Config - Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    backgroundColor = 0xFF19120CL
+)
 @Composable
-fun TypingMissionConfigScreenManyPhrasesPreview() {
-    ReMindTheme {
+fun TypingMissionConfigScreenDarkPreview() {
+    ReMindTheme(darkTheme = true) {
         TypingMissionConfigScreen(
             repetitions = 5,
             selectedPhrases = listOf(
                 Phrase(id = 1, content = "I am wide awake", categoryId = "basic", alarmId = 0),
                 Phrase(id = 2, content = "Time to conquer the day", categoryId = "basic", alarmId = 0),
                 Phrase(id = 3, content = "I will not snooze", categoryId = "basic", alarmId = 0),
-                Phrase(id = 4, content = "Morning is beautiful", categoryId = "basic", alarmId = 0),
-                Phrase(id = 5, content = "Let's get to work", categoryId = "basic", alarmId = 0)
+                Phrase(id = 4, content = "Morning is beautiful", categoryId = "basic", alarmId = 0)
             ),
             mode = TypingMode.SHUFFLE_WORDS,
             onBackClick = {},
@@ -370,13 +267,3 @@ fun TypingMissionConfigScreenManyPhrasesPreview() {
         )
     }
 }
-
-
-
-
-
-
-
-
-
-

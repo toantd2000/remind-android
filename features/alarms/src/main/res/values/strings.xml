@@ -57,12 +57,6 @@
     <string name="no_ringtone">No Sound</string>
     
     <!-- Permissions Warning -->
-    <string name="permission_warning_banner_title">Missing Permissions</string>
-    <string name="permission_warning_banner_desc">Notifications and Exact Alarm permissions are required for the alarm to ring properly.</string>
-    <string name="permission_warning_banner_non_critical_title">Permission Recommendation</string>
-    <string name="permission_warning_banner_non_critical_desc">Some optional permissions are missing. Granting them ensures alarms ring reliably on lock screen and during battery saving.</string>
-    <string name="permission_warning_banner_action">Fix Now</string>
-    <string name="permission_warning_banner_remind_later">Remind me later</string>
     <string name="error_missing_permissions">Critical permissions missing. Alarm cannot be enabled.</string>
     <string name="permission_dialog_title">Permission Required</string>
     <string name="permission_dialog_message">To ensure this alarm fires on time, the app needs Notification and Exact Alarm permissions. If you save now, the alarm will be set as disabled.</string>

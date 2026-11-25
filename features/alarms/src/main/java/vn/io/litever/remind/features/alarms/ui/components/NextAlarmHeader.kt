@@ -56,7 +56,7 @@ fun NextAlarmHeader(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
-                imageVector = ReMindIcons.Alarm,
+                imageVector = if (isAllOff) ReMindIcons.NotificationsPaused else ReMindIcons.NotificationsActive,
                 contentDescription = null,
                 modifier = Modifier.size(18.dp)
             )

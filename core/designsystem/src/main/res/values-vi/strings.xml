@@ -87,8 +87,12 @@
     <string name="auto_silence_never">Không bao giờ</string>
 
     <!-- Permission Warning Banner -->
-    <string name="permission_warning_banner_action">Sửa ngay</string>
-    <string name="permission_warning_banner_remind_later">Nhắc tôi sau</string>
+    <string name="permission_warning_banner_title">Thiếu quyền bắt buộc</string>
+    <string name="permission_warning_banner_desc">Cần cấp để báo đúng giờ</string>
+    <string name="permission_warning_banner_non_critical_title">Tối ưu độ ổn định</string>
+    <string name="permission_warning_banner_non_critical_desc">Nên cấp thêm quyền phụ</string>
+    <string name="permission_warning_banner_action">Cấp ngay</string>
+    <string name="permission_warning_banner_dismiss">Đóng</string>
 </resources>
 
 

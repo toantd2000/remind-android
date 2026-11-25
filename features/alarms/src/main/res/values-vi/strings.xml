@@ -57,12 +57,6 @@
     <string name="no_ringtone">Không dùng âm thanh</string>
     
     <!-- Permissions Warning -->
-    <string name="permission_warning_banner_title">Thiếu quyền hệ thống</string>
-    <string name="permission_warning_banner_desc">Quyền Thông báo và Báo thức chính xác là bắt buộc để ứng dụng có thể reo chuông.</string>
-    <string name="permission_warning_banner_non_critical_title">Khuyến nghị cấp quyền</string>
-    <string name="permission_warning_banner_non_critical_desc">Một số quyền phụ chưa được cấp. Bạn nên cấp để báo thức hoạt động ổn định trên màn hình khóa và khi tiết kiệm pin.</string>
-    <string name="permission_warning_banner_action">Sửa ngay</string>
-    <string name="permission_warning_banner_remind_later">Nhắc tôi sau</string>
     <string name="error_missing_permissions">Thiếu các quyền quan trọng. Không thể bật báo thức.</string>
     <string name="permission_dialog_title">Yêu cầu cấp quyền</string>
     <string name="permission_dialog_message">Để đảm bảo báo thức hoạt động chính xác, ứng dụng cần quyền Thông báo và Báo thức chính xác. Nếu bạn lưu bây giờ, báo thức sẽ được lưu ở trạng thái tắt.</string>

@@ -88,8 +88,12 @@
     <string name="auto_silence_never">Never</string>
 
     <!-- Permission Warning Banner -->
-    <string name="permission_warning_banner_action">Fix Now</string>
-    <string name="permission_warning_banner_remind_later">Remind me later</string>
+    <string name="permission_warning_banner_title">Missing permissions</string>
+    <string name="permission_warning_banner_desc">Tap to enable reliable alerts</string>
+    <string name="permission_warning_banner_non_critical_title">Optimize reliability</string>
+    <string name="permission_warning_banner_non_critical_desc">Recommended permissions missing</string>
+    <string name="permission_warning_banner_action">Fix</string>
+    <string name="permission_warning_banner_dismiss">Dismiss</string>
 
     <!-- Plan Badges -->
     <string name="plan_badge_pro" translatable="false">PRO</string>

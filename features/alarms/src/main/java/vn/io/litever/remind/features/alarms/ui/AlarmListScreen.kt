@@ -66,7 +66,7 @@ import kotlinx.coroutines.flow.collectLatest
 import vn.io.litever.brand.assets.LiteverMascotState
 import vn.io.litever.brand.tokens.LiteverTokens
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
-import vn.io.litever.remind.core.designsystem.components.PermissionWarningBanner
+import vn.io.litever.remind.core.designsystem.components.PermissionWarningBannerSection
 import vn.io.litever.remind.core.designsystem.components.ReMindLogo
 import vn.io.litever.remind.core.designsystem.components.ReMindProTopBarButton
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
@@ -174,7 +174,6 @@ fun AlarmListRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AlarmListScreen(
     alarms: List<Alarm>?,
@@ -249,43 +248,28 @@ fun AlarmListScreen(
                         }
                     }
                 )
-                if (!hasCriticalPermissions) {
-                    PermissionWarningBanner(
-                        title = stringResource(R.string.permission_warning_banner_title),
-                        message = stringResource(R.string.permission_warning_banner_desc),
-                        isCritical = true,
-                        onClick = onNavigateToPermissions,
+                val showPermissionBanner = !hasCriticalPermissions ||
+                    (!hasNonCriticalPermissions && !isPermissionWarningDismissed)
+                PermissionWarningBannerSection(
+                    visible = showPermissionBanner,
+                    isCritical = !hasCriticalPermissions,
+                    onClick = onNavigateToPermissions,
+                    onDismiss = onDismissPermissionWarning,
+                    modifier = Modifier.padding(
+                        start = MaterialTheme.spacing.medium,
+                        end = MaterialTheme.spacing.medium,
+                        bottom = MaterialTheme.spacing.small
+                    )
+                )
+                if (hasCriticalPermissions && hasAlarms) {
+                    NextAlarmHeader(
                         modifier = Modifier.padding(
                             start = MaterialTheme.spacing.medium,
                             end = MaterialTheme.spacing.medium,
                             bottom = MaterialTheme.spacing.small
-                        )
+                        ),
+                        state = nextAlarmState
                     )
-                } else {
-                    if (!hasNonCriticalPermissions && !isPermissionWarningDismissed) {
-                        PermissionWarningBanner(
-                            title = stringResource(R.string.permission_warning_banner_non_critical_title),
-                            message = stringResource(R.string.permission_warning_banner_non_critical_desc),
-                            isCritical = false,
-                            onClick = onNavigateToPermissions,
-                            onDismiss = onDismissPermissionWarning,
-                            modifier = Modifier.padding(
-                                start = MaterialTheme.spacing.medium,
-                                end = MaterialTheme.spacing.medium,
-                                bottom = MaterialTheme.spacing.small
-                            )
-                        )
-                    }
-                    if (hasAlarms) {
-                        NextAlarmHeader(
-                            modifier = Modifier.padding(
-                                start = MaterialTheme.spacing.medium,
-                                end = MaterialTheme.spacing.medium,
-                                bottom = MaterialTheme.spacing.small
-                            ),
-                            state = nextAlarmState
-                        )
-                    }
                 }
             }
         },
@@ -493,7 +477,7 @@ private fun AlarmActionBottomSheetContent(
                 is24HourFormat
             )
             androidx.compose.foundation.layout.Row(
-                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 androidx.compose.foundation.layout.Row {
                     Text(

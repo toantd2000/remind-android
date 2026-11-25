@@ -40,6 +40,7 @@ import androidx.compose.material.icons.rounded.DoNotDisturbOn
 import androidx.compose.material.icons.rounded.DragHandle
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.EditNote
+import androidx.compose.material.icons.rounded.Error
 import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.Extension
 import androidx.compose.material.icons.rounded.Favorite
@@ -142,6 +143,7 @@ object ReMindIcons {
     val DragHandle: ImageVector = Icons.Rounded.DragHandle
     val Edit: ImageVector = Icons.Rounded.Edit
     val EditNote: ImageVector = Icons.Rounded.EditNote
+    val Error: ImageVector = Icons.Rounded.Error
     val ErrorOutline: ImageVector = Icons.Rounded.ErrorOutline
     val Extension: ImageVector = Icons.Rounded.Extension
     val Favorite: ImageVector = Icons.Rounded.Favorite

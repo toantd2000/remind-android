@@ -149,12 +149,6 @@
     <string name="dismiss_action">Đã xong</string>
 
     <!-- Permissions Warning & Save Anyway Dialog -->
-    <string name="reminder_permission_warning_banner_title">Thiếu quyền hệ thống</string>
-    <string name="reminder_permission_warning_banner_desc">Quyền Thông báo, Vị trí hoặc Báo thức là bắt buộc để nhắc nhở có thể kích hoạt chính xác trong nền.</string>
-    <string name="reminder_permission_warning_banner_non_critical_title">Khuyến nghị cấp quyền</string>
-    <string name="reminder_permission_warning_banner_non_critical_desc">Quyền Báo thức chính xác và Tối ưu hóa pin giúp nhắc nhở luôn kích hoạt chính xác và ổn định trong nền.</string>
-    <string name="permission_warning_banner_action">Sửa ngay</string>
-    <string name="permission_warning_banner_remind_later">Nhắc tôi sau</string>
     <string name="reminder_permission_dialog_title">Yêu cầu cấp quyền</string>
     <string name="reminder_permission_dialog_message">Để đảm bảo nhắc nhở hoạt động chính xác trong nền, các quyền bắt buộc cần được cấp. Nếu bạn lưu bây giờ, nhắc nhở sẽ được lưu ở trạng thái tắt.</string>
     <string name="action_save_anyway">Vẫn lưu (Tắt nhắc nhở)</string>

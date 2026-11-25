@@ -59,7 +59,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
@@ -221,7 +220,7 @@ fun MemoryTilesMissionContent(
 
                     Text(
                         text = statusText,
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                        style = MaterialTheme.typography.titleSmall,
                         color = statusColor,
                         modifier = Modifier.weight(1f)
                     )
@@ -399,7 +398,7 @@ fun MemoryTilesMissionContent(
                     ) {
                         Text(
                             text = stringResource(R.string.action_continue),
-                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
+                            style = MaterialTheme.typography.labelLarge
                         )
                         Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
                         Icon(
@@ -417,7 +416,7 @@ fun MemoryTilesMissionContent(
                     ) {
                         Text(
                             text = stringResource(R.string.action_retry_now),
-                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
+                            style = MaterialTheme.typography.labelLarge
                         )
                         Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
                         Icon(

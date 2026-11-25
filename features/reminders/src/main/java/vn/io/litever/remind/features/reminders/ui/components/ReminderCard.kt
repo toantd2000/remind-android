@@ -159,9 +159,7 @@ fun ReminderCard(
                     // Title
                     Text(
                         text = reminder.title,
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold
-                        ),
+                        style = MaterialTheme.typography.titleMedium,
                         color = when {
                             !reminder.isEnabled -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                             isSnoozed -> MaterialTheme.colorScheme.secondary

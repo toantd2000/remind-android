@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.settings.ui
 
+import vn.io.litever.brand.tokens.LiteverTokens
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -296,7 +297,7 @@ private fun ProSettingsTopBar(
                             text = stringResource(
                                 if (isPro) R.string.pro_banner_active_title else R.string.pro_banner_title
                             ),
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                            style = MaterialTheme.typography.titleMedium,
                             color = contentColor,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -345,7 +346,7 @@ private fun ProSettingsTopBar(
                         text = stringResource(
                             if (isPro) R.string.pro_action_manage else R.string.pro_action_upgrade
                         ),
-                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                        style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
                         modifier = Modifier.padding(
@@ -393,7 +394,7 @@ private fun PermissionStatusPill(health: PermissionHealthSummary) {
     ) {
         Text(
             text = label,
-            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+            style = LiteverTokens.typography.labelSmallEmphasized,
             color = textColor,
             maxLines = 1,
             modifier = Modifier.padding(

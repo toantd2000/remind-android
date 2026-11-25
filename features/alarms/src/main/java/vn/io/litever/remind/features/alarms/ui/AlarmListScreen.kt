@@ -79,7 +79,6 @@ import vn.io.litever.remind.features.alarms.viewmodel.AlarmListViewModel
 import java.time.LocalTime
 
 @Suppress("LocalContextGetResourceValueCall")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlarmListRoute(
     onAddAlarmClick: () -> Unit,
@@ -495,7 +494,6 @@ private fun AlarmActionBottomSheetContent(
                 Text(
                     text = timeStr,
                     style = MaterialTheme.typography.displaySmall.copy(
-                        fontWeight = FontWeight.Bold,
                         letterSpacing = (-0.5).sp
                     ),
                     color = MaterialTheme.colorScheme.onSurface
@@ -634,7 +632,7 @@ fun EmptyState(
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.mediumLarge))
         Text(
             text = stringResource(R.string.no_alarms),
-            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            style = MaterialTheme.typography.titleMedium,
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))

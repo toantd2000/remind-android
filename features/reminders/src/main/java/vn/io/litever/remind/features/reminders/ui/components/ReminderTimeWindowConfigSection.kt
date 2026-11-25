@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
+import vn.io.litever.brand.tokens.LiteverTokens
 import androidx.compose.material3.MaterialTheme
 import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.res.Configuration
@@ -135,7 +136,7 @@ fun ReminderTimeWindowConfigSection(
                 label = {
                     Text(
                         stringResource(R.string.add_time_window),
-                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
+                        style = LiteverTokens.typography.labelMediumEmphasized
                     )
                 },
                 leadingIcon = {
@@ -190,7 +191,6 @@ fun ReminderTimeWindowConfigSection(
                             Text(
                                 text = TimeFormatUtils.formatTime(editingStartTime, is24HourFormat),
                                 style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary
                             )
                         }
@@ -217,7 +217,6 @@ fun ReminderTimeWindowConfigSection(
                             Text(
                                 text = TimeFormatUtils.formatTime(editingEndTime, is24HourFormat),
                                 style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary
                             )
                         }
@@ -269,7 +268,7 @@ fun ReminderTimeWindowConfigSection(
             title = {
                 Text(
                     stringResource(R.string.set_start_time),
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(
                         bottom = MaterialTheme.spacing.medium,
                     )
@@ -310,7 +309,7 @@ fun ReminderTimeWindowConfigSection(
             title = {
                 Text(
                     stringResource(R.string.set_end_time),
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(
                         bottom = MaterialTheme.spacing.medium,
                     )

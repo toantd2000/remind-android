@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.settings.ui
 
+import vn.io.litever.brand.tokens.LiteverTokens
 import androidx.compose.material3.MaterialTheme
 import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.app.Activity
@@ -56,7 +57,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -202,7 +202,7 @@ fun PaywallScreen(
                 text = stringResource(
                     if (uiState.isPro) R.string.paywall_hero_title_active else R.string.paywall_hero_title
                 ),
-                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.Center
             )
@@ -269,7 +269,7 @@ fun PaywallScreen(
 
             Text(
                 text = stringResource(R.string.paywall_social_proof),
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+                style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.Center
             )
@@ -348,7 +348,7 @@ fun PaywallScreen(
                 } else {
                     Text(
                         text = ctaText,
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                        style = MaterialTheme.typography.titleMedium
                     )
                 }
             }
@@ -456,7 +456,7 @@ private fun ComparisonSlide() {
                         Spacer(modifier = Modifier.width(3.dp))
                         Text(
                             text = stringResource(R.string.paywall_col_pro),
-                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                            style = LiteverTokens.typography.labelMediumEmphasized,
                             color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     }
@@ -464,7 +464,7 @@ private fun ComparisonSlide() {
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = stringResource(R.string.paywall_col_basic),
-                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                    style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.width(58.dp)
@@ -565,7 +565,7 @@ private fun FeatureSpotlightSlide(
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center
             )
@@ -619,7 +619,7 @@ private fun PlanOptionCard(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = title,
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                        style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     if (subtitle != null) {
@@ -632,7 +632,7 @@ private fun PlanOptionCard(
                 }
                 Text(
                     text = priceText,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    style = MaterialTheme.typography.titleMedium,
                     color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                 )
             }
@@ -648,7 +648,7 @@ private fun PlanOptionCard(
             ) {
                 Text(
                     text = badgeText,
-                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                    style = LiteverTokens.typography.labelSmallEmphasized,
                     color = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
                 )

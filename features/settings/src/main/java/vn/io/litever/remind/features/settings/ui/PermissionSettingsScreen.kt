@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.settings.ui
 
+import vn.io.litever.brand.tokens.LiteverTokens
 import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
@@ -282,7 +283,7 @@ fun PermissionTile(
                 ) {
                     Text(
                         text = title,
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                        style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.weight(1f, fill = false)
                     )
@@ -361,7 +362,7 @@ fun ManufacturerSettingsTile(onOpen: () -> Unit) {
                 Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium))
                 Text(
                     text = stringResource(R.string.permission_manufacturer_title),
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                    style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }
@@ -414,7 +415,7 @@ fun StatusBadge(
                 horizontal = MaterialTheme.spacing.small,
                 vertical = MaterialTheme.spacing.tiny
             ),
-            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+            style = LiteverTokens.typography.labelSmallEmphasized,
             color = textColor,
             maxLines = 1
         )

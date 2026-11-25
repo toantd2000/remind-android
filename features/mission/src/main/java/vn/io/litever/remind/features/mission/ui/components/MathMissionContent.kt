@@ -235,7 +235,7 @@ fun MathMissionContent(
                     AnimatedVisibility(visible = validationState == StepValidationState.WRONG) {
                         Text(
                             text = stringResource(R.string.mission_math_wrong),
-                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                            style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.error,
                             textAlign = TextAlign.Center
                         )
@@ -338,7 +338,7 @@ private fun KeypadNumberButton(
     ) {
         Text(
             text = digit.toString(),
-            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+            style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.onSurface
         )
     }

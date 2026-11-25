@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import vn.io.litever.remind.features.alarms.R
 import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState
@@ -38,7 +37,6 @@ fun NextAlarmHeader(
             Text(
                 text = formatNextAlarmText(state),
                 style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.SemiBold
             )
         }
     }

@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.alarms.ui
 
+import vn.io.litever.brand.tokens.LiteverTokens
 import vn.io.litever.remind.core.designsystem.theme.spacing
 
 
@@ -490,7 +491,7 @@ fun AlarmEditScreen(
             title = {
                 Text(
                     stringResource(R.string.set_alarm_time),
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(
                         bottom = MaterialTheme.spacing.medium,
                     )
@@ -570,7 +571,7 @@ fun AlarmEditScreen(
                 title = {
                     Text(
                         stringResource(R.string.set_alarm_date),
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                        style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.padding(
                             top = MaterialTheme.spacing.medium,
                             bottom = MaterialTheme.spacing.small,
@@ -799,7 +800,6 @@ fun AlarmEditScreen(
                             Text(
                                 text = uiState.time.format(timeFormatter),
                                 style = MaterialTheme.typography.displayLarge.copy(
-                                    fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary,
                                     letterSpacing = (-2).sp
                                 )
@@ -809,9 +809,7 @@ fun AlarmEditScreen(
                                     text = uiState.time.format(DateTimeFormatter.ofPattern("a"))
                                         .uppercase(),
                                     style = MaterialTheme.typography.headlineSmall.copy(
-                                        color = MaterialTheme.colorScheme.secondary,
-                                        fontWeight = FontWeight.Bold
-                                    ),
+                                        color = MaterialTheme.colorScheme.secondary,),
                                     modifier = Modifier.padding(bottom = MaterialTheme.spacing.smallMedium)
                                 )
                             }
@@ -870,7 +868,7 @@ fun AlarmEditScreen(
                         Column {
                             Text(
                                 text = stringResource(R.string.alarm_label_title),
-                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                style = LiteverTokens.typography.labelSmallEmphasized,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Spacer(modifier = Modifier.height(8.dp))
@@ -947,7 +945,7 @@ fun AlarmEditScreen(
                         Column {
                             Text(
                                 text = stringResource(R.string.alarm_message_title),
-                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                style = LiteverTokens.typography.labelSmallEmphasized,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Spacer(modifier = Modifier.height(8.dp))
@@ -1054,7 +1052,7 @@ fun AlarmEditScreen(
                                     ) {
                                         Text(
                                             text = stringResource(R.string.announce_label_tts_title),
-                                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                                            style = MaterialTheme.typography.titleSmall,
                                             color = MaterialTheme.colorScheme.onSurface
                                         )
                                         vn.io.litever.remind.core.designsystem.components.ReMindProDiamondTag()
@@ -1343,7 +1341,7 @@ fun AlarmEditScreen(
                             )
                             Text(
                                 text = "${uiState.missions.size}/5",
-                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                style = LiteverTokens.typography.labelMediumEmphasized,
                                 color = MaterialTheme.colorScheme.primary
                             )
                         }

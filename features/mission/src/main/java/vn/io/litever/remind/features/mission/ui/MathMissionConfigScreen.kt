@@ -210,7 +210,7 @@ fun MathMissionConfigScreen(
 
                     Text(
                         text = "$repetitions",
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                        style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface
                     )
 

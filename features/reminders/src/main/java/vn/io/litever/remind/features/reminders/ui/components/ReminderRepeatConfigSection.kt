@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
+import vn.io.litever.brand.tokens.LiteverTokens
 import androidx.compose.material3.MaterialTheme
 import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.res.Configuration
@@ -264,7 +265,7 @@ fun ReminderRepeatConfigSection(
                 title = {
                     Text(
                         stringResource(R.string.set_reminder_date),
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                        style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.padding(
                             top = MaterialTheme.spacing.medium,
                             bottom = MaterialTheme.spacing.small,
@@ -319,8 +320,7 @@ fun ReminderRepeatConfigSection(
                                     Text(
                                         text = Month.of(selectedMonth)
                                             .getDisplayName(TextStyle.FULL, currentLocale),
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        fontWeight = FontWeight.SemiBold,
+                                        style = LiteverTokens.typography.bodyMediumEmphasized,
                                         color = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
@@ -383,8 +383,7 @@ fun ReminderRepeatConfigSection(
                                     )
                                     Text(
                                         text = stringResource(R.string.day_format, selectedDay),
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        fontWeight = FontWeight.SemiBold,
+                                        style = LiteverTokens.typography.bodyMediumEmphasized,
                                         color = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
@@ -485,8 +484,7 @@ fun ReminderRepeatConfigSection(
                                     Text(
                                         text = Month.of(selectedMonth)
                                             .getDisplayName(TextStyle.FULL, currentLocale),
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        fontWeight = FontWeight.SemiBold,
+                                        style = LiteverTokens.typography.bodyMediumEmphasized,
                                         color = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
@@ -549,8 +547,7 @@ fun ReminderRepeatConfigSection(
                                     )
                                     Text(
                                         text = stringResource(R.string.day_format, selectedDay),
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        fontWeight = FontWeight.SemiBold,
+                                        style = LiteverTokens.typography.bodyMediumEmphasized,
                                         color = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
@@ -693,7 +690,7 @@ private fun RepeatDetailContent(
                         label = {
                             Text(
                                 stringResource(R.string.add_date),
-                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
+                                style = LiteverTokens.typography.labelMediumEmphasized
                             )
                         },
                         leadingIcon = {
@@ -885,7 +882,7 @@ private fun RepeatDetailContent(
                         label = {
                             Text(
                                 stringResource(R.string.add_date),
-                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
+                                style = LiteverTokens.typography.labelMediumEmphasized
                             )
                         },
                         leadingIcon = {

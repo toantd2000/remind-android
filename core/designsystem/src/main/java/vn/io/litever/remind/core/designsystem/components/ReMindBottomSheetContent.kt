@@ -11,7 +11,6 @@ import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 
 /**
  * Standard content container for bottom sheets in ReMind.
@@ -43,7 +42,7 @@ fun ReMindBottomSheetContent(
                     )
             ) {
                 ProvideTextStyle(
-                    value = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                    value = MaterialTheme.typography.titleLarge
                 ) {
                     title()
                 }
@@ -70,7 +69,7 @@ fun ReMindBottomSheetContent(
         {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                style = MaterialTheme.typography.titleLarge
             )
         }
     } else {

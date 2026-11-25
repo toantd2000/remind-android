@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
+import vn.io.litever.brand.tokens.LiteverTokens
 import androidx.compose.material3.MaterialTheme
 import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.compose.foundation.BorderStroke
@@ -19,7 +20,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
@@ -118,7 +118,7 @@ fun ReminderTriggerSection(
                             ) {
                                 Text(
                                     text = stringResource(R.string.interval_section_title),
-                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                    style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
@@ -134,7 +134,7 @@ fun ReminderTriggerSection(
                                 } else {
                                     stringResource(R.string.interval_not_set)
                                 },
-                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                                style = LiteverTokens.typography.bodyMediumEmphasized,
                                 color = if (totalMins > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                             )
 

@@ -55,7 +55,6 @@ fun ReminderPuzzleDialog(
             Text(
                 text = stringResource(R.string.puzzle_dialog_title),
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
             )
         },

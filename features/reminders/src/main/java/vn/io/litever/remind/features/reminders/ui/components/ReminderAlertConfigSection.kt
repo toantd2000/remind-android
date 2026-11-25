@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
+import vn.io.litever.brand.tokens.LiteverTokens
 import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
@@ -167,7 +168,6 @@ fun ReminderAlertConfigSection(
             Text(
                 text = stringResource(R.string.sound_settings_title),
                 style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
             )
 
@@ -200,8 +200,7 @@ fun ReminderAlertConfigSection(
                         Column {
                             Text(
                                 text = stringResource(R.string.ringtone_title),
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.SemiBold,
+                                style = LiteverTokens.typography.bodyMediumEmphasized,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
@@ -309,8 +308,7 @@ fun ReminderAlertConfigSection(
                         Column {
                             Text(
                                 text = stringResource(R.string.vibration_label),
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.SemiBold,
+                                style = LiteverTokens.typography.bodyMediumEmphasized,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
@@ -364,8 +362,7 @@ fun ReminderAlertConfigSection(
                             Column {
                                 Text(
                                     text = stringResource(R.string.auto_silence_title),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.SemiBold,
+                                    style = LiteverTokens.typography.bodyMediumEmphasized,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 val autoSilenceSummary = if (autoSilenceMinutes <= 0) {
@@ -419,8 +416,7 @@ fun ReminderAlertConfigSection(
                             Column(modifier = Modifier.padding(end = 8.dp)) {
                                 Text(
                                     text = stringResource(R.string.use_alarm_stream_title),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.SemiBold,
+                                    style = LiteverTokens.typography.bodyMediumEmphasized,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
@@ -473,8 +469,7 @@ fun ReminderAlertConfigSection(
                         Column {
                             Text(
                                 text = stringResource(R.string.snooze_action),
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.SemiBold,
+                                style = LiteverTokens.typography.bodyMediumEmphasized,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             val snoozeSummary = if (snoozeEnabled) {
@@ -535,8 +530,7 @@ fun ReminderAlertConfigSection(
                             ) {
                                 Text(
                                     text = stringResource(R.string.announce_title_tts_title),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.SemiBold,
+                                    style = LiteverTokens.typography.bodyMediumEmphasized,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 vn.io.litever.remind.core.designsystem.components.ReMindProDiamondTag()
@@ -596,8 +590,7 @@ fun ReminderAlertConfigSection(
                             ) {
                                 Text(
                                     text = stringResource(R.string.extra_loud_title),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.SemiBold,
+                                    style = LiteverTokens.typography.bodyMediumEmphasized,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 vn.io.litever.remind.core.designsystem.components.ReMindProDiamondTag()

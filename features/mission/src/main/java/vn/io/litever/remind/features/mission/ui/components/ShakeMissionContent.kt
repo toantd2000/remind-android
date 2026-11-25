@@ -27,7 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
@@ -109,7 +108,7 @@ fun ShakeMissionContent(
 
         Text(
             text = "$remaining",
-            style = MaterialTheme.typography.displayLarge.copy(fontWeight = FontWeight.ExtraBold),
+            style = MaterialTheme.typography.displayLarge,
             color = MaterialTheme.colorScheme.primary
         )
 

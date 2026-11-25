@@ -150,7 +150,6 @@ fun AlarmCard(
                 Text(
                     text = timeStr,
                     style = MaterialTheme.typography.displaySmall.copy(
-                        fontWeight = FontWeight.Bold,
                         letterSpacing = (-0.5).sp
                     ),
                     color = MaterialTheme.colorScheme.onSurface
@@ -158,7 +157,7 @@ fun AlarmCard(
                 if (amPm != null) {
                     Text(
                         text = amPm.uppercase(),
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                        style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier
                             .padding(start = MaterialTheme.spacing.extraSmall, bottom = MaterialTheme.spacing.small)

@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.reminders.ui
 
+import vn.io.litever.brand.tokens.LiteverTokens
 import androidx.compose.material3.MaterialTheme
 import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.res.Configuration
@@ -386,7 +387,7 @@ private fun RingingReminderContent(
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
             Text(
                 text = reminder.title,
-                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = MaterialTheme.spacing.medium),
@@ -424,7 +425,7 @@ private fun RingingReminderContent(
 
                 Text(
                     text = stringResource(R.string.auto_silence_countdown_mm_ss, formattedTime),
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                    style = LiteverTokens.typography.bodyLargeEmphasized,
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier
                         .background(
@@ -527,7 +528,7 @@ private fun RingingBottomActions(
                             ) {
                                 Text(
                                     text = "+${mins}m",
-                                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                                    style = MaterialTheme.typography.labelLarge,
                                     maxLines = 1
                                 )
                             }
@@ -543,7 +544,7 @@ private fun RingingBottomActions(
                         ) {
                             Text(
                                 text = stringResource(R.string.snooze_custom),
-                                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                                style = MaterialTheme.typography.labelLarge,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
@@ -569,7 +570,7 @@ private fun RingingBottomActions(
                                 R.string.snooze_default_format,
                                 reminder.action.snoozeIntervalMinutes
                             ),
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                            style = MaterialTheme.typography.titleMedium,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -583,7 +584,7 @@ private fun RingingBottomActions(
                     ) {
                         Text(
                             text = stringResource(R.string.snooze_more_options),
-                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                            style = MaterialTheme.typography.titleSmall,
                             maxLines = 1
                         )
                         Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
@@ -607,7 +608,7 @@ private fun RingingBottomActions(
                 ) {
                     Text(
                         text = stringResource(R.string.snooze_limit_reached),
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                        style = MaterialTheme.typography.titleMedium
                     )
                 }
             }
@@ -623,7 +624,7 @@ private fun RingingBottomActions(
         ) {
             Text(
                 text = stringResource(R.string.dismiss_action),
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold)
+                style = LiteverTokens.typography.titleMediumEmphasized
             )
         }
     }
@@ -643,7 +644,7 @@ private fun CustomSnoozeDialog(
         title = {
             Text(
                 text = stringResource(R.string.snooze_custom_dialog_title),
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                style = MaterialTheme.typography.titleMedium
             )
         },
         text = {

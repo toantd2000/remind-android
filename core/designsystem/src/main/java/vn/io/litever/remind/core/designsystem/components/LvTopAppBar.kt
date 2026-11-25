@@ -1,10 +1,7 @@
 package vn.io.litever.remind.core.designsystem.components
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
-import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -15,9 +12,9 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import vn.io.litever.remind.core.designsystem.R
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 
 /**
  * Navigation icon types for [LvTopAppBar].
@@ -35,7 +32,6 @@ typealias ReMindNavigationIconType = LvNavigationIconType
  * Custom TopAppBar component in `:core:designsystem` extending Material 3 [TopAppBar].
  * Supports title, navigation icon (`Back`, `Close`, `Menu`), and action slots.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LvTopAppBar(
     title: String,
@@ -53,7 +49,6 @@ fun LvTopAppBar(
                 text = title,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
             )
         },
         modifier = modifier,
@@ -87,7 +82,6 @@ fun LvTopAppBar(
 /**
  * Overload of [LvTopAppBar] accepting a custom [title] composable slot.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LvTopAppBar(
     title: @Composable () -> Unit,

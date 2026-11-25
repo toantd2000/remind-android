@@ -177,7 +177,7 @@ fun AnnounceLabelPreviewBottomSheetContent(
 
                 Text(
                     text = "“$spokenText”",
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
@@ -200,7 +200,7 @@ fun AnnounceLabelPreviewBottomSheetContent(
                 ) {
                     Text(
                         text = stringResource(R.string.tts_preview_language_label, selectedLanguageDisplay),
-                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                        style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.weight(1f)
                     )
@@ -313,7 +313,7 @@ fun AnnounceLabelPreviewBottomSheetContent(
                     } else {
                         stringResource(R.string.tts_preview_action_replay)
                     },
-                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
+                    style = MaterialTheme.typography.titleSmall
                 )
             }
             if (isSpeaking) {

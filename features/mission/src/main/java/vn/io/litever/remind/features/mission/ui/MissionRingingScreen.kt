@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.mission.ui
 
+import vn.io.litever.brand.tokens.LiteverTokens
 import androidx.compose.material3.MaterialTheme
 import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.activity.compose.BackHandler
@@ -160,7 +161,7 @@ fun MissionRingingScreen(
                             ) {
                                 Text(
                                     text = stringResource(R.string.wakeup_challenge_title),
-                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                    style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.onSurface,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
@@ -393,7 +394,7 @@ private fun MissionProgressScaffold(
                                     currentMissionIndex + 1,
                                     totalMissions
                                 ),
-                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                style = LiteverTokens.typography.labelSmallEmphasized,
                                 color = MaterialTheme.colorScheme.onPrimary,
                                 modifier = Modifier.padding(
                                     horizontal = MaterialTheme.spacing.small,
@@ -404,7 +405,7 @@ private fun MissionProgressScaffold(
                     }
                     Text(
                         text = missionName,
-                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                        style = LiteverTokens.typography.labelMediumEmphasized,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                 }
@@ -426,7 +427,7 @@ private fun MissionProgressScaffold(
                             currentRepetition,
                             totalRepetitions
                         ),
-                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                        style = LiteverTokens.typography.labelSmallEmphasized,
                         color = MaterialTheme.colorScheme.primary
                     )
                 }

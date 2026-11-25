@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.mission.ui
 
+import vn.io.litever.brand.tokens.LiteverTokens
 import androidx.compose.material3.MaterialTheme
 import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.res.Configuration
@@ -37,7 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
@@ -131,7 +131,7 @@ fun BarcodeMissionConfigScreen(
                     ) {
                         Text(
                             text = targetBarcode.ifBlank { stringResource(R.string.barcode_not_set) },
-                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                            style = LiteverTokens.typography.bodyLargeEmphasized,
                             color = if (targetBarcode.isNotBlank()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(MaterialTheme.spacing.medium)
                         )

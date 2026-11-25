@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.alarms.ui
 
+import vn.io.litever.brand.tokens.LiteverTokens
 import androidx.compose.material3.MaterialTheme
 import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.activity.compose.BackHandler
@@ -247,7 +248,7 @@ fun AlarmPreviewContent(
                     Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
                     Text(
                         text = alarm.label,
-                        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                        style = MaterialTheme.typography.headlineMedium,
                         modifier = Modifier.fillMaxWidth().padding(horizontal = MaterialTheme.spacing.medium),
                         textAlign = TextAlign.Center
                     )
@@ -280,7 +281,7 @@ fun AlarmPreviewContent(
                         val formattedTime = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
                         Text(
                             text = stringResource(R.string.auto_silence_countdown, formattedTime),
-                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                            style = LiteverTokens.typography.bodyLargeEmphasized,
                             color = MaterialTheme.colorScheme.error,
                             modifier = Modifier
                                 .background(
@@ -334,7 +335,7 @@ fun AlarmPreviewContent(
                     }
                     Text(
                         text = dismissText,
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold)
+                        style = LiteverTokens.typography.titleMediumEmphasized
                     )
                 }
             }

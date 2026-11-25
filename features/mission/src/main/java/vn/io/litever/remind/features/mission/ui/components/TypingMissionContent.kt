@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.mission.ui.components
 
+import vn.io.litever.brand.tokens.LiteverTokens
 import androidx.compose.material3.MaterialTheme
 import vn.io.litever.remind.core.designsystem.theme.spacing
 import vn.io.litever.remind.core.designsystem.theme.semanticColors
@@ -243,7 +244,7 @@ fun TypingMissionContent(
                         )
                         Text(
                             text = stringResource(R.string.mission_typing_board_header),
-                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                            style = LiteverTokens.typography.labelMediumEmphasized,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     }
@@ -266,7 +267,7 @@ fun TypingMissionContent(
                                 )
                                 Text(
                                     text = stringResource(R.string.mission_typing_completed_badge),
-                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                    style = LiteverTokens.typography.labelSmallEmphasized,
                                     color = MaterialTheme.semanticColors.onSuccessContainer
                                 )
                             }
@@ -336,7 +337,7 @@ fun TypingMissionContent(
             ) {
                 Text(
                     text = stringResource(R.string.action_continue),
-                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
+                    style = MaterialTheme.typography.labelLarge
                 )
                 Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
                 Icon(

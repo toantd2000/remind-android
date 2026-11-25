@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
+import vn.io.litever.brand.tokens.LiteverTokens
 import androidx.compose.material3.MaterialTheme
 import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.res.Configuration
@@ -121,7 +122,7 @@ fun ReminderTimeConfigSection(
                 label = {
                     Text(
                         stringResource(R.string.add_fixed_time),
-                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
+                        style = LiteverTokens.typography.labelMediumEmphasized
                     )
                 },
                 leadingIcon = {
@@ -151,7 +152,7 @@ fun ReminderTimeConfigSection(
             title = {
                 Text(
                     stringResource(R.string.set_reminder_time),
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(
                         bottom = MaterialTheme.spacing.medium,
                     )
@@ -192,7 +193,7 @@ fun ReminderTimeConfigSection(
             title = {
                 Text(
                     stringResource(R.string.set_reminder_time),
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(
                         bottom = MaterialTheme.spacing.medium,
                     )

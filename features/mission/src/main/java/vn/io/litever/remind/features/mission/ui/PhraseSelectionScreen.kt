@@ -1,5 +1,6 @@
 package vn.io.litever.remind.features.mission.ui
 
+import vn.io.litever.brand.tokens.LiteverTokens
 import androidx.compose.material3.MaterialTheme
 import vn.io.litever.remind.core.designsystem.theme.spacing
 import vn.io.litever.remind.core.designsystem.theme.semanticColors
@@ -521,7 +522,7 @@ fun AddCustomPhraseContent(
             ) {
                 Text(
                     text = stringResource(R.string.mission_phrase_placeholder),
-                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                    style = LiteverTokens.typography.labelSmallEmphasized,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -645,7 +646,7 @@ fun AddCustomPhraseContent(
             Column {
                 Text(
                     text = stringResource(R.string.mission_shared),
-                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
+                    style = MaterialTheme.typography.titleSmall
                 )
                 Text(
                     text = stringResource(if (canBePrivate) R.string.mission_shared_desc else R.string.mission_private_disabled_desc),

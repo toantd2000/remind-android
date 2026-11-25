@@ -169,7 +169,7 @@ fun MissionRingingScreen(
                                 if (alarmTimeString.isNotBlank()) {
                                     Text(
                                         text = stringResource(R.string.alarm_time_subtitle, alarmTimeString),
-                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
+                                        style = MaterialTheme.typography.labelSmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         maxLines = 1
                                     )
@@ -206,7 +206,9 @@ fun MissionRingingScreen(
                                     )
                                     Text(
                                         text = String.format("%02d:%02d", uiState.timeoutCountdown / 60, uiState.timeoutCountdown % 60),
-                                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.ExtraBold),
+                                        style = LiteverTokens.typography.labelMediumEmphasized.copy(
+                                            fontFeatureSettings = "tnum"
+                                        ),
                                         color = timerContentColor
                                     )
                                 }
@@ -398,7 +400,7 @@ private fun MissionProgressScaffold(
                                 color = MaterialTheme.colorScheme.onPrimary,
                                 modifier = Modifier.padding(
                                     horizontal = MaterialTheme.spacing.small,
-                                    vertical = 2.dp
+                                    vertical = MaterialTheme.spacing.tiny
                                 )
                             )
                         }
@@ -413,7 +415,7 @@ private fun MissionProgressScaffold(
                 // Vòng x/y
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall)
                 ) {
                     Icon(
                         imageVector = ReMindIcons.Flag,

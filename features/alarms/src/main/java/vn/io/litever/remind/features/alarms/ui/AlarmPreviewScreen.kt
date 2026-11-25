@@ -183,26 +183,28 @@ fun AlarmPreviewContent(
             ) {
                 val (timeStr, amPm) = TimeFormatUtils.formatTimeParts(currentTime.toLocalTime(), is24HourFormat)
                 Row(
-                    verticalAlignment = Alignment.Bottom,
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
                         text = timeStr,
-                        style = MaterialTheme.typography.displayLarge.copy(
-                            fontSize = 80.sp,
-                            fontWeight = FontWeight.Black
+                        style = LiteverTokens.typography.displayLargeEmphasized.copy(
+                            fontSize = 76.sp
                         ),
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.primary,
+                        maxLines = 1,
+                        softWrap = false,
+                        modifier = Modifier.alignByBaseline()
                     )
                     if (amPm != null) {
+                        Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
                         Text(
                             text = amPm.uppercase(Locale.getDefault()),
-                            style = MaterialTheme.typography.displayLarge.copy(
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.Black
-                            ),
-                            color = MaterialTheme.colorScheme.primary,
+                            style = MaterialTheme.typography.headlineSmall,
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
+                            maxLines = 1,
+                            softWrap = false,
+                            modifier = Modifier.alignByBaseline()
                         )
                     }
                 }
@@ -238,7 +240,7 @@ fun AlarmPreviewContent(
                                 R.string.scheduled_time_format,
                                 TimeFormatUtils.formatTime(alarm.time, is24HourFormat)
                             ),
-                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium),
+                            style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onTertiaryContainer
                         )
                     }
@@ -259,7 +261,7 @@ fun AlarmPreviewContent(
                     Text(
                         text = alarm.message,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.fillMaxWidth().padding(horizontal = MaterialTheme.spacing.extraLarge),
                         textAlign = TextAlign.Center
                     )
@@ -281,7 +283,9 @@ fun AlarmPreviewContent(
                         val formattedTime = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
                         Text(
                             text = stringResource(R.string.auto_silence_countdown, formattedTime),
-                            style = LiteverTokens.typography.bodyLargeEmphasized,
+                            style = LiteverTokens.typography.bodyLargeEmphasized.copy(
+                                fontFeatureSettings = "tnum"
+                            ),
                             color = MaterialTheme.colorScheme.error,
                             modifier = Modifier
                                 .background(

@@ -86,6 +86,7 @@ fun ReminderCard(
                 }
                 .padding(
                     start = MaterialTheme.spacing.medium,
+                    end = MaterialTheme.spacing.extraSmall,
                     top = MaterialTheme.spacing.smallMedium,
                     bottom = MaterialTheme.spacing.smallMedium
                 ),
@@ -174,7 +175,9 @@ fun ReminderCard(
                         Text(
                             text = reminder.notes,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                                alpha = if (reminder.isEnabled) 1f else 0.6f
+                            ),
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.padding(top = MaterialTheme.spacing.tiny)
@@ -185,11 +188,12 @@ fun ReminderCard(
                 // Options menu button (3-dots)
                 IconButton(
                     onClick = onMoreClick,
-                    modifier = Modifier.size(MaterialTheme.spacing.extraLarge)
+                    modifier = Modifier.size(36.dp)
                 ) {
                     Icon(
                         imageVector = ReMindIcons.MoreVert,
                         contentDescription = stringResource(R.string.action_more),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(MaterialTheme.spacing.mediumLarge),
                     )
                 }
@@ -276,9 +280,8 @@ private fun TimeWindowBadge(
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = text,
-                style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
-                fontWeight = FontWeight.Medium
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSecondaryContainer
             )
         }
     }
@@ -381,9 +384,8 @@ private fun BadgeContainer(
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = text,
-                style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+                style = MaterialTheme.typography.labelSmall,
                 color = contentColor,
-                fontWeight = FontWeight.Medium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )

@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -43,6 +41,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.flow.collectLatest
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
+import vn.io.litever.remind.core.designsystem.components.ReMindProTopBarButton
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.features.reminders.R
 import vn.io.litever.remind.features.reminders.ui.components.ReminderActionBottomSheet
@@ -147,10 +146,10 @@ fun ReminderListScreen(
             LvTopAppBar(
                 title = stringResource(R.string.reminders_title),
                 actions = {
-                    vn.io.litever.remind.core.designsystem.components.ReMindProTopBarButton(
+                    ReMindProTopBarButton(
                         isPro = isPro,
                         onClick = { onNavigateToPaywall(0) },
-                        modifier = Modifier.padding(end = if (hasReminders) 0.dp else 8.dp)
+                        modifier = Modifier.padding(end = if (hasReminders) MaterialTheme.spacing.none else MaterialTheme.spacing.small)
                     )
                     if (hasReminders) {
                         Box {
@@ -241,14 +240,12 @@ fun ReminderListScreen(
                 LazyColumn(
                     modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
-                    contentPadding = PaddingValues(MaterialTheme.spacing.medium).let {
-                        PaddingValues(
-                            start = it.calculateStartPadding(androidx.compose.ui.unit.LayoutDirection.Ltr),
-                            top = it.calculateTopPadding(),
-                            end = it.calculateEndPadding(androidx.compose.ui.unit.LayoutDirection.Ltr),
-                            bottom = it.calculateBottomPadding() + 80.dp
-                        )
-                    }
+                    contentPadding = PaddingValues(
+                        start = MaterialTheme.spacing.medium,
+                        top = MaterialTheme.spacing.small,
+                        end = MaterialTheme.spacing.medium,
+                        bottom = MaterialTheme.spacing.medium + 80.dp
+                    )
                 ) {
                     items(
                         items = uiState.reminders,

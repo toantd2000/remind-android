@@ -1,7 +1,5 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
-import vn.io.litever.brand.tokens.LiteverTokens
-import androidx.compose.material3.MaterialTheme
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,9 +16,9 @@ import androidx.compose.foundation.text.input.TextFieldDecorator
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,9 +33,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import vn.io.litever.brand.tokens.LiteverTokens
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsDivider
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import vn.io.litever.remind.features.reminders.R
 
 @Composable
@@ -57,9 +58,13 @@ fun ReminderBasicInfoSection(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(top = 8.dp, bottom = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(
+                    start = MaterialTheme.spacing.medium,
+                    end = MaterialTheme.spacing.medium,
+                    top = MaterialTheme.spacing.small,
+                    bottom = MaterialTheme.spacing.medium
+                ),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
         ) {
             // Title Field
             Column {
@@ -68,7 +73,7 @@ fun ReminderBasicInfoSection(
                     style = LiteverTokens.typography.labelSmallEmphasized,
                     color = if (showTitleError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
@@ -108,9 +113,8 @@ fun ReminderBasicInfoSection(
                                 if (titleState.text.isEmpty()) {
                                     Text(
                                         text = stringResource(R.string.reminder_title_placeholder),
-                                        style = MaterialTheme.typography.bodyLarge.copy(
-                                            color = MaterialTheme.colorScheme.outlineVariant
-                                        )
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                                     )
                                 }
                                 innerTextField()
@@ -126,20 +130,20 @@ fun ReminderBasicInfoSection(
                             Icon(
                                 imageVector = ReMindIcons.Close,
                                 contentDescription = stringResource(R.string.action_clear_title),
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(MaterialTheme.spacing.mediumLarge)
                             )
                         }
                     } else {
                         Icon(
                             imageVector = ReMindIcons.NewLabel,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.outlineVariant
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                         )
                     }
                 }
 
                 if (showTitleError) {
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(MaterialTheme.spacing.extraSmall))
                     Text(
                         text = stringResource(R.string.reminder_title_required),
                         style = MaterialTheme.typography.bodySmall,
@@ -148,8 +152,9 @@ fun ReminderBasicInfoSection(
                 }
             }
 
-            HorizontalDivider(
-                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+            ReMindSettingsDivider(
+                inset = false,
+                modifier = Modifier.padding(horizontal = MaterialTheme.spacing.none)
             )
 
             // Notes Field
@@ -159,7 +164,7 @@ fun ReminderBasicInfoSection(
                     style = LiteverTokens.typography.labelSmallEmphasized,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.Top
@@ -193,9 +198,8 @@ fun ReminderBasicInfoSection(
                                 if (notesState.text.isEmpty()) {
                                     Text(
                                         text = stringResource(R.string.reminder_notes_placeholder),
-                                        style = MaterialTheme.typography.bodyLarge.copy(
-                                            color = MaterialTheme.colorScheme.outlineVariant
-                                        )
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                                     )
                                 }
                                 innerTextField()
@@ -211,17 +215,17 @@ fun ReminderBasicInfoSection(
                             Icon(
                                 imageVector = ReMindIcons.Close,
                                 contentDescription = stringResource(R.string.action_clear_notes),
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(MaterialTheme.spacing.mediumLarge)
                             )
                         }
                     } else {
                         Icon(
                             imageVector = ReMindIcons.EditNote,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.outlineVariant,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                             modifier = Modifier
-                                .size(24.dp)
-                                .padding(top = 2.dp)
+                                .size(MaterialTheme.spacing.large)
+                                .padding(top = MaterialTheme.spacing.tiny)
                         )
                     }
                 }

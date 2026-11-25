@@ -1,46 +1,45 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
-import vn.io.litever.brand.tokens.LiteverTokens
-import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.res.Configuration
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.SliderState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import vn.io.litever.brand.tokens.LiteverTokens
 import vn.io.litever.remind.core.designsystem.components.AutoSilenceBottomSheet
-import vn.io.litever.remind.core.designsystem.components.ReMindSettingIcon
-import vn.io.litever.remind.core.designsystem.components.ReMindSettingsCategory
+import vn.io.litever.remind.core.designsystem.components.ReMindProDiamondTag
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsDivider
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsItem
 import vn.io.litever.remind.core.designsystem.components.SnoozeBottomSheet
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import vn.io.litever.remind.core.model.NotificationStyle
 import vn.io.litever.remind.features.reminders.R
 import kotlin.math.roundToInt
@@ -99,25 +98,23 @@ fun ReminderAlertConfigSection(
         )
     }
 
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surfaceContainerLow
+    ReMindSettingsGroup(
+        title = stringResource(R.string.section_alert_settings),
+        modifier = modifier
     ) {
+        // 1. Notification Style Selector (Full-screen ringing vs Standard notification)
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(MaterialTheme.spacing.medium)
+                .padding(
+                    horizontal = MaterialTheme.spacing.medium,
+                    vertical = MaterialTheme.spacing.small
+                ),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall)
         ) {
-
-            ReMindSettingsCategory(
-                title = stringResource(R.string.section_alert_settings)
-            )
-
-            // 1. Notification Style Selector (Đổ chuông vs Thông báo thường)
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
             ) {
                 NotificationStyle.entries.forEach { style ->
                     val labelRes = when (style) {
@@ -131,22 +128,21 @@ fun ReminderAlertConfigSection(
                         label = {
                             Text(
                                 text = stringResource(labelRes),
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.SemiBold
+                                style = if (isSelected) {
+                                    LiteverTokens.typography.labelMediumEmphasized
+                                } else {
+                                    MaterialTheme.typography.labelMedium
+                                },
+                                maxLines = 1
                             )
                         },
                         colors = FilterChipDefaults.filterChipColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                             labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
                             selectedContainerColor = MaterialTheme.colorScheme.primary,
                             selectedLabelColor = MaterialTheme.colorScheme.onPrimary
                         ),
-                        border = FilterChipDefaults.filterChipBorder(
-                            enabled = true,
-                            selected = isSelected,
-                            borderColor = MaterialTheme.colorScheme.outlineVariant,
-                            selectedBorderColor = MaterialTheme.colorScheme.outline
-                        ),
+                        border = null,
                         shape = MaterialTheme.shapes.medium,
                         modifier = Modifier.weight(1f)
                     )
@@ -160,463 +156,246 @@ fun ReminderAlertConfigSection(
             Text(
                 text = styleDesc,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 6.dp, bottom = 12.dp)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-
-            // 2. Sound & Vibration Settings (Applies to both ringing and standard)
-            Text(
-                text = stringResource(R.string.sound_settings_title),
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Ringtone Selection Row
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(MaterialTheme.shapes.medium)
-                    .clickable(onClick = onRingtoneClick),
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
-                shape = MaterialTheme.shapes.medium
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 14.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        ReMindSettingIcon(
-                            imageVector = ReMindIcons.MusicNote
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Column {
-                            Text(
-                                text = stringResource(R.string.ringtone_title),
-                                style = LiteverTokens.typography.bodyMediumEmphasized,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Text(
-                                text = ringtoneTitle.ifBlank { stringResource(R.string.default_ringtone) },
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-
-                    Icon(
-                        imageVector = ReMindIcons.KeyboardArrowRight,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            if (notificationStyle == NotificationStyle.FULL_SCREEN) {
-                // Volume Slider Row (Full Screen Ringing Mode)
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(MaterialTheme.shapes.medium),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
-                    shape = MaterialTheme.shapes.medium
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 14.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        ReMindSettingIcon(
-                            imageVector = if (volume == 0) ReMindIcons.VolumeOff else ReMindIcons.VolumeUp,
-                            selected = false
-                        )
-
-                        val volumeSliderState = remember {
-                            SliderState(
-                                value = volume.toFloat(),
-                                steps = 9,
-                                trackRange = 0f..100f
-                            )
-                        }
-                        androidx.compose.runtime.LaunchedEffect(volume) {
-                            if (volumeSliderState.value.roundToInt() != volume) {
-                                volumeSliderState.value = volume.toFloat()
-                            }
-                        }
-                        Slider(
-                            state = volumeSliderState,
-                            onValueChange = {
-                                volumeSliderState.value = it
-                                onVolumeChange(it.roundToInt())
-                            },
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(horizontal = 12.dp),
-                            colors = SliderDefaults.colors(
-                                thumbColor = MaterialTheme.colorScheme.primary,
-                                activeTrackColor = MaterialTheme.colorScheme.primary,
-                                inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant
-                            )
-                        )
-
-                        ReMindSettingIcon(
-                            imageVector = if (isPlaying) ReMindIcons.Pause else ReMindIcons.PlayArrow,
-                            selected = isPlaying,
-                            onClick = onTogglePlay
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-            }
-
-            // Vibration Switch Row (Both FULL_SCREEN and STANDARD modes)
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(MaterialTheme.shapes.medium)
-                    .clickable { onVibrationChange(!vibrationEnabled) },
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
-                shape = MaterialTheme.shapes.medium
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 14.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        ReMindSettingIcon(
-                            imageVector = ReMindIcons.Vibration,
-                            selected = vibrationEnabled
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Column {
-                            Text(
-                                text = stringResource(R.string.vibration_label),
-                                style = LiteverTokens.typography.bodyMediumEmphasized,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Text(
-                                text = if (vibrationEnabled) {
-                                    stringResource(R.string.vibration_enabled_desc)
-                                } else {
-                                    stringResource(R.string.off)
-                                },
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-
-                    Switch(
-                        checked = vibrationEnabled,
-                        onCheckedChange = onVibrationChange
-                    )
-                }
-            }
-
-            // 3. Ringing-only Settings (Auto-Silence & Alarm Stream)
-            if (notificationStyle == NotificationStyle.FULL_SCREEN) {
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // Auto-Silence Row
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(MaterialTheme.shapes.medium)
-                        .clickable { showAutoSilenceSheet = true },
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
-                    shape = MaterialTheme.shapes.medium
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 14.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            ReMindSettingIcon(
-                                imageVector = ReMindIcons.Timer,
-                                selected = autoSilenceMinutes > 0
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column {
-                                Text(
-                                    text = stringResource(R.string.auto_silence_title),
-                                    style = LiteverTokens.typography.bodyMediumEmphasized,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                                val autoSilenceSummary = if (autoSilenceMinutes <= 0) {
-                                    stringResource(R.string.auto_silence_never)
-                                } else {
-                                    stringResource(R.string.minutes_format, autoSilenceMinutes)
-                                }
-                                Text(
-                                    text = autoSilenceSummary,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-
-                        Icon(
-                            imageVector = ReMindIcons.KeyboardArrowRight,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // Use Alarm Stream (STREAM_ALARM) Switch Row
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(MaterialTheme.shapes.medium)
-                        .clickable { onUseAlarmStreamChange(!useAlarmStream) },
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
-                    shape = MaterialTheme.shapes.medium
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 14.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            ReMindSettingIcon(
-                                imageVector = ReMindIcons.AlarmOn,
-                                selected = useAlarmStream
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column(modifier = Modifier.padding(end = 8.dp)) {
-                                Text(
-                                    text = stringResource(R.string.use_alarm_stream_title),
-                                    style = LiteverTokens.typography.bodyMediumEmphasized,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                                Text(
-                                    text = if (useAlarmStream) {
-                                        stringResource(R.string.use_alarm_stream_desc)
-                                    } else {
-                                        stringResource(R.string.use_notification_stream_desc)
-                                    },
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-
-                        Switch(
-                            checked = useAlarmStream,
-                            onCheckedChange = onUseAlarmStreamChange
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // 4. Snooze Row
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(MaterialTheme.shapes.medium)
-                    .clickable { showSnoozeSheet = true },
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
-                shape = MaterialTheme.shapes.medium
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 14.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        ReMindSettingIcon(
-                            imageVector = ReMindIcons.Snooze,
-                            selected = snoozeEnabled
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Column {
-                            Text(
-                                text = stringResource(R.string.snooze_action),
-                                style = LiteverTokens.typography.bodyMediumEmphasized,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            val snoozeSummary = if (snoozeEnabled) {
-                                stringResource(R.string.minutes_format, snoozeIntervalMinutes)
-                            } else {
-                                stringResource(R.string.off)
-                            }
-                            Text(
-                                text = snoozeSummary,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-
-                    Icon(
-                        imageVector = ReMindIcons.KeyboardArrowRight,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // 5. Voice Announcement TTS (Pro)
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(MaterialTheme.shapes.medium)
-                    .clickable {
-                        if (!isPro && !announceTitleTts) onNavigateToPaywall(2)
-                        else onAnnounceTitleTtsChange(!announceTitleTts)
-                    },
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
-                shape = MaterialTheme.shapes.medium
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 14.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        ReMindSettingIcon(
-                            imageVector = ReMindIcons.Speaker,
-                            selected = announceTitleTts
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Column {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(6.dp)
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.announce_title_tts_title),
-                                    style = LiteverTokens.typography.bodyMediumEmphasized,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                                vn.io.litever.remind.core.designsystem.components.ReMindProDiamondTag()
-                            }
-                            Text(
-                                text = stringResource(R.string.announce_title_tts_desc),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-
-                    Switch(
-                        checked = announceTitleTts,
-                        onCheckedChange = { enabled ->
-                            if (!isPro && enabled) onNavigateToPaywall(2)
-                            else onAnnounceTitleTtsChange(enabled)
-                        }
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // 6. Extra Loud (Pro)
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(MaterialTheme.shapes.medium)
-                    .clickable {
-                        if (!isPro && !extraLoudEnabled) onNavigateToPaywall(4)
-                        else onExtraLoudChange(!extraLoudEnabled)
-                    },
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
-                shape = MaterialTheme.shapes.medium
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 14.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        ReMindSettingIcon(
-                            imageVector = ReMindIcons.VolumeUp,
-                            selected = extraLoudEnabled
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Column {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(6.dp)
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.extra_loud_title),
-                                    style = LiteverTokens.typography.bodyMediumEmphasized,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                                vn.io.litever.remind.core.designsystem.components.ReMindProDiamondTag()
-                            }
-                            Text(
-                                text = stringResource(R.string.extra_loud_desc),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-
-                    Switch(
-                        checked = extraLoudEnabled,
-                        onCheckedChange = { enabled ->
-                            if (!isPro && enabled) onNavigateToPaywall(4)
-                            else onExtraLoudChange(enabled)
-                        }
-                    )
-                }
-            }
         }
+
+        ReMindSettingsDivider(inset = false)
+
+        // 2. Ringtone
+        ReMindSettingsItem(
+            title = stringResource(R.string.ringtone_title),
+            subtitle = ringtoneTitle.ifBlank { stringResource(R.string.default_ringtone) },
+            icon = ReMindIcons.MusicNote,
+            showChevron = true,
+            onClick = onRingtoneClick
+        )
+
+        ReMindSettingsDivider()
+
+        // 3. Volume Slider (Full-screen mode)
+        if (notificationStyle == NotificationStyle.FULL_SCREEN) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = MaterialTheme.spacing.medium,
+                        vertical = MaterialTheme.spacing.small
+                    ),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = if (volume == 0) ReMindIcons.VolumeOff else ReMindIcons.VolumeUp,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(MaterialTheme.spacing.large)
+                )
+
+                val volumeSliderState = remember {
+                    SliderState(
+                        value = volume.toFloat(),
+                        steps = 9,
+                        trackRange = 0f..100f
+                    )
+                }
+                LaunchedEffect(volume) {
+                    if (volumeSliderState.value.roundToInt() != volume) {
+                        volumeSliderState.value = volume.toFloat()
+                    }
+                }
+                Slider(
+                    state = volumeSliderState,
+                    onValueChange = {
+                        volumeSliderState.value = it
+                        onVolumeChange(it.roundToInt())
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = MaterialTheme.spacing.smallMedium),
+                    colors = SliderDefaults.colors(
+                        thumbColor = MaterialTheme.colorScheme.primary,
+                        activeTrackColor = MaterialTheme.colorScheme.primary,
+                        inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
+                )
+
+                FilledTonalIconButton(
+                    onClick = onTogglePlay,
+                    modifier = Modifier.size(40.dp),
+                    colors = IconButtonDefaults.filledTonalIconButtonColors(
+                        containerColor = if (isPlaying) {
+                            MaterialTheme.colorScheme.primaryContainer
+                        } else {
+                            MaterialTheme.colorScheme.surfaceContainerHighest
+                        },
+                        contentColor = if (isPlaying) {
+                            MaterialTheme.colorScheme.onPrimaryContainer
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        }
+                    )
+                ) {
+                    Icon(
+                        imageVector = if (isPlaying) ReMindIcons.Pause else ReMindIcons.PlayArrow,
+                        contentDescription = null,
+                        modifier = Modifier.size(MaterialTheme.spacing.mediumLarge)
+                    )
+                }
+            }
+
+            ReMindSettingsDivider()
+        }
+
+        // 4. Vibration
+        ReMindSettingsItem(
+            title = stringResource(R.string.vibration_label),
+            subtitle = if (vibrationEnabled) {
+                stringResource(R.string.vibration_enabled_desc)
+            } else {
+                stringResource(R.string.off)
+            },
+            icon = ReMindIcons.Vibration,
+            iconTint = if (vibrationEnabled) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            },
+            onClick = { onVibrationChange(!vibrationEnabled) },
+            trailingContent = {
+                Switch(
+                    checked = vibrationEnabled,
+                    onCheckedChange = onVibrationChange
+                )
+            }
+        )
+
+        // 5. Ringing-only Settings (Auto-Silence & Alarm Stream)
+        if (notificationStyle == NotificationStyle.FULL_SCREEN) {
+            ReMindSettingsDivider()
+
+            val autoSilenceSummary = if (autoSilenceMinutes <= 0) {
+                stringResource(R.string.auto_silence_never)
+            } else {
+                stringResource(R.string.minutes_format, autoSilenceMinutes)
+            }
+            ReMindSettingsItem(
+                title = stringResource(R.string.auto_silence_title),
+                subtitle = autoSilenceSummary,
+                icon = ReMindIcons.Timer,
+                iconTint = if (autoSilenceMinutes > 0) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                },
+                showChevron = true,
+                onClick = { showAutoSilenceSheet = true }
+            )
+
+            ReMindSettingsDivider()
+
+            ReMindSettingsItem(
+                title = stringResource(R.string.use_alarm_stream_title),
+                subtitle = if (useAlarmStream) {
+                    stringResource(R.string.use_alarm_stream_desc)
+                } else {
+                    stringResource(R.string.use_notification_stream_desc)
+                },
+                icon = ReMindIcons.AlarmOn,
+                iconTint = if (useAlarmStream) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                },
+                onClick = { onUseAlarmStreamChange(!useAlarmStream) },
+                trailingContent = {
+                    Switch(
+                        checked = useAlarmStream,
+                        onCheckedChange = onUseAlarmStreamChange
+                    )
+                }
+            )
+        }
+
+        ReMindSettingsDivider()
+
+        // 6. Snooze
+        val snoozeSummary = if (snoozeEnabled) {
+            stringResource(R.string.minutes_format, snoozeIntervalMinutes)
+        } else {
+            stringResource(R.string.off)
+        }
+        ReMindSettingsItem(
+            title = stringResource(R.string.snooze_action),
+            subtitle = snoozeSummary,
+            icon = ReMindIcons.Snooze,
+            iconTint = if (snoozeEnabled) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            },
+            showChevron = true,
+            onClick = { showSnoozeSheet = true }
+        )
+
+        ReMindSettingsDivider()
+
+        // 7. Voice Announcement TTS (Pro)
+        ReMindSettingsItem(
+            title = stringResource(R.string.announce_title_tts_title),
+            subtitle = stringResource(R.string.announce_title_tts_desc),
+            icon = ReMindIcons.Speaker,
+            iconTint = if (announceTitleTts) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            },
+            titleBadge = { ReMindProDiamondTag() },
+            onClick = {
+                if (!isPro && !announceTitleTts) onNavigateToPaywall(2)
+                else onAnnounceTitleTtsChange(!announceTitleTts)
+            },
+            trailingContent = {
+                Switch(
+                    checked = announceTitleTts,
+                    onCheckedChange = { enabled ->
+                        if (!isPro && enabled) onNavigateToPaywall(2)
+                        else onAnnounceTitleTtsChange(enabled)
+                    }
+                )
+            }
+        )
+
+        ReMindSettingsDivider()
+
+        // 8. Extra Loud (Pro)
+        ReMindSettingsItem(
+            title = stringResource(R.string.extra_loud_title),
+            subtitle = stringResource(R.string.extra_loud_desc),
+            icon = ReMindIcons.VolumeUp,
+            iconTint = if (extraLoudEnabled) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            },
+            titleBadge = { ReMindProDiamondTag() },
+            onClick = {
+                if (!isPro && !extraLoudEnabled) onNavigateToPaywall(4)
+                else onExtraLoudChange(!extraLoudEnabled)
+            },
+            trailingContent = {
+                Switch(
+                    checked = extraLoudEnabled,
+                    onCheckedChange = { enabled ->
+                        if (!isPro && enabled) onNavigateToPaywall(4)
+                        else onExtraLoudChange(enabled)
+                    }
+                )
+            }
+        )
     }
 }
 
-@Preview(showBackground = true)
+@Preview(name = "Alert Config Full Screen - Light", showBackground = true)
 @Composable
 private fun ReminderAlertConfigSectionPreview() {
     ReMindTheme {
@@ -641,7 +420,7 @@ private fun ReminderAlertConfigSectionPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(name = "Alert Config Standard - Light", showBackground = true)
 @Composable
 private fun ReminderAlertConfigSectionStandardPreview() {
     ReMindTheme {
@@ -666,7 +445,12 @@ private fun ReminderAlertConfigSectionStandardPreview() {
     }
 }
 
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(
+    name = "Alert Config - Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    backgroundColor = 0xFF19120CL
+)
 @Composable
 private fun ReminderAlertConfigSectionDarkPreview() {
     ReMindTheme(darkTheme = true) {

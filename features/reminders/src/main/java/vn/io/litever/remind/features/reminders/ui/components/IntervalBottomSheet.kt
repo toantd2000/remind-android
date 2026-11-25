@@ -1,7 +1,6 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
-import androidx.compose.material3.MaterialTheme
-import vn.io.litever.remind.core.designsystem.theme.spacing
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +16,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SheetValue
@@ -29,14 +29,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import android.content.res.Configuration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomSheetContent
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import vn.io.litever.remind.features.reminders.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,12 +78,12 @@ fun IntervalBottomSheetContent(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = MaterialTheme.spacing.mediumLarge)
-            .padding(bottom = MaterialTheme.spacing.large)
+            .padding(horizontal = MaterialTheme.spacing.medium)
+            .padding(bottom = MaterialTheme.spacing.medium)
             .navigationBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // 1. Increment Display (+ 0h / + 0m) and Reset button (Exactly like QuickAlarmBottomSheet)
+        // 1. Increment Display (+ 0h / + 0m) and Reset button
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
@@ -100,8 +99,8 @@ fun IntervalBottomSheetContent(
 
             Text(
                 text = displayText,
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    letterSpacing = (-1).sp
+                style = MaterialTheme.typography.headlineLarge.copy(
+                    fontFeatureSettings = "tnum"
                 ),
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -122,7 +121,7 @@ fun IntervalBottomSheetContent(
 
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
 
-        // 2. Preset Time Grid (2 rows x 3 buttons) - Exactly like QuickAlarmBottomSheet
+        // 2. Preset Time Grid (2 rows x 3 buttons)
         val presetsRow1 = listOf(15 to R.string.interval_preset_15m, 30 to R.string.interval_preset_30m, 60 to R.string.interval_preset_1h)
         val presetsRow2 = listOf(120 to R.string.interval_preset_2h, 180 to R.string.interval_preset_3h, 240 to R.string.interval_preset_4h)
 
@@ -140,6 +139,8 @@ fun IntervalBottomSheetContent(
             }
         }
 
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
@@ -156,15 +157,13 @@ fun IntervalBottomSheetContent(
 
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.mediumLarge))
 
-        // 3. Action Buttons (Cancel & Save) - Exactly like QuickAlarmBottomSheet
+        // 3. Action Buttons (Cancel & Save)
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
         ) {
             OutlinedButton(onClick = onDismiss) {
-                Text(
-                    text = stringResource(R.string.action_cancel),
-                )
+                Text(text = stringResource(R.string.action_cancel))
             }
 
             Button(
@@ -176,15 +175,13 @@ fun IntervalBottomSheetContent(
                 enabled = totalMinutes > 0,
                 modifier = Modifier.weight(1f)
             ) {
-                Text(
-                    text = stringResource(R.string.action_save),
-                )
+                Text(text = stringResource(R.string.action_save))
             }
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview(name = "Interval Sheet - Light", showBackground = true)
 @Composable
 private fun IntervalBottomSheetContentPreview() {
     ReMindTheme {
@@ -196,7 +193,12 @@ private fun IntervalBottomSheetContentPreview() {
     }
 }
 
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(
+    name = "Interval Sheet - Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    backgroundColor = 0xFF19120CL
+)
 @Composable
 private fun IntervalBottomSheetContentDarkPreview() {
     ReMindTheme(darkTheme = true) {

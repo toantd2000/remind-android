@@ -1,8 +1,7 @@
 package vn.io.litever.remind.features.alarms.ui.components
 
-import androidx.compose.material3.MaterialTheme
-import vn.io.litever.remind.core.designsystem.theme.spacing
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -22,17 +22,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import vn.io.litever.brand.tokens.LiteverTokens
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import vn.io.litever.remind.core.model.Alarm
 import vn.io.litever.remind.core.model.Mission
 import vn.io.litever.remind.core.model.MissionType
@@ -49,19 +51,28 @@ fun AlarmCard(
     modifier: Modifier = Modifier
 ) {
     val isSkipped = alarm.skippedAt != null
+    val isActive = alarm.isEnabled && !isSkipped
 
-    val containerColor = if (alarm.isEnabled && !isSkipped) {
+    val containerColor = if (isActive) {
         MaterialTheme.colorScheme.surfaceContainer
     } else {
         MaterialTheme.colorScheme.surfaceContainerLow
+    }
+
+    val timeContentColor = when {
+        isActive -> MaterialTheme.colorScheme.onSurface
+        isSkipped -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
+        else -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f)
     }
 
     val primaryColor = MaterialTheme.colorScheme.primary
     val secondaryColor = MaterialTheme.colorScheme.secondary
 
     Surface(
-        onClick = onClick,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.large)
+            .then(if (!alarm.isQuickAlarm) Modifier.clickable(onClick = onClick) else Modifier),
         shape = MaterialTheme.shapes.large,
         color = containerColor,
     ) {
@@ -82,7 +93,7 @@ fun AlarmCard(
                 }
                 .padding(
                     start = MaterialTheme.spacing.medium,
-                    end = MaterialTheme.spacing.none,
+                    end = MaterialTheme.spacing.extraSmall,
                     top = MaterialTheme.spacing.smallMedium,
                     bottom = MaterialTheme.spacing.smallMedium
                 ),
@@ -94,15 +105,14 @@ fun AlarmCard(
                     Icon(
                         imageVector = ReMindIcons.FlashOn,
                         contentDescription = null,
-                        tint = if (alarm.isEnabled && !isSkipped) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
+                        tint = if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
                         modifier = Modifier.size(14.dp)
                     )
                     Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
                     Text(
                         text = stringResource(R.string.quick_alarm_tag),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = if (alarm.isEnabled && !isSkipped) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
-                        fontWeight = FontWeight.Bold,
+                        style = LiteverTokens.typography.labelSmallEmphasized,
+                        color = if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
                         modifier = Modifier.weight(1f, fill = false),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -110,12 +120,12 @@ fun AlarmCard(
                 } else {
                     Text(
                         text = getRepeatText(alarm),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = if (alarm.isEnabled && !isSkipped)
+                        style = LiteverTokens.typography.labelSmallEmphasized,
+                        color = if (isActive) {
                             MaterialTheme.colorScheme.primary
-                        else
-                            MaterialTheme.colorScheme.secondary,
-                        fontWeight = FontWeight.Bold,
+                        } else {
+                            MaterialTheme.colorScheme.secondary
+                        },
                         modifier = Modifier.weight(1f, fill = false),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -137,54 +147,63 @@ fun AlarmCard(
                     val dateFormatter = remember { DateTimeFormatter.ofPattern("dd/MM") }
                     Text(
                         text = stringResource(R.string.skipped_next_format, skippedAt.format(dateFormatter)),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.tertiary,
-                        fontWeight = FontWeight.Bold
+                        style = LiteverTokens.typography.labelSmallEmphasized,
+                        color = MaterialTheme.colorScheme.tertiary
                     )
                 }
             }
 
-            // Middle Row: Time - Lighter font weight
+            // Middle Row: Time + Controls
             val (timeStr, amPm) = TimeFormatUtils.formatTimeParts(alarm.time, is24HourFormat)
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = timeStr,
-                    style = MaterialTheme.typography.displaySmall.copy(
-                        letterSpacing = (-0.5).sp
-                    ),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                if (amPm != null) {
+                Row {
                     Text(
-                        text = amPm.uppercase(),
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier
-                            .padding(start = MaterialTheme.spacing.extraSmall, bottom = MaterialTheme.spacing.small)
-                            .align(Alignment.Bottom)
+                        text = timeStr,
+                        style = MaterialTheme.typography.headlineLarge.copy(
+                            fontFeatureSettings = "tnum"
+                        ),
+                        color = timeContentColor,
+                        maxLines = 1,
+                        softWrap = false,
+                        modifier = Modifier.alignByBaseline()
                     )
+                    if (amPm != null) {
+                        Text(
+                            text = amPm.uppercase(),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = timeContentColor.copy(alpha = 0.75f),
+                            maxLines = 1,
+                            softWrap = false,
+                            modifier = Modifier
+                                .padding(start = MaterialTheme.spacing.extraSmall)
+                                .alignByBaseline()
+                        )
+                    }
                 }
 
                 // Mission Icons
                 MissionIcons(
                     missions = alarm.missions,
-                    modifier = Modifier.padding(start = MaterialTheme.spacing.small, bottom = MaterialTheme.spacing.small)
+                    modifier = Modifier.padding(start = MaterialTheme.spacing.small)
                 )
 
                 Spacer(Modifier.weight(1F))
 
                 Switch(
-                    checked = alarm.isEnabled && !isSkipped,
+                    checked = isActive,
                     onCheckedChange = onToggle
                 )
 
+                Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
+
                 IconButton(
                     onClick = onMoreClick,
-                    modifier = Modifier.size(MaterialTheme.spacing.extraLarge)
+                    modifier = Modifier.size(36.dp)
                 ) {
                     Icon(
                         imageVector = ReMindIcons.MoreVert,
                         contentDescription = stringResource(R.string.action_more),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(MaterialTheme.spacing.mediumLarge),
                     )
                 }
@@ -192,25 +211,32 @@ fun AlarmCard(
 
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.tiny))
 
-            // Bottom Row: Label - Italics if empty
-            val labelText = alarm.label.ifEmpty { stringResource(R.string.no_label) }
+            // Bottom Row: Label - Italics and softer alpha if empty
+            val isLabelEmpty = alarm.label.isEmpty()
+            val labelText = if (isLabelEmpty) stringResource(R.string.no_label) else alarm.label
+            val labelAlpha = when {
+                isLabelEmpty && isActive -> 0.55f
+                isLabelEmpty -> 0.4f
+                isActive -> 1f
+                else -> 0.7f
+            }
             Text(
                 text = labelText,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = labelAlpha),
                 style = MaterialTheme.typography.bodyMedium.copy(
-                    fontStyle = if (alarm.label.isEmpty()) FontStyle.Italic else FontStyle.Normal,
+                    fontStyle = if (isLabelEmpty) FontStyle.Italic else FontStyle.Normal,
                 ),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            }
         }
     }
+}
 
 @Composable
 internal fun MissionIcons(missions: List<Mission>, modifier: Modifier = Modifier) {
     if (missions.isEmpty()) return
-    
+
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
@@ -240,10 +266,9 @@ internal fun MissionIcons(missions: List<Mission>, modifier: Modifier = Modifier
             ) {
                 Text(
                     text = "+${missions.size - 1}",
-                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                    style = LiteverTokens.typography.labelSmallEmphasized.copy(fontSize = 10.sp),
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.padding(horizontal = MaterialTheme.spacing.extraSmall, vertical = 1.dp),
-                    fontWeight = FontWeight.Bold
+                    modifier = Modifier.padding(horizontal = MaterialTheme.spacing.extraSmall, vertical = 1.dp)
                 )
             }
         }
@@ -359,15 +384,3 @@ fun AlarmCardNoLabelPreview() {
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-

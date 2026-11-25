@@ -1,15 +1,13 @@
 package vn.io.litever.remind.features.alarms.ui
 
-import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.res.Configuration
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,64 +16,70 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
-import vn.io.litever.remind.features.alarms.ui.components.QuickAlarmBottomSheet
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FloatingActionButtonMenu
+import androidx.compose.material3.FloatingActionButtonMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
+import androidx.compose.material3.ToggleFloatingActionButton
+import androidx.compose.material3.ToggleFloatingActionButtonDefaults.animateIcon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.compose.foundation.Image
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import vn.io.litever.brand.assets.LiteverMascotState
-import androidx.compose.material3.Button
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.SnackbarHost
 import kotlinx.coroutines.flow.collectLatest
+import vn.io.litever.brand.assets.LiteverMascotState
+import vn.io.litever.brand.tokens.LiteverTokens
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
-import vn.io.litever.remind.core.designsystem.components.ReMindLogo
-import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
-import vn.io.litever.remind.core.model.Alarm
-import java.time.DayOfWeek
-import vn.io.litever.remind.features.alarms.R
 import vn.io.litever.remind.core.designsystem.components.PermissionWarningBanner
+import vn.io.litever.remind.core.designsystem.components.ReMindLogo
+import vn.io.litever.remind.core.designsystem.components.ReMindProTopBarButton
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
+import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
+import vn.io.litever.remind.core.model.Alarm
+import vn.io.litever.remind.features.alarms.R
 import vn.io.litever.remind.features.alarms.ui.components.AlarmCard
 import vn.io.litever.remind.features.alarms.ui.components.NextAlarmHeader
+import vn.io.litever.remind.features.alarms.ui.components.QuickAlarmBottomSheet
 import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState
 import vn.io.litever.remind.features.alarms.viewmodel.AlarmListViewModel
+import java.time.DayOfWeek
 import java.time.LocalTime
 
 @Suppress("LocalContextGetResourceValueCall")
@@ -170,7 +174,7 @@ fun AlarmListRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AlarmListScreen(
     alarms: List<Alarm>?,
@@ -215,16 +219,13 @@ fun AlarmListScreen(
             ) {
                 LvTopAppBar(
                     title = {
-                        Text(
-                            stringResource(R.string.alarms_title),
-                            fontWeight = FontWeight.Bold
-                        )
+                        Text(text = stringResource(R.string.alarms_title))
                     },
                     actions = {
-                        vn.io.litever.remind.core.designsystem.components.ReMindProTopBarButton(
+                        ReMindProTopBarButton(
                             isPro = isPro,
                             onClick = { onNavigateToPaywall(0) },
-                            modifier = Modifier.padding(end = if (hasAlarms) 0.dp else 8.dp)
+                            modifier = Modifier.padding(end = if (hasAlarms) MaterialTheme.spacing.none else MaterialTheme.spacing.small)
                         )
                         if (hasAlarms) {
                             IconButton(onClick = { showTopMenu = !showTopMenu }) {
@@ -290,33 +291,42 @@ fun AlarmListScreen(
         },
         floatingActionButton = {
             if (hasAlarms) {
-                Box {
-                    FloatingActionButton(
-                        onClick = { showFabMenu = !showFabMenu }
-                    ) {
-                        Icon(ReMindIcons.Add, contentDescription = actionAddDescription)
-                    }
-                    DropdownMenu(
-                        expanded = showFabMenu,
-                        onDismissRequest = { showFabMenu = false }
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.alarm_option)) },
-                            leadingIcon = { Icon(ReMindIcons.Alarm, contentDescription = null) },
-                            onClick = {
-                                showFabMenu = false
-                                onAddAlarmClick()
+                FloatingActionButtonMenu(
+                    expanded = showFabMenu,
+                    button = {
+                        ToggleFloatingActionButton(
+                            checked = showFabMenu,
+                            onCheckedChange = { showFabMenu = it },
+                        ) {
+                            val iconVector by remember {
+                                derivedStateOf {
+                                    if (checkedProgress > 0.5f) ReMindIcons.Close else ReMindIcons.Add
+                                }
                             }
-                        )
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.quick_alarm)) },
-                            leadingIcon = { Icon(ReMindIcons.FlashOn, contentDescription = null) },
-                            onClick = {
-                                showFabMenu = false
-                                showQuickAlarmSheet = true
-                            }
-                        )
-                    }
+                            Icon(
+                                painter = rememberVectorPainter(iconVector),
+                                contentDescription = actionAddDescription,
+                                modifier = Modifier.animateIcon({ checkedProgress }),
+                            )
+                        }
+                    },
+                ) {
+                    FloatingActionButtonMenuItem(
+                        onClick = {
+                            showFabMenu = false
+                            onAddAlarmClick()
+                        },
+                        icon = { Icon(ReMindIcons.Alarm, contentDescription = null) },
+                        text = { Text(text = stringResource(R.string.alarm_option)) },
+                    )
+                    FloatingActionButtonMenuItem(
+                        onClick = {
+                            showFabMenu = false
+                            showQuickAlarmSheet = true
+                        },
+                        icon = { Icon(ReMindIcons.FlashOn, contentDescription = null) },
+                        text = { Text(text = stringResource(R.string.quick_alarm)) },
+                    )
                 }
             }
         },
@@ -342,16 +352,11 @@ fun AlarmListScreen(
                         modifier = Modifier.weight(1f),
                         verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
                         contentPadding = PaddingValues(
-                            horizontal = MaterialTheme.spacing.mediumLarge,
-                            vertical = MaterialTheme.spacing.small
-                        ).let {
-                            PaddingValues(
-                                start = it.calculateStartPadding(androidx.compose.ui.unit.LayoutDirection.Ltr),
-                                top = it.calculateTopPadding(),
-                                end = it.calculateEndPadding(androidx.compose.ui.unit.LayoutDirection.Ltr),
-                                bottom = it.calculateBottomPadding() + 80.dp
-                            )
-                        }
+                            start = MaterialTheme.spacing.medium,
+                            top = MaterialTheme.spacing.small,
+                            end = MaterialTheme.spacing.medium,
+                            bottom = MaterialTheme.spacing.small + 80.dp
+                        )
                     ) {
                         itemsIndexed(alarms, key = { _, alarm -> alarm.id }) { index, alarm ->
                             AlarmCard(
@@ -474,9 +479,8 @@ private fun AlarmActionBottomSheetContent(
                 )
             Text(
                 text = repeatText,
-                style = MaterialTheme.typography.labelSmall,
+                style = LiteverTokens.typography.labelSmallEmphasized,
                 color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Bold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -491,33 +495,34 @@ private fun AlarmActionBottomSheetContent(
             androidx.compose.foundation.layout.Row(
                 verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
             ) {
-                Text(
-                    text = timeStr,
-                    style = MaterialTheme.typography.displaySmall.copy(
-                        letterSpacing = (-0.5).sp
-                    ),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                if (amPm != null) {
+                androidx.compose.foundation.layout.Row {
                     Text(
-                        text = amPm.uppercase(),
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Medium),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier
-                            .padding(
-                                start = MaterialTheme.spacing.extraSmall,
-                                bottom = MaterialTheme.spacing.small
-                            )
-                            .align(androidx.compose.ui.Alignment.Bottom)
+                        text = timeStr,
+                        style = MaterialTheme.typography.headlineLarge.copy(
+                            fontFeatureSettings = "tnum"
+                        ),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        softWrap = false,
+                        modifier = Modifier.alignByBaseline()
                     )
+                    if (amPm != null) {
+                        Text(
+                            text = amPm.uppercase(),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            softWrap = false,
+                            modifier = Modifier
+                                .padding(start = MaterialTheme.spacing.extraSmall)
+                                .alignByBaseline()
+                        )
+                    }
                 }
 
                 vn.io.litever.remind.features.alarms.ui.components.MissionIcons(
                     missions = alarm.missions,
-                    modifier = Modifier.padding(
-                        start = MaterialTheme.spacing.small,
-                        bottom = MaterialTheme.spacing.small
-                    )
+                    modifier = Modifier.padding(start = MaterialTheme.spacing.small)
                 )
 
                 // Label if present

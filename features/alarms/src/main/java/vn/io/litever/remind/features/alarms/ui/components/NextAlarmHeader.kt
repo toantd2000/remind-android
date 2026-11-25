@@ -1,15 +1,25 @@
 package vn.io.litever.remind.features.alarms.ui.components
 
+import android.content.res.Configuration
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import vn.io.litever.remind.core.designsystem.theme.spacing
-import androidx.compose.foundation.layout.*
-import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
-import androidx.compose.material3.*
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
+import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import vn.io.litever.remind.features.alarms.R
 import vn.io.litever.remind.features.alarms.ui.state.NextAlarmUiState
 
@@ -18,14 +28,31 @@ fun NextAlarmHeader(
     state: NextAlarmUiState,
     modifier: Modifier = Modifier
 ) {
+    val isAllOff = state is NextAlarmUiState.AllOff
+    val containerColor = if (isAllOff) {
+        MaterialTheme.colorScheme.surfaceContainerHigh
+    } else {
+        MaterialTheme.colorScheme.tertiaryContainer
+    }
+    val contentColor = if (isAllOff) {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    } else {
+        MaterialTheme.colorScheme.onTertiaryContainer
+    }
+
     Surface(
         modifier = modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.tertiaryContainer,
-        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+        color = containerColor,
+        contentColor = contentColor,
         shape = MaterialTheme.shapes.large,
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(all = MaterialTheme.spacing.medium),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = MaterialTheme.spacing.medium,
+                    vertical = MaterialTheme.spacing.smallMedium
+                ),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
@@ -36,12 +63,11 @@ fun NextAlarmHeader(
             Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
             Text(
                 text = formatNextAlarmText(state),
-                style = MaterialTheme.typography.labelMedium,
+                style = MaterialTheme.typography.labelLarge,
             )
         }
     }
 }
-
 
 @Composable
 private fun formatNextAlarmText(state: NextAlarmUiState): String {
@@ -59,33 +85,37 @@ private fun formatNextAlarmText(state: NextAlarmUiState): String {
     }
 }
 
-@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@Preview(name = "Next Alarm - Light", showBackground = true)
 @Composable
 fun NextAlarmHeaderPreview() {
-    vn.io.litever.remind.core.designsystem.theme.ReMindTheme {
+    ReMindTheme {
         NextAlarmHeader(
             state = NextAlarmUiState.Remaining(0, 7, 30)
         )
     }
 }
 
-@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@Preview(name = "Next Alarm All Off - Light", showBackground = true)
 @Composable
 fun NextAlarmHeaderAllOffPreview() {
-    vn.io.litever.remind.core.designsystem.theme.ReMindTheme {
+    ReMindTheme {
         NextAlarmHeader(
             state = NextAlarmUiState.AllOff
         )
     }
 }
 
-
-
-
-
-
-
-
-
-
-
+@Preview(
+    name = "Next Alarm - Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    backgroundColor = 0xFF19120CL
+)
+@Composable
+fun NextAlarmHeaderDarkPreview() {
+    ReMindTheme(darkTheme = true) {
+        NextAlarmHeader(
+            state = NextAlarmUiState.Remaining(0, 7, 30)
+        )
+    }
+}

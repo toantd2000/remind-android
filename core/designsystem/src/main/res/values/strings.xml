@@ -90,6 +90,10 @@
     <!-- Permission Warning Banner -->
     <string name="permission_warning_banner_action">Fix Now</string>
     <string name="permission_warning_banner_remind_later">Remind me later</string>
+
+    <!-- Plan Badges -->
+    <string name="plan_badge_pro" translatable="false">PRO</string>
+    <string name="plan_badge_free" translatable="false">FREE</string>
 </resources>
 
 

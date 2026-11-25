@@ -52,8 +52,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import vn.io.litever.remind.core.designsystem.components.ReMindLogo
+import vn.io.litever.remind.core.designsystem.components.ReMindPlanBadge
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsItem
+import vn.io.litever.remind.core.designsystem.components.rememberReMindProGradient
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
 import vn.io.litever.remind.core.designsystem.theme.semanticColors
@@ -240,18 +242,12 @@ private fun ProSettingsTopBar(
         )
     }
 
+    val proGradient = rememberReMindProGradient()
     val iconBadgeModifier = if (isPro) {
         Modifier
             .size(44.dp)
             .clip(MaterialTheme.shapes.medium)
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.primary,
-                        MaterialTheme.colorScheme.tertiary
-                    )
-                )
-            )
+            .background(brush = proGradient)
     } else {
         Modifier
             .size(44.dp)
@@ -303,22 +299,7 @@ private fun ProSettingsTopBar(
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.weight(1f, fill = false)
                         )
-                        if (isPro) {
-                            Surface(
-                                color = badgeBgColor,
-                                shape = MaterialTheme.shapes.extraSmall
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.pro_badge_label),
-                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.ExtraBold),
-                                    color = badgeIconColor,
-                                    modifier = Modifier.padding(
-                                        horizontal = MaterialTheme.spacing.small,
-                                        vertical = MaterialTheme.spacing.tiny
-                                    )
-                                )
-                            }
-                        }
+                        ReMindPlanBadge(isPro = isPro)
                     }
                     Spacer(modifier = Modifier.height(MaterialTheme.spacing.tiny))
                     Text(

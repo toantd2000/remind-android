@@ -1,18 +1,15 @@
 package vn.io.litever.remind.features.reminders.ui
 
-import vn.io.litever.brand.tokens.LiteverTokens
-import androidx.compose.material3.MaterialTheme
-import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
@@ -20,7 +17,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,9 +38,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -54,12 +57,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -69,18 +76,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import kotlinx.coroutines.delay
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
+import vn.io.litever.brand.tokens.LiteverTokens
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import vn.io.litever.remind.core.model.Reminder
 import vn.io.litever.remind.core.model.ReminderAction
 import vn.io.litever.remind.core.model.ReminderTriggerType
-import vn.io.litever.remind.core.model.RepeatMode as ReminderRepeatMode
 import vn.io.litever.remind.core.model.TimeTrigger
 import vn.io.litever.remind.core.model.UrgencyLevel
 import vn.io.litever.remind.features.reminders.R
@@ -90,7 +93,7 @@ import vn.io.litever.remind.features.reminders.viewmodel.ReminderRingingViewMode
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import java.util.Locale
+import vn.io.litever.remind.core.model.RepeatMode as ReminderRepeatMode
 
 @Composable
 fun ReminderRingingRoute(
@@ -102,7 +105,7 @@ fun ReminderRingingRoute(
 
     // Intercept back press
     BackHandler {
-        // Do nothing to prevent accidental dismissal during lock-screen alarm
+        // Do nothing to prevent accidental dismissal during lock-screen alert
     }
 
     if (uiState.reminder == null) {
@@ -134,6 +137,9 @@ fun ReminderRingingScreen(
 ) {
     val reminder = uiState.reminder ?: return
     val isInspectionMode = LocalInspectionMode.current
+    val currentLocale = LocalLocale.current.platformLocale
+    val isHardUrgency = reminder.action.urgencyLevel == UrgencyLevel.HARD
+
     var isVisible by remember { mutableStateOf(isInspectionMode) }
     var currentDateTime by remember { mutableStateOf(LocalDateTime.now()) }
     var showQuickSnoozeOptions by remember { mutableStateOf(false) }
@@ -148,113 +154,159 @@ fun ReminderRingingScreen(
         }
     }
 
-    // Shake animation for dismiss and snooze buttons, aligned with AlarmRingingScreen
-    val shakeTransition = rememberInfiniteTransition(label = "shake")
-    val shakeOffsetState = shakeTransition.animateFloat(
-        initialValue = -3f,
-        targetValue = 3f,
+    // Ambient breathing glow & periodic burst shake aligned with AlarmRingingScreen
+    val ringingTransition = rememberInfiniteTransition(label = "reminderRingingTransition")
+    val pulseScale by ringingTransition.animateFloat(
+        initialValue = 0.94f,
+        targetValue = 1.08f,
         animationSpec = infiniteRepeatable(
-            animation = tween(50, easing = LinearEasing),
+            animation = tween(durationMillis = 2200, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
         ),
-        label = "shakeOffset"
+        label = "pulseScale"
     )
-    val snoozeShakeOffsetState = shakeTransition.animateFloat(
-        initialValue = -1f,
-        targetValue = 1f,
+    val pulseAlpha by ringingTransition.animateFloat(
+        initialValue = 0.14f,
+        targetValue = 0.26f,
         animationSpec = infiniteRepeatable(
-            animation = tween(100, easing = LinearEasing),
+            animation = tween(durationMillis = 2200, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
         ),
-        label = "snoozeShakeOffset"
+        label = "pulseAlpha"
     )
+    val burstShakeOffset by ringingTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 0f,
+        animationSpec = infiniteRepeatable(
+            animation = keyframes {
+                durationMillis = 2200
+                0f at 0
+                -3.5f at 60
+                3.5f at 120
+                -2.5f at 180
+                2.5f at 240
+                -1.5f at 300
+                0f at 360
+                0f at 2200
+            },
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "burstShakeOffset"
+    )
+
+    val activeGlowAlpha = if (uiState.isRinging && !isInspectionMode) pulseAlpha else 0.18f
+    val activeGlowScale = if (uiState.isRinging && !isInspectionMode) pulseScale else 0.96f
+    val activeShakeOffset = if (uiState.isRinging && !isInspectionMode) burstShakeOffset else 0f
 
     val topAlpha by animateFloatAsState(
         targetValue = if (isVisible) 1f else 0f,
-        animationSpec = tween(durationMillis = 1000, easing = FastOutSlowInEasing),
+        animationSpec = tween(durationMillis = 700, easing = FastOutSlowInEasing),
         label = "topAlpha"
     )
     val topOffset by animateDpAsState(
-        targetValue = if (isVisible) 0.dp else (-50).dp,
-        animationSpec = tween(durationMillis = 1000, easing = FastOutSlowInEasing),
+        targetValue = if (isVisible) 0.dp else (-28).dp,
+        animationSpec = tween(durationMillis = 700, easing = FastOutSlowInEasing),
         label = "topOffset"
     )
 
     val bottomAlpha by animateFloatAsState(
         targetValue = if (isVisible) 1f else 0f,
-        animationSpec = tween(durationMillis = 1000, delayMillis = 300, easing = FastOutSlowInEasing),
+        animationSpec = tween(durationMillis = 700, delayMillis = 200, easing = FastOutSlowInEasing),
         label = "bottomAlpha"
     )
     val bottomOffset by animateDpAsState(
-        targetValue = if (isVisible) 0.dp else 50.dp,
-        animationSpec = tween(durationMillis = 1000, delayMillis = 300, easing = FastOutSlowInEasing),
+        targetValue = if (isVisible) 0.dp else 28.dp,
+        animationSpec = tween(durationMillis = 700, delayMillis = 200, easing = FastOutSlowInEasing),
         label = "bottomOffset"
     )
 
+    val glowColor = if (isHardUrgency) {
+        MaterialTheme.colorScheme.error
+    } else {
+        MaterialTheme.colorScheme.primary
+    }
+
     Surface(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .statusBarsPadding()
-                .padding(MaterialTheme.spacing.medium),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .drawBehind {
+                    drawRect(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                glowColor.copy(alpha = activeGlowAlpha),
+                                Color.Transparent
+                            ),
+                            center = Offset(x = size.width / 2f, y = size.height * 0.36f),
+                            radius = size.minDimension * 0.72f * activeGlowScale
+                        )
+                    )
+                }
         ) {
-            // Top Section: Clock & Date anchored at top, matching AlarmRingingScreen typography & colors
-            RingingClockHeader(
-                currentDateTime = currentDateTime,
-                is24HourFormat = uiState.is24HourFormat,
+            Column(
                 modifier = Modifier
-                    .padding(top = MaterialTheme.spacing.large)
-                    .graphicsLayer {
-                        translationY = topOffset.toPx()
-                        alpha = topAlpha
-                    }
-            )
-
-            // Center Section: Reminder schedule pills, title, notes & auto-silence countdown centered in remaining space
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .graphicsLayer {
-                        translationY = topOffset.toPx()
-                        alpha = topAlpha
-                    },
-                contentAlignment = Alignment.Center
+                    .fillMaxSize()
+                    .statusBarsPadding()
+                    .padding(horizontal = MaterialTheme.spacing.medium),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                RingingReminderContent(
-                    reminder = reminder,
+                // Top Section: Compact contextual time & date strip
+                RingingTimeContextStrip(
+                    currentDateTime = currentDateTime,
                     is24HourFormat = uiState.is24HourFormat,
-                    autoSilenceCountdown = uiState.autoSilenceCountdown,
+                    modifier = Modifier
+                        .padding(top = MaterialTheme.spacing.medium)
+                        .graphicsLayer {
+                            translationY = topOffset.toPx()
+                            alpha = topAlpha
+                        }
+                )
+
+                // Center Hero: Reminder Title, Notes, Urgency & Schedule as primary focal point
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .verticalScroll(rememberScrollState())
+                        .weight(1f)
+                        .graphicsLayer {
+                            translationY = topOffset.toPx()
+                            alpha = topAlpha
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    RingingReminderContent(
+                        reminder = reminder,
+                        is24HourFormat = uiState.is24HourFormat,
+                        autoSilenceCountdown = uiState.autoSilenceCountdown,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState())
+                    )
+                }
+
+                // Bottom Section: Ergonomic Snooze & Dismiss Action Buttons
+                RingingBottomActions(
+                    reminder = reminder,
+                    showQuickSnoozeOptions = showQuickSnoozeOptions,
+                    dismissShakeOffsetProvider = { activeShakeOffset },
+                    onToggleQuickSnoozeOptions = { showQuickSnoozeOptions = !showQuickSnoozeOptions },
+                    onSnoozeClick = onSnoozeClick,
+                    onOpenCustomSnooze = {
+                        customMinutesText = ""
+                        showCustomSnoozeDialog = true
+                    },
+                    onDismissClick = onDismissClick,
+                    modifier = Modifier
+                        .navigationBarsPadding()
+                        .padding(bottom = MaterialTheme.spacing.large)
+                        .graphicsLayer {
+                            translationY = bottomOffset.toPx()
+                            alpha = bottomAlpha
+                        }
                 )
             }
-
-            // Bottom Section: Snooze & Dismiss Action Buttons aligned with AlarmRingingScreen
-            RingingBottomActions(
-                reminder = reminder,
-                showQuickSnoozeOptions = showQuickSnoozeOptions,
-                snoozeShakeOffsetProvider = { snoozeShakeOffsetState.value },
-                dismissShakeOffsetProvider = { shakeOffsetState.value },
-                onToggleQuickSnoozeOptions = { showQuickSnoozeOptions = !showQuickSnoozeOptions },
-                onSnoozeClick = onSnoozeClick,
-                onOpenCustomSnooze = {
-                    customMinutesText = ""
-                    showCustomSnoozeDialog = true
-                },
-                onDismissClick = onDismissClick,
-                modifier = Modifier
-                    .navigationBarsPadding()
-                    .padding(bottom = MaterialTheme.spacing.medium)
-                    .graphicsLayer {
-                        translationY = bottomOffset.toPx()
-                        alpha = bottomAlpha
-                    }
-            )
         }
 
         if (showCustomSnoozeDialog) {
@@ -274,56 +326,51 @@ fun ReminderRingingScreen(
 }
 
 @Composable
-private fun RingingClockHeader(
+private fun RingingTimeContextStrip(
     currentDateTime: LocalDateTime,
     is24HourFormat: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val dateFormatter = remember { DateTimeFormatter.ofPattern("EEEE, d MMMM", Locale.getDefault()) }
-    val (timeStr, amPm) = TimeFormatUtils.formatTimeParts(currentDateTime.toLocalTime(), is24HourFormat)
+    val currentLocale = LocalLocale.current.platformLocale
+    val dateFormatter = remember(currentLocale) {
+        DateTimeFormatter.ofPattern("EEE, d MMM", currentLocale)
+    }
+    val formattedTime = TimeFormatUtils.formatTime(currentDateTime.toLocalTime(), is24HourFormat)
+        .uppercase(currentLocale)
+    val formattedDate = currentDateTime.format(dateFormatter)
+        .replaceFirstChar { it.uppercase(currentLocale) }
 
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
+    Surface(
+        modifier = modifier,
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        shape = CircleShape
     ) {
         Row(
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                text = timeStr,
-                style = LiteverTokens.typography.displayLargeEmphasized.copy(
-                    fontSize = 76.sp
-                ),
-                color = MaterialTheme.colorScheme.primary,
-                maxLines = 1,
-                softWrap = false,
-                modifier = Modifier.alignByBaseline()
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(
+                horizontal = MaterialTheme.spacing.medium,
+                vertical = MaterialTheme.spacing.small
             )
-            if (amPm != null) {
-                Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
-                Text(
-                    text = amPm.uppercase(Locale.getDefault()),
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
-                    maxLines = 1,
-                    softWrap = false,
-                    modifier = Modifier.alignByBaseline()
-                )
-            }
+        ) {
+            Icon(
+                imageVector = ReMindIcons.AccessTime,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp)
+            )
+            Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
+            Text(
+                text = "$formattedTime • $formattedDate",
+                style = LiteverTokens.typography.labelLargeEmphasized.copy(
+                    fontFeatureSettings = "tnum"
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
-
-        Text(
-            text = currentDateTime.format(dateFormatter).replaceFirstChar { it.uppercase() },
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.secondary,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center
-        )
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun RingingReminderContent(
     reminder: Reminder,
@@ -331,6 +378,7 @@ private fun RingingReminderContent(
     autoSilenceCountdown: Int?,
     modifier: Modifier = Modifier
 ) {
+    val currentLocale = LocalLocale.current.platformLocale
     val isHardUrgency = reminder.action.urgencyLevel == UrgencyLevel.HARD
     val recurrenceText = ReminderCardFormatter.formatRecurrenceSchedule(reminder.timeTrigger)
     val timeDetailText = when (reminder.triggerType) {
@@ -346,18 +394,93 @@ private fun RingingReminderContent(
         .filter { it.isNotBlank() }
         .joinToString(" • ")
 
+    val badgeContainerColor = if (isHardUrgency) {
+        MaterialTheme.colorScheme.errorContainer
+    } else {
+        MaterialTheme.colorScheme.primaryContainer
+    }
+    val badgeIconColor = if (isHardUrgency) {
+        MaterialTheme.colorScheme.onErrorContainer
+    } else {
+        MaterialTheme.colorScheme.onPrimaryContainer
+    }
+
     Column(
-        modifier = modifier,
+        modifier = modifier.padding(vertical = MaterialTheme.spacing.medium),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        if (scheduleSummary.isNotBlank() || isHardUrgency) {
+        // Hero Reminder Icon Badge
+        Box(
+            modifier = Modifier
+                .size(64.dp)
+                .clip(CircleShape)
+                .background(badgeContainerColor),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = if (isHardUrgency) {
+                    ReMindIcons.NotificationImportant
+                } else {
+                    ReMindIcons.NotificationsActive
+                },
+                contentDescription = null,
+                tint = badgeIconColor,
+                modifier = Modifier.size(32.dp)
+            )
+        }
+
+        if (reminder.title.isNotBlank()) {
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.large))
+            Text(
+                text = reminder.title,
+                style = LiteverTokens.typography.headlineLargeEmphasized,
+                color = MaterialTheme.colorScheme.onBackground,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = MaterialTheme.spacing.small),
+                textAlign = TextAlign.Center
+            )
+        }
+
+        if (reminder.notes.isNotBlank()) {
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
+            Surface(
+                color = MaterialTheme.colorScheme.surfaceContainerLow,
+                shape = MaterialTheme.shapes.large,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = reminder.notes,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 6,
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = MaterialTheme.spacing.medium,
+                            vertical = MaterialTheme.spacing.smallMedium
+                        )
+                )
+            }
+        }
+
+        val hasMetaPills = scheduleSummary.isNotBlank() ||
+            isHardUrgency ||
+            (autoSilenceCountdown != null && autoSilenceCountdown > 0)
+
+        if (hasMetaPills) {
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.large))
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(
                     MaterialTheme.spacing.small,
                     Alignment.CenterHorizontally
                 ),
-                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall),
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 if (scheduleSummary.isNotBlank()) {
@@ -365,7 +488,7 @@ private fun RingingReminderContent(
                         icon = if (reminder.triggerType == ReminderTriggerType.INTERVAL) {
                             ReMindIcons.Timer
                         } else {
-                            ReMindIcons.Notifications
+                            ReMindIcons.NotificationsActive
                         },
                         text = scheduleSummary,
                         containerColor = MaterialTheme.colorScheme.tertiaryContainer,
@@ -381,70 +504,20 @@ private fun RingingReminderContent(
                         contentColor = MaterialTheme.colorScheme.onErrorContainer
                     )
                 }
-            }
-        }
 
-        if (reminder.title.isNotBlank()) {
-            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
-            Text(
-                text = reminder.title,
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = MaterialTheme.spacing.medium),
-                textAlign = TextAlign.Center
-            )
-        }
-
-        if (reminder.notes.isNotBlank()) {
-            Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
-            Text(
-                text = reminder.notes,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = MaterialTheme.spacing.extraLarge),
-                textAlign = TextAlign.Center
-            )
-        }
-
-        AnimatedVisibility(
-            visible = autoSilenceCountdown != null && autoSilenceCountdown > 0,
-            enter = fadeIn() + expandVertically(),
-            exit = fadeOut() + shrinkVertically()
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
-                val safeCountdown = (autoSilenceCountdown ?: 0).coerceAtLeast(0)
-                val minutes = safeCountdown / 60
-                val seconds = safeCountdown % 60
-                val formattedTime = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
-
-                Text(
-                    text = stringResource(R.string.auto_silence_countdown_mm_ss, formattedTime),
-                    style = LiteverTokens.typography.bodyLargeEmphasized.copy(
-                        fontFeatureSettings = "tnum"
-                    ),
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier
-                        .background(
-                            color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f),
-                            shape = MaterialTheme.shapes.medium
-                        )
-                        .border(
-                            width = 1.dp,
-                            color = MaterialTheme.colorScheme.error.copy(alpha = 0.1f),
-                            shape = MaterialTheme.shapes.medium
-                        )
-                        .padding(
-                            horizontal = MaterialTheme.spacing.medium,
-                            vertical = MaterialTheme.spacing.small
-                        )
-                )
+                if (autoSilenceCountdown != null && autoSilenceCountdown > 0) {
+                    val safeCountdown = autoSilenceCountdown.coerceAtLeast(0)
+                    val minutes = safeCountdown / 60
+                    val seconds = safeCountdown % 60
+                    val formattedTime = String.format(currentLocale, "%02d:%02d", minutes, seconds)
+                    RingingSchedulePill(
+                        icon = ReMindIcons.VolumeOff,
+                        text = stringResource(R.string.auto_silence_countdown_mm_ss, formattedTime),
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                        tabularNumbers = true
+                    )
+                }
             }
         }
     }
@@ -455,30 +528,34 @@ private fun RingingSchedulePill(
     icon: ImageVector,
     text: String,
     containerColor: Color,
-    contentColor: Color
+    contentColor: Color,
+    tabularNumbers: Boolean = false
 ) {
     Surface(
         color = containerColor,
+        contentColor = contentColor,
         shape = CircleShape
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(
                 horizontal = MaterialTheme.spacing.smallMedium,
-                vertical = MaterialTheme.spacing.extraSmall
+                vertical = MaterialTheme.spacing.extraSmall + 2.dp
             )
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                modifier = Modifier.size(14.dp),
-                tint = contentColor
+                modifier = Modifier.size(16.dp)
             )
             Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
             Text(
                 text = text,
-                style = MaterialTheme.typography.labelMedium,
-                color = contentColor,
+                style = if (tabularNumbers) {
+                    LiteverTokens.typography.labelLargeEmphasized.copy(fontFeatureSettings = "tnum")
+                } else {
+                    MaterialTheme.typography.labelLarge
+                },
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -490,7 +567,6 @@ private fun RingingSchedulePill(
 private fun RingingBottomActions(
     reminder: Reminder,
     showQuickSnoozeOptions: Boolean,
-    snoozeShakeOffsetProvider: () -> Float,
     dismissShakeOffsetProvider: () -> Float,
     onToggleQuickSnoozeOptions: () -> Unit,
     onSnoozeClick: (Int) -> Unit,
@@ -506,7 +582,7 @@ private fun RingingBottomActions(
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.smallMedium)
     ) {
         if (reminder.action.snoozeEnabled) {
             if (reminder.action.canSnooze()) {
@@ -521,29 +597,29 @@ private fun RingingBottomActions(
                     ) {
                         val quickOptions = listOf(5, 10, 15)
                         quickOptions.forEach { mins ->
-                            OutlinedButton(
+                            FilledTonalButton(
                                 onClick = { onSnoozeClick(mins) },
-                                shape = MaterialTheme.shapes.large,
+                                shape = CircleShape,
                                 contentPadding = PaddingValues(horizontal = MaterialTheme.spacing.extraSmall),
                                 modifier = Modifier
                                     .weight(1f)
-                                    .height(48.dp)
+                                    .height(46.dp)
                             ) {
                                 Text(
                                     text = "+${mins}m",
-                                    style = MaterialTheme.typography.labelLarge,
+                                    style = LiteverTokens.typography.labelLargeEmphasized,
                                     maxLines = 1
                                 )
                             }
                         }
 
-                        OutlinedButton(
+                        FilledTonalButton(
                             onClick = onOpenCustomSnooze,
-                            shape = MaterialTheme.shapes.large,
+                            shape = CircleShape,
                             contentPadding = PaddingValues(horizontal = MaterialTheme.spacing.small),
                             modifier = Modifier
                                 .weight(1.4f)
-                                .height(48.dp)
+                                .height(46.dp)
                         ) {
                             Text(
                                 text = stringResource(R.string.snooze_custom),
@@ -556,34 +632,40 @@ private fun RingingBottomActions(
                 }
 
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .offset { IntOffset(x = snoozeShakeOffsetProvider().dp.roundToPx(), y = 0) },
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
                 ) {
-                    OutlinedButton(
+                    FilledTonalButton(
                         onClick = { onSnoozeClick(reminder.action.snoozeIntervalMinutes) },
-                        shape = MaterialTheme.shapes.large,
+                        shape = CircleShape,
                         modifier = Modifier
                             .weight(1f)
-                            .height(52.dp)
+                            .height(56.dp)
                     ) {
+                        Icon(
+                            imageVector = ReMindIcons.Snooze,
+                            contentDescription = null,
+                            modifier = Modifier.size(22.dp)
+                        )
+                        Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
                         Text(
                             text = stringResource(
                                 R.string.snooze_default_format,
                                 reminder.action.snoozeIntervalMinutes
                             ),
-                            style = MaterialTheme.typography.titleMedium,
+                            style = LiteverTokens.typography.titleMediumEmphasized.copy(
+                                fontSize = 17.sp
+                            ),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                     }
 
-                    OutlinedButton(
+                    FilledTonalButton(
                         onClick = onToggleQuickSnoozeOptions,
-                        shape = MaterialTheme.shapes.large,
+                        shape = CircleShape,
                         contentPadding = PaddingValues(horizontal = MaterialTheme.spacing.medium),
-                        modifier = Modifier.height(52.dp)
+                        modifier = Modifier.height(56.dp)
                     ) {
                         Text(
                             text = stringResource(R.string.snooze_more_options),
@@ -601,13 +683,13 @@ private fun RingingBottomActions(
                     }
                 }
             } else {
-                OutlinedButton(
+                FilledTonalButton(
                     onClick = {},
                     enabled = false,
-                    shape = MaterialTheme.shapes.large,
+                    shape = CircleShape,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(52.dp)
+                        .height(56.dp)
                 ) {
                     Text(
                         text = stringResource(R.string.snooze_limit_reached),
@@ -619,15 +701,25 @@ private fun RingingBottomActions(
 
         Button(
             onClick = onDismissClick,
-            shape = MaterialTheme.shapes.large,
+            shape = CircleShape,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(52.dp)
+                .height(62.dp)
                 .offset { IntOffset(x = dismissShakeOffsetProvider().dp.roundToPx(), y = 0) }
         ) {
+            Icon(
+                imageVector = ReMindIcons.Check,
+                contentDescription = null,
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
             Text(
                 text = stringResource(R.string.dismiss_action),
-                style = LiteverTokens.typography.titleMediumEmphasized
+                style = LiteverTokens.typography.titleLargeEmphasized.copy(
+                    fontSize = 20.sp
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }
@@ -675,7 +767,7 @@ private fun CustomSnoozeDialog(
             }
         },
         dismissButton = {
-            OutlinedButton(onClick = onDismiss) {
+            TextButton(onClick = onDismiss) {
                 Text(stringResource(R.string.action_cancel))
             }
         }

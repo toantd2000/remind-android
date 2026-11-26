@@ -129,6 +129,7 @@ class MainViewModel @Inject constructor(
     val colorPalette = preferencesDataSource.colorPalette
     val language = preferencesDataSource.language
     val isPro = preferencesDataSource.isProUser
+    val is24HourFormat = preferencesDataSource.is24HourFormat
 
     val isAdFreeActive: StateFlow<Boolean> = combine(
         preferencesDataSource.isProUser,
@@ -228,6 +229,7 @@ class MainActivity : ComponentActivity() {
             val themeMode by viewModel.themeMode.collectAsState(initial = "SYSTEM")
             val colorPalette by viewModel.colorPalette.collectAsState(initial = "ORANGE")
             val isPro by viewModel.isPro.collectAsState(initial = false)
+            val is24HourFormat by viewModel.is24HourFormat.collectAsState(initial = true)
             val language by viewModel.language.collectAsState(
                 initial = if (LocalLocale.current.platformLocale.language == "vi") "vi" else "en"
             )
@@ -274,12 +276,9 @@ class MainActivity : ComponentActivity() {
 
                             val navBackStackEntry by navController.currentBackStackEntryAsState()
 
-                            if (missedAlarms.isNotEmpty()) {
-                                vn.io.litever.remind.features.alarms.ui.components.MissedAlarmDialog(
-                                    missedAlarms = missedAlarms,
-                                    onDismiss = { viewModel.dismissMissedAlarms() }
-                                )
-                            }
+                            val showMissedAlarmsScreen = missedAlarms.isNotEmpty() &&
+                                ringingAlarmId == null &&
+                                ringingReminderId == null
 
                             val isNavReady = navBackStackEntry != null
                             var lastNavigatedRingingReminderId by remember { mutableStateOf<Long?>(null) }
@@ -626,6 +625,18 @@ class MainActivity : ComponentActivity() {
                                             )
                                         }
                                     }
+                                }
+
+                                if (showMissedAlarmsScreen) {
+                                    vn.io.litever.remind.features.alarms.ui.MissedAlarmsScreen(
+                                        missedAlarms = missedAlarms,
+                                        is24HourFormat = is24HourFormat,
+                                        onDismiss = { viewModel.dismissMissedAlarms() },
+                                        onCheckPermissions = {
+                                            viewModel.dismissMissedAlarms()
+                                            navController.navigateToPermissions()
+                                        }
+                                    )
                                 }
                             }
                         }

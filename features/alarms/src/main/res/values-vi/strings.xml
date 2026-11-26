@@ -110,9 +110,11 @@
     <string name="missed_reason_permission">Thiếu quyền hệ thống</string>
     <string name="missed_reason_dnd">Đang bật chế độ Không làm phiền</string>
     <string name="missed_dnd_notification_content">Báo thức %s bị lỡ do Không làm phiền.</string>
-    <string name="missed_reason_unknown">Lý do không xác định</string>
-    <string name="missed_alarms_dialog_title">Báo thức bị lỡ</string>
-    <string name="missed_alarms_dialog_desc">Một số báo thức đã không thể đổ chuông đúng giờ. Nguyên nhân có thể do điện thoại bị tắt nguồn hoặc ứng dụng bị hạn chế quyền.</string>
+    <string name="missed_reason_unknown">Bị hệ thống chặn nền hoặc tiết kiệm pin</string>
+    <string name="missed_alarms_dialog_title">Báo thức đã bỏ lỡ</string>
+    <string name="missed_alarms_dialog_desc">Các báo thức dưới đây đã không thể đổ chuông đúng giờ.</string>
+    <string name="missed_alarms_action_got_it">Đã hiểu</string>
+    <string name="missed_alarms_action_check_permissions">Kiểm tra quyền hệ thống</string>
     <string name="scheduled_time_format">Báo thức: %s</string>
     <string name="discard_changes_title">Lưu thay đổi?</string>
     <string name="discard_changes_message">Bạn có các thay đổi chưa lưu. Bạn có muốn lưu trước khi thoát không?</string>

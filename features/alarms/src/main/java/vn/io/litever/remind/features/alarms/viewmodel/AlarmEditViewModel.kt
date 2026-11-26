@@ -584,7 +584,7 @@ class AlarmEditViewModel @Inject constructor(
             currentSnoozeCount = originalAlarm?.currentSnoozeCount ?: 0,
             snoozeNextTriggerTime = originalAlarm?.snoozeNextTriggerTime,
             skippedAt = originalAlarm?.skippedAt,
-            lastTriggeredTime = originalAlarm?.lastTriggeredTime
+            lastTriggeredTime = if (state.isEnabled) System.currentTimeMillis() else originalAlarm?.lastTriggeredTime
         )
     }
 }

@@ -1,14 +1,15 @@
 package vn.io.litever.remind.core.alarm
 
+import android.os.SystemClock
+import kotlinx.coroutines.flow.first
+import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import vn.io.litever.remind.core.domain.repository.AlarmRepository
 import vn.io.litever.remind.core.domain.repository.MissedAlarmRepository
 import vn.io.litever.remind.core.domain.scheduler.AlarmScheduler
-import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import vn.io.litever.remind.core.model.MissedAlarm
 import vn.io.litever.remind.core.model.MissedReason
-import kotlinx.coroutines.flow.first
-import java.time.LocalDateTime
 import java.time.Instant
+import java.time.LocalDateTime
 import java.time.ZoneId
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -22,8 +23,10 @@ class AlarmSyncManager @Inject constructor(
 ) {
     suspend fun sync() {
         val nowMillis = System.currentTimeMillis()
+        val uptimeMillis = runCatching { SystemClock.elapsedRealtime() }.getOrDefault(0L)
+        val bootTimeMillis = if (uptimeMillis > 0L) nowMillis - uptimeMillis else 0L
         var lastCheck = preferencesDataSource.lastMissedCheckTime.first()
-        
+
         // If first time, initialize to now and skip missed check to avoid false positives
         if (lastCheck == 0L) {
             preferencesDataSource.setLastMissedCheckTime(nowMillis)
@@ -55,28 +58,39 @@ class AlarmSyncManager @Inject constructor(
             }
 
             // 3. Process Missed or Reschedule
-            if (occurrenceMillis < nowMillis - 60000) { // 1 minute grace period
+            if (occurrenceMillis < nowMillis - 60_000) { // 1 minute grace period
+                // Distinguish genuine device power-off from background/OEM restriction without relying on BootReceiver
+                val reason = if (bootTimeMillis > 0L && occurrenceMillis < bootTimeMillis) {
+                    MissedReason.POWER_OFF
+                } else {
+                    MissedReason.UNKNOWN
+                }
+
                 missedAlarmRepository.insertMissedAlarm(
                     MissedAlarm(
                         alarmId = currentAlarm.id,
                         alarmLabel = currentAlarm.label,
                         scheduledTime = occurrenceMillis,
-                        reason = MissedReason.POWER_OFF
+                        reason = reason
                     )
                 )
 
-                // Update status: if one-time alarm, disable it
+                // Update status: if one-time alarm, disable it; always stamp lastTriggeredTime to avoid duplicates
                 if (currentAlarm.repeatDays.isEmpty()) {
-                    val updatedAlarm = currentAlarm.copy(isEnabled = false)
+                    val updatedAlarm = currentAlarm.copy(
+                        isEnabled = false,
+                        lastTriggeredTime = nowMillis
+                    )
                     alarmRepository.updateAlarm(updatedAlarm)
                 } else {
-                    // For recurring alarms, reschedule for the NEXT occurrence
-                    alarmScheduler.schedule(currentAlarm)
+                    val updatedAlarm = currentAlarm.copy(lastTriggeredTime = nowMillis)
+                    alarmRepository.updateAlarm(updatedAlarm)
+                    alarmScheduler.schedule(updatedAlarm)
                 }
             } else {
                 // Not missed, just normal rescheduling (e.g. after reboot)
                 alarmScheduler.schedule(currentAlarm)
-                
+
                 // Restore snooze if active
                 val snoozeTime = currentAlarm.snoozeNextTriggerTime
                 if (snoozeTime != null && snoozeTime > nowMillis) {
@@ -84,7 +98,7 @@ class AlarmSyncManager @Inject constructor(
                 }
             }
         }
-        
+
         // Update last check time to now
         preferencesDataSource.setLastMissedCheckTime(nowMillis)
     }

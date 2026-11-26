@@ -80,15 +80,19 @@ class AlarmReceiver : BroadcastReceiver() {
     }
 
     private suspend fun recordMissed(context: Context, alarmId: Long, reason: MissedReason, alarmArg: vn.io.litever.remind.core.model.Alarm?) {
+        val nowMillis = System.currentTimeMillis()
         val alarm = alarmArg ?: alarmRepository.getAlarmById(alarmId)
         missedAlarmRepository.insertMissedAlarm(
             MissedAlarm(
                 alarmId = alarmId,
                 alarmLabel = alarm?.label ?: "",
-                scheduledTime = alarm?.time?.toSecondOfDay()?.toLong() ?: System.currentTimeMillis(),
+                scheduledTime = nowMillis,
                 reason = reason
             )
         )
+        if (alarm != null) {
+            alarmRepository.updateAlarm(alarm.copy(lastTriggeredTime = nowMillis))
+        }
 
         if ((reason == MissedReason.DND_ACTIVE || reason == MissedReason.PERMISSION_MISSING) && alarm != null) {
             val contentTextRes = if (reason == MissedReason.DND_ACTIVE) {

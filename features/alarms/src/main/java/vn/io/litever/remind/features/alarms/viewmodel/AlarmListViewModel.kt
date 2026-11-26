@@ -137,7 +137,8 @@ class AlarmListViewModel @Inject constructor(
 
             val updatedAlarm = alarm.copy(
                 isEnabled = isEnabling,
-                skippedAt = null // Clear skip status when toggling
+                skippedAt = null, // Clear skip status when toggling
+                lastTriggeredTime = if (isEnabling) System.currentTimeMillis() else alarm.lastTriggeredTime
             )
             repository.updateAlarm(updatedAlarm)
             if (updatedAlarm.isEnabled) {

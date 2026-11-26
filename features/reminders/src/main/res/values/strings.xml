@@ -16,6 +16,7 @@
     <string name="action_duplicate">Duplicate</string>
     <string name="action_delete">Delete</string>
     <string name="action_turn_off">Turn off reminder</string>
+    <string name="action_turn_off_snoozing_desc">Cancels pending snooze as well</string>
     <string name="action_turn_on">Turn on reminder</string>
     <string name="action_pause_reminder">Pause reminder</string>
     <string name="action_resume_reminder">Resume reminder</string>
@@ -234,6 +235,7 @@
 
     <!-- Reminder Card Rich Info & Next Trigger -->
     <string name="reminder_status_disabled">Disabled</string>
+    <string name="reminder_status_snoozing">Snoozing</string>
     <string name="reminder_status_completed">All reminders completed</string>
     <string name="next_trigger_today">Next: Today %1$s (%2$s)</string>
     <string name="next_trigger_tomorrow">Next: Tomorrow %1$s (%2$s)</string>

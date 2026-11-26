@@ -443,6 +443,9 @@ private fun AlarmActionBottomSheetContent(
     onPreview: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val currentLocale = androidx.compose.ui.platform.LocalLocale.current.platformLocale
+    val isSkipped = alarm.isEnabled && alarm.skippedAt != null
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -454,20 +457,50 @@ private fun AlarmActionBottomSheetContent(
                 .fillMaxWidth()
                 .padding(MaterialTheme.spacing.medium)
         ) {
-            // Repeat summary
+            // Repeat summary + optional status pill
             val repeatText =
                 vn.io.litever.remind.features.alarms.ui.components.getRepeatSummaryText(
                     alarm.repeatDays,
                     alarm.time,
                     alarm.date
                 )
-            Text(
-                text = repeatText,
-                style = LiteverTokens.typography.labelSmallEmphasized,
-                color = MaterialTheme.colorScheme.primary,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            androidx.compose.foundation.layout.Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
+            ) {
+                Text(
+                    text = repeatText,
+                    style = LiteverTokens.typography.labelSmallEmphasized,
+                    color = MaterialTheme.colorScheme.primary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                if (!alarm.isEnabled) {
+                    androidx.compose.material3.Surface(
+                        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        shape = androidx.compose.foundation.shape.CircleShape
+                    ) {
+                        Text(
+                            text = stringResource(R.string.alarm_status_disabled),
+                            style = LiteverTokens.typography.labelSmallEmphasized,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                        )
+                    }
+                } else if (isSkipped) {
+                    androidx.compose.material3.Surface(
+                        color = MaterialTheme.colorScheme.tertiaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                        shape = androidx.compose.foundation.shape.CircleShape
+                    ) {
+                        Text(
+                            text = stringResource(R.string.alarm_status_skipped),
+                            style = LiteverTokens.typography.labelSmallEmphasized,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                        )
+                    }
+                }
+            }
 
             Spacer(modifier = Modifier.size(MaterialTheme.spacing.extraSmall))
 
@@ -492,7 +525,7 @@ private fun AlarmActionBottomSheetContent(
                     )
                     if (amPm != null) {
                         Text(
-                            text = amPm.uppercase(),
+                            text = amPm.uppercase(currentLocale),
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 1,
@@ -524,40 +557,69 @@ private fun AlarmActionBottomSheetContent(
         }
 
         HorizontalDivider(
-            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.12f),
+            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.25f),
             modifier = Modifier.padding(horizontal = MaterialTheme.spacing.medium)
         )
 
+        val transparentListItemColors = androidx.compose.material3.ListItemDefaults.colors(
+            containerColor = androidx.compose.ui.graphics.Color.Transparent
+        )
+
         if (alarm.isEnabled && alarm.repeatDays.isNotEmpty()) {
-            val isSkipped = alarm.skippedAt != null
             ListItem(
+                headlineContent = {
+                    Text(stringResource(if (isSkipped) R.string.action_cancel_skip else R.string.action_skip_once))
+                },
                 leadingContent = {
                     Icon(
                         if (isSkipped) ReMindIcons.NotificationsPaused else ReMindIcons.SkipNext,
-                        contentDescription = null
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 },
+                colors = transparentListItemColors,
                 modifier = Modifier.clickable { if (isSkipped) onCancelSkip() else onSkipOnce() }
-            ) {
-                Text(stringResource(if (isSkipped) R.string.action_cancel_skip else R.string.action_skip_once))
-            }
+            )
         }
 
         ListItem(
-            leadingContent = { Icon(ReMindIcons.PlayArrow, contentDescription = null) },
+            headlineContent = { Text(stringResource(R.string.action_preview)) },
+            leadingContent = {
+                Icon(
+                    ReMindIcons.PlayArrow,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            },
+            colors = transparentListItemColors,
             modifier = Modifier.clickable { onPreview() }
-        ) {
-            Text(stringResource(R.string.action_preview))
-        }
+        )
 
         ListItem(
-            leadingContent = { Icon(ReMindIcons.ContentCopy, contentDescription = null) },
+            headlineContent = { Text(stringResource(R.string.action_duplicate)) },
+            leadingContent = {
+                Icon(
+                    ReMindIcons.ContentCopy,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            },
+            colors = transparentListItemColors,
             modifier = Modifier.clickable { onDuplicate() }
-        ) {
-            Text(stringResource(R.string.action_duplicate))
-        }
+        )
+
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.25f),
+            modifier = Modifier.padding(horizontal = MaterialTheme.spacing.medium)
+        )
 
         ListItem(
+            headlineContent = {
+                Text(
+                    stringResource(R.string.action_delete),
+                    color = MaterialTheme.colorScheme.error
+                )
+            },
             leadingContent = {
                 Icon(
                     ReMindIcons.Delete,
@@ -565,13 +627,9 @@ private fun AlarmActionBottomSheetContent(
                     tint = MaterialTheme.colorScheme.error
                 )
             },
+            colors = transparentListItemColors,
             modifier = Modifier.clickable { onDelete() }
-        ) {
-            Text(
-                stringResource(R.string.action_delete),
-                color = MaterialTheme.colorScheme.error
-            )
-        }
+        )
     }
 }
 

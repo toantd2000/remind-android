@@ -16,6 +16,7 @@
     <string name="action_duplicate">Nhân bản</string>
     <string name="action_delete">Xóa</string>
     <string name="action_turn_off">Tắt lời nhắc</string>
+    <string name="action_turn_off_snoozing_desc">Sẽ hủy cả lần báo lại đang chờ</string>
     <string name="action_turn_on">Bật lời nhắc</string>
     <string name="action_pause_reminder">Tạm dừng lời nhắc</string>
     <string name="action_resume_reminder">Kích hoạt lời nhắc</string>
@@ -234,6 +235,7 @@
 
     <!-- Reminder Card Rich Info & Next Trigger -->
     <string name="reminder_status_disabled">Đã tắt</string>
+    <string name="reminder_status_snoozing">Đang hoãn</string>
     <string name="reminder_status_completed">Đã hoàn thành các lượt nhắc</string>
     <string name="next_trigger_today">Lần tới: Hôm nay %1$s (%2$s)</string>
     <string name="next_trigger_tomorrow">Lần tới: Ngày mai %1$s (%2$s)</string>

@@ -254,6 +254,7 @@ fun ReminderListScreen(
     selectedReminderForAction?.let { reminder ->
         ReminderActionBottomSheet(
             reminder = reminder,
+            is24HourFormat = uiState.is24HourFormat,
             onDismissRequest = { selectedReminderForAction = null },
             onEditClick = { onEditReminderClick(reminder.id) },
             onDuplicateClick = { onDuplicateReminder(reminder) },

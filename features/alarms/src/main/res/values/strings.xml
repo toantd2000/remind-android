@@ -101,6 +101,8 @@
     <string name="disabled_alarms_deleted">Disabled alarms deleted</string>
     <string name="undo">Undo</string>
     <string name="skipped_next_format">Skipped next: %s</string>
+    <string name="alarm_status_disabled">Off</string>
+    <string name="alarm_status_skipped">Skipping next</string>
     <string name="action_preview">Preview</string>
     <string name="action_exit_preview">Exit Preview</string>
     <string name="missed_reason_timeout">Timed out (auto-silenced)</string>

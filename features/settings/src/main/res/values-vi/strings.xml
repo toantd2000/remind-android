@@ -147,7 +147,10 @@
     <string name="pro_badge_label">PRO</string>
     <string name="pro_action_upgrade">Nâng cấp</string>
     <string name="pro_action_manage">Quản lý</string>
-    <string name="paywall_restore_purchases">Phục hồi mua</string>
+    <string name="paywall_restore_purchases">Khôi phục gói</string>
+    <string name="paywall_restoring_purchases">Đang kiểm tra...</string>
+    <string name="paywall_restore_success">Đã khôi phục ReMind Pro!</string>
+    <string name="paywall_restore_empty">Không tìm thấy gói đăng ký nào trên tài khoản Google Play này.</string>
     <string name="paywall_hero_title">Dùng thử Pro miễn phí 7 ngày</string>
     <string name="paywall_hero_title_active">Bạn đang là thành viên ReMind Pro</string>
     <string name="paywall_col_pro">Pro</string>
@@ -159,6 +162,7 @@
     <string name="paywall_feat_wakeup_check">Kiểm tra thức dậy</string>
     <string name="paywall_feat_extra_loud">Chế độ âm lượng siêu lớn</string>
     <string name="paywall_feat_multi_reminder">Không giới hạn mốc giờ &amp; khung giờ nhắc nhở</string>
+    <string name="paywall_feat_pro_branding">Biểu tượng &amp; màn khởi động Pro</string>
     <string name="paywall_slide_missions_title">5 Ô Nhiệm vụ &amp; Chế độ Ngẫu nhiên</string>
     <string name="paywall_slide_missions_desc">Ghép chuỗi tối đa 5 thử thách liên tiếp hoặc để ReMind chọn ngẫu nhiên mỗi sáng.</string>
     <string name="paywall_slide_tts_title">Thông báo bằng giọng nói thông minh</string>
@@ -182,6 +186,9 @@
     <string name="paywall_cta_subscribe">Nâng cấp Pro</string>
     <string name="paywall_cta_lifetime">Mở khóa Trọn đời</string>
     <string name="paywall_rewarded_ad_cta">Chưa sẵn sàng? Xem 1 quảng cáo để tắt quảng cáo 24h</string>
+    <string name="paywall_manage_subscription">Quản lý trên Google Play</string>
+    <string name="paywall_active_desc">Cảm ơn bạn đã ủng hộ ReMind. Toàn bộ tính năng Pro đã được mở khóa.</string>
+    <string name="paywall_products_unavailable">Chưa tải được giá từ Google Play. Vui lòng thử lại.</string>
 
     <!-- App Icon -->
     <string name="app_icon_headline">Biểu tượng ứng dụng</string>

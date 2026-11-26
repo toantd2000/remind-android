@@ -200,7 +200,16 @@ class PlayBillingManagerImpl @Inject constructor(
     }
 
     override fun refreshPurchases() {
-        if (!billingClient.isReady) return
+        queryActivePurchases(isManualRestore = false)
+    }
+
+    private fun queryActivePurchases(isManualRestore: Boolean) {
+        if (!billingClient.isReady) {
+            if (isManualRestore) {
+                _purchaseStatus.value = PurchaseStatus.Error("Google Play Billing is not ready")
+            }
+            return
+        }
         val subsParams = QueryPurchasesParams.newBuilder()
             .setProductType(BillingClient.ProductType.SUBS)
             .build()
@@ -219,14 +228,22 @@ class PlayBillingManagerImpl @Inject constructor(
                         allActive.addAll(inAppPurchases)
                     }
                     scope.launch {
-                        handlePurchases(allActive, isRestore = true)
+                        handlePurchases(
+                            purchases = allActive,
+                            isRestore = true,
+                            isManualRestore = isManualRestore
+                        )
                     }
                 }
             }
         }
     }
 
-    private suspend fun handlePurchases(purchases: List<Purchase>, isRestore: Boolean) {
+    private suspend fun handlePurchases(
+        purchases: List<Purchase>,
+        isRestore: Boolean,
+        isManualRestore: Boolean = false
+    ) {
         val activePurchase = purchases.firstOrNull { it.purchaseState == Purchase.PurchaseState.PURCHASED }
         if (activePurchase != null) {
             if (!activePurchase.isAcknowledged) {
@@ -239,14 +256,24 @@ class PlayBillingManagerImpl @Inject constructor(
             }
             val productId = activePurchase.products.firstOrNull()
             preferencesDataSource.setProStatus(isPro = true, productId = productId)
-            _purchaseStatus.value = PurchaseStatus.Success
+            _purchaseStatus.value = if (isManualRestore) {
+                PurchaseStatus.Restored
+            } else {
+                PurchaseStatus.Success
+            }
         } else if (isRestore) {
             val currentProductId = preferencesDataSource.proProductId.firstOrNull()
             if (isDebugBuild && currentProductId == DEBUG_LIFETIME_PRODUCT_ID) {
                 Log.d(TAG, "Preserving debug lifetime Pro entitlement")
+                if (isManualRestore) {
+                    _purchaseStatus.value = PurchaseStatus.Restored
+                }
                 return
             }
             preferencesDataSource.setProStatus(isPro = false, productId = null)
+            if (isManualRestore) {
+                _purchaseStatus.value = PurchaseStatus.NothingToRestore
+            }
         }
     }
 
@@ -287,12 +314,12 @@ class PlayBillingManagerImpl @Inject constructor(
     }
 
     override fun restorePurchases() {
-        _purchaseStatus.value = PurchaseStatus.Loading
+        _purchaseStatus.value = PurchaseStatus.Restoring
         if (!billingClient.isReady) {
             startConnection()
-            _purchaseStatus.value = PurchaseStatus.Idle
+            _purchaseStatus.value = PurchaseStatus.Error("Unable to connect to Google Play")
         } else {
-            refreshPurchases()
+            queryActivePurchases(isManualRestore = true)
         }
     }
 

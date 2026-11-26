@@ -1,11 +1,10 @@
 package vn.io.litever.remind.features.settings.ui
 
-import vn.io.litever.brand.tokens.LiteverTokens
-import androidx.compose.material3.MaterialTheme
-import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.Intent
+import android.content.res.Configuration
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -24,6 +23,7 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.pager.HorizontalPager
@@ -38,6 +38,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -60,12 +61,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import vn.io.litever.brand.tokens.LiteverTokens
 import vn.io.litever.remind.core.ads.api.AdPlacement
 import vn.io.litever.remind.core.ads.api.AdState
 import vn.io.litever.remind.core.ads.api.LocalAdManager
+import vn.io.litever.remind.core.designsystem.components.ReMindPlanBadge
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import vn.io.litever.remind.core.model.BillingPlanType
 import vn.io.litever.remind.core.model.ProProduct
 import vn.io.litever.remind.core.model.ProProductIds
@@ -80,12 +85,24 @@ fun PaywallRoute(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val productsUnavailableMsg = stringResource(R.string.paywall_products_unavailable)
+    val restoreSuccessMsg = stringResource(R.string.paywall_restore_success)
+    val restoreEmptyMsg = stringResource(R.string.paywall_restore_empty)
 
     LaunchedEffect(uiState.purchaseStatus) {
         when (val status = uiState.purchaseStatus) {
             is PurchaseStatus.Success -> {
                 viewModel.clearPurchaseStatus()
                 onNavigateBack()
+            }
+            is PurchaseStatus.Restored -> {
+                Toast.makeText(context, restoreSuccessMsg, Toast.LENGTH_SHORT).show()
+                viewModel.clearPurchaseStatus()
+                onNavigateBack()
+            }
+            is PurchaseStatus.NothingToRestore -> {
+                Toast.makeText(context, restoreEmptyMsg, Toast.LENGTH_LONG).show()
+                viewModel.clearPurchaseStatus()
             }
             is PurchaseStatus.Error -> {
                 Toast.makeText(context, status.message, Toast.LENGTH_SHORT).show()
@@ -103,9 +120,16 @@ fun PaywallRoute(
         initialSlide = initialSlide,
         onSelectPlan = viewModel::selectPlan,
         onPurchaseClick = {
-            context.findPaywallActivity()?.let { activity ->
-                viewModel.purchaseSelectedPlan(activity)
+            val activity = context.findPaywallActivity()
+            if (activity != null) {
+                val launched = viewModel.purchaseSelectedPlan(activity)
+                if (!launched) {
+                    Toast.makeText(context, productsUnavailableMsg, Toast.LENGTH_SHORT).show()
+                }
             }
+        },
+        onManageSubscriptionClick = {
+            openPlaySubscriptions(context)
         },
         onRestoreClick = viewModel::restorePurchases,
         onRewardGranted = { viewModel.grant24hAdFreeReward(context) },
@@ -119,6 +143,7 @@ fun PaywallScreen(
     initialSlide: Int = 0,
     onSelectPlan: (BillingPlanType) -> Unit,
     onPurchaseClick: () -> Unit,
+    onManageSubscriptionClick: () -> Unit = {},
     onRestoreClick: () -> Unit,
     onRewardGranted: () -> Unit,
     onCloseClick: () -> Unit
@@ -161,22 +186,14 @@ fun PaywallScreen(
     )
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = MaterialTheme.spacing.medium),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // Top bar: Close & Restore
+        containerColor = MaterialTheme.colorScheme.background,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        topBar = {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = MaterialTheme.spacing.small),
+                    .statusBarsPadding()
+                    .padding(horizontal = MaterialTheme.spacing.small, vertical = MaterialTheme.spacing.extraSmall),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -188,28 +205,164 @@ fun PaywallScreen(
                     )
                 }
 
-                TextButton(onClick = onRestoreClick) {
-                    Text(
-                        text = stringResource(R.string.paywall_restore_purchases),
-                        style = MaterialTheme.typography.labelLarge
-                    )
+                if (!uiState.isPro) {
+                    val isRestoring = uiState.purchaseStatus == PurchaseStatus.Restoring
+                    TextButton(
+                        onClick = onRestoreClick,
+                        enabled = !isRestoring && uiState.purchaseStatus != PurchaseStatus.Loading
+                    ) {
+                        if (isRestoring) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(14.dp),
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Icon(
+                                imageVector = ReMindIcons.History,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
+                        Text(
+                            text = stringResource(
+                                if (isRestoring) {
+                                    R.string.paywall_restoring_purchases
+                                } else {
+                                    R.string.paywall_restore_purchases
+                                }
+                            ),
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                    }
                 }
             }
+        },
+        bottomBar = {
+            Surface(
+                color = MaterialTheme.colorScheme.background,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
+                        .padding(
+                            horizontal = MaterialTheme.spacing.medium,
+                            vertical = MaterialTheme.spacing.smallMedium
+                        ),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    if (uiState.isPro) {
+                        Button(
+                            onClick = onManageSubscriptionClick,
+                            shape = CircleShape,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp)
+                        ) {
+                            Text(
+                                text = stringResource(R.string.paywall_manage_subscription),
+                                style = LiteverTokens.typography.titleMediumEmphasized
+                            )
+                        }
+                    } else {
+                        Text(
+                            text = stringResource(R.string.paywall_cancel_anytime),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center
+                        )
 
-            Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
+                        Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
 
+                        val ctaText = when (uiState.selectedPlan) {
+                            BillingPlanType.ANNUAL -> stringResource(R.string.paywall_cta_trial)
+                            else -> stringResource(R.string.paywall_cta_subscribe)
+                        }
+
+                        Button(
+                            onClick = onPurchaseClick,
+                            enabled = uiState.purchaseStatus != PurchaseStatus.Loading,
+                            shape = CircleShape,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp)
+                        ) {
+                            if (uiState.purchaseStatus == PurchaseStatus.Loading) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(20.dp),
+                                    strokeWidth = 2.dp,
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                )
+                            } else {
+                                Text(
+                                    text = ctaText,
+                                    style = LiteverTokens.typography.titleMediumEmphasized
+                                )
+                            }
+                        }
+
+                        if (!isInspection) {
+                            val adManager = LocalAdManager.current
+                            TextButton(
+                                onClick = {
+                                    val activity = context.findPaywallActivity()
+                                    if (activity != null && adManager.isAdLoaded(AdPlacement.SUPPORT_REWARDED)) {
+                                        adManager.showAd(activity, AdPlacement.SUPPORT_REWARDED) {
+                                            onRewardGranted()
+                                            showThankYouDialog = true
+                                        }
+                                    } else {
+                                        adManager.loadAd(AdPlacement.SUPPORT_REWARDED)
+                                        showAdLoading = true
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.paywall_rewarded_ad_cta),
+                                    style = MaterialTheme.typography.labelMedium,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = MaterialTheme.spacing.medium),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text(
                 text = stringResource(
                     if (uiState.isPro) R.string.paywall_hero_title_active else R.string.paywall_hero_title
                 ),
-                style = MaterialTheme.typography.headlineSmall,
+                style = LiteverTokens.typography.headlineSmallEmphasized,
                 color = MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.extraSmall))
+
+            Text(
+                text = stringResource(
+                    if (uiState.isPro) R.string.paywall_active_desc else R.string.paywall_social_proof
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )
 
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
 
-            // Carousel: Comparison table + 5 Feature Spotlights
+            // Carousel: Comparison table + 5 Feature Spotlights (uniform height prevents jump)
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier.fillMaxWidth()
@@ -267,115 +420,31 @@ fun PaywallScreen(
 
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
 
-            Text(
-                text = stringResource(R.string.paywall_social_proof),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onBackground,
-                textAlign = TextAlign.Center
-            )
+            if (uiState.isPro) {
+                ActiveProMemberCard()
+            } else {
+                // Plan Selector Cards (Annual & Monthly only)
+                val monthlyProduct = uiState.products.firstOrNull { it.planType == BillingPlanType.MONTHLY }
+                val annualProduct = uiState.products.firstOrNull { it.planType == BillingPlanType.ANNUAL }
 
-            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
-
-            // Plan Selector Cards
-            val monthlyProduct = uiState.products.firstOrNull { it.planType == BillingPlanType.MONTHLY }
-            val annualProduct = uiState.products.firstOrNull { it.planType == BillingPlanType.ANNUAL }
-            val lifetimeProduct = uiState.products.firstOrNull { it.planType == BillingPlanType.LIFETIME }
-
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
-            ) {
-                PlanOptionCard(
-                    title = stringResource(R.string.paywall_plan_monthly),
-                    priceText = "${monthlyProduct?.formattedPrice ?: "$0.99"}${stringResource(R.string.paywall_plan_monthly_suffix)}",
-                    subtitle = null,
-                    badgeText = null,
-                    selected = uiState.selectedPlan == BillingPlanType.MONTHLY,
-                    onClick = { onSelectPlan(BillingPlanType.MONTHLY) }
-                )
-
-                PlanOptionCard(
-                    title = stringResource(R.string.paywall_plan_annual),
-                    priceText = "${annualProduct?.formattedPrice ?: "$6.99"}${stringResource(R.string.paywall_plan_annual_suffix)}",
-                    subtitle = null,
-                    badgeText = stringResource(R.string.paywall_plan_annual_badge),
-                    selected = uiState.selectedPlan == BillingPlanType.ANNUAL,
-                    onClick = { onSelectPlan(BillingPlanType.ANNUAL) }
-                )
-
-                PlanOptionCard(
-                    title = stringResource(R.string.paywall_plan_lifetime),
-                    priceText = lifetimeProduct?.formattedPrice ?: "$14.99",
-                    subtitle = stringResource(R.string.paywall_plan_lifetime_desc),
-                    badgeText = null,
-                    selected = uiState.selectedPlan == BillingPlanType.LIFETIME,
-                    onClick = { onSelectPlan(BillingPlanType.LIFETIME) }
-                )
-            }
-
-            Spacer(modifier = Modifier.height(MaterialTheme.spacing.smallMedium))
-
-            Text(
-                text = stringResource(R.string.paywall_cancel_anytime),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
-
-            // Primary CTA
-            val ctaText = when {
-                uiState.isPro -> stringResource(R.string.pro_banner_active_title)
-                uiState.selectedPlan == BillingPlanType.ANNUAL -> stringResource(R.string.paywall_cta_trial)
-                uiState.selectedPlan == BillingPlanType.LIFETIME -> stringResource(R.string.paywall_cta_lifetime)
-                else -> stringResource(R.string.paywall_cta_subscribe)
-            }
-
-            Button(
-                onClick = onPurchaseClick,
-                enabled = !uiState.isPro && uiState.purchaseStatus != PurchaseStatus.Loading,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp)
-            ) {
-                if (uiState.purchaseStatus == PurchaseStatus.Loading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(20.dp),
-                        strokeWidth = 2.dp,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                } else {
-                    Text(
-                        text = ctaText,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                }
-            }
-
-            // Rewarded Ad Option (moved from SettingsScreen)
-            if (!uiState.isPro && !isInspection) {
-                val adManager = LocalAdManager.current
-                Spacer(modifier = Modifier.height(MaterialTheme.spacing.extraSmall))
-                TextButton(
-                    onClick = {
-                        val activity = context.findPaywallActivity()
-                        if (activity != null && adManager.isAdLoaded(AdPlacement.SUPPORT_REWARDED)) {
-                            adManager.showAd(activity, AdPlacement.SUPPORT_REWARDED) {
-                                onRewardGranted()
-                                showThankYouDialog = true
-                            }
-                        } else {
-                            adManager.loadAd(AdPlacement.SUPPORT_REWARDED)
-                            showAdLoading = true
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth()
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
                 ) {
-                    Text(
-                        text = stringResource(R.string.paywall_rewarded_ad_cta),
-                        style = MaterialTheme.typography.labelMedium,
-                        textAlign = TextAlign.Center
+                    PlanOptionCard(
+                        title = stringResource(R.string.paywall_plan_annual),
+                        priceText = "${annualProduct?.formattedPrice ?: "$6.99"}${stringResource(R.string.paywall_plan_annual_suffix)}",
+                        badgeText = stringResource(R.string.paywall_plan_annual_badge),
+                        selected = uiState.selectedPlan == BillingPlanType.ANNUAL,
+                        onClick = { onSelectPlan(BillingPlanType.ANNUAL) }
+                    )
+
+                    PlanOptionCard(
+                        title = stringResource(R.string.paywall_plan_monthly),
+                        priceText = "${monthlyProduct?.formattedPrice ?: "$0.99"}${stringResource(R.string.paywall_plan_monthly_suffix)}",
+                        badgeText = null,
+                        selected = uiState.selectedPlan == BillingPlanType.MONTHLY,
+                        onClick = { onSelectPlan(BillingPlanType.MONTHLY) }
                     )
                 }
             }
@@ -425,13 +494,76 @@ fun PaywallScreen(
 }
 
 @Composable
-private fun ComparisonSlide() {
+private fun ActiveProMemberCard() {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.primaryContainer
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(MaterialTheme.spacing.medium),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.smallMedium)
+        ) {
+            Surface(
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(44.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = ReMindIcons.WorkspacePremium,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
+                ) {
+                    Text(
+                        text = stringResource(R.string.pro_banner_active_title),
+                        style = LiteverTokens.typography.titleMediumEmphasized,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                    ReMindPlanBadge(isPro = true)
+                }
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = stringResource(R.string.pro_banner_active_subtitle),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.85f)
+                )
+            }
+        }
+    }
+}
+
+private val PAYWALL_SLIDE_HEIGHT = 288.dp
+
+@Composable
+private fun ComparisonSlide() {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(PAYWALL_SLIDE_HEIGHT),
+        shape = MaterialTheme.shapes.large,
         color = MaterialTheme.colorScheme.surfaceContainerLow
     ) {
-        Column(modifier = Modifier.padding(MaterialTheme.spacing.medium)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    horizontal = MaterialTheme.spacing.medium,
+                    vertical = MaterialTheme.spacing.smallMedium
+                ),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -467,11 +599,9 @@ private fun ComparisonSlide() {
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.width(58.dp)
+                    modifier = Modifier.width(56.dp)
                 )
             }
-
-            Spacer(modifier = Modifier.height(8.dp))
 
             val rows = listOf(
                 stringResource(R.string.paywall_feat_basic_alarm) to true,
@@ -480,48 +610,51 @@ private fun ComparisonSlide() {
                 stringResource(R.string.paywall_feat_voice_tts) to false,
                 stringResource(R.string.paywall_feat_wakeup_check) to false,
                 stringResource(R.string.paywall_feat_extra_loud) to false,
-                stringResource(R.string.paywall_feat_multi_reminder) to false
+                stringResource(R.string.paywall_feat_multi_reminder) to false,
+                stringResource(R.string.paywall_feat_pro_branding) to false
             )
 
-            rows.forEachIndexed { index, (label, isFree) ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = label,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Box(
-                        modifier = Modifier.width(68.dp),
-                        contentAlignment = Alignment.Center
+            Column(modifier = Modifier.fillMaxWidth()) {
+                rows.forEachIndexed { index, (label, isFree) ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            imageVector = ReMindIcons.Check,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(18.dp)
+                        Text(
+                            text = label,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.weight(1f)
                         )
+                        Box(
+                            modifier = Modifier.width(68.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = ReMindIcons.Check,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(17.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Box(
+                            modifier = Modifier.width(56.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = if (isFree) ReMindIcons.Check else ReMindIcons.Close,
+                                contentDescription = null,
+                                tint = if (isFree) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.outlineVariant,
+                                modifier = Modifier.size(15.dp)
+                            )
+                        }
                     }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Box(
-                        modifier = Modifier.width(58.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = if (isFree) ReMindIcons.Check else ReMindIcons.Close,
-                            contentDescription = null,
-                            tint = if (isFree) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.outlineVariant,
-                            modifier = Modifier.size(16.dp)
-                        )
+                    if (index < rows.lastIndex) {
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.25f))
                     }
-                }
-                if (index < rows.lastIndex) {
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.25f))
                 }
             }
         }
@@ -537,7 +670,7 @@ private fun FeatureSpotlightSlide(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .height(250.dp),
+            .height(PAYWALL_SLIDE_HEIGHT),
         shape = MaterialTheme.shapes.large,
         color = MaterialTheme.colorScheme.surfaceContainerLow
     ) {
@@ -565,7 +698,7 @@ private fun FeatureSpotlightSlide(
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleMedium,
+                style = LiteverTokens.typography.titleMediumEmphasized,
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center
             )
@@ -584,7 +717,6 @@ private fun FeatureSpotlightSlide(
 private fun PlanOptionCard(
     title: String,
     priceText: String,
-    subtitle: String?,
     badgeText: String?,
     selected: Boolean,
     onClick: () -> Unit
@@ -616,23 +748,15 @@ private fun PlanOptionCard(
                     onClick = onClick
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    if (subtitle != null) {
-                        Text(
-                            text = subtitle,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
+                Text(
+                    text = title,
+                    style = LiteverTokens.typography.titleSmallEmphasized,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f)
+                )
                 Text(
                     text = priceText,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = LiteverTokens.typography.titleMediumEmphasized,
                     color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                 )
             }
@@ -644,7 +768,7 @@ private fun PlanOptionCard(
                     .align(Alignment.TopEnd)
                     .padding(end = 16.dp),
                 color = MaterialTheme.colorScheme.primary,
-                shape = RoundedCornerShape(50)
+                shape = CircleShape
             ) {
                 Text(
                     text = badgeText,
@@ -657,6 +781,18 @@ private fun PlanOptionCard(
     }
 }
 
+private fun openPlaySubscriptions(context: Context) {
+    val uri = "https://play.google.com/store/account/subscriptions?package=${context.packageName}".toUri()
+    val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+    try {
+        context.startActivity(intent)
+    } catch (_: Exception) {
+        // Play Store unavailable
+    }
+}
+
 private fun Context.findPaywallActivity(): Activity? {
     var current = this
     while (current is ContextWrapper) {
@@ -666,7 +802,7 @@ private fun Context.findPaywallActivity(): Activity? {
     return null
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Paywall - Free (Light)")
 @Composable
 private fun PaywallScreenPreview() {
     ReMindTheme {
@@ -675,8 +811,7 @@ private fun PaywallScreenPreview() {
                 isPro = false,
                 products = listOf(
                     ProProduct(ProProductIds.SUB_MONTHLY, BillingPlanType.MONTHLY, "$0.99"),
-                    ProProduct(ProProductIds.SUB_ANNUAL, BillingPlanType.ANNUAL, "$6.99", hasFreeTrial = true, trialDays = 7),
-                    ProProduct(ProProductIds.IAP_LIFETIME, BillingPlanType.LIFETIME, "$14.99")
+                    ProProduct(ProProductIds.SUB_ANNUAL, BillingPlanType.ANNUAL, "$6.99", hasFreeTrial = true, trialDays = 7)
                 ),
                 selectedPlan = BillingPlanType.ANNUAL
             ),
@@ -689,7 +824,7 @@ private fun PaywallScreenPreview() {
     }
 }
 
-@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Paywall - Free (Dark)")
 @Composable
 private fun PaywallScreenDarkPreview() {
     ReMindTheme(darkTheme = true) {
@@ -698,11 +833,25 @@ private fun PaywallScreenDarkPreview() {
                 isPro = false,
                 products = listOf(
                     ProProduct(ProProductIds.SUB_MONTHLY, BillingPlanType.MONTHLY, "$0.99"),
-                    ProProduct(ProProductIds.SUB_ANNUAL, BillingPlanType.ANNUAL, "$6.99", hasFreeTrial = true, trialDays = 7),
-                    ProProduct(ProProductIds.IAP_LIFETIME, BillingPlanType.LIFETIME, "$14.99")
+                    ProProduct(ProProductIds.SUB_ANNUAL, BillingPlanType.ANNUAL, "$6.99", hasFreeTrial = true, trialDays = 7)
                 ),
                 selectedPlan = BillingPlanType.ANNUAL
             ),
+            onSelectPlan = {},
+            onPurchaseClick = {},
+            onRestoreClick = {},
+            onRewardGranted = {},
+            onCloseClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Paywall - Active Pro")
+@Composable
+private fun PaywallScreenActiveProPreview() {
+    ReMindTheme {
+        PaywallScreen(
+            uiState = PaywallUiState(isPro = true),
             onSelectPlan = {},
             onPurchaseClick = {},
             onRestoreClick = {},

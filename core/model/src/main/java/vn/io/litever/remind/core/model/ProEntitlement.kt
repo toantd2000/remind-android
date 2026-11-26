@@ -25,7 +25,10 @@ data class ProEntitlement(
 sealed interface PurchaseStatus {
     data object Idle : PurchaseStatus
     data object Loading : PurchaseStatus
+    data object Restoring : PurchaseStatus
     data object Success : PurchaseStatus
+    data object Restored : PurchaseStatus
+    data object NothingToRestore : PurchaseStatus
     data object Cancelled : PurchaseStatus
     data class Error(val message: String) : PurchaseStatus
 }

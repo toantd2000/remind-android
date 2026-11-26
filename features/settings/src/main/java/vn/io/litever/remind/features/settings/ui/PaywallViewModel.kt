@@ -54,17 +54,24 @@ class PaywallViewModel @Inject constructor(
     )
 
     fun selectPlan(plan: BillingPlanType) {
-        _selectedPlan.value = plan
+        if (plan == BillingPlanType.MONTHLY || plan == BillingPlanType.ANNUAL) {
+            _selectedPlan.value = plan
+        }
     }
 
-    fun purchaseSelectedPlan(activity: Activity) {
+    /**
+     * Launches the Google Play Billing purchase flow for the selected plan.
+     * @return true if the product was found and flow was launched, false if products are not yet loaded.
+     */
+    fun purchaseSelectedPlan(activity: Activity): Boolean {
         val state = uiState.value
-        val product = state.products.firstOrNull { it.planType == state.selectedPlan } ?: return
+        val product = state.products.firstOrNull { it.planType == state.selectedPlan } ?: return false
         billingLauncher.launchPurchaseFlow(
             activity = activity,
             productId = product.productId,
             offerToken = product.offerToken
         )
+        return true
     }
 
     fun restorePurchases() {

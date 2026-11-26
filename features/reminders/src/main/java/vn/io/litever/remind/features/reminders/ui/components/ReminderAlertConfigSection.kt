@@ -98,300 +98,309 @@ fun ReminderAlertConfigSection(
         )
     }
 
-    ReMindSettingsGroup(
-        title = stringResource(R.string.section_alert_settings),
-        modifier = modifier
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.smallMedium)
     ) {
-        // 1. Notification Style Selector (Full-screen ringing vs Standard notification)
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    horizontal = MaterialTheme.spacing.medium,
-                    vertical = MaterialTheme.spacing.small
-                ),
-            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall)
+        // Group 3: Sound & Alert Style (aligned with AlarmEditScreen)
+        ReMindSettingsGroup(
+            title = stringResource(R.string.section_alert_settings)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
-            ) {
-                NotificationStyle.entries.forEach { style ->
-                    val labelRes = when (style) {
-                        NotificationStyle.FULL_SCREEN -> R.string.style_full_screen
-                        NotificationStyle.STANDARD -> R.string.style_standard
-                    }
-                    val isSelected = notificationStyle == style
-                    FilterChip(
-                        selected = isSelected,
-                        onClick = { onNotificationStyleChange(style) },
-                        label = {
-                            Text(
-                                text = stringResource(labelRes),
-                                style = if (isSelected) {
-                                    LiteverTokens.typography.labelMediumEmphasized
-                                } else {
-                                    MaterialTheme.typography.labelMedium
-                                },
-                                maxLines = 1
-                            )
-                        },
-                        colors = FilterChipDefaults.filterChipColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                            labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            selectedContainerColor = MaterialTheme.colorScheme.primary,
-                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary
-                        ),
-                        border = null,
-                        shape = MaterialTheme.shapes.medium,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
-
-            val styleDesc = when (notificationStyle) {
-                NotificationStyle.FULL_SCREEN -> stringResource(R.string.style_full_screen_desc)
-                NotificationStyle.STANDARD -> stringResource(R.string.style_standard_desc)
-            }
-            Text(
-                text = styleDesc,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-
-        ReMindSettingsDivider(inset = false)
-
-        // 2. Ringtone
-        ReMindSettingsItem(
-            title = stringResource(R.string.ringtone_title),
-            subtitle = ringtoneTitle.ifBlank { stringResource(R.string.default_ringtone) },
-            icon = ReMindIcons.MusicNote,
-            showChevron = true,
-            onClick = onRingtoneClick
-        )
-
-        ReMindSettingsDivider()
-
-        // 3. Volume Slider (Full-screen mode)
-        if (notificationStyle == NotificationStyle.FULL_SCREEN) {
-            Row(
+            // 1. Notification Style Selector (Full-screen ringing vs Standard notification)
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
                         horizontal = MaterialTheme.spacing.medium,
                         vertical = MaterialTheme.spacing.small
                     ),
-                verticalAlignment = Alignment.CenterVertically
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall)
             ) {
-                Icon(
-                    imageVector = if (volume == 0) ReMindIcons.VolumeOff else ReMindIcons.VolumeUp,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(MaterialTheme.spacing.large)
-                )
-
-                val volumeSliderState = remember {
-                    SliderState(
-                        value = volume.toFloat(),
-                        steps = 9,
-                        trackRange = 0f..100f
-                    )
-                }
-                LaunchedEffect(volume) {
-                    if (volumeSliderState.value.roundToInt() != volume) {
-                        volumeSliderState.value = volume.toFloat()
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
+                ) {
+                    NotificationStyle.entries.forEach { style ->
+                        val labelRes = when (style) {
+                            NotificationStyle.FULL_SCREEN -> R.string.style_full_screen
+                            NotificationStyle.STANDARD -> R.string.style_standard
+                        }
+                        val isSelected = notificationStyle == style
+                        FilterChip(
+                            selected = isSelected,
+                            onClick = { onNotificationStyleChange(style) },
+                            label = {
+                                Text(
+                                    text = stringResource(labelRes),
+                                    style = if (isSelected) {
+                                        LiteverTokens.typography.labelMediumEmphasized
+                                    } else {
+                                        MaterialTheme.typography.labelMedium
+                                    },
+                                    maxLines = 1
+                                )
+                            },
+                            colors = FilterChipDefaults.filterChipColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                                labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                            ),
+                            border = null,
+                            shape = MaterialTheme.shapes.medium,
+                            modifier = Modifier.weight(1f)
+                        )
                     }
                 }
-                Slider(
-                    state = volumeSliderState,
-                    onValueChange = {
-                        volumeSliderState.value = it
-                        onVolumeChange(it.roundToInt())
-                    },
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = MaterialTheme.spacing.smallMedium),
-                    colors = SliderDefaults.colors(
-                        thumbColor = MaterialTheme.colorScheme.primary,
-                        activeTrackColor = MaterialTheme.colorScheme.primary,
-                        inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant
-                    )
-                )
 
-                FilledTonalIconButton(
-                    onClick = onTogglePlay,
-                    modifier = Modifier.size(40.dp),
-                    colors = IconButtonDefaults.filledTonalIconButtonColors(
-                        containerColor = if (isPlaying) {
-                            MaterialTheme.colorScheme.primaryContainer
-                        } else {
-                            MaterialTheme.colorScheme.surfaceContainerHighest
-                        },
-                        contentColor = if (isPlaying) {
-                            MaterialTheme.colorScheme.onPrimaryContainer
-                        } else {
-                            MaterialTheme.colorScheme.onSurfaceVariant
-                        }
-                    )
+                val styleDesc = when (notificationStyle) {
+                    NotificationStyle.FULL_SCREEN -> stringResource(R.string.style_full_screen_desc)
+                    NotificationStyle.STANDARD -> stringResource(R.string.style_standard_desc)
+                }
+                Text(
+                    text = styleDesc,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            ReMindSettingsDivider(inset = false)
+
+            // 2. Ringtone
+            ReMindSettingsItem(
+                title = stringResource(R.string.ringtone_title),
+                subtitle = ringtoneTitle.ifBlank { stringResource(R.string.default_ringtone) },
+                icon = ReMindIcons.MusicNote,
+                showChevron = true,
+                onClick = onRingtoneClick
+            )
+
+            ReMindSettingsDivider()
+
+            // 3. Volume Slider (Full-screen mode)
+            if (notificationStyle == NotificationStyle.FULL_SCREEN) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = MaterialTheme.spacing.medium,
+                            vertical = MaterialTheme.spacing.small
+                        ),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = if (isPlaying) ReMindIcons.Pause else ReMindIcons.PlayArrow,
+                        imageVector = if (volume == 0) ReMindIcons.VolumeOff else ReMindIcons.VolumeUp,
                         contentDescription = null,
-                        modifier = Modifier.size(MaterialTheme.spacing.mediumLarge)
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(MaterialTheme.spacing.large)
+                    )
+
+                    val volumeSliderState = remember {
+                        SliderState(
+                            value = volume.toFloat(),
+                            steps = 9,
+                            trackRange = 0f..100f
+                        )
+                    }
+                    LaunchedEffect(volume) {
+                        if (volumeSliderState.value.roundToInt() != volume) {
+                            volumeSliderState.value = volume.toFloat()
+                        }
+                    }
+                    Slider(
+                        state = volumeSliderState,
+                        onValueChange = {
+                            volumeSliderState.value = it
+                            onVolumeChange(it.roundToInt())
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = MaterialTheme.spacing.smallMedium),
+                        colors = SliderDefaults.colors(
+                            thumbColor = MaterialTheme.colorScheme.primary,
+                            activeTrackColor = MaterialTheme.colorScheme.primary,
+                            inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
+                    )
+
+                    FilledTonalIconButton(
+                        onClick = onTogglePlay,
+                        modifier = Modifier.size(40.dp),
+                        colors = IconButtonDefaults.filledTonalIconButtonColors(
+                            containerColor = if (isPlaying) {
+                                MaterialTheme.colorScheme.primaryContainer
+                            } else {
+                                MaterialTheme.colorScheme.surfaceContainerHighest
+                            },
+                            contentColor = if (isPlaying) {
+                                MaterialTheme.colorScheme.onPrimaryContainer
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            }
+                        )
+                    ) {
+                        Icon(
+                            imageVector = if (isPlaying) ReMindIcons.Pause else ReMindIcons.PlayArrow,
+                            contentDescription = null,
+                            modifier = Modifier.size(MaterialTheme.spacing.mediumLarge)
+                        )
+                    }
+                }
+
+                ReMindSettingsDivider()
+            }
+
+            // 4. Vibration
+            ReMindSettingsItem(
+                title = stringResource(R.string.vibration_label),
+                subtitle = if (vibrationEnabled) {
+                    stringResource(R.string.vibration_enabled_desc)
+                } else {
+                    stringResource(R.string.off)
+                },
+                icon = ReMindIcons.Vibration,
+                iconTint = if (vibrationEnabled) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                },
+                onClick = { onVibrationChange(!vibrationEnabled) },
+                trailingContent = {
+                    Switch(
+                        checked = vibrationEnabled,
+                        onCheckedChange = onVibrationChange
                     )
                 }
-            }
+            )
 
-            ReMindSettingsDivider()
-        }
+            // 5. Alarm Audio Stream (Full-screen mode)
+            if (notificationStyle == NotificationStyle.FULL_SCREEN) {
+                ReMindSettingsDivider()
 
-        // 4. Vibration
-        ReMindSettingsItem(
-            title = stringResource(R.string.vibration_label),
-            subtitle = if (vibrationEnabled) {
-                stringResource(R.string.vibration_enabled_desc)
-            } else {
-                stringResource(R.string.off)
-            },
-            icon = ReMindIcons.Vibration,
-            iconTint = if (vibrationEnabled) {
-                MaterialTheme.colorScheme.primary
-            } else {
-                MaterialTheme.colorScheme.onSurfaceVariant
-            },
-            onClick = { onVibrationChange(!vibrationEnabled) },
-            trailingContent = {
-                Switch(
-                    checked = vibrationEnabled,
-                    onCheckedChange = onVibrationChange
+                ReMindSettingsItem(
+                    title = stringResource(R.string.use_alarm_stream_title),
+                    subtitle = if (useAlarmStream) {
+                        stringResource(R.string.use_alarm_stream_desc)
+                    } else {
+                        stringResource(R.string.use_notification_stream_desc)
+                    },
+                    icon = ReMindIcons.AlarmOn,
+                    iconTint = if (useAlarmStream) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                    onClick = { onUseAlarmStreamChange(!useAlarmStream) },
+                    trailingContent = {
+                        Switch(
+                            checked = useAlarmStream,
+                            onCheckedChange = onUseAlarmStreamChange
+                        )
+                    }
                 )
             }
-        )
 
-        // 5. Ringing-only Settings (Auto-Silence & Alarm Stream)
-        if (notificationStyle == NotificationStyle.FULL_SCREEN) {
             ReMindSettingsDivider()
 
-            val autoSilenceSummary = if (autoSilenceMinutes <= 0) {
-                stringResource(R.string.auto_silence_never)
+            // 6. Voice Announcement TTS (Pro)
+            ReMindSettingsItem(
+                title = stringResource(R.string.announce_title_tts_title),
+                subtitle = stringResource(R.string.announce_title_tts_desc),
+                icon = ReMindIcons.Speaker,
+                iconTint = if (announceTitleTts) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                },
+                titleBadge = { ReMindProDiamondTag() },
+                onClick = {
+                    if (!isPro && !announceTitleTts) onNavigateToPaywall(2)
+                    else onAnnounceTitleTtsChange(!announceTitleTts)
+                },
+                trailingContent = {
+                    Switch(
+                        checked = announceTitleTts,
+                        onCheckedChange = { enabled ->
+                            if (!isPro && enabled) onNavigateToPaywall(2)
+                            else onAnnounceTitleTtsChange(enabled)
+                        }
+                    )
+                }
+            )
+
+            ReMindSettingsDivider()
+
+            // 7. Extra Loud (Pro)
+            ReMindSettingsItem(
+                title = stringResource(R.string.extra_loud_title),
+                subtitle = stringResource(R.string.extra_loud_desc),
+                icon = ReMindIcons.VolumeUp,
+                iconTint = if (extraLoudEnabled) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                },
+                titleBadge = { ReMindProDiamondTag() },
+                onClick = {
+                    if (!isPro && !extraLoudEnabled) onNavigateToPaywall(4)
+                    else onExtraLoudChange(!extraLoudEnabled)
+                },
+                trailingContent = {
+                    Switch(
+                        checked = extraLoudEnabled,
+                        onCheckedChange = { enabled ->
+                            if (!isPro && enabled) onNavigateToPaywall(4)
+                            else onExtraLoudChange(enabled)
+                        }
+                    )
+                }
+            )
+        }
+
+        // Group 4: Snooze & Auto-Silence (aligned with AlarmEditScreen)
+        ReMindSettingsGroup(
+            title = stringResource(R.string.section_snooze_and_silence)
+        ) {
+            val snoozeSummary = if (snoozeEnabled) {
+                stringResource(R.string.minutes_format, snoozeIntervalMinutes)
             } else {
-                stringResource(R.string.minutes_format, autoSilenceMinutes)
+                stringResource(R.string.off)
             }
             ReMindSettingsItem(
-                title = stringResource(R.string.auto_silence_title),
-                subtitle = autoSilenceSummary,
-                icon = ReMindIcons.Timer,
-                iconTint = if (autoSilenceMinutes > 0) {
+                title = stringResource(R.string.snooze_action),
+                subtitle = snoozeSummary,
+                icon = ReMindIcons.Snooze,
+                iconTint = if (snoozeEnabled) {
                     MaterialTheme.colorScheme.primary
                 } else {
                     MaterialTheme.colorScheme.onSurfaceVariant
                 },
                 showChevron = true,
-                onClick = { showAutoSilenceSheet = true }
+                onClick = { showSnoozeSheet = true }
             )
 
-            ReMindSettingsDivider()
+            if (notificationStyle == NotificationStyle.FULL_SCREEN) {
+                ReMindSettingsDivider()
 
-            ReMindSettingsItem(
-                title = stringResource(R.string.use_alarm_stream_title),
-                subtitle = if (useAlarmStream) {
-                    stringResource(R.string.use_alarm_stream_desc)
+                val autoSilenceSummary = if (autoSilenceMinutes <= 0) {
+                    stringResource(R.string.auto_silence_never)
                 } else {
-                    stringResource(R.string.use_notification_stream_desc)
-                },
-                icon = ReMindIcons.AlarmOn,
-                iconTint = if (useAlarmStream) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                },
-                onClick = { onUseAlarmStreamChange(!useAlarmStream) },
-                trailingContent = {
-                    Switch(
-                        checked = useAlarmStream,
-                        onCheckedChange = onUseAlarmStreamChange
-                    )
+                    stringResource(R.string.minutes_format, autoSilenceMinutes)
                 }
-            )
-        }
-
-        ReMindSettingsDivider()
-
-        // 6. Snooze
-        val snoozeSummary = if (snoozeEnabled) {
-            stringResource(R.string.minutes_format, snoozeIntervalMinutes)
-        } else {
-            stringResource(R.string.off)
-        }
-        ReMindSettingsItem(
-            title = stringResource(R.string.snooze_action),
-            subtitle = snoozeSummary,
-            icon = ReMindIcons.Snooze,
-            iconTint = if (snoozeEnabled) {
-                MaterialTheme.colorScheme.primary
-            } else {
-                MaterialTheme.colorScheme.onSurfaceVariant
-            },
-            showChevron = true,
-            onClick = { showSnoozeSheet = true }
-        )
-
-        ReMindSettingsDivider()
-
-        // 7. Voice Announcement TTS (Pro)
-        ReMindSettingsItem(
-            title = stringResource(R.string.announce_title_tts_title),
-            subtitle = stringResource(R.string.announce_title_tts_desc),
-            icon = ReMindIcons.Speaker,
-            iconTint = if (announceTitleTts) {
-                MaterialTheme.colorScheme.primary
-            } else {
-                MaterialTheme.colorScheme.onSurfaceVariant
-            },
-            titleBadge = { ReMindProDiamondTag() },
-            onClick = {
-                if (!isPro && !announceTitleTts) onNavigateToPaywall(2)
-                else onAnnounceTitleTtsChange(!announceTitleTts)
-            },
-            trailingContent = {
-                Switch(
-                    checked = announceTitleTts,
-                    onCheckedChange = { enabled ->
-                        if (!isPro && enabled) onNavigateToPaywall(2)
-                        else onAnnounceTitleTtsChange(enabled)
-                    }
+                ReMindSettingsItem(
+                    title = stringResource(R.string.auto_silence_title),
+                    subtitle = autoSilenceSummary,
+                    icon = ReMindIcons.Timer,
+                    iconTint = if (autoSilenceMinutes > 0) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                    showChevron = true,
+                    onClick = { showAutoSilenceSheet = true }
                 )
             }
-        )
-
-        ReMindSettingsDivider()
-
-        // 8. Extra Loud (Pro)
-        ReMindSettingsItem(
-            title = stringResource(R.string.extra_loud_title),
-            subtitle = stringResource(R.string.extra_loud_desc),
-            icon = ReMindIcons.VolumeUp,
-            iconTint = if (extraLoudEnabled) {
-                MaterialTheme.colorScheme.primary
-            } else {
-                MaterialTheme.colorScheme.onSurfaceVariant
-            },
-            titleBadge = { ReMindProDiamondTag() },
-            onClick = {
-                if (!isPro && !extraLoudEnabled) onNavigateToPaywall(4)
-                else onExtraLoudChange(!extraLoudEnabled)
-            },
-            trailingContent = {
-                Switch(
-                    checked = extraLoudEnabled,
-                    onCheckedChange = { enabled ->
-                        if (!isPro && enabled) onNavigateToPaywall(4)
-                        else onExtraLoudChange(enabled)
-                    }
-                )
-            }
-        )
+        }
     }
 }
 

@@ -1,38 +1,39 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
-import vn.io.litever.remind.core.designsystem.theme.spacing
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import vn.io.litever.brand.tokens.LiteverTokens
 import vn.io.litever.remind.core.common.util.TimeFormatUtils
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import vn.io.litever.remind.core.model.Reminder
+import vn.io.litever.remind.core.model.ReminderAction
 import vn.io.litever.remind.core.model.ReminderTimeWindow
 import vn.io.litever.remind.core.model.ReminderTriggerType
 import vn.io.litever.remind.core.model.RepeatMode
@@ -44,6 +45,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ReminderCard(
     reminder: Reminder,
@@ -52,20 +54,37 @@ fun ReminderCard(
     onMoreClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val isSnoozed = reminder.snoozeNextTriggerTime != null
+    val isSnoozed = reminder.isEnabled && reminder.snoozeNextTriggerTime != null
     val isCardActive = reminder.isEnabled
 
+    // Match AlarmCard container color & inactive dimming language
     val containerColor = if (isCardActive) {
         MaterialTheme.colorScheme.surfaceContainer
     } else {
         MaterialTheme.colorScheme.surfaceContainerLow
     }
 
-    val indicatorColor = if (isSnoozed) {
-        MaterialTheme.colorScheme.secondary
-    } else {
-        MaterialTheme.colorScheme.primary
+    val recurrenceText = ReminderCardFormatter.formatRecurrenceSchedule(reminder.timeTrigger)
+    val timeText = when (reminder.triggerType) {
+        ReminderTriggerType.INTERVAL -> ReminderCardFormatter.formatIntervalFrequency(
+            reminder.timeTrigger?.intervalMinutes
+        )
+        ReminderTriggerType.FIXED_TIME -> ReminderCardFormatter.formatFixedTimes(
+            reminder.timeTrigger?.time ?: emptyList(),
+            is24HourFormat
+        ).ifEmpty { stringResource(R.string.trigger_time) }
     }
+    val windowText = if (reminder.triggerType == ReminderTriggerType.INTERVAL) {
+        ReminderCardFormatter.formatTimeWindows(
+            reminder.timeTrigger?.timeWindows.orEmpty(),
+            is24HourFormat
+        )
+    } else {
+        ""
+    }
+    val scheduleSummary = listOf(recurrenceText, timeText, windowText)
+        .filter { it.isNotBlank() }
+        .joinToString(" • ")
 
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -76,116 +95,49 @@ fun ReminderCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .drawBehind {
-                    if (isCardActive) {
-                        drawRect(
-                            color = indicatorColor.copy(alpha = 0.8f),
-                            size = Size(3.dp.toPx(), size.height)
-                        )
-                    }
-                }
                 .padding(
                     start = MaterialTheme.spacing.medium,
                     end = MaterialTheme.spacing.extraSmall,
                     top = MaterialTheme.spacing.smallMedium,
                     bottom = MaterialTheme.spacing.smallMedium
-                ),
+                )
         ) {
-            // Top Row: Separated Time badge, Recurrence badge, Time Windows, Snooze, Urgency badges
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = Modifier.padding(bottom = 6.dp)
-            ) {
-
-                // 1. Separate Recurrence / Repeat Schedule badge
-                RecurrenceBadge(
-                    timeTrigger = reminder.timeTrigger,
-                )
-
-                // 2. Time / Interval frequency badge
-                TimeBadge(
-                    reminder = reminder,
-                    is24HourFormat = is24HourFormat,
-                    containerColor = if (isSnoozed) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f),
-                    contentColor = if (isSnoozed) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.7f)
-                )
-
-                // 3. Time Window Badge (for Interval)
-                if (reminder.triggerType == ReminderTriggerType.INTERVAL) {
-                    val activeWindows = reminder.timeTrigger?.timeWindows ?: emptyList()
-                    if (activeWindows.isNotEmpty()) {
-                        TimeWindowBadge(
-                            timeWindows = activeWindows,
-                            is24HourFormat = is24HourFormat
-                        )
-                    }
-                }
-
-                // 4. Snoozing Badge (if snoozed)
-                if (isSnoozed) {
-                    SnoozingBadge(
-                        snoozeTimeMillis = reminder.snoozeNextTriggerTime!!,
-                        is24HourFormat = is24HourFormat
-                    )
-                }
-
-                // 5. Hard Urgency Badge
-                if (reminder.action.urgencyLevel == UrgencyLevel.HARD) {
-                    BadgeContainer(
-                        icon = ReMindIcons.NotificationImportant,
-                        text = stringResource(R.string.urgency_hard),
-                        containerColor = MaterialTheme.colorScheme.errorContainer,
-                        contentColor = MaterialTheme.colorScheme.onErrorContainer
-                    )
-                }
-
-                // 6. Persistent Alert Badge
-                if (reminder.action.isPersistentAlert) {
-                    BadgeContainer(
-                        icon = ReMindIcons.Alarm,
-                        text = stringResource(R.string.badge_persistent_alert),
-                        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.8f),
-                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                }
-            }
+            // 1. Hero Row: Title + Notes first (Reminder-First hierarchy) + compact MoreVert
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.Top,
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Column(
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(top = 2.dp)
                 ) {
-
-                    // Title
                     Text(
                         text = reminder.title,
-                        style = MaterialTheme.typography.titleMedium,
+                        style = LiteverTokens.typography.titleMediumEmphasized,
                         color = when {
-                            !reminder.isEnabled -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                            isSnoozed -> MaterialTheme.colorScheme.secondary
+                            !isCardActive -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                            isSnoozed -> MaterialTheme.colorScheme.primary
                             else -> MaterialTheme.colorScheme.onSurface
                         },
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
 
-                    // Notes snippet
                     if (reminder.notes.isNotBlank()) {
+                        Spacer(modifier = Modifier.height(MaterialTheme.spacing.tiny))
                         Text(
                             text = reminder.notes,
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                                alpha = if (reminder.isEnabled) 1f else 0.6f
+                                alpha = if (isCardActive) 0.9f else 0.55f
                             ),
                             maxLines = 2,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.padding(top = MaterialTheme.spacing.tiny)
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
 
-                // Options menu button (3-dots)
                 IconButton(
                     onClick = onMoreClick,
                     modifier = Modifier.size(36.dp)
@@ -198,126 +150,109 @@ fun ReminderCard(
                     )
                 }
             }
-            // Footer: Next Trigger / Relative Countdown / Inactive status
+
+            // 2. Concise Schedule & Notable Status Row (subtle tonal pills, no color overload)
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.padding(end = MaterialTheme.spacing.smallMedium)
+            ) {
+                if (scheduleSummary.isNotBlank()) {
+                    ReminderMetaPill(
+                        icon = if (reminder.triggerType == ReminderTriggerType.INTERVAL) {
+                            ReMindIcons.Timer
+                        } else {
+                            ReMindIcons.AccessTime
+                        },
+                        text = scheduleSummary,
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                            alpha = if (isCardActive) 1f else 0.6f
+                        ),
+                        tabularNumbers = true
+                    )
+                }
+
+                if (isSnoozed) {
+                    val snoozeTime = LocalDateTime.ofInstant(
+                        Instant.ofEpochMilli(reminder.snoozeNextTriggerTime!!),
+                        ZoneId.systemDefault()
+                    ).toLocalTime()
+                    val formattedTime = TimeFormatUtils.formatTime(snoozeTime, is24HourFormat)
+                    ReminderMetaPill(
+                        icon = ReMindIcons.Snooze,
+                        text = stringResource(R.string.snoozing_badge_format, formattedTime),
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        tabularNumbers = true
+                    )
+                }
+
+                if (reminder.action.urgencyLevel == UrgencyLevel.HARD) {
+                    ReminderMetaPill(
+                        icon = ReMindIcons.NotificationImportant,
+                        text = stringResource(R.string.urgency_hard),
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                }
+
+                if (reminder.action.isPersistentAlert) {
+                    ReminderMetaPill(
+                        icon = ReMindIcons.NotificationsActive,
+                        text = stringResource(R.string.badge_persistent_alert),
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                    )
+                }
+            }
+
+            // 3. Footer: Next Trigger / Relative Countdown / Inactive status
             NextTriggerFooter(
                 reminder = reminder,
                 is24HourFormat = is24HourFormat,
-                modifier = Modifier.padding(top = 8.dp)
+                modifier = Modifier.padding(
+                    top = MaterialTheme.spacing.small,
+                    end = MaterialTheme.spacing.smallMedium
+                )
             )
         }
     }
 }
 
 @Composable
-private fun TimeBadge(
-    reminder: Reminder,
-    is24HourFormat: Boolean,
+private fun ReminderMetaPill(
+    icon: ImageVector,
+    text: String,
     containerColor: Color,
-    contentColor: Color
+    contentColor: Color,
+    tabularNumbers: Boolean = false
 ) {
-    val timeTrigger = reminder.timeTrigger
-    val (icon, text) = when (reminder.triggerType) {
-        ReminderTriggerType.INTERVAL -> {
-            val freq = ReminderCardFormatter.formatIntervalFrequency(timeTrigger?.intervalMinutes)
-            Pair(ReMindIcons.Timer, freq)
-        }
-
-        ReminderTriggerType.FIXED_TIME -> {
-            val timesText = ReminderCardFormatter.formatFixedTimes(
-                timeTrigger?.time ?: emptyList(),
-                is24HourFormat
-            )
-                .ifEmpty { stringResource(R.string.trigger_time) }
-            Pair(ReMindIcons.AccessTime, timesText)
-        }
-    }
-
-    BadgeContainer(
-        icon = icon,
-        text = text,
-        containerColor = containerColor,
-        contentColor = contentColor
-    )
-}
-
-@Composable
-private fun RecurrenceBadge(
-    timeTrigger: TimeTrigger?
-) {
-    val text = ReminderCardFormatter.formatRecurrenceSchedule(timeTrigger)
-    if (text.isBlank()) return
-
-    BadgeContainer(
-        icon = ReMindIcons.CalendarMonth,
-        text = text,
-        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
-        contentColor = MaterialTheme.colorScheme.onPrimary
-    )
-}
-
-@Composable
-private fun TimeWindowBadge(
-    timeWindows: List<ReminderTimeWindow>,
-    is24HourFormat: Boolean
-) {
-    val text = ReminderCardFormatter.formatTimeWindows(timeWindows, is24HourFormat)
-    if (text.isBlank()) return
-
     Surface(
-        color = MaterialTheme.colorScheme.secondaryContainer,
-        shape = MaterialTheme.shapes.extraSmall
+        color = containerColor,
+        contentColor = contentColor,
+        shape = CircleShape
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
         ) {
             Icon(
-                imageVector = ReMindIcons.DateRange,
+                imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSecondaryContainer,
                 modifier = Modifier.size(12.dp)
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = text,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSecondaryContainer
-            )
-        }
-    }
-}
-
-@Composable
-private fun SnoozingBadge(
-    snoozeTimeMillis: Long,
-    is24HourFormat: Boolean
-) {
-    val snoozeTime = LocalDateTime.ofInstant(
-        Instant.ofEpochMilli(snoozeTimeMillis),
-        ZoneId.systemDefault()
-    ).toLocalTime()
-    val formattedTime = TimeFormatUtils.formatTime(snoozeTime, is24HourFormat)
-
-    Surface(
-        color = MaterialTheme.colorScheme.secondaryContainer,
-        shape = MaterialTheme.shapes.extraSmall
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-        ) {
-            Icon(
-                imageVector = ReMindIcons.Snooze,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                modifier = Modifier.size(12.dp)
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                text = stringResource(R.string.snoozing_badge_format, formattedTime),
-                style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
-                fontWeight = FontWeight.Medium
+                style = if (tabularNumbers) {
+                    MaterialTheme.typography.labelSmall.copy(fontFeatureSettings = "tnum")
+                } else {
+                    MaterialTheme.typography.labelSmall
+                },
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }
@@ -332,8 +267,8 @@ private fun NextTriggerFooter(
     val displayInfo = ReminderCardFormatter.getNextTriggerDisplayInfo(reminder, is24HourFormat)
 
     val contentColor = when {
-        displayInfo.isInactive -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
-        displayInfo.isSnoozed -> MaterialTheme.colorScheme.onSurfaceVariant
+        displayInfo.isInactive -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f)
+        displayInfo.isSnoozed -> MaterialTheme.colorScheme.primary
         else -> MaterialTheme.colorScheme.tertiary
     }
 
@@ -350,46 +285,15 @@ private fun NextTriggerFooter(
         Spacer(modifier = Modifier.width(5.dp))
         Text(
             text = displayInfo.text,
-            style = MaterialTheme.typography.labelSmall.copy(
-                fontWeight = if (displayInfo.isInactive) FontWeight.Light else FontWeight.Medium
-            ),
+            style = if (displayInfo.isInactive) {
+                MaterialTheme.typography.labelSmall
+            } else {
+                LiteverTokens.typography.labelSmallEmphasized.copy(fontFeatureSettings = "tnum")
+            },
             color = contentColor,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-    }
-}
-
-@Composable
-private fun BadgeContainer(
-    icon: ImageVector,
-    text: String,
-    containerColor: Color,
-    contentColor: Color
-) {
-    Surface(
-        color = containerColor,
-        shape = MaterialTheme.shapes.extraSmall
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = contentColor,
-                modifier = Modifier.size(12.dp)
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                text = text,
-                style = MaterialTheme.typography.labelSmall,
-                color = contentColor,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
     }
 }
 
@@ -412,7 +316,8 @@ private fun ReminderCardFixedTimePreview() {
             ),
             is24HourFormat = false,
             onClick = {},
-            onMoreClick = {}
+            onMoreClick = {},
+            modifier = Modifier.padding(MaterialTheme.spacing.medium)
         )
     }
 }
@@ -437,11 +342,13 @@ private fun ReminderCardIntervalPreview() {
                             endTime = LocalTime.of(17, 30)
                         )
                     )
-                )
+                ),
+                action = ReminderAction(urgencyLevel = UrgencyLevel.HARD)
             ),
             is24HourFormat = true,
             onClick = {},
-            onMoreClick = {}
+            onMoreClick = {},
+            modifier = Modifier.padding(MaterialTheme.spacing.medium)
         )
     }
 }
@@ -455,7 +362,7 @@ private fun ReminderCardDarkPreview() {
                 id = 1L,
                 title = "Drink Water & Take Vitamins",
                 notes = "Stay hydrated throughout the day and take daily supplements.",
-                isEnabled = true,
+                isEnabled = false,
                 triggerType = ReminderTriggerType.FIXED_TIME,
                 timeTrigger = TimeTrigger(
                     time = listOf(LocalTime.of(9, 0), LocalTime.of(14, 0)),
@@ -464,7 +371,8 @@ private fun ReminderCardDarkPreview() {
             ),
             is24HourFormat = false,
             onClick = {},
-            onMoreClick = {}
+            onMoreClick = {},
+            modifier = Modifier.padding(MaterialTheme.spacing.medium)
         )
     }
 }

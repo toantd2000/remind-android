@@ -84,7 +84,8 @@ fun ReminderRepeatConfigSection(
     exactDates: List<LocalDate> = if (date != null) listOf(date) else emptyList(),
     onAddExactDate: (LocalDate) -> Unit = { onDateChange(it) },
     onRemoveExactDate: (Int) -> Unit = {},
-    onUpdateExactDate: (Int, LocalDate) -> Unit = { _, d -> onDateChange(d) }
+    onUpdateExactDate: (Int, LocalDate) -> Unit = { _, d -> onDateChange(d) },
+    embedded: Boolean = false
 ) {
     val currentLocale = LocalLocale.current.platformLocale
     var showDatePicker by remember { mutableStateOf(false) }
@@ -95,10 +96,7 @@ fun ReminderRepeatConfigSection(
     var editingDateIndex by remember { mutableIntStateOf(-1) }
     var dateToEdit by remember { mutableStateOf<ReminderMonthDay?>(null) }
 
-    ReMindSettingsGroup(
-        title = stringResource(R.string.repeat_title),
-        modifier = modifier
-    ) {
+    val repeatContent: @Composable () -> Unit = {
         val intervals = listOf(
             ReminderRepeatInterval.NONE,
             ReminderRepeatInterval.DAILY,
@@ -199,6 +197,23 @@ fun ReminderRepeatConfigSection(
             }
         } else {
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
+        }
+    }
+
+    if (embedded) {
+        Column(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(top = MaterialTheme.spacing.small)
+        ) {
+            repeatContent()
+        }
+    } else {
+        ReMindSettingsGroup(
+            title = stringResource(R.string.repeat_title),
+            modifier = modifier
+        ) {
+            repeatContent()
         }
     }
 

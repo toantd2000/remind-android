@@ -1,30 +1,23 @@
 package vn.io.litever.remind.features.reminders.ui.components
 
-import vn.io.litever.brand.tokens.LiteverTokens
-import androidx.compose.material3.MaterialTheme
-import vn.io.litever.remind.core.designsystem.theme.spacing
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
+import vn.io.litever.remind.core.designsystem.components.ReMindSettingsItem
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
+import vn.io.litever.remind.core.designsystem.theme.spacing
 import vn.io.litever.remind.core.model.ReminderTimeWindow
 import vn.io.litever.remind.core.model.ReminderTriggerType
 import vn.io.litever.remind.features.reminders.R
@@ -47,12 +40,10 @@ fun ReminderTriggerSection(
     onRemoveTimeWindow: (Int) -> Unit = {},
     is24HourFormat: Boolean = true,
     isPro: Boolean = false,
-    onNavigateToPaywall: (Int) -> Unit = {}
+    onNavigateToPaywall: (Int) -> Unit = {},
+    embedded: Boolean = false
 ) {
-    ReMindSettingsGroup(
-        title = stringResource(R.string.section_time_trigger),
-        modifier = modifier
-    ) {
+    val content: @Composable () -> Unit = {
         // Tab selector for trigger types (Fixed Time vs Interval)
         ReminderTriggerTypeSelector(
             selectedTriggerType = uiState.triggerType,
@@ -91,60 +82,25 @@ fun ReminderTriggerSection(
                 }
 
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = MaterialTheme.spacing.medium),
-                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
                 ) {
-                    // Simple settings row (clickable card) opening IntervalBottomSheet
-                    Surface(
-                        onClick = { showIntervalBottomSheet = true },
-                        shape = MaterialTheme.shapes.medium,
-                        color = MaterialTheme.colorScheme.surfaceContainer,
-                        border = BorderStroke(
-                            width = 1.dp,
-                            color = MaterialTheme.colorScheme.outlineVariant
-                        ),
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth()
-                                .padding(MaterialTheme.spacing.medium),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
-                        ) {
-                            Column(
-                                modifier = Modifier.weight(1f),
-                                verticalArrangement = Arrangement.spacedBy(2.dp)
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.interval_section_title),
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                                Text(
-                                    text = stringResource(R.string.tap_to_set_interval),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-
-                            Text(
-                                text = if (totalMins > 0) {
-                                    stringResource(R.string.interval_set_format, displayDuration)
-                                } else {
-                                    stringResource(R.string.interval_not_set)
-                                },
-                                style = LiteverTokens.typography.bodyMediumEmphasized,
-                                color = if (totalMins > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-
-                            Icon(
-                                imageVector = ReMindIcons.ChevronRight,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-                    }
+                    ReMindSettingsItem(
+                        title = stringResource(R.string.interval_section_title),
+                        subtitle = if (totalMins > 0) {
+                            stringResource(R.string.interval_set_format, displayDuration)
+                        } else {
+                            stringResource(R.string.tap_to_set_interval)
+                        },
+                        icon = ReMindIcons.Timer,
+                        iconTint = if (totalMins > 0) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                        showChevron = true,
+                        onClick = { showIntervalBottomSheet = true }
+                    )
 
                     if (showIntervalBottomSheet) {
                         IntervalBottomSheet(
@@ -177,11 +133,25 @@ fun ReminderTriggerSection(
                         is24HourFormat = is24HourFormat,
                         isPro = isPro,
                         onNavigateToPaywall = onNavigateToPaywall,
-                        modifier = Modifier.padding(bottom = MaterialTheme.spacing.medium)
+                        modifier = Modifier
+                            .padding(horizontal = MaterialTheme.spacing.medium)
+                            .padding(bottom = MaterialTheme.spacing.medium)
                     )
                 }
             }
+        }
+    }
 
+    if (embedded) {
+        Column(modifier = modifier.fillMaxWidth()) {
+            content()
+        }
+    } else {
+        ReMindSettingsGroup(
+            title = stringResource(R.string.section_time_trigger),
+            modifier = modifier
+        ) {
+            content()
         }
     }
 }

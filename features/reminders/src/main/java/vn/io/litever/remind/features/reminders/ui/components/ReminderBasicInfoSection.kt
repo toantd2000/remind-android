@@ -99,7 +99,7 @@ fun ReminderBasicInfoSection(
                     BasicTextField(
                         state = titleState,
                         modifier = textFieldModifier,
-                        textStyle = MaterialTheme.typography.bodyLarge.copy(
+                        textStyle = LiteverTokens.typography.titleMediumEmphasized.copy(
                             color = MaterialTheme.colorScheme.onSurface
                         ),
                         keyboardOptions = KeyboardOptions(
@@ -113,7 +113,7 @@ fun ReminderBasicInfoSection(
                                 if (titleState.text.isEmpty()) {
                                     Text(
                                         text = stringResource(R.string.reminder_title_placeholder),
-                                        style = MaterialTheme.typography.bodyLarge,
+                                        style = MaterialTheme.typography.titleMedium,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                                     )
                                 }

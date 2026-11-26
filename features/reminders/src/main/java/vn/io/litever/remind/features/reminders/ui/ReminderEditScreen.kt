@@ -267,7 +267,16 @@ fun ReminderEditScreen(
         topBar = {
             LvTopAppBar(
                 title = stringResource(if (uiState.id == 0L) R.string.add_reminder_title else R.string.edit_reminder_title),
-                onBackClick = onBackClick
+                onBackClick = onBackClick,
+                actions = {
+                    if (uiState.id != 0L) {
+                        androidx.compose.material3.Switch(
+                            checked = uiState.isEnabled,
+                            onCheckedChange = onToggleEnabled,
+                            modifier = Modifier.padding(end = MaterialTheme.spacing.medium)
+                        )
+                    }
+                }
             )
         },
         bottomBar = {
@@ -321,51 +330,57 @@ fun ReminderEditScreen(
                 )
             }
 
-            // 2. Repeat Configuration Section (Day schedule: One-time, Weekly, Monthly, Yearly)
+            // 2. Unified Schedule Section (Repeat/Dates + Within-day Time/Interval)
             item {
-                ReminderRepeatConfigSection(
-                    repeatInterval = uiState.repeatInterval,
-                    onRepeatIntervalChange = onRepeatIntervalChange,
-                    date = uiState.date,
-                    onDateChange = onDateChange,
-                    exactDates = uiState.exactDates,
-                    onAddExactDate = onAddExactDate,
-                    onRemoveExactDate = onRemoveExactDate,
-                    onUpdateExactDate = onUpdateExactDate,
-                    repeatDays = uiState.repeatDays,
-                    onRepeatDaysChange = onRepeatDaysChange,
-                    onRepeatDayToggle = onRepeatDayToggle,
-                    monthlyDays = uiState.monthlyDays,
-                    onMonthlyDayToggle = onMonthlyDayToggle,
-                    yearlyDates = uiState.yearlyDates,
-                    onAddYearlyDate = onAddYearlyDate,
-                    onRemoveYearlyDate = onRemoveYearlyDate,
+                vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup(
+                    title = stringResource(R.string.section_schedule),
                     modifier = Modifier.fillMaxWidth()
-                )
+                ) {
+                    ReminderRepeatConfigSection(
+                        repeatInterval = uiState.repeatInterval,
+                        onRepeatIntervalChange = onRepeatIntervalChange,
+                        date = uiState.date,
+                        onDateChange = onDateChange,
+                        exactDates = uiState.exactDates,
+                        onAddExactDate = onAddExactDate,
+                        onRemoveExactDate = onRemoveExactDate,
+                        onUpdateExactDate = onUpdateExactDate,
+                        repeatDays = uiState.repeatDays,
+                        onRepeatDaysChange = onRepeatDaysChange,
+                        onRepeatDayToggle = onRepeatDayToggle,
+                        monthlyDays = uiState.monthlyDays,
+                        onMonthlyDayToggle = onMonthlyDayToggle,
+                        yearlyDates = uiState.yearlyDates,
+                        onAddYearlyDate = onAddYearlyDate,
+                        onRemoveYearlyDate = onRemoveYearlyDate,
+                        embedded = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    vn.io.litever.remind.core.designsystem.components.ReMindSettingsDivider(inset = false)
+
+                    ReminderTriggerSection(
+                        uiState = uiState,
+                        onTriggerTypeSelected = onTriggerTypeSelected,
+                        onTimeChange = onTimeChange,
+                        fixedTimes = fixedTimes,
+                        onAddFixedTime = onAddFixedTime,
+                        onRemoveFixedTime = onRemoveFixedTime,
+                        onUpdateFixedTime = onUpdateFixedTime,
+                        onIntervalMinutesChange = onIntervalMinutesChange,
+                        onTimeWindowsChange = onTimeWindowsChange,
+                        onAddTimeWindow = onAddTimeWindow,
+                        onRemoveTimeWindow = onRemoveTimeWindow,
+                        is24HourFormat = uiState.is24HourFormat,
+                        isPro = uiState.isPro,
+                        onNavigateToPaywall = onNavigateToPaywall,
+                        embedded = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
 
-            // 3. Trigger Configuration Section (Within-day trigger: Fixed time vs Interval)
-            item {
-                ReminderTriggerSection(
-                    uiState = uiState,
-                    onTriggerTypeSelected = onTriggerTypeSelected,
-                    onTimeChange = onTimeChange,
-                    fixedTimes = fixedTimes,
-                    onAddFixedTime = onAddFixedTime,
-                    onRemoveFixedTime = onRemoveFixedTime,
-                    onUpdateFixedTime = onUpdateFixedTime,
-                    onIntervalMinutesChange = onIntervalMinutesChange,
-                    onTimeWindowsChange = onTimeWindowsChange,
-                    onAddTimeWindow = onAddTimeWindow,
-                    onRemoveTimeWindow = onRemoveTimeWindow,
-                    is24HourFormat = uiState.is24HourFormat,
-                    isPro = uiState.isPro,
-                    onNavigateToPaywall = onNavigateToPaywall,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-
-            // 3. Alert & Notification Settings
+            // 3 & 4. Alert Style & Sound + Snooze & Auto-Silence
             item {
                 ReminderAlertConfigSection(
                     notificationStyle = uiState.notificationStyle,
@@ -393,26 +408,6 @@ fun ReminderEditScreen(
                     isPro = uiState.isPro,
                     onNavigateToPaywall = onNavigateToPaywall
                 )
-            }
-
-            // 4. Toggle Enabled Action Button (Only for existing reminders)
-            if (uiState.id != 0L) {
-                item {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedButton(
-                        onClick = { onToggleEnabled(!uiState.isEnabled) },
-                        colors = if (uiState.isEnabled) ButtonDefaults.errorTextColors() else ButtonDefaults.outlinedButtonColors(),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = if (uiState.isEnabled) {
-                                stringResource(R.string.action_turn_off)
-                            } else {
-                                stringResource(R.string.action_turn_on)
-                            }
-                        )
-                    }
-                }
             }
 
             item {

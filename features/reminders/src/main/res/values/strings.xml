@@ -236,6 +236,9 @@
     <!-- Reminder Card Rich Info & Next Trigger -->
     <string name="reminder_status_disabled">Disabled</string>
     <string name="reminder_status_snoozing">Snoozing</string>
+    <string name="section_schedule">Schedule</string>
+    <string name="section_snooze_and_silence">Snooze &amp; Auto-Silence</string>
+    <string name="reminder_active_title">Reminder active</string>
     <string name="reminder_status_completed">All reminders completed</string>
     <string name="next_trigger_today">Next: Today %1$s (%2$s)</string>
     <string name="next_trigger_tomorrow">Next: Tomorrow %1$s (%2$s)</string>

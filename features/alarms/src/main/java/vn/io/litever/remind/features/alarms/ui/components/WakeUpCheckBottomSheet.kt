@@ -37,7 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import vn.io.litever.brand.tokens.LiteverTokens
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomSheetContent
-import vn.io.litever.remind.core.designsystem.components.ReMindProDiamondTag
+import vn.io.litever.remind.core.designsystem.components.ReMindProTag
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsDivider
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
 import vn.io.litever.remind.core.designsystem.theme.ReMindTheme
@@ -72,7 +72,7 @@ fun WakeUpCheckBottomSheet(
                 ) {
                     Text(text = stringResource(R.string.wakeup_check_title))
                     if (!isPro) {
-                        ReMindProDiamondTag()
+                        ReMindProTag()
                     }
                 }
             }

@@ -15,6 +15,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -57,6 +58,9 @@ class AlarmService : Service() {
 
     @Inject
     lateinit var analyticsLogger: vn.io.litever.remind.core.analytics.AnalyticsLogger
+
+    @Inject
+    lateinit var proRepository: vn.io.litever.remind.core.domain.repository.ProRepository
 
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var autoSilenceJob: Job? = null
@@ -186,7 +190,7 @@ class AlarmService : Service() {
         return START_STICKY
     }
 
-    private fun startRinging(alarm: Alarm) {
+    private suspend fun startRinging(alarm: Alarm) {
         val missionTypes = alarm.missions.joinToString(",") { it.type.name }
         val missionRepeatCounts = alarm.missions.joinToString(",") { it.repeatCount.toString() }
         val isSnoozed = alarm.currentSnoozeCount > 0
@@ -205,18 +209,20 @@ class AlarmService : Service() {
             "mission_types" to missionTypes,
             "mission_repeat_counts" to missionRepeatCounts
         ))
-        val uri = getAccessibleRingtoneUri(this@AlarmService, alarm.ringtoneUri)
+        val isPro = runCatching { proRepository.isPro.first() }.getOrDefault(false)
+        val effectiveAlarm = vn.io.litever.remind.core.model.ProFeaturePolicy.resolveEffectiveAlarm(alarm, isPro)
+        val uri = getAccessibleRingtoneUri(this@AlarmService, effectiveAlarm.ringtoneUri)
         audioPlayer.play(
             uri = uri,
-            useAlarmStream = alarm.useAlarmStream,
-            volume = alarm.volume,
-            gradualVolumeDurationSeconds = alarm.gradualVolumeDurationSeconds,
-            vibrationEnabled = alarm.vibrationEnabled,
-            extraLoudEnabled = alarm.extraLoudEnabled,
+            useAlarmStream = effectiveAlarm.useAlarmStream,
+            volume = effectiveAlarm.volume,
+            gradualVolumeDurationSeconds = effectiveAlarm.gradualVolumeDurationSeconds,
+            vibrationEnabled = effectiveAlarm.vibrationEnabled,
+            extraLoudEnabled = effectiveAlarm.extraLoudEnabled,
             extraLoudDelaySeconds = 40
         )
 
-        startTtsAnnouncements(alarm)
+        startTtsAnnouncements(effectiveAlarm)
     }
 
     private fun startTtsAnnouncements(alarm: Alarm) {

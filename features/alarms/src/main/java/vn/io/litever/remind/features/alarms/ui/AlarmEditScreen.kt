@@ -89,7 +89,8 @@ import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.MissionSelectionBottomSheet
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.components.ReMindGroupCard
-import vn.io.litever.remind.core.designsystem.components.ReMindProDiamondTag
+import vn.io.litever.remind.core.designsystem.components.ReMindProTag
+import vn.io.litever.remind.core.designsystem.components.ReMindProUnlockButton
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsDivider
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsItem
@@ -371,8 +372,8 @@ fun AlarmEditRoute(
             val intent = android.content.Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
             context.startActivity(intent)
         },
-        onVolumeBoostSave = viewModel::updateVolumeBoostSettings,
-        onPreviewGentle = viewModel::previewGentleAlarm,
+        onExtraLoudChange = viewModel::updateExtraLoudEnabled,
+        onAnnounceTimeTtsChange = viewModel::updateAnnounceTimeTts,
         onPreviewExtraLoud = viewModel::previewExtraLoud,
         onPreviewTimeTts = viewModel::previewTimeAnnouncementTts,
         onStopPreview = viewModel::stopRingtonePlayback,
@@ -443,8 +444,8 @@ fun AlarmEditScreen(
     onPreviewClick: () -> Unit,
     onDismissDndPermissionDialog: () -> Unit,
     onNavigateToDndSettings: () -> Unit,
-    onVolumeBoostSave: (Int, Boolean, Boolean) -> Unit = { duration, _, _ -> onGradualVolumeChange(duration) },
-    onPreviewGentle: (Int) -> Unit = {},
+    onExtraLoudChange: (Boolean) -> Unit = {},
+    onAnnounceTimeTtsChange: (Boolean) -> Unit = {},
     onPreviewExtraLoud: () -> Unit = {},
     onPreviewTimeTts: () -> Unit = {},
     onStopPreview: () -> Unit = {},
@@ -683,17 +684,10 @@ fun AlarmEditScreen(
     if (showGradualVolumeSheet) {
         GentleAlarmBottomSheet(
             currentDuration = uiState.gradualVolumeDurationSeconds,
-            extraLoudEnabled = uiState.extraLoudEnabled,
-            announceTimeTts = uiState.announceTimeTts,
-            isPro = isPro,
-            onPreviewGentle = onPreviewGentle,
-            onPreviewExtraLoud = onPreviewExtraLoud,
-            onPreviewTimeTts = onPreviewTimeTts,
-            onStopPreview = onStopPreview,
-            onSave = { duration, extraLoud, announceTime ->
-                onVolumeBoostSave(duration, extraLoud, announceTime)
+            onDurationSelect = { duration ->
+                onGradualVolumeChange(duration)
+                if (showGradualVolumeSheet) showGradualVolumeSheet = false
             },
-            onNavigateToPaywall = onNavigateToPaywall,
             onDismissRequest = { if (showGradualVolumeSheet) showGradualVolumeSheet = false },
             sheetState = sheetState
         )
@@ -1012,62 +1006,60 @@ fun AlarmEditScreen(
                         ReMindSettingsDivider(inset = false)
 
                         // Announce Label TTS (Pro) — unified ReMindSettingsItem
+                        val effectiveAnnounceLabelTts = vn.io.litever.remind.core.model.ProFeaturePolicy.isEffectiveEnabled(
+                            savedValue = uiState.announceLabelTts,
+                            isPro = isPro
+                        )
                         ReMindSettingsItem(
                             title = stringResource(R.string.announce_label_tts_title),
                             subtitle = stringResource(R.string.announce_label_tts_desc),
                             icon = ReMindIcons.Speaker,
-                            iconTint = if (uiState.announceLabelTts) {
+                            iconTint = if (effectiveAnnounceLabelTts) {
                                 MaterialTheme.colorScheme.primary
                             } else {
                                 MaterialTheme.colorScheme.onSurfaceVariant
                             },
-                            titleBadge = { ReMindProDiamondTag() },
+                            titleBadge = if (!isPro) {
+                                { ReMindProTag(showLockIcon = false) }
+                            } else {
+                                null
+                            },
                             onClick = {
-                                if (!isPro && !uiState.announceLabelTts) {
+                                if (!isPro) {
                                     onNavigateToPaywall(2)
                                 } else {
                                     onAnnounceLabelTtsChange(!uiState.announceLabelTts)
                                 }
                             },
                             trailingContent = {
-                                Switch(
-                                    checked = uiState.announceLabelTts,
-                                    onCheckedChange = { enabled ->
-                                        if (!isPro && enabled) {
-                                            onNavigateToPaywall(2)
-                                        } else {
-                                            onAnnounceLabelTtsChange(enabled)
-                                        }
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall)
+                                ) {
+                                    IconButton(
+                                        onClick = { showLabelTtsPreviewSheet = true },
+                                        modifier = Modifier.size(36.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = ReMindIcons.PlayArrow,
+                                            contentDescription = stringResource(R.string.action_preview),
+                                            tint = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.size(20.dp)
+                                        )
                                     }
-                                )
-                            }
-                        )
-
-                        AnimatedVisibility(visible = uiState.announceLabelTts) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(
-                                        start = MaterialTheme.spacing.medium,
-                                        end = MaterialTheme.spacing.medium,
-                                        bottom = MaterialTheme.spacing.small
-                                    ),
-                                horizontalArrangement = Arrangement.End
-                            ) {
-                                TextButton(onClick = { showLabelTtsPreviewSheet = true }) {
-                                    Icon(
-                                        imageVector = ReMindIcons.PlayArrow,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
-                                    Text(
-                                        text = stringResource(R.string.action_preview),
-                                        style = MaterialTheme.typography.labelLarge
-                                    )
+                                    if (isPro) {
+                                        Switch(
+                                            checked = effectiveAnnounceLabelTts,
+                                            onCheckedChange = onAnnounceLabelTtsChange
+                                        )
+                                    } else {
+                                        ReMindProUnlockButton(
+                                            onClick = { onNavigateToPaywall(2) }
+                                        )
+                                    }
                                 }
                             }
-                        }
+                        )
                     }
                 }
             }
@@ -1191,35 +1183,146 @@ fun AlarmEditScreen(
 
                     ReMindSettingsDivider()
 
-                    // Volume Boost (Gentle Alarm + Extra Loud + Time TTS)
-                    val summaryParts = buildList {
-                        if (uiState.gradualVolumeDurationSeconds > 0) {
-                            add(stringResource(R.string.seconds_unit_short, uiState.gradualVolumeDurationSeconds))
-                        }
-                        if (uiState.extraLoudEnabled) {
-                            add(stringResource(R.string.extra_loud_title))
-                        }
-                        if (uiState.announceTimeTts) {
-                            add(stringResource(R.string.time_announcement_title))
-                        }
-                    }
-                    val gentleAlarmSummary = if (summaryParts.isEmpty()) {
-                        stringResource(R.string.off)
-                    } else {
-                        summaryParts.joinToString(" · ")
+                    // Gentle Alarm (Gradual Volume Increase — BottomSheet picker like Auto-Silence)
+                    val gentleAlarmSummary = when {
+                        uiState.gradualVolumeDurationSeconds <= 0 -> stringResource(R.string.off)
+                        uiState.gradualVolumeDurationSeconds < 60 -> stringResource(
+                            R.string.seconds_unit,
+                            uiState.gradualVolumeDurationSeconds
+                        )
+                        else -> stringResource(
+                            R.string.minutes_unit,
+                            uiState.gradualVolumeDurationSeconds / 60
+                        )
                     }
 
                     ReMindSettingsItem(
-                        title = stringResource(R.string.volume_boost_sheet_title),
+                        title = stringResource(R.string.gentle_alarm_title),
                         subtitle = gentleAlarmSummary,
                         icon = ReMindIcons.GraphicEq,
-                        iconTint = if (summaryParts.isNotEmpty()) {
+                        iconTint = if (uiState.gradualVolumeDurationSeconds > 0) {
                             MaterialTheme.colorScheme.primary
                         } else {
                             MaterialTheme.colorScheme.onSurfaceVariant
                         },
                         showChevron = true,
                         onClick = { showGradualVolumeSheet = true }
+                    )
+
+                    ReMindSettingsDivider()
+
+                    // Extra Loud (Pro)
+                    val effectiveExtraLoud = vn.io.litever.remind.core.model.ProFeaturePolicy.isEffectiveEnabled(
+                        savedValue = uiState.extraLoudEnabled,
+                        isPro = isPro
+                    )
+                    ReMindSettingsItem(
+                        title = stringResource(R.string.extra_loud_title),
+                        subtitle = stringResource(R.string.extra_loud_desc),
+                        icon = ReMindIcons.VolumeUp,
+                        iconTint = if (effectiveExtraLoud) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                        titleBadge = if (!isPro) {
+                            { ReMindProTag(showLockIcon = false) }
+                        } else {
+                            null
+                        },
+                        onClick = {
+                            if (!isPro) {
+                                onNavigateToPaywall(4)
+                            } else {
+                                onExtraLoudChange(!uiState.extraLoudEnabled)
+                            }
+                        },
+                        trailingContent = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall)
+                            ) {
+                                IconButton(
+                                    onClick = onPreviewExtraLoud,
+                                    modifier = Modifier.size(36.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = ReMindIcons.PlayArrow,
+                                        contentDescription = stringResource(R.string.action_preview),
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                                if (isPro) {
+                                    Switch(
+                                        checked = effectiveExtraLoud,
+                                        onCheckedChange = onExtraLoudChange
+                                    )
+                                } else {
+                                    ReMindProUnlockButton(
+                                        onClick = { onNavigateToPaywall(4) }
+                                    )
+                                }
+                            }
+                        }
+                    )
+
+                    ReMindSettingsDivider()
+
+                    // Time Announcement TTS (Pro)
+                    val effectiveAnnounceTimeTts = vn.io.litever.remind.core.model.ProFeaturePolicy.isEffectiveEnabled(
+                        savedValue = uiState.announceTimeTts,
+                        isPro = isPro
+                    )
+                    ReMindSettingsItem(
+                        title = stringResource(R.string.time_announcement_title),
+                        subtitle = stringResource(R.string.time_announcement_desc),
+                        icon = ReMindIcons.AccessTime,
+                        iconTint = if (effectiveAnnounceTimeTts) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                        titleBadge = if (!isPro) {
+                            { ReMindProTag(showLockIcon = false) }
+                        } else {
+                            null
+                        },
+                        onClick = {
+                            if (!isPro) {
+                                onNavigateToPaywall(2)
+                            } else {
+                                onAnnounceTimeTtsChange(!uiState.announceTimeTts)
+                            }
+                        },
+                        trailingContent = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall)
+                            ) {
+                                IconButton(
+                                    onClick = onPreviewTimeTts,
+                                    modifier = Modifier.size(36.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = ReMindIcons.PlayArrow,
+                                        contentDescription = stringResource(R.string.action_preview),
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                                if (isPro) {
+                                    Switch(
+                                        checked = effectiveAnnounceTimeTts,
+                                        onCheckedChange = onAnnounceTimeTtsChange
+                                    )
+                                } else {
+                                    ReMindProUnlockButton(
+                                        onClick = { onNavigateToPaywall(2) }
+                                    )
+                                }
+                            }
+                        }
                     )
                 }
             }
@@ -1339,19 +1442,28 @@ fun AlarmEditScreen(
 
                     ReMindSettingsDivider(inset = false)
 
-                    val wakeUpSummary = if (uiState.wakeUpCheckMinutes <= 0) {
+                    val effectiveWakeUpMinutes = vn.io.litever.remind.core.model.ProFeaturePolicy.effectiveWakeUpCheckMinutes(
+                        savedMinutes = uiState.wakeUpCheckMinutes,
+                        isPro = isPro
+                    )
+                    val wakeUpSummary = if (effectiveWakeUpMinutes <= 0) {
                         stringResource(R.string.off)
                     } else {
-                        stringResource(R.string.minutes_unit, uiState.wakeUpCheckMinutes)
+                        stringResource(R.string.minutes_unit, effectiveWakeUpMinutes)
                     }
                     ReMindSettingsItem(
                         title = stringResource(R.string.wakeup_check_title),
                         subtitle = wakeUpSummary,
                         icon = ReMindIcons.AlarmOn,
-                        iconTint = if (uiState.wakeUpCheckMinutes > 0) {
+                        iconTint = if (effectiveWakeUpMinutes > 0) {
                             MaterialTheme.colorScheme.primary
                         } else {
                             MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                        titleBadge = if (!isPro) {
+                            { ReMindProTag() }
+                        } else {
+                            null
                         },
                         showChevron = true,
                         onClick = { showWakeUpCheckSheet = true }

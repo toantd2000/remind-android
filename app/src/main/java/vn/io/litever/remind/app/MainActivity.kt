@@ -127,9 +127,17 @@ class MainViewModel @Inject constructor(
 
     val themeMode = preferencesDataSource.themeMode
     val colorPalette = preferencesDataSource.colorPalette
+    val appIcon = preferencesDataSource.appIcon
     val language = preferencesDataSource.language
     val isPro = preferencesDataSource.isProUser
     val is24HourFormat = preferencesDataSource.is24HourFormat
+
+    fun revertExpiredProAppIcon(appIconManager: vn.io.litever.remind.core.common.util.AppIconManager) {
+        viewModelScope.launch {
+            preferencesDataSource.setAppIcon(vn.io.litever.remind.core.common.util.AppIconVariant.DEFAULT.key)
+            appIconManager.scheduleAppIconChange(vn.io.litever.remind.core.common.util.AppIconVariant.DEFAULT)
+        }
+    }
 
     val isAdFreeActive: StateFlow<Boolean> = combine(
         preferencesDataSource.isProUser,
@@ -228,8 +236,16 @@ class MainActivity : ComponentActivity() {
         setContent {
             val themeMode by viewModel.themeMode.collectAsState(initial = "SYSTEM")
             val colorPalette by viewModel.colorPalette.collectAsState(initial = "ORANGE")
+            val appIcon by viewModel.appIcon.collectAsState(initial = vn.io.litever.remind.core.common.util.AppIconVariant.DEFAULT.key)
             val isPro by viewModel.isPro.collectAsState(initial = false)
             val is24HourFormat by viewModel.is24HourFormat.collectAsState(initial = true)
+
+            // Automatically revert Pro Gold app icon if Pro subscription has expired
+            LaunchedEffect(isPro, appIcon) {
+                if (!isPro && appIcon == vn.io.litever.remind.core.common.util.AppIconVariant.PRO_GOLD.key) {
+                    viewModel.revertExpiredProAppIcon(appIconManager)
+                }
+            }
             val language by viewModel.language.collectAsState(
                 initial = if (LocalLocale.current.platformLocale.language == "vi") "vi" else "en"
             )

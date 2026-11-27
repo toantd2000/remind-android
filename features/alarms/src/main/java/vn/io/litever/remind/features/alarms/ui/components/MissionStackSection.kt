@@ -45,10 +45,10 @@ private const val MAX_MISSION_SLOTS = 5
  * Interactive 5-slot Mission stack editor for [vn.io.litever.remind.features.alarms.ui.AlarmEditScreen].
  *
  * Single-point interaction on the 5 slots:
- * - **Filled slots:** Order badge (`1..5`), mission icon, repeat count (`×N`), and a crisp remove badge.
+ * - **Filled slots:** Mission icon, repeat count (`×N`), and a crisp remove badge.
  * - **Next add slot:** Dashed `primary` border inviting the user to add the next mission.
  * - **Future unlocked empty slots:** Subtle muted dashed outline so multiple `+` boxes don't compete.
- * - **Pro-locked slots:** Soft `surfaceContainerHigh` box with lock indicator and slot index.
+ * - **Pro-locked slots:** Soft `surfaceContainerHigh` box with lock indicator.
  */
 @Composable
 fun MissionStackSection(
@@ -74,19 +74,22 @@ fun MissionStackSection(
             horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
         ) {
             repeat(MAX_MISSION_SLOTS) { slotIndex ->
-                val mission = missions.getOrNull(slotIndex)
-                val isSlotUnlocked = isPro || slotIndex == 0
-                val isNextAddSlot = mission == null && slotIndex == missions.size && isSlotUnlocked
+                val rawMission = missions.getOrNull(slotIndex)
+                val isSlotUnlocked = vn.io.litever.remind.core.model.ProFeaturePolicy.isMissionSlotUnlocked(slotIndex, isPro)
+                val isMissionEffective = rawMission != null &&
+                    isSlotUnlocked &&
+                    vn.io.litever.remind.core.model.ProFeaturePolicy.canUseMissionType(rawMission.type, isPro)
+                val effectiveMission = if (isMissionEffective) rawMission else null
+                val isNextAddSlot = rawMission == null && slotIndex == missions.size && isSlotUnlocked
 
                 MissionSlotCard(
-                    slotNumber = slotIndex + 1,
-                    mission = mission,
-                    isUnlocked = isSlotUnlocked,
+                    mission = effectiveMission,
+                    isUnlocked = isSlotUnlocked && (rawMission == null || isMissionEffective),
                     isNextAddSlot = isNextAddSlot,
-                    onFilledClick = { mission?.let(onMissionClick) },
-                    onRemoveClick = { mission?.let(onMissionRemove) },
+                    onFilledClick = { effectiveMission?.let(onMissionClick) },
+                    onRemoveClick = { effectiveMission?.let(onMissionRemove) },
                     onAddClick = {
-                        if (isSlotUnlocked) {
+                        if (isSlotUnlocked && (rawMission == null || isMissionEffective)) {
                             onAddMissionClick()
                         } else {
                             onLockedSlotClick()
@@ -109,7 +112,6 @@ fun MissionStackSection(
 
 @Composable
 private fun MissionSlotCard(
-    slotNumber: Int,
     mission: Mission?,
     isUnlocked: Boolean,
     isNextAddSlot: Boolean,
@@ -129,7 +131,7 @@ private fun MissionSlotCard(
                 onClick = onFilledClick,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 6.dp, start = 4.dp, end = 6.dp),
+                    .padding(top = 6.dp, end = 6.dp),
                 shape = slotShape,
                 color = MaterialTheme.colorScheme.primaryContainer
             ) {
@@ -153,27 +155,6 @@ private fun MissionSlotCard(
                             fontFeatureSettings = "tnum"
                         ),
                         color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.85f),
-                        maxLines = 1
-                    )
-                }
-            }
-
-            // Order badge (1..5) at TopStart
-            Surface(
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .size(20.dp),
-                shape = CircleShape,
-                color = MaterialTheme.colorScheme.primary,
-                border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.surfaceContainer)
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Text(
-                        text = "$slotNumber",
-                        style = LiteverTokens.typography.labelSmallEmphasized.copy(
-                            fontFeatureSettings = "tnum"
-                        ),
-                        color = MaterialTheme.colorScheme.onPrimary,
                         maxLines = 1
                     )
                 }
@@ -219,7 +200,7 @@ private fun MissionSlotCard(
                 onClick = onAddClick,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 6.dp, start = 4.dp, end = 6.dp)
+                    .padding(top = 6.dp, end = 6.dp)
                     .then(
                         if (dashColor != Color.Transparent) {
                             Modifier.drawBehind {
@@ -242,10 +223,9 @@ private fun MissionSlotCard(
                 shape = slotShape,
                 color = containerColor
             ) {
-                Column(
+                Box(
                     modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+                    contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = if (isUnlocked) ReMindIcons.Add else ReMindIcons.Lock,
@@ -257,15 +237,6 @@ private fun MissionSlotCard(
                         tint = iconTint,
                         modifier = Modifier.size(if (isNextAddSlot) 22.dp else 18.dp)
                     )
-                    if (!isUnlocked) {
-                        Spacer(modifier = Modifier.height(MaterialTheme.spacing.tiny))
-                        Text(
-                            text = "#$slotNumber",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = iconTint,
-                            maxLines = 1
-                        )
-                    }
                 }
             }
         }

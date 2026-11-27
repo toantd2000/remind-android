@@ -98,6 +98,7 @@
     <!-- Plan Badges -->
     <string name="plan_badge_pro" translatable="false">PRO</string>
     <string name="plan_badge_free" translatable="false">FREE</string>
+    <string name="pro_unlock_action">Unlock</string>
 </resources>
 
 

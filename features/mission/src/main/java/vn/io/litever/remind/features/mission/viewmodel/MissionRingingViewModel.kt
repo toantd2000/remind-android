@@ -12,7 +12,10 @@ import vn.io.litever.remind.core.domain.repository.AlarmRepository
 import vn.io.litever.remind.core.domain.scheduler.AlarmController
 import vn.io.litever.remind.core.model.*
 import vn.io.litever.remind.core.alarm.AlarmRingManager
+import kotlinx.coroutines.flow.first
 import vn.io.litever.remind.core.alarm.DraftAlarmStore
+import vn.io.litever.remind.core.domain.repository.ProRepository
+import vn.io.litever.remind.core.model.ProFeaturePolicy
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,7 +26,8 @@ class MissionRingingViewModel @Inject constructor(
     private val alarmController: AlarmController,
     private val alarmRingManager: AlarmRingManager,
     private val draftAlarmStore: DraftAlarmStore,
-    private val analyticsLogger: vn.io.litever.remind.core.analytics.AnalyticsLogger
+    private val analyticsLogger: vn.io.litever.remind.core.analytics.AnalyticsLogger,
+    private val proRepository: ProRepository
 ) : ViewModel() {
     private val MISSION_TIMEOUT_SECONDS = 30
 
@@ -46,8 +50,10 @@ class MissionRingingViewModel @Inject constructor(
     private fun loadMissions() {
         viewModelScope.launch {
             val alarm = draftAlarmStore.getDraft() ?: alarmRepository.getAlarmById(alarmId) ?: return@launch
-            if (alarm.missions.isNotEmpty()) {
-                val missions = alarm.missions.sortedBy { it.order }.map { resolveRandomMission(it) }
+            val isPro = if (isPreview) true else runCatching { proRepository.isPro.first() }.getOrDefault(false)
+            val effectiveMissions = ProFeaturePolicy.resolveEffectiveMissions(alarm.missions, isPro)
+            if (effectiveMissions.isNotEmpty()) {
+                val missions = effectiveMissions.map { resolveRandomMission(it) }
                 _uiState.update { it.copy(isLoading = false, missions = missions, alarm = alarm) }
                 loadMissionData(0)
             } else {

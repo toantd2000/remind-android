@@ -29,6 +29,7 @@ class AlarmControllerImplTest {
     private val alarmScheduler = mockk<AlarmScheduler>(relaxed = true)
     private val missedAlarmRepository = mockk<MissedAlarmRepository>(relaxed = true)
     private val analyticsLogger = mockk<AnalyticsLogger>(relaxed = true)
+    private val proRepository = mockk<vn.io.litever.remind.core.domain.repository.ProRepository>(relaxed = true)
 
     private val alarmManager = mockk<AlarmManager>(relaxed = true)
     private val notificationManager = mockk<NotificationManager>(relaxed = true)
@@ -40,6 +41,7 @@ class AlarmControllerImplTest {
         every { context.getSystemService(Context.ALARM_SERVICE) } returns alarmManager
         every { context.getSystemService(Context.NOTIFICATION_SERVICE) } returns notificationManager
         every { alarmRingManager.ringingAlarmId } returns MutableStateFlow<Long?>(null)
+        every { proRepository.isPro } returns MutableStateFlow(false)
 
         controller = AlarmControllerImpl(
             context = context,
@@ -47,7 +49,8 @@ class AlarmControllerImplTest {
             alarmRepository = alarmRepository,
             alarmScheduler = alarmScheduler,
             missedAlarmRepository = missedAlarmRepository,
-            analyticsLogger = analyticsLogger
+            analyticsLogger = analyticsLogger,
+            proRepository = proRepository
         )
     }
 

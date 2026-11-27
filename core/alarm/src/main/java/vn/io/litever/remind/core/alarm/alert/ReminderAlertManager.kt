@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -72,7 +73,8 @@ class ReminderAlertManagerImpl @Inject constructor(
     private val reminderSchedulerProvider: Provider<ReminderScheduler>? = null,
     private val reminderNotificationManagerProvider: Provider<ReminderNotificationManager>? = null,
     private val reminderActionHandlerProvider: Provider<vn.io.litever.remind.core.domain.handler.ReminderActionHandler>? = null,
-    private val ttsSpeaker: TtsSpeaker? = null
+    private val ttsSpeaker: TtsSpeaker? = null,
+    private val proRepositoryProvider: Provider<vn.io.litever.remind.core.domain.repository.ProRepository>? = null
 ) : ReminderAlertManager {
 
     private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
@@ -254,20 +256,27 @@ class ReminderAlertManagerImpl @Inject constructor(
                 if (reminder.action.vibrationEnabled) {
                     startVibration(isPersistent, audioAttributes)
                 }
-                if (reminder.action.announceTitleTts && reminder.title.isNotBlank()) {
-                    ttsSpeaker?.speak(reminder.title, useAlarmStream = reminder.action.useAlarmStream)
-                }
-                if (reminder.action.extraLoudEnabled) {
-                    extraLoudJob?.cancel()
-                    extraLoudJob = scope.launch {
-                        delay(40_000L)
-                        if (mediaPlayer == mp) {
-                            runCatching {
-                                mp.setVolume(1f, 1f)
-                                loudnessEnhancer?.release()
-                                loudnessEnhancer = LoudnessEnhancer(mp.audioSessionId).apply {
-                                    setTargetGain(1200)
-                                    enabled = true
+                scope.launch {
+                    val isPro = runCatching { proRepositoryProvider?.get()?.isPro?.first() ?: false }.getOrDefault(false)
+                    val effectiveAction = vn.io.litever.remind.core.model.ProFeaturePolicy.resolveEffectiveReminderAction(
+                        action = reminder.action,
+                        isPro = isPro
+                    )
+                    if (effectiveAction.announceTitleTts && reminder.title.isNotBlank()) {
+                        ttsSpeaker?.speak(reminder.title, useAlarmStream = effectiveAction.useAlarmStream)
+                    }
+                    if (effectiveAction.extraLoudEnabled) {
+                        extraLoudJob?.cancel()
+                        extraLoudJob = scope.launch {
+                            delay(40_000L)
+                            if (mediaPlayer == mp) {
+                                runCatching {
+                                    mp.setVolume(1f, 1f)
+                                    loudnessEnhancer?.release()
+                                    loudnessEnhancer = LoudnessEnhancer(mp.audioSessionId).apply {
+                                        setTargetGain(1200)
+                                        enabled = true
+                                    }
                                 }
                             }
                         }

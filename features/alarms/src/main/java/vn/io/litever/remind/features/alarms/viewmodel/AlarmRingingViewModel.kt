@@ -9,10 +9,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import vn.io.litever.remind.core.domain.repository.AlarmRepository
 import vn.io.litever.remind.core.model.Alarm
+import vn.io.litever.remind.core.model.ProFeaturePolicy
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import vn.io.litever.remind.core.alarm.AlarmRingManager
 import kotlinx.coroutines.launch
@@ -28,8 +29,12 @@ class AlarmRingingViewModel @Inject constructor(
 
     private val alarmId: Long = checkNotNull(savedStateHandle["alarmId"])
 
-    val alarm: StateFlow<Alarm?> = alarmRepository.getAllAlarms()
-        .map { alarms -> alarms.find { it.id == alarmId } }
+    val alarm: StateFlow<Alarm?> = combine(
+        alarmRepository.getAllAlarms(),
+        preferencesDataSource.isProUser
+    ) { alarms, isPro ->
+        alarms.find { it.id == alarmId }?.let { ProFeaturePolicy.resolveEffectiveAlarm(it, isPro) }
+    }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),

@@ -93,6 +93,9 @@
     <string name="permission_warning_banner_non_critical_desc">Nên cấp thêm quyền phụ</string>
     <string name="permission_warning_banner_action">Cấp ngay</string>
     <string name="permission_warning_banner_dismiss">Đóng</string>
+
+    <!-- Plan Badges -->
+    <string name="pro_unlock_action">Mở khóa</string>
 </resources>
 
 

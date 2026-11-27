@@ -47,7 +47,7 @@ import vn.io.litever.brand.tokens.LiteverTokens
 import vn.io.litever.remind.core.datastore.AlarmPreferencesDataSource
 import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
-import vn.io.litever.remind.core.designsystem.components.ReMindProDiamondTag
+import vn.io.litever.remind.core.designsystem.components.ReMindProTag
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsDivider
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.icon.ReMindIcons
@@ -150,7 +150,7 @@ fun RandomMissionConfigScreen(
                 onBackClick = onBackClick,
                 actions = {
                     if (!isPro) {
-                        ReMindProDiamondTag(
+                        ReMindProTag(
                             modifier = Modifier.padding(end = MaterialTheme.spacing.medium)
                         )
                     }

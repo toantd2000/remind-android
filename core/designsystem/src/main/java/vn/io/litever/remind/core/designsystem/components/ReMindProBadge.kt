@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -122,24 +124,65 @@ fun ReMindProTopBarButton(
 }
 
 /**
- * Small diamond badge indicating a Pro feature.
+ * Compact `PRO` pill tag indicating a locked Pro feature.
+ *
+ * @param showLockIcon Whether to include a leading lock icon (use `false` when paired with
+ *   [ReMindProUnlockButton] in the same row to avoid duplicate lock icons).
  */
 @Composable
-fun ReMindProDiamondTag(
-    modifier: Modifier = Modifier
+fun ReMindProTag(
+    modifier: Modifier = Modifier,
+    showLockIcon: Boolean = true
 ) {
     Surface(
         modifier = modifier,
         color = MaterialTheme.colorScheme.primaryContainer,
         shape = RoundedCornerShape(6.dp)
     ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(3.dp)
+        ) {
+            if (showLockIcon) {
+                Icon(
+                    imageVector = ReMindIcons.Lock,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(10.dp)
+                )
+            }
+            Text(
+                text = stringResource(R.string.plan_badge_pro),
+                style = LiteverTokens.typography.labelSmallEmphasized,
+                color = MaterialTheme.colorScheme.primary,
+                maxLines = 1
+            )
+        }
+    }
+}
+
+/**
+ * Compact trailing unlock icon button shown in place of a [androidx.compose.material3.Switch]
+ * on Pro-gated settings rows when the user does not have an active Pro subscription.
+ */
+@Composable
+fun ReMindProUnlockButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    FilledTonalIconButton(
+        onClick = onClick,
+        modifier = modifier.size(36.dp),
+        colors = IconButtonDefaults.filledTonalIconButtonColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.primary
+        )
+    ) {
         Icon(
-            imageVector = ReMindIcons.Diamond,
-            contentDescription = stringResource(R.string.plan_badge_pro),
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier
-                .padding(horizontal = 5.dp, vertical = 3.dp)
-                .size(12.dp)
+            imageVector = ReMindIcons.Lock,
+            contentDescription = stringResource(R.string.pro_unlock_action),
+            modifier = Modifier.size(18.dp)
         )
     }
 }
@@ -155,7 +198,8 @@ private fun ReMindProBadgeLightPreview() {
         ) {
             ReMindProTopBarButton(isPro = false, onClick = {})
             ReMindProTopBarButton(isPro = true, onClick = {})
-            ReMindProDiamondTag()
+            ReMindProTag()
+            ReMindProUnlockButton(onClick = {})
         }
     }
 }
@@ -176,7 +220,8 @@ private fun ReMindProBadgeDarkPreview() {
         ) {
             ReMindProTopBarButton(isPro = false, onClick = {})
             ReMindProTopBarButton(isPro = true, onClick = {})
-            ReMindProDiamondTag()
+            ReMindProTag()
+            ReMindProUnlockButton(onClick = {})
         }
     }
 }

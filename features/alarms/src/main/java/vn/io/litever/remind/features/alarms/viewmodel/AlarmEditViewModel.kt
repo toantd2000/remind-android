@@ -392,6 +392,14 @@ class AlarmEditViewModel @Inject constructor(
         }
     }
 
+    fun updateExtraLoudEnabled(enabled: Boolean) {
+        _uiState.update { it.copy(extraLoudEnabled = enabled) }
+    }
+
+    fun updateAnnounceTimeTts(enabled: Boolean) {
+        _uiState.update { it.copy(announceTimeTts = enabled) }
+    }
+
     fun updateAnnounceLabelTts(enabled: Boolean) {
         _uiState.update { it.copy(announceLabelTts = enabled) }
     }

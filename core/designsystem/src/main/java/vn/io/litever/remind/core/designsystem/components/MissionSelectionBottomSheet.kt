@@ -115,7 +115,7 @@ fun MissionSelectionBottomSheetContent(
                     iconTint = MaterialTheme.colorScheme.primary,
                     showChevron = true,
                     titleBadge = if (item.isProOnly) {
-                        { ReMindProDiamondTag() }
+                        { ReMindProTag() }
                     } else {
                         null
                     },

@@ -32,7 +32,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import vn.io.litever.brand.tokens.LiteverTokens
 import vn.io.litever.remind.core.designsystem.components.AutoSilenceBottomSheet
-import vn.io.litever.remind.core.designsystem.components.ReMindProDiamondTag
+import vn.io.litever.remind.core.designsystem.components.ReMindProTag
+import vn.io.litever.remind.core.designsystem.components.ReMindProUnlockButton
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsDivider
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsGroup
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsItem
@@ -303,56 +304,78 @@ fun ReminderAlertConfigSection(
             ReMindSettingsDivider()
 
             // 6. Voice Announcement TTS (Pro)
+            val effectiveAnnounceTitleTts = vn.io.litever.remind.core.model.ProFeaturePolicy.isEffectiveEnabled(
+                savedValue = announceTitleTts,
+                isPro = isPro
+            )
             ReMindSettingsItem(
                 title = stringResource(R.string.announce_title_tts_title),
                 subtitle = stringResource(R.string.announce_title_tts_desc),
                 icon = ReMindIcons.Speaker,
-                iconTint = if (announceTitleTts) {
+                iconTint = if (effectiveAnnounceTitleTts) {
                     MaterialTheme.colorScheme.primary
                 } else {
                     MaterialTheme.colorScheme.onSurfaceVariant
                 },
-                titleBadge = { ReMindProDiamondTag() },
+                titleBadge = if (!isPro) {
+                    { ReMindProTag(showLockIcon = false) }
+                } else {
+                    null
+                },
                 onClick = {
-                    if (!isPro && !announceTitleTts) onNavigateToPaywall(2)
+                    if (!isPro) onNavigateToPaywall(2)
                     else onAnnounceTitleTtsChange(!announceTitleTts)
                 },
                 trailingContent = {
-                    Switch(
-                        checked = announceTitleTts,
-                        onCheckedChange = { enabled ->
-                            if (!isPro && enabled) onNavigateToPaywall(2)
-                            else onAnnounceTitleTtsChange(enabled)
-                        }
-                    )
+                    if (isPro) {
+                        Switch(
+                            checked = effectiveAnnounceTitleTts,
+                            onCheckedChange = onAnnounceTitleTtsChange
+                        )
+                    } else {
+                        ReMindProUnlockButton(
+                            onClick = { onNavigateToPaywall(2) }
+                        )
+                    }
                 }
             )
 
             ReMindSettingsDivider()
 
             // 7. Extra Loud (Pro)
+            val effectiveExtraLoud = vn.io.litever.remind.core.model.ProFeaturePolicy.isEffectiveEnabled(
+                savedValue = extraLoudEnabled,
+                isPro = isPro
+            )
             ReMindSettingsItem(
                 title = stringResource(R.string.extra_loud_title),
                 subtitle = stringResource(R.string.extra_loud_desc),
                 icon = ReMindIcons.VolumeUp,
-                iconTint = if (extraLoudEnabled) {
+                iconTint = if (effectiveExtraLoud) {
                     MaterialTheme.colorScheme.primary
                 } else {
                     MaterialTheme.colorScheme.onSurfaceVariant
                 },
-                titleBadge = { ReMindProDiamondTag() },
+                titleBadge = if (!isPro) {
+                    { ReMindProTag(showLockIcon = false) }
+                } else {
+                    null
+                },
                 onClick = {
-                    if (!isPro && !extraLoudEnabled) onNavigateToPaywall(4)
+                    if (!isPro) onNavigateToPaywall(4)
                     else onExtraLoudChange(!extraLoudEnabled)
                 },
                 trailingContent = {
-                    Switch(
-                        checked = extraLoudEnabled,
-                        onCheckedChange = { enabled ->
-                            if (!isPro && enabled) onNavigateToPaywall(4)
-                            else onExtraLoudChange(enabled)
-                        }
-                    )
+                    if (isPro) {
+                        Switch(
+                            checked = effectiveExtraLoud,
+                            onCheckedChange = onExtraLoudChange
+                        )
+                    } else {
+                        ReMindProUnlockButton(
+                            onClick = { onNavigateToPaywall(4) }
+                        )
+                    }
                 }
             )
         }

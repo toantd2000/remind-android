@@ -15,9 +15,12 @@ import vn.io.litever.remind.core.model.MissedAlarm
 import vn.io.litever.remind.core.model.MissedReason
 import androidx.core.net.toUri
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import androidx.core.app.NotificationCompat
 import vn.io.litever.remind.core.alarm.R
+import vn.io.litever.remind.core.domain.repository.ProRepository
+import vn.io.litever.remind.core.model.ProFeaturePolicy
 import javax.inject.Inject
 
 class AlarmControllerImpl @Inject constructor(
@@ -26,7 +29,8 @@ class AlarmControllerImpl @Inject constructor(
     private val alarmRepository: AlarmRepository,
     private val alarmScheduler: AlarmScheduler,
     private val missedAlarmRepository: MissedAlarmRepository,
-    private val analyticsLogger: vn.io.litever.remind.core.analytics.AnalyticsLogger
+    private val analyticsLogger: vn.io.litever.remind.core.analytics.AnalyticsLogger,
+    private val proRepository: ProRepository
 ) : AlarmController {
 
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -53,11 +57,16 @@ class AlarmControllerImpl @Inject constructor(
                             snoozeNextTriggerTime = null
                         )
                         alarmRepository.updateAlarm(updatedAlarm)
-                        if (alarm.wakeUpCheckMinutes > 0) {
+                        val isPro = runCatching { proRepository.isPro.first() }.getOrDefault(false)
+                        val effectiveWakeUpMinutes = ProFeaturePolicy.effectiveWakeUpCheckMinutes(
+                            savedMinutes = alarm.wakeUpCheckMinutes,
+                            isPro = isPro
+                        )
+                        if (effectiveWakeUpMinutes > 0) {
                             vn.io.litever.remind.core.alarm.receiver.WakeUpCheckReceiver.schedule(
                                 context = context,
                                 alarmId = alarm.id,
-                                delayMinutes = alarm.wakeUpCheckMinutes
+                                delayMinutes = effectiveWakeUpMinutes
                             )
                         }
                     }

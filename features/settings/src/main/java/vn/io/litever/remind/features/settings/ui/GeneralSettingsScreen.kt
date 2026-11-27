@@ -408,7 +408,7 @@ private fun CompactTimeFormatToggle(
     ) {
         Row(
             modifier = Modifier
-                .padding(MaterialTheme.spacing.extraSmall)
+                .padding(horizontal = MaterialTheme.spacing.extraSmall)
                 .animateContentSize(),
             verticalAlignment = Alignment.CenterVertically,
         ) {

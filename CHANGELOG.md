@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Interactive TTS Label Preview:** Thêm `AnnounceLabelPreviewBottomSheet` hiển thị trạng thái đọc thời gian thực (`isSpeaking`), tự động phát hiện ngôn ngữ (Việt/Anh/Trung/Nhật/Hàn), cho phép chọn và lưu ngôn ngữ đọc (`AUTO`, `vi-VN`, `en-US`, `zh-CN`), cảnh báo thiếu gói giọng nói offline và điều hướng thẳng tới cài đặt TTS hệ thống.
 
 ### Changed
+- **Brand Typography Hierarchy:** Cấu hình `FontWeight.Bold` mặc định cho `display*`, `headline*` (bao gồm tiêu đề `AlertDialog`) và `titleLarge` (bao gồm tiêu đề `TopAppBar`), cùng `FontWeight.SemiBold` cho `titleMedium`/`titleSmall` trong `litever-brand` (`BrandTypography`).
 - **Bundled Typography Fonts:** Nhúng sẵn toàn bộ bộ font `Be Vietnam Pro` và `Nunito` vào `litever-designsystem` thay cho Downloadable Google Fonts để loại bỏ giật chữ khi chuyển màn hình.
 - **Fixed Android 11+ TTS Visibility:** Bổ sung `<queries>` (`INTENT_ACTION_TTS_SERVICE`) trong `AndroidManifest.xml` và cơ chế tự reset khi `TtsSpeaker` khởi tạo lỗi.
 - **Unified Dialogs & Pickers:** Chuẩn hóa toàn bộ Date Picker, Time Picker và form thông tin cơ bản của Nhắc nhở theo phong cách hiện đại của Báo thức.
@@ -20,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Modernized Trigger Controls:** Tinh giản cấu hình điều kiện kích hoạt nhắc nhở ngay trên màn hình biên tập, loại bỏ điều hướng phụ.
 
 ### Removed
+- Xoá `ReMindAlertDialog.kt` không còn sử dụng khỏi `:core:designsystem`, sử dụng trực tiếp Material 3 `AlertDialog` gốc.
 - Xoá bỏ hoàn toàn module `:core:network`, các model `Weather`/`TodayBriefing` cùng thư viện `Retrofit`, `OkHttp`, `Coil` không còn sử dụng; đánh dấu `@Deprecated` cho các key Remote Config cũ trong `AdPlacement` để tương thích ngược.
 - Loại bỏ tầng Domain, Data và DataStore cho Thời tiết và Quote (`WeatherRepository`, `TodayRepository`, `WeatherPreferencesDataSource`) cùng binding DI tương ứng.
 - Loại bỏ các thành phần UI Thời tiết (`WeatherInfoView`), Quote hằng ngày (`TodayQuoteView`), 5 bộ minh hoạ `*_pana.xml` khỏi `:core:designsystem` cùng các loại Mission chưa hoàn thiện (`SHAKE`, `QR_CODE`, `STEP`, `COLOR_MATCH`, `TAP_CHALLENGE`, `FIND_ITEM`) và nhãn "Sắp ra mắt".

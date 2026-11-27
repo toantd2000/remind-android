@@ -32,7 +32,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
-import com.google.android.gms.ads.nativead.NativeAd
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import vn.io.litever.remind.core.ads.api.AdPlacement
@@ -50,7 +49,7 @@ internal fun AdMobMicroAdStrip(
     adManager: AdMobManagerImpl,
     modifier: Modifier = Modifier
 ) {
-    var nativeAd by remember { mutableStateOf<NativeAd?>(adManager.cachedAds[placement]) }
+    var nativeAd by remember { mutableStateOf(adManager.cachedAds[placement]) }
     var adFailed by remember { mutableStateOf(false) }
 
     val lifecycle = LocalLifecycleOwner.current.lifecycle

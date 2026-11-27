@@ -368,7 +368,6 @@ class MainActivity : ComponentActivity() {
                                     currentRoute == RemindersListRoute ||
                                     currentRoute == settingsRoute
 
-                            val isAdFreeActive by viewModel.isAdFreeActive.collectAsState()
                             val context = LocalContext.current
                             var showExitDialog by remember { mutableStateOf(false) }
 
@@ -389,8 +388,7 @@ class MainActivity : ComponentActivity() {
                                             }
                                             currentContext = currentContext.baseContext
                                         }
-                                    },
-                                    isAdFreeActive = isAdFreeActive
+                                    }
                                 )
                             }
 
@@ -422,9 +420,8 @@ class MainActivity : ComponentActivity() {
                                                     }
                                                 }
                                             )
-                                            Spacer(modifier = Modifier.height(4.dp))
                                             adManager.MicroAdStrip(
-                                                placement = AdPlacement.SETTINGS_BOTTOM_STRIP,
+                                                placement = AdPlacement.MAIN_BOTTOM_STRIP,
                                                 modifier = Modifier.fillMaxWidth()
                                             )
                                         }

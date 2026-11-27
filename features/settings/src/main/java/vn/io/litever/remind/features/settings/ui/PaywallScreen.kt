@@ -156,7 +156,7 @@ fun PaywallScreen(
 
     if (!isInspection) {
         val adManager = LocalAdManager.current
-        val adState by adManager.adState.collectAsState()
+        val adState by adManager.adState(AdPlacement.SUPPORT_REWARDED).collectAsState()
         LaunchedEffect(adState, showAdLoading) {
             if (showAdLoading) {
                 when (adState) {
@@ -164,10 +164,15 @@ fun PaywallScreen(
                         showAdLoading = false
                         val activity = context.findPaywallActivity()
                         if (activity != null) {
-                            adManager.showAd(activity, AdPlacement.SUPPORT_REWARDED) {
-                                onRewardGranted()
-                                showThankYouDialog = true
-                            }
+                            adManager.showAd(
+                                activity = activity,
+                                placement = AdPlacement.SUPPORT_REWARDED,
+                                onRewardEarned = {
+                                    onRewardGranted()
+                                    showThankYouDialog = true
+                                },
+                                onAdDismissed = {}
+                            )
                         }
                     }
                     is AdState.Failed -> {
@@ -309,10 +314,15 @@ fun PaywallScreen(
                                 onClick = {
                                     val activity = context.findPaywallActivity()
                                     if (activity != null && adManager.isAdLoaded(AdPlacement.SUPPORT_REWARDED)) {
-                                        adManager.showAd(activity, AdPlacement.SUPPORT_REWARDED) {
-                                            onRewardGranted()
-                                            showThankYouDialog = true
-                                        }
+                                        adManager.showAd(
+                                            activity = activity,
+                                            placement = AdPlacement.SUPPORT_REWARDED,
+                                            onRewardEarned = {
+                                                onRewardGranted()
+                                                showThankYouDialog = true
+                                            },
+                                            onAdDismissed = {}
+                                        )
                                     } else {
                                         adManager.loadAd(AdPlacement.SUPPORT_REWARDED)
                                         showAdLoading = true

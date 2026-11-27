@@ -86,6 +86,22 @@ fun ReminderEditRoute(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
+    val activity = LocalContext.current as? android.app.Activity
+    val adManager = LocalAdManager.current
+
+    LaunchedEffect(Unit) {
+        adManager.loadAd(AdPlacement.SAVE_ALARM_INTERSTITIAL)
+    }
+
+    val finishAfterSave: () -> Unit = {
+        if (activity != null) {
+            adManager.showAd(activity, AdPlacement.SAVE_ALARM_INTERSTITIAL) {
+                onBackClick()
+            }
+        } else {
+            onBackClick()
+        }
+    }
 
     val currentBackStackEntry = navController.currentBackStackEntry
     val savedStateHandle = currentBackStackEntry?.savedStateHandle
@@ -130,8 +146,8 @@ fun ReminderEditRoute(
     ReminderEditScreen(
         uiState = uiState,
         onBackClick = { viewModel.onBackClick(onBackClick) },
-        onSaveClick = { viewModel.saveReminder(onSuccess = onBackClick) },
-        onSaveAnyway = { viewModel.saveAnyway(onSuccess = onBackClick) },
+        onSaveClick = { viewModel.saveReminder(onSuccess = finishAfterSave) },
+        onSaveAnyway = { viewModel.saveAnyway(onSuccess = finishAfterSave) },
         onDismissPermissionDialog = viewModel::dismissPermissionDialog,
         onNavigateToPermissions = {
             viewModel.dismissPermissionDialog()

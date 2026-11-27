@@ -6,15 +6,17 @@ import androidx.compose.ui.Modifier
 import kotlinx.coroutines.flow.StateFlow
 
 interface AdManager {
-    val adState: StateFlow<AdState>
+    fun adState(placement: AdPlacement): StateFlow<AdState>
 
     fun initialize()
     fun loadAd(placement: AdPlacement)
-    fun showAd(activity: Activity, placement: AdPlacement, onAdDismissed: () -> Unit)
+    fun showAd(
+        activity: Activity,
+        placement: AdPlacement,
+        onRewardEarned: () -> Unit = {},
+        onAdDismissed: () -> Unit
+    )
     fun isAdLoaded(placement: AdPlacement): Boolean
-
-    @Composable
-    fun NativeAdView(placement: AdPlacement, modifier: Modifier)
 
     @Composable
     fun MicroAdStrip(placement: AdPlacement, modifier: Modifier)

@@ -1,6 +1,5 @@
 package vn.io.litever.remind.core.ads.impl.ui
 
-import androidx.compose.material3.MaterialTheme
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.text.TextUtils
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,7 +41,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import com.google.android.gms.ads.nativead.NativeAdView as GmsNativeAdView
 
 /**
- * Compact 1-line Native Ad strip (~40dp) anchored near bottom navigation / action bars,
+ * Compact 1-line Native Ad strip (~40dp) anchored at the bottom of edit screens,
  * styled to match the app's surface without disrupting user interaction.
  */
 @Composable
@@ -62,7 +62,7 @@ internal fun AdMobMicroAdStrip(
                     if (ad != null) {
                         nativeAd = ad
                         adFailed = false
-                    } else {
+                    } else if (nativeAd == null) {
                         adFailed = true
                     }
                 }
@@ -79,6 +79,7 @@ internal fun AdMobMicroAdStrip(
     val colorPrimary = MaterialTheme.colorScheme.primary
     val colorBadgeBg = MaterialTheme.colorScheme.surfaceVariant
     val fallbackCta = stringResource(vn.io.litever.remind.core.ads.impl.R.string.ad_cta_open)
+    val adBadgeText = stringResource(vn.io.litever.remind.core.ads.impl.R.string.ad_badge_label)
 
     val fontFamilyResolver = LocalFontFamilyResolver.current
     val titleFontFamily = MaterialTheme.typography.labelMedium.fontFamily
@@ -101,12 +102,13 @@ internal fun AdMobMicroAdStrip(
             AndroidView(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(40.dp),
+                    .height(44.dp),
                 factory = { ctx ->
                     val adView = GmsNativeAdView(ctx)
                     val row = createMicroStripLayout(
                         ctx = ctx,
                         adView = adView,
+                        adBadgeText = adBadgeText,
                         colorOnSurface = colorOnSurface,
                         colorOnSurfaceVariant = colorOnSurfaceVariant,
                         colorPrimary = colorPrimary,
@@ -150,6 +152,7 @@ internal fun AdMobMicroAdStrip(
 private fun createMicroStripLayout(
     ctx: android.content.Context,
     adView: GmsNativeAdView,
+    adBadgeText: String,
     colorOnSurface: Color,
     colorOnSurfaceVariant: Color,
     colorPrimary: Color,
@@ -169,12 +172,12 @@ private fun createMicroStripLayout(
     }
 
     val adBadge = TextView(ctx).apply {
-        text = "AD"
-        textSize = 9f
+        text = adBadgeText
+        textSize = 10f
         setTextColor(colorOnSurfaceVariant.toArgb())
         typeface = Typeface.DEFAULT_BOLD
         val padH = (5 * density).toInt()
-        val padV = (1 * density).toInt()
+        val padV = (2 * density).toInt()
         setPadding(padH, padV, padH, padV)
         background = GradientDrawable().apply {
             setColor(colorBadgeBg.toArgb())
@@ -190,7 +193,7 @@ private fun createMicroStripLayout(
     container.addView(adBadge)
 
     val iconView = ImageView(ctx).apply {
-        val size = (20 * density).toInt()
+        val size = (24 * density).toInt()
         layoutParams = LinearLayout.LayoutParams(size, size).apply {
             marginEnd = (8 * density).toInt()
         }

@@ -5,8 +5,16 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AdConfig(
     val isAdsEnabled: Boolean = true,
-    val placements: Map<AdPlacement, PlacementConfig> = emptyMap()
-)
+    val placements: Map<String, PlacementConfig> = emptyMap()
+) {
+    fun placementConfig(placement: AdPlacement): PlacementConfig? {
+        return placements[placement.name] ?: when (placement) {
+            // Backward compatibility with legacy Remote Config key name
+            AdPlacement.MAIN_BOTTOM_STRIP -> placements["SETTINGS_BOTTOM_STRIP"]
+            else -> null
+        }
+    }
+}
 
 @Serializable
 data class PlacementConfig(

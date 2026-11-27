@@ -89,6 +89,7 @@ import vn.io.litever.remind.core.designsystem.components.LvTopAppBar
 import vn.io.litever.remind.core.designsystem.components.MissionSelectionBottomSheet
 import vn.io.litever.remind.core.designsystem.components.ReMindBottomBar
 import vn.io.litever.remind.core.designsystem.components.ReMindGroupCard
+import vn.io.litever.remind.core.designsystem.components.ReMindPreviewIconButton
 import vn.io.litever.remind.core.designsystem.components.ReMindProTag
 import vn.io.litever.remind.core.designsystem.components.ReMindProUnlockButton
 import vn.io.litever.remind.core.designsystem.components.ReMindSettingsDivider
@@ -1036,17 +1037,10 @@ fun AlarmEditScreen(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall)
                                 ) {
-                                    IconButton(
+                                    ReMindPreviewIconButton(
                                         onClick = { showLabelTtsPreviewSheet = true },
-                                        modifier = Modifier.size(36.dp)
-                                    ) {
-                                        Icon(
-                                            imageVector = ReMindIcons.PlayArrow,
-                                            contentDescription = stringResource(R.string.action_preview),
-                                            tint = MaterialTheme.colorScheme.primary,
-                                            modifier = Modifier.size(20.dp)
-                                        )
-                                    }
+                                        contentDescription = stringResource(R.string.action_preview)
+                                    )
                                     if (isPro) {
                                         Switch(
                                             checked = effectiveAnnounceLabelTts,
@@ -1242,17 +1236,10 @@ fun AlarmEditScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall)
                             ) {
-                                IconButton(
+                                ReMindPreviewIconButton(
                                     onClick = onPreviewExtraLoud,
-                                    modifier = Modifier.size(36.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = ReMindIcons.PlayArrow,
-                                        contentDescription = stringResource(R.string.action_preview),
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                }
+                                    contentDescription = stringResource(R.string.action_preview)
+                                )
                                 if (isPro) {
                                     Switch(
                                         checked = effectiveExtraLoud,
@@ -1300,17 +1287,10 @@ fun AlarmEditScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall)
                             ) {
-                                IconButton(
+                                ReMindPreviewIconButton(
                                     onClick = onPreviewTimeTts,
-                                    modifier = Modifier.size(36.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = ReMindIcons.PlayArrow,
-                                        contentDescription = stringResource(R.string.action_preview),
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                }
+                                    contentDescription = stringResource(R.string.action_preview)
+                                )
                                 if (isPro) {
                                     Switch(
                                         checked = effectiveAnnounceTimeTts,

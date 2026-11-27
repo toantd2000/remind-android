@@ -7,14 +7,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -135,32 +138,10 @@ fun ReMindSettingsItem(
         else -> null
     }
 
-    ListItem(
-        supportingContent = subtitle?.let {
-            {
-                Text(
-                    text = it,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = alpha)
-                )
-            }
-        },
-        leadingContent = icon?.let {
-            {
-                Icon(
-                    imageVector = it,
-                    contentDescription = null,
-                    modifier = Modifier.size(MaterialTheme.spacing.large),
-                    tint = (iconTint ?: MaterialTheme.colorScheme.onSurfaceVariant).copy(alpha = alpha)
-                )
-            }
-        },
-        trailingContent = effectiveTrailing,
-        colors = ListItemDefaults.colors(
-            containerColor = Color.Transparent
-        ),
+    Row(
         modifier = modifier
             .fillMaxWidth()
+            .defaultMinSize(minHeight = 56.dp)
             .clip(MaterialTheme.shapes.large)
             .then(
                 if (onClick != null) Modifier.clickable(
@@ -168,17 +149,35 @@ fun ReMindSettingsItem(
                     onClick = onClick
                 ) else Modifier
             )
+            .padding(
+                horizontal = MaterialTheme.spacing.medium,
+                vertical = MaterialTheme.spacing.smallMedium
+            ),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Column {
+        if (icon != null) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(MaterialTheme.spacing.large),
+                tint = (iconTint ?: MaterialTheme.colorScheme.onSurfaceVariant).copy(alpha = alpha)
+            )
+            Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium))
+        }
+
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.tiny)
+        ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = alpha),
-                    maxLines = 1,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f, fill = false)
                 )
@@ -193,7 +192,47 @@ fun ReMindSettingsItem(
                     overflow = TextOverflow.Ellipsis
                 )
             }
+            if (subtitle != null) {
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = alpha),
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
+
+        if (effectiveTrailing != null) {
+            Spacer(modifier = Modifier.width(MaterialTheme.spacing.smallMedium))
+            effectiveTrailing()
+        }
+    }
+}
+
+/**
+ * Compact tonal icon button (`36.dp`) for previewing sound/TTS options inline inside
+ * [ReMindSettingsItem] trailing rows without competing visually with primary unlock/save actions.
+ */
+@Composable
+fun ReMindPreviewIconButton(
+    onClick: () -> Unit,
+    contentDescription: String,
+    modifier: Modifier = Modifier
+) {
+    FilledTonalIconButton(
+        onClick = onClick,
+        modifier = modifier.size(36.dp),
+        colors = IconButtonDefaults.filledTonalIconButtonColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    ) {
+        Icon(
+            imageVector = ReMindIcons.PlayArrow,
+            contentDescription = contentDescription,
+            modifier = Modifier.size(18.dp)
+        )
     }
 }
 
